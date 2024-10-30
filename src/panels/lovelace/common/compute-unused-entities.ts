@@ -26,6 +26,9 @@ const addFromAction = (entities: Set<string>, actionConfig: ActionConfig) => {
 };
 
 const addEntityId = (entities: Set<string>, entity) => {
+  if (!entity) {
+    return;
+  }
   if (typeof entity === "string") {
     entities.add(entity);
     return;

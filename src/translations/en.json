@@ -362,6 +362,7 @@
       "help": "Help",
       "successfully_saved": "Successfully saved",
       "successfully_deleted": "Successfully deleted",
+      "deleting_failed": "Deleting failed",
       "error_required": "Required",
       "copied": "Copied",
       "copied_clipboard": "Copied to clipboard",
@@ -1190,6 +1191,7 @@
           "skip": "Skip",
           "clear_skipped": "Clear skipped",
           "install": "Install",
+          "update": "Update",
           "create_backup": "Create backup before updating",
           "auto_update_enabled_title": "Can not skip version",
           "auto_update_enabled_text": "Automatic updates for this item have been enabled; skipping it is, therefore, unavailable. You can either install this update now or wait for Home Assistant to do it automatically."
@@ -1928,7 +1930,10 @@
           "multiselect": {
             "failed": "Failed to update {number} items."
           },
-          "learn_more": "Learn more"
+          "learn_more": "Learn more",
+          "show_url": "Show full URL",
+          "hide_url": "Hide URL",
+          "copy_link": "Copy link"
         },
         "updates": {
           "caption": "Updates",
@@ -1956,14 +1961,14 @@
           "caption": "Repairs",
           "description": "Find and fix issues with your Home Assistant instance",
           "title": "{count} {count, plural,\n  one {repair}\n  other {repairs}\n}",
-          "no_repairs": "There are currently no repairs available",
+          "no_repairs": "There are currently no repairs pending",
           "more_repairs": "Show all repairs",
           "show_ignored": "Show ignored repairs",
           "critical": "Critical",
           "error": "Error",
           "warning": "Warning",
           "system_information": "System information",
-          "integration_startup_time": "Integration startup time",
+          "integration_startup_time": "Integration startup times",
           "copy": "Copy",
           "reported_by": "Reported by {integration}",
           "created_at_by": "{date} by {integration}",
@@ -2396,7 +2401,9 @@
           "enable_remote": "[%key:ui::common::enable%]",
           "internal_url_automatic": "Automatic",
           "internal_url_https_error_title": "Invalid local network URL",
-          "internal_url_https_error_description": "You have configured an HTTPS certificate in Home Assistant. This means that your internal URL needs to be set to a domain covered by the certficate."
+          "internal_url_https_error_description": "You have configured an HTTPS certificate in Home Assistant. This means that your internal URL needs to be set to a domain covered by the certficate.",
+          "internal_url_automatic_description": "Use the configured network settings",
+          "internal_url_placeholder": "http://<some IP address>:8123"
         },
         "hardware": {
           "caption": "Hardware",
@@ -2464,6 +2471,7 @@
           "failed_get_logs": "Failed to get {provider} logs, {error}",
           "no_issues_search": "No issues found for search term ''{term}''",
           "load_logs": "Load full logs",
+          "nr_of_lines": "Number of lines",
           "loading_log": "Loading full log…",
           "no_errors": "No errors have been reported",
           "no_issues": "There are no new issues!",
@@ -2482,9 +2490,15 @@
           "custom_integration": "custom integration",
           "error_from_custom_integration": "This error originated from a custom integration.",
           "show_full_logs": "Show full logs",
+          "select_number_of_lines": "Select number of lines to download",
+          "lines": "Lines",
           "download_full_log": "Download full log",
+          "scroll_down_button": "New logs - Click to scroll",
           "provider_not_found": "Log provider not found",
           "provider_not_available": "Logs for ''{provider}'' are not available on your system.",
+          "current": "Current",
+          "previous": "Previous",
+          "startups_ago": "{boot} startups ago",
           "detail": {
             "logger": "Logger",
             "source": "Source",
@@ -2856,6 +2870,7 @@
             "copy_to_clipboard": "Copy to clipboard",
             "search_in": "Search · {group}",
             "unknown_entity": "unknown entity",
+            "edit_unknown_device": "Editor not available for unknown device",
             "triggers": {
               "name": "Triggers",
               "header": "When",
@@ -3150,8 +3165,8 @@
                   "label": "And",
                   "description": {
                     "picker": "Test if multiple conditions are true.",
-                    "no_conditions": "Test if multiple conditions match",
-                    "full": "Test if {count} {count, plural,\n one {condition match}\n other {conditions matches}\n}"
+                    "no_conditions": "If multiple conditions match",
+                    "full": "If {count} {count, plural,\n one {condition match}\n other {conditions matches}\n}"
                   }
                 },
                 "device": {
@@ -3165,9 +3180,9 @@
                   "label": "Not",
                   "description": {
                     "picker": "Test if a condition is not true.",
-                    "no_conditions": "Test if no condition matches",
-                    "one_condition": "Test if 1 condition does not match",
-                    "full": "Test if none of {count} conditions match"
+                    "no_conditions": "If no condition matches",
+                    "one_condition": "If 1 condition does not match",
+                    "full": "If none of {count} conditions match"
                   }
                 },
                 "numeric_state": {
@@ -3190,8 +3205,8 @@
                   "label": "Or",
                   "description": {
                     "picker": "Test if any condition is true.",
-                    "no_conditions": "Test if any condition matches",
-                    "full": "Test if any of {count} {count, plural,\n  one {condition}\n other {conditions}\n} matches"
+                    "no_conditions": "If any condition matches",
+                    "full": "If any of {count} {count, plural,\n  one {condition}\n other {conditions}\n} matches"
                   }
                 },
                 "state": {
@@ -3200,7 +3215,7 @@
                   "description": {
                     "picker": "If an entity (or attribute) is in a specific state.",
                     "no_entity": "Confirm state",
-                    "full": "Confirm{hasAttribute, select, \n true { {attribute} of}\n other {}\n} {numberOfEntities, plural,\n zero {an entity is}\n one {{entities} is}\n other {{entities} are}\n} {numberOfStates, plural,\n zero {a state}\n other {{states}}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n }"
+                    "full": "If{hasAttribute, select, \n true { {attribute} of}\n other {}\n} {numberOfEntities, plural,\n zero {an entity is}\n one {{entities} is}\n other {{entities} are}\n} {numberOfStates, plural,\n zero {a state}\n other {{states}}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n }"
                   }
                 },
                 "sun": {
@@ -3213,7 +3228,7 @@
                   "sunset": "Sunset",
                   "description": {
                     "picker": "If the sun is above or below the horizon.",
-                    "full": "Confirm sun{afterChoice, select, \n sunrise { after sunrise}\n sunset { after sunset}\n other {}\n}{afterOffsetChoice, select, \n offset { offset by {afterOffset}}\n other {}\n}{beforeChoice, select, \n sunrise { before sunrise}\n sunset { before sunset}\n other {}\n}{beforeOffsetChoice, select, \n offset { offset by {beforeOffset}}\n other {}\n}"
+                    "full": "If the sun{afterChoice, select, \n sunrise { after sunrise}\n sunset { after sunset}\n other {}\n}{afterOffsetChoice, select, \n offset { offset by {afterOffset}}\n other {}\n}{beforeChoice, select, \n sunrise { before sunrise}\n sunset { before sunset}\n other {}\n}{beforeOffsetChoice, select, \n offset { offset by {beforeOffset}}\n other {}\n}"
                   }
                 },
                 "template": {
@@ -3221,7 +3236,7 @@
                   "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::template::value_template%]",
                   "description": {
                     "picker": "If a template evaluates to true.",
-                    "full": "Test if template renders a value equal to true"
+                    "full": "If template renders a value equal to true"
                   }
                 },
                 "time": {
@@ -3244,7 +3259,7 @@
                   },
                   "description": {
                     "picker": "If the current time is before or after a specified time.",
-                    "full": "Confirm the {hasTime, select, \n after {time is after {time_after}}\n before {time is before {time_before}}\n after_before {time is after {time_after} and before {time_before}} \n other {}\n }{hasTimeAndDay, select, \n true { and the }\n other {}\n}{hasDay, select, \n true { day is {day}}\n other {}\n}"
+                    "full": "If the {hasTime, select, \n after {time is after {time_after}}\n before {time is before {time_before}}\n after_before {time is after {time_after} and before {time_before}} \n other {}\n }{hasTimeAndDay, select, \n true { and the }\n other {}\n}{hasDay, select, \n true { day is {day}}\n other {}\n}"
                   }
                 },
                 "trigger": {
@@ -3278,7 +3293,7 @@
               "invalid_action": "Invalid action",
               "run": "Run",
               "run_action_error": "Error running action",
-              "run_action_success": "Action run successfully",
+              "run_action_success": "Action ran successfully",
               "duplicate": "[%key:ui::common::duplicate%]",
               "re_order": "[%key:ui::panel::config::automation::editor::triggers::re_order%]",
               "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
@@ -3905,9 +3920,6 @@
               "info": "Home Assistant Cloud provides a secure remote access to your instance while away from home. For more information on remote access and these settings visit our security documentation.",
               "info_instance_will_be_available": "Your instance will be available at your Nabu Casa URL.",
               "link_learn_how_it_works": "Learn how it works",
-              "show_url": "Show full URL",
-              "hide_url": "Hide URL",
-              "copy_link": "Copy link",
               "security_options": "Security options",
               "external_activation": "Allow external activation of remote access",
               "external_activation_secondary": "If you disable remote access on this page, having this setting enabled allows you to reactivate it remotely via your Nabu Casa account.",
@@ -5220,7 +5232,8 @@
           "supervisor": {
             "title": "Configure network interfaces",
             "connected_to": "Connected to {ssid}",
-            "scan_ap": "Scan for access points",
+            "scan_ap": "Search networks",
+            "reset": "Reset configuration",
             "signal_strength": "Signal strength",
             "open": "Open",
             "wep": "WEP",
@@ -5602,14 +5615,14 @@
             "type_warning_sections": "You can not change your view to use the 'sections' view type because migration is not supported yet. Start from scratch with a new view if you want to experiment with the 'sections' view.",
             "type_warning_others": "You can not change your view to an other type because migration is not supported yet. Start from scratch with a new view if you want to use another view type.",
             "types": {
-              "masonry": "Masonry (default)",
+              "masonry": "Masonry",
               "sidebar": "Sidebar",
-              "panel": "Panel (1 card)",
-              "sections": "Sections (experimental)"
+              "panel": "Panel (single card)",
+              "sections": "Sections"
             },
             "subview": "Subview",
             "max_columns": "Max number of sections wide",
-            "section_specifics": "Sections view specifics settings",
+            "section_specifics": "Sections view specific settings",
             "dense_section_placement": "Dense section placement",
             "dense_section_placement_helper": "Will try to fill gaps with sections that fit the gap. This may make section placement less predictable.",
             "subview_helper": "Subviews don't appear in tabs and have a back button.",
@@ -5690,8 +5703,8 @@
           },
           "move_card": {
             "header": "Choose a view to move the card to",
-            "error_title": "Impossible to move the card",
-            "error_text_section": "Moving a card to a section view is not supported yet. Use copy/cut/paste instead."
+            "strategy_error_title": "Impossible to move the card",
+            "strategy_error_text_strategy": "Moving a card to an auto generated view is not supported."
           },
           "change_position": {
             "title": "Change card position",
@@ -5709,7 +5722,9 @@
             "add_badge": "Add badge",
             "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
             "create_section": "Create section",
-            "default_section_title": "New section"
+            "default_section_title": "New section",
+            "imported_card_section_title_view": "Imported cards from ''{view_title}'' view",
+            "imported_card_section_title_default": "Imported cards from another view"
           },
           "delete_section": {
             "title": "Delete section",
@@ -6075,6 +6090,7 @@
             "map": {
               "name": "Map",
               "geo_location_sources": "Geolocation sources",
+              "no_geo_location_sources": "No geolocation sources available",
               "dark_mode": "Dark mode?",
               "appearance": "Appearance",
               "theme_mode": "Theme Mode",
@@ -6102,7 +6118,7 @@
             },
             "picture-elements": {
               "name": "Picture elements",
-              "description": "The Picture elements card is one of the most versatile types of cards. The cards allow you to position icons or text and even services! On an image based on coordinates.",
+              "description": "The Picture elements card is one of the most versatile types of cards. The cards allow you to position icons or text and even actions! On an image based on coordinates.",
               "card_options": "Card Options",
               "elements": "Elements",
               "new_element": "Add new element",
@@ -6127,7 +6143,7 @@
             },
             "picture-glance": {
               "name": "Picture glance",
-              "description": "The Picture card allows you to set an image to use for navigation to various paths in your interface or to perform an action.",
+              "description": "The Picture glance card allows you to set an image to use for navigation to various paths in your interface or to perform an action.",
               "state_entity": "State entity"
             },
             "plant-status": {
@@ -7658,6 +7674,7 @@
     },
     "backup": {
       "search": "[%key:ui::panel::config::backup::picker::search%]",
+      "loading_backups": "Loading backups. This can take a few seconds.",
       "no_backups": "You don't have any backups yet.",
       "create_blocked_not_running": "Creating a backup is not possible right now because the system is in \"{state}\" state.",
       "restore_blocked_not_running": "Restoring a backup is not possible right now because the system is in \"{state}\" state.",
@@ -7753,7 +7770,7 @@
       },
       "uninstall_addon": {
         "title": "Uninstall {name}?",
-        "text": "Its configuration will be permanently deleted.",
+        "remove_data": "Also permanently delete this addon's data",
         "uninstall": "Uninstall"
       },
       "hardware": {

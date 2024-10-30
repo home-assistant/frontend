@@ -67,7 +67,6 @@ export class HaMdTabs extends MdTabs {
         --md-divider-thickness: 0px;
         --md-primary-tab-container-height: 56px;
         --md-secondary-tab-container-height: 56px;
-        --md-secondary-tab-label-text-size: 14px;
       }
       ::-webkit-scrollbar {
         display: none;

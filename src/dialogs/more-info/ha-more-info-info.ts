@@ -9,6 +9,7 @@ import {
   computeShowHistoryComponent,
   computeShowLogBookComponent,
   computeShowNewMoreInfo,
+  DOMAINS_FULL_HEIGHT_MORE_INFO,
   DOMAINS_NO_INFO,
   DOMAINS_WITH_MORE_INFO,
 } from "./const";
@@ -40,6 +41,8 @@ export class MoreInfoInfo extends LitElement {
     const entityRegObj = this.hass.entities[entityId];
     const domain = computeDomain(entityId);
     const isNewMoreInfo = stateObj && computeShowNewMoreInfo(stateObj);
+    const isFullHeight =
+      isNewMoreInfo || DOMAINS_FULL_HEIGHT_MORE_INFO.includes(domain);
 
     return html`
       <div class="container" data-domain=${domain}>
@@ -89,7 +92,7 @@ export class MoreInfoInfo extends LitElement {
                 .entityId=${this.entityId}
               ></ha-more-info-logbook>`}
           <more-info-content
-            ?full-height=${isNewMoreInfo}
+            ?full-height=${isFullHeight}
             .stateObj=${stateObj}
             .hass=${this.hass}
             .entry=${this.entry}

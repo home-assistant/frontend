@@ -8,6 +8,7 @@ import { BINARY_STATE_ON } from "../common/const";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
+import { formatNumber } from "../common/number/format_number";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../types";
@@ -23,13 +24,15 @@ export enum UpdateEntityFeature {
 
 interface UpdateEntityAttributes extends HassEntityAttributeBase {
   auto_update: boolean | null;
+  display_precision: number;
   installed_version: string | null;
-  in_progress: boolean | number;
+  in_progress: boolean;
   latest_version: string | null;
   release_summary: string | null;
   release_url: string | null;
   skipped_version: string | null;
   title: string | null;
+  update_percentage: number | null;
 }
 
 export interface UpdateEntity extends HassEntityBase {
@@ -38,7 +41,7 @@ export interface UpdateEntity extends HassEntityBase {
 
 export const updateUsesProgress = (entity: UpdateEntity): boolean =>
   supportsFeature(entity, UpdateEntityFeature.PROGRESS) &&
-  typeof entity.attributes.in_progress === "number";
+  entity.attributes.update_percentage !== null;
 
 export const updateCanInstall = (
   entity: UpdateEntity,
@@ -49,7 +52,7 @@ export const updateCanInstall = (
   supportsFeature(entity, UpdateEntityFeature.INSTALL);
 
 export const updateIsInstalling = (entity: UpdateEntity): boolean =>
-  updateUsesProgress(entity) || !!entity.attributes.in_progress;
+  !!entity.attributes.in_progress;
 
 export const updateReleaseNotes = (hass: HomeAssistant, entityId: string) =>
   hass.callWS<string | null>({
@@ -183,10 +186,13 @@ export const computeUpdateStateDisplay = (
     if (updateIsInstalling(stateObj)) {
       const supportsProgress =
         supportsFeature(stateObj, UpdateEntityFeature.PROGRESS) &&
-        typeof attributes.in_progress === "number";
+        attributes.update_percentage !== null;
       if (supportsProgress) {
         return hass.localize("ui.card.update.installing_with_progress", {
-          progress: attributes.in_progress as number,
+          progress: formatNumber(attributes.update_percentage!, hass.locale, {
+            maximumFractionDigits: attributes.display_precision,
+            minimumFractionDigits: attributes.display_precision,
+          }),
         });
       }
       return hass.localize("ui.card.update.installing");

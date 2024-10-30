@@ -14,6 +14,7 @@ import { LovelaceHeaderFooterConfig } from "./header-footer/types";
 import { LovelaceCardFeatureConfig } from "./card-features/types";
 import { LovelaceElement, LovelaceElementConfig } from "./elements/types";
 import { LovelaceHeadingBadgeConfig } from "./heading-badges/types";
+import type { ShowToastParams } from "../../managers/notification-manager";
 
 declare global {
   // eslint-disable-next-line
@@ -35,6 +36,7 @@ export interface Lovelace {
   setEditMode: (editMode: boolean) => void;
   saveConfig: (newConfig: LovelaceRawConfig) => Promise<void>;
   deleteConfig: () => Promise<void>;
+  showToast: (params: ShowToastParams) => void;
 }
 
 export interface LovelaceBadge extends HTMLElement {
