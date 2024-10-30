@@ -32,7 +32,6 @@ export class HaActionSelector extends LitElement {
         .disabled=${this.disabled}
         .actions=${this._actions(this.value)}
         .hass=${this.hass}
-        .path=${this.selector.action?.path}
       ></ha-automation-action>
     `;
   }

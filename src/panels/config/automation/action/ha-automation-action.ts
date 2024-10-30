@@ -13,14 +13,14 @@ import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { listenMediaQuery } from "../../../../common/dom/media_query";
-import { nestedArrayMove } from "../../../../common/util/array-move";
+import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import { getService, isService } from "../../../../data/action";
 import type { AutomationClipboard } from "../../../../data/automation";
 import { Action } from "../../../../data/script";
-import { HomeAssistant, ItemPath } from "../../../../types";
+import { HomeAssistant } from "../../../../types";
 import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
@@ -35,8 +35,6 @@ export default class HaAutomationAction extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Boolean }) public disabled = false;
-
-  @property({ type: Array }) public path?: ItemPath;
 
   @property({ attribute: false }) public actions!: Action[];
 
@@ -69,20 +67,17 @@ export default class HaAutomationAction extends LitElement {
     this._unsubMql = undefined;
   }
 
-  private get nested() {
-    return this.path !== undefined;
-  }
-
   protected render() {
     return html`
       <ha-sortable
         handle-selector=".handle"
         draggable-selector="ha-automation-action-row"
         .disabled=${!this._showReorder || this.disabled}
-        @item-moved=${this._actionMoved}
         group="actions"
-        .path=${this.path}
         invert-swap
+        @item-moved=${this._actionMoved}
+        @item-added=${this._actionAdded}
+        @item-removed=${this._actionRemoved}
       >
         <div class="actions">
           ${repeat(
@@ -90,7 +85,7 @@ export default class HaAutomationAction extends LitElement {
             (action) => this._getKey(action),
             (action, idx) => html`
               <ha-automation-action-row
-                .path=${[...(this.path ?? []), idx]}
+                .sortableData=${action}
                 .index=${idx}
                 .first=${idx === 0}
                 .last=${idx === this.actions.length - 1}
@@ -225,28 +220,44 @@ export default class HaAutomationAction extends LitElement {
     this._move(index, newIndex);
   }
 
-  private _move(
-    oldIndex: number,
-    newIndex: number,
-    oldPath?: ItemPath,
-    newPath?: ItemPath
-  ) {
-    const actions = nestedArrayMove(
-      this.actions,
-      oldIndex,
-      newIndex,
-      oldPath,
-      newPath
-    );
-
+  private _move(oldIndex: number, newIndex: number) {
+    const actions = this.actions.concat();
+    const item = actions.splice(oldIndex, 1)[0];
+    actions.splice(newIndex, 0, item);
+    this.actions = actions;
     fireEvent(this, "value-changed", { value: actions });
   }
 
   private _actionMoved(ev: CustomEvent): void {
-    if (this.nested) return;
     ev.stopPropagation();
-    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
-    this._move(oldIndex, newIndex, oldPath, newPath);
+    const { oldIndex, newIndex } = ev.detail;
+    this._move(oldIndex, newIndex);
+  }
+
+  private async _actionAdded(ev: CustomEvent): Promise<void> {
+    ev.stopPropagation();
+    const { index, data } = ev.detail;
+    const actions = [
+      ...this.actions.slice(0, index),
+      data,
+      ...this.actions.slice(index),
+    ];
+    // Add action locally to avoid UI jump
+    this.actions = actions;
+    await nextRender();
+    fireEvent(this, "value-changed", { value: this.actions });
+  }
+
+  private async _actionRemoved(ev: CustomEvent): Promise<void> {
+    ev.stopPropagation();
+    const { index } = ev.detail;
+    const action = this.actions[index];
+    // Remove action locally to avoid UI jump
+    this.actions = this.actions.filter((a) => a !== action);
+    await nextRender();
+    // Ensure action is removed even after update
+    const actions = this.actions.filter((a) => a !== action);
+    fireEvent(this, "value-changed", { value: actions });
   }
 
   private _actionChanged(ev: CustomEvent) {

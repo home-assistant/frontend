@@ -8,7 +8,7 @@ import "../../../../../components/ha-duration-input";
 import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-textfield";
 import { WaitForTriggerAction } from "../../../../../data/script";
-import { HomeAssistant, ItemPath } from "../../../../../types";
+import { HomeAssistant } from "../../../../../types";
 import "../../trigger/ha-automation-trigger";
 import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
 
@@ -22,8 +22,6 @@ export class HaWaitForTriggerAction
   @property({ attribute: false }) public action!: WaitForTriggerAction;
 
   @property({ type: Boolean }) public disabled = false;
-
-  @property({ attribute: false }) public path?: ItemPath;
 
   public static get defaultConfig(): WaitForTriggerAction {
     return { wait_for_trigger: [] };
@@ -55,7 +53,6 @@ export class HaWaitForTriggerAction
         ></ha-switch>
       </ha-formfield>
       <ha-automation-trigger
-        .path=${[...(this.path ?? []), "wait_for_trigger"]}
         .triggers=${ensureArray(this.action.wait_for_trigger)}
         .hass=${this.hass}
         .disabled=${this.disabled}

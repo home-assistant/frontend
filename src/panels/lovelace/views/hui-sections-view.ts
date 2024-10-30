@@ -175,8 +175,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
               const rowSpan = sectionConfig?.row_span || 1;
 
-              (section as any).itemPath = [idx];
-
               return html`
                 <div
                   class="section"
