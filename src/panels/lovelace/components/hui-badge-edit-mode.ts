@@ -1,14 +1,15 @@
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import {
   mdiContentCopy,
   mdiContentCut,
-  mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
   mdiPencil,
+  mdiPlusCircleMultipleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { storage } from "../../../common/decorators/storage";
@@ -17,18 +18,18 @@ import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
-import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import { ensureBadgeConfig } from "../../../data/lovelace/config/badge";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { showEditBadgeDialog } from "../editor/badge-editor/show-edit-badge-dialog";
+import type { LovelaceCardPath } from "../editor/lovelace-path";
 import {
-  LovelaceCardPath,
   findLovelaceItems,
   getLovelaceContainerPath,
   parseLovelaceCardPath,
 } from "../editor/lovelace-path";
-import { Lovelace } from "../types";
-import { ensureBadgeConfig } from "../../../data/lovelace/config/badge";
+import type { Lovelace } from "../types";
 
 @customElement("hui-badge-edit-mode")
 export class HuiBadgeEditMode extends LitElement {
@@ -111,8 +112,8 @@ export class HuiBadgeEditMode extends LitElement {
       <div class="badge-overlay ${classMap({ visible: showOverlay })}">
         <div
           class="edit"
-          @click=${this._editBadge}
-          @keydown=${this._editBadge}
+          @click=${this._handleOverlayClick}
+          @keydown=${this._handleOverlayClick}
           tabindex="0"
         >
           <div class="edit-overlay"></div>
@@ -130,9 +131,13 @@ export class HuiBadgeEditMode extends LitElement {
           <ha-icon-button slot="trigger" .path=${mdiDotsVertical}>
           </ha-icon-button>
           <ha-list-item graphic="icon">
+            <ha-svg-icon slot="graphic" .path=${mdiPencil}></ha-svg-icon>
+            ${this.hass.localize("ui.panel.lovelace.editor.edit_card.edit")}
+          </ha-list-item>
+          <ha-list-item graphic="icon">
             <ha-svg-icon
               slot="graphic"
-              .path=${mdiContentDuplicate}
+              .path=${mdiPlusCircleMultipleOutline}
             ></ha-svg-icon>
             ${this.hass.localize(
               "ui.panel.lovelace.editor.edit_card.duplicate"
@@ -168,18 +173,33 @@ export class HuiBadgeEditMode extends LitElement {
     this._menuOpened = false;
   }
 
+  private _handleOverlayClick(ev): void {
+    if (ev.defaultPrevented) {
+      return;
+    }
+    if (ev.type === "keydown" && ev.key !== "Enter" && ev.key !== " ") {
+      return;
+    }
+    ev.preventDefault();
+    ev.stopPropagation();
+    this._editBadge();
+  }
+
   private _handleAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
-        this._duplicateBadge();
+        this._editBadge();
         break;
       case 1:
-        this._copyBadge();
+        this._duplicateBadge();
         break;
       case 2:
-        this._cutBadge();
+        this._copyBadge();
         break;
       case 3:
+        this._cutBadge();
+        break;
+      case 4:
         this._deleteBadge();
         break;
     }
@@ -187,7 +207,7 @@ export class HuiBadgeEditMode extends LitElement {
 
   private _cutBadge(): void {
     this._copyBadge();
-    this._deleteBadge();
+    fireEvent(this, "ll-delete-badge", { path: this.path!, silent: true });
   }
 
   private _copyBadge(): void {
@@ -208,20 +228,12 @@ export class HuiBadgeEditMode extends LitElement {
     });
   }
 
-  private _editBadge(ev): void {
-    if (ev.defaultPrevented) {
-      return;
-    }
-    if (ev.type === "keydown" && ev.key !== "Enter" && ev.key !== " ") {
-      return;
-    }
-    ev.preventDefault();
-    ev.stopPropagation();
+  private _editBadge(): void {
     fireEvent(this, "ll-edit-badge", { path: this.path! });
   }
 
   private _deleteBadge(): void {
-    fireEvent(this, "ll-delete-badge", { path: this.path! });
+    fireEvent(this, "ll-delete-badge", { path: this.path!, silent: false });
   }
 
   static get styles(): CSSResultGroup {

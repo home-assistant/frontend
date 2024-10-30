@@ -1,14 +1,16 @@
-import { html, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
+import { html } from "lit";
 import { customElement, state } from "lit/decorators";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
 import { navigate } from "../common/navigate";
 import { getStorageDefaultPanelUrlPath } from "../data/panel";
-import { WindowWithPreloads } from "../data/preloads";
-import { getRecorderInfo, RecorderInfo } from "../data/recorder";
+import type { WindowWithPreloads } from "../data/preloads";
+import type { RecorderInfo } from "../data/recorder";
+import { getRecorderInfo } from "../data/recorder";
 import "../resources/custom-card-support";
 import { HassElement } from "../state/hass-element";
 import QuickBarMixin from "../state/quick-bar-mixin";
-import { HomeAssistant, Route } from "../types";
+import type { HomeAssistant, Route } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import {
   removeLaunchScreen,

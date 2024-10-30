@@ -1,7 +1,7 @@
 import type { IntlMessageFormat } from "intl-messageformat";
 import type { HTMLTemplateResult } from "lit";
 import { polyfillLocaleData } from "../../resources/polyfills/locale-data-polyfill";
-import { Resources, TranslationDict } from "../../types";
+import type { Resources, TranslationDict } from "../../types";
 import { fireEvent } from "../dom/fire_event";
 
 // Exclude some patterns from key type checking for now
@@ -15,7 +15,6 @@ export type LocalizeKeys =
   | `ui.card.weather.cardinal_direction.${string}`
   | `ui.card.lawn_mower.actions.${string}`
   | `ui.components.calendar.event.rrule.${string}`
-  | `ui.components.logbook.${string}`
   | `ui.components.selectors.file.${string}`
   | `ui.dialogs.entity_registry.editor.${string}`
   | `ui.dialogs.more_info_control.lawn_mower.${string}`

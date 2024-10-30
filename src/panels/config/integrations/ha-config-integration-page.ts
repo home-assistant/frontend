@@ -25,16 +25,9 @@ import {
   mdiStopCircleOutline,
   mdiWrench,
 } from "@mdi/js";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { until } from "lit/directives/until";
@@ -56,9 +49,11 @@ import {
   fetchApplicationCredentialsConfigEntry,
 } from "../../../data/application_credential";
 import { getSignedPath } from "../../../data/auth";
-import {
+import type {
   ConfigEntry,
   DisableConfigEntryResult,
+} from "../../../data/config_entries";
+import {
   ERROR_STATES,
   RECOVERABLE_STATES,
   deleteConfigEntry,
@@ -69,21 +64,21 @@ import {
   updateConfigEntry,
 } from "../../../data/config_entries";
 import { ATTENTION_SOURCES } from "../../../data/config_flow";
-import { DeviceRegistryEntry } from "../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../data/device_registry";
+import type { DiagnosticInfo } from "../../../data/diagnostics";
 import {
-  DiagnosticInfo,
   fetchDiagnosticHandler,
   getConfigEntryDiagnosticsDownloadUrl,
 } from "../../../data/diagnostics";
-import {
-  EntityRegistryEntry,
-  subscribeEntityRegistry,
-} from "../../../data/entity_registry";
+import type { EntityRegistryEntry } from "../../../data/entity_registry";
+import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
 import { getErrorLogDownloadUrl } from "../../../data/error_log";
-import {
+import type {
   IntegrationLogInfo,
   IntegrationManifest,
+} from "../../../data/integration";
+import {
   LogSeverity,
   domainToName,
   fetchIntegrationManifest,
@@ -104,11 +99,11 @@ import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { documentationUrl } from "../../../util/documentation-url";
 import { fileDownload } from "../../../util/file_download";
-import { DataEntryFlowProgressExtended } from "./ha-config-integrations";
+import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
 
 @customElement("ha-config-integration-page")
@@ -484,9 +479,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                             unelevated
                             .flow=${flow}
                             @click=${this._continueFlow}
-                            .label=${this.hass.localize(
-                              "ui.panel.config.integrations.configure"
-                            )}
+                            .label=${this.hass.localize("ui.common.add")}
                           ></ha-button>
                         </ha-md-list-item>`
                     )}

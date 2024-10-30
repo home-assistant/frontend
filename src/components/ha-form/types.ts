@@ -1,5 +1,5 @@
 import type { LitElement } from "lit";
-import { Selector } from "../../data/selector";
+import type { Selector } from "../../data/selector";
 import type { HaDurationData } from "../ha-duration-input";
 
 export type HaFormSchema =

@@ -13,18 +13,12 @@ import {
   mdiUnfoldLessHorizontal,
   mdiUnfoldMoreHorizontal,
 } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
-import { LocalizeFunc } from "../common/translations/localize";
+import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/chips/ha-assist-chip";
 import "../components/chips/ha-filter-chip";
 import "../components/data-table/ha-data-table";
@@ -36,8 +30,9 @@ import type {
 } from "../components/data-table/ha-data-table";
 import "../components/ha-md-button-menu";
 import "../components/ha-dialog";
+import "../components/ha-dialog-header";
 import "../components/ha-md-divider";
-import { HaMenu } from "../components/ha-menu";
+import type { HaMenu } from "../components/ha-menu";
 import "../components/ha-md-menu-item";
 import "../components/search-input-outlined";
 import type { HomeAssistant, Route } from "../types";
@@ -371,7 +366,7 @@ export class HaTabsSubpageDataTable extends LitElement {
                   >
                     <div slot="headline">
                       ${localize(
-                        "ui.components.subpage-data-table.close_select_mode"
+                        "ui.components.subpage-data-table.exit_selection_mode"
                       )}
                     </div>
                   </ha-md-menu-item>

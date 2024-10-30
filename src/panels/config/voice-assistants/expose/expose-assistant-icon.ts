@@ -1,10 +1,11 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { mdiAlertCircle } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { voiceAssistants } from "../../../../data/expose";
-import { HomeAssistant } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
 import "../../../../components/ha-svg-icon";
 

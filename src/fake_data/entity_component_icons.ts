@@ -1,4 +1,4 @@
-import { ComponentIcons } from "../data/icons";
+import type { ComponentIcons } from "../data/icons";
 
 export const ENTITY_COMPONENT_ICONS: Record<string, ComponentIcons> = {
   person: {
