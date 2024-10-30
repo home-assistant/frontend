@@ -156,6 +156,8 @@ export default [
       "lit-a11y/alt-text": "warn",
       "lit-a11y/anchor-is-valid": "warn",
       "lit-a11y/role-has-required-aria-attrs": "warn",
+      "@typescript-eslint/consistent-type-imports": "error",
+      "@typescript-eslint/no-import-type-side-effects": "error",
     },
   },
 ];
