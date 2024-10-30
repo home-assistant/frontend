@@ -17,7 +17,7 @@ import type { HuiCard } from "../cards/hui-card";
 import { computeCardGridSize } from "../common/compute-card-grid-size";
 import "../components/hui-card-edit-mode";
 import { moveCard } from "../editor/config-util";
-import { LovelaceCardPath } from "../editor/lovelace-path";
+import type { LovelaceCardPath } from "../editor/lovelace-path";
 import type { Lovelace } from "../types";
 
 const CARD_SORTABLE_OPTIONS: HaSortableOptions = {
