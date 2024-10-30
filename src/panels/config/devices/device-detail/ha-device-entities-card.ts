@@ -107,26 +107,29 @@ export class HaDeviceEntitiesCard extends LitElement {
             `
           : nothing}
         ${hiddenEntities.length
-          ? !this.showHidden
-            ? html`
-                <button class="show-more" @click=${this._toggleShowHidden}>
-                  ${this.hass.localize(
-                    "ui.panel.config.devices.entities.hidden_entities",
-                    { count: hiddenEntities.length }
-                  )}
-                </button>
-              `
-            : html`
-                <mwc-list>
-                  ${hiddenEntities.map((entry) => this._renderEntry(entry))}
-                </mwc-list>
-                <button class="show-more" @click=${this._toggleShowHidden}>
-                  ${this.hass.localize(
-                    "ui.panel.config.devices.entities.show_less"
-                  )}
-                </button>
-              `
-          : nothing}
+            ? html`<div class=${classMap({ "move-up": !shownEntities.length })}>
+                ${!this.showHidden
+                    ? html`
+                        <button class="show-more" @click=${this._toggleShowHidden}>
+                            ${this.hass.localize(
+                            "ui.panel.config.devices.entities.hidden_entities",
+                            { count: hiddenEntities.length }
+                            )}
+                        </button>
+                        `
+                    : html`
+                        <mwc-list>
+                            ${hiddenEntities.map((entry) => this._renderEntry(entry))}
+                        </mwc-list>
+                        <button class="show-more" @click=${this._toggleShowHidden}>
+                            ${this.hass.localize(
+                            "ui.panel.config.devices.entities.show_less"
+                            )}
+                        </button>
+                        `
+                    }
+                </div>`
+            : nothing}
         <div class="card-actions">
           <mwc-button @click=${this._addToLovelaceView}>
             ${this.hass.localize(
@@ -268,8 +271,8 @@ export class HaDeviceEntitiesCard extends LitElement {
       .disabled-entry {
         color: var(--secondary-text-color);
       }
-      #entities {
-        margin-top: -24px; /* match the spacing between card title and content of the device info card above it */
+      .move-up {
+        margin-top: -24px;
       }
       #entities > * {
         margin: 8px 16px 8px 8px;
