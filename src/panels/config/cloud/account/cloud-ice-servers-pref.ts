@@ -1,11 +1,14 @@
 import { mdiHelpCircle } from "@mdi/js";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
+import "../../../../components/ha-icon-button";
 import "../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../components/ha-switch";
-import { CloudStatusLoggedIn, updateCloudPref } from "../../../../data/cloud";
+import type { CloudStatusLoggedIn } from "../../../../data/cloud";
+import { updateCloudPref } from "../../../../data/cloud";
 import type { HomeAssistant } from "../../../../types";
 
 @customElement("cloud-ice-servers-pref")
