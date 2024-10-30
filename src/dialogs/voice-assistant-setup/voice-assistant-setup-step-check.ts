@@ -47,7 +47,7 @@ export class HaVoiceAssistantSetupStepCheck extends LitElement {
               >
               <ha-button @click=${this._testConnection}>Retry</ha-button>
             </div>`
-        : html`<img src="/static/images/voice-assistant/hi.gif" />
+        : html`<img src="/static/images/voice-assistant/hi.png" />
             <h1>Hi</h1>
             <p class="secondary">
               Over the next couple steps we're going to personalize your voice
