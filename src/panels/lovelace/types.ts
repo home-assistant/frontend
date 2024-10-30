@@ -53,12 +53,23 @@ export type LovelaceLayoutOptions = {
   grid_max_rows?: number;
 };
 
+export type LovelaceGridOptions = {
+  columns?: number | "full";
+  rows?: number | "auto";
+  max_columns?: number;
+  min_columns?: number;
+  min_rows?: number;
+  max_rows?: number;
+};
+
 export interface LovelaceCard extends HTMLElement {
   hass?: HomeAssistant;
   preview?: boolean;
   layout?: string;
   getCardSize(): number | Promise<number>;
+  /** @deprecated Use `getGridOptions` instead */
   getLayoutOptions?(): LovelaceLayoutOptions;
+  getGridOptions?(): LovelaceGridOptions;
   setConfig(config: LovelaceCardConfig): void;
 }
 
