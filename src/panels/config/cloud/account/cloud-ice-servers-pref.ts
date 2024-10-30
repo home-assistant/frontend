@@ -19,7 +19,8 @@ export class CloudICEServersPref extends LitElement {
       return nothing;
     }
 
-    const { cloud_ice_servers_enabled } = this.cloudStatus.prefs;
+    const { cloud_ice_servers_enabled: cloudICEServersEnabled } =
+      this.cloudStatus.prefs;
 
     return html`
       <ha-card
@@ -30,7 +31,7 @@ export class CloudICEServersPref extends LitElement {
       >
         <div class="header-actions">
           <a
-            href="https://www.nabucasa.com/config/"
+            href="https://www.nabucasa.com/config/webrtc/"
             target="_blank"
             rel="noreferrer"
             class="icon-link"
@@ -43,7 +44,7 @@ export class CloudICEServersPref extends LitElement {
             ></ha-icon-button>
           </a>
           <ha-switch
-            .checked=${cloud_ice_servers_enabled}
+            .checked=${cloudICEServersEnabled}
             @change=${this._toggleCloudICEServersEnabledChanged}
           ></ha-switch>
         </div>

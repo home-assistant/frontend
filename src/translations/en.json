@@ -3930,8 +3930,8 @@
               "more_info": "More details"
             },
             "ice_servers": {
-              "title": "Cloud WebRTC ICE servers",
-              "info": "Do you want to use Home Assistant Cloud for WebRTC connections? Enable this option to use the Home Assistant Cloud WebRTC ICE servers.",
+              "title": "WebRTC connections",
+              "info": "Home Assistant Cloud provides WebRTC servers. This improves your ability to view your camera streams when you are away from home.",
               "link_learn_how_it_works": "Learn how it works"
             },
             "alexa": {
