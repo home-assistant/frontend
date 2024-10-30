@@ -2,7 +2,7 @@ import "@material/mwc-linear-progress/mwc-linear-progress";
 import { mdiArrowCollapseDown, mdiDownload } from "@mdi/js";
 // eslint-disable-next-line import/extensions
 import { IntersectionController } from "@lit-labs/observers/intersection-controller.js";
-import { LitElement, PropertyValues, css, html, nothing } from "lit";
+import { LitElement, type PropertyValues, css, html, nothing } from "lit";
 import { classMap } from "lit/directives/class-map";
 import { customElement, property, query, state } from "lit/decorators";
 import type { LocalizeFunc } from "../../../src/common/translations/localize";

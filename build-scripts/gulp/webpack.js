@@ -203,28 +203,18 @@ gulp.task("webpack-prod-gallery", () =>
   )
 );
 
-gulp.task("webpack-dev-server-landing-page", () =>
-  runDevServer({
-    compiler: webpack(
-      process.env.ES5
-        ? bothBuilds(createLandingPageConfig, { isProdBuild: false })
-        : createLandingPageConfig({ isProdBuild: false, latestBuild: true })
-    ),
-    contentBase: paths.landingPage_output_root,
-    port: 8110,
-    listenHost: "0.0.0.0",
-    proxy: [
-      {
-        context: ["/observer"],
-        target: "http://localhost:8830",
-      },
-      {
-        context: ["/supervisor"],
-        target: "http://localhost:8830",
-      },
-    ],
-  })
-);
+gulp.task("webpack-watch-landing-page", () => {
+  // This command will run forever because we don't close compiler
+  webpack(
+    process.env.ES5
+      ? bothBuilds(createLandingPageConfig, { isProdBuild: false })
+      : createLandingPageConfig({ isProdBuild: false, latestBuild: true })
+  ).watch({ poll: isWsl }, doneHandler());
+  gulp.watch(
+    path.join(paths.translations_src, "en.json"),
+    gulp.series("build-translations", "copy-translations-app")
+  );
+});
 
 gulp.task("webpack-prod-landing-page", () =>
   prodBuild(

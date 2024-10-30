@@ -1,8 +1,8 @@
 import "@material/mwc-linear-progress/mwc-linear-progress";
 import {
-  CSSResultGroup,
+  type CSSResultGroup,
   LitElement,
-  PropertyValues,
+  type PropertyValues,
   css,
   html,
   nothing,

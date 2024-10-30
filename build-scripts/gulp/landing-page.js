@@ -1,5 +1,4 @@
 import gulp from "gulp";
-import env from "../env.cjs";
 import "./clean.js";
 import "./entry-html.js";
 import "./gather-static.js";
@@ -20,11 +19,7 @@ gulp.task(
     gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
     "copy-static-landing-page",
     "gen-pages-landing-page-dev",
-    gulp.parallel(
-      env.useRollup()
-        ? "rollup-dev-server-landing-page"
-        : "webpack-dev-server-landing-page"
-    )
+    gulp.parallel("webpack-watch-landing-page")
   )
 );
 
@@ -38,7 +33,7 @@ gulp.task(
     "translations-enable-merge-backend",
     gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
     "copy-static-landing-page",
-    env.useRollup() ? "rollup-prod-landing-page" : "webpack-prod-landing-page",
+    "webpack-prod-landing-page",
     "gen-pages-landing-page-prod"
   )
 );
