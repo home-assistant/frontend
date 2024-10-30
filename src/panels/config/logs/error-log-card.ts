@@ -39,6 +39,7 @@ import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   fetchHassioBoots,
   fetchHassioLogs,
+  fetchHassioLogsBootFollow,
   fetchHassioLogsFollow,
   getHassioLogDownloadUrl,
 } from "../../../data/hassio/supervisor";
@@ -378,7 +379,7 @@ class ErrorLogCard extends LitElement {
         isComponentLoaded(this.hass, "hassio") &&
         this.provider
       ) {
-        const response = await fetchHassioLogsFollow(
+        const response = await this._fetchLogs()(
           this.hass,
           this.provider,
           this._logStreamAborter.signal,
@@ -467,6 +468,13 @@ class ErrorLogCard extends LitElement {
       });
     }
   }
+
+  private _fetchLogs = () => {
+    if (this._boot === 0) {
+      return fetchHassioLogsFollow;
+    }
+    return fetchHassioLogsBootFollow;
+  };
 
   private _debounceSearch = debounce(() => {
     this._noSearchResults = !this._ansiToHtmlElement?.filterLines(this.filter);
@@ -570,9 +578,13 @@ class ErrorLogCard extends LitElement {
     if (this._streamSupported && isComponentLoaded(this.hass, "hassio")) {
       try {
         const { data } = await fetchHassioBoots(this.hass);
-        this._boots = Object.keys(data.boots)
+        const boots = Object.keys(data.boots)
           .map(Number)
           .sort((a, b) => b - a);
+
+        if (boots.length) {
+          this._boots = boots;
+        }
       } catch (err: any) {
         // eslint-disable-next-line no-console
         console.error(err);

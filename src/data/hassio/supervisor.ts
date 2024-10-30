@@ -206,6 +206,20 @@ export const fetchHassioLogsFollow = async (
   hass: HomeAssistant,
   provider: string,
   signal: AbortSignal,
+  lines = 100
+) =>
+  hass.callApiRaw(
+    "GET",
+    `hassio/${provider.includes("_") ? `addons/${provider}` : provider}/logs/follow?lines=${lines}`,
+    undefined,
+    undefined,
+    signal
+  );
+
+export const fetchHassioLogsBootFollow = async (
+  hass: HomeAssistant,
+  provider: string,
+  signal: AbortSignal,
   lines = 100,
   boot = 0
 ) =>
