@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import { ActionDetail } from "@material/mwc-list";
+import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiDeleteOutline,
   mdiDevices,
@@ -7,14 +7,8 @@ import {
   mdiInformationOutline,
   mdiCellphoneKey,
 } from "@mdi/js";
-import {
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
@@ -25,17 +19,15 @@ import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-card";
 import { getSignedPath } from "../../../../../data/auth";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../../../data/diagnostics";
+import type { OTBRInfo, OTBRInfoDict } from "../../../../../data/otbr";
 import {
   OTBRCreateNetwork,
-  OTBRInfo,
-  OTBRInfoDict,
   OTBRSetChannel,
   OTBRSetNetwork,
   getOTBRInfo,
 } from "../../../../../data/otbr";
+import type { ThreadDataSet, ThreadRouter } from "../../../../../data/thread";
 import {
-  ThreadDataSet,
-  ThreadRouter,
   addThreadDataSet,
   getThreadDataSetTLV,
   listThreadDataSets,
@@ -53,7 +45,7 @@ import {
 import "../../../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
-import { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
 import { fileDownload } from "../../../../../util/file_download";
 import { documentationUrl } from "../../../../../util/documentation-url";

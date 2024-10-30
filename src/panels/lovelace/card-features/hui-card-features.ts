@@ -1,7 +1,8 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import "./hui-card-feature";
 import type { LovelaceCardFeatureConfig } from "./types";
 

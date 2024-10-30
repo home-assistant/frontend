@@ -1,10 +1,11 @@
 import "@material/mwc-button";
 import type { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/entity/state-info";
 import { activateScene } from "../data/scene";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import { haStyle } from "../resources/styles";
 
 @customElement("state-card-scene")

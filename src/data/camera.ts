@@ -1,9 +1,9 @@
-import {
+import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
 import { timeCacheEntityPromiseFunc } from "../common/util/time-cache-entity-promise-func";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import { getSignedPath } from "./auth";
 
 export const CAMERA_ORIENTATIONS = [1, 2, 3, 4, 6, 8];
@@ -12,6 +12,8 @@ export const CAMERA_SUPPORT_STREAM = 2;
 
 export const STREAM_TYPE_HLS = "hls";
 export const STREAM_TYPE_WEB_RTC = "web_rtc";
+
+export type StreamType = typeof STREAM_TYPE_HLS | typeof STREAM_TYPE_WEB_RTC;
 
 interface CameraEntityAttributes extends HassEntityAttributeBase {
   model_name: string;
@@ -174,6 +176,16 @@ export const isCameraMediaSource = (mediaContentId: string) =>
 
 export const getEntityIdFromCameraMediaSource = (mediaContentId: string) =>
   mediaContentId.substring(CAMERA_MEDIA_SOURCE_PREFIX.length);
+
+export interface CameraCapabilities {
+  frontend_stream_types: StreamType[];
+}
+
+export const fetchCameraCapabilities = async (
+  hass: HomeAssistant,
+  entity_id: string
+) =>
+  hass.callWS<CameraCapabilities>({ type: "camera/capabilities", entity_id });
 
 export interface WebRTCClientConfiguration {
   configuration: RTCConfiguration;

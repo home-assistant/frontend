@@ -1,6 +1,6 @@
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { OTBRInfo } from "../../../../../data/otbr";
-import { ThreadNetwork } from "./thread-config-panel";
+import type { OTBRInfo } from "../../../../../data/otbr";
+import type { ThreadNetwork } from "./thread-config-panel";
 
 export interface DialogThreadDatasetParams {
   network: ThreadNetwork;

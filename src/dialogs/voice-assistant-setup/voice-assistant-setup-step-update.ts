@@ -1,15 +1,16 @@
-import { css, html, LitElement, nothing, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-circular-progress";
 import { ON, UNAVAILABLE } from "../../data/entity";
 import {
   updateCanInstall,
-  UpdateEntity,
+  type UpdateEntity,
   updateIsInstalling,
   updateUsesProgress,
 } from "../../data/update";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import { AssistantSetupStyles } from "./styles";
 
 @customElement("ha-voice-assistant-setup-step-update")

@@ -11,24 +11,17 @@ import {
   mdiPlus,
   mdiTag,
 } from "@mdi/js";
-import { HassEntity } from "home-assistant-js-websocket";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { storage } from "../../../common/decorators/storage";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { navigate } from "../../../common/navigate";
-import {
+import type {
   LocalizeFunc,
   LocalizeKeys,
 } from "../../../common/translations/localize";
@@ -37,7 +30,7 @@ import {
   hasRejectedItems,
   rejectedItems,
 } from "../../../common/util/promise-all-settled-results";
-import {
+import type {
   DataTableColumnContainer,
   RowClickedEvent,
   SelectionChangedEvent,
@@ -55,36 +48,36 @@ import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-md-divider";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
+import type { CategoryRegistryEntry } from "../../../data/category_registry";
 import {
-  CategoryRegistryEntry,
   createCategoryRegistryEntry,
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
-import {
-  ConfigEntry,
-  subscribeConfigEntries,
-} from "../../../data/config_entries";
+import type { ConfigEntry } from "../../../data/config_entries";
+import { subscribeConfigEntries } from "../../../data/config_entries";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
 import { fullEntitiesContext } from "../../../data/context";
-import {
+import type {
   DataTableFiltersItems,
   DataTableFiltersValues,
 } from "../../../data/data_table_filters";
-import {
+import type {
   EntityRegistryEntry,
   UpdateEntityRegistryEntryResult,
+} from "../../../data/entity_registry";
+import {
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
+import type { IntegrationManifest } from "../../../data/integration";
 import {
-  IntegrationManifest,
   domainToName,
   fetchIntegrationManifest,
   fetchIntegrationManifests,
 } from "../../../data/integration";
+import type { LabelRegistryEntry } from "../../../data/label_registry";
 import {
-  LabelRegistryEntry,
   createLabelRegistryEntry,
   subscribeLabelRegistry,
 } from "../../../data/label_registry";
@@ -99,7 +92,7 @@ import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant, Route } from "../../../types";
+import type { HomeAssistant, Route } from "../../../types";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import { configSections } from "../ha-panel-config";

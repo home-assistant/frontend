@@ -1,4 +1,4 @@
-import { Condition } from "../../../panels/lovelace/common/validate-condition";
+import type { Condition } from "../../../panels/lovelace/common/validate-condition";
 
 export interface LovelaceBadgeConfig {
   type: string;

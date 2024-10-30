@@ -1,10 +1,11 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 
 import "../components/entity/state-info";
 import "../components/ha-humidifier-state";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import { haStyle } from "../resources/styles";
 
 @customElement("state-card-humidifier")

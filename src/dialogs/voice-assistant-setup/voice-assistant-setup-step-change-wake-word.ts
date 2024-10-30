@@ -1,11 +1,9 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import {
-  AssistSatelliteConfiguration,
-  setWakeWords,
-} from "../../data/assist_satellite";
-import { HomeAssistant } from "../../types";
+import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
+import { setWakeWords } from "../../data/assist_satellite";
+import type { HomeAssistant } from "../../types";
 import { STEP } from "./voice-assistant-setup-dialog";
 import { AssistantSetupStyles } from "./styles";
 import "../../components/ha-md-list";

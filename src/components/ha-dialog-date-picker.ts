@@ -6,8 +6,8 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { nextRender } from "../common/util/render-status";
 import { haStyleDialog } from "../resources/styles";
-import { HomeAssistant } from "../types";
-import { datePickerDialogParams } from "./ha-date-input";
+import type { HomeAssistant } from "../types";
+import type { datePickerDialogParams } from "./ha-date-input";
 import "./ha-dialog";
 
 @customElement("ha-dialog-date-picker")

@@ -1,5 +1,5 @@
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { ZHADevice } from "../../../../../data/zha";
+import type { ZHADevice } from "../../../../../data/zha";
 
 export interface ZHAReconfigureDeviceDialogParams {
   device: ZHADevice;

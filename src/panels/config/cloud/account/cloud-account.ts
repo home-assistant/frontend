@@ -9,12 +9,15 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
 import "../../../../components/ha-tip";
 import "../../../../components/ha-list-item";
+import "../../../../components/ha-button-menu";
+import type {
+  CloudStatusLoggedIn,
+  SubscriptionInfo,
+} from "../../../../data/cloud";
 import {
   cloudLogout,
-  CloudStatusLoggedIn,
   fetchCloudSubscriptionInfo,
   removeCloudData,
-  SubscriptionInfo,
 } from "../../../../data/cloud";
 import {
   showAlertDialog,
@@ -23,7 +26,7 @@ import {
 import "../../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../resources/styles";
-import { HomeAssistant } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 import "../../ha-config-section";
 import "./cloud-ice-servers-pref";
 import "./cloud-remote-pref";

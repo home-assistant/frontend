@@ -1,19 +1,20 @@
 import { sanitizeUrl } from "@braintree/sanitize-url";
-import { html, LitElement, TemplateResult, nothing } from "lit";
+import type { TemplateResult } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { navigate } from "../../src/common/navigate";
 import {
   createSearchParam,
   extractSearchParamsObject,
 } from "../../src/common/url/search-params";
-import { Supervisor } from "../../src/data/supervisor/supervisor";
+import type { Supervisor } from "../../src/data/supervisor/supervisor";
 import "../../src/layouts/hass-error-screen";
-import {
+import type {
   ParamType,
   Redirect,
   Redirects,
 } from "../../src/panels/my/ha-panel-my";
-import { HomeAssistant, Route } from "../../src/types";
+import type { HomeAssistant, Route } from "../../src/types";
 
 export const REDIRECTS: Redirects = {
   supervisor: {

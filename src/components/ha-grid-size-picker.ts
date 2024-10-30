@@ -8,11 +8,9 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 import { conditionalClamp } from "../common/number/clamp";
-import {
-  CardGridSize,
-  DEFAULT_GRID_SIZE,
-} from "../panels/lovelace/common/compute-card-grid-size";
-import { HomeAssistant } from "../types";
+import type { CardGridSize } from "../panels/lovelace/common/compute-card-grid-size";
+import { DEFAULT_GRID_SIZE } from "../panels/lovelace/common/compute-card-grid-size";
+import type { HomeAssistant } from "../types";
 
 @customElement("ha-grid-size-picker")
 export class HaGridSizeEditor extends LitElement {

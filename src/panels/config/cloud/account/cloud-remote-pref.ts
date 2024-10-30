@@ -1,5 +1,6 @@
 import { mdiContentCopy, mdiEye, mdiEyeOff, mdiHelpCircle } from "@mdi/js";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
@@ -11,11 +12,12 @@ import "../../../../components/ha-formfield";
 import "../../../../components/ha-radio";
 import "../../../../components/ha-settings-row";
 import "../../../../components/ha-switch";
+import "../../../../components/ha-textfield";
 // eslint-disable-next-line
 import { formatDate } from "../../../../common/datetime/format_date";
 import type { HaSwitch } from "../../../../components/ha-switch";
+import type { CloudStatusLoggedIn } from "../../../../data/cloud";
 import {
-  CloudStatusLoggedIn,
   connectCloudRemote,
   disconnectCloudRemote,
   updateCloudPref,

@@ -1,14 +1,8 @@
 import { mdiImageFilterCenterFocus } from "@mdi/js";
-import { HassEntities } from "home-assistant-js-websocket";
-import { LatLngTuple } from "leaflet";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  nothing,
-} from "lit";
+import type { HassEntities } from "home-assistant-js-websocket";
+import type { LatLngTuple } from "leaflet";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { getColorByIndex } from "../../../common/color/colors";
@@ -27,20 +21,18 @@ import type {
   HaMapPathPoint,
   HaMapPaths,
 } from "../../../components/map/ha-map";
-import {
-  HistoryStates,
-  subscribeHistoryStatesTimeWindow,
-} from "../../../data/history";
+import type { HistoryStates } from "../../../data/history";
+import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
 import {
   hasConfigChanged,
   hasConfigOrEntitiesChanged,
 } from "../common/has-changed";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { processConfigEntities } from "../common/process-config-entities";
-import { EntityConfig } from "../entity-rows/types";
-import { LovelaceCard, LovelaceLayoutOptions } from "../types";
-import { MapCardConfig } from "./types";
+import type { EntityConfig } from "../entity-rows/types";
+import type { LovelaceCard, LovelaceLayoutOptions } from "../types";
+import type { MapCardConfig } from "./types";
 
 export const DEFAULT_HOURS_TO_SHOW = 0;
 export const DEFAULT_ZOOM = 14;

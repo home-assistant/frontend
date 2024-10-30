@@ -1,4 +1,5 @@
-import { html, LitElement, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
