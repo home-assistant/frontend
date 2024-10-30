@@ -265,6 +265,7 @@ export default class HaAutomationCondition extends LitElement {
       data,
       ...this.conditions.slice(index),
     ];
+    // Add condition locally to avoid UI jump
     this.conditions = conditions;
     await nextRender();
     fireEvent(this, "value-changed", { value: this.conditions });

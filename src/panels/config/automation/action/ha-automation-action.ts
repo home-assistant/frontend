@@ -242,6 +242,7 @@ export default class HaAutomationAction extends LitElement {
       data,
       ...this.actions.slice(index),
     ];
+    // Add action locally to avoid UI jump
     this.actions = actions;
     await nextRender();
     fireEvent(this, "value-changed", { value: this.actions });

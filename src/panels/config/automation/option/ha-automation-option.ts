@@ -196,6 +196,7 @@ export default class HaAutomationOption extends LitElement {
       data,
       ...this.options.slice(index),
     ];
+    // Add option locally to avoid UI jump
     this.options = options;
     await nextRender();
     fireEvent(this, "value-changed", { value: this.options });

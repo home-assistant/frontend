@@ -227,6 +227,7 @@ export default class HaAutomationTrigger extends LitElement {
       data,
       ...this.triggers.slice(index),
     ];
+    // Add trigger locally to avoid UI jump
     this.triggers = triggers;
     await nextRender();
     fireEvent(this, "value-changed", { value: this.triggers });
