@@ -233,8 +233,8 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         .add {
           position: relative;
           outline: none;
-          grid-row: span var(--row-size, 1);
-          grid-column: span var(--column-size, 2);
+          grid-row: span 1;
+          grid-column: span 1;
           background: none;
           cursor: pointer;
           border-radius: var(--ha-card-border-radius, 12px);

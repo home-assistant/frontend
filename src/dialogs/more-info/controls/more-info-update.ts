@@ -1,15 +1,18 @@
-import "@material/mwc-button/mwc-button";
 import "@material/mwc-linear-progress/mwc-linear-progress";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { BINARY_STATE_OFF } from "../../../common/const";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-alert";
+import "../../../components/ha-button";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-faded";
 import "../../../components/ha-formfield";
 import "../../../components/ha-markdown";
+import "../../../components/ha-settings-row";
+import "../../../components/ha-switch";
+import type { HaSwitch } from "../../../components/ha-switch";
 import { isUnavailableState } from "../../../data/entity";
 import {
   UpdateEntity,
@@ -30,6 +33,8 @@ class MoreInfoUpdate extends LitElement {
 
   @state() private _error?: string;
 
+  @state() private _markdownLoading = true;
+
   protected render() {
     if (
       !this.hass ||
@@ -45,137 +50,174 @@ class MoreInfoUpdate extends LitElement {
         this.stateObj.attributes.latest_version;
 
     return html`
-      ${this.stateObj.attributes.in_progress
-        ? supportsFeature(this.stateObj, UpdateEntityFeature.PROGRESS) &&
-          typeof this.stateObj.attributes.in_progress === "number"
-          ? html`<mwc-linear-progress
-              .progress=${this.stateObj.attributes.in_progress / 100}
-              buffer=""
-            ></mwc-linear-progress>`
-          : html`<mwc-linear-progress indeterminate></mwc-linear-progress>`
-        : ""}
-      <h3>${this.stateObj.attributes.title}</h3>
-      ${this._error
-        ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-        : ""}
-      <div class="row">
-        <div class="key">
-          ${this.hass.formatEntityAttributeName(
-            this.stateObj,
-            "installed_version"
-          )}
+      <div class="content">
+        ${this.stateObj.attributes.in_progress
+          ? supportsFeature(this.stateObj, UpdateEntityFeature.PROGRESS) &&
+            this.stateObj.attributes.update_percentage !== null
+            ? html`<mwc-linear-progress
+                .progress=${this.stateObj.attributes.update_percentage / 100}
+                buffer=""
+              ></mwc-linear-progress>`
+            : html`<mwc-linear-progress indeterminate></mwc-linear-progress>`
+          : nothing}
+        <h3>${this.stateObj.attributes.title}</h3>
+        ${this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : nothing}
+        <div class="row">
+          <div class="key">
+            ${this.hass.formatEntityAttributeName(
+              this.stateObj,
+              "installed_version"
+            )}
+          </div>
+          <div class="value">
+            ${this.stateObj.attributes.installed_version ??
+            this.hass.localize("state.default.unavailable")}
+          </div>
         </div>
-        <div class="value">
-          ${this.stateObj.attributes.installed_version ??
-          this.hass.localize("state.default.unavailable")}
+        <div class="row">
+          <div class="key">
+            ${this.hass.formatEntityAttributeName(
+              this.stateObj,
+              "latest_version"
+            )}
+          </div>
+          <div class="value">
+            ${this.stateObj.attributes.latest_version ??
+            this.hass.localize("state.default.unavailable")}
+          </div>
         </div>
-      </div>
-      <div class="row">
-        <div class="key">
-          ${this.hass.formatEntityAttributeName(
-            this.stateObj,
-            "latest_version"
-          )}
-        </div>
-        <div class="value">
-          ${this.stateObj.attributes.latest_version ??
-          this.hass.localize("state.default.unavailable")}
-        </div>
-      </div>
 
-      ${this.stateObj.attributes.release_url
-        ? html`<div class="row">
-            <div class="key">
-              <a
-                href=${this.stateObj.attributes.release_url}
-                target="_blank"
-                rel="noreferrer"
-              >
-                ${this.hass.localize(
-                  "ui.dialogs.more_info_control.update.release_announcement"
-                )}
-              </a>
-            </div>
-          </div>`
-        : ""}
-      ${supportsFeature(this.stateObj!, UpdateEntityFeature.RELEASE_NOTES) &&
-      !this._error
-        ? this._releaseNotes === undefined
-          ? html`<div class="flex center">
-              <ha-circular-progress indeterminate></ha-circular-progress>
+        ${this.stateObj.attributes.release_url
+          ? html`<div class="row">
+              <div class="key">
+                <a
+                  href=${this.stateObj.attributes.release_url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  ${this.hass.localize(
+                    "ui.dialogs.more_info_control.update.release_announcement"
+                  )}
+                </a>
+              </div>
             </div>`
-          : html`<hr />
-              <ha-faded>
-                <ha-markdown .content=${this._releaseNotes}></ha-markdown>
-              </ha-faded> `
-        : this.stateObj.attributes.release_summary
-          ? html`<hr />
-              <ha-markdown
-                .content=${this.stateObj.attributes.release_summary}
-              ></ha-markdown>`
-          : ""}
-      ${supportsFeature(this.stateObj, UpdateEntityFeature.BACKUP)
-        ? html`<hr />
-            <ha-formfield
-              .label=${this.hass.localize(
-                "ui.dialogs.more_info_control.update.create_backup"
-              )}
-            >
-              <ha-checkbox
-                checked
-                .disabled=${updateIsInstalling(this.stateObj)}
-              ></ha-checkbox>
-            </ha-formfield> `
-        : ""}
-      <div class="actions">
-        ${this.stateObj.state === BINARY_STATE_OFF &&
-        this.stateObj.attributes.skipped_version
+          : nothing}
+        ${supportsFeature(this.stateObj!, UpdateEntityFeature.RELEASE_NOTES) &&
+        !this._error
+          ? this._releaseNotes === undefined
+            ? html`
+                <hr />
+                ${this._markdownLoading ? this._renderLoader() : nothing}
+              `
+            : html`
+                <hr />
+                <ha-markdown
+                  @content-resize=${this._markdownLoaded}
+                  .content=${this._releaseNotes}
+                  class=${this._markdownLoading ? "hidden" : ""}
+                ></ha-markdown>
+                ${this._markdownLoading ? this._renderLoader() : nothing}
+              `
+          : this.stateObj.attributes.release_summary
+            ? html`
+                <hr />
+                <ha-markdown
+                  @content-resize=${this._markdownLoaded}
+                  .content=${this.stateObj.attributes.release_summary}
+                  class=${this._markdownLoading ? "hidden" : ""}
+                ></ha-markdown>
+                ${this._markdownLoading ? this._renderLoader() : nothing}
+              `
+            : nothing}
+      </div>
+      <div class="footer">
+        ${supportsFeature(this.stateObj, UpdateEntityFeature.BACKUP)
           ? html`
-              <mwc-button @click=${this._handleClearSkipped}>
-                ${this.hass.localize(
-                  "ui.dialogs.more_info_control.update.clear_skipped"
-                )}
-              </mwc-button>
+              <ha-settings-row>
+                <span slot="heading">
+                  ${this.hass.localize(
+                    "ui.dialogs.more_info_control.update.create_backup"
+                  )}
+                </span>
+                <ha-switch
+                  id="create_backup"
+                  checked
+                  .disabled=${updateIsInstalling(this.stateObj)}
+                ></ha-switch>
+              </ha-settings-row>
             `
-          : html`
-              <mwc-button
-                @click=${this._handleSkip}
-                .disabled=${skippedVersion ||
-                this.stateObj.state === BINARY_STATE_OFF ||
-                updateIsInstalling(this.stateObj)}
-              >
-                ${this.hass.localize(
-                  "ui.dialogs.more_info_control.update.skip"
-                )}
-              </mwc-button>
-            `}
-        ${supportsFeature(this.stateObj, UpdateEntityFeature.INSTALL)
-          ? html`
-              <mwc-button
-                @click=${this._handleInstall}
-                .disabled=${(this.stateObj.state === BINARY_STATE_OFF &&
-                  !skippedVersion) ||
-                updateIsInstalling(this.stateObj)}
-              >
-                ${this.hass.localize(
-                  "ui.dialogs.more_info_control.update.install"
-                )}
-              </mwc-button>
-            `
-          : ""}
+          : nothing}
+        <div class="actions">
+          ${this.stateObj.state === BINARY_STATE_OFF &&
+          this.stateObj.attributes.skipped_version
+            ? html`
+                <ha-button @click=${this._handleClearSkipped}>
+                  ${this.hass.localize(
+                    "ui.dialogs.more_info_control.update.clear_skipped"
+                  )}
+                </ha-button>
+              `
+            : html`
+                <ha-button
+                  @click=${this._handleSkip}
+                  .disabled=${skippedVersion ||
+                  this.stateObj.state === BINARY_STATE_OFF ||
+                  updateIsInstalling(this.stateObj)}
+                >
+                  ${this.hass.localize(
+                    "ui.dialogs.more_info_control.update.skip"
+                  )}
+                </ha-button>
+              `}
+          ${supportsFeature(this.stateObj, UpdateEntityFeature.INSTALL)
+            ? html`
+                <ha-button
+                  @click=${this._handleInstall}
+                  .disabled=${(this.stateObj.state === BINARY_STATE_OFF &&
+                    !skippedVersion) ||
+                  updateIsInstalling(this.stateObj)}
+                >
+                  ${this.hass.localize(
+                    "ui.dialogs.more_info_control.update.update"
+                  )}
+                </ha-button>
+              `
+            : nothing}
+        </div>
+      </div>
+    `;
+  }
+
+  private _renderLoader() {
+    return html`
+      <div class="flex center loader">
+        <ha-circular-progress indeterminate></ha-circular-progress>
       </div>
     `;
   }
 
   protected firstUpdated(): void {
     if (supportsFeature(this.stateObj!, UpdateEntityFeature.RELEASE_NOTES)) {
-      updateReleaseNotes(this.hass, this.stateObj!.entity_id)
-        .then((result) => {
-          this._releaseNotes = result;
-        })
-        .catch((err) => {
-          this._error = err.message;
-        });
+      this._fetchReleaseNotes();
+    }
+  }
+
+  private async _markdownLoaded() {
+    if (this._markdownLoading) {
+      this._markdownLoading = false;
+    }
+  }
+
+  private async _fetchReleaseNotes() {
+    try {
+      this._releaseNotes = await updateReleaseNotes(
+        this.hass,
+        this.stateObj!.entity_id
+      );
+    } catch (err: any) {
+      this._error = err.message;
     }
   }
 
@@ -183,9 +225,11 @@ class MoreInfoUpdate extends LitElement {
     if (!supportsFeature(this.stateObj!, UpdateEntityFeature.BACKUP)) {
       return null;
     }
-    const checkbox = this.shadowRoot?.querySelector("ha-checkbox");
-    if (checkbox) {
-      return checkbox.checked;
+    const createBackupSwitch = this.shadowRoot?.getElementById(
+      "create-backup"
+    ) as HaSwitch;
+    if (createBackupSwitch) {
+      return createBackupSwitch.checked;
     }
     return true;
   }
@@ -234,6 +278,12 @@ class MoreInfoUpdate extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
+      :host {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        justify-content: space-between;
+      }
       hr {
         border-color: var(--divider-color);
         border-bottom: none;
@@ -248,26 +298,44 @@ class MoreInfoUpdate extends LitElement {
         flex-direction: row;
         justify-content: space-between;
       }
-      .actions {
+
+      .footer {
         border-top: 1px solid var(--divider-color);
         background: var(
           --ha-dialog-surface-background,
           var(--mdc-theme-surface, #fff)
         );
-        margin: 8px 0 0;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
         position: sticky;
         bottom: 0;
-        padding: 12px 0;
-        margin-bottom: -24px;
-        z-index: 1;
+        margin: 0 -24px -24px -24px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow: hidden;
+        z-index: 10;
       }
 
-      .actions mwc-button {
-        margin: 0 4px 4px;
+      ha-settings-row {
+        width: 100%;
+        padding: 0 24px;
+        box-sizing: border-box;
+        margin-bottom: -16px;
+        margin-top: -4px;
       }
+
+      .actions {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        box-sizing: border-box;
+        padding: 12px;
+        z-index: 1;
+        gap: 8px;
+      }
+
       a {
         color: var(--primary-color);
       }
@@ -282,6 +350,16 @@ class MoreInfoUpdate extends LitElement {
       }
       ha-markdown {
         direction: ltr;
+        padding-bottom: 16px;
+        box-sizing: border-box;
+      }
+      ha-markdown.hidden {
+        display: none;
+      }
+      .loader {
+        height: 80px;
+        box-sizing: border-box;
+        padding-bottom: 16px;
       }
     `;
   }

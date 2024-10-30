@@ -16,6 +16,7 @@ import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { ActionRowConfig, LovelaceRow } from "./types";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
+import { confirmAction } from "../common/confirm-action";
 
 @customElement("hui-script-entity-row")
 class HuiScriptEntityRow extends LitElement implements LovelaceRow {
@@ -91,12 +92,20 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
     this._callService("turn_off");
   }
 
-  private _runScript(ev): void {
+  private async _runScript(ev): Promise<void> {
     ev.stopPropagation();
 
     if (hasScriptFields(this.hass!, this._config!.entity)) {
       showMoreInfoDialog(this, { entityId: this._config!.entity });
-    } else {
+    } else if (
+      !this._config?.confirmation ||
+      (await confirmAction(
+        this,
+        this.hass!,
+        this._config.confirmation,
+        this._config.action_name || this.hass!.localize("ui.card.script.run")
+      ))
+    ) {
       this._callService("turn_on");
     }
   }

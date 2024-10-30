@@ -44,6 +44,7 @@ import {
   CAMERA_ORIENTATIONS,
   CAMERA_SUPPORT_STREAM,
   CameraPreferences,
+  fetchCameraCapabilities,
   fetchCameraPrefs,
   STREAM_TYPE_HLS,
   updateCameraPrefs,
@@ -145,9 +146,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   @property({ type: Object }) public entry!: ExtEntityRegistryEntry;
 
-  @property({ type: Boolean }) public hideName = false;
+  @property({ type: Boolean, attribute: "hide-name" }) public hideName = false;
 
-  @property({ type: Boolean }) public hideIcon = false;
+  @property({ type: Boolean, attribute: "hide-icon" }) public hideIcon = false;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -236,13 +237,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     if (domain === "camera" && isComponentLoaded(this.hass, "stream")) {
       const stateObj: HassEntity | undefined =
         this.hass.states[this.entry.entity_id];
-      if (
-        stateObj &&
-        supportsFeature(stateObj, CAMERA_SUPPORT_STREAM) &&
-        // The stream component for HLS streams supports a server-side pre-load
-        // option that client initiated WebRTC streams do not
-        stateObj.attributes.frontend_stream_type === STREAM_TYPE_HLS
-      ) {
+      if (stateObj && supportsFeature(stateObj, CAMERA_SUPPORT_STREAM)) {
         this._fetchCameraPrefs();
       }
     }
@@ -1396,6 +1391,19 @@ export class EntityRegistrySettingsEditor extends LitElement {
   }
 
   private async _fetchCameraPrefs() {
+    const capabilities = await fetchCameraCapabilities(
+      this.hass,
+      this.entry.entity_id
+    );
+
+    // The stream component for HLS streams supports a server-side pre-load
+    // option that client initiated WebRTC streams do not
+
+    if (!capabilities.frontend_stream_types.includes(STREAM_TYPE_HLS)) {
+      this._cameraPrefs = undefined;
+      return;
+    }
+
     this._cameraPrefs = await fetchCameraPrefs(this.hass, this.entry.entity_id);
   }
 
