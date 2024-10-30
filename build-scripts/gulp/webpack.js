@@ -216,11 +216,11 @@ gulp.task("webpack-dev-server-landing-page", () =>
     proxy: [
       {
         context: ["/observer"],
-        target: "http://localhost:3000",
+        target: "http://localhost:8830",
       },
       {
         context: ["/supervisor"],
-        target: "http://localhost:3000",
+        target: "http://localhost:8830",
       },
     ],
   })

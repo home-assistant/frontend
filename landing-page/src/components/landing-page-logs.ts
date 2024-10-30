@@ -1,5 +1,5 @@
 import "@material/mwc-linear-progress/mwc-linear-progress";
-import { mdiArrowCollapseDown } from "@mdi/js";
+import { mdiArrowCollapseDown, mdiDownload } from "@mdi/js";
 // eslint-disable-next-line import/extensions
 import { IntersectionController } from "@lit-labs/observers/intersection-controller.js";
 import { LitElement, PropertyValues, css, html, nothing } from "lit";
@@ -7,12 +7,14 @@ import { classMap } from "lit/directives/class-map";
 import { customElement, property, query, state } from "lit/decorators";
 import type { LocalizeFunc } from "../../../src/common/translations/localize";
 import "../../../src/components/ha-button";
+import "../../../src/components/ha-icon-button";
 import "../../../src/components/ha-svg-icon";
 import "../../../src/components/ha-ansi-to-html";
 import "../../../src/components/ha-alert";
 import type { HaAnsiToHtml } from "../../../src/components/ha-ansi-to-html";
 import { getObserverLogs, getSupervisorLogsFollow } from "../data/supervisor";
 import { fireEvent } from "../../../src/common/dom/fire_event";
+import { fileDownload } from "../../../src/util/file_download";
 
 const ERROR_CHECK = /^[\d -:]+(ERROR|CRITICAL)(.*)/gm;
 declare global {
@@ -49,13 +51,24 @@ class LandingPageLogs extends LitElement {
 
   protected render() {
     return html`
-      <ha-button @click=${this._toggleLogDetails}>
-        ${this.localize(
-          this._show
-            ? "ui.panel.page-onboarding.prepare.hide_details"
-            : "ui.panel.page-onboarding.prepare.show_details"
-        )}
-      </ha-button>
+      <div class="actions">
+        <ha-button @click=${this._toggleLogDetails}>
+          ${this.localize(
+            this._show
+              ? "ui.panel.page-onboarding.prepare.hide_details"
+              : "ui.panel.page-onboarding.prepare.show_details"
+          )}
+        </ha-button>
+        ${this._show
+          ? html`<ha-icon-button
+              .label=${this.localize(
+                "ui.panel.page-onboarding.prepare.logs.download_full_log"
+              )}
+              .path=${mdiDownload}
+              @click=${this._downloadFullLog}
+            ></ha-icon-button>`
+          : nothing}
+      </div>
       ${this._error
         ? html`
             <ha-alert
@@ -229,6 +242,14 @@ class LandingPageLogs extends LitElement {
     }
   }
 
+  private async _downloadFullLog() {
+    const timeString = new Date().toISOString().replace(/:/g, "-");
+    fileDownload(
+      "/supervisor/supervisor/logs?lines=1000",
+      `home-assistant_${timeString}.log`
+    );
+  }
+
   static styles = [
     css`
       :host {
@@ -240,6 +261,19 @@ class LandingPageLogs extends LitElement {
 
       ha-alert {
         width: 100%;
+      }
+
+      .actions {
+        position: relative;
+        width: 100%;
+        text-align: center;
+      }
+
+      .actions ha-icon-button {
+        position: absolute;
+        right: 0;
+        top: -4px;
+        --icon-primary-color: var(--primary-color);
       }
 
       .logs {

@@ -1,5 +1,9 @@
 export async function getSupervisorLogsFollow() {
-  return fetch("/supervisor/logs/follow?lines=500");
+  return fetch("/supervisor/supervisor/logs/follow?lines=500", {
+    headers: {
+      Accept: "text/plain",
+    },
+  });
 }
 
 export async function getObserverLogs() {
