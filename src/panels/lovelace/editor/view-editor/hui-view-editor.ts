@@ -40,6 +40,26 @@ export class HuiViewEditor extends LitElement {
   private _schema = memoizeOne(
     (localize: LocalizeFunc, viewType: string) =>
       [
+        {
+          name: "type",
+          selector: {
+            select: {
+              options: (
+                [
+                  SECTIONS_VIEW_LAYOUT,
+                  MASONRY_VIEW_LAYOUT,
+                  SIDEBAR_VIEW_LAYOUT,
+                  PANEL_VIEW_LAYOUT,
+                ] as const
+              ).map((type) => ({
+                value: type,
+                label: localize(
+                  `ui.panel.lovelace.editor.edit_view.types.${type}`
+                ),
+              })),
+            },
+          },
+        },
         { name: "title", selector: { text: {} } },
         {
           name: "icon",
@@ -53,26 +73,6 @@ export class HuiViewEditor extends LitElement {
           name: "subview",
           selector: {
             boolean: {},
-          },
-        },
-        {
-          name: "type",
-          selector: {
-            select: {
-              options: (
-                [
-                  SECTIONS_VIEW_LAYOUT,
-                  SIDEBAR_VIEW_LAYOUT,
-                  PANEL_VIEW_LAYOUT,
-                  MASONRY_VIEW_LAYOUT,
-                ] as const
-              ).map((type) => ({
-                value: type,
-                label: localize(
-                  `ui.panel.lovelace.editor.edit_view.types.${type}`
-                ),
-              })),
-            },
           },
         },
         ...(viewType === SECTIONS_VIEW_LAYOUT

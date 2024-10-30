@@ -5611,7 +5611,7 @@
             "visibility": {
               "select_users": "Select which users should see this view in the navigation"
             },
-            "type": "View type",
+            "type": "Layout",
             "convert_view": "Convert",
             "convert_view_title": "Convert view layout",
             "convert_view_text": "It will create a new view using sections. This current view will stay untouched. All your cards will be imported so you can rearrange them freely.",
@@ -5619,10 +5619,10 @@
             "card_to_section_convert": "Convert your view to a section view.",
             "section_to_card_not_supported": "You can not change your section view to an other type. Start from scratch with a new view if you want to use another view type.",
             "types": {
+              "sections": "Sections (default)",
               "masonry": "Masonry",
               "sidebar": "Sidebar",
-              "panel": "Panel (single card)",
-              "sections": "Sections"
+              "panel": "Panel (single card)"
             },
             "subview": "Subview",
             "max_columns": "Max number of sections wide",
