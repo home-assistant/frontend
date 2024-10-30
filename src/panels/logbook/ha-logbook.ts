@@ -140,6 +140,8 @@ export class HaLogbook extends LitElement {
     this._updateUsers.cancel();
     this._unsubscribeSetLoading();
 
+    this._liveUpdatesEnabled = true;
+
     if (force) {
       this._getLogBookData();
     } else {
