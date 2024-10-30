@@ -95,7 +95,7 @@ export class HaDeviceEntitiesCard extends LitElement {
       <ha-card outlined .header=${this.header}>
         ${shownEntities.length
           ? html`
-              <div id="entities">
+              <div id="entities" class="move-up">
                 <mwc-list>
                   ${shownEntities.map((entry) =>
                     this.hass.states[entry.entity_id]
