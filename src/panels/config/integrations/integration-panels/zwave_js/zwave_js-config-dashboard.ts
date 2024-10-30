@@ -79,19 +79,18 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
   @state()
   private _statistics?: ZWaveJSControllerStatisticsUpdatedMessage;
 
-  protected firstUpdated() {
+  protected async firstUpdated() {
     if (this.hass) {
-      this._fetchData().then(() => {
-        if (this._status === "connected") {
-          const inclusion_state = this._network?.controller.inclusion_state;
-          // show dialog if inclusion/exclusion is already in progress
-          if (inclusion_state === InclusionState.Including) {
-            this._addNodeClicked();
-          } else if (inclusion_state === InclusionState.Excluding) {
-            this._removeNodeClicked();
-          }
+      await this._fetchData();
+      if (this._status === "connected") {
+        const inclusion_state = this._network?.controller.inclusion_state;
+        // show dialog if inclusion/exclusion is already in progress
+        if (inclusion_state === InclusionState.Including) {
+          this._addNodeClicked();
+        } else if (inclusion_state === InclusionState.Excluding) {
+          this._removeNodeClicked();
         }
-      });
+      }
     }
   }
 
@@ -176,11 +175,11 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                                     `ui.panel.config.zwave_js.dashboard.not_ready`,
                                     { count: notReadyDevices }
                                   )})`
-                                : ""}
+                                : nothing}
                             </small>
                           </div>
                         `
-                      : ``}
+                      : nothing}
                   </div>
                 </div>
                 <div class="card-actions">
@@ -207,7 +206,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                           )}
                         </mwc-button></a
                       >`
-                    : ""}
+                    : nothing}
                 </div>
               </ha-card>
               <ha-card header="Diagnostics">
@@ -447,7 +446,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                 </div>
               </ha-card>
             `
-          : ``}
+          : nothing}
         <ha-fab
           slot="fab"
           .label=${this.hass.localize(
@@ -523,7 +522,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
             </mwc-button>
           </div>
         `
-      : ""}`;
+      : nothing}`;
   }
 
   private _handleBack(): void {

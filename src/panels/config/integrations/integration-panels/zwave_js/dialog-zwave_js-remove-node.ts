@@ -76,7 +76,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
                 )}
               </mwc-button>
             `
-          : ``}
+          : nothing}
         ${this._status === "started"
           ? html`
               <div class="flex-container">
@@ -102,7 +102,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
                 )}
               </mwc-button>
             `
-          : ``}
+          : nothing}
         ${this._status === "failed"
           ? html`
               <div class="flex-container">
@@ -120,14 +120,14 @@ class DialogZWaveJSRemoveNode extends LitElement {
                     ? html`<ha-alert alert-type="error">
                         ${this._error}
                       </ha-alert>`
-                    : ""}
+                    : nothing}
                 </div>
               </div>
               <mwc-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize("ui.common.close")}
               </mwc-button>
             `
-          : ``}
+          : nothing}
         ${this._status === "finished"
           ? html`
               <div class="flex-container">
@@ -148,7 +148,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
                 ${this.hass.localize("ui.common.close")}
               </mwc-button>
             `
-          : ``}
+          : nothing}
       </ha-dialog>
     `;
   }
