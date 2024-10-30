@@ -311,13 +311,6 @@ export class HaDeviceEntitiesCard extends LitElement {
         outline: none;
         text-decoration: underline;
       }
-      mwc-list:has(.disabled-entry) {
-        --mdc-list-vertical-padding: 0;
-        margin-top: -8px;
-      }
-      #entities + mwc-list:has(.disabled-entry) {
-        margin-top: 8px;
-      }
       ha-list-item {
         height: 40px;
       }
