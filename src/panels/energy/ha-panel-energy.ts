@@ -131,6 +131,7 @@ class PanelEnergy extends LitElement {
       saveConfig: async () => undefined,
       deleteConfig: async () => undefined,
       setEditMode: () => undefined,
+      showToast: () => undefined,
     };
   }
 
@@ -187,9 +188,7 @@ class PanelEnergy extends LitElement {
       row.push(type);
       row.push(unit.normalize("NFKD"));
       times.forEach((t) => {
-        if (stats[stat][n].start > t) {
-          row.push("");
-        } else if (n < stats[stat].length && stats[stat][n].start === t) {
+        if (n < stats[stat].length && stats[stat][n].start === t) {
           row.push((stats[stat][n].change ?? "").toString());
           n++;
         } else {

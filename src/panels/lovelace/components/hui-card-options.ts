@@ -52,7 +52,7 @@ import {
 } from "../editor/lovelace-path";
 import { showSelectViewDialog } from "../editor/select-view/show-select-view-dialog";
 import { Lovelace, LovelaceCard } from "../types";
-import { SECTION_VIEW_LAYOUT } from "../views/const";
+import { SECTIONS_VIEW_LAYOUT } from "../views/const";
 
 @customElement("hui-card-options")
 export class HuiCardOptions extends LitElement {
@@ -274,7 +274,7 @@ export class HuiCardOptions extends LitElement {
         this._cutCard();
         break;
       case 4:
-        this._deleteCard(true);
+        this._deleteCard({ silent: false });
         break;
     }
   }
@@ -297,7 +297,7 @@ export class HuiCardOptions extends LitElement {
 
   private _cutCard(): void {
     this._copyCard();
-    this._deleteCard(false);
+    this._deleteCard({ silent: true });
   }
 
   private _copyCard(): void {
@@ -355,7 +355,7 @@ export class HuiCardOptions extends LitElement {
       viewSelectedCallback: async (urlPath, selectedDashConfig, viewIndex) => {
         const view = selectedDashConfig.views[viewIndex];
 
-        if (!isStrategyView(view) && view.type === SECTION_VIEW_LAYOUT) {
+        if (!isStrategyView(view) && view.type === SECTIONS_VIEW_LAYOUT) {
           showAlertDialog(this, {
             title: this.hass!.localize(
               "ui.panel.lovelace.editor.move_card.error_title"
@@ -395,8 +395,8 @@ export class HuiCardOptions extends LitElement {
     });
   }
 
-  private _deleteCard(confirm: boolean): void {
-    fireEvent(this, "ll-delete-card", { path: this.path!, confirm });
+  private _deleteCard({ silent }: { silent: boolean }): void {
+    fireEvent(this, "ll-delete-card", { path: this.path!, silent });
   }
 }
 
