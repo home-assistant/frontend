@@ -108,9 +108,9 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
             (_cardConfig, idx) => {
               const card = this.cards![idx];
               card.layout = "grid";
-              const layoutOptions = card.getLayoutOptions();
+              const gridOptions = card.getGridOptions();
 
-              const { rows, columns } = computeCardGridSize(layoutOptions);
+              const { rows, columns } = computeCardGridSize(gridOptions);
 
               const cardPath: LovelaceCardPath = [
                 this.viewIndex!,
@@ -125,7 +125,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
                     "--row-size": typeof rows === "number" ? rows : undefined,
                   })}
                   class="card ${classMap({
-                    "fit-rows": typeof layoutOptions?.grid_rows === "number",
+                    "fit-rows": typeof rows === "number",
                     "full-width": columns === "full",
                   })}"
                   .sortableData=${cardPath}
@@ -211,7 +211,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
       haStyle,
       css`
         :host {
-          --base-column-count: 4;
+          --base-column-count: 12;
           --row-gap: var(--ha-section-grid-row-gap, 8px);
           --column-gap: var(--ha-section-grid-column-gap, 8px);
           --row-height: var(--ha-section-grid-row-height, 56px);
@@ -281,7 +281,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           position: relative;
           outline: none;
           grid-row: span 1;
-          grid-column: span 1;
+          grid-column: span 3;
           background: none;
           cursor: pointer;
           border-radius: var(--ha-card-border-radius, 12px);
