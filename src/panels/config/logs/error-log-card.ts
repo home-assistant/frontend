@@ -7,11 +7,11 @@ import {
 } from "@mdi/js";
 import {
   css,
-  CSSResultGroup,
+  type CSSResultGroup,
   html,
   LitElement,
-  PropertyValues,
-  TemplateResult,
+  type PropertyValues,
+  type TemplateResult,
   nothing,
 } from "lit";
 import { classMap } from "lit/directives/class-map";
@@ -42,10 +42,10 @@ import {
   fetchHassioLogsFollow,
   getHassioLogDownloadUrl,
 } from "../../../data/hassio/supervisor";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
-import { ConnectionStatus } from "../../../data/connection-status";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import type { ConnectionStatus } from "../../../data/connection-status";
 import { atLeastVersion } from "../../../common/config/version";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { debounce } from "../../../common/util/debounce";

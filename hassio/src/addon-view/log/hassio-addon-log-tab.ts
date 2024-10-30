@@ -1,10 +1,16 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  type CSSResultGroup,
+  html,
+  LitElement,
+  type TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../src/components/ha-circular-progress";
-import { HassioAddonDetails } from "../../../../src/data/hassio/addon";
-import { Supervisor } from "../../../../src/data/supervisor/supervisor";
+import type { HassioAddonDetails } from "../../../../src/data/hassio/addon";
+import type { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import { haStyle } from "../../../../src/resources/styles";
-import { HomeAssistant } from "../../../../src/types";
+import type { HomeAssistant } from "../../../../src/types";
 import { hassioStyle } from "../../resources/hassio-style";
 import "../../../../src/panels/config/logs/error-log-card";
 import "../../../../src/components/search-input";

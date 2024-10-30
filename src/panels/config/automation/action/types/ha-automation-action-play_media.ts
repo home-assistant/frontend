@@ -3,10 +3,10 @@ import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-selector/ha-selector-media";
-import { PlayMediaAction } from "../../../../../data/script";
+import type { PlayMediaAction } from "../../../../../data/script";
 import type { MediaSelectorValue } from "../../../../../data/selector";
 import type { HomeAssistant } from "../../../../../types";
-import { ActionElement } from "../ha-automation-action-row";
+import type { ActionElement } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-play_media")
 export class HaPlayMediaAction extends LitElement implements ActionElement {

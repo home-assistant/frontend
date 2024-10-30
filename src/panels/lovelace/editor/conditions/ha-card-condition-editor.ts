@@ -1,6 +1,7 @@
-import { ActionDetail } from "@material/mwc-list";
+import type { ActionDetail } from "@material/mwc-list";
 import { mdiCheck, mdiDelete, mdiDotsVertical, mdiFlask } from "@mdi/js";
-import { LitElement, PropertyValues, css, html, nothing } from "lit";
+import type { PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
@@ -20,9 +21,11 @@ import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { ICON_CONDITION } from "../../common/icon-condition";
-import {
+import type {
   Condition,
   LegacyCondition,
+} from "../../common/validate-condition";
+import {
   checkConditionsMet,
   validateConditionalConfig,
 } from "../../common/validate-condition";

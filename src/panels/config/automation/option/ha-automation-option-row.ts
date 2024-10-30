@@ -1,5 +1,5 @@
 import { consume } from "@lit-labs/context";
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import {
   mdiArrowDown,
@@ -9,7 +9,8 @@ import {
   mdiDotsVertical,
   mdiRenameBox,
 } from "@mdi/js";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -20,11 +21,13 @@ import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
-import { Condition } from "../../../../data/automation";
+import "../condition/ha-automation-condition";
+import "../action/ha-automation-action";
+import type { Condition } from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
 import { fullEntitiesContext } from "../../../../data/context";
-import { EntityRegistryEntry } from "../../../../data/entity_registry";
-import { Action, Option } from "../../../../data/script";
+import type { EntityRegistryEntry } from "../../../../data/entity_registry";
+import type { Action, Option } from "../../../../data/script";
 import {
   showConfirmationDialog,
   showPromptDialog,

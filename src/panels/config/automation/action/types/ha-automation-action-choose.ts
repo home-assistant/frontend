@@ -1,13 +1,14 @@
-import { CSSResultGroup, LitElement, css, html } from "lit";
+import { type CSSResultGroup, LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-button";
-import { Action, ChooseAction, Option } from "../../../../../data/script";
+import type { Action, ChooseAction, Option } from "../../../../../data/script";
 import { haStyle } from "../../../../../resources/styles";
-import { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant } from "../../../../../types";
 import "../../option/ha-automation-option";
-import { ActionElement } from "../ha-automation-action-row";
+import type { ActionElement } from "../ha-automation-action-row";
+import "../ha-automation-action";
 
 @customElement("ha-automation-action-choose")
 export class HaChooseAction extends LitElement implements ActionElement {

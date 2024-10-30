@@ -1,35 +1,30 @@
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { mdiPencil, mdiDownload } from "@mdi/js";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-menu-button";
 import "../../components/ha-list-item";
 import "../../components/ha-top-app-bar-fixed";
-import { LovelaceConfig } from "../../data/lovelace/config/types";
+import type { LovelaceConfig } from "../../data/lovelace/config/types";
 import { haStyle } from "../../resources/styles";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import "../lovelace/components/hui-energy-period-selector";
-import { Lovelace } from "../lovelace/types";
+import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-container";
 import { navigate } from "../../common/navigate";
-import {
-  getEnergyDataCollection,
-  getEnergyGasUnit,
-  getEnergyWaterUnit,
+import type {
   GridSourceTypeEnergyPreference,
   SolarSourceTypeEnergyPreference,
   BatterySourceTypeEnergyPreference,
   GasSourceTypeEnergyPreference,
   WaterSourceTypeEnergyPreference,
   DeviceConsumptionEnergyPreference,
+} from "../../data/energy";
+import {
+  getEnergyDataCollection,
+  getEnergyGasUnit,
+  getEnergyWaterUnit,
 } from "../../data/energy";
 import { fileDownload } from "../../util/file_download";
 

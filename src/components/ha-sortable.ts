@@ -1,5 +1,6 @@
 /* eslint-disable lit/prefer-static-styles */
-import { html, LitElement, nothing, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { SortableEvent } from "sortablejs";
 import { fireEvent } from "../common/dom/fire_event";

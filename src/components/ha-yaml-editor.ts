@@ -1,12 +1,7 @@
-import { DEFAULT_SCHEMA, dump, load, Schema } from "js-yaml";
-import {
-  CSSResultGroup,
-  css,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import type { Schema } from "js-yaml";
+import { DEFAULT_SCHEMA, dump, load } from "js-yaml";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HomeAssistant } from "../types";

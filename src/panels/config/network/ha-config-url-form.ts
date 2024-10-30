@@ -1,12 +1,6 @@
 import "@material/mwc-button/mwc-button";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { mdiContentCopy, mdiEyeOff, mdiEye } from "@mdi/js";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -16,8 +10,11 @@ import "../../../components/ha-card";
 import "../../../components/ha-formfield";
 import "../../../components/ha-switch";
 import "../../../components/ha-textfield";
+import "../../../components/ha-settings-row";
+import "../../../components/ha-button";
 import type { HaTextField } from "../../../components/ha-textfield";
-import { CloudStatus, fetchCloudStatus } from "../../../data/cloud";
+import type { CloudStatus } from "../../../data/cloud";
+import { fetchCloudStatus } from "../../../data/cloud";
 import { saveCoreConfig } from "../../../data/core";
 import { getNetworkUrls, type NetworkUrls } from "../../../data/network";
 import type { ValueChangedEvent, HomeAssistant } from "../../../types";

@@ -1,12 +1,6 @@
 import { mdiPlus } from "@mdi/js";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
@@ -15,11 +9,11 @@ import "../../../components/ha-ripple";
 import "../../../components/ha-sortable";
 import type { HaSortableOptions } from "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import "../components/hui-badge-edit-mode";
 import { moveBadge } from "../editor/config-util";
-import { Lovelace } from "../types";
-import { HuiBadge } from "./hui-badge";
+import type { Lovelace } from "../types";
+import type { HuiBadge } from "./hui-badge";
 
 const BADGE_SORTABLE_OPTIONS: HaSortableOptions = {
   delay: 100,

@@ -1,23 +1,17 @@
 /* eslint-disable no-console */
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import {
   addWebRtcCandidate,
   fetchWebRtcClientConfiguration,
-  WebRtcAnswer,
-  WebRTCClientConfiguration,
+  type WebRtcAnswer,
+  type WebRTCClientConfiguration,
   webRtcOffer,
-  WebRtcOfferEvent,
+  type WebRtcOfferEvent,
 } from "../data/camera";
 import type { HomeAssistant } from "../types";
 import "./ha-alert";
