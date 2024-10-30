@@ -250,7 +250,7 @@ export class CloudRemotePref extends LitElement {
       }
       fireEvent(this, "ha-refresh-cloud-status");
     } catch (err: any) {
-      alert(err.message);
+      showToast(this, { message: err.message });
       toggle.checked = !toggle.checked;
     }
   }
@@ -264,7 +264,7 @@ export class CloudRemotePref extends LitElement {
       });
       fireEvent(this, "ha-refresh-cloud-status");
     } catch (err: any) {
-      alert(err.message);
+      showToast(this, { message: err.message });
       toggle.checked = !toggle.checked;
     }
   }

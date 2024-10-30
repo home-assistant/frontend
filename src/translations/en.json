@@ -3929,6 +3929,11 @@
               "certificate_expire": "Certificate renewal at {date}",
               "more_info": "More details"
             },
+            "ice_servers": {
+              "title": "WebRTC connections",
+              "info": "Home Assistant Cloud provides WebRTC servers. This improves your ability to view your camera streams when you are away from home.",
+              "link_learn_how_it_works": "Learn how it works"
+            },
             "alexa": {
               "title": "Alexa",
               "info": "With the Alexa integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Alexa-enabled device.",
