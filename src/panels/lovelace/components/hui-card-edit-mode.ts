@@ -233,7 +233,7 @@ export class HuiCardEditMode extends LitElement {
   }
 
   private _handleAction(ev) {
-    switch ((ev.target as any).action) {
+    switch (ev.target.action) {
       case "edit":
         this._editCard();
         break;
