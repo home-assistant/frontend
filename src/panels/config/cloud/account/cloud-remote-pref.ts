@@ -23,6 +23,7 @@ import {
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import { showCloudCertificateDialog } from "../dialog-cloud-certificate/show-dialog-cloud-certificate";
+import { obfuscateUrl } from "../../../../util/url";
 
 @customElement("cloud-remote-pref")
 export class CloudRemotePref extends LitElement {
@@ -142,7 +143,7 @@ export class CloudRemotePref extends LitElement {
               <ha-textfield
                 .value=${this._unmaskedUrl
                   ? `https://${remote_domain}`
-                  : "https://•••••••••••••••••.ui.nabu.casa"}
+                  : obfuscateUrl(`https://${remote_domain}`)}
                 readonly
                 .suffix=${
                   // reserve some space for the icon.
@@ -153,7 +154,7 @@ export class CloudRemotePref extends LitElement {
                 class="toggle-unmasked-url"
                 toggles
                 .label=${this.hass.localize(
-                  `ui.panel.config.cloud.account.remote.${this._unmaskedUrl ? "hide" : "show"}_url`
+                  `ui.panel.config.common.${this._unmaskedUrl ? "hide" : "show"}_url`
                 )}
                 @click=${this._toggleUnmaskedUrl}
                 .path=${this._unmaskedUrl ? mdiEyeOff : mdiEye}
@@ -165,9 +166,7 @@ export class CloudRemotePref extends LitElement {
               unelevated
             >
               <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
-              ${this.hass.localize(
-                "ui.panel.config.cloud.account.remote.copy_link"
-              )}
+              ${this.hass.localize("ui.panel.config.common.copy_link")}
             </ha-button>
           </div>
 

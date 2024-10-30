@@ -1069,8 +1069,7 @@ ${
         }
         if (
           changedProps.has("_entitySources") ||
-          (changedProps.has("hass") && !oldHass) ||
-          !oldHass.states[entityId]
+          (changedProps.has("hass") && (!oldHass || !oldHass.states[entityId]))
         ) {
           changed = true;
         }
