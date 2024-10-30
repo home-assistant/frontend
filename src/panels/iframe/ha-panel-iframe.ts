@@ -3,7 +3,7 @@ import { customElement, property } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import "../../layouts/hass-error-screen";
 import "../../layouts/hass-subpage";
-import { HomeAssistant, PanelInfo } from "../../types";
+import type { HomeAssistant, PanelInfo } from "../../types";
 import { IFRAME_SANDBOX } from "../../util/iframe";
 
 @customElement("ha-panel-iframe")

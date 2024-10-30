@@ -1,6 +1,7 @@
 import type { ActionDetail } from "@material/mwc-list";
 import { mdiCheck, mdiDotsVertical } from "@mdi/js";
-import { css, html, LitElement, nothing, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
@@ -18,16 +19,14 @@ import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-switch";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
-import { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
+import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import { haStyle } from "../../../../resources/styles";
-import { HomeAssistant } from "../../../../types";
-import { HuiCard } from "../../cards/hui-card";
-import {
-  CardGridSize,
-  computeCardGridSize,
-} from "../../common/compute-card-grid-size";
-import { LovelaceLayoutOptions } from "../../types";
+import type { HomeAssistant } from "../../../../types";
+import type { HuiCard } from "../../cards/hui-card";
+import type { CardGridSize } from "../../common/compute-card-grid-size";
+import { computeCardGridSize } from "../../common/compute-card-grid-size";
+import type { LovelaceLayoutOptions } from "../../types";
 
 @customElement("hui-card-layout-editor")
 export class HuiCardLayoutEditor extends LitElement {

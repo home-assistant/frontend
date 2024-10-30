@@ -1,20 +1,15 @@
 import "@material/mwc-button/mwc-button";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isUnavailableState } from "../../../data/entity";
-import { canRun, hasScriptFields, ScriptEntity } from "../../../data/script";
-import { HomeAssistant } from "../../../types";
+import type { ScriptEntity } from "../../../data/script";
+import { canRun, hasScriptFields } from "../../../data/script";
+import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import { ActionRowConfig, LovelaceRow } from "./types";
+import type { ActionRowConfig, LovelaceRow } from "./types";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { confirmAction } from "../common/confirm-action";
 

@@ -15,7 +15,7 @@ import {
   mdiStateMachine,
   mdiWeatherSunny,
 } from "@mdi/js";
-import { AutomationElementGroup } from "./automation";
+import type { AutomationElementGroup } from "./automation";
 
 export const CONDITION_ICONS = {
   device: mdiDevices,

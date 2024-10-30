@@ -1,6 +1,7 @@
 /* eslint-disable lit/no-template-arrow */
 import "@material/mwc-button";
-import { css, html, LitElement, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
 import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
 import { mockConfigEntries } from "../../../../demo/src/stubs/config_entries";
@@ -10,18 +11,18 @@ import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervis
 import "../../../../src/components/ha-selector/ha-selector";
 import "../../../../src/components/ha-settings-row";
 import type { AreaRegistryEntry } from "../../../../src/data/area_registry";
-import { BlueprintInput } from "../../../../src/data/blueprint";
+import type { BlueprintInput } from "../../../../src/data/blueprint";
 import { showDialog } from "../../../../src/dialogs/make-dialog-manager";
 import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
-import { ProvideHassElement } from "../../../../src/mixins/provide-hass-lit-mixin";
+import type { ProvideHassElement } from "../../../../src/mixins/provide-hass-lit-mixin";
 import type { HomeAssistant } from "../../../../src/types";
 import "../../components/demo-black-white-row";
-import { FloorRegistryEntry } from "../../../../src/data/floor_registry";
-import { LabelRegistryEntry } from "../../../../src/data/label_registry";
+import type { FloorRegistryEntry } from "../../../../src/data/floor_registry";
+import type { LabelRegistryEntry } from "../../../../src/data/label_registry";
 import { mockFloorRegistry } from "../../../../demo/src/stubs/floor_registry";
 import { mockLabelRegistry } from "../../../../demo/src/stubs/label_registry";
-import { DeviceRegistryEntry } from "../../../../src/data/device_registry";
+import type { DeviceRegistryEntry } from "../../../../src/data/device_registry";
 
 const ENTITIES = [
   getEntity("alarm_control_panel", "alarm", "disarmed", {

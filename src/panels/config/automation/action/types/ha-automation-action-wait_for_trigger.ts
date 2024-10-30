@@ -1,16 +1,18 @@
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { TimeChangedEvent } from "../../../../../components/ha-base-time-input";
+import type { TimeChangedEvent } from "../../../../../components/ha-base-time-input";
 import "../../../../../components/ha-duration-input";
 import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-textfield";
-import { WaitForTriggerAction } from "../../../../../data/script";
-import { HomeAssistant } from "../../../../../types";
+import type { WaitForTriggerAction } from "../../../../../data/script";
+import type { HomeAssistant } from "../../../../../types";
 import "../../trigger/ha-automation-trigger";
-import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
+import type { ActionElement } from "../ha-automation-action-row";
+import { handleChangeEvent } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-wait_for_trigger")
 export class HaWaitForTriggerAction

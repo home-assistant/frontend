@@ -4,7 +4,8 @@ import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-tab";
 import "@material/mwc-tab-bar";
 import { mdiClose } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
@@ -20,22 +21,24 @@ import "../../../../src/components/ha-radio";
 import "../../../../src/components/ha-textfield";
 import type { HaTextField } from "../../../../src/components/ha-textfield";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
-import {
+import type {
   AccessPoints,
-  accesspointScan,
   NetworkInterface,
-  updateNetworkInterface,
   WifiConfiguration,
 } from "../../../../src/data/hassio/network";
-import { Supervisor } from "../../../../src/data/supervisor/supervisor";
+import {
+  accesspointScan,
+  updateNetworkInterface,
+} from "../../../../src/data/hassio/network";
+import type { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../src/dialogs/generic/show-dialog-box";
-import { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
+import type { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
-import { HassioNetworkDialogParams } from "./show-dialog-network";
+import type { HassioNetworkDialogParams } from "./show-dialog-network";
 
 const IP_VERSIONS = ["ipv4", "ipv6"];
 

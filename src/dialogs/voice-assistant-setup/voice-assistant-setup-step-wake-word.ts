@@ -1,15 +1,14 @@
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { html, LitElement, nothing, PropertyValues } from "lit";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
 import "../../components/ha-dialog-header";
-import {
-  AssistSatelliteConfiguration,
-  interceptWakeWord,
-} from "../../data/assist_satellite";
-import { HomeAssistant } from "../../types";
+import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
+import { interceptWakeWord } from "../../data/assist_satellite";
+import type { HomeAssistant } from "../../types";
 import { AssistantSetupStyles } from "./styles";
 import { STEP } from "./voice-assistant-setup-dialog";
 

@@ -1,30 +1,27 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import "../../../components/ha-assist-pipeline-picker";
-import { HaFormSchema, SchemaUnion } from "../../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../components/ha-form/types";
 import "../../../components/ha-help-tooltip";
 import "../../../components/ha-navigation-picker";
 import "../../../components/ha-service-control";
-import {
+import type {
   ActionConfig,
   CallServiceActionConfig,
   NavigateActionConfig,
   UrlActionConfig,
 } from "../../../data/lovelace/config/action";
-import { ServiceAction } from "../../../data/script";
-import { HomeAssistant } from "../../../types";
-import { EditorTarget } from "../editor/types";
-import { HaSelect } from "../../../components/ha-select";
+import type { ServiceAction } from "../../../data/script";
+import type { HomeAssistant } from "../../../types";
+import type { EditorTarget } from "../editor/types";
+import type { HaSelect } from "../../../components/ha-select";
 
 export type UiAction = Exclude<ActionConfig["action"], "fire-dom-event">;
 

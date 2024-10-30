@@ -1,6 +1,6 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
-import { LovelaceContainerPath } from "../lovelace-path";
+import type { LovelaceContainerPath } from "../lovelace-path";
 
 export interface CreateBadgeDialogParams {
   lovelaceConfig: LovelaceConfig;

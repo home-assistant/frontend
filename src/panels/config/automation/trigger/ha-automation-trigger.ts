@@ -1,13 +1,7 @@
 import { mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
@@ -18,13 +12,13 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
-import {
+import type {
   AutomationClipboard,
   Trigger,
   TriggerList,
 } from "../../../../data/automation";
 import { isTriggerList } from "../../../../data/trigger";
-import { HomeAssistant } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 import {
   PASTE_VALUE,
   showAddAutomationElementDialog,

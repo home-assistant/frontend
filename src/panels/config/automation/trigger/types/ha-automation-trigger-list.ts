@@ -4,10 +4,8 @@ import { ensureArray } from "../../../../../common/array/ensure-array";
 import type { TriggerList } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import "../ha-automation-trigger";
-import {
-  handleChangeEvent,
-  TriggerElement,
-} from "../ha-automation-trigger-row";
+import type { TriggerElement } from "../ha-automation-trigger-row";
+import { handleChangeEvent } from "../ha-automation-trigger-row";
 
 @customElement("ha-automation-trigger-list")
 export class HaTriggerList extends LitElement implements TriggerElement {

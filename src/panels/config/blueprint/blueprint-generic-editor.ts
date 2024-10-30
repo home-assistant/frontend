@@ -1,5 +1,6 @@
 import "@material/mwc-button/mwc-button";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-blueprint-picker";
@@ -8,16 +9,16 @@ import "../../../components/ha-circular-progress";
 import "../../../components/ha-markdown";
 import "../../../components/ha-selector/ha-selector";
 import "../../../components/ha-settings-row";
-import { BlueprintAutomationConfig } from "../../../data/automation";
-import {
+import type { BlueprintAutomationConfig } from "../../../data/automation";
+import type {
   BlueprintInput,
   BlueprintInputSection,
   BlueprintOrError,
   Blueprints,
 } from "../../../data/blueprint";
-import { BlueprintScriptConfig } from "../../../data/script";
+import type { BlueprintScriptConfig } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 
 @customElement("blueprint-generic-editor")
 export abstract class HaBlueprintGenericEditor extends LitElement {

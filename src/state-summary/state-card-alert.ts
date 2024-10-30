@@ -1,5 +1,6 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { stateActive } from "../common/entity/state_active";
 import "../components/entity/ha-entity-toggle";

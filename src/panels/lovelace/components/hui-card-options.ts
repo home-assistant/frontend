@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import {
   mdiContentCopy,
   mdiContentCut,
@@ -11,22 +11,15 @@ import {
   mdiPlusCircleMultipleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, queryAssignedNodes } from "lit/decorators";
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
-import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { saveConfig } from "../../../data/lovelace/config/types";
 import {
   isStrategyView,
@@ -37,7 +30,7 @@ import {
   showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { showSaveSuccessToast } from "../../../util/toast-saved-success";
 import { computeCardSize } from "../common/compute-card-size";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
@@ -49,14 +42,14 @@ import {
   moveCardToIndex,
 } from "../editor/config-util";
 import {
-  LovelaceCardPath,
+  type LovelaceCardPath,
   type LovelaceContainerPath,
   findLovelaceItems,
   getLovelaceContainerPath,
   parseLovelaceCardPath,
 } from "../editor/lovelace-path";
 import { showSelectViewDialog } from "../editor/select-view/show-select-view-dialog";
-import { Lovelace, LovelaceCard } from "../types";
+import type { Lovelace, LovelaceCard } from "../types";
 import { SECTIONS_VIEW_LAYOUT } from "../views/const";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 

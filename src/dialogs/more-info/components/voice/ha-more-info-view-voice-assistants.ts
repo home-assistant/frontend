@@ -1,10 +1,12 @@
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { ExtEntityRegistryEntry } from "../../../../data/entity_registry";
-import { ExposeEntitySettings, voiceAssistants } from "../../../../data/expose";
+import type { ExtEntityRegistryEntry } from "../../../../data/entity_registry";
+import type { ExposeEntitySettings } from "../../../../data/expose";
+import { voiceAssistants } from "../../../../data/expose";
 import "../../../../panels/config/voice-assistants/entity-voice-settings";
-import { HomeAssistant } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 
 @customElement("ha-more-info-view-voice-assistants")
 class MoreInfoViewVoiceAssistants extends LitElement {

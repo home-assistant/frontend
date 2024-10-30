@@ -1,26 +1,26 @@
 import {
   css,
-  CSSResultGroup,
+  type CSSResultGroup,
   html,
   LitElement,
   nothing,
-  PropertyValues,
+  type PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { supportsFeature } from "../common/entity/supports-feature";
 import {
   CAMERA_SUPPORT_STREAM,
-  CameraCapabilities,
-  CameraEntity,
+  type CameraCapabilities,
+  type CameraEntity,
   computeMJPEGStreamUrl,
   fetchCameraCapabilities,
   fetchThumbnailUrlWithCache,
   STREAM_TYPE_HLS,
   STREAM_TYPE_WEB_RTC,
-  StreamType,
+  type StreamType,
 } from "../data/camera";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "./ha-hls-player";
 import "./ha-web-rtc-player";
 

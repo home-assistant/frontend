@@ -4,23 +4,25 @@ import {
   mdiCodeBraces,
   mdiDotsVertical,
 } from "@mdi/js";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { HASSDomEvent, fireEvent } from "../../../../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-button-menu";
 import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-header";
 import "../../../../../components/ha-icon-button";
-import { LovelaceStrategyConfig } from "../../../../../data/lovelace/config/strategy";
+import type { LovelaceStrategyConfig } from "../../../../../data/lovelace/config/strategy";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { showSaveSuccessToast } from "../../../../../util/toast-saved-success";
 import "../hui-dashboard-strategy-element-editor";
 import type { HuiDashboardStrategyElementEditor } from "../hui-dashboard-strategy-element-editor";
-import { ConfigChangedEvent } from "../../hui-element-editor";
-import { GUIModeChangedEvent } from "../../types";
+import type { ConfigChangedEvent } from "../../hui-element-editor";
+import type { GUIModeChangedEvent } from "../../types";
 import { cleanLegacyStrategyConfig } from "../../../strategies/legacy-strategy";
 import type { DashboardStrategyEditorDialogParams } from "./show-dialog-dashboard-strategy-editor";
 

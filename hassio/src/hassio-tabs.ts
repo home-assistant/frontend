@@ -6,7 +6,7 @@ import {
 } from "@mdi/js";
 import { atLeastVersion } from "../../src/common/config/version";
 import type { PageNavigation } from "../../src/layouts/hass-tabs-subpage";
-import { HomeAssistant } from "../../src/types";
+import type { HomeAssistant } from "../../src/types";
 
 export const supervisorTabs = (hass: HomeAssistant): PageNavigation[] =>
   atLeastVersion(hass.config.version, 2022, 5)

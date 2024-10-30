@@ -15,15 +15,9 @@ import {
   mdiToggleSwitch,
   mdiToggleSwitchOffOutline,
 } from "@mdi/js";
-import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
@@ -38,7 +32,7 @@ import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
-import { LocalizeFunc } from "../../../common/translations/localize";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
   hasRejectedItems,
   rejectedItems,
@@ -65,27 +59,28 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
-import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
+import type { ConfigEntry } from "../../../data/config_entries";
+import { getConfigEntries } from "../../../data/config_entries";
 import { fullEntitiesContext } from "../../../data/context";
-import {
+import type {
   DataTableFiltersItems,
   DataTableFiltersValues,
 } from "../../../data/data_table_filters";
 import { UNAVAILABLE } from "../../../data/entity";
-import {
+import type {
   EntityRegistryEntry,
   UpdateEntityRegistryEntryResult,
+} from "../../../data/entity_registry";
+import {
   computeEntityRegistryName,
   removeEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
-import {
-  EntitySources,
-  fetchEntitySourcesWithCache,
-} from "../../../data/entity_sources";
+import type { EntitySources } from "../../../data/entity_sources";
+import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
 import { domainToName } from "../../../data/integration";
+import type { LabelRegistryEntry } from "../../../data/label_registry";
 import {
-  LabelRegistryEntry,
   createLabelRegistryEntry,
   subscribeLabelRegistry,
 } from "../../../data/label_registry";

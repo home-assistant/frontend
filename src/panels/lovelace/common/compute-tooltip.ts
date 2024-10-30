@@ -1,6 +1,6 @@
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { ActionConfig } from "../../../data/lovelace/config/action";
-import { HomeAssistant } from "../../../types";
+import type { ActionConfig } from "../../../data/lovelace/config/action";
+import type { HomeAssistant } from "../../../types";
 
 interface Config {
   entity?: string;

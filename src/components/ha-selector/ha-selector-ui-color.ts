@@ -1,9 +1,9 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import { UiColorSelector } from "../../data/selector";
+import type { UiColorSelector } from "../../data/selector";
 import "../ha-color-picker";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 
 @customElement("ha-selector-ui_color")
 export class HaSelectorUiColor extends LitElement {
