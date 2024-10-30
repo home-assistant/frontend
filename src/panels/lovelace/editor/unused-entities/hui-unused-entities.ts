@@ -1,12 +1,6 @@
 import { mdiPlus } from "@mdi/js";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { computeDomain } from "../../../../common/entity/compute_domain";
@@ -20,7 +14,7 @@ import type { Lovelace } from "../../types";
 import "../card-editor/hui-entity-picker-table";
 import { showSuggestCardDialog } from "../card-editor/show-suggest-card-dialog";
 import { showSelectViewDialog } from "../select-view/show-select-view-dialog";
-import { LovelaceConfig } from "../../../../data/lovelace/config/types";
+import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import {
   computeCards,
   computeSection,
@@ -167,7 +161,6 @@ export class HuiUnusedEntities extends LitElement {
   static get styles(): CSSResultGroup {
     return css`
       :host {
-        background: var(--lovelace-background);
         overflow: hidden;
       }
       .container {

@@ -41,6 +41,7 @@ MdDialog.addInitializer(async (instance) => {
   };
 });
 
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 let DIALOG_POLYFILL: Promise<typeof import("dialog-polyfill")>;
 
 /**

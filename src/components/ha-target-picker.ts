@@ -12,13 +12,14 @@ import {
   mdiTextureBox,
   mdiUnfoldMoreVertical,
 } from "@mdi/js";
-import { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
-import {
+import type { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
+import type {
   HassEntity,
   HassServiceTarget,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket";
-import { CSSResultGroup, LitElement, css, html, nothing, unsafeCSS } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing, unsafeCSS } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ensureArray } from "../common/array/ensure-array";
@@ -29,18 +30,14 @@ import { stopPropagation } from "../common/dom/stop_propagation";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { isValidEntityId } from "../common/entity/valid_entity_id";
-import { AreaRegistryEntry } from "../data/area_registry";
-import {
-  DeviceRegistryEntry,
-  computeDeviceName,
-} from "../data/device_registry";
-import { EntityRegistryDisplayEntry } from "../data/entity_registry";
-import {
-  LabelRegistryEntry,
-  subscribeLabelRegistry,
-} from "../data/label_registry";
+import type { AreaRegistryEntry } from "../data/area_registry";
+import type { DeviceRegistryEntry } from "../data/device_registry";
+import { computeDeviceName } from "../data/device_registry";
+import type { EntityRegistryDisplayEntry } from "../data/entity_registry";
+import type { LabelRegistryEntry } from "../data/label_registry";
+import { subscribeLabelRegistry } from "../data/label_registry";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "./device/ha-device-picker";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./entity/ha-entity-picker";

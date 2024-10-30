@@ -1,8 +1,10 @@
-import { html, LitElement, nothing, PropertyValues } from "lit";
+import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-button";
+import "../../components/ha-circular-progress";
 import { testAssistSatelliteConnection } from "../../data/assist_satellite";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import { AssistantSetupStyles } from "./styles";
 
 @customElement("ha-voice-assistant-setup-step-check")

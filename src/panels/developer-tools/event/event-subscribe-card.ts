@@ -1,5 +1,6 @@
-import { HassEvent } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { HassEvent } from "home-assistant-js-websocket";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { formatTime } from "../../../common/datetime/format_time";
@@ -8,7 +9,7 @@ import "../../../components/ha-textfield";
 import "../../../components/ha-yaml-editor";
 import "../../../components/ha-button";
 import "../../../components/ha-alert";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 
 @customElement("event-subscribe-card")
 class EventSubscribeCard extends LitElement {

@@ -1,7 +1,8 @@
 /* eslint-disable lit/value-after-constraints */
 /* eslint-disable lit/prefer-static-styles */
 import { floatingLabel } from "@material/mwc-floating-label/mwc-floating-label-directive";
-import { TemplateResult, html } from "lit";
+import type { TemplateResult } from "lit";
+import { html } from "lit";
 import { customElement } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { live } from "lit/directives/live";

@@ -1,7 +1,7 @@
-import { TemplateResult } from "lit";
-import { LocalizeFunc } from "../../../src/common/translations/localize";
-import { LovelaceConfig } from "../../../src/data/lovelace/config/types";
-import { Entity } from "../../../src/fake_data/entity";
+import type { TemplateResult } from "lit";
+import type { LocalizeFunc } from "../../../src/common/translations/localize";
+import type { LovelaceConfig } from "../../../src/data/lovelace/config/types";
+import type { Entity } from "../../../src/fake_data/entity";
 
 export interface DemoConfig {
   index?: number;

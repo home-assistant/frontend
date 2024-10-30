@@ -1,15 +1,16 @@
-import { css, html, LitElement, nothing, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-circular-progress";
 import { ON, UNAVAILABLE } from "../../data/entity";
 import {
   updateCanInstall,
-  UpdateEntity,
+  type UpdateEntity,
   updateIsInstalling,
   updateUsesProgress,
 } from "../../data/update";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import { AssistantSetupStyles } from "./styles";
 
 @customElement("ha-voice-assistant-setup-step-update")
@@ -77,7 +78,7 @@ export class HaVoiceAssistantSetupStepUpdate extends LitElement {
       </p>
       <ha-circular-progress
         .value=${progressIsNumeric
-          ? (stateObj.attributes.in_progress as number) / 100
+          ? (stateObj.attributes.update_percentage as number) / 100
           : undefined}
         .indeterminate=${!progressIsNumeric}
       ></ha-circular-progress>
@@ -85,7 +86,7 @@ export class HaVoiceAssistantSetupStepUpdate extends LitElement {
         ${stateObj?.state === UNAVAILABLE
           ? "Restarting voice assistant"
           : progressIsNumeric
-            ? `Installing ${stateObj.attributes.in_progress}%`
+            ? `Installing ${stateObj.attributes.update_percentage}%`
             : ""}
       </p>
     </div>`;

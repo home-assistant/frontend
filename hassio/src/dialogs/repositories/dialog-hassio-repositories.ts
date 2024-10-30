@@ -1,7 +1,8 @@
 import "@material/mwc-button/mwc-button";
 import { mdiDelete, mdiDeleteOff } from "@mdi/js";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
@@ -10,7 +11,7 @@ import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-circular-progress";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-icon-button";
-import {
+import type {
   HassioAddonInfo,
   HassioAddonRepository,
 } from "../../../../src/data/hassio/addon";
@@ -22,7 +23,7 @@ import {
 } from "../../../../src/data/supervisor/store";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
-import { HassioRepositoryDialogParams } from "./show-dialog-repositories";
+import type { HassioRepositoryDialogParams } from "./show-dialog-repositories";
 import type { HaTextField } from "../../../../src/components/ha-textfield";
 import "../../../../src/components/ha-textfield";
 import "../../../../src/components/ha-md-list";

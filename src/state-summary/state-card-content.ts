@@ -1,7 +1,7 @@
 import { LitElement, nothing } from "lit";
-import { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { customElement, property } from "lit/decorators";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import { dynamicElement } from "../common/dom/dynamic-element-directive";
 import { stateCardType } from "../common/entity/state_card_type";
 import "./state-card-alert";

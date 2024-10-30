@@ -1,4 +1,4 @@
-import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import "../cards/hui-entity-card";
 import "../cards/hui-entities-card";
 import "../cards/hui-button-card";

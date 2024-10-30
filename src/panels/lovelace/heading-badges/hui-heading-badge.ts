@@ -1,7 +1,8 @@
-import { PropertyValues, ReactiveElement } from "lit";
+import type { PropertyValues } from "lit";
+import { ReactiveElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { MediaQueriesListener } from "../../../common/dom/media_query";
+import type { MediaQueriesListener } from "../../../common/dom/media_query";
 import "../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../types";
 import {
@@ -10,7 +11,7 @@ import {
 } from "../common/validate-condition";
 import { createHeadingBadgeElement } from "../create-element/create-heading-badge-element";
 import type { LovelaceHeadingBadge } from "../types";
-import { LovelaceHeadingBadgeConfig } from "./types";
+import type { LovelaceHeadingBadgeConfig } from "./types";
 
 declare global {
   interface HASSDomEvents {

@@ -1,5 +1,6 @@
 import { mdiHomeImportOutline, mdiPause, mdiPlay } from "@mdi/js";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
@@ -8,16 +9,14 @@ import { blankBeforePercent } from "../../../common/translations/blank_before_pe
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-icon-button";
 import { UNAVAILABLE } from "../../../data/entity";
+import type { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
 import {
-  EntityRegistryDisplayEntry,
   findBatteryChargingEntity,
   findBatteryEntity,
 } from "../../../data/entity_registry";
-import {
-  LawnMowerEntity,
-  LawnMowerEntityFeature,
-} from "../../../data/lawn_mower";
-import { HomeAssistant } from "../../../types";
+import type { LawnMowerEntity } from "../../../data/lawn_mower";
+import { LawnMowerEntityFeature } from "../../../data/lawn_mower";
+import type { HomeAssistant } from "../../../types";
 
 interface LawnMowerCommand {
   translationKey: string;

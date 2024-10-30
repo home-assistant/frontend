@@ -1,6 +1,8 @@
-import { SelectedDetail } from "@material/mwc-list";
+import "@material/mwc-list/mwc-list";
+import type { SelectedDetail } from "@material/mwc-list";
 import { mdiFilterVariantRemove } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyleScrollbar } from "../resources/styles";
@@ -8,6 +10,7 @@ import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-icon";
+import "./ha-icon-button";
 
 @customElement("ha-filter-states")
 export class HaFilterStates extends LitElement {

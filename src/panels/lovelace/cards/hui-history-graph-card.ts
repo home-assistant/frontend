@@ -1,11 +1,5 @@
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -13,17 +7,17 @@ import "../../../components/chart/state-history-charts";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
+import type { HistoryResult } from "../../../data/history";
 import {
-  HistoryResult,
   computeHistory,
   subscribeHistoryStatesTimeWindow,
 } from "../../../data/history";
 import { getSensorNumericDeviceClasses } from "../../../data/sensor";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
-import { LovelaceCard } from "../types";
-import { HistoryGraphCardConfig } from "./types";
+import type { LovelaceCard } from "../types";
+import type { HistoryGraphCardConfig } from "./types";
 import { createSearchParam } from "../../../common/url/search-params";
 
 export const DEFAULT_HOURS_TO_SHOW = 24;
