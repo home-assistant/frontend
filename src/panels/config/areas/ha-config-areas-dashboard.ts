@@ -1,4 +1,4 @@
-import { ActionDetail } from "@material/mwc-list";
+import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiDelete,
   mdiDotsVertical,
@@ -7,10 +7,10 @@ import {
   mdiPlus,
 } from "@mdi/js";
 import {
-  CSSResultGroup,
+  type CSSResultGroup,
   LitElement,
-  PropertyValues,
-  TemplateResult,
+  type PropertyValues,
+  type TemplateResult,
   css,
   html,
   nothing,
@@ -24,13 +24,13 @@ import "../../../components/ha-floor-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
+import type { AreaRegistryEntry } from "../../../data/area_registry";
 import {
-  AreaRegistryEntry,
   createAreaRegistryEntry,
   updateAreaRegistryEntry,
 } from "../../../data/area_registry";
+import type { FloorRegistryEntry } from "../../../data/floor_registry";
 import {
-  FloorRegistryEntry,
   createFloorRegistryEntry,
   deleteFloorRegistryEntry,
   getFloorAreaLookup,
@@ -41,7 +41,7 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage";
-import { HomeAssistant, Route } from "../../../types";
+import type { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import {

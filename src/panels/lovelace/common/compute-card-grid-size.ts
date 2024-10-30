@@ -1,5 +1,5 @@
 import { conditionalClamp } from "../../../common/number/clamp";
-import { LovelaceLayoutOptions } from "../types";
+import type { LovelaceLayoutOptions } from "../types";
 
 export const DEFAULT_GRID_SIZE = {
   columns: 4,

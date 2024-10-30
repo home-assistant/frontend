@@ -1,22 +1,16 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { property, query, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
-import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { handleStructError } from "../../../common/structs/handle-errors";
 import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/ha-alert";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
-import { LovelaceConfig } from "../../../data/lovelace/config/types";
+import type { LovelaceConfig } from "../../../data/lovelace/config/types";
 import type { HomeAssistant } from "../../../types";
 import type {
   LovelaceConfigForm,
@@ -24,7 +18,7 @@ import type {
 } from "../types";
 import type { HuiFormEditor } from "./config-elements/hui-form-editor";
 import { GUISupportError } from "./gui-support-error";
-import {
+import type {
   EditDetailElementEvent,
   EditSubElementEvent,
   GUIModeChangedEvent,

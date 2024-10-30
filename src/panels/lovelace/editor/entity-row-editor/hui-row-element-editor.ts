@@ -1,6 +1,6 @@
 import { customElement } from "lit/decorators";
 import { getRowElementClass } from "../../create-element/create-row-element";
-import { LovelaceRowConfig } from "../../entity-rows/types";
+import type { LovelaceRowConfig } from "../../entity-rows/types";
 import type { LovelaceRowEditor } from "../../types";
 import { HuiTypedElementEditor } from "../hui-typed-element-editor";
 import "../config-elements/hui-generic-entity-row-editor";

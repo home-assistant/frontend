@@ -1,10 +1,10 @@
 import {
   css,
-  CSSResultGroup,
+  type CSSResultGroup,
   html,
   LitElement,
-  PropertyValues,
-  TemplateResult,
+  type PropertyValues,
+  type TemplateResult,
 } from "lit";
 import {
   customElement,

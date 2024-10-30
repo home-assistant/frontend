@@ -1,8 +1,9 @@
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
-import { css, CSSResultGroup, html, nothing, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
-import { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
+import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import { getBadgeElementClass } from "../../create-element/create-badge-element";
 import type { LovelaceCardEditor, LovelaceConfigForm } from "../../types";
 import { HuiTypedElementEditor } from "../hui-typed-element-editor";

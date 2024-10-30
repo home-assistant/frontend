@@ -7,7 +7,7 @@ import {
   mdiUpload,
 } from "@mdi/js";
 import { getConfigEntries } from "../../../../../../data/config_entries";
-import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import {
   fetchZwaveIsAnyOTAFirmwareUpdateInProgress,
   fetchZwaveIsNodeFirmwareUpdateInProgress,

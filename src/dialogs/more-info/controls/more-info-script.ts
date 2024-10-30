@@ -1,27 +1,22 @@
 import { mdiPlay, mdiStop } from "@mdi/js";
 import "@material/mwc-button";
-import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-relative-time";
 import "../../../components/ha-service-control";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/entity/state-info";
-import { HomeAssistant } from "../../../types";
-import { canRun, ScriptEntity } from "../../../data/script";
+import type { HomeAssistant } from "../../../types";
+import type { ScriptEntity } from "../../../data/script";
+import { canRun } from "../../../data/script";
 import { isUnavailableState } from "../../../data/entity";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { listenMediaQuery } from "../../../common/dom/media_query";
 import "../components/ha-more-info-state-header";
-import { ExtEntityRegistryEntry } from "../../../data/entity_registry";
+import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
 
 @customElement("more-info-script")
 class MoreInfoScript extends LitElement {

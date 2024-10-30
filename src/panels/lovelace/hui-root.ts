@@ -17,14 +17,8 @@ import {
 } from "@mdi/js";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
@@ -33,7 +27,7 @@ import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
-import { LocalizeKeys } from "../../common/translations/localize";
+import type { LocalizeKeys } from "../../common/translations/localize";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
   addSearchParam,
@@ -52,11 +46,9 @@ import "../../components/ha-menu-button";
 import "../../components/ha-svg-icon";
 import "../../components/ha-tabs";
 import type { LovelacePanelConfig } from "../../data/lovelace";
-import {
-  LovelaceConfig,
-  isStrategyDashboard,
-} from "../../data/lovelace/config/types";
-import { LovelaceViewConfig } from "../../data/lovelace/config/view";
+import type { LovelaceConfig } from "../../data/lovelace/config/types";
+import { isStrategyDashboard } from "../../data/lovelace/config/types";
+import type { LovelaceViewConfig } from "../../data/lovelace/config/view";
 import {
   deleteDashboard,
   fetchDashboards,

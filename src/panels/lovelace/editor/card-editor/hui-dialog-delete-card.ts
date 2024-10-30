@@ -1,5 +1,6 @@
 import deepFreeze from "deep-freeze";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";

@@ -7,16 +7,18 @@ import "../../../../../components/device/ha-device-action-picker";
 import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/ha-form/ha-form";
 import { fullEntitiesContext } from "../../../../../data/context";
-import {
+import type {
   DeviceAction,
-  deviceAutomationsEqual,
   DeviceCapabilities,
+} from "../../../../../data/device_automation";
+import {
+  deviceAutomationsEqual,
   fetchDeviceActionCapabilities,
   localizeExtraFieldsComputeLabelCallback,
   localizeExtraFieldsComputeHelperCallback,
 } from "../../../../../data/device_automation";
-import { EntityRegistryEntry } from "../../../../../data/entity_registry";
-import { HomeAssistant } from "../../../../../types";
+import type { EntityRegistryEntry } from "../../../../../data/entity_registry";
+import type { HomeAssistant } from "../../../../../types";
 
 @customElement("ha-automation-action-device_id")
 export class HaDeviceAction extends LitElement {

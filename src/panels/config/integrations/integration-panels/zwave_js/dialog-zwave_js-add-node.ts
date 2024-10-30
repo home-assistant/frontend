@@ -1,7 +1,8 @@
 import "@material/mwc-button/mwc-button";
 import { mdiAlertCircle, mdiCheckCircle, mdiQrcodeScan } from "@mdi/js";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -16,12 +17,14 @@ import "../../../../../components/ha-radio";
 import "../../../../../components/ha-switch";
 import "../../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../../components/ha-textfield";
+import type {
+  QRProvisioningInformation,
+  RequestedGrant,
+} from "../../../../../data/zwave_js";
 import {
   InclusionStrategy,
   MINIMUM_QR_STRING_LENGTH,
   provisionZwaveSmartStartNode,
-  QRProvisioningInformation,
-  RequestedGrant,
   SecurityClass,
   stopZwaveInclusion,
   subscribeAddZwaveNode,
@@ -33,8 +36,8 @@ import {
   zwaveValidateDskAndEnterPin,
 } from "../../../../../data/zwave_js";
 import { haStyle, haStyleDialog } from "../../../../../resources/styles";
-import { HomeAssistant } from "../../../../../types";
-import { ZWaveJSAddNodeDialogParams } from "./show-dialog-zwave_js-add-node";
+import type { HomeAssistant } from "../../../../../types";
+import type { ZWaveJSAddNodeDialogParams } from "./show-dialog-zwave_js-add-node";
 
 export interface ZWaveJSAddNodeDevice {
   id: string;

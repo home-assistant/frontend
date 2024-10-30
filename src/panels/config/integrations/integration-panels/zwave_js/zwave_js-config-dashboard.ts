@@ -7,15 +7,9 @@ import {
   mdiPlus,
   mdiRefresh,
 } from "@mdi/js";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  TemplateResult,
-  nothing,
-} from "lit";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import "../../../../../components/ha-card";
@@ -25,11 +19,17 @@ import "../../../../../components/ha-help-tooltip";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-svg-icon";
+import type { ConfigEntry } from "../../../../../data/config_entries";
 import {
-  ConfigEntry,
   ERROR_STATES,
   getConfigEntries,
 } from "../../../../../data/config_entries";
+import type {
+  ZWaveJSClient,
+  ZWaveJSControllerStatisticsUpdatedMessage,
+  ZWaveJSNetwork,
+  ZwaveJSProvisioningEntry,
+} from "../../../../../data/zwave_js";
 import {
   fetchZwaveDataCollectionStatus,
   fetchZwaveNetworkStatus,
@@ -37,10 +37,6 @@ import {
   InclusionState,
   setZwaveDataCollectionPreference,
   subscribeZwaveControllerStatistics,
-  ZWaveJSClient,
-  ZWaveJSControllerStatisticsUpdatedMessage,
-  ZWaveJSNetwork,
-  ZwaveJSProvisioningEntry,
 } from "../../../../../data/zwave_js";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
 import "../../../../../layouts/hass-tabs-subpage";

@@ -1,10 +1,7 @@
-import {
-  Auth,
-  Connection,
-  getUser,
-  HassUser,
-} from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { Auth, Connection, HassUser } from "home-assistant-js-websocket";
+import { getUser } from "home-assistant-js-websocket";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../src/components/ha-card";
 

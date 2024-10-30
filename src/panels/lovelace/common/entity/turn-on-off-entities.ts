@@ -1,6 +1,6 @@
 import { STATES_OFF } from "../../../../common/const";
 import { computeDomain } from "../../../../common/entity/compute_domain";
-import { HomeAssistant } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 
 export const turnOnOffEntities = (
   hass: HomeAssistant,

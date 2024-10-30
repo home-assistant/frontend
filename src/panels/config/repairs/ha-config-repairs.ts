@@ -15,9 +15,9 @@ import { brandsUrl } from "../../../util/brands-url";
 import { fixStatisticsIssue } from "../../developer-tools/statistics/fix-statistics";
 import { showRepairsFlowDialog } from "./show-dialog-repair-flow";
 import { showRepairsIssueDialog } from "./show-repair-issue-dialog";
+import type { StatisticsValidationResult } from "../../../data/recorder";
 import {
   STATISTIC_TYPES,
-  StatisticsValidationResult,
   updateStatisticsIssues,
 } from "../../../data/recorder";
 
