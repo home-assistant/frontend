@@ -13,6 +13,7 @@ import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { navigate } from "../../../../common/navigate";
 import { deepEqual } from "../../../../common/util/deep-equal";
 import "../../../../components/ha-alert";
+import "../../../../components/ha-button";
 import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
@@ -57,8 +58,10 @@ export class HuiDialogEditView extends LitElement {
 
   @query("ha-yaml-editor") private _editor?: HaYamlEditor;
 
+  @state() private _currentType = getViewType();
+
   get _type(): string {
-    return getViewType(this._config!);
+    return getViewType(this._config);
   }
 
   protected updated(changedProperties: PropertyValues) {
@@ -76,7 +79,6 @@ export class HuiDialogEditView extends LitElement {
     if (this._params.viewIndex === undefined) {
       this._config = {
         type: SECTIONS_VIEW_LAYOUT,
-        sections: [generateDefaultSection(this.hass!.localize)],
       };
       this._dirty = false;
       return;
@@ -89,6 +91,7 @@ export class HuiDialogEditView extends LitElement {
       return;
     }
     this._config = view;
+    this._currentType = this._type;
   }
 
   public closeDialog(): void {
@@ -159,12 +162,14 @@ export class HuiDialogEditView extends LitElement {
       }
     }
 
-    const isCompatibleViewType =
-      this._config?.type === SECTIONS_VIEW_LAYOUT
-        ? this._config?.type === SECTIONS_VIEW_LAYOUT &&
-          !this._config?.cards?.length
-        : this._config?.type !== SECTIONS_VIEW_LAYOUT &&
-          !this._config?.sections?.length;
+    const convertToSection =
+      this._type === SECTIONS_VIEW_LAYOUT &&
+      this._currentType !== SECTIONS_VIEW_LAYOUT &&
+      this._config?.cards?.length;
+    const convertNotSupported =
+      this._type !== SECTIONS_VIEW_LAYOUT &&
+      this._currentType === SECTIONS_VIEW_LAYOUT &&
+      this._config?.sections?.length;
 
     return html`
       <ha-dialog
@@ -224,16 +229,29 @@ export class HuiDialogEditView extends LitElement {
                 : ``}
             </mwc-list-item>
           </ha-button-menu>
-          ${!isCompatibleViewType
+          ${convertToSection
             ? html`
-                <ha-alert class="incompatible" alert-type="warning">
-                  ${this._config?.type === SECTIONS_VIEW_LAYOUT
-                    ? this.hass!.localize(
-                        "ui.panel.lovelace.editor.edit_view.type_warning_sections"
-                      )
-                    : this.hass!.localize(
-                        "ui.panel.lovelace.editor.edit_view.type_warning_others"
-                      )}
+                <ha-alert alert-type="info">
+                  ${this.hass!.localize(
+                    "ui.panel.lovelace.editor.edit_view.card_to_section_convert"
+                  )}
+                  <ha-button
+                    slot="action"
+                    .label=${this.hass!.localize(
+                      "ui.panel.lovelace.editor.edit_view.convert_view"
+                    )}
+                    @click=${this._convertToSection}
+                  >
+                  </ha-button>
+                </ha-alert>
+              `
+            : nothing}
+          ${convertNotSupported
+            ? html`
+                <ha-alert alert-type="warning">
+                  ${this.hass!.localize(
+                    "ui.panel.lovelace.editor.edit_view.section_to_card_not_supported"
+                  )}
                 </ha-alert>
               `
             : nothing}
@@ -258,7 +276,7 @@ export class HuiDialogEditView extends LitElement {
         ${content}
         ${this._params.viewIndex !== undefined
           ? html`
-              <mwc-button
+              <ha-button
                 class="warning"
                 slot="secondaryAction"
                 @click=${this._deleteConfirm}
@@ -266,15 +284,16 @@ export class HuiDialogEditView extends LitElement {
                 ${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_view.delete"
                 )}
-              </mwc-button>
+              </ha-button>
             `
           : nothing}
-        <mwc-button
+        <ha-button
           slot="primaryAction"
           ?disabled=${!this._config ||
           this._saving ||
           !this._dirty ||
-          !isCompatibleViewType}
+          convertToSection ||
+          convertNotSupported}
           @click=${this._save}
         >
           ${this._saving
@@ -284,7 +303,7 @@ export class HuiDialogEditView extends LitElement {
                 aria-label="Saving"
               ></ha-circular-progress>`
             : nothing}
-          ${this.hass!.localize("ui.common.save")}</mwc-button
+          ${this.hass!.localize("ui.common.save")}</ha-button
         >
       </ha-dialog>
     `;
@@ -300,6 +319,54 @@ export class HuiDialogEditView extends LitElement {
       case 1:
         this._yamlMode = true;
         break;
+    }
+  }
+
+  private async _convertToSection() {
+    if (!this._params || !this._config) {
+      return;
+    }
+    const confirm = await showConfirmationDialog(this, {
+      title: this.hass!.localize(
+        "ui.panel.lovelace.editor.edit_view.convert_view_title"
+      ),
+      text: this.hass!.localize(
+        "ui.panel.lovelace.editor.edit_view.convert_view_text"
+      ),
+      confirmText: this.hass!.localize(
+        "ui.panel.lovelace.editor.edit_view.convert_view_action"
+      ),
+      dismissText: this.hass!.localize("ui.common.cancel"),
+    });
+
+    if (!confirm) {
+      return;
+    }
+
+    const newConfig = {
+      ...this._config,
+    };
+    newConfig.type = SECTIONS_VIEW_LAYOUT;
+    newConfig.sections = [generateDefaultSection(this.hass!.localize)];
+    newConfig.path = undefined;
+    const lovelace = this._params!.lovelace!;
+
+    try {
+      await lovelace.saveConfig(
+        addView(this.hass!, lovelace.config, newConfig)
+      );
+      if (this._params.saveCallback) {
+        this._params.saveCallback(lovelace.config.views.length, newConfig);
+      }
+      this.closeDialog();
+    } catch (err: any) {
+      showAlertDialog(this, {
+        text: `${this.hass!.localize(
+          "ui.panel.lovelace.editor.edit_view.saving_failed"
+        )}: ${err.message}`,
+      });
+    } finally {
+      this._saving = false;
     }
   }
 
@@ -366,7 +433,7 @@ export class HuiDialogEditView extends LitElement {
     const viewConf = {
       ...this._config,
     };
-
+    // Ensure we have at least one section if we are in sections view
     if (viewConf.type === SECTIONS_VIEW_LAYOUT && !viewConf.sections?.length) {
       viewConf.sections = [generateDefaultSection(this.hass!.localize)];
     } else if (!viewConf.cards?.length) {
@@ -386,7 +453,7 @@ export class HuiDialogEditView extends LitElement {
               viewConf
             )
       );
-      if (this._params.saveCallback) {
+      if (this._params.saveCallback && this._creatingView) {
         this._params.saveCallback(
           this._params.viewIndex || lovelace.config.views.length,
           viewConf
@@ -479,7 +546,7 @@ export class HuiDialogEditView extends LitElement {
           text-transform: uppercase;
           padding: 0 20px;
         }
-        mwc-button.warning {
+        ha-button.warning {
           margin-right: auto;
           margin-inline-end: auto;
           margin-inline-start: initial;
@@ -494,7 +561,10 @@ export class HuiDialogEditView extends LitElement {
           color: var(--error-color);
           border-bottom: 1px solid var(--error-color);
         }
-        .incompatible {
+        ha-alert {
+          display: block;
+        }
+        ha-alert ha-button {
           display: block;
         }
 

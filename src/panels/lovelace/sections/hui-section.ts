@@ -43,6 +43,9 @@ export class HuiSection extends ReactiveElement {
 
   @property({ type: Boolean, reflect: true }) public preview = false;
 
+  @property({ type: Boolean, attribute: "import-only" })
+  public importOnly = false;
+
   @property({ type: Number }) public index!: number;
 
   @property({ type: Number }) public viewIndex!: number;
@@ -127,6 +130,9 @@ export class HuiSection extends ReactiveElement {
         this._cards.forEach((element) => {
           element.preview = this.preview;
         });
+      }
+      if (changedProperties.has("importOnly")) {
+        this._layoutElement.importOnly = this.importOnly;
       }
       if (changedProperties.has("_cards")) {
         this._layoutElement.cards = this._cards;
