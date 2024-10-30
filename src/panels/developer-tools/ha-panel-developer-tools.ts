@@ -11,7 +11,7 @@ import { haStyle } from "../../resources/styles";
 import { HomeAssistant, Route } from "../../types";
 import "./developer-tools-router";
 import "../../components/ha-md-tabs";
-import "../../components/ha-md-secondary-tab";
+import "../../components/ha-md-primary-tab";
 
 const tabs = [
   { page: "yaml", label: "yaml" },
@@ -71,11 +71,11 @@ class PanelDeveloperTools extends LitElement {
         >
           ${tabs.map(
             (tab) => html`
-              <ha-md-secondary-tab
+              <ha-md-primary-tab
                 >${this.hass.localize(
                   `ui.panel.developer-tools.tabs.${tab.label}.title`
                 )}
-              </ha-md-secondary-tab>
+              </ha-md-primary-tab>
             `
           )}
         </ha-md-tabs>

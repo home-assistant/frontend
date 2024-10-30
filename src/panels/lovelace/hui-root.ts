@@ -346,7 +346,7 @@ class HUIRoot extends LitElement {
                           >
                             ${views.map(
                               (view) => html`
-                                <ha-md-secondary-tab
+                                <ha-md-primary-tab
                                   aria-label=${ifDefined(view.title)}
                                   class=${classMap({
                                     "hide-tab": Boolean(
@@ -370,7 +370,7 @@ class HUIRoot extends LitElement {
                                         ></ha-icon>
                                       `
                                     : view.title || "Unnamed view"}
-                                </ha-md-secondary-tab>
+                                </ha-md-primary-tab>
                               `
                             )}
                           </ha-md-tabs>
@@ -1085,7 +1085,7 @@ class HUIRoot extends LitElement {
         }
         ha-md-tabs {
           text-transform: uppercase;
-          --md-secondary-tab-label-text-size: 14px;
+          --md-primary-tab-label-text-size: 14px;
           --md-sys-color-primary: var(--app-header-text-color, white);
           --md-sys-color-secondary: var(--app-header-text-color, white);
           --md-sys-color-surface: var(--app-header-background-color);
