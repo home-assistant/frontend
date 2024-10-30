@@ -5612,8 +5612,12 @@
               "select_users": "Select which users should see this view in the navigation"
             },
             "type": "View type",
-            "type_warning_sections": "You can not change your view to use the 'sections' view type because migration is not supported yet. Start from scratch with a new view if you want to experiment with the 'sections' view.",
-            "type_warning_others": "You can not change your view to an other type because migration is not supported yet. Start from scratch with a new view if you want to use another view type.",
+            "convert_view": "Convert",
+            "convert_view_title": "Convert view layout",
+            "convert_view_text": "It will create a new view using sections. This current view will stay untouched. All your cards will be imported so you can rearrange them freely.",
+            "convert_view_action": "Create",
+            "card_to_section_convert": "Convert your view to a section view.",
+            "section_to_card_not_supported": "You can not change your section view to an other type. Start from scratch with a new view if you want to use another view type.",
             "types": {
               "masonry": "Masonry",
               "sidebar": "Sidebar",
@@ -5726,7 +5730,7 @@
             "imported_card_section_title_view": "Imported cards from ''{view_title}'' view",
             "imported_card_section_title_default": "Imported cards from another view",
             "imported_cards_title": "Imported cards",
-            "imported_cards_description": "These cards are imported from another view. They will only be displayed in edit mode. Drag them into sections to use them your view."
+            "imported_cards_description": "These cards are imported from another view. They will only be displayed in edit mode. Move them into sections to display them in your view."
           },
           "delete_section": {
             "title": "Delete section",
