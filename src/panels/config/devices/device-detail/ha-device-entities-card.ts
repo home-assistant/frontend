@@ -305,6 +305,7 @@ export class HaDeviceEntitiesCard extends LitElement {
       }
       ha-list-item {
         height: 40px;
+        --mdc-ripple-color: transparent;
       }
     `;
   }
