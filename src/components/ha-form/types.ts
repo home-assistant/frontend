@@ -25,8 +25,8 @@ export interface HaFormBaseSchema {
     suffix?: string;
     // This value will be set initially when form is loaded
     suggested_value?: HaFormData;
-    // Disable flag is passed here from backend for config flow
-    disabled?: boolean;
+    // Readonly flag is passed here from backend for config flow
+    readonly?: boolean;
   };
   context?: Record<string, string>;
 }

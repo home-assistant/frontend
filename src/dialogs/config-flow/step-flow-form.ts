@@ -47,10 +47,10 @@ class StepFlowForm extends LitElement {
     this.removeEventListener("keydown", this._handleKeyDown);
   }
 
-  private handleDisabledFields = memoizeOne((schema) =>
+  private handleReadonlyFields = memoizeOne((schema) =>
     schema?.map((field) => ({
       ...field,
-      ...(field?.description?.disabled ? { disabled: true } : {}),
+      ...(field?.description?.readonly ? { disabled: true } : {}),
     }))
   );
 
@@ -71,7 +71,7 @@ class StepFlowForm extends LitElement {
           .disabled=${this._loading}
           @value-changed=${this._stepDataChanged}
           .schema=${autocompleteLoginFields(
-            this.handleDisabledFields(step.data_schema)
+            this.handleReadonlyFields(step.data_schema)
           )}
           .error=${step.errors}
           .computeLabel=${this._labelCallback}
@@ -192,7 +192,7 @@ class StepFlowForm extends LitElement {
       const isEmpty = [undefined, ""].includes(value);
       const field = this.step.data_schema?.find((f) => f.name === key);
 
-      if (!isEmpty && !field?.description?.disabled) {
+      if (!isEmpty && !field?.description?.readonly) {
         toSendData[key] = value;
       }
     });
