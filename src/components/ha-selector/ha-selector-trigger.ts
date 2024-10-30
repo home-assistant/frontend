@@ -32,7 +32,6 @@ export class HaTriggerSelector extends LitElement {
         .disabled=${this.disabled}
         .triggers=${this._triggers(this.value)}
         .hass=${this.hass}
-        .path=${this.selector.trigger?.path}
       ></ha-automation-trigger>
     `;
   }

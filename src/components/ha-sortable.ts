@@ -4,15 +4,19 @@ import { customElement, property } from "lit/decorators";
 import type { SortableEvent } from "sortablejs";
 import { fireEvent } from "../common/dom/fire_event";
 import type { SortableInstance } from "../resources/sortable";
-import { ItemPath } from "../types";
 
 declare global {
   interface HASSDomEvents {
     "item-moved": {
       oldIndex: number;
       newIndex: number;
-      oldPath?: ItemPath;
-      newPath?: ItemPath;
+    };
+    "item-added": {
+      index: number;
+      data: any;
+    };
+    "item-removed": {
+      index: number;
     };
     "drag-start": undefined;
     "drag-end": undefined;
@@ -21,7 +25,7 @@ declare global {
 
 export type HaSortableOptions = Omit<
   SortableInstance.SortableOptions,
-  "onStart" | "onChoose" | "onEnd"
+  "onStart" | "onChoose" | "onEnd" | "onUpdate" | "onAdd" | "onRemove"
 >;
 
 @customElement("ha-sortable")
@@ -30,9 +34,6 @@ export class HaSortable extends LitElement {
 
   @property({ type: Boolean })
   public disabled = false;
-
-  @property({ type: Array })
-  public path?: ItemPath;
 
   @property({ type: Boolean, attribute: "no-style" })
   public noStyle: boolean = false;
@@ -138,6 +139,9 @@ export class HaSortable extends LitElement {
       onChoose: this._handleChoose,
       onStart: this._handleStart,
       onEnd: this._handleEnd,
+      onUpdate: this._handleUpdate,
+      onAdd: this._handleAdd,
+      onRemove: this._handleRemove,
     };
 
     if (this.draggableSelector) {
@@ -159,33 +163,31 @@ export class HaSortable extends LitElement {
     this._sortable = new Sortable(container, options);
   }
 
-  private _handleEnd = async (evt: SortableEvent) => {
+  private _handleUpdate = (evt) => {
+    fireEvent(this, "item-moved", {
+      newIndex: evt.newIndex,
+      oldIndex: evt.oldIndex,
+    });
+  };
+
+  private _handleAdd = (evt) => {
+    fireEvent(this, "item-added", {
+      index: evt.newIndex,
+      data: evt.item.sortableData,
+    });
+  };
+
+  private _handleRemove = (evt) => {
+    fireEvent(this, "item-removed", { index: evt.oldIndex });
+  };
+
+  private _handleEnd = async (evt) => {
     fireEvent(this, "drag-end");
     // put back in original location
     if (this.rollback && (evt.item as any).placeholder) {
       (evt.item as any).placeholder.replaceWith(evt.item);
       delete (evt.item as any).placeholder;
     }
-
-    const oldIndex = evt.oldIndex;
-    const oldPath = (evt.from.parentElement as HaSortable).path;
-    const newIndex = evt.newIndex;
-    const newPath = (evt.to.parentElement as HaSortable).path;
-
-    if (
-      oldIndex === undefined ||
-      newIndex === undefined ||
-      (oldIndex === newIndex && oldPath?.join(".") === newPath?.join("."))
-    ) {
-      return;
-    }
-
-    fireEvent(this, "item-moved", {
-      oldIndex,
-      newIndex,
-      oldPath,
-      newPath,
-    });
   };
 
   private _handleStart = () => {

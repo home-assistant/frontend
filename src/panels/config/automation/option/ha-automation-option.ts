@@ -15,30 +15,23 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { listenMediaQuery } from "../../../../common/dom/media_query";
 import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
-import "../../../../components/ha-button-menu";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
-import {
-  AutomationClipboard,
-  Trigger,
-  TriggerList,
-} from "../../../../data/automation";
-import { isTriggerList } from "../../../../data/trigger";
+import type { AutomationClipboard } from "../../../../data/automation";
+import { Option } from "../../../../data/script";
 import { HomeAssistant } from "../../../../types";
-import {
-  PASTE_VALUE,
-  showAddAutomationElementDialog,
-} from "../show-add-automation-element-dialog";
-import "./ha-automation-trigger-row";
-import type HaAutomationTriggerRow from "./ha-automation-trigger-row";
+import "./ha-automation-option-row";
+import type HaAutomationOptionRow from "./ha-automation-option-row";
 
-@customElement("ha-automation-trigger")
-export default class HaAutomationTrigger extends LitElement {
+@customElement("ha-automation-option")
+export default class HaAutomationOption extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public triggers!: Trigger[];
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Boolean }) public disabled = false;
+
+  @property({ attribute: false }) public options!: Option[];
 
   @state() private _showReorder: boolean = false;
 
@@ -50,9 +43,9 @@ export default class HaAutomationTrigger extends LitElement {
   })
   public _clipboard?: AutomationClipboard;
 
-  private _focusLastTriggerOnChange = false;
+  private _focusLastOptionOnChange = false;
 
-  private _triggerKeys = new WeakMap<Trigger, string>();
+  private _optionsKeys = new WeakMap<Option, string>();
 
   private _unsubMql?: () => void;
 
@@ -73,31 +66,32 @@ export default class HaAutomationTrigger extends LitElement {
     return html`
       <ha-sortable
         handle-selector=".handle"
-        draggable-selector="ha-automation-trigger-row"
+        draggable-selector="ha-automation-option-row"
         .disabled=${!this._showReorder || this.disabled}
-        group="triggers"
+        group="options"
         invert-swap
-        @item-moved=${this._triggerMoved}
-        @item-added=${this._triggerAdded}
-        @item-removed=${this._triggerRemoved}
+        @item-moved=${this._optionMoved}
+        @item-added=${this._optionAdded}
+        @item-removed=${this._optionRemoved}
       >
-        <div class="triggers">
+        <div class="options">
           ${repeat(
-            this.triggers,
-            (trigger) => this._getKey(trigger),
-            (trg, idx) => html`
-              <ha-automation-trigger-row
-                .sortableData=${trg}
+            this.options,
+            (option) => this._getKey(option),
+            (option, idx) => html`
+              <ha-automation-option-row
+                .sortableData=${option}
                 .index=${idx}
                 .first=${idx === 0}
-                .last=${idx === this.triggers.length - 1}
-                .trigger=${trg}
-                @duplicate=${this._duplicateTrigger}
+                .last=${idx === this.options.length - 1}
+                .option=${option}
+                .narrow=${this.narrow}
+                .disabled=${this.disabled}
+                @duplicate=${this._duplicateOption}
                 @move-down=${this._moveDown}
                 @move-up=${this._moveUp}
-                @value-changed=${this._triggerChanged}
+                @value-changed=${this._optionChanged}
                 .hass=${this.hass}
-                .disabled=${this.disabled}
               >
                 ${this._showReorder && !this.disabled
                   ? html`
@@ -106,17 +100,17 @@ export default class HaAutomationTrigger extends LitElement {
                       </div>
                     `
                   : nothing}
-              </ha-automation-trigger-row>
+              </ha-automation-option-row>
             `
           )}
           <div class="buttons">
             <ha-button
               outlined
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.editor.triggers.add"
-              )}
               .disabled=${this.disabled}
-              @click=${this._addTriggerDialog}
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.type.choose.add_option"
+              )}
+              @click=${this._addOption}
             >
               <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
             </ha-button>
@@ -126,45 +120,14 @@ export default class HaAutomationTrigger extends LitElement {
     `;
   }
 
-  private _addTriggerDialog() {
-    showAddAutomationElementDialog(this, {
-      type: "trigger",
-      add: this._addTrigger,
-      clipboardItem: !this._clipboard?.trigger
-        ? undefined
-        : isTriggerList(this._clipboard.trigger)
-          ? "list"
-          : this._clipboard?.trigger?.trigger,
-    });
-  }
-
-  private _addTrigger = (value: string) => {
-    let triggers: Trigger[];
-    if (value === PASTE_VALUE) {
-      triggers = this.triggers.concat(deepClone(this._clipboard!.trigger));
-    } else {
-      const trigger = value as Exclude<Trigger, TriggerList>["trigger"];
-      const elClass = customElements.get(
-        `ha-automation-trigger-${trigger}`
-      ) as CustomElementConstructor & {
-        defaultConfig: Trigger;
-      };
-      triggers = this.triggers.concat({
-        ...elClass.defaultConfig,
-      });
-    }
-    this._focusLastTriggerOnChange = true;
-    fireEvent(this, "value-changed", { value: triggers });
-  };
-
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
 
-    if (changedProps.has("triggers") && this._focusLastTriggerOnChange) {
-      this._focusLastTriggerOnChange = false;
+    if (changedProps.has("options") && this._focusLastOptionOnChange) {
+      this._focusLastOptionOnChange = false;
 
-      const row = this.shadowRoot!.querySelector<HaAutomationTriggerRow>(
-        "ha-automation-trigger-row:last-of-type"
+      const row = this.shadowRoot!.querySelector<HaAutomationOptionRow>(
+        "ha-automation-option-row:last-of-type"
       )!;
       row.updateComplete.then(() => {
         row.expand();
@@ -175,20 +138,26 @@ export default class HaAutomationTrigger extends LitElement {
   }
 
   public expandAll() {
-    const rows = this.shadowRoot!.querySelectorAll<HaAutomationTriggerRow>(
-      "ha-automation-trigger-row"
+    const rows = this.shadowRoot!.querySelectorAll<HaAutomationOptionRow>(
+      "ha-automation-option-row"
     )!;
     rows.forEach((row) => {
       row.expand();
     });
   }
 
-  private _getKey(action: Trigger) {
-    if (!this._triggerKeys.has(action)) {
-      this._triggerKeys.set(action, Math.random().toString());
+  private _addOption = () => {
+    const options = this.options.concat({ conditions: [], sequence: [] });
+    this._focusLastOptionOnChange = true;
+    fireEvent(this, "value-changed", { value: options });
+  };
+
+  private _getKey(option: Option) {
+    if (!this._optionsKeys.has(option)) {
+      this._optionsKeys.set(option, Math.random().toString());
     }
 
-    return this._triggerKeys.get(action)!;
+    return this._optionsKeys.get(option)!;
   }
 
   private _moveUp(ev) {
@@ -206,75 +175,75 @@ export default class HaAutomationTrigger extends LitElement {
   }
 
   private _move(oldIndex: number, newIndex: number) {
-    const triggers = this.triggers.concat();
-    const item = triggers.splice(oldIndex, 1)[0];
-    triggers.splice(newIndex, 0, item);
-    this.triggers = triggers;
-    fireEvent(this, "value-changed", { value: triggers });
+    const options = this.options.concat();
+    const item = options.splice(oldIndex, 1)[0];
+    options.splice(newIndex, 0, item);
+    this.options = options;
+    fireEvent(this, "value-changed", { value: options });
   }
 
-  private _triggerMoved(ev: CustomEvent): void {
+  private _optionMoved(ev: CustomEvent): void {
     ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
     this._move(oldIndex, newIndex);
   }
 
-  private async _triggerAdded(ev: CustomEvent): Promise<void> {
+  private async _optionAdded(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
     const { index, data } = ev.detail;
-    const triggers = [
-      ...this.triggers.slice(0, index),
+    const options = [
+      ...this.options.slice(0, index),
       data,
-      ...this.triggers.slice(index),
+      ...this.options.slice(index),
     ];
-    // Add trigger locally to avoid UI jump
-    this.triggers = triggers;
+    // Add option locally to avoid UI jump
+    this.options = options;
     await nextRender();
-    fireEvent(this, "value-changed", { value: this.triggers });
+    fireEvent(this, "value-changed", { value: this.options });
   }
 
-  private async _triggerRemoved(ev: CustomEvent): Promise<void> {
+  private async _optionRemoved(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
     const { index } = ev.detail;
-    const trigger = this.triggers[index];
-    // Remove trigger locally to avoid UI jump
-    this.triggers = this.triggers.filter((t) => t !== trigger);
+    const option = this.options[index];
+    // Remove option locally to avoid UI jump
+    this.options = this.options.filter((o) => o !== option);
     await nextRender();
-    // Ensure trigger is removed even after update
-    const triggers = this.triggers.filter((t) => t !== trigger);
-    fireEvent(this, "value-changed", { value: triggers });
+    // Ensure option is removed even after update
+    const options = this.options.filter((o) => o !== option);
+    fireEvent(this, "value-changed", { value: options });
   }
 
-  private _triggerChanged(ev: CustomEvent) {
+  private _optionChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    const triggers = [...this.triggers];
+    const options = [...this.options];
     const newValue = ev.detail.value;
     const index = (ev.target as any).index;
 
     if (newValue === null) {
-      triggers.splice(index, 1);
+      options.splice(index, 1);
     } else {
       // Store key on new value.
-      const key = this._getKey(triggers[index]);
-      this._triggerKeys.set(newValue, key);
+      const key = this._getKey(options[index]);
+      this._optionsKeys.set(newValue, key);
 
-      triggers[index] = newValue;
+      options[index] = newValue;
     }
 
-    fireEvent(this, "value-changed", { value: triggers });
+    fireEvent(this, "value-changed", { value: options });
   }
 
-  private _duplicateTrigger(ev: CustomEvent) {
+  private _duplicateOption(ev: CustomEvent) {
     ev.stopPropagation();
     const index = (ev.target as any).index;
     fireEvent(this, "value-changed", {
-      value: this.triggers.concat(deepClone(this.triggers[index])),
+      value: this.options.concat(deepClone(this.options[index])),
     });
   }
 
   static get styles(): CSSResultGroup {
     return css`
-      .triggers {
+      .options {
         padding: 16px;
         margin: -16px;
         display: flex;
@@ -288,7 +257,7 @@ export default class HaAutomationTrigger extends LitElement {
       .sortable-drag {
         background: none;
       }
-      ha-automation-trigger-row {
+      ha-automation-option-row {
         display: block;
         scroll-margin-top: 48px;
       }
@@ -316,6 +285,6 @@ export default class HaAutomationTrigger extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-automation-trigger": HaAutomationTrigger;
+    "ha-automation-option": HaAutomationOption;
   }
 }

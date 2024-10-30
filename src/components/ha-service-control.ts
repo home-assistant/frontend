@@ -19,7 +19,6 @@ import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { supportsFeature } from "../common/entity/supports-feature";
-import { nestedArrayMove } from "../common/util/array-move";
 import {
   fetchIntegrationManifest,
   IntegrationManifest,
@@ -597,15 +596,6 @@ export class HaServiceControl extends LitElement {
     }
 
     const selector = dataField?.selector ?? { text: undefined };
-    const type = Object.keys(selector)[0];
-    const enhancedSelector = ["action", "condition", "trigger"].includes(type)
-      ? {
-          [type]: {
-            ...selector[type],
-            path: [dataField.key],
-          },
-        }
-      : selector;
 
     const showOptional = showOptionalToggle(dataField);
 
@@ -646,7 +636,7 @@ export class HaServiceControl extends LitElement {
               (!this._value?.data ||
                 this._value.data[dataField.key] === undefined))}
             .hass=${this.hass}
-            .selector=${enhancedSelector}
+            .selector=${selector}
             .key=${dataField.key}
             @value-changed=${this._serviceDataChanged}
             .value=${this._value?.data
@@ -654,7 +644,6 @@ export class HaServiceControl extends LitElement {
               : undefined}
             .placeholder=${dataField.default}
             .localizeValue=${this._localizeValueCallback}
-            @item-moved=${this._itemMoved}
           ></ha-selector>
         </ha-settings-row>`
       : "";
@@ -852,22 +841,6 @@ export class HaServiceControl extends LitElement {
       value: {
         ...this._value,
         data,
-      },
-    });
-  }
-
-  private _itemMoved(ev) {
-    ev.stopPropagation();
-    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
-
-    const data = this.value?.data ?? {};
-
-    const newData = nestedArrayMove(data, oldIndex, newIndex, oldPath, newPath);
-
-    fireEvent(this, "value-changed", {
-      value: {
-        ...this.value,
-        data: newData,
       },
     });
   }

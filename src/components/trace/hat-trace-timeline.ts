@@ -33,7 +33,7 @@ import { LabelRegistryEntry } from "../../data/label_registry";
 import { LogbookEntry } from "../../data/logbook";
 import {
   ChooseAction,
-  ChooseActionChoice,
+  Option,
   IfAction,
   ParallelAction,
   RepeatAction,
@@ -413,7 +413,7 @@ class ActionRenderer {
           : undefined;
       const choiceConfig = this._getDataFromPath(
         `${this.keys[index]}/choose/${chooseTrace.result.choice}`
-      ) as ChooseActionChoice | undefined;
+      ) as Option | undefined;
       const choiceName = choiceConfig
         ? `${
             choiceConfig.alias ||
