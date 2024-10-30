@@ -36,8 +36,6 @@ import {
   fetchZwaveProvisioningEntries,
   InclusionState,
   setZwaveDataCollectionPreference,
-  stopZwaveExclusion,
-  stopZwaveInclusion,
   subscribeZwaveControllerStatistics,
   ZWaveJSClient,
   ZWaveJSControllerStatisticsUpdatedMessage,
@@ -81,9 +79,18 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
   @state()
   private _statistics?: ZWaveJSControllerStatisticsUpdatedMessage;
 
-  protected firstUpdated() {
+  protected async firstUpdated() {
     if (this.hass) {
-      this._fetchData();
+      await this._fetchData();
+      if (this._status === "connected") {
+        const inclusion_state = this._network?.controller.inclusion_state;
+        // show dialog if inclusion/exclusion is already in progress
+        if (inclusion_state === InclusionState.Including) {
+          this._addNodeClicked();
+        } else if (inclusion_state === InclusionState.Excluding) {
+          this._removeNodeClicked();
+        }
+      }
     }
   }
 
@@ -126,31 +133,6 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           .path=${mdiRefresh}
           .label=${this.hass!.localize("ui.common.refresh")}
         ></ha-icon-button>
-        ${this._network &&
-        this._status === "connected" &&
-        (this._network?.controller.inclusion_state ===
-          InclusionState.Including ||
-          this._network?.controller.inclusion_state ===
-            InclusionState.Excluding)
-          ? html`
-              <ha-alert alert-type="info">
-                ${this.hass.localize(
-                  `ui.panel.config.zwave_js.common.in_progress_inclusion_exclusion`
-                )}
-                <mwc-button
-                  slot="action"
-                  .label=${this.hass.localize(
-                    `ui.panel.config.zwave_js.common.cancel_inclusion_exclusion`
-                  )}
-                  @click=${this._network?.controller.inclusion_state ===
-                  InclusionState.Including
-                    ? this._cancelInclusion
-                    : this._cancelExclusion}
-                >
-                </mwc-button>
-              </ha-alert>
-            `
-          : ""}
         ${this._network
           ? html`
               <ha-card class="content network-status">
@@ -193,11 +175,11 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                                     `ui.panel.config.zwave_js.dashboard.not_ready`,
                                     { count: notReadyDevices }
                                   )})`
-                                : ""}
+                                : nothing}
                             </small>
                           </div>
                         `
-                      : ``}
+                      : nothing}
                   </div>
                 </div>
                 <div class="card-actions">
@@ -224,7 +206,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                           )}
                         </mwc-button></a
                       >`
-                    : ""}
+                    : nothing}
                 </div>
               </ha-card>
               <ha-card header="Diagnostics">
@@ -464,7 +446,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                 </div>
               </ha-card>
             `
-          : ``}
+          : nothing}
         <ha-fab
           slot="fab"
           .label=${this.hass.localize(
@@ -540,7 +522,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
             </mwc-button>
           </div>
         `
-      : ""}`;
+      : nothing}`;
   }
 
   private _handleBack(): void {
@@ -593,6 +575,9 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
   private async _removeNodeClicked() {
     showZWaveJSRemoveNodeDialog(this, {
       entry_id: this.configEntryId!,
+      skipConfirmation:
+        this._network?.controller.inclusion_state === InclusionState.Excluding,
+      removedCallback: () => this._fetchData(),
     });
   }
 
@@ -600,16 +585,6 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     showZWaveJSRebuildNetworkRoutesDialog(this, {
       entry_id: this.configEntryId!,
     });
-  }
-
-  private async _cancelInclusion() {
-    stopZwaveInclusion(this.hass!, this.configEntryId!);
-    await this._fetchData();
-  }
-
-  private async _cancelExclusion() {
-    stopZwaveExclusion(this.hass!, this.configEntryId!);
-    await this._fetchData();
   }
 
   private _dataCollectionToggled(ev) {
