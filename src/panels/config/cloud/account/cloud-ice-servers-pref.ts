@@ -10,6 +10,7 @@ import type { HaSwitch } from "../../../../components/ha-switch";
 import type { CloudStatusLoggedIn } from "../../../../data/cloud";
 import { updateCloudPref } from "../../../../data/cloud";
 import type { HomeAssistant } from "../../../../types";
+import { showToast } from "../../../../util/toast";
 
 @customElement("cloud-ice-servers-pref")
 export class CloudICEServersPref extends LitElement {
@@ -72,7 +73,7 @@ export class CloudICEServersPref extends LitElement {
       });
       fireEvent(this, "ha-refresh-cloud-status");
     } catch (err: any) {
-      alert(err.message);
+      showToast(this, { message: err.message });
       toggle.checked = !toggle.checked;
     }
   }
