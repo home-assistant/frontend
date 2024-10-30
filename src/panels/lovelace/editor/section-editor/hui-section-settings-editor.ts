@@ -2,13 +2,14 @@ import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import {
+import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
-import { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
-import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
-import { HomeAssistant } from "../../../../types";
+import "../../../../components/ha-form/ha-form";
+import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
+import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import type { HomeAssistant } from "../../../../types";
 
 type SettingsData = {
   column_span?: number;

@@ -1,15 +1,9 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-formfield/mwc-formfield";
 import { mdiContentCopy } from "@mdi/js";
-import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
@@ -21,7 +15,7 @@ import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { formatNumber } from "../../../common/number/format_number";
 import { stringCompare } from "../../../common/string/compare";
-import {
+import type {
   LocalizeFunc,
   LocalizeKeys,
 } from "../../../common/translations/localize";
@@ -43,29 +37,30 @@ import "../../../components/ha-textfield";
 import {
   CAMERA_ORIENTATIONS,
   CAMERA_SUPPORT_STREAM,
-  CameraPreferences,
+  type CameraPreferences,
   fetchCameraCapabilities,
   fetchCameraPrefs,
   STREAM_TYPE_HLS,
   updateCameraPrefs,
 } from "../../../data/camera";
-import { ConfigEntry, deleteConfigEntry } from "../../../data/config_entries";
+import type { ConfigEntry } from "../../../data/config_entries";
+import { deleteConfigEntry } from "../../../data/config_entries";
 import {
   createConfigFlow,
   handleConfigFlowStep,
 } from "../../../data/config_flow";
-import { DataEntryFlowStepCreateEntry } from "../../../data/data_entry_flow";
-import {
-  DeviceRegistryEntry,
-  updateDeviceRegistryEntry,
-} from "../../../data/device_registry";
-import {
+import type { DataEntryFlowStepCreateEntry } from "../../../data/data_entry_flow";
+import type { DeviceRegistryEntry } from "../../../data/device_registry";
+import { updateDeviceRegistryEntry } from "../../../data/device_registry";
+import type {
   AlarmControlPanelEntityOptions,
   EntityRegistryEntry,
   EntityRegistryEntryUpdateParams,
   ExtEntityRegistryEntry,
   LockEntityOptions,
   SensorEntityOptions,
+} from "../../../data/entity_registry";
+import {
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
@@ -83,10 +78,8 @@ import {
   getSensorDeviceClassConvertibleUnits,
   getSensorNumericDeviceClasses,
 } from "../../../data/sensor";
-import {
-  getWeatherConvertibleUnits,
-  WeatherUnits,
-} from "../../../data/weather";
+import type { WeatherUnits } from "../../../data/weather";
+import { getWeatherConvertibleUnits } from "../../../data/weather";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import {
   showAlertDialog,

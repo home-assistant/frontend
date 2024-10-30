@@ -2,7 +2,8 @@
 // eslint-disable-next-line spaced-comment
 /// <reference path="../types/service-worker.d.ts" />
 /* eslint-env serviceworker */
-import { cacheNames, RouteHandler } from "workbox-core";
+import type { RouteHandler } from "workbox-core";
+import { cacheNames } from "workbox-core";
 import { CacheableResponsePlugin } from "workbox-cacheable-response";
 import { ExpirationPlugin } from "workbox-expiration";
 import { cleanupOutdatedCaches, precacheAndRoute } from "workbox-precaching";

@@ -1,8 +1,8 @@
 import { customElement } from "lit/decorators";
 import "../../../components/entity/ha-state-label-badge";
-import { HuiStateLabelBadgeEditor } from "../editor/config-elements/hui-state-label-badge-editor";
+import type { HuiStateLabelBadgeEditor } from "../editor/config-elements/hui-state-label-badge-editor";
 import { HuiEntityBadge } from "./hui-entity-badge";
-import { EntityBadgeConfig, StateLabelBadgeConfig } from "./types";
+import type { EntityBadgeConfig, StateLabelBadgeConfig } from "./types";
 
 @customElement("hui-state-label-badge")
 export class HuiStateLabelBadge extends HuiEntityBadge {

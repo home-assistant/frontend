@@ -1,13 +1,15 @@
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import { ImageSelector } from "../../data/selector";
-import { HomeAssistant } from "../../types";
+import type { ImageSelector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
 import "../ha-icon-button";
 import "../ha-textarea";
 import "../ha-textfield";
 import "../ha-picture-upload";
 import "../ha-radio";
+import "../ha-formfield";
 import type { HaPictureUpload } from "../ha-picture-upload";
 import { URL_PREFIX } from "../../data/image_upload";
 

@@ -22,7 +22,8 @@ import {
   mdiPound,
   mdiShield,
 } from "@mdi/js";
-import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -38,12 +39,15 @@ import "../../../../src/components/ha-markdown";
 import "../../../../src/components/ha-settings-row";
 import "../../../../src/components/ha-svg-icon";
 import "../../../../src/components/ha-switch";
+import "../../../../src/components/ha-formfield";
 import type { HaSwitch } from "../../../../src/components/ha-switch";
-import {
+import type {
   AddonCapability,
   HassioAddonDetails,
   HassioAddonSetOptionParams,
   HassioAddonSetSecurityParams,
+} from "../../../../src/data/hassio/addon";
+import {
   fetchHassioAddonChangelog,
   fetchHassioAddonInfo,
   installHassioAddon,
@@ -56,23 +60,23 @@ import {
   uninstallHassioAddon,
   validateHassioAddonOption,
 } from "../../../../src/data/hassio/addon";
+import type { HassioStats } from "../../../../src/data/hassio/common";
 import {
-  HassioStats,
   extractApiErrorMessage,
   fetchHassioStats,
 } from "../../../../src/data/hassio/common";
-import {
+import type {
   StoreAddon,
   StoreAddonDetails,
 } from "../../../../src/data/supervisor/store";
-import { Supervisor } from "../../../../src/data/supervisor/supervisor";
+import type { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../src/dialogs/generic/show-dialog-box";
 import { mdiHomeAssistant } from "../../../../src/resources/home-assistant-logo-svg";
 import { haStyle } from "../../../../src/resources/styles";
-import { HomeAssistant, Route } from "../../../../src/types";
+import type { HomeAssistant, Route } from "../../../../src/types";
 import { bytesToString } from "../../../../src/util/bytes-to-string";
 import "../../components/hassio-card-content";
 import "../../components/supervisor-metric";

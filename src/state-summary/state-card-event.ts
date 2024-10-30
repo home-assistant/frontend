@@ -1,10 +1,11 @@
-import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/entity/ha-entity-toggle";
 import "../components/entity/state-info";
 import { haStyle } from "../resources/styles";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 
 @customElement("state-card-event")
 class StateCardEvent extends LitElement {

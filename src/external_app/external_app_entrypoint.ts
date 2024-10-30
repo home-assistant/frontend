@@ -8,7 +8,7 @@ This is the entry point for providing external app stuff from app entrypoint.
 import { fireEvent } from "../common/dom/fire_event";
 import { mainWindow } from "../common/dom/get_main_window";
 import { showAutomationEditor } from "../data/automation";
-import { HomeAssistantMain } from "../layouts/home-assistant-main";
+import type { HomeAssistantMain } from "../layouts/home-assistant-main";
 import type {
   EMIncomingMessageBarCodeScanAborted,
   EMIncomingMessageBarCodeScanResult,

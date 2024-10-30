@@ -1,7 +1,8 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list";
 import { mdiDeleteForever, mdiDotsVertical } from "@mdi/js";
-import { css, html, LitElement, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { navigate } from "../../../../common/navigate";
@@ -11,6 +12,7 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-icon-next";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-password-field";
+import "../../../../components/ha-button-menu";
 import type { HaPasswordField } from "../../../../components/ha-password-field";
 import "../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../components/ha-textfield";
@@ -22,7 +24,7 @@ import {
 } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
-import { HomeAssistant } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 import "../../ha-config-section";
 
 @customElement("cloud-login")

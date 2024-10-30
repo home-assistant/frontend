@@ -1,4 +1,5 @@
-import { LitElement, PropertyValues, css, html, nothing } from "lit";
+import type { PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import QRCode from "qrcode";
 import "./ha-alert";

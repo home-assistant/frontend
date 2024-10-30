@@ -1,4 +1,4 @@
-import {
+import type {
   ListItem,
   RequestSelectedDetail,
 } from "@material/mwc-list/mwc-list-item";

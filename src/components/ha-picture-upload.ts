@@ -1,15 +1,14 @@
 import { mdiImagePlus } from "@mdi/js";
-import { LitElement, TemplateResult, css, html } from "lit";
+import type { TemplateResult } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyle } from "../resources/styles";
 import { createImage, generateImageThumbnailUrl } from "../data/image_upload";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
-import {
-  CropOptions,
-  showImageCropperDialog,
-} from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
-import { HomeAssistant } from "../types";
+import type { CropOptions } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
+import { showImageCropperDialog } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
+import type { HomeAssistant } from "../types";
 import "./ha-button";
 import "./ha-circular-progress";
 import "./ha-file-upload";

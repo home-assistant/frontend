@@ -1,5 +1,6 @@
 import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
-import { ComboBoxLitRenderer, comboBoxRenderer } from "@vaadin/combo-box/lit";
+import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import { comboBoxRenderer } from "@vaadin/combo-box/lit";
 import "@vaadin/combo-box/theme/material/vaadin-combo-box-light";
 import type {
   ComboBoxDataProvider,
@@ -9,11 +10,12 @@ import type {
   ComboBoxLightValueChangedEvent,
 } from "@vaadin/combo-box/vaadin-combo-box-light";
 import { registerStyles } from "@vaadin/vaadin-themable-mixin/register-styles";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "./ha-icon-button";
 import "./ha-list-item";
 import "./ha-textfield";

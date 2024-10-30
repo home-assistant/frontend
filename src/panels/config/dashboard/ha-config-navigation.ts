@@ -1,6 +1,7 @@
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { canShowPage } from "../../../common/config/can_show_page";
 import "../../../components/ha-card";

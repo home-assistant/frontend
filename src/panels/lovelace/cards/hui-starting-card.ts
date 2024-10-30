@@ -1,20 +1,14 @@
 import "@material/mwc-button/mwc-button";
 import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
-import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCard } from "../types";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCard } from "../types";
 
 @customElement("hui-starting-card")
 export class HuiStartingCard extends LitElement implements LovelaceCard {

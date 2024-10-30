@@ -4,6 +4,7 @@ import { property, query, state } from "lit/decorators";
 import { computeRTL } from "../common/util/compute_rtl";
 import "../components/ha-button";
 import "../components/ha-toast";
+import "../components/ha-icon-button";
 import type { HaToast } from "../components/ha-toast";
 import type { HomeAssistant } from "../types";
 
