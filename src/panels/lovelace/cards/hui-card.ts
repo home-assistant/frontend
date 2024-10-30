@@ -1,9 +1,10 @@
-import { PropertyValues, ReactiveElement } from "lit";
+import type { PropertyValues } from "lit";
+import { ReactiveElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { MediaQueriesListener } from "../../../common/dom/media_query";
+import type { MediaQueriesListener } from "../../../common/dom/media_query";
 import "../../../components/ha-svg-icon";
-import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../types";
 import { migrateLayoutToGridOptions } from "../common/compute-card-grid-size";
 import { computeCardSize } from "../common/compute-card-size";

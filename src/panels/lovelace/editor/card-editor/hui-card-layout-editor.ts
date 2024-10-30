@@ -1,6 +1,7 @@
 import type { ActionDetail } from "@material/mwc-list";
 import { mdiCheck, mdiDotsVertical } from "@mdi/js";
-import { css, html, LitElement, nothing, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
@@ -17,20 +18,20 @@ import "../../../../components/ha-slider";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-switch";
 import "../../../../components/ha-yaml-editor";
-import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
-import { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
+import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import { haStyle } from "../../../../resources/styles";
-import { HomeAssistant } from "../../../../types";
-import { HuiCard } from "../../cards/hui-card";
+import type { HomeAssistant } from "../../../../types";
+import type { HuiCard } from "../../cards/hui-card";
+import type { CardGridSize } from "../../common/compute-card-grid-size";
 import {
-  CardGridSize,
   computeCardGridSize,
   divideBy,
   GRID_COLUMN_MULTIPLIER,
   migrateLayoutToGridOptions,
   multiplyBy,
 } from "../../common/compute-card-grid-size";
-import { LovelaceGridOptions } from "../../types";
+import type { LovelaceGridOptions } from "../../types";
 
 const computePreciseMode = (columns?: number | string) =>
   typeof columns === "number" && columns % 3 !== 0;

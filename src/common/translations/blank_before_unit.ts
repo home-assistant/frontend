@@ -1,4 +1,4 @@
-import { FrontendLocaleData } from "../../data/translation";
+import type { FrontendLocaleData } from "../../data/translation";
 import { blankBeforePercent } from "./blank_before_percent";
 
 export const blankBeforeUnit = (

@@ -1,10 +1,11 @@
+import "@material/mwc-list/mwc-list-item";
 import {
   css,
-  CSSResultGroup,
+  type CSSResultGroup,
   html,
   LitElement,
   nothing,
-  PropertyValues,
+  type PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -21,10 +22,10 @@ import "../../../src/components/ha-settings-row";
 import "../../../src/components/ha-svg-icon";
 import "../../../src/components/ha-switch";
 import type { HaSwitch } from "../../../src/components/ha-switch";
+import type { HassioAddonDetails } from "../../../src/data/hassio/addon";
 import {
   fetchHassioAddonChangelog,
   fetchHassioAddonInfo,
-  HassioAddonDetails,
   updateHassioAddon,
 } from "../../../src/data/hassio/addon";
 import {
@@ -38,11 +39,11 @@ import {
   updateSupervisor,
 } from "../../../src/data/hassio/supervisor";
 import { updateCore } from "../../../src/data/supervisor/core";
-import { StoreAddon } from "../../../src/data/supervisor/store";
-import { Supervisor } from "../../../src/data/supervisor/supervisor";
+import type { StoreAddon } from "../../../src/data/supervisor/store";
+import type { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../src/resources/styles";
-import { HomeAssistant, Route } from "../../../src/types";
+import type { HomeAssistant, Route } from "../../../src/types";
 import { addonArchIsSupported, extractChangelog } from "../util/addon";
 
 declare global {

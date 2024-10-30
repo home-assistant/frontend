@@ -1,17 +1,16 @@
 import "../ha-list-item";
-import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
-import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues, TemplateResult } from "lit";
+import { html, LitElement } from "lit";
+import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import {
-  fuzzyFilterSort,
-  ScorableTextItem,
-} from "../../common/string/filter/sequence-matching";
-import { ValueChangedEvent, HomeAssistant } from "../../types";
+import type { ScorableTextItem } from "../../common/string/filter/sequence-matching";
+import { fuzzyFilterSort } from "../../common/string/filter/sequence-matching";
+import type { ValueChangedEvent, HomeAssistant } from "../../types";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
 import "../ha-icon-button";
@@ -20,10 +19,8 @@ import "./state-badge";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { showHelperDetailDialog } from "../../panels/config/helpers/show-dialog-helper-detail";
 import { domainToName } from "../../data/integration";
-import {
-  isHelperDomain,
-  HelperDomain,
-} from "../../panels/config/helpers/const";
+import type { HelperDomain } from "../../panels/config/helpers/const";
+import { isHelperDomain } from "../../panels/config/helpers/const";
 
 interface HassEntityWithCachedName extends HassEntity, ScorableTextItem {
   friendly_name: string;

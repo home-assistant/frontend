@@ -1,27 +1,20 @@
 import "@material/mwc-button/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
-import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ensureArray } from "../../../common/array/ensure-array";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { nestedArrayMove } from "../../../common/util/array-move";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
-import {
+import type {
   Condition,
   ManualAutomationConfig,
   Trigger,
 } from "../../../data/automation";
-import { Action } from "../../../data/script";
+import type { Action } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -132,7 +125,6 @@ export class HaManualAutomationEditor extends LitElement {
         .triggers=${this.config.triggers || []}
         .path=${["triggers"]}
         @value-changed=${this._triggerChanged}
-        @item-moved=${this._itemMoved}
         .hass=${this.hass}
         .disabled=${this.disabled}
       ></ha-automation-trigger>
@@ -174,7 +166,6 @@ export class HaManualAutomationEditor extends LitElement {
         .conditions=${this.config.conditions || []}
         .path=${["conditions"]}
         @value-changed=${this._conditionChanged}
-        @item-moved=${this._itemMoved}
         .hass=${this.hass}
         .disabled=${this.disabled}
       ></ha-automation-condition>
@@ -214,7 +205,6 @@ export class HaManualAutomationEditor extends LitElement {
         .actions=${this.config.actions || []}
         .path=${["actions"]}
         @value-changed=${this._actionChanged}
-        @item-moved=${this._itemMoved}
         .hass=${this.hass}
         .narrow=${this.narrow}
         .disabled=${this.disabled}
@@ -243,21 +233,6 @@ export class HaManualAutomationEditor extends LitElement {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: { ...this.config!, actions: ev.detail.value as Action[] },
-    });
-  }
-
-  private _itemMoved(ev: CustomEvent): void {
-    ev.stopPropagation();
-    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
-    const updatedConfig = nestedArrayMove(
-      this.config,
-      oldIndex,
-      newIndex,
-      oldPath,
-      newPath
-    );
-    fireEvent(this, "value-changed", {
-      value: updatedConfig,
     });
   }
 

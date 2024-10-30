@@ -1,5 +1,5 @@
 import { mdiStop } from "@mdi/js";
-import { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -9,6 +9,7 @@ import {
 } from "../../../common/entity/cover_icon";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-button";
+import "../../../components/ha-svg-icon";
 import "../../../components/ha-control-button-group";
 import {
   canClose,
@@ -16,10 +17,10 @@ import {
   canStop,
   CoverEntityFeature,
 } from "../../../data/cover";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCardFeature } from "../types";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
-import { CoverOpenCloseCardFeatureConfig } from "./types";
+import type { CoverOpenCloseCardFeatureConfig } from "./types";
 
 export const supportsCoverOpenCloseCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);

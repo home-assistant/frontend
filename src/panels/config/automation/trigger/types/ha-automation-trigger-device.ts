@@ -1,5 +1,6 @@
 import { consume } from "@lit-labs/context";
-import { css, html, LitElement, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -9,16 +10,18 @@ import "../../../../../components/device/ha-device-trigger-picker";
 import "../../../../../components/ha-form/ha-form";
 import { computeInitialHaFormData } from "../../../../../components/ha-form/compute-initial-ha-form-data";
 import { fullEntitiesContext } from "../../../../../data/context";
-import {
-  deviceAutomationsEqual,
+import type {
   DeviceCapabilities,
   DeviceTrigger,
+} from "../../../../../data/device_automation";
+import {
+  deviceAutomationsEqual,
   fetchDeviceTriggerCapabilities,
   localizeExtraFieldsComputeLabelCallback,
   localizeExtraFieldsComputeHelperCallback,
 } from "../../../../../data/device_automation";
-import { EntityRegistryEntry } from "../../../../../data/entity_registry";
-import { HomeAssistant } from "../../../../../types";
+import type { EntityRegistryEntry } from "../../../../../data/entity_registry";
+import type { HomeAssistant } from "../../../../../types";
 
 @customElement("ha-automation-trigger-device")
 export class HaDeviceTrigger extends LitElement {

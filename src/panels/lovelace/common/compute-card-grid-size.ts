@@ -1,5 +1,5 @@
 import { conditionalClamp } from "../../../common/number/clamp";
-import { LovelaceGridOptions, LovelaceLayoutOptions } from "../types";
+import type { LovelaceGridOptions, LovelaceLayoutOptions } from "../types";
 
 export const GRID_COLUMN_MULTIPLIER = 3;
 

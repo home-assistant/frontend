@@ -1,19 +1,18 @@
 import "@material/mwc-button/mwc-button";
 import { mdiChevronLeft, mdiClose } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import "../../components/ha-dialog";
-import {
-  AssistSatelliteConfiguration,
-  fetchAssistSatelliteConfiguration,
-} from "../../data/assist_satellite";
-import { EntityRegistryDisplayEntry } from "../../data/entity_registry";
+import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
+import { fetchAssistSatelliteConfiguration } from "../../data/assist_satellite";
+import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import { VoiceAssistantSetupDialogParams } from "./show-voice-assistant-setup-dialog";
+import type { VoiceAssistantSetupDialogParams } from "./show-voice-assistant-setup-dialog";
 import "./voice-assistant-setup-step-area";
 import "./voice-assistant-setup-step-change-wake-word";
 import "./voice-assistant-setup-step-check";

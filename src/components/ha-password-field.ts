@@ -1,4 +1,4 @@
-import { TextAreaCharCounter } from "@material/mwc-textfield/mwc-textfield-base";
+import type { TextAreaCharCounter } from "@material/mwc-textfield/mwc-textfield-base";
 import { mdiEye, mdiEyeOff } from "@mdi/js";
 import { LitElement, css, html } from "lit";
 import {
@@ -8,7 +8,7 @@ import {
   query,
   state,
 } from "lit/decorators";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "./ha-icon-button";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";

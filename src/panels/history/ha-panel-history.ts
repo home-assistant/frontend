@@ -4,13 +4,14 @@ import {
   mdiFilterRemove,
   mdiImagePlus,
 } from "@mdi/js";
-import { ActionDetail } from "@material/mwc-list";
+import type { ActionDetail } from "@material/mwc-list";
 import { differenceInHours } from "date-fns";
-import {
+import type {
   HassServiceTarget,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket/dist/types";
-import { LitElement, PropertyValues, css, html } from "lit";
+import type { PropertyValues } from "lit";
+import { LitElement, css, html } from "lit";
 import { property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
@@ -35,17 +36,20 @@ import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
 import "../../components/ha-target-picker";
 import "../../components/ha-top-app-bar-fixed";
-import {
+import type {
   EntityHistoryState,
   HistoryResult,
   HistoryStates,
   LineChartState,
   LineChartUnit,
+} from "../../data/history";
+import {
   computeGroupKey,
   computeHistory,
   subscribeHistory,
 } from "../../data/history";
-import { Statistics, fetchStatistics } from "../../data/recorder";
+import type { Statistics } from "../../data/recorder";
+import { fetchStatistics } from "../../data/recorder";
 import {
   expandAreaTarget,
   expandDeviceTarget,
@@ -55,7 +59,7 @@ import {
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../resources/styles";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import { fileDownload } from "../../util/file_download";
 import { addEntitiesToLovelaceView } from "../lovelace/editor/add-entities-to-view";
 

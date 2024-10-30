@@ -1,6 +1,7 @@
 import "@material/mwc-button/mwc-button";
 import { mdiSolarPower } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-statistic-picker";
@@ -10,19 +11,20 @@ import "../../../../components/ha-dialog";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-radio";
 import type { HaRadio } from "../../../../components/ha-radio";
-import { ConfigEntry, getConfigEntries } from "../../../../data/config_entries";
+import type { ConfigEntry } from "../../../../data/config_entries";
+import { getConfigEntries } from "../../../../data/config_entries";
+import type { SolarSourceTypeEnergyPreference } from "../../../../data/energy";
 import {
   emptySolarEnergyPreference,
-  SolarSourceTypeEnergyPreference,
   energyStatisticHelpUrl,
 } from "../../../../data/energy";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import { showConfigFlowDialog } from "../../../../dialogs/config-flow/show-dialog-config-flow";
-import { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import { HomeAssistant } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
-import { EnergySettingsSolarDialogParams } from "./show-dialogs-energy";
+import type { EnergySettingsSolarDialogParams } from "./show-dialogs-energy";
 
 const energyUnitClasses = ["energy"];
 
