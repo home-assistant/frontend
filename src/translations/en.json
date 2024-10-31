@@ -7459,7 +7459,7 @@
           },
           "watchdog": {
             "title": "Watchdog",
-            "description": "This will start the add-on if it crashes"
+            "description": "This will restart the add-on if it crashes"
           },
           "auto_update": {
             "title": "Auto update",
