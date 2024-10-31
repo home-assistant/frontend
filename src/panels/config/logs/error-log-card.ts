@@ -379,7 +379,7 @@ class ErrorLogCard extends LitElement {
         isComponentLoaded(this.hass, "hassio") &&
         this.provider
       ) {
-        const response = await this._fetchLogs()(
+        const response = await this._fetchLogsFunction()(
           this.hass,
           this.provider,
           this._logStreamAborter.signal,
@@ -469,7 +469,7 @@ class ErrorLogCard extends LitElement {
     }
   }
 
-  private _fetchLogs = () => {
+  private _fetchLogsFunction = () => {
     if (this._boot === 0) {
       return fetchHassioLogsFollow;
     }
@@ -582,7 +582,8 @@ class ErrorLogCard extends LitElement {
           .map(Number)
           .sort((a, b) => b - a);
 
-        if (boots.length) {
+        // only show boots select when there are more than one boot
+        if (boots.length > 1) {
           this._boots = boots;
         }
       } catch (err: any) {

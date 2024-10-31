@@ -115,7 +115,11 @@ class DownloadLogsDialog extends LitElement {
     const boot = this._dialogParams!.boot;
 
     const timeString = new Date().toISOString().replace(/:/g, "-");
-    const downloadUrl = this._getDownloadUrl()(provider, this._lineCount, boot);
+    const downloadUrl = this._getDownloadUrlFunction()(
+      provider,
+      this._lineCount,
+      boot
+    );
     const logFileName =
       provider !== "core"
         ? `${provider}_${timeString}.log`
@@ -125,7 +129,7 @@ class DownloadLogsDialog extends LitElement {
     this.closeDialog();
   }
 
-  private _getDownloadUrl() {
+  private _getDownloadUrlFunction() {
     if (this._dialogParams!.boot === 0) {
       return getHassioLogDownloadLinesUrl;
     }
