@@ -7774,7 +7774,8 @@
         "title": "Manage add-on repositories",
         "add": "Add",
         "remove": "Remove",
-        "used": "Repository is in use for installed add-ons and can't be removed."
+        "used": "Repository is in use for installed add-ons and can't be removed.",
+        "no_repositories": "No repositories"
       },
       "restart_addon": {
         "title": "Restart {name}?",
