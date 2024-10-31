@@ -1776,8 +1776,8 @@
           "code_instructions": "Paste the code you just received from the other controller."
         },
         "generic": {
-          "header": "Copy setup code",
-          "code_instructions": "Search for the sharing mode in the app of your controller, and activate it. You will get a sharing code, enter that below.",
+          "header": "Enter setup code",
+          "code_instructions": "Search for the sharing mode in the app of your controller, and activate it. You will get a setup code, enter that below.",
           "setup_code": "Setup code"
         }
       }
