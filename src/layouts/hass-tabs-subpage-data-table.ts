@@ -371,11 +371,13 @@ export class HaTabsSubpageDataTable extends LitElement {
                     </div>
                   </ha-md-menu-item>
                 </ha-md-button-menu>
-                <p>
-                  ${localize("ui.components.subpage-data-table.selected", {
-                    selected: this.selected || "0",
-                  })}
-                </p>
+                ${this.selected !== undefined
+                  ? html`<p>
+                      ${localize("ui.components.subpage-data-table.selected", {
+                        selected: this.selected || "0",
+                      })}
+                    </p>`
+                  : nothing}
               </div>
               <div class="center-vertical">
                 <slot name="selection-bar"></slot>
