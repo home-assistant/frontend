@@ -63,7 +63,7 @@ const actionConfigStructAssist = type({
 
 const actionConfigStructMoreInfo = type({
   action: literal("more-info"),
-  entity_id: optional(string()),
+  entity: optional(string()),
 });
 
 export const actionConfigStructType = object({
