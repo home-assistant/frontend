@@ -9,6 +9,7 @@ import {
   nothing
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { until } from "lit/directives/until";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { stripPrefixFromEntityName } from "../../../../common/entity/strip_prefix_from_entity_name";
