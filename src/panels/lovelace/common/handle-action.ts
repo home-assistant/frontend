@@ -95,7 +95,7 @@ export const handleAction = async (
   switch (actionConfig.action) {
     case "more-info": {
       const entityId =
-        actionConfig.entity_id ||
+        actionConfig.entity ||
         config.entity ||
         config.camera_image ||
         config.image_entity;
