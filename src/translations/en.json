@@ -7358,6 +7358,7 @@
       },
       "dashboard": {
         "changelog": "Changelog",
+        "current_version": "Current version: {version}",
         "cpu_usage": "Add-on CPU usage",
         "ram_usage": "Add-on RAM usage",
         "hostname": "Hostname",
