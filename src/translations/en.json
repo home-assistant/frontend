@@ -2792,7 +2792,9 @@
             },
             "empty_header": "Start automating",
             "empty_text_1": "Automations make Home Assistant automatically respond to things happening in and around your home.",
-            "empty_text_2": "Automations connect triggers to actions in a ''when trigger then action'' fashion with optional conditions. For example: ''When the sun sets and if {user} is home, then turn on the lights''."
+            "empty_text_2": "Automations connect triggers to actions in a ''when trigger then action'' fashion with optional conditions. For example: ''When the sun sets and if {user} is home, then turn on the lights''.",
+            "migrate_automation": "Migrate automation?",
+            "migrate_automation_description": "You can migrate this automation, so it can be edited from the UI. After it is migrated and you have saved it, you will have to manually delete your old automation from your configuration. Do you want to migrate this automation?"
           },
           "dialog_new": {
             "header": "Create automation",
@@ -3746,7 +3748,9 @@
             "save_script": "Save script",
             "sequence": "Sequence",
             "sequence_sentence": "The sequence of actions of this script.",
-            "link_available_actions": "Learn more about available actions."
+            "link_available_actions": "Learn more about available actions.",
+            "migrate_script": "Migrate script?",
+            "migrate_script_description": "You can migrate this script, so it can be edited from the UI. After it is migrated and you have saved it, you will have to manually delete your old script from your configuration. Do you want to migrate this script?"
           },
           "trace": {
             "edit_script": "Edit script"
