@@ -120,9 +120,6 @@ class HassioRepositoriesDialog extends LitElement {
                       </div>
                       <div class="delete" slot="end">
                         <ha-icon-button
-                          .label=${this._dialogParams!.supervisor.localize(
-                            "dialog.repositories.remove"
-                          )}
                           .disabled=${usedRepositories.includes(repo.slug)}
                           .slug=${repo.slug}
                           .path=${usedRepositories.includes(repo.slug)
@@ -146,7 +143,11 @@ class HassioRepositoriesDialog extends LitElement {
                     </ha-md-list-item>
                   `
                 )
-              : html`<ha-md-list-item> No repositories </ha-md-list-item>`}
+              : html`<ha-md-list-item
+                  >${this._dialogParams!.supervisor.localize(
+                    "dialog.repositories.no_repositories"
+                  )}</ha-md-list-item
+                >`}
           </ha-md-list>
           <div class="layout horizontal bottom">
             <ha-textfield
@@ -212,6 +213,7 @@ class HassioRepositoriesDialog extends LitElement {
         }
         ha-md-list-item {
           position: relative;
+          --md-item-overflow: visible;
         }
       `,
     ];
