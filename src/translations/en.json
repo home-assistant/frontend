@@ -5871,7 +5871,7 @@
             },
             "entities": {
               "name": "Entities",
-              "show_header_toggle": "Show header toggle?",
+              "show_header_toggle": "Show header toggle",
               "toggle": "Toggle entities.",
               "description": "The Entities card is the most common type of card. It groups items together into lists.",
               "special_row": "special row",
@@ -5918,9 +5918,9 @@
             },
             "gauge": {
               "name": "Gauge",
-              "needle_gauge": "Display as needle gauge?",
+              "needle_gauge": "Display as needle gauge",
               "severity": {
-                "define": "Define severity?",
+                "define": "Define severity",
                 "green": "Green",
                 "red": "Red",
                 "yellow": "Yellow"
@@ -6054,7 +6054,7 @@
               "state": "State",
               "secondary_info_attribute": "Secondary info attribute",
               "search": "Search",
-              "state_color": "Color icons based on state?",
+              "state_color": "Show state color",
               "suggested_cards": "Suggested cards",
               "other_cards": "Other cards",
               "custom_cards": "Custom cards",
@@ -6091,7 +6091,6 @@
               "name": "Map",
               "geo_location_sources": "Geolocation sources",
               "no_geo_location_sources": "No geolocation sources available",
-              "dark_mode": "Dark mode?",
               "appearance": "Appearance",
               "theme_mode": "Theme Mode",
               "theme_modes": {
