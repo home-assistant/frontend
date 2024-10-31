@@ -25,7 +25,6 @@ export class HaBadge extends LitElement {
   static get styles(): CSSResultGroup {
     return css`
       :host {
-        color: var(--secondary-text-color);
       }
       [role="button"] {
         cursor: pointer;
@@ -36,11 +35,10 @@ export class HaBadge extends LitElement {
         white-space: nowrap;
         align-items: center;
         gap: 3px;
-        font-family: Roboto;
-        font-size: 14px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: 20px;
+        color: var(--ha-heading-badge-text-color, var(--secondary-text-color));
+        font-size: var(--ha-heading-badge-font-size, 14px);
+        font-weight: var(--ha-heading-badge-font-weight, 400);
+        line-height: var(--ha-heading-badge-line-height, 20px);
         letter-spacing: 0.1px;
         --mdc-icon-size: 14px;
       }
