@@ -5306,7 +5306,7 @@
               "share": "Share"
             },
             "mount_type": {
-              "nfs": "Network file share (NFS)",
+              "nfs": "Network File System (NFS)",
               "cifs": "Samba/Windows (CIFS)"
             },
             "cifs_versions": {
