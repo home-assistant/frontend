@@ -282,7 +282,12 @@ class HaPanelDevTemplate extends LitElement {
         }
 
         .content.horizontal {
-          --code-mirror-max-height: calc(100vh - 400px);
+          --code-mirror-max-height: calc(100vh
+            - var(--header-height)
+            - var(--paper-font-body1_-_line-height) * 3 - 1em * 3
+            - max(16px,env(safe-area-inset-top)) * 2 - max(16px,env(safe-area-inset-bottom)) * 2
+            - var(--ha-card-border-width,1px) * 2
+            - 179px);
         }
 
         ha-card {
@@ -323,7 +328,17 @@ class HaPanelDevTemplate extends LitElement {
           padding: 8px;
           direction: ltr;
           overflow: auto;
-          max-height: calc(var(--code-mirror-max-height) - 30px);
+        }
+
+        .content.horizontal .render-pane .card-content {
+          display: flex;
+          flex-direction: column;
+          max-height: calc(100vh
+            - var(--header-height)
+            - var(--paper-font-body1_-_line-height) * 3 - 1em * 3
+            - max(16px,env(safe-area-inset-top)) * 2 - max(16px,env(safe-area-inset-bottom)) *2
+            - var(--ha-card-border-width,1px) * 2
+            - 132px);        
         }
 
         .all_listeners {
