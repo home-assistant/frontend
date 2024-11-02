@@ -224,7 +224,7 @@
     "lodash.template": "4.5.0",
     "magic-string": "0.30.12",
     "map-stream": "0.0.7",
-    "mocha": "10.8.1",
+    "mocha": "10.8.2",
     "object-hash": "3.0.0",
     "open": "10.1.0",
     "pinst": "3.0.0",
