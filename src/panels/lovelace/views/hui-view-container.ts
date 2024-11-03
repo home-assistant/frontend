@@ -54,6 +54,9 @@ class HuiViewContainer extends LitElement {
 
   private _computeBackgroundProperty(background?: BackgroundConfig) {
     if (typeof background === "object" && background.image) {
+      if (background.tile) {
+        return `top / auto repeat url('${background.image}')`;
+      }
       return `center / cover no-repeat url('${background.image}')`;
     }
     if (typeof background === "string") {

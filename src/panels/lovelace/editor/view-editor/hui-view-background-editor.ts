@@ -3,11 +3,30 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-form/ha-form";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
 import "../../../../components/ha-selector/ha-selector-image";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
-import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 
-const SELECTOR = { image: { original: true } };
+const SCHEMA = [
+  {
+    name: "backgroundUrl",
+    selector: { image: { original: true } },
+  },
+  {
+    name: "settings",
+    flatten: true,
+    expanded: true,
+    type: "expandable" as const,
+    schema: [
+      {
+        name: "tile",
+        selector: { boolean: {} },
+      },
+    ],
+  },
+];
 
 @customElement("hui-view-background-editor")
 export class HuiViewBackgroundEditor extends LitElement {
@@ -30,21 +49,23 @@ export class HuiViewBackgroundEditor extends LitElement {
         ? background.match(/url\(['"]?([^'"]+)['"]?\)/)?.[1]
         : background?.image;
 
+    const tile = typeof background === "string" ? false : background?.tile;
+
+    const data = { backgroundUrl, tile };
+
     return html`
-      <ha-selector-image
+      <ha-form
         .hass=${this.hass}
-        .label=${this.hass.localize(
-          "ui.panel.lovelace.editor.edit_view.background.title"
-        )}
-        .value=${backgroundUrl}
-        .selector=${SELECTOR}
-        @value-changed=${this._backgroundChanged}
-      ></ha-selector-image>
+        .data=${data}
+        .schema=${SCHEMA}
+        .computeLabel=${this._computeLabelCallback}
+        @value-changed=${this._valueChanged}
+      ></ha-form>
     `;
   }
 
-  private _backgroundChanged(ev: ValueChangedEvent<string | null>) {
-    const backgroundUrl = ev.detail.value;
+  private _valueChanged(ev: CustomEvent): void {
+    const backgroundUrl = ev.detail.value.backgroundUrl;
     const config = {
       ...this._config,
       background: {
@@ -52,10 +73,24 @@ export class HuiViewBackgroundEditor extends LitElement {
           ? {}
           : this._config.background),
         image: backgroundUrl || undefined,
+        tile: ev.detail.value.tile,
       },
     };
     fireEvent(this, "view-config-changed", { config });
   }
+
+  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
+    switch (schema.name) {
+      case "backgroundUrl":
+        return this.hass.localize(
+          "ui.panel.lovelace.editor.edit_view.background.image"
+        );
+      default:
+        return this.hass.localize(
+          `ui.panel.lovelace.editor.edit_view.background.${schema.name}`
+        );
+    }
+  };
 
   static get styles(): CSSResultGroup {
     return css`
