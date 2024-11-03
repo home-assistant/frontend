@@ -4,17 +4,20 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import "../../../components/entity/ha-entity-toggle";
-import "../../../components/entity/state-badge";
 import "../../../components/ha-climate-state";
 import "../../../components/ha-cover-controls";
 import "../../../components/ha-cover-tilt-controls";
+import "../../../components/ha-date-input";
 import "../../../components/ha-humidifier-state";
 import "../../../components/ha-select";
+import "../../../components/ha-slider";
 import "../../../components/ha-time-input";
+import "../../../components/entity/ha-entity-toggle";
+import "../../../components/entity/state-badge";
 import { isTiltOnly } from "../../../data/cover";
 import { isUnavailableState } from "../../../data/entity";
-import { computeImageUrl, ImageEntity } from "../../../data/image";
+import type { ImageEntity } from "../../../data/image";
+import { computeImageUrl } from "../../../data/image";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
 import "../../../panels/lovelace/components/hui-timestamp-display";
 import type { HomeAssistant } from "../../../types";
@@ -101,22 +104,97 @@ class EntityPreviewRow extends LitElement {
 
   private renderEntityState(stateObj: HassEntity): TemplateResult | string {
     const domain = stateObj.entity_id.split(".", 1)[0];
-    if (domain === "sensor") {
-      const showSensor =
-        stateObj.attributes.device_class === SENSOR_DEVICE_CLASS_TIMESTAMP &&
-        !isUnavailableState(stateObj.state);
+
+    if (domain === "button") {
       return html`
-        ${showSensor
+        <mwc-button .disabled=${isUnavailableState(stateObj.state)}>
+          ${this.hass.localize("ui.card.button.press")}
+        </mwc-button>
+      `;
+    }
+
+    const climateDomains = ["climate", "water_heater"];
+    if (climateDomains.includes(domain)) {
+      return html`
+        <ha-climate-state .hass=${this.hass} .stateObj=${stateObj}>
+        </ha-climate-state>
+      `;
+    }
+
+    if (domain === "cover") {
+      return html`
+        ${isTiltOnly(stateObj)
           ? html`
-              <hui-timestamp-display
+              <ha-cover-tilt-controls
+                .hass=${this.hass}
+                .stateObj=${stateObj}
+              ></ha-cover-tilt-controls>
+            `
+          : html`
+              <ha-cover-controls
+                .hass=${this.hass}
+                .stateObj=${stateObj}
+              ></ha-cover-controls>
+            `}
+      `;
+    }
+
+    if (domain === "date") {
+      return html`
+        <ha-date-input
+          .locale=${this.hass.locale}
+          .disabled=${isUnavailableState(stateObj.state)}
+          .value=${isUnavailableState(stateObj.state)
+            ? undefined
+            : stateObj.state}
+        >
+        </ha-date-input>
+      `;
+    }
+
+    if (domain === "datetime") {
+      const dateObj = isUnavailableState(stateObj.state)
+        ? undefined
+        : new Date(stateObj.state);
+      const time = dateObj ? format(dateObj, "HH:mm:ss") : undefined;
+      const date = dateObj ? format(dateObj, "yyyy-MM-dd") : undefined;
+      return html`
+        <div class="datetimeflex">
+          <ha-date-input
+            .label=${computeStateName(stateObj)}
+            .locale=${this.hass.locale}
+            .value=${date}
+            .disabled=${isUnavailableState(stateObj.state)}
+          >
+          </ha-date-input>
+          <ha-time-input
+            .value=${time}
+            .disabled=${isUnavailableState(stateObj.state)}
+            .locale=${this.hass.locale}
+          ></ha-time-input>
+        </div>
+      `;
+    }
+
+    if (domain === "event") {
+      return html`
+        <div class="when">
+          ${isUnavailableState(stateObj.state)
+            ? this.hass.formatEntityState(stateObj)
+            : html`<hui-timestamp-display
                 .hass=${this.hass}
                 .ts=${new Date(stateObj.state)}
                 capitalize
-              ></hui-timestamp-display>
-            `
-          : this.hass.formatEntityState(stateObj)}
+              ></hui-timestamp-display>`}
+        </div>
+        <div class="what">
+          ${isUnavailableState(stateObj.state)
+            ? nothing
+            : this.hass.formatEntityAttributeValue(stateObj, "event_type")}
+        </div>
       `;
     }
+
     const toggleDomains = ["fan", "light", "remote", "siren", "switch"];
     if (toggleDomains.includes(domain)) {
       const showToggle =
@@ -134,6 +212,37 @@ class EntityPreviewRow extends LitElement {
           : this.hass.formatEntityState(stateObj)}
       `;
     }
+
+    if (domain === "humidifier") {
+      return html`
+        <ha-humidifier-state .hass=${this.hass} .stateObj=${stateObj}>
+        </ha-humidifier-state>
+      `;
+    }
+
+    if (domain === "image") {
+      const image: string = computeImageUrl(stateObj as ImageEntity);
+      return html`
+        <img
+          alt=${ifDefined(stateObj?.attributes.friendly_name)}
+          src=${this.hass.hassUrl(image)}
+        />
+      `;
+    }
+
+    if (domain === "lock") {
+      return html`
+        <mwc-button
+          .disabled=${isUnavailableState(stateObj.state)}
+          class="text-content"
+        >
+          ${stateObj.state === "locked"
+            ? this.hass!.localize("ui.card.lock.unlock")
+            : this.hass!.localize("ui.card.lock.lock")}
+        </mwc-button>
+      `;
+    }
+
     if (domain === "number") {
       const showNumberSlider =
         stateObj.attributes.mode === "slider" ||
@@ -173,6 +282,7 @@ class EntityPreviewRow extends LitElement {
             </div>`}
       `;
     }
+
     if (domain === "select") {
       return html`
         <ha-select
@@ -193,119 +303,24 @@ class EntityPreviewRow extends LitElement {
         </ha-select>
       `;
     }
-    if (domain === "date") {
+
+    if (domain === "sensor") {
+      const showSensor =
+        stateObj.attributes.device_class === SENSOR_DEVICE_CLASS_TIMESTAMP &&
+        !isUnavailableState(stateObj.state);
       return html`
-        <ha-date-input
-          .locale=${this.hass.locale}
-          .disabled=${isUnavailableState(stateObj.state)}
-          .value=${isUnavailableState(stateObj.state)
-            ? undefined
-            : stateObj.state}
-        >
-        </ha-date-input>
-      `;
-    }
-    if (domain === "datetime") {
-      const dateObj = isUnavailableState(stateObj.state)
-        ? undefined
-        : new Date(stateObj.state);
-      const time = dateObj ? format(dateObj, "HH:mm:ss") : undefined;
-      const date = dateObj ? format(dateObj, "yyyy-MM-dd") : undefined;
-      return html`
-        <div class="datetimeflex">
-          <ha-date-input
-            .label=${computeStateName(stateObj)}
-            .locale=${this.hass.locale}
-            .value=${date}
-            .disabled=${isUnavailableState(stateObj.state)}
-          >
-          </ha-date-input>
-          <ha-time-input
-            .value=${time}
-            .disabled=${isUnavailableState(stateObj.state)}
-            .locale=${this.hass.locale}
-          ></ha-time-input>
-        </div>
-      `;
-    }
-    if (domain === "time") {
-      return html`
-        <ha-time-input
-          .value=${isUnavailableState(stateObj.state)
-            ? undefined
-            : stateObj.state}
-          .locale=${this.hass.locale}
-          .disabled=${isUnavailableState(stateObj.state)}
-        ></ha-time-input>
-      `;
-    }
-    if (domain === "lock") {
-      return html`
-        <mwc-button
-          .disabled=${isUnavailableState(stateObj.state)}
-          class="text-content"
-        >
-          ${stateObj.state === "locked"
-            ? this.hass!.localize("ui.card.lock.unlock")
-            : this.hass!.localize("ui.card.lock.lock")}
-        </mwc-button>
-      `;
-    }
-    if (domain === "humidifier") {
-      return html`
-        <ha-humidifier-state .hass=${this.hass} .stateObj=${stateObj}>
-        </ha-humidifier-state>
-      `;
-    }
-    if (domain === "button") {
-      return html`
-        <mwc-button .disabled=${isUnavailableState(stateObj.state)}>
-          ${this.hass.localize("ui.card.button.press")}
-        </mwc-button>
-      `;
-    }
-    if (domain === "event") {
-      return html`
-        <div class="when">
-          ${isUnavailableState(stateObj.state)
-            ? this.hass.formatEntityState(stateObj)
-            : html`<hui-timestamp-display
+        ${showSensor
+          ? html`
+              <hui-timestamp-display
                 .hass=${this.hass}
                 .ts=${new Date(stateObj.state)}
                 capitalize
-              ></hui-timestamp-display>`}
-        </div>
-        <div class="what">
-          ${isUnavailableState(stateObj.state)
-            ? nothing
-            : this.hass.formatEntityAttributeValue(stateObj, "event_type")}
-        </div>
-      `;
-    }
-    const climateDomains = ["climate", "water_heater"];
-    if (climateDomains.includes(domain)) {
-      return html`
-        <ha-climate-state .hass=${this.hass} .stateObj=${stateObj}>
-        </ha-climate-state>
-      `;
-    }
-    if (domain === "cover") {
-      return html`
-        ${isTiltOnly(stateObj)
-          ? html`
-              <ha-cover-tilt-controls
-                .hass=${this.hass}
-                .stateObj=${stateObj}
-              ></ha-cover-tilt-controls>
+              ></hui-timestamp-display>
             `
-          : html`
-              <ha-cover-controls
-                .hass=${this.hass}
-                .stateObj=${stateObj}
-              ></ha-cover-controls>
-            `}
+          : this.hass.formatEntityState(stateObj)}
       `;
     }
+
     if (domain === "text") {
       return html`
         <ha-textfield
@@ -321,6 +336,19 @@ class EntityPreviewRow extends LitElement {
         ></ha-textfield>
       `;
     }
+
+    if (domain === "time") {
+      return html`
+        <ha-time-input
+          .value=${isUnavailableState(stateObj.state)
+            ? undefined
+            : stateObj.state}
+          .locale=${this.hass.locale}
+          .disabled=${isUnavailableState(stateObj.state)}
+        ></ha-time-input>
+      `;
+    }
+
     if (domain === "weather") {
       return html`
         <div>
@@ -332,15 +360,7 @@ class EntityPreviewRow extends LitElement {
         </div>
       `;
     }
-    if (domain === "image") {
-      const image: string = computeImageUrl(stateObj as ImageEntity);
-      return html`
-        <img
-          alt=${ifDefined(stateObj?.attributes.friendly_name)}
-          src=${this.hass.hassUrl(image)}
-        />
-      `;
-    }
+
     return this.hass.formatEntityState(stateObj);
   }
 }
