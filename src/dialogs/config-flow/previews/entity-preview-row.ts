@@ -3,6 +3,7 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { format } from "date-fns";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-climate-state";
 import "../../../components/ha-cover-controls";
