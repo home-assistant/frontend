@@ -1,5 +1,6 @@
 import "@material/mwc-list/mwc-list-item";
 import type { CSSResultGroup } from "lit";
+import memoizeOne from "memoize-one";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -8,25 +9,6 @@ import type { SchemaUnion } from "../../../../components/ha-form/types";
 import "../../../../components/ha-selector/ha-selector-image";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
-
-const SCHEMA = [
-  {
-    name: "backgroundUrl",
-    selector: { image: { original: true } },
-  },
-  {
-    name: "settings",
-    flatten: true,
-    expanded: true,
-    type: "expandable" as const,
-    schema: [
-      {
-        name: "tile",
-        selector: { boolean: {} },
-      },
-    ],
-  },
-];
 
 @customElement("hui-view-background-editor")
 export class HuiViewBackgroundEditor extends LitElement {
@@ -37,6 +19,29 @@ export class HuiViewBackgroundEditor extends LitElement {
   set config(config: LovelaceViewConfig) {
     this._config = config;
   }
+
+  private _schema = memoizeOne((showSettings: boolean) => [
+    {
+      name: "backgroundUrl",
+      selector: { image: { original: true } },
+    },
+    ...(showSettings
+      ? ([
+          {
+            name: "settings",
+            flatten: true,
+            expanded: true,
+            type: "expandable" as const,
+            schema: [
+              {
+                name: "tile",
+                selector: { boolean: {} },
+              },
+            ],
+          },
+        ] as const)
+      : []),
+  ]);
 
   protected render() {
     if (!this.hass) {
@@ -57,7 +62,7 @@ export class HuiViewBackgroundEditor extends LitElement {
       <ha-form
         .hass=${this.hass}
         .data=${data}
-        .schema=${SCHEMA}
+        .schema=${this._schema(!!backgroundUrl)}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
@@ -73,13 +78,17 @@ export class HuiViewBackgroundEditor extends LitElement {
           ? {}
           : this._config.background),
         image: backgroundUrl || undefined,
-        tile: ev.detail.value.tile,
+        ...(backgroundUrl
+          ? { tile: ev.detail.value.tile }
+          : { tile: undefined }),
       },
     };
     fireEvent(this, "view-config-changed", { config });
   }
 
-  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
     switch (schema.name) {
       case "backgroundUrl":
         return this.hass.localize(
