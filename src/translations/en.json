@@ -5604,7 +5604,9 @@
             "header_name": "{name} View Configuration",
             "add": "Add view",
             "background": {
-              "title": "Add a background to the view"
+              "settings": "Background settings",
+              "image": "Background image",
+              "tile": "Tile background"
             },
             "edit": "Edit view",
             "delete": "Delete view",

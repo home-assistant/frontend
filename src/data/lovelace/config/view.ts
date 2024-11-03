@@ -9,6 +9,7 @@ export interface ShowViewConfig {
 
 interface LovelaceViewBackgroundConfig {
   image?: string;
+  tile?: boolean;
 }
 
 export interface LovelaceBaseViewConfig {
