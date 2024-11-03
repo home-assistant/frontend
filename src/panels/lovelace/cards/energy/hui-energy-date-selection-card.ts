@@ -59,7 +59,6 @@ export class HuiEnergyDateSelectionCard
 
   static get styles(): CSSResultGroup {
     return css`
-    :host {
       ha-card {
         height: 100%;
         display: flex;
