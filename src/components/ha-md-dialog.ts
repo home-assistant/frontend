@@ -164,8 +164,8 @@ export class HaMdDialog extends MdDialog {
         min-width: 320px;
       }
 
-      :host(:not([type="alert"])) {
-        @media all and (max-width: 450px), all and (max-height: 500px) {
+      @media all and (max-width: 450px), all and (max-height: 500px) {
+        :host(:not([type="alert"])) {
           min-width: calc(
             100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
           );
@@ -178,7 +178,7 @@ export class HaMdDialog extends MdDialog {
         }
       }
 
-      :host ::slotted(ha-dialog-header) {
+      ::slotted(ha-dialog-header) {
         display: contents;
       }
 
@@ -186,7 +186,7 @@ export class HaMdDialog extends MdDialog {
         padding: var(--dialog-content-padding, 24px);
       }
       .scrim {
-        z-index: 10; // overlay navigation
+        z-index: 10; /* overlay navigation */
       }
     `,
   ];
