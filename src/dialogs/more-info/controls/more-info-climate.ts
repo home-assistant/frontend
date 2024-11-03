@@ -201,10 +201,7 @@ class MoreInfoClimate extends LitElement {
         ${supportPresetMode && stateObj.attributes.preset_modes
           ? html`
               <ha-control-select-menu
-                .label=${this.hass.formatEntityAttributeName(
-                  stateObj,
-                  "preset_mode"
-                )}
+                .label=${this.hass.localize("ui.card.climate.preset")}
                 .value=${stateObj.attributes.preset_mode}
                 .disabled=${this.stateObj.state === UNAVAILABLE}
                 fixedMenuPosition
@@ -252,10 +249,7 @@ class MoreInfoClimate extends LitElement {
         ${supportFanMode && stateObj.attributes.fan_modes
           ? html`
               <ha-control-select-menu
-                .label=${this.hass.formatEntityAttributeName(
-                  stateObj,
-                  "fan_mode"
-                )}
+                .label=${this.hass.localize("ui.card.climate.fan")}
                 .value=${stateObj.attributes.fan_mode}
                 .disabled=${this.stateObj.state === UNAVAILABLE}
                 fixedMenuPosition
@@ -300,10 +294,9 @@ class MoreInfoClimate extends LitElement {
         ${supportSwingMode && stateObj.attributes.swing_modes
           ? html`
               <ha-control-select-menu
-                .label=${this.hass.formatEntityAttributeName(
-                  stateObj,
-                  "swing_mode"
-                )}
+                .label=${supportSwingHorizontalMode
+                  ? this.hass.localize("ui.card.climate.vertical_swing")
+                  : this.hass.localize("ui.card.climate.swing")}
                 .value=${stateObj.attributes.swing_mode}
                 .disabled=${this.stateObj.state === UNAVAILABLE}
                 fixedMenuPosition
@@ -352,10 +345,7 @@ class MoreInfoClimate extends LitElement {
         stateObj.attributes.swing_horizontal_modes
           ? html`
               <ha-control-select-menu
-                .label=${this.hass.formatEntityAttributeName(
-                  stateObj,
-                  "swing_horizontal_mode"
-                )}
+                .label=${this.hass.localize("ui.card.climate.horizontal_swing")}
                 .value=${stateObj.attributes.swing_horizontal_mode}
                 .disabled=${this.stateObj.state === UNAVAILABLE}
                 fixedMenuPosition
