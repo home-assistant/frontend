@@ -1265,9 +1265,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/autocomplete@npm:6.18.1":
-  version: 6.18.1
-  resolution: "@codemirror/autocomplete@npm:6.18.1"
+"@codemirror/autocomplete@npm:6.18.2":
+  version: 6.18.2
+  resolution: "@codemirror/autocomplete@npm:6.18.2"
   dependencies:
     "@codemirror/language": "npm:^6.0.0"
     "@codemirror/state": "npm:^6.0.0"
@@ -1278,7 +1278,7 @@ __metadata:
     "@codemirror/state": ^6.0.0
     "@codemirror/view": ^6.0.0
     "@lezer/common": ^1.0.0
-  checksum: 10/3b56ac6c57214e3e50c6ed79c12ac1822e3774afb033e0e4fb98dffd252f5ae64e5bed67dc2ad9cbd5d784373031be90995ddb1b36a10c16a2eef6af832041e2
+  checksum: 10/35bd17afb53e8c99b1342964616f0bcc13f5f06a5d4e2d9936afdaea61742b1c20b3856d513c5d5676e3a9b6fd95e997c842467d21dfa106845e65ab1720b2f4
   languageName: node
   linkType: hard
 
@@ -6099,12 +6099,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chart.js@npm:4.4.5":
-  version: 4.4.5
-  resolution: "chart.js@npm:4.4.5"
+"chart.js@npm:4.4.6":
+  version: 4.4.6
+  resolution: "chart.js@npm:4.4.6"
   dependencies:
     "@kurkle/color": "npm:^0.3.0"
-  checksum: 10/def643ed3ae898f3f37a0a59b5f1a36ffaf68c8a4f4392dcfebb6e5872534065d04b5b437b25c2b3065c20799403b4436a356bdd1700727267b3b468fec49f84
+  checksum: 10/50d0c13a16fd8c156784ff5e4c79070f09325147b0ee5c64d6d3a17933dd9072027dbc72c561cdd8aa41183d8e5736ef634c9843767f79e8abcf1fa0fd03543b
   languageName: node
   linkType: hard
 
@@ -6540,10 +6540,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"core-js@npm:3.38.1":
-  version: 3.38.1
-  resolution: "core-js@npm:3.38.1"
-  checksum: 10/3c25fdf0b2595ed37ceb305213a61e2cf26185f628455e99d1c736dda5f69e2de4de7126e6a1da136f54260c4fcc982c4215e37b5a618790a597930f854c0a37
+"core-js@npm:3.39.0":
+  version: 3.39.0
+  resolution: "core-js@npm:3.39.0"
+  checksum: 10/a3d34e669783dfc878e545f1983f60d9ff48a3867cd1d7ff8839b849e053002a208c7c14a5ca354b8e0b54982901e2f83dc87c3d9b95de0a94b4071d1c74e5f6
   languageName: node
   linkType: hard
 
@@ -8716,7 +8716,7 @@ __metadata:
     "@babel/runtime": "npm:7.26.0"
     "@braintree/sanitize-url": "npm:7.1.0"
     "@bundle-stats/plugin-webpack-filter": "npm:4.16.0"
-    "@codemirror/autocomplete": "npm:6.18.1"
+    "@codemirror/autocomplete": "npm:6.18.2"
     "@codemirror/commands": "npm:6.7.1"
     "@codemirror/language": "npm:6.10.3"
     "@codemirror/legacy-modes": "npm:6.4.1"
@@ -8824,10 +8824,10 @@ __metadata:
     babel-plugin-template-html-minifier: "npm:4.1.0"
     browserslist-useragent-regexp: "npm:4.1.3"
     chai: "npm:5.1.2"
-    chart.js: "npm:4.4.5"
+    chart.js: "npm:4.4.6"
     color-name: "npm:2.0.0"
     comlink: "npm:4.4.1"
-    core-js: "npm:3.38.1"
+    core-js: "npm:3.39.0"
     cropperjs: "npm:1.6.2"
     date-fns: "npm:4.1.0"
     date-fns-tz: "npm:3.2.0"
@@ -8877,7 +8877,7 @@ __metadata:
     map-stream: "npm:0.0.7"
     marked: "npm:14.1.3"
     memoize-one: "npm:6.0.0"
-    mocha: "npm:10.7.3"
+    mocha: "npm:10.8.2"
     node-vibrant: "npm:3.2.1-alpha.1"
     object-hash: "npm:3.0.0"
     open: "npm:10.1.0"
@@ -8921,12 +8921,12 @@ __metadata:
     webpackbar: "npm:6.0.1"
     weekstart: "npm:2.0.0"
     workbox-build: "patch:workbox-build@npm%3A7.1.1#~/.yarn/patches/workbox-build-npm-7.1.1-a854f3faae.patch"
-    workbox-cacheable-response: "npm:7.1.0"
-    workbox-core: "npm:7.1.0"
-    workbox-expiration: "npm:7.1.0"
-    workbox-precaching: "npm:7.1.0"
-    workbox-routing: "npm:7.1.0"
-    workbox-strategies: "npm:7.1.0"
+    workbox-cacheable-response: "npm:7.3.0"
+    workbox-core: "npm:7.3.0"
+    workbox-expiration: "npm:7.3.0"
+    workbox-precaching: "npm:7.3.0"
+    workbox-routing: "npm:7.3.0"
+    workbox-strategies: "npm:7.3.0"
     xss: "npm:1.0.15"
   languageName: unknown
   linkType: soft
@@ -10966,9 +10966,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mocha@npm:10.7.3":
-  version: 10.7.3
-  resolution: "mocha@npm:10.7.3"
+"mocha@npm:10.8.2":
+  version: 10.8.2
+  resolution: "mocha@npm:10.8.2"
   dependencies:
     ansi-colors: "npm:^4.1.3"
     browser-stdout: "npm:^1.3.1"
@@ -10993,7 +10993,7 @@ __metadata:
   bin:
     _mocha: bin/_mocha
     mocha: bin/mocha.js
-  checksum: 10/5757aeb320df2507338bfba41731070ce16d27177c5876672fff4bcc4f7b7bcf1afe6ec761bfded43a5d28032d7b797b8b905b5b44c9420203f3ee71457732c1
+  checksum: 10/903bbffcb195ef9d36b27db54e3462c5486de1397289e0953735b3530397a139336c452bcf5188c663496c660d2285bbb6c7213290d36d536ad647b6145cb917
   languageName: node
   linkType: hard
 
@@ -14990,10 +14990,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"workbox-cacheable-response@npm:7.3.0":
+  version: 7.3.0
+  resolution: "workbox-cacheable-response@npm:7.3.0"
+  dependencies:
+    workbox-core: "npm:7.3.0"
+  checksum: 10/44cd7bc26e509ca96b1b84e3ff5964296efa645853f114f39789d21c0a214ca5fc047259910b303e220bb4052155cddc5639993fcee076fac496b4895ff17a15
+  languageName: node
+  linkType: hard
+
 "workbox-core@npm:7.1.0":
   version: 7.1.0
   resolution: "workbox-core@npm:7.1.0"
   checksum: 10/b890e0e257c12d3a818eee9dabdfdc8d7d228b89f9734f7612f14e664ca5414c511778d5aef5159248db4c6c161587cff6d2332f0543e3628a1e0cd5a1f0b3ac
+  languageName: node
+  linkType: hard
+
+"workbox-core@npm:7.3.0":
+  version: 7.3.0
+  resolution: "workbox-core@npm:7.3.0"
+  checksum: 10/228fb7018a0568c329e21d47d84980f93ebfef9b1eb3f40ddc3516ca6ae58d51dc7ca4dddc829332775b59a3079e62d105c5e1c5c312805d177b963f8bf54393
   languageName: node
   linkType: hard
 
@@ -15004,6 +15020,16 @@ __metadata:
     idb: "npm:^7.0.1"
     workbox-core: "npm:7.1.0"
   checksum: 10/45c7a27b217355fc30929482625c43cbfa04c914162a26b92c7e91fcb3a20e9982b50026bf4bb37382a320e1426818e3726b999dce1c8c08d2aa330eee569308
+  languageName: node
+  linkType: hard
+
+"workbox-expiration@npm:7.3.0":
+  version: 7.3.0
+  resolution: "workbox-expiration@npm:7.3.0"
+  dependencies:
+    idb: "npm:^7.0.1"
+    workbox-core: "npm:7.3.0"
+  checksum: 10/83e021d700e521a65a89907679d1a580aacc0419428286910ec7c6b0a538326f71f05566434f666ebf6c9fbe819ef3ea81428df1d868f9ea92527afe5d11152d
   languageName: node
   linkType: hard
 
@@ -15039,6 +15065,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"workbox-precaching@npm:7.3.0":
+  version: 7.3.0
+  resolution: "workbox-precaching@npm:7.3.0"
+  dependencies:
+    workbox-core: "npm:7.3.0"
+    workbox-routing: "npm:7.3.0"
+    workbox-strategies: "npm:7.3.0"
+  checksum: 10/d14135c471a45de36438c40eed7cb7157cdb336d4216a775486c6307d1ac316794d64231c2e2d0a4c313bb4a4fec623ab77e391cc458b4f2afa64e2487acb2e8
+  languageName: node
+  linkType: hard
+
 "workbox-range-requests@npm:7.1.0":
   version: 7.1.0
   resolution: "workbox-range-requests@npm:7.1.0"
@@ -15071,12 +15108,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"workbox-routing@npm:7.3.0":
+  version: 7.3.0
+  resolution: "workbox-routing@npm:7.3.0"
+  dependencies:
+    workbox-core: "npm:7.3.0"
+  checksum: 10/0d729f9c5cfc5754404ac1f7b729c7740ddc806203792701ac642151fbec939b4aa0fb289eab2295e49180e8154ad9bb1380effb7e0f0362163b79db4291dba7
+  languageName: node
+  linkType: hard
+
 "workbox-strategies@npm:7.1.0":
   version: 7.1.0
   resolution: "workbox-strategies@npm:7.1.0"
   dependencies:
     workbox-core: "npm:7.1.0"
   checksum: 10/52734ecce926ba6c135b5c7cb31906e40ad6bc767c77d45e74414b8adbb980f8a81bc1253af64750ce22202d0f1c4f01161785829cfb7bcb3f59408da9130555
+  languageName: node
+  linkType: hard
+
+"workbox-strategies@npm:7.3.0":
+  version: 7.3.0
+  resolution: "workbox-strategies@npm:7.3.0"
+  dependencies:
+    workbox-core: "npm:7.3.0"
+  checksum: 10/61ba672075ef8aaa70ad9221460dab80a7d8920e324e14137460f26ebe8b137e5589fb75c664e0efeaf4402e3d8435a9b1818f9a9c61f88863c0e0315af337e7
   languageName: node
   linkType: hard
 
