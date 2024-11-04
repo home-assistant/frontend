@@ -7206,6 +7206,7 @@
           },
           "create_account": "Create account",
           "error": {
+            "username_not_normalized": "Username can only contain lowercase letters, and can not contain whitespace.",
             "password_not_match": "Passwords don't match"
           }
         },
