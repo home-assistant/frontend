@@ -39,8 +39,6 @@ import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   fetchHassioBoots,
   fetchHassioLogs,
-  fetchHassioLogsBootFollow,
-  fetchHassioLogsBoots,
   fetchHassioLogsFollow,
   getHassioLogDownloadUrl,
 } from "../../../data/hassio/supervisor";
@@ -380,7 +378,7 @@ class ErrorLogCard extends LitElement {
         isComponentLoaded(this.hass, "hassio") &&
         this.provider
       ) {
-        const response = await this._fetchLogsFollowFunction()(
+        const response = await fetchHassioLogsFollow(
           this.hass,
           this.provider,
           this._logStreamAborter.signal,
@@ -470,20 +468,6 @@ class ErrorLogCard extends LitElement {
     }
   }
 
-  private _fetchLogsFunction = () => {
-    if (this._boot === 0) {
-      return fetchHassioLogs;
-    }
-    return fetchHassioLogsBoots;
-  };
-
-  private _fetchLogsFollowFunction = () => {
-    if (this._boot === 0) {
-      return fetchHassioLogsFollow;
-    }
-    return fetchHassioLogsBootFollow;
-  };
-
   private _debounceSearch = debounce(() => {
     this._noSearchResults = !this._ansiToHtmlElement?.filterLines(this.filter);
 
@@ -527,7 +511,7 @@ class ErrorLogCard extends LitElement {
       const scrollPositionFromBottom =
         this._logElement.scrollHeight - this._logElement.scrollTop;
       this._loadingPrevState = "loading";
-      const response = await this._fetchLogsFunction()(
+      const response = await fetchHassioLogs(
         this.hass,
         this.provider,
         `entries=${this._firstCursor}:-100:100`,
