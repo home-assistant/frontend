@@ -67,7 +67,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
       : undefined;
 
     return html`<div class="content">
-        <img src="/static/images/voice-assistant/heart.gif" />
+        <img src="/static/images/voice-assistant/heart.png" />
         <h1>Ready to Assist!</h1>
         <p class="secondary">
           Make any final customizations here. You can always change these in the

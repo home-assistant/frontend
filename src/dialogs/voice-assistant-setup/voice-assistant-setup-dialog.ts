@@ -66,6 +66,8 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
   private _dialogClosed() {
     this._params = undefined;
     this._assistConfiguration = undefined;
+    this._previousSteps = [];
+    this._nextStep = undefined;
     this._step = STEP.INIT;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
