@@ -40,6 +40,7 @@ import {
   fetchHassioBoots,
   fetchHassioLogs,
   fetchHassioLogsBootFollow,
+  fetchHassioLogsBoots,
   fetchHassioLogsFollow,
   getHassioLogDownloadUrl,
 } from "../../../data/hassio/supervisor";
@@ -379,7 +380,7 @@ class ErrorLogCard extends LitElement {
         isComponentLoaded(this.hass, "hassio") &&
         this.provider
       ) {
-        const response = await this._fetchLogsFunction()(
+        const response = await this._fetchLogsFollowFunction()(
           this.hass,
           this.provider,
           this._logStreamAborter.signal,
@@ -471,6 +472,13 @@ class ErrorLogCard extends LitElement {
 
   private _fetchLogsFunction = () => {
     if (this._boot === 0) {
+      return fetchHassioLogs;
+    }
+    return fetchHassioLogsBoots;
+  };
+
+  private _fetchLogsFollowFunction = () => {
+    if (this._boot === 0) {
       return fetchHassioLogsFollow;
     }
     return fetchHassioLogsBootFollow;
@@ -519,7 +527,7 @@ class ErrorLogCard extends LitElement {
       const scrollPositionFromBottom =
         this._logElement.scrollHeight - this._logElement.scrollTop;
       this._loadingPrevState = "loading";
-      const response = await fetchHassioLogs(
+      const response = await this._fetchLogsFunction()(
         this.hass,
         this.provider,
         `entries=${this._firstCursor}:-100:100`,

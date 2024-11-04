@@ -188,6 +188,22 @@ export const fetchHassioBoots = async (hass: HomeAssistant) =>
 export const fetchHassioLogs = async (
   hass: HomeAssistant,
   provider: string,
+  range?: string
+) =>
+  hass.callApiRaw(
+    "GET",
+    `hassio/${provider.includes("_") ? `addons/${provider}` : provider}/logs`,
+    undefined,
+    range
+      ? {
+          Range: range,
+        }
+      : undefined
+  );
+
+export const fetchHassioLogsBoots = async (
+  hass: HomeAssistant,
+  provider: string,
   range?: string,
   boot = 0
 ) =>
