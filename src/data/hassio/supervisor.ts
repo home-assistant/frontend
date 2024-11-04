@@ -222,19 +222,14 @@ export const getHassioLogDownloadUrl = (provider: string) =>
     provider.includes("_") ? `addons/${provider}` : provider
   }/logs`;
 
-export const getHassioLogDownloadLinesUrl = (provider: string, lines: number) =>
-  `/api/hassio/${
-    provider.includes("_") ? `addons/${provider}` : provider
-  }/logs?lines=${lines}`;
-
-export const getHassioLogBootDownloadLinesUrl = (
+export const getHassioLogDownloadLinesUrl = (
   provider: string,
   lines: number,
   boot = 0
 ) =>
   `/api/hassio/${
     provider.includes("_") ? `addons/${provider}` : provider
-  }/logs/boots/${boot}?lines=${lines}`;
+  }/logs${boot !== 0 ? `/boots/${boot}` : ""}?lines=${lines}`;
 
 export const setSupervisorOption = async (
   hass: HomeAssistant,
