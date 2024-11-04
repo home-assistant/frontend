@@ -1,5 +1,11 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import { mdiDelete, mdiDrag, mdiPencil, mdiViewGridPlus } from "@mdi/js";
+import {
+  mdiDelete,
+  mdiDrag,
+  mdiEyeOff,
+  mdiPencil,
+  mdiViewGridPlus,
+} from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -245,6 +251,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                 <div class="section imported-cards">
                   <div class="imported-card-header">
                     <p class="title">
+                      <ha-svg-icon .path=${mdiEyeOff}></ha-svg-icon>
                       ${this.hass.localize(
                         "ui.panel.lovelace.editor.section.imported_cards_title"
                       )}
@@ -480,9 +487,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       }
 
       .imported-card-header {
-        margin-top: 24px;
-        padding: 16px 8px;
-        border-top: 2px dashed var(--divider-color);
+        margin-top: 36px;
+        padding: 32px 0 16px 0;
+        border-top: 4px dotted var(--divider-color);
       }
 
       .imported-card-header .title {
@@ -491,6 +498,11 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         font-size: 16px;
         font-weight: 400;
         line-height: 24px;
+        --mdc-icon-size: 18px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 8px;
       }
       .imported-card-header .subtitle {
         margin: 0;

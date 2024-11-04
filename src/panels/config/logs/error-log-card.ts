@@ -39,7 +39,6 @@ import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   fetchHassioBoots,
   fetchHassioLogs,
-  fetchHassioLogsBootFollow,
   fetchHassioLogsFollow,
   getHassioLogDownloadUrl,
 } from "../../../data/hassio/supervisor";
@@ -379,7 +378,7 @@ class ErrorLogCard extends LitElement {
         isComponentLoaded(this.hass, "hassio") &&
         this.provider
       ) {
-        const response = await this._fetchLogsFunction()(
+        const response = await fetchHassioLogsFollow(
           this.hass,
           this.provider,
           this._logStreamAborter.signal,
@@ -468,13 +467,6 @@ class ErrorLogCard extends LitElement {
       });
     }
   }
-
-  private _fetchLogsFunction = () => {
-    if (this._boot === 0) {
-      return fetchHassioLogsFollow;
-    }
-    return fetchHassioLogsBootFollow;
-  };
 
   private _debounceSearch = debounce(() => {
     this._noSearchResults = !this._ansiToHtmlElement?.filterLines(this.filter);

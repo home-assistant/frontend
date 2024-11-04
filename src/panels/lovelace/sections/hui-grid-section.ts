@@ -242,8 +242,9 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           min-height: var(--row-height);
         }
 
-        .container.edit-mode:not(.import-only) {
-          border-start-end-radius: 0px;
+        .container.import-only {
+          border: none;
+          padding: 0 !important;
         }
 
         .card {

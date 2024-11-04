@@ -1387,6 +1387,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         this._extraConfigEntries || this.configEntries
       );
       if (entries.length > 0) {
+        const localize = await this.hass.loadBackendTranslation(
+          "title",
+          this._manifest.name
+        );
         await showAlertDialog(this, {
           title: this.hass.localize(
             "ui.panel.config.integrations.config_flow.single_config_entry_title"
@@ -1394,7 +1398,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           text: this.hass.localize(
             "ui.panel.config.integrations.config_flow.single_config_entry",
             {
-              integration_name: this._manifest.name,
+              integration_name: domainToName(localize, this._manifest.name),
             }
           ),
         });

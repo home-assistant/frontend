@@ -14,10 +14,7 @@ import type { DownloadLogsDialogParams } from "./show-dialog-download-logs";
 import "../../../components/ha-select";
 import "../../../components/ha-list-item";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
-import {
-  getHassioLogDownloadLinesUrl,
-  getHassioLogBootDownloadLinesUrl,
-} from "../../../data/hassio/supervisor";
+import { getHassioLogDownloadLinesUrl } from "../../../data/hassio/supervisor";
 import { getSignedPath } from "../../../data/auth";
 import { fileDownload } from "../../../util/file_download";
 
@@ -115,7 +112,7 @@ class DownloadLogsDialog extends LitElement {
     const boot = this._dialogParams!.boot;
 
     const timeString = new Date().toISOString().replace(/:/g, "-");
-    const downloadUrl = this._getDownloadUrlFunction()(
+    const downloadUrl = getHassioLogDownloadLinesUrl(
       provider,
       this._lineCount,
       boot
@@ -127,13 +124,6 @@ class DownloadLogsDialog extends LitElement {
     const signedUrl = await getSignedPath(this.hass, downloadUrl);
     fileDownload(signedUrl.path, logFileName);
     this.closeDialog();
-  }
-
-  private _getDownloadUrlFunction() {
-    if (this._dialogParams!.boot === 0) {
-      return getHassioLogDownloadLinesUrl;
-    }
-    return getHassioLogBootDownloadLinesUrl;
   }
 
   private _setNumberOfLogs(ev) {

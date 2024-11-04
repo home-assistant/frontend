@@ -681,8 +681,12 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   private async _duplicate() {
     const result = this._readOnly
       ? await showConfirmationDialog(this, {
-          title: "Migrate script?",
-          text: "You can migrate this script, so it can be edited from the UI. After it is migrated and you have saved it, you will have to manually delete your old script from your configuration. Do you want to migrate this script?",
+          title: this.hass.localize(
+            "ui.panel.config.script.picker.migrate_script"
+          ),
+          text: this.hass.localize(
+            "ui.panel.config.script.picker.migrate_script_description"
+          ),
         })
       : await this.confirmUnsavedChanged();
     if (result) {

@@ -59,17 +59,11 @@ export class HuiEnergyDateSelectionCard
 
   static get styles(): CSSResultGroup {
     return css`
-    :host {
       ha-card {
         height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: center;
-      }
-      .padded {
-        padding-left: 16px !important;
-        padding-inline-start: 16px !important;
-        padding-inline-end: initial !important;
       }
     `;
   }
