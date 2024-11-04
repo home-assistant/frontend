@@ -102,7 +102,9 @@ export class HaCameraStream extends LitElement {
           .entityid=${this.stateObj.entity_id}
           .posterUrl=${this._posterUrl}
           @streams=${this._handleHlsStreams}
-          class=${!this._streamType && this._webRtcStreams ? "hidden" : ""}
+          class=${!this._streamType && this._webRtcStreams?.hasVideo
+            ? "hidden"
+            : ""}
         ></ha-hls-player>`
       : nothing}
     ${this._streamType === STREAM_TYPE_WEB_RTC ||
