@@ -106,6 +106,14 @@ function copyMapPanel(staticDir) {
   );
 }
 
+function copyZXingWasm(staticDir) {
+  const staticPath = genStaticPath(staticDir);
+  copyFileDir(
+    npmPath("zxing-wasm/dist/reader/zxing_reader.wasm"),
+    staticPath("js")
+  );
+}
+
 gulp.task("copy-locale-data", async () => {
   const staticDir = paths.app_output_static;
   copyLocaleData(staticDir);
@@ -143,6 +151,7 @@ gulp.task("copy-static-app", async () => {
   copyMapPanel(staticDir);
 
   // Qr Scanner assets
+  copyZXingWasm(staticDir);
   copyQrScannerWorker(staticDir);
 });
 
