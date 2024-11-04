@@ -1317,14 +1317,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/search@npm:6.5.6":
-  version: 6.5.6
-  resolution: "@codemirror/search@npm:6.5.6"
+"@codemirror/search@npm:6.5.7":
+  version: 6.5.7
+  resolution: "@codemirror/search@npm:6.5.7"
   dependencies:
     "@codemirror/state": "npm:^6.0.0"
     "@codemirror/view": "npm:^6.0.0"
     crelt: "npm:^1.0.5"
-  checksum: 10/6668a34b4617e909617d3d831627d74b7a7985e8cd86d396bfcb3e86262f2310fc029fd6c846f1b8f1e6768e75985c9f1b0b18b31e05341f06b5b75c1ffde38d
+  checksum: 10/0a4c5e23c42231ffb829513940ee43a630585b4277fa8cc919a947f3821c9c2dc095d334bb0e4d51b3ebb50739a34a81ddbcc39ca9c1f6f935fdaa51a86661bf
   languageName: node
   linkType: hard
 
@@ -8711,7 +8711,7 @@ __metadata:
     "@codemirror/commands": "npm:6.7.1"
     "@codemirror/language": "npm:6.10.3"
     "@codemirror/legacy-modes": "npm:6.4.1"
-    "@codemirror/search": "npm:6.5.6"
+    "@codemirror/search": "npm:6.5.7"
     "@codemirror/state": "npm:6.4.1"
     "@codemirror/view": "npm:6.34.1"
     "@egjs/hammerjs": "npm:2.0.17"
