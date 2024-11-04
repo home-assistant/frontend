@@ -24,7 +24,7 @@ import type { HaTextField } from "./ha-textfield";
 setZXingModuleOverrides({
   locateFile: (path: string, prefix: string) => {
     if (path.endsWith(".wasm")) {
-      return "/static/js/zxing-decoder.wasm";
+      return "/static/js/zxing_reader.wasm";
     }
     return prefix + path;
   },
