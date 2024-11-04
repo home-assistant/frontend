@@ -209,6 +209,12 @@ export class HaCameraStream extends LitElement {
         }
         return [{ type: supportedTypes[0], visible: true }];
       }
+
+      return [
+        { type: STREAM_TYPE_HLS, visible: true },
+        { type: STREAM_TYPE_WEB_RTC, visible: true },
+      ];
+
       if (hlsStreams && webRtcStreams) {
         // fully loaded
         if (
@@ -265,10 +271,6 @@ export class HaCameraStream extends LitElement {
 
       img {
         width: 100%;
-      }
-
-      .hidden {
-        display: none;
       }
     `;
   }
