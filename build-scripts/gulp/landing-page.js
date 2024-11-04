@@ -1,4 +1,5 @@
 import gulp from "gulp";
+import env from "../env.cjs";
 import "./clean.js";
 import "./compress.js";
 import "./entry-html.js";
@@ -36,6 +37,7 @@ gulp.task(
     "build-locale-data",
     "copy-static-landing-page",
     "webpack-prod-landing-page",
-    "gen-pages-landing-page-prod"
+    "gen-pages-landing-page-prod",
+    ...(env.isTestBuild() ? [] : ["compress-landing-page"]) // Don't compress running tests
   )
 );

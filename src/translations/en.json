@@ -7337,29 +7337,6 @@
         "next": "Next",
         "finish": "Finish",
         "help": "Help",
-        "prepare": {
-          "header": "Preparing Home Assistant",
-          "subheader": "This may take 20 minutes or more",
-          "show_details": "Show details",
-          "hide_details": "Hide details",
-          "network_issue": {
-            "title": "Networking issue detected",
-            "error_get_network_info": "Cannot get network information",
-            "description": "Home Assistant OS detected a networking issue in your setup. As part of the initial setup, Home Assistant OS downloads the latest version of Home Assistant Core. This networking issue prevents this download. The network issue might be DNS related. The currently used DNS service is: {dns}.",
-            "resolve_different": "To resolve this, you can try a different DNS server. Select one of the options below. Alternatively, change your router configuration to use your own custom DNS server.",
-            "use_cloudflare": "Use Cloudflare DNS",
-            "use_google": "Use Google DNS",
-            "no_primary_interface": "Home Assistant OS wasn't able to detect a primary network interface, so you cannot define a DNS server!"
-          },
-          "logs": {
-            "scroll_down_button": "New logs - Click to scroll",
-            "fetch_error": "Failed to fetch logs",
-            "retry": "Retry",
-            "download_full_log": "[%key:ui::panel::config::logs::download_full_log%]"
-          },
-          "error_title": "Error installing Home Assistant",
-          "error_description": "An error occurred while installing Home Assistant. Please check the logs for more information."
-        },
         "welcome": {
           "header": "Welcome!",
           "start": "Create my smart home",

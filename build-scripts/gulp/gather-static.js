@@ -27,16 +27,6 @@ function copyTranslations(staticDir) {
   );
 }
 
-function copyFragmentTranslations(staticDir, pageName) {
-  const staticPath = genStaticPath(staticDir);
-
-  // Translation output
-  fs.copySync(
-    polyPath(`build/translations/output/${pageName}`),
-    staticPath(`translations/${pageName}`)
-  );
-}
-
 function copyLocaleData(staticDir) {
   const staticPath = genStaticPath(staticDir);
 
