@@ -8,7 +8,6 @@ import { customIcons } from "../data/custom_icons";
 import type { Chunks, Icons } from "../data/iconsets";
 import {
   MDI_PREFIXES,
-  checkCacheVersion,
   findIconChunk,
   getIcon,
   writeCache,
@@ -25,11 +24,6 @@ interface DeprecatedIcon {
 const mdiDeprecatedIcons: DeprecatedIcon = {};
 
 const chunks: Chunks = {};
-
-// Supervisor doesn't use icons, and should not update/downgrade the icon DB.
-if (!__SUPERVISOR__) {
-  checkCacheVersion();
-}
 
 const debouncedWriteCache = debounce(() => writeCache(chunks), 2000);
 
