@@ -712,8 +712,12 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   private async _duplicate() {
     const result = this._readOnly
       ? await showConfirmationDialog(this, {
-          title: "Migrate automation?",
-          text: "You can migrate this automation, so it can be edited from the UI. After it is migrated and you have saved it, you will have to manually delete your old automation from your configuration. Do you want to migrate this automation?",
+          title: this.hass.localize(
+            "ui.panel.config.automation.picker.migrate_automation"
+          ),
+          text: this.hass.localize(
+            "ui.panel.config.automation.picker.migrate_automation_description"
+          ),
         })
       : await this.confirmUnsavedChanged();
     if (result) {
