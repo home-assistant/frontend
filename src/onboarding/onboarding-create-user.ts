@@ -170,6 +170,7 @@ class OnboardingCreateUser extends LitElement {
     const parts = String(this._newUser.name).split(" ");
     if (parts.length) {
       this._newUser.username = parts[0].toLowerCase();
+      this._checkUsername();
     }
   }
 
