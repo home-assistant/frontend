@@ -1,10 +1,10 @@
 import gulp from "gulp";
+import env from "../env.cjs";
 import "./clean.js";
+import "./compress.js";
 import "./entry-html.js";
 import "./gather-static.js";
 import "./gen-icons-json.js";
-import "./rollup.js";
-import "./service-worker.js";
 import "./translations.js";
 import "./webpack.js";
 
@@ -16,10 +16,12 @@ gulp.task(
     },
     "clean-landing-page",
     "translations-enable-merge-backend",
-    gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
+    "build-landing-page-translations",
+    "copy-translations-landing-page",
+    "build-locale-data",
     "copy-static-landing-page",
     "gen-pages-landing-page-dev",
-    gulp.parallel("webpack-watch-landing-page")
+    "webpack-watch-landing-page"
   )
 );
 
@@ -30,10 +32,12 @@ gulp.task(
       process.env.NODE_ENV = "production";
     },
     "clean-landing-page",
-    "translations-enable-merge-backend",
-    gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
+    "build-landing-page-translations",
+    "copy-translations-landing-page",
+    "build-locale-data",
     "copy-static-landing-page",
     "webpack-prod-landing-page",
-    "gen-pages-landing-page-prod"
+    "gen-pages-landing-page-prod",
+    ...(env.isTestBuild() ? [] : ["compress-landing-page"]) // Don't compress running tests
   )
 );

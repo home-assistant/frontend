@@ -274,7 +274,8 @@ gulp.task(
     LANDING_PAGE_PAGE_ENTRIES,
     paths.landingPage_dir,
     paths.landingPage_output_root,
-    paths.landingPage_output_latest
+    paths.landingPage_output_latest,
+    paths.landingPage_output_es5
   )
 );
 

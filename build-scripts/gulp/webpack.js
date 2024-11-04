@@ -210,9 +210,13 @@ gulp.task("webpack-watch-landing-page", () => {
       ? bothBuilds(createLandingPageConfig, { isProdBuild: false })
       : createLandingPageConfig({ isProdBuild: false, latestBuild: true })
   ).watch({ poll: isWsl }, doneHandler());
+
   gulp.watch(
     path.join(paths.translations_src, "en.json"),
-    gulp.series("build-translations", "copy-translations-app")
+    gulp.series(
+      "build-landing-page-translations",
+      "copy-translations-landing-page"
+    )
   );
 });
 

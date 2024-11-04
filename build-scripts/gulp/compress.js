@@ -51,6 +51,12 @@ const compressHassioBrotli = () =>
     paths.hassio_output_latest,
     false
   );
+const compressLandingPageBrotli = () =>
+  compressDistBrotli(
+    paths.landingPage_output_root,
+    paths.landingPage_output_latest,
+    false
+  );
 
 const compressAppZopfli = () =>
   compressDistZopfli(paths.app_output_root, paths.app_output_latest);
@@ -60,9 +66,19 @@ const compressHassioZopfli = () =>
     paths.hassio_output_latest,
     true
   );
+const compressLandingPageZopfli = () =>
+  compressDistZopfli(
+    paths.landingPage_output_root,
+    paths.landingPage_output_latest,
+    true
+  );
 
 gulp.task("compress-app", gulp.parallel(compressAppBrotli, compressAppZopfli));
 gulp.task(
   "compress-hassio",
   gulp.parallel(compressHassioBrotli, compressHassioZopfli)
+);
+gulp.task(
+  "compress-landing-page",
+  gulp.parallel(compressLandingPageBrotli, compressLandingPageZopfli)
 );

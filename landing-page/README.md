@@ -1,6 +1,6 @@
 # Home Assistant OS Landingpage
 
-On initial startup of Home Assistant, the HAOS needs to download Home Assistant core before the setup can start.
+On initial startup of Home Assistant, HAOS needs to download Home Assistant core before the setup can start.
 In this time the [home-assistant/landingpage](https://github.com/home-assistant/landingpage) is serving a "Preparing Home Assistant" page.
 
 ## Functionality

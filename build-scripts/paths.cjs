@@ -40,6 +40,10 @@ module.exports = {
     __dirname,
     "../landing-page/dist/frontend_latest"
   ),
+  landingPage_output_es5: path.resolve(
+    __dirname,
+    "../landing-page/dist/frontend_es5"
+  ),
   landingPage_output_static: path.resolve(
     __dirname,
     "../landing-page/dist/static"

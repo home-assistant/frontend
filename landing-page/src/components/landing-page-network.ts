@@ -9,8 +9,8 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type {
+  LandingPageKeys,
   LocalizeFunc,
-  LocalizeKeys,
 } from "../../../src/common/translations/localize";
 import "../../../src/components/ha-button";
 import "../../../src/components/ha-alert";
@@ -22,24 +22,24 @@ const SCHEDULE_FETCH_NETWORK_INFO_SECONDS = 5;
 const ALTERNATIVE_DNS_SERVERS: {
   ipv4: string[];
   ipv6: string[];
-  translationKey: LocalizeKeys;
+  translationKey: LandingPageKeys;
 }[] = [
   {
     ipv4: ["1.1.1.1", "1.0.0.1"],
     ipv6: ["2606:4700:4700::1111", "2606:4700:4700::1001"],
-    translationKey:
-      "ui.panel.page-onboarding.prepare.network_issue.use_cloudflare",
+    translationKey: "network_issue.use_cloudflare",
   },
   {
     ipv4: ["8.8.8.8", "8.8.4.4"],
     ipv6: ["2001:4860:4860::8888", "2001:4860:4860::8844"],
-    translationKey: "ui.panel.page-onboarding.prepare.network_issue.use_google",
+    translationKey: "network_issue.use_google",
   },
 ];
 
 @customElement("landing-page-network")
 class LandingPageNetwork extends LitElement {
-  @property({ attribute: false }) public localize!: LocalizeFunc;
+  @property({ attribute: false })
+  public localize!: LocalizeFunc<LandingPageKeys>;
 
   @state() private _networkIssue = false;
 
@@ -55,11 +55,7 @@ class LandingPageNetwork extends LitElement {
     if (this._getNetworkInfoError) {
       return html`
         <ha-alert alert-type="error">
-          <p>
-            ${this.localize(
-              "ui.panel.page-onboarding.prepare.network_issue.error_get_network_info"
-            )}
-          </p>
+          <p>${this.localize("network_issue.error_get_network_info")}</p>
         </ha-alert>
       `;
     }
@@ -67,29 +63,18 @@ class LandingPageNetwork extends LitElement {
     return html`
       <ha-alert
         alert-type="warning"
-        .title=${this.localize(
-          "ui.panel.page-onboarding.prepare.network_issue.title"
-        )}
+        .title=${this.localize("network_issue.title")}
       >
         <p>
-          ${this.localize(
-            "ui.panel.page-onboarding.prepare.network_issue.description",
-            { dns: this._dnsPrimaryInterface || "?" }
-          )}
+          ${this.localize("network_issue.description", {
+            dns: this._dnsPrimaryInterface || "?",
+          })}
         </p>
-        <p>
-          ${this.localize(
-            "ui.panel.page-onboarding.prepare.network_issue.resolve_different"
-          )}
-        </p>
+        <p>${this.localize("network_issue.resolve_different")}</p>
         ${!this._dnsPrimaryInterface
           ? html`
               <p>
-                <b
-                  >${this.localize(
-                    "ui.panel.page-onboarding.prepare.network_issue.no_primary_interface"
-                  )}
-                </b>
+                <b>${this.localize("network_issue.no_primary_interface")} </b>
               </p>
             `
           : nothing}

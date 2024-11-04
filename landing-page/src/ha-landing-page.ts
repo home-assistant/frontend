@@ -1,30 +1,21 @@
 import "@material/mwc-linear-progress";
-import { LitElement, type PropertyValues, css, html, nothing } from "lit";
+import { type PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../src/components/ha-alert";
 import { haStyle } from "../../src/resources/styles";
 import "../../src/onboarding/onboarding-welcome-links";
 import "./components/landing-page-network";
 import "./components/landing-page-logs";
-import { litLocalizeLiteMixin } from "../../src/mixins/lit-localize-lite-mixin";
 import { extractSearchParam } from "../../src/common/url/search-params";
 import { onBoardingStyles } from "../../src/onboarding/styles";
-import type { Constructor } from "../../src/types";
-import themesMixin from "../../src/state/themes-mixin";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
-import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
+import { LandingPageBaseElement } from "./landing-page-base-element";
 
 const SCHEDULE_CORE_CHECK_SECONDS = 5;
 
-const ext = <T extends Constructor>(baseClass: T, mixins): T =>
-  mixins.reduceRight((base, mixin) => mixin(base), baseClass);
-
 @customElement("ha-landing-page")
-class HaLandingPage extends litLocalizeLiteMixin(
-  ext(ProvideHassLitMixin(LitElement), [themesMixin])
-) {
-  @property({ attribute: false }) public translationFragment =
-    "page-onboarding";
+class HaLandingPage extends LandingPageBaseElement {
+  @property({ attribute: false }) public translationFragment = "landing-page";
 
   @state() private _networkIssue = false;
 
@@ -37,12 +28,10 @@ class HaLandingPage extends litLocalizeLiteMixin(
     return html`
       <ha-card>
         <div class="card-content">
-          <h1>${this.localize("ui.panel.page-onboarding.prepare.header")}</h1>
+          <h1>${this.localize("header")}</h1>
           ${!this._networkIssue && !this._supervisorError
             ? html`
-                <p>
-                  ${this.localize("ui.panel.page-onboarding.prepare.subheader")}
-                </p>
+                <p>${this.localize("subheader")}</p>
                 <mwc-linear-progress indeterminate></mwc-linear-progress>
               `
             : nothing}
@@ -55,13 +44,9 @@ class HaLandingPage extends litLocalizeLiteMixin(
             ? html`
                 <ha-alert
                   alert-type="error"
-                  .title=${this.localize(
-                    "ui.panel.page-onboarding.prepare.error_title"
-                  )}
+                  .title=${this.localize("error_title")}
                 >
-                  ${this.localize(
-                    "ui.panel.page-onboarding.prepare.error_description"
-                  )}
+                  ${this.localize("error_description")}
                 </ha-alert>
               `
             : nothing}
@@ -133,12 +118,13 @@ class HaLandingPage extends litLocalizeLiteMixin(
 
   private _languageChanged(ev: CustomEvent) {
     const language = ev.detail.value;
-    this.language = language;
-    try {
-      localStorage.setItem("selectedLanguage", JSON.stringify(language));
-      location.reload();
-    } catch (err: any) {
-      // Ignore
+    if (language !== this.language && language) {
+      this.language = language;
+      try {
+        localStorage.setItem("selectedLanguage", JSON.stringify(language));
+      } catch (err: any) {
+        // Ignore
+      }
     }
   }
 

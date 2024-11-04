@@ -5,7 +5,10 @@ import { IntersectionController } from "@lit-labs/observers/intersection-control
 import { LitElement, type PropertyValues, css, html, nothing } from "lit";
 import { classMap } from "lit/directives/class-map";
 import { customElement, property, query, state } from "lit/decorators";
-import type { LocalizeFunc } from "../../../src/common/translations/localize";
+import type {
+  LandingPageKeys,
+  LocalizeFunc,
+} from "../../../src/common/translations/localize";
 import "../../../src/components/ha-button";
 import "../../../src/components/ha-icon-button";
 import "../../../src/components/ha-svg-icon";
@@ -25,7 +28,8 @@ declare global {
 
 @customElement("landing-page-logs")
 class LandingPageLogs extends LitElement {
-  @property({ attribute: false }) public localize!: LocalizeFunc;
+  @property({ attribute: false })
+  public localize!: LocalizeFunc<LandingPageKeys>;
 
   @query("ha-ansi-to-html") private _ansiToHtmlElement?: HaAnsiToHtml;
 
@@ -53,17 +57,11 @@ class LandingPageLogs extends LitElement {
     return html`
       <div class="actions">
         <ha-button @click=${this._toggleLogDetails}>
-          ${this.localize(
-            this._show
-              ? "ui.panel.page-onboarding.prepare.hide_details"
-              : "ui.panel.page-onboarding.prepare.show_details"
-          )}
+          ${this.localize(this._show ? "hide_details" : "show_details")}
         </ha-button>
         ${this._show
           ? html`<ha-icon-button
-              .label=${this.localize(
-                "ui.panel.page-onboarding.prepare.logs.download_full_log"
-              )}
+              .label=${this.localize("logs.download_full_log")}
               .path=${mdiDownload}
               @click=${this._downloadFullLog}
             ></ha-icon-button>`
@@ -73,12 +71,10 @@ class LandingPageLogs extends LitElement {
         ? html`
             <ha-alert
               alert-type="error"
-              .title=${this.localize(
-                "ui.panel.page-onboarding.prepare.logs.fetch_error"
-              )}
+              .title=${this.localize("logs.fetch_error")}
             >
               <ha-button @click=${this._startLogStream}>
-                ${this.localize("ui.panel.page-onboarding.prepare.logs.retry")}
+                ${this.localize("logs.retry")}
               </ha-button>
             </ha-alert>
           `
@@ -103,9 +99,7 @@ class LandingPageLogs extends LitElement {
         @click=${this._scrollToBottom}
       >
         <ha-svg-icon .path=${mdiArrowCollapseDown} slot="icon"></ha-svg-icon>
-        ${this.localize(
-          "ui.panel.page-onboarding.prepare.logs.scroll_down_button"
-        )}
+        ${this.localize("logs.scroll_down_button")}
         <ha-svg-icon
           .path=${mdiArrowCollapseDown}
           slot="trailingIcon"
