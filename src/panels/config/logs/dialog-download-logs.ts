@@ -133,6 +133,7 @@ class DownloadLogsDialog extends LitElement {
       css`
         :host {
           direction: var(--direction);
+          --dialog-content-overflow: visible;
         }
         .content {
           display: flex;
