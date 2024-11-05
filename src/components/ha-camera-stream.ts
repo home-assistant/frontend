@@ -93,7 +93,7 @@ export class HaCameraStream extends LitElement {
     return html`${repeat(
       streamTypes,
       (stream) => stream.type + this.stateObj!.entity_id,
-      this._renderStream
+      (stream) => this._renderStream(stream)
     )}`;
   }
 
