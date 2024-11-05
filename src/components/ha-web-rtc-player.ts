@@ -55,7 +55,7 @@ class HaWebRtcPlayer extends LitElement {
 
   private _sessionId?: string;
 
-  private _candidatesList: string[] = [];
+  private _candidatesList: RTCIceCandidate[] = [];
 
   protected override render(): TemplateResult {
     if (this._error) {
@@ -255,11 +255,13 @@ class HaWebRtcPlayer extends LitElement {
     if (event.type === "session") {
       this._sessionId = event.session_id;
       this._candidatesList.forEach((candidate) =>
+        // sdpMLineIndex is always populated
         addWebRtcCandidate(
           this.hass,
           this.entityid!,
           event.session_id,
-          candidate
+          candidate.candidate,
+          candidate?.sdpMLineIndex || 0
         )
       );
       this._candidatesList = [];
@@ -274,7 +276,10 @@ class HaWebRtcPlayer extends LitElement {
 
       try {
         await this._peerConnection?.addIceCandidate(
-          new RTCIceCandidate({ candidate: event.candidate, sdpMid: "0" })
+          new RTCIceCandidate({
+            candidate: event.candidate,
+            sdpMLineIndex: event.sdp_m_line_index,
+          })
         );
       } catch (err: any) {
         console.error(err);
@@ -294,18 +299,22 @@ class HaWebRtcPlayer extends LitElement {
     console.timeLog(
       "WebRTC",
       "local ice candidate",
-      event.candidate?.candidate
+      event.candidate?.candidate,
+      event.candidate?.sdpMLineIndex
     );
 
     if (this._sessionId) {
+      // sdpMLineIndex is always populated
+      const sdpMLineIndex = event.candidate?.sdpMLineIndex || 0;
       addWebRtcCandidate(
         this.hass,
         this.entityid,
         this._sessionId,
-        event.candidate?.candidate
+        event.candidate?.candidate,
+        sdpMLineIndex
       );
     } else {
-      this._candidatesList.push(event.candidate?.candidate);
+      this._candidatesList.push(event.candidate);
     }
   };
 
