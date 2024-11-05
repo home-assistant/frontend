@@ -3944,6 +3944,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/dom-webcodecs@npm:^0.1.13":
+  version: 0.1.13
+  resolution: "@types/dom-webcodecs@npm:0.1.13"
+  checksum: 10/99cb227416725efd4b22175ef18988ae3fc728480fe6ed2192777d7dba52d18af540b4df49fcfa3cf73753d1dcf9d5399b089702bde215d78679284848b078f7
+  languageName: node
+  linkType: hard
+
+"@types/emscripten@npm:^1.39.13":
+  version: 1.39.13
+  resolution: "@types/emscripten@npm:1.39.13"
+  checksum: 10/02c0446150f9cc2c74dc3a551f86ce13df266c33d8b98d11d9f17263e2d98a6a6b4d36bdd15066c4e1547ae1ed2d52eed9420116b4935d119009e0f53ddbb041
+  languageName: node
+  linkType: hard
+
 "@types/eslint-scope@npm:^3.7.7":
   version: 3.7.7
   resolution: "@types/eslint-scope@npm:3.7.7"
@@ -3961,17 +3975,6 @@ __metadata:
     "@types/estree": "npm:*"
     "@types/json-schema": "npm:*"
   checksum: 10/719fcd255760168a43d0e306ef87548e1e15bffe361d5f4022b0f266575637acc0ecb85604ac97879ee8ae83c6a6d0613b0ed31d0209ddf22a0fe6d608fc56fe
-"@types/dom-webcodecs@npm:^0.1.13":
-  version: 0.1.13
-  resolution: "@types/dom-webcodecs@npm:0.1.13"
-  checksum: 10/99cb227416725efd4b22175ef18988ae3fc728480fe6ed2192777d7dba52d18af540b4df49fcfa3cf73753d1dcf9d5399b089702bde215d78679284848b078f7
-  languageName: node
-  linkType: hard
-
-"@types/emscripten@npm:^1.39.13":
-  version: 1.39.13
-  resolution: "@types/emscripten@npm:1.39.13"
-  checksum: 10/02c0446150f9cc2c74dc3a551f86ce13df266c33d8b98d11d9f17263e2d98a6a6b4d36bdd15066c4e1547ae1ed2d52eed9420116b4935d119009e0f53ddbb041
   languageName: node
   linkType: hard
 
