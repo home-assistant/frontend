@@ -141,15 +141,16 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     ) {
       return {
         rows: 2,
-        columns: 2,
+        columns: 6,
         min_columns: 2,
         min_rows: 2,
       };
     }
     return {
       rows: 1,
-      columns: 1,
+      columns: 3,
       min_columns: 2,
+      min_rows: 1,
     };
   }
 

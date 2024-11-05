@@ -536,7 +536,7 @@ export class HuiAreaCard
 
   getGridOptions(): LovelaceGridOptions {
     return {
-      columns: 4,
+      columns: 12,
       rows: 3,
       min_columns: 3,
     };
