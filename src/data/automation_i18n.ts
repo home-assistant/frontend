@@ -1,4 +1,4 @@
-import { HassConfig } from "home-assistant-js-websocket";
+import type { HassConfig } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
 import { formatDuration } from "../common/datetime/format_duration";
 import {
@@ -8,16 +8,16 @@ import {
 import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { computeAttributeNameDisplay } from "../common/entity/compute_attribute_display";
 import { computeStateName } from "../common/entity/compute_state_name";
+import { isValidEntityId } from "../common/entity/valid_entity_id";
 import type { HomeAssistant } from "../types";
-import { Condition, ForDict, Trigger } from "./automation";
+import type { Condition, ForDict, Trigger } from "./automation";
+import type { DeviceCondition, DeviceTrigger } from "./device_automation";
 import {
-  DeviceCondition,
-  DeviceTrigger,
   localizeDeviceAutomationCondition,
   localizeDeviceAutomationTrigger,
 } from "./device_automation";
-import { EntityRegistryEntry } from "./entity_registry";
-import { FrontendLocaleData } from "./translation";
+import type { EntityRegistryEntry } from "./entity_registry";
+import type { FrontendLocaleData } from "./translation";
 import {
   formatListWithAnds,
   formatListWithOrs,
@@ -371,13 +371,22 @@ const tryDescribeTrigger = (
 
   // Time Trigger
   if (trigger.trigger === "time" && trigger.at) {
-    const result = ensureArray(trigger.at).map((at) =>
-      typeof at !== "string"
-        ? at
-        : at.includes(".")
-          ? `entity ${hass.states[at] ? computeStateName(hass.states[at]) : at}`
-          : localizeTimeString(at, hass.locale, hass.config)
-    );
+    const result = ensureArray(trigger.at).map((at) => {
+      if (typeof at === "string") {
+        if (isValidEntityId(at)) {
+          return `entity ${hass.states[at] ? computeStateName(hass.states[at]) : at}`;
+        }
+        return localizeTimeString(at, hass.locale, hass.config);
+      }
+      const entityStr = `entity ${hass.states[at.entity_id] ? computeStateName(hass.states[at.entity_id]) : at.entity_id}`;
+      const offsetStr = at.offset
+        ? " " +
+          hass.localize(`${triggerTranslationBaseKey}.time.offset_by`, {
+            offset: describeDuration(hass.locale, at.offset),
+          })
+        : "";
+      return `${entityStr}${offsetStr}`;
+    });
 
     return hass.localize(`${triggerTranslationBaseKey}.time.description.full`, {
       time: formatListWithOrs(hass.locale, result),

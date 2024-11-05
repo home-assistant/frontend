@@ -1,7 +1,7 @@
 import { customElement } from "lit/decorators";
 import { assert, assign, boolean, object, optional, string } from "superstruct";
 import "../../../../components/ha-form/ha-form";
-import { EntityBadgeConfig } from "../../badges/types";
+import type { EntityBadgeConfig } from "../../badges/types";
 import "../hui-sub-element-editor";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceBadgeConfig } from "../structs/base-badge-struct";

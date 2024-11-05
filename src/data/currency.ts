@@ -65,7 +65,7 @@ export const countryCurrency = {
   HK: "HKD",
   HN: "HNL",
   HM: "AUD",
-  VE: "VEF",
+  VE: "VED",
   PR: "USD",
   PS: "ILS",
   PW: "USD",

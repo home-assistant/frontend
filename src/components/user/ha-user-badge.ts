@@ -1,17 +1,12 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import { computeUserInitials, User } from "../../data/user";
-import { CurrentUser, HomeAssistant } from "../../types";
+import type { User } from "../../data/user";
+import { computeUserInitials } from "../../data/user";
+import type { CurrentUser, HomeAssistant } from "../../types";
 
 @customElement("ha-user-badge")
 class UserBadge extends LitElement {

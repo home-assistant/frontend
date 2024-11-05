@@ -1,5 +1,5 @@
 import { consume } from "@lit-labs/context";
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import {
   mdiAlertCircleCheck,
@@ -17,14 +17,8 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { storage } from "../../../../common/decorators/storage";
@@ -41,14 +35,18 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-service-icon";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { ACTION_ICONS, YAML_ONLY_ACTION_TYPES } from "../../../../data/action";
-import { AutomationClipboard } from "../../../../data/automation";
+import type { AutomationClipboard } from "../../../../data/automation";
 import { validateConfig } from "../../../../data/config";
-import { fullEntitiesContext, labelsContext } from "../../../../data/context";
-import { EntityRegistryEntry } from "../../../../data/entity_registry";
-import { LabelRegistryEntry } from "../../../../data/label_registry";
 import {
-  Action,
-  NonConditionAction,
+  floorsContext,
+  fullEntitiesContext,
+  labelsContext,
+} from "../../../../data/context";
+import type { EntityRegistryEntry } from "../../../../data/entity_registry";
+import type { FloorRegistryEntry } from "../../../../data/floor_registry";
+import type { LabelRegistryEntry } from "../../../../data/label_registry";
+import type { Action, NonConditionAction } from "../../../../data/script";
+import {
   getActionType,
   migrateAutomationAction,
 } from "../../../../data/script";
@@ -60,7 +58,7 @@ import {
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant, ItemPath } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import "./types/ha-automation-action-activate_scene";
 import "./types/ha-automation-action-choose";
@@ -132,8 +130,6 @@ export default class HaAutomationActionRow extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Array }) public path?: ItemPath;
-
   @property({ type: Boolean }) public first?: boolean;
 
   @property({ type: Boolean }) public last?: boolean;
@@ -153,6 +149,10 @@ export default class HaAutomationActionRow extends LitElement {
   @state()
   @consume({ context: labelsContext, subscribe: true })
   _labelReg!: LabelRegistryEntry[];
+
+  @state()
+  @consume({ context: floorsContext, subscribe: true })
+  _floorReg!: { [id: string]: FloorRegistryEntry };
 
   @state() private _warnings?: string[];
 
@@ -222,6 +222,7 @@ export default class HaAutomationActionRow extends LitElement {
                 this.hass,
                 this._entityReg,
                 this._labelReg,
+                this._floorReg,
                 this.action
               )
             )}
@@ -422,7 +423,6 @@ export default class HaAutomationActionRow extends LitElement {
                       action: this.action,
                       narrow: this.narrow,
                       disabled: this.disabled,
-                      path: this.path,
                     })}
                   </div>
                 `}
@@ -593,6 +593,7 @@ export default class HaAutomationActionRow extends LitElement {
           this.hass,
           this._entityReg,
           this._labelReg,
+          this._floorReg,
           this.action,
           undefined,
           true

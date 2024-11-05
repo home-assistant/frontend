@@ -1,13 +1,7 @@
 import { mdiClose, mdiHelpCircle } from "@mdi/js";
 import deepFreeze from "deep-freeze";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -16,11 +10,9 @@ import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
-import {
-  ensureBadgeConfig,
-  LovelaceBadgeConfig,
-} from "../../../../data/lovelace/config/badge";
-import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
+import { ensureBadgeConfig } from "../../../../data/lovelace/config/badge";
+import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import {
   getCustomBadgeEntry,
   isCustomType,

@@ -1,4 +1,4 @@
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list";
 import {
   mdiContentDuplicate,
@@ -6,15 +6,9 @@ import {
   mdiDelete,
   mdiDotsVertical,
 } from "@mdi/js";
-import { HassEvent } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  nothing,
-} from "lit";
+import type { HassEvent } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -35,16 +29,22 @@ import "../../../components/ha-icon-picker";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
+import type { DeviceRegistryEntry } from "../../../data/device_registry";
 import {
   computeDeviceName,
-  DeviceRegistryEntry,
   subscribeDeviceRegistry,
 } from "../../../data/device_registry";
+import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import {
-  EntityRegistryEntry,
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
+import type {
+  SceneConfig,
+  SceneEntities,
+  SceneEntity,
+  SceneMetaData,
+} from "../../../data/scene";
 import {
   activateScene,
   applyScene,
@@ -52,10 +52,6 @@ import {
   getSceneConfig,
   getSceneEditorInitData,
   saveScene,
-  SceneConfig,
-  SceneEntities,
-  SceneEntity,
-  SceneMetaData,
   SCENE_IGNORED_DOMAINS,
   showSceneEditor,
 } from "../../../data/scene";
@@ -67,7 +63,7 @@ import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant, Route } from "../../../types";
+import type { HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import "../ha-config-section";
 

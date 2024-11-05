@@ -1,19 +1,17 @@
 import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
 import { getRelativePosition } from "chart.js/helpers";
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import millisecondsToDuration from "../../common/datetime/milliseconds_to_duration";
 import { fireEvent } from "../../common/dom/fire_event";
 import { numberFormatToLocale } from "../../common/number/format_number";
 import { computeRTL } from "../../common/util/compute_rtl";
-import { TimelineEntity } from "../../data/history";
-import { HomeAssistant } from "../../types";
-import {
-  ChartResizeOptions,
-  HaChartBase,
-  MIN_TIME_BETWEEN_UPDATES,
-} from "./ha-chart-base";
+import type { TimelineEntity } from "../../data/history";
+import type { HomeAssistant } from "../../types";
+import type { ChartResizeOptions, HaChartBase } from "./ha-chart-base";
+import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
 import type { TimeLineData } from "./timeline-chart/const";
 import { computeTimelineColor } from "./timeline-chart/timeline-color";
 import { clickIsTouch } from "./click_is_touch";

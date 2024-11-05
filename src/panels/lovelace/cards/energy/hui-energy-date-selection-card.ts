@@ -1,17 +1,12 @@
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { HomeAssistant } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import "../../components/hui-energy-period-selector";
-import { LovelaceCard, LovelaceLayoutOptions } from "../../types";
-import { EnergyCardBaseConfig } from "../types";
+import "../../../../components/ha-card";
+import type { LovelaceCard, LovelaceLayoutOptions } from "../../types";
+import type { EnergyCardBaseConfig } from "../types";
 
 @customElement("hui-energy-date-selection-card")
 export class HuiEnergyDateSelectionCard
@@ -64,17 +59,11 @@ export class HuiEnergyDateSelectionCard
 
   static get styles(): CSSResultGroup {
     return css`
-    :host {
       ha-card {
         height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: center;
-      }
-      .padded {
-        padding-left: 16px !important;
-        padding-inline-start: 16px !important;
-        padding-inline-end: initial !important;
       }
     `;
   }

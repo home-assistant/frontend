@@ -1,20 +1,19 @@
 import "@material/mwc-button/mwc-button";
 import { mdiChevronLeft, mdiClose } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import "../../components/ha-dialog";
-import {
-  AssistSatelliteConfiguration,
-  fetchAssistSatelliteConfiguration,
-} from "../../data/assist_satellite";
-import { EntityRegistryDisplayEntry } from "../../data/entity_registry";
+import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
+import { fetchAssistSatelliteConfiguration } from "../../data/assist_satellite";
+import { UNAVAILABLE } from "../../data/entity";
+import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import { VoiceAssistantSetupDialogParams } from "./show-voice-assistant-setup-dialog";
-import "./voice-assistant-setup-step-addons";
+import type { VoiceAssistantSetupDialogParams } from "./show-voice-assistant-setup-dialog";
 import "./voice-assistant-setup-step-area";
 import "./voice-assistant-setup-step-change-wake-word";
 import "./voice-assistant-setup-step-check";
@@ -23,7 +22,6 @@ import "./voice-assistant-setup-step-pipeline";
 import "./voice-assistant-setup-step-success";
 import "./voice-assistant-setup-step-update";
 import "./voice-assistant-setup-step-wake-word";
-import { UNAVAILABLE } from "../../data/entity";
 
 export const enum STEP {
   INIT,
@@ -34,7 +32,6 @@ export const enum STEP {
   PIPELINE,
   SUCCESS,
   CLOUD,
-  ADDONS,
   CHANGE_WAKEWORD,
 }
 
@@ -69,6 +66,8 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
   private _dialogClosed() {
     this._params = undefined;
     this._assistConfiguration = undefined;
+    this._previousSteps = [];
+    this._nextStep = undefined;
     this._step = STEP.INIT;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -210,22 +209,18 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
                           ? html`<ha-voice-assistant-setup-step-cloud
                               .hass=${this.hass}
                             ></ha-voice-assistant-setup-step-cloud>`
-                          : this._step === STEP.ADDONS
-                            ? html`<ha-voice-assistant-setup-step-addons
+                          : this._step === STEP.SUCCESS
+                            ? html`<ha-voice-assistant-setup-step-success
                                 .hass=${this.hass}
-                              ></ha-voice-assistant-setup-step-addons>`
-                            : this._step === STEP.SUCCESS
-                              ? html`<ha-voice-assistant-setup-step-success
-                                  .hass=${this.hass}
-                                  .assistConfiguration=${this
-                                    ._assistConfiguration}
-                                  .assistEntityId=${this._findDomainEntityId(
-                                    this._params.deviceId,
-                                    this.hass.entities,
-                                    "assist_satellite"
-                                  )}
-                                ></ha-voice-assistant-setup-step-success>`
-                              : nothing}
+                                .assistConfiguration=${this
+                                  ._assistConfiguration}
+                                .assistEntityId=${this._findDomainEntityId(
+                                  this._params.deviceId,
+                                  this.hass.entities,
+                                  "assist_satellite"
+                                )}
+                              ></ha-voice-assistant-setup-step-success>`
+                            : nothing}
         </div>
       </ha-dialog>
     `;

@@ -1,5 +1,5 @@
 import { mdiClose } from "@mdi/js";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
@@ -7,12 +7,14 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-dialog-header";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-button-arrow-prev";
+import "../../../../../components/ha-button";
+import "../../../../../components/ha-dialog";
 import {
   commissionMatterDevice,
   redirectOnNewMatterDevice,
 } from "../../../../../data/matter";
 import { haStyleDialog } from "../../../../../resources/styles";
-import { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant } from "../../../../../types";
 import "./matter-add-device/matter-add-device-apple-home";
 import "./matter-add-device/matter-add-device-existing";
 import "./matter-add-device/matter-add-device-generic";

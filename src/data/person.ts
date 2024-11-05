@@ -1,8 +1,8 @@
-import {
+import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 
 export interface BasePerson {
   name: string;
