@@ -1185,6 +1185,7 @@ export class HaDataTable extends LitElement {
 
         .group-header {
           padding-top: 12px;
+          height: var(--data-table-row-height, 52px);
           padding-left: 12px;
           padding-inline-start: 12px;
           padding-inline-end: initial;
