@@ -1,4 +1,3 @@
-import { memoize } from "@fullcalendar/core/internal";
 import {
   css,
   type CSSResultGroup,
@@ -8,6 +7,7 @@ import {
   type PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { supportsFeature } from "../common/entity/supports-feature";
 import {
@@ -159,7 +159,7 @@ export class HaCameraStream extends LitElement {
     this._webRtcStreams = ev.detail;
   }
 
-  private _streamType = memoize(
+  private _streamType = memoizeOne(
     (
       streamTypes?: StreamType[],
       hlsStreams?: { hasAudio: boolean; hasVideo: boolean },
