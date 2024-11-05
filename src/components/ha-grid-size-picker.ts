@@ -2,9 +2,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../panels/lovelace/editor/card-editor/ha-grid-layout-slider";
 import "./ha-icon-button";
-
 import { mdiRestore } from "@mdi/js";
-import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 import { conditionalClamp } from "../common/number/clamp";
@@ -102,34 +100,38 @@ export class HaGridSizeEditor extends LitElement {
               </ha-icon-button>
             `
           : nothing}
-        <div
-          class="preview ${classMap({ "full-width": fullWidth })}"
-          style=${styleMap({
-            "--total-rows": this.rows,
-            "--total-columns": this.columns,
-            "--rows": rowValue,
-            "--columns": fullWidth ? this.columns : columnValue,
-          })}
-        >
-          <div>
-            ${Array(this.rows * this.columns)
+        <div class="preview">
+          <table>
+            ${Array(this.rows)
               .fill(0)
               .map((_, index) => {
-                const row = Math.floor(index / this.columns) + 1;
-                const column = (index % this.columns) + 1;
+                const row = index + 1;
                 return html`
-                  <div
-                    class="cell"
-                    data-row=${row}
-                    data-column=${column}
-                    @click=${this._cellClick}
-                  ></div>
+                  <tr>
+                    ${Array(this.columns)
+                      .fill(0)
+                      .map((__, columnIndex) => {
+                        const column = columnIndex + 1;
+                        return html`
+                          <td
+                            data-row=${row}
+                            data-column=${column}
+                            @click=${this._cellClick}
+                          ></td>
+                        `;
+                      })}
+                  </tr>
                 `;
               })}
-          </div>
-          <div class="selected">
-            <div class="cell"></div>
-          </div>
+          </table>
+          <div
+            class="preview-card"
+            style=${styleMap({
+              "--rows": rowValue,
+              "--columns": fullWidth ? this.columns : columnValue,
+              "--total-columns": this.columns,
+            })}
+          ></div>
         </div>
       </div>
     `;
@@ -228,37 +230,34 @@ export class HaGridSizeEditor extends LitElement {
         position: relative;
         grid-area: preview;
       }
-      .preview > div {
-        position: relative;
-        display: grid;
-        grid-template-columns: repeat(var(--total-columns), 1fr);
-        grid-template-rows: repeat(var(--total-rows), 25px);
-        gap: 4px;
+      .preview table,
+      .preview tr,
+      .preview td {
+        border: 2px dotted var(--divider-color);
+        border-collapse: collapse;
       }
-      .preview .cell {
-        background-color: var(--disabled-color);
-        grid-column: span 1;
-        grid-row: span 1;
-        border-radius: 4px;
-        opacity: 0.2;
-        cursor: pointer;
-      }
-      .preview .selected {
-        position: absolute;
-        pointer-events: none;
-        top: 0;
-        left: 0;
-        height: 100%;
+      .preview table {
         width: 100%;
       }
-      .selected .cell {
-        background-color: var(--primary-color);
-        grid-column: 1 / span min(var(--columns, 0), var(--total-columns));
-        grid-row: 1 / span min(var(--rows, 0), var(--total-rows));
-        opacity: 0.5;
+      .preview tr {
+        height: 25px;
       }
-      .preview.full-width .selected .cell {
-        grid-column: 1 / -1;
+      .preview td {
+        cursor: pointer;
+      }
+      .preview-card {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: var(--primary-color);
+        opacity: 0.3;
+        border-radius: 8px;
+        height: calc(var(--rows, 1) * 25px);
+        width: calc(var(--columns, 1) * 100% / var(--total-columns, 12));
+        pointer-events: none;
+        transition:
+          width 0.2s,
+          height 0.2s;
       }
     `,
   ];
