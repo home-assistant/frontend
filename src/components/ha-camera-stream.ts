@@ -85,13 +85,13 @@ export class HaCameraStream extends LitElement {
     if (!this.stateObj) {
       return nothing;
     }
-    const streamTypes = this._streamTypes(
+    const streams = this._streams(
       this._capabilities?.frontend_stream_types,
       this._hlsStreams,
       this._webRtcStreams
     );
     return html`${repeat(
-      streamTypes,
+      streams,
       (stream) => stream.type + this.stateObj!.entity_id,
       (stream) => this._renderStream(stream)
     )}`;
@@ -180,7 +180,7 @@ export class HaCameraStream extends LitElement {
     this._webRtcStreams = ev.detail;
   }
 
-  private _streamTypes = memoizeOne(
+  private _streams = memoizeOne(
     (
       supportedTypes?: StreamType[],
       hlsStreams?: { hasAudio: boolean; hasVideo: boolean },
