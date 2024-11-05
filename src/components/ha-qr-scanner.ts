@@ -188,7 +188,7 @@ class HaQrScanner extends LitElement {
   }
 
   private _qrCodeError = (err: any) => {
-    if (err === "No QR code found") {
+    if (err.endsWith("No QR code found")) {
       this._qrNotFoundCount++;
       if (this._qrNotFoundCount === 250) {
         this._reportError(err);
