@@ -1,4 +1,5 @@
 import type { HomeAssistant } from "../types";
+import { isIosApp } from "./is_ios";
 
 export const fileDownload = (href: string, filename = ""): void => {
   const a = document.createElement("a");
@@ -11,5 +12,5 @@ export const fileDownload = (href: string, filename = ""): void => {
   document.body.removeChild(a);
 };
 
-export const downloadFileSupportedViaApp = (hass: HomeAssistant): boolean =>
-  !!hass.auth.external?.config.downloadFileSupported;
+export const downloadFileSupported = (hass: HomeAssistant): boolean =>
+  !isIosApp(hass) || !!hass.auth.external?.config.downloadFileSupported;

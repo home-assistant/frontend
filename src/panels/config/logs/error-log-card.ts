@@ -46,7 +46,7 @@ import {
 } from "../../../data/hassio/supervisor";
 import type { HomeAssistant } from "../../../types";
 import {
-  downloadFileSupportedViaApp,
+  downloadFileSupported,
   fileDownload,
 } from "../../../util/file_download";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -56,7 +56,6 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { debounce } from "../../../common/util/debounce";
 import { showDownloadLogsDialog } from "./show-dialog-download-logs";
 import type { HaMenu } from "../../../components/ha-menu";
-import { isIosApp } from "../../../util/is_ios";
 
 const NUMBER_OF_LINES = 100;
 
@@ -312,8 +311,7 @@ class ErrorLogCard extends LitElement {
       );
     }
     if (this._downloadSupported === undefined && this.hass) {
-      this._downloadSupported =
-        !isIosApp(this.hass) || downloadFileSupportedViaApp(this.hass);
+      this._downloadSupported = downloadFileSupported(this.hass);
     }
   }
 

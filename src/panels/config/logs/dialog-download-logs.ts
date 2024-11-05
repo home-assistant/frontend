@@ -17,13 +17,15 @@ import type { HomeAssistant } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
 import type { DownloadLogsDialogParams } from "./show-dialog-download-logs";
 
+const DEFAULT_LINE_COUNT = 500;
+
 @customElement("dialog-download-logs")
 class DownloadLogsDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _dialogParams?: DownloadLogsDialogParams;
 
-  @state() private _lineCount = 100;
+  @state() private _lineCount = DEFAULT_LINE_COUNT;
 
   @query("ha-md-dialog") private _dialogElement!: HaMdDialog;
 
@@ -38,7 +40,7 @@ class DownloadLogsDialog extends LitElement {
 
   private _dialogClosed() {
     this._dialogParams = undefined;
-    this._lineCount = 500;
+    this._lineCount = DEFAULT_LINE_COUNT;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
