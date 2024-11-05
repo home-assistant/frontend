@@ -240,7 +240,7 @@ export class HaGridSizeEditor extends LitElement {
         width: 100%;
       }
       .preview tr {
-        height: 25px;
+        height: 30px;
       }
       .preview td {
         cursor: pointer;
@@ -252,7 +252,7 @@ export class HaGridSizeEditor extends LitElement {
         background-color: var(--primary-color);
         opacity: 0.3;
         border-radius: 8px;
-        height: calc(var(--rows, 1) * 25px);
+        height: calc(var(--rows, 1) * 30px);
         width: calc(var(--columns, 1) * 100% / var(--total-columns, 12));
         pointer-events: none;
         transition:
