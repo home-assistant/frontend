@@ -84,7 +84,6 @@ export class HaCameraStream extends LitElement {
       this._hlsStreams,
       this._webRtcStreams
     );
-    console.log(streamTypes);
     return html`${MJPEG_STREAM in streamTypes
       ? html`<img
           .src=${__DEMO__
@@ -178,6 +177,15 @@ export class HaCameraStream extends LitElement {
       }
       if (streamTypes.length === 1) {
         // only 1 stream type, no need to choose
+        if (
+          (streamTypes[0] === STREAM_TYPE_HLS &&
+            hlsStreams?.hasVideo === false) ||
+          (streamTypes[0] === STREAM_TYPE_WEB_RTC &&
+            webRtcStreams?.hasVideo === false)
+        ) {
+          // stream failed to load, fallback to mjpeg
+          return { [MJPEG_STREAM]: { visible: true } };
+        }
         return { [streamTypes[0]]: { visible: true } };
       }
       if (hlsStreams && webRtcStreams) {
@@ -187,16 +195,19 @@ export class HaCameraStream extends LitElement {
           hlsStreams.hasAudio &&
           !webRtcStreams.hasAudio
         ) {
+          // webRTC stream is missing audio, use HLS
           return { [STREAM_TYPE_HLS]: { visible: true } };
         }
         if (webRtcStreams.hasVideo) {
           return { [STREAM_TYPE_WEB_RTC]: { visible: true } };
         }
+        // both streams failed to load, fallback to mjpeg
         return { [MJPEG_STREAM]: { visible: true } };
       }
 
       if (hlsStreams?.hasVideo !== webRtcStreams?.hasVideo) {
         // one of the two streams is loaded, or errored
+        // choose the one that has video or is still loading
         if (hlsStreams?.hasVideo) {
           return {
             [STREAM_TYPE_HLS]: { visible: true },
