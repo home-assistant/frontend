@@ -2,21 +2,20 @@ import { mdiClose } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import "../../../components/ha-md-dialog";
+import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog-header";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-md-dialog";
 import type { HaMdDialog } from "../../../components/ha-md-dialog";
-import type { HomeAssistant } from "../../../types";
-import { haStyle, haStyleDialog } from "../../../resources/styles";
-import { fireEvent } from "../../../common/dom/fire_event";
-import type { DownloadLogsDialogParams } from "./show-dialog-download-logs";
-import "../../../components/ha-select";
-import "../../../components/ha-list-item";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
-import { getHassioLogDownloadLinesUrl } from "../../../data/hassio/supervisor";
+import "../../../components/ha-md-select";
+import "../../../components/ha-md-select-option";
 import { getSignedPath } from "../../../data/auth";
+import { getHassioLogDownloadLinesUrl } from "../../../data/hassio/supervisor";
+import { haStyle, haStyleDialog } from "../../../resources/styles";
+import type { HomeAssistant } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
+import type { DownloadLogsDialogParams } from "./show-dialog-download-logs";
 
 @customElement("dialog-download-logs")
 class DownloadLogsDialog extends LitElement {
@@ -78,22 +77,19 @@ class DownloadLogsDialog extends LitElement {
               "ui.panel.config.logs.select_number_of_lines"
             )}:
           </div>
-          <ha-select
+          <ha-md-select
             .label=${this.hass.localize("ui.panel.config.logs.lines")}
-            @selected=${this._setNumberOfLogs}
-            fixedMenuPosition
-            naturalMenuWidth
-            @closed=${stopPropagation}
+            @change=${this._setNumberOfLogs}
             .value=${String(this._lineCount)}
           >
             ${numberOfLinesOptions.map(
               (option) => html`
-                <ha-list-item .value=${String(option)}>
+                <ha-md-select-option .value=${String(option)}>
                   ${option}
-                </ha-list-item>
+                </ha-md-select-option>
               `
             )}
-          </ha-select>
+          </ha-md-select>
         </div>
         <div slot="actions">
           <ha-button @click=${this.closeDialog}>
