@@ -90,22 +90,25 @@ export class HaCameraStream extends LitElement {
       this._hlsStreams,
       this._webRtcStreams
     );
-    return html` ${repeat(
+    return html`${repeat(
       streamTypes,
-      (stream) => stream.type,
-      (stream) => this._renderStream(stream, this.stateObj!)
+      (stream) => stream.type + this.stateObj!.entity_id,
+      this._renderStream
     )}`;
   }
 
-  private _renderStream(stream: Stream, stateObj: CameraEntity) {
+  private _renderStream(stream: Stream) {
+    if (!this.stateObj) {
+      return nothing;
+    }
     if (stream.type === MJPEG_STREAM) {
       return html`<img
         .src=${__DEMO__
-          ? stateObj.attributes.entity_picture!
+          ? this.stateObj.attributes.entity_picture!
           : this._connected
-            ? computeMJPEGStreamUrl(stateObj)
+            ? computeMJPEGStreamUrl(this.stateObj)
             : this._posterUrl || ""}
-        alt=${`Preview of the ${computeStateName(stateObj)} camera.`}
+        alt=${`Preview of the ${computeStateName(this.stateObj)} camera.`}
       />`;
     }
 
@@ -117,7 +120,7 @@ export class HaCameraStream extends LitElement {
         .muted=${this.muted}
         .controls=${this.controls}
         .hass=${this.hass}
-        .entityid=${stateObj.entity_id}
+        .entityid=${this.stateObj.entity_id}
         .posterUrl=${this._posterUrl}
         @streams=${this._handleHlsStreams}
         class=${stream.visible ? "" : "hidden"}
@@ -131,7 +134,7 @@ export class HaCameraStream extends LitElement {
         .muted=${this.muted}
         .controls=${this.controls}
         .hass=${this.hass}
-        .entityid=${stateObj.entity_id}
+        .entityid=${this.stateObj.entity_id}
         .posterUrl=${this._posterUrl}
         @streams=${this._handleWebRtcStreams}
         class=${stream.visible ? "" : "hidden"}
