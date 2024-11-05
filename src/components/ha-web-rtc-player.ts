@@ -254,7 +254,7 @@ class HaWebRtcPlayer extends LitElement {
           this.entityid!,
           event.session_id,
           candidate.candidate,
-          candidate?.sdpMLineIndex || 0
+          candidate.sdpMLineIndex || 0
         )
       );
       this._candidatesList = [];
