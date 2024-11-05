@@ -19,7 +19,7 @@ import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
-  LovelaceLayoutOptions,
+  LovelaceGridOptions,
 } from "../types";
 import type { HumidifierCardConfig } from "./types";
 
@@ -171,21 +171,21 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  public getLayoutOptions(): LovelaceLayoutOptions {
-    const grid_columns = 4;
-    let grid_rows = 5;
-    let grid_min_rows = 2;
-    const grid_min_columns = 2;
+  public getGridOptions(): LovelaceGridOptions {
+    const columns = 12;
+    let rows = 5;
+    let min_rows = 2;
+    const min_columns = 6;
     if (this._config?.features?.length) {
       const featureHeight = Math.ceil((this._config.features.length * 2) / 3);
-      grid_rows += featureHeight;
-      grid_min_rows += featureHeight;
+      rows += featureHeight;
+      min_rows += featureHeight;
     }
     return {
-      grid_columns,
-      grid_rows,
-      grid_min_rows,
-      grid_min_columns,
+      columns,
+      rows,
+      min_rows,
+      min_columns,
     };
   }
 

@@ -34,7 +34,7 @@ import { hasAction } from "../common/has-action";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
-  LovelaceLayoutOptions,
+  LovelaceGridOptions,
 } from "../types";
 import { renderTileBadge } from "./tile/badges/tile-badge";
 import type { ThermostatCardConfig, TileCardConfig } from "./types";
@@ -109,22 +109,22 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     );
   }
 
-  public getLayoutOptions(): LovelaceLayoutOptions {
-    const grid_columns = 2;
-    let grid_min_columns = 2;
-    let grid_rows = 1;
+  public getGridOptions(): LovelaceGridOptions {
+    const columns = 6;
+    let min_columns = 6;
+    let rows = 1;
     if (this._config?.features?.length) {
-      grid_rows += this._config.features.length;
+      rows += this._config.features.length;
     }
     if (this._config?.vertical) {
-      grid_rows++;
-      grid_min_columns = 1;
+      rows++;
+      min_columns = 3;
     }
     return {
-      grid_columns,
-      grid_rows,
-      grid_min_rows: grid_rows,
-      grid_min_columns,
+      columns,
+      rows,
+      min_rows: rows,
+      min_columns,
     };
   }
 

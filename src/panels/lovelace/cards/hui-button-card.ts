@@ -46,7 +46,7 @@ import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
-  LovelaceLayoutOptions,
+  LovelaceGridOptions,
 } from "../types";
 import type { ButtonCardConfig } from "./types";
 
@@ -134,20 +134,22 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     );
   }
 
-  public getLayoutOptions(): LovelaceLayoutOptions {
+  public getGridOptions(): LovelaceGridOptions {
     if (
       this._config?.show_icon &&
       (this._config?.show_name || this._config?.show_state)
     ) {
       return {
-        grid_rows: 2,
-        grid_columns: 2,
-        grid_min_rows: 2,
+        rows: 2,
+        columns: 2,
+        min_columns: 2,
+        min_rows: 2,
       };
     }
     return {
-      grid_rows: 1,
-      grid_columns: 1,
+      rows: 1,
+      columns: 1,
+      min_columns: 2,
     };
   }
 

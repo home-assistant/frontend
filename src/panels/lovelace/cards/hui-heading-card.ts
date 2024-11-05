@@ -16,7 +16,7 @@ import "../heading-badges/hui-heading-badge";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
-  LovelaceLayoutOptions,
+  LovelaceGridOptions,
 } from "../types";
 import type { HeadingCardConfig } from "./types";
 
@@ -65,10 +65,10 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
     return 1;
   }
 
-  public getLayoutOptions(): LovelaceLayoutOptions {
+  public getGridOptions(): LovelaceGridOptions {
     return {
-      grid_columns: "full",
-      grid_rows: this._config?.heading_style === "subtitle" ? "auto" : 1,
+      columns: "full",
+      rows: this._config?.heading_style === "subtitle" ? "auto" : 1,
     };
   }
 

@@ -45,7 +45,7 @@ import "../components/hui-warning";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
-  LovelaceLayoutOptions,
+  LovelaceGridOptions,
 } from "../types";
 import type { AreaCardConfig } from "./types";
 
@@ -534,10 +534,11 @@ export class HuiAreaCard
     forwardHaptic("light");
   }
 
-  getLayoutOptions(): LovelaceLayoutOptions {
+  getGridOptions(): LovelaceGridOptions {
     return {
-      grid_columns: 4,
-      grid_rows: 3,
+      columns: 4,
+      rows: 3,
+      min_columns: 3,
     };
   }
 

@@ -249,7 +249,7 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
     fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
   }
 
-  public getLayoutOptions(): LovelaceLayoutOptions {
+  public getGridOptions(): LovelaceLayoutOptions {
     return {
       grid_columns: 2,
       grid_rows: 2,
