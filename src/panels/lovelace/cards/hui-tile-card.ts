@@ -123,8 +123,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     return {
       columns,
       rows,
-      min_rows: rows,
       min_columns,
+      min_rows: rows,
     };
   }
 

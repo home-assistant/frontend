@@ -184,8 +184,8 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     return {
       columns,
       rows,
-      min_rows,
       min_columns,
+      min_rows,
     };
   }
 

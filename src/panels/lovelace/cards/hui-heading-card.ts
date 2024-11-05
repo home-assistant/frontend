@@ -69,6 +69,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
     return {
       columns: "full",
       rows: this._config?.heading_style === "subtitle" ? "auto" : 1,
+      min_columns: 3,
     };
   }
 

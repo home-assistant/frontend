@@ -117,6 +117,7 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
     return {
       columns: "full",
       rows: 4,
+      min_columns: 3,
       min_rows: 2,
     };
   }
