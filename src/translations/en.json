@@ -2492,7 +2492,7 @@
           "show_full_logs": "Show full logs",
           "select_number_of_lines": "Select number of lines to download",
           "lines": "Lines",
-          "download_full_log": "Download full log",
+          "download_logs": "Download logs",
           "scroll_down_button": "New logs - Click to scroll",
           "provider_not_found": "Log provider not found",
           "provider_not_available": "Logs for ''{provider}'' are not available on your system.",

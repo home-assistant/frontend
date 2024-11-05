@@ -1,3 +1,5 @@
+import type { HomeAssistant } from "../types";
+
 export const fileDownload = (href: string, filename = ""): void => {
   const a = document.createElement("a");
   a.target = "_blank";
@@ -8,3 +10,6 @@ export const fileDownload = (href: string, filename = ""): void => {
   a.dispatchEvent(new MouseEvent("click"));
   document.body.removeChild(a);
 };
+
+export const downloadFileSupportedViaApp = (hass: HomeAssistant): boolean =>
+  !!hass.auth.external?.config.downloadFileSupported;

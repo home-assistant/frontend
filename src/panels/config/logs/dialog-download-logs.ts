@@ -29,7 +29,7 @@ class DownloadLogsDialog extends LitElement {
 
   public showDialog(dialogParams: DownloadLogsDialogParams) {
     this._dialogParams = dialogParams;
-    this._lineCount = this._dialogParams?.defaultLineCount ?? 100;
+    this._lineCount = this._dialogParams?.defaultLineCount || 500;
   }
 
   public closeDialog() {
@@ -38,7 +38,7 @@ class DownloadLogsDialog extends LitElement {
 
   private _dialogClosed() {
     this._dialogParams = undefined;
-    this._lineCount = 100;
+    this._lineCount = 500;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -48,7 +48,7 @@ class DownloadLogsDialog extends LitElement {
     }
 
     const numberOfLinesOptions = [100, 500, 1000, 5000, 10000];
-    if (!numberOfLinesOptions.includes(this._lineCount)) {
+    if (!numberOfLinesOptions.includes(this._lineCount) && this._lineCount) {
       numberOfLinesOptions.push(this._lineCount);
       numberOfLinesOptions.sort((a, b) => a - b);
     }
@@ -63,7 +63,7 @@ class DownloadLogsDialog extends LitElement {
             .path=${mdiClose}
           ></ha-icon-button>
           <span slot="title" id="dialog-light-color-favorite-title">
-            ${this.hass.localize("ui.panel.config.logs.download_full_log")}
+            ${this.hass.localize("ui.panel.config.logs.download_logs")}
           </span>
           <span slot="subtitle">
             ${this._dialogParams.header}${this._dialogParams.boot === 0
@@ -95,7 +95,7 @@ class DownloadLogsDialog extends LitElement {
           <ha-button @click=${this.closeDialog}>
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
-          <ha-button @click=${this._dowloadLogs}>
+          <ha-button @click=${this._downloadLogs}>
             ${this.hass.localize("ui.common.download")}
           </ha-button>
         </div>
@@ -103,7 +103,7 @@ class DownloadLogsDialog extends LitElement {
     `;
   }
 
-  private async _dowloadLogs() {
+  private async _downloadLogs() {
     const provider = this._dialogParams!.provider;
     const boot = this._dialogParams!.boot;
 
