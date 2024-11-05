@@ -85,7 +85,7 @@ export class HaCameraStream extends LitElement {
     if (!this.stateObj) {
       return nothing;
     }
-    const streamTypes = this._streamType(
+    const streamTypes = this._streamTypes(
       this._capabilities?.frontend_stream_types,
       this._hlsStreams,
       this._webRtcStreams
@@ -180,34 +180,34 @@ export class HaCameraStream extends LitElement {
     this._webRtcStreams = ev.detail;
   }
 
-  private _streamType = memoizeOne(
+  private _streamTypes = memoizeOne(
     (
-      streamTypes?: StreamType[],
+      supportedTypes?: StreamType[],
       hlsStreams?: { hasAudio: boolean; hasVideo: boolean },
       webRtcStreams?: { hasAudio: boolean; hasVideo: boolean }
     ): Stream[] => {
       if (__DEMO__) {
         return [{ type: MJPEG_STREAM, visible: true }];
       }
-      if (!streamTypes) {
+      if (!supportedTypes) {
         return [];
       }
-      if (streamTypes.length === 0) {
+      if (supportedTypes.length === 0) {
         // doesn't support any stream type, fallback to mjpeg
         return [{ type: MJPEG_STREAM, visible: true }];
       }
-      if (streamTypes.length === 1) {
+      if (supportedTypes.length === 1) {
         // only 1 stream type, no need to choose
         if (
-          (streamTypes[0] === STREAM_TYPE_HLS &&
+          (supportedTypes[0] === STREAM_TYPE_HLS &&
             hlsStreams?.hasVideo === false) ||
-          (streamTypes[0] === STREAM_TYPE_WEB_RTC &&
+          (supportedTypes[0] === STREAM_TYPE_WEB_RTC &&
             webRtcStreams?.hasVideo === false)
         ) {
           // stream failed to load, fallback to mjpeg
           return [{ type: MJPEG_STREAM, visible: true }];
         }
-        return [{ type: streamTypes[0], visible: true }];
+        return [{ type: supportedTypes[0], visible: true }];
       }
       if (hlsStreams && webRtcStreams) {
         // fully loaded
