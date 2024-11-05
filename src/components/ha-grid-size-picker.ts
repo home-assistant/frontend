@@ -256,8 +256,8 @@ export class HaGridSizeEditor extends LitElement {
         width: calc(var(--columns, 1) * 100% / var(--total-columns, 12));
         pointer-events: none;
         transition:
-          width 0.2s,
-          height 0.2s;
+          width ease-in-out 180ms,
+          height ease-in-out 180ms;
       }
     `,
   ];
