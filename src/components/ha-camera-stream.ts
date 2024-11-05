@@ -7,6 +7,8 @@ import {
   type PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
+import memoizeOne from "memoize-one";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { supportsFeature } from "../common/entity/supports-feature";
 import {
@@ -23,6 +25,13 @@ import {
 import type { HomeAssistant } from "../types";
 import "./ha-hls-player";
 import "./ha-web-rtc-player";
+
+const MJPEG_STREAM = "mjpeg";
+
+type Stream = {
+  type: StreamType | typeof MJPEG_STREAM;
+  visible: boolean;
+};
 
 @customElement("ha-camera-stream")
 export class HaCameraStream extends LitElement {
@@ -46,8 +55,6 @@ export class HaCameraStream extends LitElement {
 
   @state() private _capabilities?: CameraCapabilities;
 
-  @state() private _streamType?: StreamType;
-
   @state() private _hlsStreams?: { hasAudio: boolean; hasVideo: boolean };
 
   @state() private _webRtcStreams?: { hasAudio: boolean; hasVideo: boolean };
@@ -55,7 +62,6 @@ export class HaCameraStream extends LitElement {
   public willUpdate(changedProps: PropertyValues): void {
     if (
       changedProps.has("stateObj") &&
-      !this._shouldRenderMJPEG &&
       this.stateObj &&
       (changedProps.get("stateObj") as CameraEntity | undefined)?.entity_id !==
         this.stateObj.entity_id
@@ -79,52 +85,63 @@ export class HaCameraStream extends LitElement {
     if (!this.stateObj) {
       return nothing;
     }
-    if (__DEMO__ || this._shouldRenderMJPEG) {
+    const streams = this._streams(
+      this._capabilities?.frontend_stream_types,
+      this._hlsStreams,
+      this._webRtcStreams
+    );
+    return html`${repeat(
+      streams,
+      (stream) => stream.type + this.stateObj!.entity_id,
+      (stream) => this._renderStream(stream)
+    )}`;
+  }
+
+  private _renderStream(stream: Stream) {
+    if (!this.stateObj) {
+      return nothing;
+    }
+    if (stream.type === MJPEG_STREAM) {
       return html`<img
         .src=${__DEMO__
           ? this.stateObj.attributes.entity_picture!
           : this._connected
             ? computeMJPEGStreamUrl(this.stateObj)
-            : ""}
+            : this._posterUrl || ""}
         alt=${`Preview of the ${computeStateName(this.stateObj)} camera.`}
       />`;
     }
-    return html`${this._streamType === STREAM_TYPE_HLS ||
-    (!this._streamType &&
-      this._capabilities?.frontend_stream_types.includes(STREAM_TYPE_HLS))
-      ? html`<ha-hls-player
-          autoplay
-          playsinline
-          .allowExoPlayer=${this.allowExoPlayer}
-          .muted=${this.muted}
-          .controls=${this.controls}
-          .hass=${this.hass}
-          .entityid=${this.stateObj.entity_id}
-          .posterUrl=${this._posterUrl}
-          @streams=${this._handleHlsStreams}
-          class=${!this._streamType && this._webRtcStreams?.hasVideo
-            ? "hidden"
-            : ""}
-        ></ha-hls-player>`
-      : nothing}
-    ${this._streamType === STREAM_TYPE_WEB_RTC ||
-    (!this._streamType &&
-      this._capabilities?.frontend_stream_types.includes(STREAM_TYPE_WEB_RTC))
-      ? html`<ha-web-rtc-player
-          autoplay
-          playsinline
-          .muted=${this.muted}
-          .controls=${this.controls}
-          .hass=${this.hass}
-          .entityid=${this.stateObj.entity_id}
-          .posterUrl=${this._posterUrl}
-          @streams=${this._handleWebRtcStreams}
-          class=${this._streamType !== STREAM_TYPE_WEB_RTC &&
-          !this._webRtcStreams
-            ? "hidden"
-            : ""}
-        ></ha-web-rtc-player>`
-      : nothing}`;
+
+    if (stream.type === STREAM_TYPE_HLS) {
+      return html`<ha-hls-player
+        autoplay
+        playsinline
+        .allowExoPlayer=${this.allowExoPlayer}
+        .muted=${this.muted}
+        .controls=${this.controls}
+        .hass=${this.hass}
+        .entityid=${this.stateObj.entity_id}
+        .posterUrl=${this._posterUrl}
+        @streams=${this._handleHlsStreams}
+        class=${stream.visible ? "" : "hidden"}
+      ></ha-hls-player>`;
+    }
+
+    if (stream.type === STREAM_TYPE_WEB_RTC) {
+      return html`<ha-web-rtc-player
+        autoplay
+        playsinline
+        .muted=${this.muted}
+        .controls=${this.controls}
+        .hass=${this.hass}
+        .entityid=${this.stateObj.entity_id}
+        .posterUrl=${this._posterUrl}
+        @streams=${this._handleWebRtcStreams}
+        class=${stream.visible ? "" : "hidden"}
+      ></ha-web-rtc-player>`;
+    }
+
+    return nothing;
   }
 
   private async _getCapabilities() {
@@ -132,35 +149,13 @@ export class HaCameraStream extends LitElement {
     this._hlsStreams = undefined;
     this._webRtcStreams = undefined;
     if (!supportsFeature(this.stateObj!, CAMERA_SUPPORT_STREAM)) {
+      this._capabilities = { frontend_stream_types: [] };
       return;
     }
     this._capabilities = await fetchCameraCapabilities(
       this.hass!,
       this.stateObj!.entity_id
     );
-    if (this._capabilities.frontend_stream_types.length === 1) {
-      this._streamType = this._capabilities.frontend_stream_types[0];
-    }
-  }
-
-  private get _shouldRenderMJPEG() {
-    if (!supportsFeature(this.stateObj!, CAMERA_SUPPORT_STREAM)) {
-      // Steaming is not supported by the camera so fallback to MJPEG stream
-      return true;
-    }
-    if (
-      this._capabilities &&
-      (!this._capabilities.frontend_stream_types.includes(STREAM_TYPE_HLS) ||
-        this._hlsStreams?.hasVideo === false) &&
-      (!this._capabilities.frontend_stream_types.includes(
-        STREAM_TYPE_WEB_RTC
-      ) ||
-        this._webRtcStreams?.hasVideo === false)
-    ) {
-      // No video in HLS stream and no video in WebRTC stream
-      return true;
-    }
-    return false;
   }
 
   private async _getPosterUrl(): Promise<void> {
@@ -179,28 +174,87 @@ export class HaCameraStream extends LitElement {
 
   private _handleHlsStreams(ev: CustomEvent) {
     this._hlsStreams = ev.detail;
-    this._pickStreamType();
   }
 
   private _handleWebRtcStreams(ev: CustomEvent) {
     this._webRtcStreams = ev.detail;
-    this._pickStreamType();
   }
 
-  private _pickStreamType() {
-    if (!this._hlsStreams || !this._webRtcStreams) {
-      return;
+  private _streams = memoizeOne(
+    (
+      supportedTypes?: StreamType[],
+      hlsStreams?: { hasAudio: boolean; hasVideo: boolean },
+      webRtcStreams?: { hasAudio: boolean; hasVideo: boolean }
+    ): Stream[] => {
+      if (__DEMO__) {
+        return [{ type: MJPEG_STREAM, visible: true }];
+      }
+      if (!supportedTypes) {
+        return [];
+      }
+      if (supportedTypes.length === 0) {
+        // doesn't support any stream type, fallback to mjpeg
+        return [{ type: MJPEG_STREAM, visible: true }];
+      }
+      if (supportedTypes.length === 1) {
+        // only 1 stream type, no need to choose
+        if (
+          (supportedTypes[0] === STREAM_TYPE_HLS &&
+            hlsStreams?.hasVideo === false) ||
+          (supportedTypes[0] === STREAM_TYPE_WEB_RTC &&
+            webRtcStreams?.hasVideo === false)
+        ) {
+          // stream failed to load, fallback to mjpeg
+          return [{ type: MJPEG_STREAM, visible: true }];
+        }
+        return [{ type: supportedTypes[0], visible: true }];
+      }
+      if (hlsStreams && webRtcStreams) {
+        // fully loaded
+        if (
+          hlsStreams.hasVideo &&
+          hlsStreams.hasAudio &&
+          !webRtcStreams.hasAudio
+        ) {
+          // webRTC stream is missing audio, use HLS
+          return [{ type: STREAM_TYPE_HLS, visible: true }];
+        }
+        if (webRtcStreams.hasVideo) {
+          return [{ type: STREAM_TYPE_WEB_RTC, visible: true }];
+        }
+        // both streams failed to load, fallback to mjpeg
+        return [{ type: MJPEG_STREAM, visible: true }];
+      }
+
+      if (hlsStreams?.hasVideo !== webRtcStreams?.hasVideo) {
+        // one of the two streams is loaded, or errored
+        // choose the one that has video or is still loading
+        if (hlsStreams?.hasVideo) {
+          return [
+            { type: STREAM_TYPE_HLS, visible: true },
+            { type: STREAM_TYPE_WEB_RTC, visible: false },
+          ];
+        }
+        if (hlsStreams?.hasVideo === false) {
+          return [{ type: STREAM_TYPE_WEB_RTC, visible: true }];
+        }
+        if (webRtcStreams?.hasVideo) {
+          return [
+            { type: STREAM_TYPE_WEB_RTC, visible: true },
+            { type: STREAM_TYPE_HLS, visible: false },
+          ];
+        }
+        if (webRtcStreams?.hasVideo === false) {
+          return [{ type: STREAM_TYPE_HLS, visible: true }];
+        }
+      }
+
+      return [
+        { type: STREAM_TYPE_HLS, visible: true },
+        { type: STREAM_TYPE_WEB_RTC, visible: false },
+      ];
     }
-    if (
-      this._hlsStreams.hasVideo &&
-      this._hlsStreams.hasAudio &&
-      !this._webRtcStreams.hasAudio
-    ) {
-      this._streamType = STREAM_TYPE_HLS;
-    } else if (this._webRtcStreams.hasVideo) {
-      this._streamType = STREAM_TYPE_WEB_RTC;
-    }
-  }
+  );
 
   static get styles(): CSSResultGroup {
     return css`

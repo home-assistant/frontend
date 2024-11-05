@@ -6887,8 +6887,6 @@
             }
           },
           "sections": {
-            "description": "This dashboard is using the sections view released in Home Assistant 2024.3. Learn more about it in this {blog_post}.",
-            "description_blog_post": "blog post",
             "titles": {
               "welcome": "Welcome",
               "living_room": "Living room",
