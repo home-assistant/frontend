@@ -271,7 +271,9 @@ class ErrorLogCard extends LitElement {
               slot="trailingIcon"
             ></ha-svg-icon>
           </ha-button>
-          ${this._streamSupported && this._loadingState !== "loading"
+          ${this._streamSupported &&
+          this._loadingState !== "loading" &&
+          !this._error
             ? html`<div class="live-indicator">
                 <ha-svg-icon path=${mdiCircle}></ha-svg-icon>
                 Live
@@ -665,6 +667,9 @@ class ErrorLogCard extends LitElement {
   }
 
   static styles: CSSResultGroup = css`
+    :host {
+      direction: var(--direction);
+    }
     .error-log-intro {
       text-align: center;
       margin: 16px;
@@ -714,7 +719,7 @@ class ErrorLogCard extends LitElement {
       position: relative;
       font-family: var(--code-font-family, monospace);
       clear: both;
-      text-align: left;
+      text-align: start;
       padding-top: 12px;
       padding-bottom: 12px;
       overflow-y: scroll;
@@ -794,7 +799,7 @@ class ErrorLogCard extends LitElement {
     .live-indicator {
       position: absolute;
       bottom: 0;
-      right: 16px;
+      inset-inline-end: 16px;
       border-top-right-radius: 8px;
       border-top-left-radius: 8px;
       background-color: var(--primary-color);
