@@ -11,8 +11,8 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { deepEqual } from "../../../common/util/deep-equal";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
-import "../../../components/ha-card";
 import "../../../components/ha-alert";
+import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/map/ha-map";
 import type {
@@ -23,15 +23,15 @@ import type {
 } from "../../../components/map/ha-map";
 import type { HistoryStates } from "../../../data/history";
 import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
+import type { HomeAssistant } from "../../../types";
+import { findEntities } from "../common/find-entities";
 import {
   hasConfigChanged,
   hasConfigOrEntitiesChanged,
 } from "../common/has-changed";
-import type { HomeAssistant } from "../../../types";
-import { findEntities } from "../common/find-entities";
 import { processConfigEntities } from "../common/process-config-entities";
 import type { EntityConfig } from "../entity-rows/types";
-import type { LovelaceCard, LovelaceLayoutOptions } from "../types";
+import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import type { MapCardConfig } from "./types";
 
 export const DEFAULT_HOURS_TO_SHOW = 0;
@@ -431,12 +431,12 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
   );
 
-  public getLayoutOptions(): LovelaceLayoutOptions {
+  public getGridOptions(): LovelaceGridOptions {
     return {
-      grid_columns: "full",
-      grid_rows: 4,
-      grid_min_columns: 2,
-      grid_min_rows: 2,
+      columns: "full",
+      rows: 4,
+      min_columns: 6,
+      min_rows: 2,
     };
   }
 

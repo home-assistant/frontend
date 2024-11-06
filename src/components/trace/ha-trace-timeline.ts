@@ -28,7 +28,10 @@ export class HaTraceTimeline extends LitElement {
         allowPick
       >
       </hat-trace-timeline>
-      <hat-logbook-note .domain=${this.trace.domain}></hat-logbook-note>
+      <hat-logbook-note
+        .hass=${this.hass}
+        .domain=${this.trace.domain}
+      ></hat-logbook-note>
     `;
   }
 
