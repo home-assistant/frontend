@@ -64,12 +64,15 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { debounce } from "../../../common/util/debounce";
 import { showDownloadLogsDialog } from "./show-dialog-download-logs";
 import type { HaMenu } from "../../../components/ha-menu";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 
 const NUMBER_OF_LINES = 100;
 
 @customElement("error-log-card")
 class ErrorLogCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public localizeFunc?: LocalizeFunc<any>;
 
   @property() public filter = "";
 
@@ -131,6 +134,7 @@ class ErrorLogCard extends LitElement {
   @state() private _logsFileLink;
 
   protected render(): TemplateResult {
+    const localize = this.localizeFunc || this.hass.localize;
     return html`
       <div class="error-log-intro">
         ${this._error
@@ -139,8 +143,7 @@ class ErrorLogCard extends LitElement {
         <ha-card outlined class=${classMap({ hidden: this.show === false })}>
           <div class="header">
             <h1 class="card-header">
-              ${this.header ||
-              this.hass.localize("ui.panel.config.logs.show_full_logs")}
+              ${this.header || localize("ui.panel.config.logs.show_full_logs")}
             </h1>
             <div class="action-buttons">
               ${this._streamSupported &&
@@ -148,17 +151,16 @@ class ErrorLogCard extends LitElement {
               this._showBootsSelect
                 ? html`
                     <ha-assist-chip
-                      .title=${this.hass.localize(
+                      .title=${localize(
                         "ui.panel.config.logs.haos_boots_title"
                       )}
                       .label=${this._boot === 0
-                        ? this.hass.localize("ui.panel.config.logs.current")
+                        ? localize("ui.panel.config.logs.current")
                         : this._boot === -1
-                          ? this.hass.localize("ui.panel.config.logs.previous")
-                          : this.hass.localize(
-                              "ui.panel.config.logs.startups_ago",
-                              { boot: this._boot * -1 }
-                            )}
+                          ? localize("ui.panel.config.logs.previous")
+                          : localize("ui.panel.config.logs.startups_ago", {
+                              boot: this._boot * -1,
+                            })}
                       id="boots-anchor"
                       @click=${this._toggleBootsMenu}
                     >
@@ -180,14 +182,10 @@ class ErrorLogCard extends LitElement {
                             .selected=${boot === this._boot}
                           >
                             ${boot === 0
-                              ? this.hass.localize(
-                                  "ui.panel.config.logs.current"
-                                )
+                              ? localize("ui.panel.config.logs.current")
                               : boot === -1
-                                ? this.hass.localize(
-                                    "ui.panel.config.logs.previous"
-                                  )
-                                : this.hass.localize(
+                                ? localize("ui.panel.config.logs.previous")
+                                : localize(
                                     "ui.panel.config.logs.startups_ago",
                                     { boot: boot * -1 }
                                   )}
@@ -207,9 +205,7 @@ class ErrorLogCard extends LitElement {
                     <ha-icon-button
                       .path=${mdiDownload}
                       @click=${this._downloadLogs}
-                      .label=${this.hass.localize(
-                        "ui.panel.config.logs.download_logs"
-                      )}
+                      .label=${localize("ui.panel.config.logs.download_logs")}
                     ></ha-icon-button>
                   `
                 : this._logsFileLink
@@ -221,7 +217,7 @@ class ErrorLogCard extends LitElement {
                       >
                         <ha-icon-button
                           .path=${mdiDownload}
-                          .label=${this.hass.localize(
+                          .label=${localize(
                             "ui.panel.config.logs.download_logs"
                           )}
                         ></ha-icon-button>
@@ -231,7 +227,7 @@ class ErrorLogCard extends LitElement {
               <ha-icon-button
                 .path=${this._wrapLines ? mdiWrapDisabled : mdiWrap}
                 @click=${this._toggleLineWrap}
-                .label=${this.hass.localize(
+                .label=${localize(
                   `ui.panel.config.logs.${this._wrapLines ? "full_width" : "wrap_lines"}`
                 )}
               ></ha-icon-button>
@@ -239,7 +235,7 @@ class ErrorLogCard extends LitElement {
                 ? html`<ha-icon-button
                     .path=${mdiRefresh}
                     @click=${this._loadLogs}
-                    .label=${this.hass.localize("ui.common.refresh")}
+                    .label=${localize("ui.common.refresh")}
                   ></ha-icon-button>`
                 : nothing}
               <ha-button-menu @action=${this._handleOverflowAction}>
@@ -250,7 +246,7 @@ class ErrorLogCard extends LitElement {
                     slot="graphic"
                     .path=${mdiFormatListNumbered}
                   ></ha-svg-icon>
-                  ${this.hass.localize(
+                  ${localize(
                     `ui.panel.config.logs.${this._showBootsSelect ? "hide" : "show"}_haos_boots`
                   )}
                 </ha-list-item>
@@ -267,22 +263,17 @@ class ErrorLogCard extends LitElement {
                 </div>`
               : nothing}
             ${this._loadingState === "loading"
-              ? html`<div>
-                  ${this.hass.localize("ui.panel.config.logs.loading_log")}
-                </div>`
+              ? html`<div>${localize("ui.panel.config.logs.loading_log")}</div>`
               : this._loadingState === "empty"
-                ? html`<div>
-                    ${this.hass.localize("ui.panel.config.logs.no_errors")}
-                  </div>`
+                ? html`<div>${localize("ui.panel.config.logs.no_errors")}</div>`
                 : nothing}
             ${this._loadingState === "loaded" &&
             this.filter &&
             this._noSearchResults
               ? html`<div>
-                  ${this.hass.localize(
-                    "ui.panel.config.logs.no_issues_search",
-                    { term: this.filter }
-                  )}
+                  ${localize("ui.panel.config.logs.no_issues_search", {
+                    term: this.filter,
+                  })}
                 </div>`
               : nothing}
             <ha-ansi-to-html
@@ -303,7 +294,7 @@ class ErrorLogCard extends LitElement {
               .path=${mdiArrowCollapseDown}
               slot="icon"
             ></ha-svg-icon>
-            ${this.hass.localize("ui.panel.config.logs.scroll_down_button")}
+            ${localize("ui.panel.config.logs.scroll_down_button")}
             <ha-svg-icon
               .path=${mdiArrowCollapseDown}
               slot="trailingIcon"
@@ -324,14 +315,12 @@ class ErrorLogCard extends LitElement {
                 ? html`
                     <ha-button outlined @click=${this._downloadLogs}>
                       <ha-svg-icon .path=${mdiDownload}></ha-svg-icon>
-                      ${this.hass.localize(
-                        "ui.panel.config.logs.download_logs"
-                      )}
+                      ${localize("ui.panel.config.logs.download_logs")}
                     </ha-button>
                   `
                 : nothing}
               <mwc-button raised @click=${this._showLogs}>
-                ${this.hass.localize("ui.panel.config.logs.load_logs")}
+                ${localize("ui.panel.config.logs.load_logs")}
               </mwc-button>
             `
           : nothing}
@@ -568,10 +557,13 @@ class ErrorLogCard extends LitElement {
       if (err.name === "AbortError") {
         return;
       }
-      this._error = this.hass.localize("ui.panel.config.logs.failed_get_logs", {
-        provider: this.provider,
-        error: extractApiErrorMessage(err),
-      });
+      this._error = (this.localizeFunc || this.hass.localize)(
+        "ui.panel.config.logs.failed_get_logs",
+        {
+          provider: this.provider,
+          error: extractApiErrorMessage(err),
+        }
+      );
     }
   }
 

@@ -38,12 +38,13 @@ class HassioAddonLogDashboard extends LitElement {
           @value-changed=${this._filterChanged}
           .hass=${this.hass}
           .filter=${this._filter}
-          .label=${this.hass.localize("ui.panel.config.logs.search")}
+          .label=${this.supervisor.localize("ui.panel.config.logs.search")}
         ></search-input>
       </div>
       <div class="content">
         <error-log-card
           .hass=${this.hass}
+          .localizeFunc=${this.supervisor.localize}
           .header=${this.addon.name}
           .provider=${this.addon.slug}
           show
