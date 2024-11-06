@@ -2,11 +2,11 @@ import { mdiEarth, mdiMicrophoneMessage, mdiOpenInNew } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-button";
+import "../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import { AssistantSetupStyles } from "./styles";
-import "../../components/ha-button";
-import "../../components/ha-svg-icon";
 
 @customElement("ha-voice-assistant-setup-step-cloud")
 export class HaVoiceAssistantSetupStepCloud extends LitElement {

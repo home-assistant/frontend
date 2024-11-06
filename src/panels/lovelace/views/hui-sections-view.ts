@@ -1,22 +1,31 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import { mdiDelete, mdiDrag, mdiPencil, mdiViewGridPlus } from "@mdi/js";
+import {
+  mdiDelete,
+  mdiDrag,
+  mdiEyeOff,
+  mdiPencil,
+  mdiViewGridPlus,
+} from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
+import memoizeOne from "memoize-one";
 import { clamp } from "../../../common/number/clamp";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-ripple";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
-import "../../../components/ha-ripple";
 import type { LovelaceViewElement } from "../../../data/lovelace";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
 import type { HuiBadge } from "../badges/hui-badge";
 import "../badges/hui-view-badges";
+import type { HuiCard } from "../cards/hui-card";
 import "../components/hui-badge-edit-mode";
 import { addSection, deleteSection, moveSection } from "../editor/config-util";
 import { findLovelaceContainer } from "../editor/lovelace-path";
@@ -41,6 +50,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   @property({ attribute: false }) public sections: HuiSection[] = [];
 
   @property({ attribute: false }) public badges: HuiBadge[] = [];
+
+  @property({ attribute: false }) public cards: HuiCard[] = [];
 
   @state() private _config?: LovelaceViewConfig;
 
@@ -235,10 +246,46 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                 </button>
               `
             : nothing}
+          ${editMode && this._config?.cards?.length
+            ? html`
+                <div class="section imported-cards">
+                  <div class="imported-card-header">
+                    <p class="title">
+                      <ha-svg-icon .path=${mdiEyeOff}></ha-svg-icon>
+                      ${this.hass.localize(
+                        "ui.panel.lovelace.editor.section.imported_cards_title"
+                      )}
+                    </p>
+                    <p class="subtitle">
+                      ${this.hass.localize(
+                        "ui.panel.lovelace.editor.section.imported_cards_description"
+                      )}
+                    </p>
+                  </div>
+                  <hui-section
+                    .lovelace=${this.lovelace}
+                    .hass=${this.hass}
+                    .config=${this._importedCardSectionConfig(
+                      this._config.cards
+                    )}
+                    .viewIndex=${this.index}
+                    preview
+                    import-only
+                  ></hui-section>
+                </div>
+              `
+            : nothing}
         </div>
       </ha-sortable>
     `;
   }
+
+  private _importedCardSectionConfig = memoizeOne(
+    (cards: LovelaceCardConfig[]) => ({
+      type: "grid",
+      cards,
+    })
+  );
 
   private _createSection(): void {
     const newConfig = addSection(this.lovelace!.config, this.index!, {
@@ -431,6 +478,38 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         --mdc-icon-button-size: 36px;
         --mdc-icon-size: 20px;
         color: var(--primary-text-color);
+      }
+
+      .imported-cards {
+        --column-span: var(--column-count);
+        --row-span: 1;
+        order: 2;
+      }
+
+      .imported-card-header {
+        margin-top: 36px;
+        padding: 32px 0 16px 0;
+        border-top: 4px dotted var(--divider-color);
+      }
+
+      .imported-card-header .title {
+        margin: 0;
+        color: var(--primary-text-color);
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 24px;
+        --mdc-icon-size: 18px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 8px;
+      }
+      .imported-card-header .subtitle {
+        margin: 0;
+        color: var(--secondary-text-color);
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 20px;
       }
     `;
   }

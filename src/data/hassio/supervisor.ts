@@ -193,7 +193,7 @@ export const fetchHassioLogs = async (
 ) =>
   hass.callApiRaw(
     "GET",
-    `hassio/${provider.includes("_") ? `addons/${provider}` : provider}/logs/boots/${boot}`,
+    `hassio/${provider.includes("_") ? `addons/${provider}` : provider}/logs${boot !== 0 ? `/boots/${boot}` : ""}`,
     undefined,
     range
       ? {
@@ -211,7 +211,7 @@ export const fetchHassioLogsFollow = async (
 ) =>
   hass.callApiRaw(
     "GET",
-    `hassio/${provider.includes("_") ? `addons/${provider}` : provider}/logs/boots/${boot}/follow?lines=${lines}`,
+    `hassio/${provider.includes("_") ? `addons/${provider}` : provider}/logs${boot !== 0 ? `/boots/${boot}` : ""}/follow?lines=${lines}`,
     undefined,
     undefined,
     signal
@@ -229,7 +229,7 @@ export const getHassioLogDownloadLinesUrl = (
 ) =>
   `/api/hassio/${
     provider.includes("_") ? `addons/${provider}` : provider
-  }/logs/boots/${boot}?lines=${lines}`;
+  }/logs${boot !== 0 ? `/boots/${boot}` : ""}?lines=${lines}`;
 
 export const setSupervisorOption = async (
   hass: HomeAssistant,

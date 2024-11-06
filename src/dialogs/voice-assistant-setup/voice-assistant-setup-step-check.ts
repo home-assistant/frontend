@@ -1,11 +1,12 @@
 import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-button";
+import "../../components/ha-circular-progress";
 import { testAssistSatelliteConnection } from "../../data/assist_satellite";
 import type { HomeAssistant } from "../../types";
 import { AssistantSetupStyles } from "./styles";
-import "../../components/ha-circular-progress";
-import "../../components/ha-button";
+import { documentationUrl } from "../../util/documentation-url";
 
 @customElement("ha-voice-assistant-setup-step-check")
 export class HaVoiceAssistantSetupStepCheck extends LitElement {
@@ -35,7 +36,7 @@ export class HaVoiceAssistantSetupStepCheck extends LitElement {
   protected override render() {
     return html`<div class="content">
       ${this._status === "timeout"
-        ? html`<img src="/static/images/voice-assistant/error.gif" />
+        ? html`<img src="/static/images/voice-assistant/error.png" />
             <h1>The voice assistant is unable to connect to Home Assistant</h1>
             <p class="secondary">
               To play audio, the voice assistant device has to connect to Home
@@ -44,12 +45,15 @@ export class HaVoiceAssistantSetupStepCheck extends LitElement {
             </p>
             <div class="footer">
               <a
-                href="https://www.home-assistant.io/docs/configuration/remote/#adding-a-remote-url-to-home-assistant"
+                href=${documentationUrl(
+                  this.hass,
+                  "/voice_control/troubleshooting/#i-dont-get-a-voice-response"
+                )}
                 ><ha-button>Help me</ha-button></a
               >
               <ha-button @click=${this._testConnection}>Retry</ha-button>
             </div>`
-        : html`<img src="/static/images/voice-assistant/hi.gif" />
+        : html`<img src="/static/images/voice-assistant/hi.png" />
             <h1>Hi</h1>
             <p class="secondary">
               Over the next couple steps we're going to personalize your voice

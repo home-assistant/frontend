@@ -1,9 +1,9 @@
-import { MdListItem } from "@material/web/list/list-item";
+import { MdFilledSelect } from "@material/web/select/filled-select";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 
-@customElement("ha-md-list-item")
-export class HaMdListItem extends MdListItem {
+@customElement("ha-md-select")
+export class HaMdSelect extends MdFilledSelect {
   static override styles = [
     ...super.styles,
     css`
@@ -12,11 +12,14 @@ export class HaMdListItem extends MdListItem {
         --md-sys-color-primary: var(--primary-text-color);
         --md-sys-color-secondary: var(--secondary-text-color);
         --md-sys-color-surface: var(--card-background-color);
-        --md-sys-color-on-surface: var(--primary-text-color);
         --md-sys-color-on-surface-variant: var(--secondary-text-color);
-      }
-      md-item {
-        overflow: var(--md-item-overflow, hidden);
+
+        --md-sys-color-surface-container-highest: var(--input-fill-color);
+        --md-sys-color-on-surface: var(--input-ink-color);
+
+        --md-sys-color-surface-container: var(--input-fill-color);
+        --md-sys-color-secondary-container: var(--input-fill-color);
+        --md-menu-container-color: var(--card-background-color);
       }
     `,
   ];
@@ -24,6 +27,6 @@ export class HaMdListItem extends MdListItem {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-md-list-item": HaMdListItem;
+    "ha-md-select": HaMdSelect;
   }
 }

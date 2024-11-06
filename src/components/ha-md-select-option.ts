@@ -1,9 +1,9 @@
-import { MdListItem } from "@material/web/list/list-item";
+import { MdSelectOption } from "@material/web/select/select-option";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 
-@customElement("ha-md-list-item")
-export class HaMdListItem extends MdListItem {
+@customElement("ha-md-select-option")
+export class HaMdSelectOption extends MdSelectOption {
   static override styles = [
     ...super.styles,
     css`
@@ -15,15 +15,12 @@ export class HaMdListItem extends MdListItem {
         --md-sys-color-on-surface: var(--primary-text-color);
         --md-sys-color-on-surface-variant: var(--secondary-text-color);
       }
-      md-item {
-        overflow: var(--md-item-overflow, hidden);
-      }
     `,
   ];
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-md-list-item": HaMdListItem;
+    "ha-md-select-option": HaMdSelectOption;
   }
 }

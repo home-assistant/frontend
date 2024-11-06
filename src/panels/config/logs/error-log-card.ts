@@ -570,9 +570,14 @@ class ErrorLogCard extends LitElement {
     if (this._streamSupported && isComponentLoaded(this.hass, "hassio")) {
       try {
         const { data } = await fetchHassioBoots(this.hass);
-        this._boots = Object.keys(data.boots)
+        const boots = Object.keys(data.boots)
           .map(Number)
           .sort((a, b) => b - a);
+
+        // only show boots select when there are more than one boot
+        if (boots.length > 1) {
+          this._boots = boots;
+        }
       } catch (err: any) {
         // eslint-disable-next-line no-console
         console.error(err);

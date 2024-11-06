@@ -833,6 +833,10 @@ class HUIRoot extends LitElement {
     showEditViewDialog(this, {
       lovelace: this.lovelace!,
       viewIndex: this._curView as number,
+      saveCallback: (viewIndex: number, viewConfig: LovelaceViewConfig) => {
+        const path = viewConfig.path || viewIndex;
+        this._navigateToView(path);
+      },
     });
   }
 

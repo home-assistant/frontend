@@ -374,6 +374,9 @@ export class HassioBackups extends LitElement {
       haStyle,
       hassioStyle,
       css`
+        :host {
+          color: var(--primary-text-color);
+        }
         .table-header {
           display: flex;
           justify-content: space-between;

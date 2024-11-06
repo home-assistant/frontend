@@ -6,6 +6,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -19,7 +20,6 @@ import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { formatAsPaddedHex, sortZHAGroups } from "./functions";
 import { zhaTabs } from "./zha-config-dashboard";
-import type { LocalizeFunc } from "../../../../../common/translations/localize";
 
 export interface GroupRowData extends ZHAGroup {
   group?: GroupRowData;

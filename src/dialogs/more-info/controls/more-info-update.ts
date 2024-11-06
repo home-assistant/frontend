@@ -143,7 +143,7 @@ class MoreInfoUpdate extends LitElement {
                   )}
                 </span>
                 <ha-switch
-                  id="create_backup"
+                  id="create-backup"
                   checked
                   .disabled=${updateIsInstalling(this.stateObj)}
                 ></ha-switch>
