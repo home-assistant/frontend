@@ -52,59 +52,61 @@ class MoreInfoUpdate extends LitElement {
 
     return html`
       <div class="content">
-        ${this.stateObj.attributes.in_progress
-          ? supportsFeature(this.stateObj, UpdateEntityFeature.PROGRESS) &&
-            this.stateObj.attributes.update_percentage !== null
-            ? html`<mwc-linear-progress
-                .progress=${this.stateObj.attributes.update_percentage / 100}
-                buffer=""
-              ></mwc-linear-progress>`
-            : html`<mwc-linear-progress indeterminate></mwc-linear-progress>`
-          : nothing}
-        <h3>${this.stateObj.attributes.title}</h3>
-        ${this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : nothing}
-        <div class="row">
-          <div class="key">
-            ${this.hass.formatEntityAttributeName(
-              this.stateObj,
-              "installed_version"
-            )}
+        <div class="summary">
+          ${this.stateObj.attributes.in_progress
+            ? supportsFeature(this.stateObj, UpdateEntityFeature.PROGRESS) &&
+              this.stateObj.attributes.update_percentage !== null
+              ? html`<mwc-linear-progress
+                  .progress=${this.stateObj.attributes.update_percentage / 100}
+                  buffer=""
+                ></mwc-linear-progress>`
+              : html`<mwc-linear-progress indeterminate></mwc-linear-progress>`
+            : nothing}
+          <h3>${this.stateObj.attributes.title}</h3>
+          ${this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing}
+          <div class="row">
+            <div class="key">
+              ${this.hass.formatEntityAttributeName(
+                this.stateObj,
+                "installed_version"
+              )}
+            </div>
+            <div class="value">
+              ${this.stateObj.attributes.installed_version ??
+              this.hass.localize("state.default.unavailable")}
+            </div>
           </div>
-          <div class="value">
-            ${this.stateObj.attributes.installed_version ??
-            this.hass.localize("state.default.unavailable")}
+          <div class="row">
+            <div class="key">
+              ${this.hass.formatEntityAttributeName(
+                this.stateObj,
+                "latest_version"
+              )}
+            </div>
+            <div class="value">
+              ${this.stateObj.attributes.latest_version ??
+              this.hass.localize("state.default.unavailable")}
+            </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="key">
-            ${this.hass.formatEntityAttributeName(
-              this.stateObj,
-              "latest_version"
-            )}
-          </div>
-          <div class="value">
-            ${this.stateObj.attributes.latest_version ??
-            this.hass.localize("state.default.unavailable")}
-          </div>
-        </div>
 
-        ${this.stateObj.attributes.release_url
-          ? html`<div class="row">
-              <div class="key">
-                <a
-                  href=${this.stateObj.attributes.release_url}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  ${this.hass.localize(
-                    "ui.dialogs.more_info_control.update.release_announcement"
-                  )}
-                </a>
-              </div>
-            </div>`
-          : nothing}
+          ${this.stateObj.attributes.release_url
+            ? html`<div class="row">
+                <div class="key">
+                  <a
+                    href=${this.stateObj.attributes.release_url}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    ${this.hass.localize(
+                      "ui.dialogs.more_info_control.update.release_announcement"
+                    )}
+                  </a>
+                </div>
+              </div>`
+            : nothing}
+        </div>
         ${supportsFeature(this.stateObj!, UpdateEntityFeature.RELEASE_NOTES) &&
         !this._error
           ? this._releaseNotes === undefined
@@ -293,6 +295,11 @@ class MoreInfoUpdate extends LitElement {
       ha-expansion-panel {
         margin: 16px 0;
       }
+
+      .summary {
+        margin-bottom: 16px;
+      }
+
       .row {
         margin: 0;
         display: flex;
@@ -308,7 +315,9 @@ class MoreInfoUpdate extends LitElement {
         );
         position: sticky;
         bottom: 0;
-        margin: 0 -24px -24px -24px;
+        margin: 0 -24px 0 -24px;
+        margin-bottom: calc(-1 * max(env(safe-area-inset-bottom), 24px));
+        padding-bottom: env(safe-area-inset-bottom);
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
