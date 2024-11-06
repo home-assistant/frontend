@@ -150,7 +150,7 @@ export class HuiCardLayoutEditor extends LitElement {
         : html`
             <ha-grid-size-picker
               style=${styleMap({
-                "max-width": `${(this.sectionConfig.column_span ?? 1) * 250 + 50}px`,
+                "max-width": `${(this.sectionConfig.column_span ?? 1) * 250 + 40}px`,
               })}
               .columns=${gridTotalColumns}
               .hass=${this.hass}
