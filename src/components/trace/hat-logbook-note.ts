@@ -16,7 +16,7 @@ class HatLogbookNote extends LitElement {
   }
 
   private async _loadTranslations() {
-    await this.hass.loadBackendTranslation("title", this.domain, true);
+    await this.hass.loadBackendTranslation("title", this.domain);
   }
 
   render() {
