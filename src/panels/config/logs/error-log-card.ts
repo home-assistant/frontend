@@ -238,19 +238,23 @@ class ErrorLogCard extends LitElement {
                     .label=${localize("ui.common.refresh")}
                   ></ha-icon-button>`
                 : nothing}
-              <ha-button-menu @action=${this._handleOverflowAction}>
-                <ha-icon-button slot="trigger" .path=${mdiDotsVertical}>
-                </ha-icon-button>
-                <ha-list-item graphic="icon">
-                  <ha-svg-icon
-                    slot="graphic"
-                    .path=${mdiFormatListNumbered}
-                  ></ha-svg-icon>
-                  ${localize(
-                    `ui.panel.config.logs.${this._showBootsSelect ? "hide" : "show"}_haos_boots`
-                  )}
-                </ha-list-item>
-              </ha-button-menu>
+              ${this._streamSupported && Array.isArray(this._boots)
+                ? html`
+                    <ha-button-menu @action=${this._handleOverflowAction}>
+                      <ha-icon-button slot="trigger" .path=${mdiDotsVertical}>
+                      </ha-icon-button>
+                      <ha-list-item graphic="icon">
+                        <ha-svg-icon
+                          slot="graphic"
+                          .path=${mdiFormatListNumbered}
+                        ></ha-svg-icon>
+                        ${localize(
+                          `ui.panel.config.logs.${this._showBootsSelect ? "hide" : "show"}_haos_boots`
+                        )}
+                      </ha-list-item>
+                    </ha-button-menu>
+                  `
+                : nothing}
             </div>
           </div>
           <div class="card-content error-log">
