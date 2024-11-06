@@ -3582,7 +3582,8 @@
               "disabled": "(disabled)",
               "triggered_by": "{triggeredBy, select, \n alias {{alias} triggered}\n other {Triggered} \n} {triggeredPath, select, \n trigger {by the {trigger}}\n other {manually} \n} at {time}",
               "path_error": "Unable to extract path {path}. Download trace and report as bug.",
-              "not_all_entries_are_related_note": "Not all shown logbook entries might be related to this {domain}."
+              "not_all_entries_are_related_automation_note": "Not all shown logbook entries might be related to this automation.",
+              "not_all_entries_are_related_script_note": "Not all shown logbook entries might be related to this script."
             }
           }
         },

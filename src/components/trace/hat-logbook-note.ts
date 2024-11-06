@@ -1,30 +1,21 @@
 import { css, LitElement } from "lit";
-import type { PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { HomeAssistant } from "../../types";
-import { domainToName } from "../../data/integration";
 
 @customElement("hat-logbook-note")
 class HatLogbookNote extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public domain = "automation";
-
-  protected firstUpdated(changedProperties: PropertyValues) {
-    super.firstUpdated(changedProperties);
-    this._loadTranslations();
-  }
-
-  private async _loadTranslations() {
-    await this.hass.loadBackendTranslation("title", this.domain);
-  }
+  @property() public domain: "automation" | "script" = "automation";
 
   render() {
+    if (this.domain == "script") {
+      return this.hass.localize(
+        "ui.panel.config.automation.trace.messages.not_all_entries_are_related_script_note"
+      );
+    }
     return this.hass.localize(
-      "ui.panel.config.automation.trace.messages.not_all_entries_are_related_note",
-      {
-        domain: domainToName(this.hass.localize, this.domain).toLowerCase(),
-      }
+      "ui.panel.config.automation.trace.messages.not_all_entries_are_related_automation_note"
     );
   }
 
