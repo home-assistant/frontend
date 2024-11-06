@@ -2492,10 +2492,15 @@
           "show_full_logs": "Show full logs",
           "select_number_of_lines": "Select number of lines to download",
           "lines": "Lines",
-          "download_full_log": "Download full log",
+          "download_logs": "Download logs",
           "scroll_down_button": "New logs - Click to scroll",
           "provider_not_found": "Log provider not found",
           "provider_not_available": "Logs for ''{provider}'' are not available on your system.",
+          "haos_boots_title": "Logs of HAOS startup",
+          "show_haos_boots": "Show HAOS startups",
+          "hide_haos_boots": "Hide HAOS startups",
+          "full_width": "Full width",
+          "wrap_lines": "Wrap lines",
           "current": "Current",
           "previous": "Previous",
           "startups_ago": "{boot} startups ago",
@@ -3581,7 +3586,9 @@
               "stopped_unknown_reason": "Stopped because of unknown reason {reason} at {time} (runtime: {executiontime} seconds)",
               "disabled": "(disabled)",
               "triggered_by": "{triggeredBy, select, \n alias {{alias} triggered}\n other {Triggered} \n} {triggeredPath, select, \n trigger {by the {trigger}}\n other {manually} \n} at {time}",
-              "path_error": "Unable to extract path {path}. Download trace and report as bug."
+              "path_error": "Unable to extract path {path}. Download trace and report as bug.",
+              "not_all_entries_are_related_automation_note": "Not all shown logbook entries might be related to this automation.",
+              "not_all_entries_are_related_script_note": "Not all shown logbook entries might be related to this script."
             }
           }
         },
@@ -7846,6 +7853,62 @@
             "show": "[%key:ui::components::data-table::settings::show%]",
             "done": "[%key:ui::components::data-table::settings::done%]",
             "restore": "[%key:ui::components::data-table::settings::restore%]"
+          }
+        }
+      },
+      "panel": {
+        "config": {
+          "logs": {
+            "caption": "[%key:ui::panel::config::logs::caption%]",
+            "description": "[%key:ui::panel::config::logs::description%]",
+            "details": "[%key:ui::panel::config::logs::details%]",
+            "search": "[%key:ui::panel::config::logs::search%]",
+            "failed_get_logs": "[%key:ui::panel::config::logs::failed_get_logs%]",
+            "no_issues_search": "[%key:ui::panel::config::logs::no_issues_search%]",
+            "load_logs": "[%key:ui::panel::config::logs::load_logs%]",
+            "nr_of_lines": "[%key:ui::panel::config::logs::nr_of_lines%]",
+            "loading_log": "[%key:ui::panel::config::logs::loading_log%]",
+            "no_errors": "[%key:ui::panel::config::logs::no_errors%]",
+            "no_issues": "[%key:ui::panel::config::logs::no_issues%]",
+            "clear": "[%key:ui::panel::config::logs::clear%]",
+            "refresh": "[%key:ui::panel::config::logs::refresh%]",
+            "copy": "[%key:ui::panel::config::logs::copy%]",
+            "log_provider": "[%key:ui::panel::config::logs::log_provider%]",
+            "multiple_messages": "[%key:ui::panel::config::logs::multiple_messages%]",
+            "level": {
+              "critical": "[%key:ui::panel::config::logs::level::critical%]",
+              "error": "[%key:ui::panel::config::logs::level::error%]",
+              "warning": "[%key:ui::panel::config::logs::level::warning%]",
+              "info": "[%key:ui::panel::config::logs::level::info%]",
+              "debug": "[%key:ui::panel::config::logs::level::debug%]"
+            },
+            "custom_integration": "[%key:ui::panel::config::logs::custom_integration%]",
+            "error_from_custom_integration": "[%key:ui::panel::config::logs::error_from_custom_integration%]",
+            "show_full_logs": "[%key:ui::panel::config::logs::show_full_logs%]",
+            "select_number_of_lines": "[%key:ui::panel::config::logs::select_number_of_lines%]",
+            "lines": "[%key:ui::panel::config::logs::lines%]",
+            "download_logs": "[%key:ui::panel::config::logs::download_logs%]",
+            "scroll_down_button": "[%key:ui::panel::config::logs::scroll_down_button%]",
+            "provider_not_found": "[%key:ui::panel::config::logs::provider_not_found%]",
+            "provider_not_available": "[%key:ui::panel::config::logs::provider_not_available%]",
+            "haos_boots_title": "[%key:ui::panel::config::logs::haos_boots_title%]",
+            "show_haos_boots": "[%key:ui::panel::config::logs::show_haos_boots%]",
+            "hide_haos_boots": "[%key:ui::panel::config::logs::hide_haos_boots%]",
+            "full_width": "[%key:ui::panel::config::logs::full_width%]",
+            "wrap_lines": "[%key:ui::panel::config::logs::wrap_lines%]",
+            "current": "[%key:ui::panel::config::logs::current%]",
+            "previous": "[%key:ui::panel::config::logs::previous%]",
+            "startups_ago": "[%key:ui::panel::config::logs::startups_ago%]",
+            "detail": {
+              "logger": "[%key:ui::panel::config::logs::detail::logger%]",
+              "source": "[%key:ui::panel::config::logs::detail::source%]",
+              "integration": "[%key:ui::panel::config::integrations::integration%]",
+              "documentation": "[%key:ui::panel::config::logs::detail::documentation%]",
+              "issues": "[%key:ui::panel::config::logs::detail::issues%]",
+              "first_occurred": "[%key:ui::panel::config::logs::detail::first_occurred%]",
+              "occurrences": "[%key:ui::panel::config::logs::detail::occurrences%]",
+              "last_logged": "[%key:ui::panel::config::logs::detail::last_logged%]"
+            }
           }
         }
       }

@@ -26,7 +26,7 @@ import type {
   LovelaceCard,
   LovelaceCardEditor,
   LovelaceHeaderFooter,
-  LovelaceLayoutOptions,
+  LovelaceGridOptions,
 } from "../types";
 import type { HuiErrorCard } from "./hui-error-card";
 import type { EntityCardConfig, StatisticCardConfig } from "./types";
@@ -249,12 +249,12 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
     fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
   }
 
-  public getLayoutOptions(): LovelaceLayoutOptions {
+  public getGridOptions(): LovelaceGridOptions {
     return {
-      grid_columns: 2,
-      grid_rows: 2,
-      grid_min_columns: 2,
-      grid_min_rows: 2,
+      columns: 6,
+      rows: 2,
+      min_columns: 6,
+      min_rows: 2,
     };
   }
 

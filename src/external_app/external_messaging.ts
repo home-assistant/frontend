@@ -264,6 +264,7 @@ export interface ExternalConfig {
   hasAssist: boolean;
   hasBarCodeScanner: number;
   canSetupImprov: boolean;
+  downloadFileSupported: boolean;
 }
 
 export class ExternalMessaging {
