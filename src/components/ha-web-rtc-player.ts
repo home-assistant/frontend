@@ -248,13 +248,11 @@ class HaWebRtcPlayer extends LitElement {
     if (event.type === "session") {
       this._sessionId = event.session_id;
       this._candidatesList.forEach((candidate) =>
-        // sdpMLineIndex is always populated
         addWebRtcCandidate(
           this.hass,
           this.entityid!,
           event.session_id,
-          candidate.candidate,
-          candidate.sdpMLineIndex || 0
+          candidate
         )
       );
       this._candidatesList = [];
@@ -269,10 +267,7 @@ class HaWebRtcPlayer extends LitElement {
 
       try {
         await this._peerConnection?.addIceCandidate(
-          new RTCIceCandidate({
-            candidate: event.candidate,
-            sdpMLineIndex: event.sdp_m_line_index,
-          })
+          new RTCIceCandidate(event.candidate)
         );
       } catch (err: any) {
         // eslint-disable-next-line no-console
@@ -297,14 +292,11 @@ class HaWebRtcPlayer extends LitElement {
     );
 
     if (this._sessionId) {
-      // sdpMLineIndex is always populated
-      const sdpMLineIndex = event.candidate?.sdpMLineIndex || 0;
       addWebRtcCandidate(
         this.hass,
         this.entityid,
         this._sessionId,
-        event.candidate?.candidate,
-        sdpMLineIndex
+        event.candidate
       );
     } else {
       this._candidatesList.push(event.candidate);
