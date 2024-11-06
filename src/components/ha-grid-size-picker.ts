@@ -18,7 +18,7 @@ export class HaGridSizeEditor extends LitElement {
 
   @property({ attribute: false }) public rows = 8;
 
-  @property({ attribute: false }) public columns = 4;
+  @property({ attribute: false }) public columns = 12;
 
   @property({ attribute: false }) public rowMin?: number;
 
@@ -29,6 +29,8 @@ export class HaGridSizeEditor extends LitElement {
   @property({ attribute: false }) public columnMax?: number;
 
   @property({ attribute: false }) public isDefault?: boolean;
+
+  @property({ attribute: false }) public step: number = 1;
 
   @state() public _localValue?: CardGridSize = { rows: 1, columns: 1 };
 
@@ -49,8 +51,9 @@ export class HaGridSizeEditor extends LitElement {
 
     const rowMin = this.rowMin ?? 1;
     const rowMax = this.rowMax ?? this.rows;
-    const columnMin = this.columnMin ?? 1;
-    const columnMax = this.columnMax ?? this.columns;
+    const columnMin = Math.ceil((this.columnMin ?? 1) / this.step) * this.step;
+    const columnMax =
+      Math.ceil((this.columnMax ?? this.columns) / this.step) * this.step;
     const rowValue = autoHeight ? rowMin : this._localValue?.rows;
     const columnValue = this._localValue?.columns;
 
@@ -65,6 +68,7 @@ export class HaGridSizeEditor extends LitElement {
           .max=${columnMax}
           .range=${this.columns}
           .value=${fullWidth ? this.columns : this.value?.columns}
+          .step=${this.step}
           @value-changed=${this._valueChanged}
           @slider-moved=${this._sliderMoved}
           .disabled=${disabledColumns}
@@ -112,6 +116,9 @@ export class HaGridSizeEditor extends LitElement {
                       .fill(0)
                       .map((__, columnIndex) => {
                         const column = columnIndex + 1;
+                        if (column % this.step !== 0) {
+                          return nothing;
+                        }
                         return html`
                           <td
                             data-row=${row}

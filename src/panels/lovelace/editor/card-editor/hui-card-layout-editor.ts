@@ -26,15 +26,11 @@ import type { HuiCard } from "../../cards/hui-card";
 import type { CardGridSize } from "../../common/compute-card-grid-size";
 import {
   computeCardGridSize,
-  divideBy,
   GRID_COLUMN_MULTIPLIER,
+  isPreciseMode,
   migrateLayoutToGridOptions,
-  multiplyBy,
 } from "../../common/compute-card-grid-size";
 import type { LovelaceGridOptions } from "../../types";
-
-const computePreciseMode = (columns?: number | string) =>
-  typeof columns === "number" && columns % 3 !== 0;
 
 @customElement("hui-card-layout-editor")
 export class HuiCardLayoutEditor extends LitElement {
@@ -63,22 +59,6 @@ export class HuiCardLayoutEditor extends LitElement {
 
   private _computeCardGridSize = memoizeOne(computeCardGridSize);
 
-  private _simplifyOptions = (
-    options: LovelaceGridOptions
-  ): LovelaceGridOptions => ({
-    ...options,
-    columns: divideBy(options.columns, GRID_COLUMN_MULTIPLIER),
-    max_columns: divideBy(options.max_columns, GRID_COLUMN_MULTIPLIER),
-    min_columns: divideBy(options.min_columns, GRID_COLUMN_MULTIPLIER),
-  });
-
-  private _standardizeOptions = (options: LovelaceGridOptions) => ({
-    ...options,
-    columns: multiplyBy(options.columns, GRID_COLUMN_MULTIPLIER),
-    max_columns: multiplyBy(options.max_columns, GRID_COLUMN_MULTIPLIER),
-    min_columns: multiplyBy(options.min_columns, GRID_COLUMN_MULTIPLIER),
-  });
-
   private _isDefault = memoizeOne(
     (options?: LovelaceGridOptions) =>
       options?.columns === undefined && options?.rows === undefined
@@ -101,14 +81,11 @@ export class HuiCardLayoutEditor extends LitElement {
       this._defaultGridOptions
     );
 
-    const gridOptions = this._preciseMode
-      ? options
-      : this._simplifyOptions(options);
+    const gridOptions = options;
     const gridValue = this._computeCardGridSize(gridOptions);
 
     const columnSpan = this.sectionConfig.column_span ?? 1;
-    const gridTotalColumns =
-      (12 * columnSpan) / (this._preciseMode ? 1 : GRID_COLUMN_MULTIPLIER);
+    const gridTotalColumns = 12 * columnSpan;
 
     return html`
       <div class="header">
@@ -184,6 +161,7 @@ export class HuiCardLayoutEditor extends LitElement {
               .rowMax=${gridOptions.max_rows}
               .columnMin=${gridOptions.min_columns}
               .columnMax=${gridOptions.max_columns}
+              .step=${this._preciseMode ? 1 : GRID_COLUMN_MULTIPLIER}
             ></ha-grid-size-picker>
             <ha-settings-row>
               <span slot="heading" data-for="full-width">
@@ -267,16 +245,20 @@ export class HuiCardLayoutEditor extends LitElement {
   protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
     if (changedProps.has("config")) {
-      const columns = this.config.grid_options?.columns;
-      const preciseMode = computePreciseMode(columns);
+      const options = this.config.grid_options;
+
+      // Reset precise mode when grid options config is reset
+      if (!options) {
+        this._preciseMode = this._defaultGridOptions
+          ? isPreciseMode(this._defaultGridOptions)
+          : false;
+        return;
+      }
+
       // Force precise mode if columns count is not a multiple of 3
+      const preciseMode = isPreciseMode(options);
       if (!this._preciseMode && preciseMode) {
         this._preciseMode = preciseMode;
-      }
-      // Reset precise mode when grid options config is reset
-      if (columns === undefined) {
-        const defaultColumns = this._defaultGridOptions?.columns;
-        this._preciseMode = computePreciseMode(defaultColumns);
       }
     }
   }
@@ -296,18 +278,10 @@ export class HuiCardLayoutEditor extends LitElement {
     ev.stopPropagation();
     const value = ev.detail.value as CardGridSize;
 
-    const gridOptions = {
-      columns: value.columns,
-      rows: value.rows,
-    };
-
-    const newOptions = this._preciseMode
-      ? gridOptions
-      : this._standardizeOptions(gridOptions);
-
     this._updateGridOptions({
       ...this.config.grid_options,
-      ...newOptions,
+      columns: value.columns,
+      rows: value.rows,
     });
   }
 
@@ -331,13 +305,14 @@ export class HuiCardLayoutEditor extends LitElement {
     this._preciseMode = ev.target.checked;
     if (this._preciseMode) return;
 
-    const newOptions = this._standardizeOptions(
-      this._simplifyOptions(this.config.grid_options ?? {})
-    );
-    if (newOptions.columns !== this.config.grid_options?.columns) {
+    const columns = this.config.grid_options?.columns;
+
+    if (typeof columns === "number" && columns % GRID_COLUMN_MULTIPLIER !== 0) {
+      const newColumns =
+        Math.ceil(columns / GRID_COLUMN_MULTIPLIER) * GRID_COLUMN_MULTIPLIER;
       this._updateGridOptions({
         ...this.config.grid_options,
-        columns: newOptions.columns,
+        columns: newColumns,
       });
     }
   }
