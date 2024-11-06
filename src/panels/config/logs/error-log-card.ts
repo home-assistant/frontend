@@ -200,6 +200,13 @@ class ErrorLogCard extends LitElement {
                   "ui.panel.config.logs.download_full_log"
                 )}
               ></ha-icon-button>
+              <ha-icon-button
+                .path=${this._wrapLines ? mdiWrapDisabled : mdiWrap}
+                @click=${this._toggleLineWrap}
+                .label=${this.hass.localize(
+                  `ui.panel.config.logs.${this._wrapLines ? "full_width" : "wrap_lines"}`
+                )}
+              ></ha-icon-button>
               ${!this._streamSupported || this._error
                 ? html`<ha-icon-button
                     .path=${mdiRefresh}
@@ -210,15 +217,6 @@ class ErrorLogCard extends LitElement {
               <ha-button-menu @action=${this._handleOverflowAction}>
                 <ha-icon-button slot="trigger" .path=${mdiDotsVertical}>
                 </ha-icon-button>
-                <ha-list-item graphic="icon">
-                  <ha-svg-icon
-                    slot="graphic"
-                    .path=${this._wrapLines ? mdiWrapDisabled : mdiWrap}
-                  ></ha-svg-icon>
-                  ${this.hass.localize(
-                    `ui.panel.config.logs.${this._wrapLines ? "full_width" : "wrap_lines"}`
-                  )}
-                </ha-list-item>
                 <ha-list-item graphic="icon">
                   <ha-svg-icon
                     slot="graphic"
@@ -626,12 +624,13 @@ class ErrorLogCard extends LitElement {
     }
   }
 
+  private _toggleLineWrap() {
+    this._wrapLines = !this._wrapLines;
+  }
+
   private _handleOverflowAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
-        this._wrapLines = !this._wrapLines;
-        break;
-      case 1:
         this._showBootsSelect = !this._showBootsSelect;
         break;
     }
