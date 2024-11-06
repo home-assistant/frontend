@@ -9,7 +9,7 @@ class HatLogbookNote extends LitElement {
   @property() public domain: "automation" | "script" = "automation";
 
   render() {
-    if (this.domain == "script") {
+    if (this.domain === "script") {
       return this.hass.localize(
         "ui.panel.config.automation.trace.messages.not_all_entries_are_related_script_note"
       );
