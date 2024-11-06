@@ -1,10 +1,16 @@
 import "@material/mwc-list/mwc-list-item";
+import type { ActionDetail } from "@material/mwc-list";
+
 import {
   mdiArrowCollapseDown,
+  mdiDotsVertical,
   mdiCircle,
   mdiDownload,
+  mdiFormatListNumbered,
   mdiMenuDown,
   mdiRefresh,
+  mdiWrap,
+  mdiWrapDisabled,
 } from "@mdi/js";
 import {
   css,
@@ -32,6 +38,8 @@ import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-menu";
 import "../../../components/ha-md-menu-item";
 import "../../../components/ha-md-divider";
+import "../../../components/ha-button-menu";
+import "../../../components/ha-list-item";
 
 import { getSignedPath } from "../../../data/auth";
 
@@ -114,6 +122,10 @@ class ErrorLogCard extends LitElement {
 
   @state() private _boots?: number[];
 
+  @state() private _showBootsSelect = false;
+
+  @state() private _wrapLines = true;
+
   @state() private _downloadSupported;
 
   @state() private _logsFileLink;
@@ -123,7 +135,7 @@ class ErrorLogCard extends LitElement {
       <div class="error-log-intro">
         ${this._error
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : ""}
+          : nothing}
         <ha-card outlined class=${classMap({ hidden: this.show === false })}>
           <div class="header">
             <h1 class="card-header">
@@ -131,9 +143,14 @@ class ErrorLogCard extends LitElement {
               this.hass.localize("ui.panel.config.logs.show_full_logs")}
             </h1>
             <div class="action-buttons">
-              ${this._streamSupported && Array.isArray(this._boots)
+              ${this._streamSupported &&
+              Array.isArray(this._boots) &&
+              this._showBootsSelect
                 ? html`
                     <ha-assist-chip
+                      .title=${this.hass.localize(
+                        "ui.panel.config.logs.haos_boots_title"
+                      )}
                       .label=${this._boot === 0
                         ? this.hass.localize("ui.panel.config.logs.current")
                         : this._boot === -1
@@ -211,6 +228,13 @@ class ErrorLogCard extends LitElement {
                       </a>
                     `
                   : nothing}
+              <ha-icon-button
+                .path=${this._wrapLines ? mdiWrapDisabled : mdiWrap}
+                @click=${this._toggleLineWrap}
+                .label=${this.hass.localize(
+                  `ui.panel.config.logs.${this._wrapLines ? "full_width" : "wrap_lines"}`
+                )}
+              ></ha-icon-button>
               ${!this._streamSupported || this._error
                 ? html`<ha-icon-button
                     .path=${mdiRefresh}
@@ -218,6 +242,19 @@ class ErrorLogCard extends LitElement {
                     .label=${this.hass.localize("ui.common.refresh")}
                   ></ha-icon-button>`
                 : nothing}
+              <ha-button-menu @action=${this._handleOverflowAction}>
+                <ha-icon-button slot="trigger" .path=${mdiDotsVertical}>
+                </ha-icon-button>
+                <ha-list-item graphic="icon">
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiFormatListNumbered}
+                  ></ha-svg-icon>
+                  ${this.hass.localize(
+                    `ui.panel.config.logs.${this._showBootsSelect ? "hide" : "show"}_haos_boots`
+                  )}
+                </ha-list-item>
+              </ha-button-menu>
             </div>
           </div>
           <div class="card-content error-log">
@@ -248,7 +285,9 @@ class ErrorLogCard extends LitElement {
                   )}
                 </div>`
               : nothing}
-            <ha-ansi-to-html></ha-ansi-to-html>
+            <ha-ansi-to-html
+              ?wrap-disabled=${!this._wrapLines}
+            ></ha-ansi-to-html>
             <div id="scroll-bottom-marker"></div>
           </div>
           <ha-button
@@ -295,7 +334,7 @@ class ErrorLogCard extends LitElement {
                 ${this.hass.localize("ui.panel.config.logs.load_logs")}
               </mwc-button>
             `
-          : ""}
+          : nothing}
       </div>
     `;
   }
@@ -650,6 +689,18 @@ class ErrorLogCard extends LitElement {
         // eslint-disable-next-line no-console
         console.error(err);
       }
+    }
+  }
+
+  private _toggleLineWrap() {
+    this._wrapLines = !this._wrapLines;
+  }
+
+  private _handleOverflowAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        this._showBootsSelect = !this._showBootsSelect;
+        break;
     }
   }
 
