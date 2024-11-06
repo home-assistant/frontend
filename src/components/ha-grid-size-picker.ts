@@ -72,6 +72,7 @@ export class HaGridSizeEditor extends LitElement {
           @value-changed=${this._valueChanged}
           @slider-moved=${this._sliderMoved}
           .disabled=${disabledColumns}
+          tooltip-mode="always"
         ></ha-grid-layout-slider>
 
         <ha-grid-layout-slider
@@ -87,6 +88,7 @@ export class HaGridSizeEditor extends LitElement {
           @value-changed=${this._valueChanged}
           @slider-moved=${this._sliderMoved}
           .disabled=${disabledRows}
+          tooltip-mode="always"
         ></ha-grid-layout-slider>
         ${!this.isDefault
           ? html`
@@ -232,6 +234,7 @@ export class HaGridSizeEditor extends LitElement {
       }
       .reset {
         grid-area: reset;
+        --mdc-icon-button-size: 36px;
       }
       .preview {
         position: relative;
