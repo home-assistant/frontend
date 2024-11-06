@@ -363,14 +363,14 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
               ></ha-service-icon>
             `,
             key: `${SERVICE_PREFIX}${dmn}.${service}`,
-            name: `${domain ? "" : `${domainToName(localize, dmn)}: `}${
+            name: `${dmn ? "" : `${domainToName(localize, dmn)}: `}${
               this.hass.localize(`component.${dmn}.services.${service}.name`) ||
               services[dmn][service]?.name ||
               service
             }`,
             description:
               this.hass.localize(
-                `component.${domain}.services.${service}.description`
+                `component.${dmn}.services.${service}.description`
               ) || services[dmn][service]?.description,
           });
         }
