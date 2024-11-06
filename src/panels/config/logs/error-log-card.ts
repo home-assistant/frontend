@@ -1,6 +1,7 @@
 import "@material/mwc-list/mwc-list-item";
 import {
   mdiArrowCollapseDown,
+  mdiCircle,
   mdiDownload,
   mdiMenuDown,
   mdiRefresh,
@@ -40,10 +41,14 @@ import {
   fetchHassioBoots,
   fetchHassioLogs,
   fetchHassioLogsFollow,
+  getHassioLogDownloadLinesUrl,
   getHassioLogDownloadUrl,
 } from "../../../data/hassio/supervisor";
 import type { HomeAssistant } from "../../../types";
-import { fileDownload } from "../../../util/file_download";
+import {
+  downloadFileSupported,
+  fileDownload,
+} from "../../../util/file_download";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import type { ConnectionStatus } from "../../../data/connection-status";
 import { atLeastVersion } from "../../../common/config/version";
@@ -108,6 +113,10 @@ class ErrorLogCard extends LitElement {
   @state() private _boot = 0;
 
   @state() private _boots?: number[];
+
+  @state() private _downloadSupported;
+
+  @state() private _logsFileLink;
 
   protected render(): TemplateResult {
     return html`
@@ -176,13 +185,32 @@ class ErrorLogCard extends LitElement {
                     </ha-menu>
                   `
                 : nothing}
-              <ha-icon-button
-                .path=${mdiDownload}
-                @click=${this._downloadFullLog}
-                .label=${this.hass.localize(
-                  "ui.panel.config.logs.download_full_log"
-                )}
-              ></ha-icon-button>
+              ${this._downloadSupported
+                ? html`
+                    <ha-icon-button
+                      .path=${mdiDownload}
+                      @click=${this._downloadLogs}
+                      .label=${this.hass.localize(
+                        "ui.panel.config.logs.download_logs"
+                      )}
+                    ></ha-icon-button>
+                  `
+                : this._logsFileLink
+                  ? html`
+                      <a
+                        href=${this._logsFileLink}
+                        target="_blank"
+                        class="download-link"
+                      >
+                        <ha-icon-button
+                          .path=${mdiDownload}
+                          .label=${this.hass.localize(
+                            "ui.panel.config.logs.download_logs"
+                          )}
+                        ></ha-icon-button>
+                      </a>
+                    `
+                  : nothing}
               ${!this._streamSupported || this._error
                 ? html`<ha-icon-button
                     .path=${mdiRefresh}
@@ -242,13 +270,27 @@ class ErrorLogCard extends LitElement {
               slot="trailingIcon"
             ></ha-svg-icon>
           </ha-button>
+          ${this._streamSupported &&
+          this._loadingState !== "loading" &&
+          !this._error
+            ? html`<div class="live-indicator">
+                <ha-svg-icon path=${mdiCircle}></ha-svg-icon>
+                Live
+              </div>`
+            : nothing}
         </ha-card>
         ${this.show === false
           ? html`
-              <ha-button outlined @click=${this._downloadFullLog}>
-                <ha-svg-icon .path=${mdiDownload}></ha-svg-icon>
-                ${this.hass.localize("ui.panel.config.logs.download_full_log")}
-              </ha-button>
+              ${this._downloadSupported
+                ? html`
+                    <ha-button outlined @click=${this._downloadLogs}>
+                      <ha-svg-icon .path=${mdiDownload}></ha-svg-icon>
+                      ${this.hass.localize(
+                        "ui.panel.config.logs.download_logs"
+                      )}
+                    </ha-button>
+                  `
+                : nothing}
               <mwc-button raised @click=${this._showLogs}>
                 ${this.hass.localize("ui.panel.config.logs.load_logs")}
               </mwc-button>
@@ -267,6 +309,9 @@ class ErrorLogCard extends LitElement {
         2024,
         11
       );
+    }
+    if (this._downloadSupported === undefined && this.hass) {
+      this._downloadSupported = downloadFileSupported(this.hass);
     }
   }
 
@@ -331,7 +376,7 @@ class ErrorLogCard extends LitElement {
     );
   }
 
-  private async _downloadFullLog(): Promise<void> {
+  private async _downloadLogs(): Promise<void> {
     if (this._streamSupported) {
       showDownloadLogsDialog(this, {
         header: this.header,
@@ -378,6 +423,18 @@ class ErrorLogCard extends LitElement {
         isComponentLoaded(this.hass, "hassio") &&
         this.provider
       ) {
+        // check if there are any logs at all
+        const testResponse = await fetchHassioLogs(
+          this.hass,
+          this.provider,
+          `entries=:-1:`,
+          this._boot
+        );
+        const testLogs = await testResponse.text();
+        if (!testLogs.trim()) {
+          this._loadingState = "empty";
+        }
+
         const response = await fetchHassioLogsFollow(
           this.hass,
           this.provider,
@@ -437,6 +494,17 @@ class ErrorLogCard extends LitElement {
               this._scrollToBottom();
             } else {
               this._newLogsIndicator = true;
+            }
+
+            if (!this._downloadSupported) {
+              const downloadUrl = getHassioLogDownloadLinesUrl(
+                this.provider,
+                this._numberOfLines,
+                this._boot
+              );
+              getSignedPath(this.hass, downloadUrl).then((signedUrl) => {
+                this._logsFileLink = signedUrl.path;
+              });
             }
           }
         }
@@ -597,6 +665,9 @@ class ErrorLogCard extends LitElement {
   }
 
   static styles: CSSResultGroup = css`
+    :host {
+      direction: var(--direction);
+    }
     .error-log-intro {
       text-align: center;
       margin: 16px;
@@ -646,7 +717,7 @@ class ErrorLogCard extends LitElement {
       position: relative;
       font-family: var(--code-font-family, monospace);
       clear: both;
-      text-align: left;
+      text-align: start;
       padding-top: 12px;
       padding-bottom: 12px;
       overflow-y: scroll;
@@ -712,6 +783,36 @@ class ErrorLogCard extends LitElement {
     ha-assist-chip {
       --ha-assist-chip-container-shape: 10px;
       --md-assist-chip-trailing-space: 8px;
+    }
+
+    @keyframes breathe {
+      from {
+        opacity: 0.8;
+      }
+      to {
+        opacity: 0;
+      }
+    }
+
+    .live-indicator {
+      position: absolute;
+      bottom: 0;
+      inset-inline-end: 16px;
+      border-top-right-radius: 8px;
+      border-top-left-radius: 8px;
+      background-color: var(--primary-color);
+      color: var(--text-primary-color);
+      padding: 4px 8px;
+      opacity: 0.8;
+    }
+    .live-indicator ha-svg-icon {
+      animation: breathe 1s cubic-bezier(0.5, 0, 1, 1) infinite alternate;
+      height: 14px;
+      width: 14px;
+    }
+
+    .download-link {
+      color: var(--text-color);
     }
   `;
 }
