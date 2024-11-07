@@ -1,5 +1,6 @@
 import { mdiDotsVertical } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { ActionDetail } from "@material/mwc-list";
 import { navigate } from "../../common/navigate";
@@ -8,7 +9,7 @@ import "../../components/ha-button-menu";
 import "../../components/ha-icon-button";
 import "../../components/ha-list-item";
 import { haStyle } from "../../resources/styles";
-import { HomeAssistant, Route } from "../../types";
+import type { HomeAssistant, Route } from "../../types";
 import "./developer-tools-router";
 import "../../components/ha-md-tabs";
 import "../../components/ha-md-primary-tab";

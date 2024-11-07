@@ -1,5 +1,5 @@
-import { PropertyDeclaration, PropertyValues, ReactiveElement } from "lit";
-import { ClassElement } from "../../types";
+import type { PropertyDeclaration, PropertyValues, ReactiveElement } from "lit";
+import type { ClassElement } from "../../types";
 import { shallowEqual } from "../util/shallow-equal";
 
 /**

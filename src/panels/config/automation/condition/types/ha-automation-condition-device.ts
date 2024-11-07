@@ -1,5 +1,6 @@
 import { consume } from "@lit-labs/context";
-import { css, html, LitElement, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -7,15 +8,17 @@ import "../../../../../components/device/ha-device-condition-picker";
 import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/ha-form/ha-form";
 import { fullEntitiesContext } from "../../../../../data/context";
-import {
-  deviceAutomationsEqual,
+import type {
   DeviceCapabilities,
   DeviceCondition,
+} from "../../../../../data/device_automation";
+import {
+  deviceAutomationsEqual,
   fetchDeviceConditionCapabilities,
   localizeExtraFieldsComputeLabelCallback,
   localizeExtraFieldsComputeHelperCallback,
 } from "../../../../../data/device_automation";
-import { EntityRegistryEntry } from "../../../../../data/entity_registry";
+import type { EntityRegistryEntry } from "../../../../../data/entity_registry";
 import type { HomeAssistant } from "../../../../../types";
 
 @customElement("ha-automation-condition-device")

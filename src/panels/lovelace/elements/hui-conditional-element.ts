@@ -1,11 +1,11 @@
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { createStyledHuiElement } from "../cards/picture-elements/create-styled-hui-element";
 import {
   checkConditionsMet,
   validateConditionalConfig,
 } from "../common/validate-condition";
-import { LovelacePictureElementEditor } from "../types";
-import {
+import type { LovelacePictureElementEditor } from "../types";
+import type {
   ConditionalElementConfig,
   LovelaceElement,
   LovelaceElementConfig,

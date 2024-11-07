@@ -1,5 +1,6 @@
 import "@material/mwc-list/mwc-list-item";
-import { css, html, LitElement, TemplateResult, nothing } from "lit";
+import type { TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { mdiClose } from "@mdi/js";
 import { ifDefined } from "lit/directives/if-defined";
@@ -7,7 +8,8 @@ import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import "./ha-select";
 import "./ha-icon-button";
-import { HaTextField } from "./ha-textfield";
+import "./ha-textfield";
+import type { HaTextField } from "./ha-textfield";
 import "./ha-input-helper-text";
 
 export interface TimeChangedEvent {

@@ -24,7 +24,7 @@ export class HaToast extends Snackbar {
         max-width: 650px;
       }
 
-      // Revert the default styles set by mwc-snackbar
+      /* Revert the default styles set by mwc-snackbar */
       @media (max-width: 480px), (max-width: 344px) {
         .mdc-snackbar__surface {
           min-width: inherit;

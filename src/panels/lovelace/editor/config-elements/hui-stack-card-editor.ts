@@ -7,7 +7,8 @@ import {
   mdiPlus,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import {
   any,
@@ -23,21 +24,22 @@ import type {
   SchemaUnion,
 } from "../../../../components/ha-form/types";
 import { storage } from "../../../../common/decorators/storage";
-import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-button-arrow-prev";
 import "../../../../components/ha-icon-button-arrow-next";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
-import { HomeAssistant } from "../../../../types";
-import { StackCardConfig } from "../../cards/types";
-import { LovelaceCardEditor } from "../../types";
+import type { HomeAssistant } from "../../../../types";
+import type { StackCardConfig } from "../../cards/types";
+import type { LovelaceCardEditor } from "../../types";
 import "../card-editor/hui-card-element-editor";
 import type { HuiCardElementEditor } from "../card-editor/hui-card-element-editor";
 import "../card-editor/hui-card-picker";
 import type { ConfigChangedEvent } from "../hui-element-editor";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { GUIModeChangedEvent } from "../types";
+import type { GUIModeChangedEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import "../../../../components/ha-md-tabs";
 import "../../../../components/ha-md-primary-tab";

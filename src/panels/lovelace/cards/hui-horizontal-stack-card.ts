@@ -1,4 +1,5 @@
-import { css, CSSResultGroup } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css } from "lit";
 import { customElement } from "lit/decorators";
 import { computeCardSize } from "../common/compute-card-size";
 import { HuiStackCard } from "./hui-stack-card";
@@ -27,6 +28,7 @@ export class HuiHorizontalStackCard extends HuiStackCard {
       css`
         #root {
           display: flex;
+          height: 100%;
           gap: var(--horizontal-stack-card-gap, var(--stack-card-gap, 8px));
         }
         #root > hui-card {

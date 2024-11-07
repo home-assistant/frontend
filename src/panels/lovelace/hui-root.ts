@@ -15,15 +15,8 @@ import {
   mdiShape,
   mdiViewDashboard,
 } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
@@ -32,7 +25,7 @@ import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
-import { LocalizeKeys } from "../../common/translations/localize";
+import type { LocalizeKeys } from "../../common/translations/localize";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
   addSearchParam,
@@ -52,11 +45,9 @@ import "../../components/ha-md-tabs";
 import "../../components/ha-md-primary-tab";
 import "../../components/ha-md-secondary-tab";
 import type { LovelacePanelConfig } from "../../data/lovelace";
-import {
-  LovelaceConfig,
-  isStrategyDashboard,
-} from "../../data/lovelace/config/types";
-import { LovelaceViewConfig } from "../../data/lovelace/config/view";
+import type { LovelaceConfig } from "../../data/lovelace/config/types";
+import { isStrategyDashboard } from "../../data/lovelace/config/types";
+import type { LovelaceViewConfig } from "../../data/lovelace/config/view";
 import {
   deleteDashboard,
   fetchDashboards,
@@ -844,6 +835,10 @@ class HUIRoot extends LitElement {
     showEditViewDialog(this, {
       lovelace: this.lovelace!,
       viewIndex: this._curView as number,
+      saveCallback: (viewIndex: number, viewConfig: LovelaceViewConfig) => {
+        const path = viewConfig.path || viewIndex;
+        this._navigateToView(path);
+      },
     });
   }
 
