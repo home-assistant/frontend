@@ -1745,8 +1745,8 @@
           "answer_generic": "Other controllers"
         },
         "google_home": {
-          "header": "Link Matter app",
-          "step_1": "Find your device in Google Home. Tap the gear icon to open the device settings.",
+          "header": "Share from Google Home",
+          "step_1": "Find your device in the Google Home app. Tap the gear icon to open the device settings.",
           "step_2": "Tap {linked_matter_apps_services}.",
           "step_3": "Tap {link_apps_services} and choose {home_assistant} from the list.",
           "linked_matter_apps_services": "Linked Matter apps and services",
@@ -1776,8 +1776,8 @@
           "code_instructions": "Paste the code you just received from the other controller."
         },
         "generic": {
-          "header": "Copy setup code",
-          "code_instructions": "Search for the sharing mode in the app of your controller, and activate it. You will get a sharing code, enter that below.",
+          "header": "Enter setup code",
+          "code_instructions": "Search for the sharing mode in the app of your controller, and activate it. You will get a setup code, enter that below.",
           "setup_code": "Setup code"
         }
       }
@@ -2492,10 +2492,15 @@
           "show_full_logs": "Show full logs",
           "select_number_of_lines": "Select number of lines to download",
           "lines": "Lines",
-          "download_full_log": "Download full log",
+          "download_logs": "Download logs",
           "scroll_down_button": "New logs - Click to scroll",
           "provider_not_found": "Log provider not found",
           "provider_not_available": "Logs for ''{provider}'' are not available on your system.",
+          "haos_boots_title": "Logs of HAOS startup",
+          "show_haos_boots": "Show HAOS startups",
+          "hide_haos_boots": "Hide HAOS startups",
+          "full_width": "Full width",
+          "wrap_lines": "Wrap lines",
           "current": "Current",
           "previous": "Previous",
           "startups_ago": "{boot} startups ago",
@@ -2792,7 +2797,9 @@
             },
             "empty_header": "Start automating",
             "empty_text_1": "Automations make Home Assistant automatically respond to things happening in and around your home.",
-            "empty_text_2": "Automations connect triggers to actions in a ''when trigger then action'' fashion with optional conditions. For example: ''When the sun sets and if {user} is home, then turn on the lights''."
+            "empty_text_2": "Automations connect triggers to actions in a ''when trigger then action'' fashion with optional conditions. For example: ''When the sun sets and if {user} is home, then turn on the lights''.",
+            "migrate_automation": "Migrate automation?",
+            "migrate_automation_description": "You can migrate this automation, so it can be edited from the UI. After it is migrated and you have saved it, you will have to manually delete your old automation from your configuration. Do you want to migrate this automation?"
           },
           "dialog_new": {
             "header": "Create automation",
@@ -3215,7 +3222,7 @@
                   "description": {
                     "picker": "If an entity (or attribute) is in a specific state.",
                     "no_entity": "Confirm state",
-                    "full": "If{hasAttribute, select, \n true { {attribute} of}\n other {}\n} {numberOfEntities, plural,\n zero {an entity is}\n one {{entities} is}\n other {{entities} are}\n} {numberOfStates, plural,\n zero {a state}\n other {{states}}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n }"
+                    "full": "If{hasAttribute, select, \n true { {attribute} of}\n other {}\n} {numberOfEntities, plural,\n =0 {an entity is}\n one {{entities} is}\n other {{entities} are}\n} {numberOfStates, plural,\n =0 {a state}\n other {{states}}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n }"
                   }
                 },
                 "sun": {
@@ -3579,7 +3586,9 @@
               "stopped_unknown_reason": "Stopped because of unknown reason {reason} at {time} (runtime: {executiontime} seconds)",
               "disabled": "(disabled)",
               "triggered_by": "{triggeredBy, select, \n alias {{alias} triggered}\n other {Triggered} \n} {triggeredPath, select, \n trigger {by the {trigger}}\n other {manually} \n} at {time}",
-              "path_error": "Unable to extract path {path}. Download trace and report as bug."
+              "path_error": "Unable to extract path {path}. Download trace and report as bug.",
+              "not_all_entries_are_related_automation_note": "Not all shown logbook entries might be related to this automation.",
+              "not_all_entries_are_related_script_note": "Not all shown logbook entries might be related to this script."
             }
           }
         },
@@ -3676,7 +3685,9 @@
             "duplicate": "[%key:ui::common::duplicate%]",
             "empty_header": "Create your first script",
             "empty_text": "A script is a sequence of actions that can be run from a dashboard, an automation, or be triggered by voice. For example, a ''Wake-up routine''' script that gradually turns on the light in the bedroom and opens the blinds after a delay.",
-            "search": "Search {number} scripts"
+            "search": "Search {number} scripts",
+            "migrate_script": "Migrate script?",
+            "migrate_script_description": "You can migrate this script, so it can be edited from the UI. After it is migrated and you have saved it, you will have to manually delete your old script from your configuration. Do you want to migrate this script?"
           },
           "dialog_new": {
             "header": "Create script",
@@ -3929,6 +3940,11 @@
               "certificate_expire": "Certificate renewal at {date}",
               "more_info": "More details"
             },
+            "ice_servers": {
+              "title": "WebRTC connections",
+              "info": "Home Assistant Cloud provides WebRTC servers. This improves your ability to view your camera streams when you are away from home.",
+              "link_learn_how_it_works": "Learn how it works"
+            },
             "alexa": {
               "title": "Alexa",
               "info": "With the Alexa integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Alexa-enabled device.",
@@ -4110,7 +4126,7 @@
             "hidden": "Hidden"
           },
           "confirm_rename_entity_ids": "Do you also want to rename the entity IDs of your entities?",
-          "confirm_rename_entity_ids_warning": "This will not change any configuration (like automations, scripts, scenes, dashboards) that is currently using these entities! You will have to update them yourself to use the new entity IDs!",
+          "confirm_rename_entity_ids_warning": "This will not change any configuration (like automations, scripts, scenes, dashboards) that is currently using these entities! You will have to manually edit them yourself to use the new entity IDs!",
           "confirm_rename_entity_will_rename": "{count} {count, plural,\n  one {entity ID}\n  other {entity IDs}\n} will be renamed",
           "confirm_rename_new": "New",
           "confirm_rename_old": "Old",
@@ -4825,6 +4841,7 @@
             "node_id": "ID",
             "node_ready": "Ready",
             "device_config": "Configure",
+            "installer_settings": "Installer settings",
             "reinterview_device": "Re-interview",
             "rebuild_routes": "Rebuild routes",
             "remove_failed": "Remove failed",
@@ -5116,6 +5133,45 @@
             "subscribed_to_logs": "Subscribed to Z-Wave JS log messages…",
             "log_level_changed": "Log Level changed to: {level}",
             "download_logs": "Download logs"
+          },
+          "node_installer": {
+            "header": "Installer Settings",
+            "introduction": "Configure your device installer settings.",
+            "endpoint": "Endpoint",
+            "no_settings": "This device does not have any installer settings.",
+            "command_class": "Command Class",
+            "capability_controls": {
+              "thermostat_setback": {
+                "title": "Thermostat Setback",
+                "setback_state_label": "Setback in 1/10 degrees (Kelvin)",
+                "setback_state_helper": "Min: -12.8, max: 12.0",
+                "setback_special_state": {
+                  "label": "Setback special state",
+                  "frost_protection": "Frost protection",
+                  "energy_saving": "Energy saving",
+                  "unused": "Unused"
+                },
+                "setback_type": {
+                  "label": "Setback Type",
+                  "none": "None",
+                  "temporary": "Temporary",
+                  "permanent": "Permanent"
+                },
+                "get_setback_failed": "Failed to get setback state. {error}",
+                "save_setback_failed": "Failed to save setback state. {error}"
+              },
+              "multilevel_switch": {
+                "title": "Transition",
+                "direction": "Direction",
+                "up": "Up",
+                "down": "Down",
+                "ignore_start_level": "Ignore start level",
+                "start_level": "Start level",
+                "start_transition": "Start transition",
+                "stop_transition": "Stop transition",
+                "control_failed": "Failed to control transition. {error}"
+              }
+            }
           }
         },
         "matter": {
@@ -5301,7 +5357,7 @@
               "share": "Share"
             },
             "mount_type": {
-              "nfs": "Network file share (NFS)",
+              "nfs": "Network File System (NFS)",
               "cifs": "Samba/Windows (CIFS)"
             },
             "cifs_versions": {
@@ -5611,14 +5667,18 @@
             "visibility": {
               "select_users": "Select which users should see this view in the navigation"
             },
-            "type": "View type",
-            "type_warning_sections": "You can not change your view to use the 'sections' view type because migration is not supported yet. Start from scratch with a new view if you want to experiment with the 'sections' view.",
-            "type_warning_others": "You can not change your view to an other type because migration is not supported yet. Start from scratch with a new view if you want to use another view type.",
+            "type": "Layout",
+            "convert_view": "Convert",
+            "convert_view_title": "Convert view layout",
+            "convert_view_text": "It will create a new view using sections. This current view will stay untouched. All your cards will be imported so you can rearrange them freely.",
+            "convert_view_action": "Create",
+            "card_to_section_convert": "Convert your view to a section view.",
+            "section_to_card_not_supported": "You can not change your section view to an other type. Start from scratch with a new view if you want to use another view type.",
             "types": {
+              "sections": "Sections (default)",
               "masonry": "Masonry",
               "sidebar": "Sidebar",
-              "panel": "Panel (single card)",
-              "sections": "Sections"
+              "panel": "Panel (single card)"
             },
             "subview": "Subview",
             "max_columns": "Max number of sections wide",
@@ -5669,7 +5729,9 @@
             },
             "layout": {
               "full_width": "Full width card",
-              "full_width_helper": "Take up the full width of the section whatever its size"
+              "full_width_helper": "Take up the full width of the section whatever its size",
+              "precise_mode": "Precise mode",
+              "precise_mode_helper": "Change the card width with more precision"
             }
           },
           "edit_badge": {
@@ -5704,7 +5766,9 @@
           "move_card": {
             "header": "Choose a view to move the card to",
             "strategy_error_title": "Impossible to move the card",
-            "strategy_error_text_strategy": "Moving a card to an auto generated view is not supported."
+            "strategy_error_text_strategy": "Moving a card to an auto generated view is not supported.",
+            "success": "Card moved successfully",
+            "error": "Error while moving card"
           },
           "change_position": {
             "title": "Change card position",
@@ -5723,8 +5787,8 @@
             "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
             "create_section": "Create section",
             "default_section_title": "New section",
-            "imported_card_section_title_view": "Imported cards from ''{view_title}'' view",
-            "imported_card_section_title_default": "Imported cards from another view"
+            "imported_cards_title": "Imported cards",
+            "imported_cards_description": "These cards are imported from another view. They will only be displayed in edit mode. Move them into sections to display them in your view."
           },
           "delete_section": {
             "title": "Delete section",
@@ -5871,7 +5935,7 @@
             },
             "entities": {
               "name": "Entities",
-              "show_header_toggle": "Show header toggle?",
+              "show_header_toggle": "Show header toggle",
               "toggle": "Toggle entities.",
               "description": "The Entities card is the most common type of card. It groups items together into lists.",
               "special_row": "special row",
@@ -5918,9 +5982,9 @@
             },
             "gauge": {
               "name": "Gauge",
-              "needle_gauge": "Display as needle gauge?",
+              "needle_gauge": "Display as needle gauge",
               "severity": {
-                "define": "Define severity?",
+                "define": "Define severity",
                 "green": "Green",
                 "red": "Red",
                 "yellow": "Yellow"
@@ -6054,7 +6118,7 @@
               "state": "State",
               "secondary_info_attribute": "Secondary info attribute",
               "search": "Search",
-              "state_color": "Color icons based on state?",
+              "state_color": "Show state color",
               "suggested_cards": "Suggested cards",
               "other_cards": "Other cards",
               "custom_cards": "Custom cards",
@@ -6091,7 +6155,6 @@
               "name": "Map",
               "geo_location_sources": "Geolocation sources",
               "no_geo_location_sources": "No geolocation sources available",
-              "dark_mode": "Dark mode?",
               "appearance": "Appearance",
               "theme_mode": "Theme Mode",
               "theme_modes": {
@@ -6871,8 +6934,6 @@
             }
           },
           "sections": {
-            "description": "This dashboard is using the sections view released in Home Assistant 2024.3. Learn more about it in this {blog_post}.",
-            "description_blog_post": "blog post",
             "titles": {
               "welcome": "Welcome",
               "living_room": "Living room",
@@ -7190,6 +7251,7 @@
           },
           "create_account": "Create account",
           "error": {
+            "username_not_normalized": "Username can only contain lowercase letters, and can not contain whitespace.",
             "password_not_match": "Passwords don't match"
           }
         },
@@ -7359,6 +7421,7 @@
       },
       "dashboard": {
         "changelog": "Changelog",
+        "current_version": "Current version: {version}",
         "cpu_usage": "Add-on CPU usage",
         "ram_usage": "Add-on RAM usage",
         "hostname": "Hostname",
@@ -7459,7 +7522,7 @@
           },
           "watchdog": {
             "title": "Watchdog",
-            "description": "This will start the add-on if it crashes"
+            "description": "This will restart the add-on if it crashes"
           },
           "auto_update": {
             "title": "Auto update",
@@ -7761,7 +7824,8 @@
         "title": "Manage add-on repositories",
         "add": "Add",
         "remove": "Remove",
-        "used": "Repository is in use for installed add-ons and can't be removed."
+        "used": "Repository is in use for installed add-ons and can't be removed.",
+        "no_repositories": "No repositories"
       },
       "restart_addon": {
         "title": "Restart {name}?",
@@ -7800,6 +7864,93 @@
         "loading_devices": "Loading devices",
         "cancel": "[%key:ui::common::cancel%]",
         "move": "Move"
+      }
+    },
+    "ui": {
+      "components": {
+        "subpage-data-table": {
+          "filters": "[%key:ui::components::subpage-data-table::filters%]",
+          "show_results": "[%key:ui::components::subpage-data-table::show_results%]",
+          "clear_filter": "[%key:ui::components::subpage-data-table::clear_filter%]",
+          "close_filter": "[%key:ui::components::subpage-data-table::close_filter%]",
+          "exit_selection_mode": "[%key:ui::components::subpage-data-table::exit_selection_mode%]",
+          "enter_selection_mode": "[%key:ui::components::subpage-data-table::enter_selection_mode%]",
+          "sort_by": "[%key:ui::components::subpage-data-table::sort_by%]",
+          "group_by": "[%key:ui::components::subpage-data-table::group_by%]",
+          "dont_group_by": "[%key:ui::components::subpage-data-table::dont_group_by%]",
+          "collapse_all_groups": "[%key:ui::components::subpage-data-table::collapse_all_groups%]",
+          "expand_all_groups": "[%key:ui::components::subpage-data-table::expand_all_groups%]",
+          "select": "[%key:ui::components::subpage-data-table::select%]",
+          "selected": "[%key:ui::components::subpage-data-table::selected%]",
+          "select_all": "[%key:ui::components::subpage-data-table::select_all%]",
+          "select_none": "[%key:ui::components::subpage-data-table::select_none%]",
+          "settings": "[%key:ui::components::subpage-data-table::settings%]"
+        },
+        "data-table": {
+          "settings": {
+            "header": "[%key:ui::components::data-table::settings::header%]",
+            "hide": "[%key:ui::components::data-table::settings::hide%]",
+            "show": "[%key:ui::components::data-table::settings::show%]",
+            "done": "[%key:ui::components::data-table::settings::done%]",
+            "restore": "[%key:ui::components::data-table::settings::restore%]"
+          }
+        }
+      },
+      "panel": {
+        "config": {
+          "logs": {
+            "caption": "[%key:ui::panel::config::logs::caption%]",
+            "description": "[%key:ui::panel::config::logs::description%]",
+            "details": "[%key:ui::panel::config::logs::details%]",
+            "search": "[%key:ui::panel::config::logs::search%]",
+            "failed_get_logs": "[%key:ui::panel::config::logs::failed_get_logs%]",
+            "no_issues_search": "[%key:ui::panel::config::logs::no_issues_search%]",
+            "load_logs": "[%key:ui::panel::config::logs::load_logs%]",
+            "nr_of_lines": "[%key:ui::panel::config::logs::nr_of_lines%]",
+            "loading_log": "[%key:ui::panel::config::logs::loading_log%]",
+            "no_errors": "[%key:ui::panel::config::logs::no_errors%]",
+            "no_issues": "[%key:ui::panel::config::logs::no_issues%]",
+            "clear": "[%key:ui::panel::config::logs::clear%]",
+            "refresh": "[%key:ui::panel::config::logs::refresh%]",
+            "copy": "[%key:ui::panel::config::logs::copy%]",
+            "log_provider": "[%key:ui::panel::config::logs::log_provider%]",
+            "multiple_messages": "[%key:ui::panel::config::logs::multiple_messages%]",
+            "level": {
+              "critical": "[%key:ui::panel::config::logs::level::critical%]",
+              "error": "[%key:ui::panel::config::logs::level::error%]",
+              "warning": "[%key:ui::panel::config::logs::level::warning%]",
+              "info": "[%key:ui::panel::config::logs::level::info%]",
+              "debug": "[%key:ui::panel::config::logs::level::debug%]"
+            },
+            "custom_integration": "[%key:ui::panel::config::logs::custom_integration%]",
+            "error_from_custom_integration": "[%key:ui::panel::config::logs::error_from_custom_integration%]",
+            "show_full_logs": "[%key:ui::panel::config::logs::show_full_logs%]",
+            "select_number_of_lines": "[%key:ui::panel::config::logs::select_number_of_lines%]",
+            "lines": "[%key:ui::panel::config::logs::lines%]",
+            "download_logs": "[%key:ui::panel::config::logs::download_logs%]",
+            "scroll_down_button": "[%key:ui::panel::config::logs::scroll_down_button%]",
+            "provider_not_found": "[%key:ui::panel::config::logs::provider_not_found%]",
+            "provider_not_available": "[%key:ui::panel::config::logs::provider_not_available%]",
+            "haos_boots_title": "[%key:ui::panel::config::logs::haos_boots_title%]",
+            "show_haos_boots": "[%key:ui::panel::config::logs::show_haos_boots%]",
+            "hide_haos_boots": "[%key:ui::panel::config::logs::hide_haos_boots%]",
+            "full_width": "[%key:ui::panel::config::logs::full_width%]",
+            "wrap_lines": "[%key:ui::panel::config::logs::wrap_lines%]",
+            "current": "[%key:ui::panel::config::logs::current%]",
+            "previous": "[%key:ui::panel::config::logs::previous%]",
+            "startups_ago": "[%key:ui::panel::config::logs::startups_ago%]",
+            "detail": {
+              "logger": "[%key:ui::panel::config::logs::detail::logger%]",
+              "source": "[%key:ui::panel::config::logs::detail::source%]",
+              "integration": "[%key:ui::panel::config::integrations::integration%]",
+              "documentation": "[%key:ui::panel::config::logs::detail::documentation%]",
+              "issues": "[%key:ui::panel::config::logs::detail::issues%]",
+              "first_occurred": "[%key:ui::panel::config::logs::detail::first_occurred%]",
+              "occurrences": "[%key:ui::panel::config::logs::detail::occurrences%]",
+              "last_logged": "[%key:ui::panel::config::logs::detail::last_logged%]"
+            }
+          }
+        }
       }
     }
   }

@@ -8,7 +8,7 @@ import {
   mdiThermostatAuto,
   mdiWaterPercent,
 } from "@mdi/js";
-import {
+import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";

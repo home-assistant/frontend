@@ -11,14 +11,15 @@ import {
   mdiUnfoldMoreHorizontal,
 } from "@mdi/js";
 
-import { HassEntity } from "home-assistant-js-websocket";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import { type CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import { HASSDomEvent, fireEvent } from "../../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { LocalizeFunc } from "../../../common/translations/localize";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/chips/ha-assist-chip";
 import "../../../components/data-table/ha-data-table";
 import type {
@@ -30,19 +31,21 @@ import type {
 import { showDataTableSettingsDialog } from "../../../components/data-table/show-dialog-data-table-settings";
 import "../../../components/ha-md-button-menu";
 import "../../../components/ha-dialog";
-import { HaMenu } from "../../../components/ha-menu";
+import type { HaMenu } from "../../../components/ha-menu";
 import "../../../components/ha-md-menu-item";
 import "../../../components/search-input-outlined";
-import {
+import type {
   StatisticsMetaData,
   StatisticsValidationResult,
+} from "../../../data/recorder";
+import {
   clearStatistics,
   getStatisticIds,
   updateStatisticsIssues,
   validateStatistics,
 } from "../../../data/recorder";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { showConfirmationDialog } from "../../lovelace/custom-card-helpers";
 import { fixStatisticsIssue } from "./fix-statistics";
 import { showStatisticsAdjustSumDialog } from "./show-dialog-statistics-adjust-sum";

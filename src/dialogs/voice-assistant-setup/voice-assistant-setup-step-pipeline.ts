@@ -1,5 +1,6 @@
 import { mdiOpenInNew } from "@mdi/js";
-import { css, html, LitElement, nothing, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -8,11 +9,11 @@ import {
   createAssistPipeline,
   listAssistPipelines,
 } from "../../data/assist_pipeline";
-import { AssistSatelliteConfiguration } from "../../data/assist_satellite";
+import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
 import { fetchCloudStatus } from "../../data/cloud";
 import { listSTTEngines } from "../../data/stt";
 import { listTTSEngines, listTTSVoices } from "../../data/tts";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { AssistantSetupStyles } from "./styles";
 import { STEP } from "./voice-assistant-setup-dialog";

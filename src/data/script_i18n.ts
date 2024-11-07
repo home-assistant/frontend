@@ -4,20 +4,20 @@ import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { formatListWithAnds } from "../common/string/format-list";
 import { isTemplate } from "../common/string/has-template";
-import { HomeAssistant } from "../types";
-import { Condition } from "./automation";
+import type { HomeAssistant } from "../types";
+import type { Condition } from "./automation";
 import { describeCondition } from "./automation_i18n";
 import { localizeDeviceAutomationAction } from "./device_automation";
 import { computeDeviceName } from "./device_registry";
+import type { EntityRegistryEntry } from "./entity_registry";
 import {
-  EntityRegistryEntry,
   computeEntityRegistryName,
   entityRegistryById,
 } from "./entity_registry";
-import { FloorRegistryEntry } from "./floor_registry";
+import type { FloorRegistryEntry } from "./floor_registry";
 import { domainToName } from "./integration";
-import { LabelRegistryEntry } from "./label_registry";
-import {
+import type { LabelRegistryEntry } from "./label_registry";
+import type {
   ActionType,
   ActionTypes,
   ChooseAction,
@@ -34,8 +34,8 @@ import {
   StopAction,
   VariablesAction,
   WaitForTriggerAction,
-  getActionType,
 } from "./script";
+import { getActionType } from "./script";
 
 const actionTranslationBaseKey =
   "ui.panel.config.automation.editor.actions.type";

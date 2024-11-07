@@ -1,13 +1,7 @@
 import "@material/mwc-button/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { constructUrlCurrentPath } from "../../../common/url/construct-url";
@@ -15,11 +9,10 @@ import {
   extractSearchParam,
   removeSearchParam,
 } from "../../../common/url/search-params";
-import { nestedArrayMove } from "../../../common/util/array-move";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
-import { Action, Fields, ScriptConfig } from "../../../data/script";
+import type { Action, Fields, ScriptConfig } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -163,7 +156,6 @@ export class HaManualScriptEditor extends LitElement {
         .actions=${this.config.sequence || []}
         .path=${["sequence"]}
         @value-changed=${this._sequenceChanged}
-        @item-moved=${this._itemMoved}
         .hass=${this.hass}
         .narrow=${this.narrow}
         .disabled=${this.disabled}
@@ -182,21 +174,6 @@ export class HaManualScriptEditor extends LitElement {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: { ...this.config!, sequence: ev.detail.value as Action[] },
-    });
-  }
-
-  private _itemMoved(ev: CustomEvent): void {
-    ev.stopPropagation();
-    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
-    const updatedConfig = nestedArrayMove(
-      this.config,
-      oldIndex,
-      newIndex,
-      oldPath,
-      newPath
-    );
-    fireEvent(this, "value-changed", {
-      value: updatedConfig,
     });
   }
 

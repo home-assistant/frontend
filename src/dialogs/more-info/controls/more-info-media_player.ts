@@ -9,7 +9,8 @@ import {
   mdiVolumeOff,
   mdiVolumePlus,
 } from "@mdi/js";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { stateActive } from "../../../common/entity/state_active";
@@ -20,15 +21,17 @@ import "../../../components/ha-slider";
 import "../../../components/ha-svg-icon";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
 import { isUnavailableState } from "../../../data/entity";
-import {
+import type {
   MediaPickedEvent,
   MediaPlayerEntity,
+} from "../../../data/media-player";
+import {
   MediaPlayerEntityFeature,
   computeMediaControls,
   handleMediaControlClick,
   mediaPlayerPlayMedia,
 } from "../../../data/media-player";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 
 @customElement("more-info-media_player")
 class MoreInfoMediaPlayer extends LitElement {

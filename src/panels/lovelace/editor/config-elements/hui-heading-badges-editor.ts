@@ -1,6 +1,7 @@
 import { mdiDelete, mdiDrag, mdiPencil, mdiPlus } from "@mdi/js";
-import { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -13,8 +14,8 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceHeadingBadgeConfig } from "../../heading-badges/types";
+import type { HomeAssistant } from "../../../../types";
+import type { LovelaceHeadingBadgeConfig } from "../../heading-badges/types";
 
 declare global {
   interface HASSDomEvents {

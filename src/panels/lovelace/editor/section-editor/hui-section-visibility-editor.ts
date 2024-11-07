@@ -2,9 +2,9 @@ import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
-import { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
-import { HomeAssistant } from "../../../../types";
-import { Condition } from "../../common/validate-condition";
+import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
+import type { HomeAssistant } from "../../../../types";
+import type { Condition } from "../../common/validate-condition";
 import "../conditions/ha-card-conditions-editor";
 
 @customElement("hui-section-visibility-editor")

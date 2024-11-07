@@ -1,11 +1,11 @@
-import { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { until } from "lit/directives/until";
 import { DEFAULT_DOMAIN_ICON, FIXED_DOMAIN_ICONS } from "../common/const";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { entityIcon } from "../data/icons";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "./ha-icon";
 import "./ha-svg-icon";
 

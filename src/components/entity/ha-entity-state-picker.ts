@@ -1,9 +1,10 @@
-import { HassEntity } from "home-assistant-js-websocket";
-import { LitElement, PropertyValues, html, nothing } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { getStates } from "../../common/entity/get_states";
-import { HomeAssistant, ValueChangedEvent } from "../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
 

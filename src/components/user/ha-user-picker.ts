@@ -1,11 +1,13 @@
 import "@material/mwc-list/mwc-list-item";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stringCompare } from "../../common/string/compare";
-import { fetchUsers, User } from "../../data/user";
-import { HomeAssistant } from "../../types";
+import type { User } from "../../data/user";
+import { fetchUsers } from "../../data/user";
+import type { HomeAssistant } from "../../types";
 import "../ha-select";
 import "./ha-user-badge";
 import "../ha-list-item";

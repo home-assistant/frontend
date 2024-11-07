@@ -1,11 +1,9 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import {
-  AssistSatelliteConfiguration,
-  setWakeWords,
-} from "../../data/assist_satellite";
-import { HomeAssistant } from "../../types";
+import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
+import { setWakeWords } from "../../data/assist_satellite";
+import type { HomeAssistant } from "../../types";
 import { STEP } from "./voice-assistant-setup-dialog";
 import { AssistantSetupStyles } from "./styles";
 import "../../components/ha-md-list";
@@ -23,7 +21,7 @@ export class HaVoiceAssistantSetupStepChangeWakeWord extends LitElement {
 
   protected override render() {
     return html`<div class="padding content">
-        <img src="/static/images/voice-assistant/change-wake-word.gif" />
+        <img src="/static/images/voice-assistant/change-wake-word.png" />
         <h1>Change wake word</h1>
         <p class="secondary">
           Some wake words are better for

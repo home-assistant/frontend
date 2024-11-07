@@ -1,13 +1,6 @@
 import "@material/mwc-list/mwc-list";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  nothing
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { until } from "lit/directives/until";
@@ -16,19 +9,19 @@ import { stripPrefixFromEntityName } from "../../../../common/entity/strip_prefi
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-list-item";
-import {
-  ExtEntityRegistryEntry,
-  getExtendedEntityRegistryEntry,
-} from "../../../../data/entity_registry";
+import type { ExtEntityRegistryEntry } from "../../../../data/entity_registry";
+import { getExtendedEntityRegistryEntry } from "../../../../data/entity_registry";
 import { entryIcon } from "../../../../data/icons";
 import { showMoreInfoDialog } from "../../../../dialogs/more-info/show-ha-more-info-dialog";
 import type { HomeAssistant } from "../../../../types";
 import type { HuiErrorCard } from "../../../lovelace/cards/hui-error-card";
 import { createRowElement } from "../../../lovelace/create-element/create-row-element";
 import { addEntitiesToLovelaceView } from "../../../lovelace/editor/add-entities-to-view";
-import type { LovelaceRowConfig } from "../../../lovelace/entity-rows/types";
-import { LovelaceRow } from "../../../lovelace/entity-rows/types";
-import { EntityRegistryStateEntry } from "../ha-config-device-page";
+import type {
+  LovelaceRowConfig,
+  LovelaceRow,
+} from "../../../lovelace/entity-rows/types";
+import type { EntityRegistryStateEntry } from "../ha-config-device-page";
 import {
   computeCards,
   computeSection,
@@ -314,6 +307,7 @@ export class HaDeviceEntitiesCard extends LitElement {
       }
       ha-list-item {
         height: 40px;
+        --mdc-ripple-color: transparent;
       }
     `;
   }

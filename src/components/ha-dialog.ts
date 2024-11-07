@@ -1,7 +1,8 @@
 import { DialogBase } from "@material/mwc-dialog/mwc-dialog-base";
 import { styles } from "@material/mwc-dialog/mwc-dialog.css";
 import { mdiClose } from "@mdi/js";
-import { css, html, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
+import { css, html } from "lit";
 import { customElement } from "lit/decorators";
 import { FOCUS_TARGET } from "../dialogs/make-dialog-manager";
 import type { HomeAssistant } from "../types";

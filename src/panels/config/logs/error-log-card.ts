@@ -1,17 +1,24 @@
 import "@material/mwc-list/mwc-list-item";
+import type { ActionDetail } from "@material/mwc-list";
+
 import {
   mdiArrowCollapseDown,
+  mdiDotsVertical,
+  mdiCircle,
   mdiDownload,
+  mdiFormatListNumbered,
   mdiMenuDown,
   mdiRefresh,
+  mdiWrap,
+  mdiWrapDisabled,
 } from "@mdi/js";
 import {
   css,
-  CSSResultGroup,
+  type CSSResultGroup,
   html,
   LitElement,
-  PropertyValues,
-  TemplateResult,
+  type PropertyValues,
+  type TemplateResult,
   nothing,
 } from "lit";
 import { classMap } from "lit/directives/class-map";
@@ -31,6 +38,8 @@ import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-menu";
 import "../../../components/ha-md-menu-item";
 import "../../../components/ha-md-divider";
+import "../../../components/ha-button-menu";
+import "../../../components/ha-list-item";
 
 import { getSignedPath } from "../../../data/auth";
 
@@ -40,23 +49,31 @@ import {
   fetchHassioBoots,
   fetchHassioLogs,
   fetchHassioLogsFollow,
+  fetchHassioLogsLegacy,
+  getHassioLogDownloadLinesUrl,
   getHassioLogDownloadUrl,
 } from "../../../data/hassio/supervisor";
-import { HomeAssistant } from "../../../types";
-import { fileDownload } from "../../../util/file_download";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
-import { ConnectionStatus } from "../../../data/connection-status";
+import type { HomeAssistant } from "../../../types";
+import {
+  downloadFileSupported,
+  fileDownload,
+} from "../../../util/file_download";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import type { ConnectionStatus } from "../../../data/connection-status";
 import { atLeastVersion } from "../../../common/config/version";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { debounce } from "../../../common/util/debounce";
 import { showDownloadLogsDialog } from "./show-dialog-download-logs";
 import type { HaMenu } from "../../../components/ha-menu";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 
 const NUMBER_OF_LINES = 100;
 
 @customElement("error-log-card")
 class ErrorLogCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public localizeFunc?: LocalizeFunc<any>;
 
   @property() public filter = "";
 
@@ -109,30 +126,42 @@ class ErrorLogCard extends LitElement {
 
   @state() private _boots?: number[];
 
+  @state() private _showBootsSelect = false;
+
+  @state() private _wrapLines = true;
+
+  @state() private _downloadSupported;
+
+  @state() private _logsFileLink;
+
   protected render(): TemplateResult {
+    const localize = this.localizeFunc || this.hass.localize;
     return html`
       <div class="error-log-intro">
         ${this._error
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : ""}
+          : nothing}
         <ha-card outlined class=${classMap({ hidden: this.show === false })}>
           <div class="header">
             <h1 class="card-header">
-              ${this.header ||
-              this.hass.localize("ui.panel.config.logs.show_full_logs")}
+              ${this.header || localize("ui.panel.config.logs.show_full_logs")}
             </h1>
             <div class="action-buttons">
-              ${this._streamSupported && Array.isArray(this._boots)
+              ${this._streamSupported &&
+              Array.isArray(this._boots) &&
+              this._showBootsSelect
                 ? html`
                     <ha-assist-chip
+                      .title=${localize(
+                        "ui.panel.config.logs.haos_boots_title"
+                      )}
                       .label=${this._boot === 0
-                        ? this.hass.localize("ui.panel.config.logs.current")
+                        ? localize("ui.panel.config.logs.current")
                         : this._boot === -1
-                          ? this.hass.localize("ui.panel.config.logs.previous")
-                          : this.hass.localize(
-                              "ui.panel.config.logs.startups_ago",
-                              { boot: this._boot * -1 }
-                            )}
+                          ? localize("ui.panel.config.logs.previous")
+                          : localize("ui.panel.config.logs.startups_ago", {
+                              boot: this._boot * -1,
+                            })}
                       id="boots-anchor"
                       @click=${this._toggleBootsMenu}
                     >
@@ -154,14 +183,10 @@ class ErrorLogCard extends LitElement {
                             .selected=${boot === this._boot}
                           >
                             ${boot === 0
-                              ? this.hass.localize(
-                                  "ui.panel.config.logs.current"
-                                )
+                              ? localize("ui.panel.config.logs.current")
                               : boot === -1
-                                ? this.hass.localize(
-                                    "ui.panel.config.logs.previous"
-                                  )
-                                : this.hass.localize(
+                                ? localize("ui.panel.config.logs.previous")
+                                : localize(
                                     "ui.panel.config.logs.startups_ago",
                                     { boot: boot * -1 }
                                   )}
@@ -176,19 +201,60 @@ class ErrorLogCard extends LitElement {
                     </ha-menu>
                   `
                 : nothing}
+              ${this._downloadSupported
+                ? html`
+                    <ha-icon-button
+                      .path=${mdiDownload}
+                      @click=${this._downloadLogs}
+                      .label=${localize("ui.panel.config.logs.download_logs")}
+                    ></ha-icon-button>
+                  `
+                : this._logsFileLink
+                  ? html`
+                      <a
+                        href=${this._logsFileLink}
+                        target="_blank"
+                        class="download-link"
+                      >
+                        <ha-icon-button
+                          .path=${mdiDownload}
+                          .label=${localize(
+                            "ui.panel.config.logs.download_logs"
+                          )}
+                        ></ha-icon-button>
+                      </a>
+                    `
+                  : nothing}
               <ha-icon-button
-                .path=${mdiDownload}
-                @click=${this._downloadFullLog}
-                .label=${this.hass.localize(
-                  "ui.panel.config.logs.download_full_log"
+                .path=${this._wrapLines ? mdiWrapDisabled : mdiWrap}
+                @click=${this._toggleLineWrap}
+                .label=${localize(
+                  `ui.panel.config.logs.${this._wrapLines ? "full_width" : "wrap_lines"}`
                 )}
               ></ha-icon-button>
               ${!this._streamSupported || this._error
                 ? html`<ha-icon-button
                     .path=${mdiRefresh}
                     @click=${this._loadLogs}
-                    .label=${this.hass.localize("ui.common.refresh")}
+                    .label=${localize("ui.common.refresh")}
                   ></ha-icon-button>`
+                : nothing}
+              ${this._streamSupported && Array.isArray(this._boots)
+                ? html`
+                    <ha-button-menu @action=${this._handleOverflowAction}>
+                      <ha-icon-button slot="trigger" .path=${mdiDotsVertical}>
+                      </ha-icon-button>
+                      <ha-list-item graphic="icon">
+                        <ha-svg-icon
+                          slot="graphic"
+                          .path=${mdiFormatListNumbered}
+                        ></ha-svg-icon>
+                        ${localize(
+                          `ui.panel.config.logs.${this._showBootsSelect ? "hide" : "show"}_haos_boots`
+                        )}
+                      </ha-list-item>
+                    </ha-button-menu>
+                  `
                 : nothing}
             </div>
           </div>
@@ -202,25 +268,22 @@ class ErrorLogCard extends LitElement {
                 </div>`
               : nothing}
             ${this._loadingState === "loading"
-              ? html`<div>
-                  ${this.hass.localize("ui.panel.config.logs.loading_log")}
-                </div>`
+              ? html`<div>${localize("ui.panel.config.logs.loading_log")}</div>`
               : this._loadingState === "empty"
-                ? html`<div>
-                    ${this.hass.localize("ui.panel.config.logs.no_errors")}
-                  </div>`
+                ? html`<div>${localize("ui.panel.config.logs.no_errors")}</div>`
                 : nothing}
             ${this._loadingState === "loaded" &&
             this.filter &&
             this._noSearchResults
               ? html`<div>
-                  ${this.hass.localize(
-                    "ui.panel.config.logs.no_issues_search",
-                    { term: this.filter }
-                  )}
+                  ${localize("ui.panel.config.logs.no_issues_search", {
+                    term: this.filter,
+                  })}
                 </div>`
               : nothing}
-            <ha-ansi-to-html></ha-ansi-to-html>
+            <ha-ansi-to-html
+              ?wrap-disabled=${!this._wrapLines}
+            ></ha-ansi-to-html>
             <div id="scroll-bottom-marker"></div>
           </div>
           <ha-button
@@ -236,24 +299,37 @@ class ErrorLogCard extends LitElement {
               .path=${mdiArrowCollapseDown}
               slot="icon"
             ></ha-svg-icon>
-            ${this.hass.localize("ui.panel.config.logs.scroll_down_button")}
+            ${localize("ui.panel.config.logs.scroll_down_button")}
             <ha-svg-icon
               .path=${mdiArrowCollapseDown}
               slot="trailingIcon"
             ></ha-svg-icon>
           </ha-button>
+          ${this._streamSupported &&
+          this._loadingState !== "loading" &&
+          this._boot === 0 &&
+          !this._error
+            ? html`<div class="live-indicator">
+                <ha-svg-icon path=${mdiCircle}></ha-svg-icon>
+                Live
+              </div>`
+            : nothing}
         </ha-card>
         ${this.show === false
           ? html`
-              <ha-button outlined @click=${this._downloadFullLog}>
-                <ha-svg-icon .path=${mdiDownload}></ha-svg-icon>
-                ${this.hass.localize("ui.panel.config.logs.download_full_log")}
-              </ha-button>
+              ${this._downloadSupported
+                ? html`
+                    <ha-button outlined @click=${this._downloadLogs}>
+                      <ha-svg-icon .path=${mdiDownload}></ha-svg-icon>
+                      ${localize("ui.panel.config.logs.download_logs")}
+                    </ha-button>
+                  `
+                : nothing}
               <mwc-button raised @click=${this._showLogs}>
-                ${this.hass.localize("ui.panel.config.logs.load_logs")}
+                ${localize("ui.panel.config.logs.load_logs")}
               </mwc-button>
             `
-          : ""}
+          : nothing}
       </div>
     `;
   }
@@ -267,6 +343,9 @@ class ErrorLogCard extends LitElement {
         2024,
         11
       );
+    }
+    if (this._downloadSupported === undefined && this.hass) {
+      this._downloadSupported = downloadFileSupported(this.hass);
     }
   }
 
@@ -331,7 +410,7 @@ class ErrorLogCard extends LitElement {
     );
   }
 
-  private async _downloadFullLog(): Promise<void> {
+  private async _downloadLogs(): Promise<void> {
     if (this._streamSupported) {
       showDownloadLogsDialog(this, {
         header: this.header,
@@ -378,6 +457,18 @@ class ErrorLogCard extends LitElement {
         isComponentLoaded(this.hass, "hassio") &&
         this.provider
       ) {
+        // check if there are any logs at all
+        const testResponse = await fetchHassioLogs(
+          this.hass,
+          this.provider,
+          `entries=:-1:`,
+          this._boot
+        );
+        const testLogs = await testResponse.text();
+        if (!testLogs.trim()) {
+          this._loadingState = "empty";
+        }
+
         const response = await fetchHassioLogsFollow(
           this.hass,
           this.provider,
@@ -438,6 +529,17 @@ class ErrorLogCard extends LitElement {
             } else {
               this._newLogsIndicator = true;
             }
+
+            if (!this._downloadSupported) {
+              const downloadUrl = getHassioLogDownloadLinesUrl(
+                this.provider,
+                this._numberOfLines,
+                this._boot
+              );
+              getSignedPath(this.hass, downloadUrl).then((signedUrl) => {
+                this._logsFileLink = signedUrl.path;
+              });
+            }
           }
         }
       } else {
@@ -445,8 +547,7 @@ class ErrorLogCard extends LitElement {
         this._streamSupported = false;
         let logs = "";
         if (isComponentLoaded(this.hass, "hassio") && this.provider) {
-          const repsonse = await fetchHassioLogs(this.hass, this.provider);
-          logs = await repsonse.text();
+          logs = await fetchHassioLogsLegacy(this.hass, this.provider);
         } else {
           logs = await fetchErrorLog(this.hass);
         }
@@ -461,10 +562,13 @@ class ErrorLogCard extends LitElement {
       if (err.name === "AbortError") {
         return;
       }
-      this._error = this.hass.localize("ui.panel.config.logs.failed_get_logs", {
-        provider: this.provider,
-        error: extractApiErrorMessage(err),
-      });
+      this._error = (this.localizeFunc || this.hass.localize)(
+        "ui.panel.config.logs.failed_get_logs",
+        {
+          provider: this.provider,
+          error: extractApiErrorMessage(err),
+        }
+      );
     }
   }
 
@@ -570,13 +674,30 @@ class ErrorLogCard extends LitElement {
     if (this._streamSupported && isComponentLoaded(this.hass, "hassio")) {
       try {
         const { data } = await fetchHassioBoots(this.hass);
-        this._boots = Object.keys(data.boots)
+        const boots = Object.keys(data.boots)
           .map(Number)
           .sort((a, b) => b - a);
+
+        // only show boots select when there are more than one boot
+        if (boots.length > 1) {
+          this._boots = boots;
+        }
       } catch (err: any) {
         // eslint-disable-next-line no-console
         console.error(err);
       }
+    }
+  }
+
+  private _toggleLineWrap() {
+    this._wrapLines = !this._wrapLines;
+  }
+
+  private _handleOverflowAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        this._showBootsSelect = !this._showBootsSelect;
+        break;
     }
   }
 
@@ -592,6 +713,9 @@ class ErrorLogCard extends LitElement {
   }
 
   static styles: CSSResultGroup = css`
+    :host {
+      direction: var(--direction);
+    }
     .error-log-intro {
       text-align: center;
       margin: 16px;
@@ -641,7 +765,7 @@ class ErrorLogCard extends LitElement {
       position: relative;
       font-family: var(--code-font-family, monospace);
       clear: both;
-      text-align: left;
+      text-align: start;
       padding-top: 12px;
       padding-bottom: 12px;
       overflow-y: scroll;
@@ -707,6 +831,36 @@ class ErrorLogCard extends LitElement {
     ha-assist-chip {
       --ha-assist-chip-container-shape: 10px;
       --md-assist-chip-trailing-space: 8px;
+    }
+
+    @keyframes breathe {
+      from {
+        opacity: 0.8;
+      }
+      to {
+        opacity: 0;
+      }
+    }
+
+    .live-indicator {
+      position: absolute;
+      bottom: 0;
+      inset-inline-end: 16px;
+      border-top-right-radius: 8px;
+      border-top-left-radius: 8px;
+      background-color: var(--primary-color);
+      color: var(--text-primary-color);
+      padding: 4px 8px;
+      opacity: 0.8;
+    }
+    .live-indicator ha-svg-icon {
+      animation: breathe 1s cubic-bezier(0.5, 0, 1, 1) infinite alternate;
+      height: 14px;
+      width: 14px;
+    }
+
+    .download-link {
+      color: var(--text-color);
     }
   `;
 }

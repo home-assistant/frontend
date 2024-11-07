@@ -7,30 +7,28 @@ import {
   mdiStop,
   mdiTargetVariant,
 } from "@mdi/js";
-import { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-button";
+import "../../../components/ha-svg-icon";
 import "../../../components/ha-control-button-group";
 import { UNAVAILABLE } from "../../../data/entity";
+import type { VacuumEntity } from "../../../data/vacuum";
 import {
-  VacuumEntity,
   VacuumEntityFeature,
   canReturnHome,
   canStart,
   canStop,
   isCleaning,
 } from "../../../data/vacuum";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
-import {
-  VACUUM_COMMANDS,
-  VacuumCommand,
-  VacuumCommandsCardFeatureConfig,
-} from "./types";
+import type { VacuumCommand, VacuumCommandsCardFeatureConfig } from "./types";
+import { VACUUM_COMMANDS } from "./types";
 
 interface VacuumButton {
   translationKey: string;

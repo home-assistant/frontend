@@ -1,15 +1,16 @@
-import { PropertyValues, ReactiveElement } from "lit";
+import type { PropertyValues } from "lit";
+import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { MediaQueriesListener } from "../../../common/dom/media_query";
+import type { MediaQueriesListener } from "../../../common/dom/media_query";
 import "../../../components/ha-svg-icon";
 import type { LovelaceSectionElement } from "../../../data/lovelace";
-import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import {
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type {
   LovelaceSectionConfig,
   LovelaceSectionRawConfig,
-  isStrategySection,
 } from "../../../data/lovelace/config/section";
+import { isStrategySection } from "../../../data/lovelace/config/section";
 import type { HomeAssistant } from "../../../types";
 import "../cards/hui-card";
 import type { HuiCard } from "../cards/hui-card";
@@ -41,6 +42,9 @@ export class HuiSection extends ReactiveElement {
   @property({ attribute: false }) public lovelace?: Lovelace;
 
   @property({ type: Boolean, reflect: true }) public preview = false;
+
+  @property({ type: Boolean, attribute: "import-only" })
+  public importOnly = false;
 
   @property({ type: Number }) public index!: number;
 
@@ -126,6 +130,9 @@ export class HuiSection extends ReactiveElement {
         this._cards.forEach((element) => {
           element.preview = this.preview;
         });
+      }
+      if (changedProperties.has("importOnly")) {
+        this._layoutElement.importOnly = this.importOnly;
       }
       if (changedProperties.has("_cards")) {
         this._layoutElement.cards = this._cards;
