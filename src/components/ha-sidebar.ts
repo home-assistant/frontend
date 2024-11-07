@@ -21,16 +21,9 @@ import "@polymer/paper-item/paper-icon-item";
 import type { PaperIconItemElement } from "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  CSSResult,
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResult, CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, eventOptions, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -39,13 +32,12 @@ import { fireEvent } from "../common/dom/fire_event";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { stringCompare } from "../common/string/compare";
 import { throttle } from "../common/util/throttle";
-import { ActionHandlerDetail } from "../data/lovelace/action_handler";
-import {
-  PersistentNotification,
-  subscribeNotifications,
-} from "../data/persistent_notification";
+import type { ActionHandlerDetail } from "../data/lovelace/action_handler";
+import type { PersistentNotification } from "../data/persistent_notification";
+import { subscribeNotifications } from "../data/persistent_notification";
 import { subscribeRepairsIssueRegistry } from "../data/repairs";
-import { UpdateEntity, updateCanInstall } from "../data/update";
+import type { UpdateEntity } from "../data/update";
+import { updateCanInstall } from "../data/update";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
 import { haStyleScrollbar } from "../resources/styles";
@@ -859,11 +851,14 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           border-bottom: 1px solid transparent;
           white-space: nowrap;
           font-weight: 400;
-          color: var(--sidebar-menu-button-text-color, --primary-text-color);
+          color: var(
+            --sidebar-menu-button-text-color,
+            var(--primary-text-color)
+          );
           border-bottom: 1px solid var(--divider-color);
           background-color: var(
             --sidebar-menu-button-background-color,
-            --primary-background-color
+            var(--primary-background-color)
           );
           font-size: 20px;
           align-items: center;

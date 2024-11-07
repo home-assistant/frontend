@@ -1,16 +1,17 @@
 import { mdiChevronDown } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-button";
 import "../../../components/search-input";
-import { LogProvider } from "../../../data/error_log";
+import type { LogProvider } from "../../../data/error_log";
 import { fetchHassioAddonsInfo } from "../../../data/hassio/addon";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant, Route } from "../../../types";
+import type { HomeAssistant, Route } from "../../../types";
 import "./error-log-card";
 import "./system-log-card";
 import type { SystemLogCard } from "./system-log-card";
@@ -167,6 +168,7 @@ export class HaConfigLogs extends LitElement {
 
   private _selectProvider(ev) {
     this._selectedLogProvider = (ev.currentTarget as any).provider;
+    this._filter = "";
     navigate(`/config/logs?provider=${this._selectedLogProvider}`);
   }
 

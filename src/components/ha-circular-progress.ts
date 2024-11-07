@@ -1,5 +1,6 @@
 import { MdCircularProgress } from "@material/web/progress/circular-progress";
-import { PropertyValues, css } from "lit";
+import type { PropertyValues } from "lit";
+import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 
 @customElement("ha-circular-progress")

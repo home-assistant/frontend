@@ -6,7 +6,7 @@ import {
 } from "@material/web/menu/internal/controllers/shared";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
-import type { HaMenuItem } from "./ha-menu-item";
+import type { HaMdMenuItem } from "./ha-md-menu-item";
 
 @customElement("ha-menu")
 export class HaMenu extends MdMenu {
@@ -22,7 +22,7 @@ export class HaMenu extends MdMenu {
     ) {
       return;
     }
-    (ev.detail.initiator as HaMenuItem).clickAction?.(ev.detail.initiator);
+    (ev.detail.initiator as HaMdMenuItem).clickAction?.(ev.detail.initiator);
   }
 
   static override styles = [

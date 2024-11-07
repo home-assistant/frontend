@@ -1,5 +1,5 @@
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { HomeAssistant } from "../types";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { HomeAssistant } from "../types";
 
 export enum InclusionState {
   /** The controller isn't doing anything regarding inclusion. */
@@ -209,6 +209,17 @@ export interface ZWaveJSNodeStatus {
   has_firmware_update_cc: boolean;
 }
 
+export type ZWaveJSNodeCapabilities = {
+  [endpoint: number]: ZWaveJSEndpointCapability[];
+};
+
+export interface ZWaveJSEndpointCapability {
+  id: number;
+  name: string;
+  version: number;
+  is_secure: boolean;
+}
+
 export interface ZwaveJSNodeMetadata {
   node_id: number;
   exclusion: string;
@@ -252,6 +263,7 @@ export interface ZWaveJSNodeConfigParamMetadata {
   type: string;
   unit: string;
   states: { [key: number]: string };
+  default: any;
 }
 
 export interface ZWaveJSSetConfigParamData {
@@ -402,6 +414,25 @@ export interface RequestedGrant {
   /** Whether client side authentication is requested or to be granted */
   clientSideAuth: boolean;
 }
+
+export const invokeZWaveCCApi = (
+  hass: HomeAssistant,
+  device_id: string,
+  command_class: number,
+  endpoint: number | undefined,
+  method_name: string,
+  parameters: any[],
+  wait_for_result?: boolean
+): Promise<unknown> =>
+  hass.callWS({
+    type: "zwave_js/invoke_cc_api",
+    device_id,
+    command_class,
+    endpoint,
+    method_name,
+    parameters,
+    wait_for_result,
+  });
 
 export const fetchZwaveNetworkStatus = (
   hass: HomeAssistant,
@@ -575,6 +606,15 @@ export const fetchZwaveNodeStatus = (
 ): Promise<ZWaveJSNodeStatus> =>
   hass.callWS({
     type: "zwave_js/node_status",
+    device_id,
+  });
+
+export const fetchZwaveNodeCapabilities = (
+  hass: HomeAssistant,
+  device_id: string
+): Promise<ZWaveJSNodeCapabilities> =>
+  hass.callWS({
+    type: "zwave_js/node_capabilities",
     device_id,
   });
 

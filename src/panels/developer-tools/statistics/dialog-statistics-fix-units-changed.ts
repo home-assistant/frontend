@@ -1,5 +1,6 @@
 import "@material/mwc-button/mwc-button";
-import { CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-dialog";
@@ -7,10 +8,11 @@ import "../../../components/ha-formfield";
 import "../../../components/ha-radio";
 import {
   clearStatistics,
+  getStatisticLabel,
   updateStatisticsMetadata,
 } from "../../../data/recorder";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import type { DialogStatisticsUnitsChangedParams } from "./show-dialog-statistics-fix-units-changed";
 
 @customElement("dialog-statistics-fix-units-changed")
@@ -27,6 +29,10 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
   }
 
   public closeDialog(): void {
+    this._cancel();
+  }
+
+  private _closeDialog(): void {
     this._params = undefined;
     this._action = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -40,7 +46,9 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
     return html`
       <ha-dialog
         open
-        @closed=${this.closeDialog}
+        scrimClickAction
+        escapeKeyAction
+        @closed=${this._closeDialog}
         .heading=${this.hass.localize(
           "ui.panel.developer-tools.tabs.statistics.fix_issue.units_changed.title"
         )}
@@ -49,6 +57,12 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
           ${this.hass.localize(
             "ui.panel.developer-tools.tabs.statistics.fix_issue.units_changed.info_text_1",
             {
+              name: getStatisticLabel(
+                this.hass,
+                this._params.issue.data.statistic_id,
+                undefined
+              ),
+              statistic_id: this._params.issue.data.statistic_id,
               current_unit: this._params.issue.data.state_unit,
               previous_unit: this._params.issue.data.metadata_unit,
             }
@@ -98,7 +112,7 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
             "ui.panel.developer-tools.tabs.statistics.fix_issue.fix"
           )}
         </mwc-button>
-        <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
+        <mwc-button slot="secondaryAction" @click=${this._cancel}>
           ${this.hass.localize("ui.common.close")}
         </mwc-button>
       </ha-dialog>
@@ -107,6 +121,11 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
 
   private _handleActionChanged(ev): void {
     this._action = ev.target.value;
+  }
+
+  private _cancel(): void {
+    this._params?.cancelCallback!();
+    this._closeDialog();
   }
 
   private async _fixIssue(): Promise<void> {
@@ -119,8 +138,8 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
         this._params!.issue.data.state_unit
       );
     }
-    this._params?.fixedCallback();
-    this.closeDialog();
+    this._params?.fixedCallback!();
+    this._closeDialog();
   }
 
   static get styles(): CSSResultGroup {

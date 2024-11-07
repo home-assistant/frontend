@@ -1,19 +1,20 @@
 import "../../../layouts/hass-error-screen";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import {
+import type {
   EnergyPreferencesValidation,
-  getEnergyPreferenceValidation,
   EnergyInfo,
   EnergyPreferences,
+} from "../../../data/energy";
+import {
+  getEnergyPreferenceValidation,
   getEnergyInfo,
   getEnergyPreferences,
   getReferencedStatisticIds,
 } from "../../../data/energy";
-import {
-  getStatisticMetadata,
-  StatisticsMetaData,
-} from "../../../data/recorder";
+import type { StatisticsMetaData } from "../../../data/recorder";
+import { getStatisticMetadata } from "../../../data/recorder";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";

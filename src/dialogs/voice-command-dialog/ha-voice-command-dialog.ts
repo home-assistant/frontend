@@ -8,15 +8,8 @@ import {
   mdiSend,
   mdiStar,
 } from "@mdi/js";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { storage } from "../../common/decorators/storage";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -28,9 +21,10 @@ import "../../components/ha-dialog-header";
 import "../../components/ha-icon-button";
 import "../../components/ha-list-item";
 import "../../components/ha-textfield";
+import "../../components/ha-alert";
 import type { HaTextField } from "../../components/ha-textfield";
+import type { AssistPipeline } from "../../data/assist_pipeline";
 import {
-  AssistPipeline,
   getAssistPipeline,
   listAssistPipelines,
   runAssistPipeline,
@@ -40,7 +34,7 @@ import type { HomeAssistant } from "../../types";
 import { AudioRecorder } from "../../util/audio-recorder";
 import { documentationUrl } from "../../util/documentation-url";
 import { showAlertDialog } from "../generic/show-dialog-box";
-import { VoiceCommandDialogParams } from "./show-ha-voice-command-dialog";
+import type { VoiceCommandDialogParams } from "./show-ha-voice-command-dialog";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { ConversationEntityFeature } from "../../data/conversation";
 

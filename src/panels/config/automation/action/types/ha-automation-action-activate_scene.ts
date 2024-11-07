@@ -2,9 +2,9 @@ import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/entity/ha-entity-picker";
-import { SceneAction } from "../../../../../data/script";
-import { ValueChangedEvent, HomeAssistant } from "../../../../../types";
-import { ActionElement } from "../ha-automation-action-row";
+import type { SceneAction } from "../../../../../data/script";
+import type { ValueChangedEvent, HomeAssistant } from "../../../../../types";
+import type { ActionElement } from "../ha-automation-action-row";
 
 const includeDomains = ["scene"];
 
@@ -55,12 +55,12 @@ export class HaSceneAction extends LitElement implements ActionElement {
     fireEvent(this, "value-changed", {
       value: {
         ...this.action,
-        service: "scene.turn_on",
+        action: "scene.turn_on",
         target: {
           entity_id: ev.detail.value,
         },
         metadata: {},
-      },
+      } as SceneAction,
     });
   }
 }

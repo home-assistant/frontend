@@ -5,6 +5,7 @@ import {
   mdiCodeBraces,
   mdiDevices,
   mdiDotsHorizontal,
+  mdiFormatListBulleted,
   mdiGestureDoubleTap,
   mdiMapClock,
   mdiMapMarker,
@@ -21,7 +22,11 @@ import {
 } from "@mdi/js";
 
 import { mdiHomeAssistant } from "../resources/home-assistant-logo-svg";
-import { AutomationElementGroup } from "./automation";
+import type {
+  AutomationElementGroup,
+  Trigger,
+  TriggerList,
+} from "./automation";
 
 export const TRIGGER_ICONS = {
   calendar: mdiCalendar,
@@ -41,6 +46,7 @@ export const TRIGGER_ICONS = {
   webhook: mdiWebhook,
   persistent_notification: mdiMessageAlert,
   zone: mdiMapMarkerRadius,
+  list: mdiFormatListBulleted,
 };
 
 export const TRIGGER_GROUPS: AutomationElementGroup = {
@@ -65,3 +71,6 @@ export const TRIGGER_GROUPS: AutomationElementGroup = {
     },
   },
 } as const;
+
+export const isTriggerList = (trigger: Trigger): trigger is TriggerList =>
+  "triggers" in trigger;

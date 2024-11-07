@@ -1,14 +1,7 @@
 import { mdiArrowDown, mdiArrowUp, mdiChevronUp } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import {
   customElement,
   eventOptions,
@@ -27,13 +20,13 @@ import { debounce } from "../../common/util/debounce";
 import { groupBy } from "../../common/util/group-by";
 import { haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-svg-icon";
 import "../search-input";
 import { filterData, sortData } from "./sort-filter";
-import { LocalizeFunc } from "../../common/translations/localize";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import { nextRender } from "../../common/util/render-status";
 
 export interface RowClickedEvent {
@@ -201,6 +194,29 @@ export class HaDataTable extends LitElement {
     this._checkedRows = this._filteredData
       .filter((data) => data.selectable !== false)
       .map((data) => data[this.id]);
+    this._checkedRowsChanged();
+  }
+
+  public select(ids: string[], clear?: boolean): void {
+    if (clear) {
+      this._checkedRows = [];
+    }
+    ids.forEach((id) => {
+      const row = this._filteredData.find((data) => data[this.id] === id);
+      if (row?.selectable !== false && !this._checkedRows.includes(id)) {
+        this._checkedRows.push(id);
+      }
+    });
+    this._checkedRowsChanged();
+  }
+
+  public unselect(ids: string[]): void {
+    ids.forEach((id) => {
+      const index = this._checkedRows.indexOf(id);
+      if (index > -1) {
+        this._checkedRows.splice(index, 1);
+      }
+    });
     this._checkedRowsChanged();
   }
 
@@ -1011,6 +1027,7 @@ export class HaDataTable extends LitElement {
           /* @noflip */
           padding-inline-end: initial;
           width: 60px;
+          min-width: 60px;
         }
 
         .mdc-data-table__table {
@@ -1168,6 +1185,7 @@ export class HaDataTable extends LitElement {
 
         .group-header {
           padding-top: 12px;
+          height: var(--data-table-row-height, 52px);
           padding-left: 12px;
           padding-inline-start: 12px;
           padding-inline-end: initial;
@@ -1176,6 +1194,7 @@ export class HaDataTable extends LitElement {
           display: flex;
           align-items: center;
           cursor: pointer;
+          background-color: var(--primary-background-color);
         }
 
         .group-header ha-icon-button {

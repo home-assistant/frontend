@@ -15,20 +15,15 @@ import {
   mdiToggleSwitch,
   mdiToggleSwitchOffOutline,
 } from "@mdi/js";
-import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoize from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
+import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -37,7 +32,7 @@ import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
-import { LocalizeFunc } from "../../../common/translations/localize";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
   hasRejectedItems,
   rejectedItems,
@@ -52,6 +47,7 @@ import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-alert";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-check-list-item";
+import "../../../components/ha-md-divider";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-domains";
 import "../../../components/ha-filter-floor-areas";
@@ -60,26 +56,31 @@ import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-states";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-menu-item";
+import "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
-import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
+import type { ConfigEntry } from "../../../data/config_entries";
+import { getConfigEntries } from "../../../data/config_entries";
 import { fullEntitiesContext } from "../../../data/context";
+import type {
+  DataTableFiltersItems,
+  DataTableFiltersValues,
+} from "../../../data/data_table_filters";
 import { UNAVAILABLE } from "../../../data/entity";
-import {
+import type {
   EntityRegistryEntry,
   UpdateEntityRegistryEntryResult,
+} from "../../../data/entity_registry";
+import {
   computeEntityRegistryName,
   removeEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
-import {
-  EntitySources,
-  fetchEntitySourcesWithCache,
-} from "../../../data/entity_sources";
+import type { EntitySources } from "../../../data/entity_sources";
+import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
 import { domainToName } from "../../../data/integration";
+import type { LabelRegistryEntry } from "../../../data/label_registry";
 import {
-  LabelRegistryEntry,
   createLabelRegistryEntry,
   subscribeLabelRegistry,
 } from "../../../data/label_registry";
@@ -98,12 +99,6 @@ import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
-import {
-  serializeFilters,
-  deserializeFilters,
-  DataTableFilters,
-} from "../../../data/data_table_filters";
-import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 
 export interface StateEntity
   extends Omit<EntityRegistryEntry, "id" | "unique_id"> {
@@ -157,13 +152,13 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   @storage({
     storage: "sessionStorage",
-    key: "entities-table-filters-full",
+    key: "entities-table-filters",
     state: true,
     subscribe: false,
-    serializer: serializeFilters,
-    deserializer: deserializeFilters,
   })
-  private _filters: DataTableFilters = {};
+  private _filters: DataTableFiltersValues = {};
+
+  @state() private _filteredItems: DataTableFiltersItems = {};
 
   @state() private _selected: string[] = [];
 
@@ -460,13 +455,14 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       devices: HomeAssistant["devices"],
       areas: HomeAssistant["areas"],
       stateEntities: StateEntity[],
-      filters: DataTableFilters,
+      filters: DataTableFiltersValues,
+      filteredItems: DataTableFiltersItems,
       entries?: ConfigEntry[],
       labelReg?: LabelRegistryEntry[]
     ) => {
       const result: EntityRow[] = [];
 
-      const stateFilters = filters["ha-filter-states"]?.value as string[];
+      const stateFilters = filters["ha-filter-states"] as string[];
 
       const showEnabled =
         !stateFilters?.length || stateFilters.includes("enabled");
@@ -491,15 +487,11 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       const filteredDomains = new Set<string>();
 
       Object.entries(filters).forEach(([key, filter]) => {
-        if (
-          key === "config_entry" &&
-          Array.isArray(filter.value) &&
-          filter.value.length
-        ) {
+        if (key === "config_entry" && Array.isArray(filter) && filter.length) {
           filteredEntities = filteredEntities.filter(
             (entity) =>
               entity.config_entry_id &&
-              (filter.value as string[]).includes(entity.config_entry_id)
+              (filter as string[]).includes(entity.config_entry_id)
           );
 
           if (!entries) {
@@ -509,8 +501,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
           const configEntries = entries.filter(
             (entry) =>
-              entry.entry_id &&
-              (filter.value as string[]).includes(entry.entry_id)
+              entry.entry_id && (filter as string[]).includes(entry.entry_id)
           );
 
           configEntries.forEach((configEntry) => {
@@ -521,17 +512,15 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           }
         } else if (
           key === "ha-filter-integrations" &&
-          Array.isArray(filter.value) &&
-          filter.value.length
+          Array.isArray(filter) &&
+          filter.length
         ) {
           if (!entries) {
             this._loadConfigEntries();
             return;
           }
           const entryIds = entries
-            .filter((entry) =>
-              (filter.value as string[]).includes(entry.domain)
-            )
+            .filter((entry) => (filter as string[]).includes(entry.domain))
             .map((entry) => entry.entry_id);
 
           const filteredEntitiesByDomain = new Set<string>();
@@ -547,7 +536,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             entitiesByDomain[source.domain].push(entity);
           }
 
-          for (const val of filter.value) {
+          for (const val of filter) {
             if (val in entitiesByDomain) {
               entitiesByDomain[val].forEach((item) =>
                 filteredEntitiesByDomain.add(item)
@@ -558,32 +547,34 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           filteredEntities = filteredEntities.filter(
             (entity) =>
               filteredEntitiesByDomain.has(entity.entity_id) ||
-              (filter.value as string[]).includes(entity.platform) ||
+              (filter as string[]).includes(entity.platform) ||
               (entity.config_entry_id &&
                 entryIds.includes(entity.config_entry_id))
           );
-          filter.value!.forEach((domain) => filteredDomains.add(domain));
+          filter!.forEach((domain) => filteredDomains.add(domain));
         } else if (
           key === "ha-filter-domains" &&
-          Array.isArray(filter.value) &&
-          filter.value.length
+          Array.isArray(filter) &&
+          filter.length
         ) {
           filteredEntities = filteredEntities.filter((entity) =>
-            (filter.value as string[]).includes(computeDomain(entity.entity_id))
+            (filter as string[]).includes(computeDomain(entity.entity_id))
           );
         } else if (
           key === "ha-filter-labels" &&
-          Array.isArray(filter.value) &&
-          filter.value.length
+          Array.isArray(filter) &&
+          filter.length
         ) {
           filteredEntities = filteredEntities.filter((entity) =>
-            entity.labels.some((lbl) =>
-              (filter.value as string[]).includes(lbl)
-            )
+            entity.labels.some((lbl) => (filter as string[]).includes(lbl))
           );
-        } else if (filter.items) {
+        }
+      });
+
+      Object.values(filteredItems).forEach((items) => {
+        if (items) {
           filteredEntities = filteredEntities.filter((entity) =>
-            filter.items!.has(entity.entity_id)
+            items.has(entity.entity_id)
           );
         }
       });
@@ -684,6 +675,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         this.hass.areas,
         this._stateEntities,
         this._filters,
+        this._filteredItems,
         this._entries,
         this._labels
       );
@@ -704,7 +696,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           this._selected.some((entityId) =>
             this.hass.entities[entityId]?.labels.includes(label.label_id)
           );
-        return html`<ha-menu-item
+        return html`<ha-md-menu-item
           .value=${label.label_id}
           .action=${selected ? "remove" : "add"}
           @click=${this._handleBulkLabel}
@@ -722,13 +714,13 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               : nothing}
             ${label.name}
           </ha-label>
-        </ha-menu-item>`;
+        </ha-md-menu-item>`;
       })}
-      <md-divider role="separator" tabindex="-1"></md-divider>
-      <ha-menu-item @click=${this._bulkCreateLabel}>
+      <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
+      <ha-md-menu-item @click=${this._bulkCreateLabel}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.labels.add_label")}
-        </div></ha-menu-item
+        </div></ha-md-menu-item
       >`;
 
     return html`
@@ -749,10 +741,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         hasFilters
         .filters=${
           Object.values(this._filters).filter((filter) =>
-            Array.isArray(filter.value)
-              ? filter.value.length
-              : filter.value &&
-                Object.values(filter.value).some((val) =>
+            Array.isArray(filter)
+              ? filter.length
+              : filter &&
+                Object.values(filter).some((val) =>
                   Array.isArray(val) ? val.length : val
                 )
           ).length
@@ -786,7 +778,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
 ${
   !this.narrow
-    ? html`<ha-button-menu-new slot="selection-bar">
+    ? html`<ha-md-button-menu slot="selection-bar">
         <ha-assist-chip
           slot="trigger"
           .label=${this.hass.localize(
@@ -796,10 +788,10 @@ ${
           <ha-svg-icon slot="trailing-icon" .path=${mdiMenuDown}></ha-svg-icon>
         </ha-assist-chip>
         ${labelItems}
-      </ha-button-menu-new>`
+      </ha-md-button-menu>`
     : nothing
 }
-<ha-button-menu-new has-overflow slot="selection-bar">
+<ha-md-button-menu has-overflow slot="selection-bar">
   ${
     this.narrow
       ? html`<ha-assist-chip
@@ -824,29 +816,29 @@ ${
   ${
     this.narrow
       ? html`<ha-sub-menu>
-            <ha-menu-item slot="item">
+            <ha-md-menu-item slot="item">
               <div slot="headline">
                 ${this.hass.localize(
                   "ui.panel.config.automation.picker.bulk_actions.add_label"
                 )}
               </div>
               <ha-svg-icon slot="end" .path=${mdiChevronRight}></ha-svg-icon>
-            </ha-menu-item>
+            </ha-md-menu-item>
             <ha-menu slot="menu">${labelItems}</ha-menu>
           </ha-sub-menu>
-          <md-divider role="separator" tabindex="-1"></md-divider>`
+          <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>`
       : nothing
   }
 
-  <ha-menu-item @click=${this._enableSelected}>
+  <ha-md-menu-item @click=${this._enableSelected}>
     <ha-svg-icon slot="start" .path=${mdiToggleSwitch}></ha-svg-icon>
     <div slot="headline">
       ${this.hass.localize(
         "ui.panel.config.entities.picker.enable_selected.button"
       )}
     </div>
-  </ha-menu-item>
-  <ha-menu-item @click=${this._disableSelected}>
+  </ha-md-menu-item>
+  <ha-md-menu-item @click=${this._disableSelected}>
     <ha-svg-icon
       slot="start"
       .path=${mdiToggleSwitchOffOutline}
@@ -856,10 +848,10 @@ ${
         "ui.panel.config.entities.picker.disable_selected.button"
       )}
     </div>
-  </ha-menu-item>
-  <md-divider role="separator" tabindex="-1"></md-divider>
+  </ha-md-menu-item>
+  <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
 
-  <ha-menu-item @click=${this._unhideSelected}>
+  <ha-md-menu-item @click=${this._unhideSelected}>
     <ha-svg-icon
       slot="start"
       .path=${mdiEye}
@@ -869,8 +861,8 @@ ${
         "ui.panel.config.entities.picker.unhide_selected.button"
       )}
     </div>
-  </ha-menu-item>
-  <ha-menu-item @click=${this._hideSelected}>
+  </ha-md-menu-item>
+  <ha-md-menu-item @click=${this._hideSelected}>
     <ha-svg-icon
       slot="start"
       .path=${mdiEyeOff}
@@ -880,10 +872,10 @@ ${
         "ui.panel.config.entities.picker.hide_selected.button"
       )}
     </div>
-  </ha-menu-item>
-  <md-divider role="separator" tabindex="-1"></md-divider>
+  </ha-md-menu-item>
+  <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
 
-  <ha-menu-item @click=${this._removeSelected} class="warning">
+  <ha-md-menu-item @click=${this._removeSelected} class="warning">
     <ha-svg-icon
       slot="start"
       .path=${mdiDelete}
@@ -893,25 +885,24 @@ ${
         "ui.panel.config.entities.picker.delete_selected.button"
       )}
     </div>
-  </ha-menu-item>
+  </ha-md-menu-item>
 
-</ha-button-menu-new>
+</ha-md-button-menu>
         ${
-          Array.isArray(this._filters.config_entry?.value) &&
-          this._filters.config_entry?.value.length
+          Array.isArray(this._filters.config_entry) &&
+          this._filters.config_entry?.length
             ? html`<ha-alert slot="filter-pane">
                 Filtering by config entry
                 ${this._entries?.find(
-                  (entry) =>
-                    entry.entry_id === this._filters.config_entry!.value![0]
-                )?.title || this._filters.config_entry.value[0]}
+                  (entry) => entry.entry_id === this._filters.config_entry![0]
+                )?.title || this._filters.config_entry[0]}
               </ha-alert>`
             : nothing
         }
         <ha-filter-floor-areas
           .hass=${this.hass}
           type="entity"
-          .value=${this._filters["ha-filter-floor-areas"]?.value}
+          .value=${this._filters["ha-filter-floor-areas"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
           .expanded=${this._expandedFilter === "ha-filter-floor-areas"}
@@ -921,7 +912,7 @@ ${
         <ha-filter-devices
           .hass=${this.hass}
           .type=${"entity"}
-          .value=${this._filters["ha-filter-devices"]?.value}
+          .value=${this._filters["ha-filter-devices"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
           .expanded=${this._expandedFilter === "ha-filter-devices"}
@@ -930,7 +921,7 @@ ${
         ></ha-filter-devices>
         <ha-filter-domains
           .hass=${this.hass}
-          .value=${this._filters["ha-filter-domains"]?.value}
+          .value=${this._filters["ha-filter-domains"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
           .expanded=${this._expandedFilter === "ha-filter-domains"}
@@ -939,7 +930,7 @@ ${
         ></ha-filter-domains>
         <ha-filter-integrations
           .hass=${this.hass}
-          .value=${this._filters["ha-filter-integrations"]?.value}
+          .value=${this._filters["ha-filter-integrations"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
           .expanded=${this._expandedFilter === "ha-filter-integrations"}
@@ -951,7 +942,7 @@ ${
           .label=${this.hass.localize(
             "ui.panel.config.entities.picker.headers.status"
           )}
-          .value=${this._filters["ha-filter-states"]?.value}
+          .value=${this._filters["ha-filter-states"]}
           .states=${this._states(this.hass.localize)}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
@@ -961,7 +952,7 @@ ${
         ></ha-filter-states>
         <ha-filter-labels
           .hass=${this.hass}
-          .value=${this._filters["ha-filter-labels"]?.value}
+          .value=${this._filters["ha-filter-labels"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
           .expanded=${this._expandedFilter === "ha-filter-labels"}
@@ -996,7 +987,9 @@ ${
 
   private _filterChanged(ev) {
     const type = ev.target.localName;
-    this._filters = { ...this._filters, [type]: ev.detail };
+
+    this._filters = { ...this._filters, [type]: ev.detail.value };
+    this._filteredItems = { ...this._filteredItems, [type]: ev.detail.items };
   }
 
   protected firstUpdated() {
@@ -1008,41 +1001,27 @@ ${
       return;
     }
     this._filters = {
-      "ha-filter-states": {
-        value: ["enabled"],
-        items: undefined,
-      },
+      "ha-filter-states": ["enabled"],
     };
   }
 
   private _setFiltersFromUrl() {
     const domain = this._searchParms.get("domain");
     const configEntry = this._searchParms.get("config_entry");
+    const label = this._searchParms.has("label");
 
-    if (!domain && !configEntry) {
+    if (!domain && !configEntry && !label) {
       return;
     }
 
     this._filter = history.state?.filter || "";
 
     this._filters = {
-      "ha-filter-states": {
-        value: [],
-        items: undefined,
-      },
-      "ha-filter-integrations": {
-        value: domain ? [domain] : [],
-        items: undefined,
-      },
-      config_entry: {
-        value: configEntry ? [configEntry] : [],
-        items: undefined,
-      },
+      "ha-filter-states": [],
+      "ha-filter-integrations": domain ? [domain] : [],
+      config_entry: configEntry ? [configEntry] : [],
     };
-
-    if (this._searchParms.has("label")) {
-      this._filterLabel();
-    }
+    this._filterLabel();
   }
 
   private _filterLabel() {
@@ -1052,15 +1031,13 @@ ${
     }
     this._filters = {
       ...this._filters,
-      "ha-filter-labels": {
-        value: [label],
-        items: undefined,
-      },
+      "ha-filter-labels": [label],
     };
   }
 
   private _clearFilter() {
     this._filters = {};
+    this._filteredItems = {};
   }
 
   public willUpdate(changedProps: PropertyValues): void {
@@ -1070,8 +1047,10 @@ ${
     if (!this.hass || !this._entities) {
       return;
     }
+
     if (
-      changedProps.has("hass") ||
+      (changedProps.has("hass") &&
+        (!oldHass || oldHass.states !== this.hass.states)) ||
       changedProps.has("_entities") ||
       changedProps.has("_entitySources")
     ) {
@@ -1084,9 +1063,8 @@ ${
           continue;
         }
         if (
-          !oldHass ||
           changedProps.has("_entitySources") ||
-          this.hass.states[entityId] !== oldHass.states[entityId]
+          (changedProps.has("hass") && (!oldHass || !oldHass.states[entityId]))
         ) {
           changed = true;
         }
@@ -1357,6 +1335,7 @@ ${rejected
         this.hass.areas,
         this._stateEntities,
         this._filters,
+        this._filteredItems,
         this._entries,
         this._labels
       );
@@ -1468,7 +1447,7 @@ ${rejected
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;
         }
-        ha-button-menu-new ha-assist-chip {
+        ha-md-button-menu ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;
         }
         ha-label {

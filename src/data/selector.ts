@@ -4,17 +4,17 @@ import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
 import type { CropOptions } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { isHelperDomain } from "../panels/config/helpers/const";
-import { UiAction } from "../panels/lovelace/components/hui-action-editor";
-import { HomeAssistant, ItemPath } from "../types";
+import type { UiAction } from "../panels/lovelace/components/hui-action-editor";
+import type { HomeAssistant } from "../types";
 import {
-  DeviceRegistryEntry,
+  type DeviceRegistryEntry,
   getDeviceIntegrationLookup,
 } from "./device_registry";
-import {
+import type {
   EntityRegistryDisplayEntry,
   EntityRegistryEntry,
 } from "./entity_registry";
-import { EntitySources } from "./entity_sources";
+import type { EntitySources } from "./entity_sources";
 
 export type Selector =
   | ActionSelector
@@ -68,9 +68,8 @@ export type Selector =
   | UiStateContentSelector;
 
 export interface ActionSelector {
-  action: {
-    path?: ItemPath;
-  } | null;
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  action: {} | null;
 }
 
 export interface AddonSelector {
@@ -121,9 +120,8 @@ export interface ColorTempSelector {
 }
 
 export interface ConditionSelector {
-  condition: {
-    path?: ItemPath;
-  } | null;
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  condition: {} | null;
 }
 
 export interface ConversationAgentSelector {
@@ -432,9 +430,8 @@ export interface TimeSelector {
 }
 
 export interface TriggerSelector {
-  trigger: {
-    path?: ItemPath;
-  } | null;
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  trigger: {} | null;
 }
 
 export interface TTSSelector {
@@ -454,7 +451,11 @@ export interface UiActionSelector {
 
 export interface UiColorSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
-  ui_color: { default_color?: boolean } | null;
+  ui_color: {
+    default_color?: string;
+    include_none?: boolean;
+    include_state?: boolean;
+  } | null;
 }
 
 export interface UiStateContentSelector {

@@ -14,15 +14,8 @@ import {
   mdiRobotConfused,
   mdiTransitConnection,
 } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -39,10 +32,9 @@ import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
 import { validateConfig } from "../../../data/config";
 import { UNAVAILABLE } from "../../../data/entity";
-import { EntityRegistryEntry } from "../../../data/entity_registry";
+import type { EntityRegistryEntry } from "../../../data/entity_registry";
+import type { BlueprintScriptConfig, ScriptConfig } from "../../../data/script";
 import {
-  BlueprintScriptConfig,
-  ScriptConfig,
   deleteScript,
   fetchScriptFileConfig,
   getScriptEditorInitData,
@@ -82,8 +74,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public route!: Route;
 
   @state() private _config?: ScriptConfig;
-
-  @state() private _idError = false;
 
   @state() private _dirty = false;
 
@@ -414,6 +404,18 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       this._loadConfig();
     }
 
+    if (
+      (changedProps.has("scriptId") || changedProps.has("entityRegistry")) &&
+      this.scriptId &&
+      this.entityRegistry
+    ) {
+      // find entity for when script entity id changed
+      const entity = this.entityRegistry.find(
+        (ent) => ent.platform === "script" && ent.unique_id === this.scriptId
+      );
+      this._entityId = entity?.entity_id;
+    }
+
     if (changedProps.has("scriptId") && !this.scriptId && this.hass) {
       const initData = getScriptEditorInitData();
       this._dirty = !!initData;
@@ -448,15 +450,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     }
   }
 
-  private _setEntityId(id?: string) {
-    this._entityId = id;
-    if (this.hass.states[`script.${this._entityId}`]) {
-      this._idError = true;
-    } else {
-      this._idError = false;
-    }
-  }
-
   private async _checkValidation() {
     this._validationErrors = undefined;
     if (!this._entityId || !this._config) {
@@ -467,7 +460,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       return;
     }
     const validation = await validateConfig(this.hass, {
-      action: this._config.sequence,
+      actions: this._config.sequence,
     });
     this._validationErrors = (
       Object.entries(validation) as Entries<typeof validation>
@@ -475,7 +468,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       value.valid
         ? ""
         : html`${this.hass.localize(
-              `ui.panel.config.automation.editor.${key}s.name`
+              `ui.panel.config.automation.editor.${key}.name`
             )}:
             ${value.error}<br />`
     );
@@ -688,8 +681,12 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   private async _duplicate() {
     const result = this._readOnly
       ? await showConfirmationDialog(this, {
-          title: "Migrate script?",
-          text: "You can migrate this script, so it can be edited from the UI. After it is migrated and you have saved it, you will have to manually delete your old script from your configuration. Do you want to migrate this script?",
+          title: this.hass.localize(
+            "ui.panel.config.script.picker.migrate_script"
+          ),
+          text: this.hass.localize(
+            "ui.panel.config.script.picker.migrate_script_description"
+          ),
         })
       : await this.confirmUnsavedChanged();
     if (result) {
@@ -766,28 +763,12 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   }
 
   private async _saveScript(): Promise<void> {
-    if (this._idError) {
-      showToast(this, {
-        message: this.hass.localize(
-          "ui.panel.config.script.editor.id_already_exists_save_error"
-        ),
-        dismissable: false,
-        duration: -1,
-        action: {
-          action: () => {},
-          text: this.hass.localize("ui.dialogs.generic.ok"),
-        },
-      });
-      return;
-    }
-
     if (!this.scriptId) {
       const saved = await this._promptScriptAlias();
       if (!saved) {
         return;
       }
-      const entityId = this._computeEntityIdFromAlias(this._config!.alias);
-      this._setEntityId(entityId);
+      this._entityId = this._computeEntityIdFromAlias(this._config!.alias);
     }
     const id = this.scriptId || this._entityId || Date.now();
 

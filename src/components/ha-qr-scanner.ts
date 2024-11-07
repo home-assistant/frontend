@@ -1,19 +1,34 @@
 import "@material/mwc-button/mwc-button";
 import { mdiCamera } from "@mdi/js";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing, PropertyValues } from "lit";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+// The BarcodeDetector Web API is not yet supported in all browsers,
+// and "qr-scanner" defaults to a suboptimal implementation if it is not available.
+// The following import makes a better implementation available that is based on a
+// WebAssembly port of ZXing:
+import { setZXingModuleOverrides } from "barcode-detector";
 import type QrScanner from "qr-scanner";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
-import { LocalizeFunc } from "../common/translations/localize";
+import type { LocalizeFunc } from "../common/translations/localize";
 import { addExternalBarCodeListener } from "../external_app/external_app_entrypoint";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "./ha-alert";
 import "./ha-button-menu";
 import "./ha-list-item";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
+
+setZXingModuleOverrides({
+  locateFile: (path: string, prefix: string) => {
+    if (path.endsWith(".wasm")) {
+      return "/static/js/zxing_reader.wasm";
+    }
+    return prefix + path;
+  },
+});
 
 @customElement("ha-qr-scanner")
 class HaQrScanner extends LitElement {
@@ -173,7 +188,7 @@ class HaQrScanner extends LitElement {
   }
 
   private _qrCodeError = (err: any) => {
-    if (err === "No QR code found") {
+    if (err.endsWith("No QR code found")) {
       this._qrNotFoundCount++;
       if (this._qrNotFoundCount === 250) {
         this._reportError(err);

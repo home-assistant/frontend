@@ -1,12 +1,14 @@
 import "@material/mwc-list/mwc-list-item";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { computeStateName } from "../common/entity/compute_state_name";
 import "../components/entity/state-badge";
 import "../components/ha-select";
 import { UNAVAILABLE } from "../data/entity";
-import { SelectEntity, setSelectOption } from "../data/select";
+import type { SelectEntity } from "../data/select";
+import { setSelectOption } from "../data/select";
 import type { HomeAssistant } from "../types";
 
 @customElement("state-card-select")

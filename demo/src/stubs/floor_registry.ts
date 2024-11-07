@@ -1,4 +1,4 @@
-import { FloorRegistryEntry } from "../../../src/data/floor_registry";
+import type { FloorRegistryEntry } from "../../../src/data/floor_registry";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 
 export const mockFloorRegistry = (

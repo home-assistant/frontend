@@ -6,8 +6,8 @@ import {
   handleConfigFlowStep,
 } from "../../data/config_flow";
 import { domainToName } from "../../data/integration";
+import type { DataEntryFlowDialogParams } from "./show-dialog-data-entry-flow";
 import {
-  DataEntryFlowDialogParams,
   loadDataEntryFlowDialog,
   showFlowDialog,
 } from "./show-dialog-data-entry-flow";
@@ -20,7 +20,7 @@ export const showConfigFlowDialog = (
 ): void =>
   showFlowDialog(element, dialogParams, {
     flowType: "config_flow",
-    loadDevicesAndAreas: true,
+    showDevices: true,
     createFlow: async (hass, handler) => {
       const [step] = await Promise.all([
         createConfigFlow(hass, handler, dialogParams.entryId),

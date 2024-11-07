@@ -1,22 +1,21 @@
 import deepFreeze from "deep-freeze";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-yaml-editor";
 
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
-import { LovelaceConfig } from "../../../../data/lovelace/config/types";
+import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
+import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import { haStyleDialog } from "../../../../resources/styles";
-import { HomeAssistant } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import "../../badges/hui-badge";
 import { addBadges } from "../config-util";
-import {
-  LovelaceContainerPath,
-  parseLovelaceContainerPath,
-} from "../lovelace-path";
-import { SuggestBadgeDialogParams } from "./show-suggest-badge-dialog";
+import type { LovelaceContainerPath } from "../lovelace-path";
+import { parseLovelaceContainerPath } from "../lovelace-path";
+import type { SuggestBadgeDialogParams } from "./show-suggest-badge-dialog";
 
 @customElement("hui-dialog-suggest-badge")
 export class HuiDialogSuggestBadge extends LitElement {

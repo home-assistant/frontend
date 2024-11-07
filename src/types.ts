@@ -1,4 +1,4 @@
-import {
+import type {
   Auth,
   Connection,
   HassConfig,
@@ -8,14 +8,18 @@ import {
   HassServiceTarget,
   MessageBase,
 } from "home-assistant-js-websocket";
-import { LocalizeFunc } from "./common/translations/localize";
-import { AreaRegistryEntry } from "./data/area_registry";
-import { DeviceRegistryEntry } from "./data/device_registry";
-import { EntityRegistryDisplayEntry } from "./data/entity_registry";
-import { CoreFrontendUserData } from "./data/frontend";
-import { FrontendLocaleData, getHassTranslations } from "./data/translation";
-import { Themes } from "./data/ws-themes";
-import { ExternalMessaging } from "./external_app/external_messaging";
+import type { LocalizeFunc } from "./common/translations/localize";
+import type { AreaRegistryEntry } from "./data/area_registry";
+import type { DeviceRegistryEntry } from "./data/device_registry";
+import type { EntityRegistryDisplayEntry } from "./data/entity_registry";
+import type { FloorRegistryEntry } from "./data/floor_registry";
+import type { CoreFrontendUserData } from "./data/frontend";
+import type {
+  FrontendLocaleData,
+  getHassTranslations,
+} from "./data/translation";
+import type { Themes } from "./data/ws-themes";
+import type { ExternalMessaging } from "./external_app/external_messaging";
 
 declare global {
   /* eslint-disable no-var, no-redeclare */
@@ -160,6 +164,7 @@ export interface TranslationMetadata {
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 export type TranslationDict = typeof import("./translations/en.json");
 
 export interface IconMetaFile {
@@ -210,6 +215,7 @@ export interface HomeAssistant {
   entities: { [id: string]: EntityRegistryDisplayEntry };
   devices: { [id: string]: DeviceRegistryEntry };
   areas: { [id: string]: AreaRegistryEntry };
+  floors: { [id: string]: FloorRegistryEntry };
   services: HassServices;
   config: HassConfig;
   themes: Themes;
@@ -253,6 +259,13 @@ export interface HomeAssistant {
     parameters?: Record<string, any>,
     headers?: Record<string, string>
   ): Promise<T>;
+  callApiRaw( // introduced in 2024.11
+    method: "GET" | "POST" | "PUT" | "DELETE",
+    path: string,
+    parameters?: Record<string, any>,
+    headers?: Record<string, string>,
+    signal?: AbortSignal
+  ): Promise<Response>;
   fetchWithAuth(path: string, init?: Record<string, any>): Promise<Response>;
   sendWS(msg: MessageBase): void;
   callWS<T>(msg: MessageBase): Promise<T>;
@@ -298,5 +311,3 @@ export type AsyncReturnType<T extends (...args: any) => any> = T extends (
     : never;
 
 export type Entries<T> = [keyof T, T[keyof T]][];
-
-export type ItemPath = (number | string)[];

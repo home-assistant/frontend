@@ -1,4 +1,5 @@
-import { CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
   any,
@@ -11,7 +12,8 @@ import {
   type,
 } from "superstruct";
 import memoizeOne from "memoize-one";
-import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
 import "../../../../components/ha-form/ha-form";
 import "../../../../components/ha-icon";
@@ -21,12 +23,12 @@ import type { PictureElementsCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import "../hui-sub-element-editor";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { EditSubElementEvent, SubElementEditorConfig } from "../types";
+import type { EditDetailElementEvent, SubElementEditorConfig } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import "../hui-picture-elements-card-row-editor";
-import { LovelaceElementConfig } from "../../elements/types";
-import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
-import { LocalizeFunc } from "../../../../common/translations/localize";
+import type { LovelaceElementConfig } from "../../elements/types";
+import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 
 const genericElementConfigStruct = type({
   type: string(),
@@ -186,7 +188,7 @@ export class HuiPictureElementsCardEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _editDetailElement(ev: HASSDomEvent<EditSubElementEvent>): void {
+  private _editDetailElement(ev: HASSDomEvent<EditDetailElementEvent>): void {
     this._subElementEditorConfig = ev.detail.subElementConfig;
   }
 

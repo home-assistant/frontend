@@ -1,6 +1,5 @@
+import type { Auth, Connection } from "home-assistant-js-websocket";
 import {
-  Auth,
-  Connection,
   createConnection,
   ERR_INVALID_AUTH,
   getAuth,
@@ -15,12 +14,13 @@ import { subscribeFrontendUserData } from "../data/frontend";
 import { fetchConfig } from "../data/lovelace/config/types";
 import { fetchResources } from "../data/lovelace/resource";
 import { MAIN_WINDOW_NAME } from "../data/main_window";
-import { WindowWithPreloads } from "../data/preloads";
+import type { WindowWithPreloads } from "../data/preloads";
 import { getRecorderInfo } from "../data/recorder";
 import { subscribeRepairsIssueRegistry } from "../data/repairs";
 import { subscribeAreaRegistry } from "../data/ws-area_registry";
 import { subscribeDeviceRegistry } from "../data/ws-device_registry";
 import { subscribeEntityRegistryDisplay } from "../data/ws-entity_registry_display";
+import { subscribeFloorRegistry } from "../data/ws-floor_registry";
 import { subscribePanels } from "../data/ws-panels";
 import { subscribeThemes } from "../data/ws-themes";
 import { subscribeUser } from "../data/ws-user";
@@ -117,6 +117,7 @@ window.hassConnection.then(({ conn }) => {
   subscribeEntityRegistryDisplay(conn, noop);
   subscribeDeviceRegistry(conn, noop);
   subscribeAreaRegistry(conn, noop);
+  subscribeFloorRegistry(conn, noop);
   subscribeConfig(conn, noop);
   subscribeServices(conn, noop);
   subscribePanels(conn, noop);

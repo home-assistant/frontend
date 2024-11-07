@@ -1,17 +1,11 @@
-import { mdiPlus } from "@mdi/js";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import { mdiDelete, mdiPlus } from "@mdi/js";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { stringCompare } from "../../../../common/string/compare";
-import { LocalizeFunc } from "../../../../common/translations/localize";
-import {
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import type {
   DataTableColumnContainer,
   RowClickedEvent,
   SortingChangedEvent,
@@ -19,11 +13,11 @@ import {
 import "../../../../components/ha-card";
 import "../../../../components/ha-fab";
 import "../../../../components/ha-svg-icon";
+import type { LovelaceResource } from "../../../../data/lovelace/resource";
 import {
   createResource,
   deleteResource,
   fetchResources,
-  LovelaceResource,
   updateResource,
 } from "../../../../data/lovelace/resource";
 import {
@@ -34,7 +28,7 @@ import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-subpage";
 import "../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../resources/styles";
-import { HomeAssistant, Route } from "../../../../types";
+import type { HomeAssistant, Route } from "../../../../types";
 import { loadLovelaceResources } from "../../../lovelace/common/load-resources";
 import { lovelaceResourcesTabs } from "../ha-config-lovelace";
 import { showResourceDetailDialog } from "./show-dialog-lovelace-resource-detail";
@@ -108,6 +102,20 @@ export class HaConfigLovelaceRescources extends LitElement {
             `ui.panel.config.lovelace.resources.types.${resource.type}`
           ) || resource.type}
         `,
+      },
+      delete: {
+        title: "",
+        type: "icon-button",
+        minWidth: "48px",
+        maxWidth: "48px",
+        showNarrow: true,
+        template: (resource) =>
+          html`<ha-icon-button
+            @click=${this._removeResource}
+            .label=${this.hass.localize("ui.common.delete")}
+            .path=${mdiDelete}
+            .resource=${resource}
+          ></ha-icon-button>`,
       },
     })
   );
@@ -235,45 +243,48 @@ export class HaConfigLovelaceRescources extends LitElement {
         );
         loadLovelaceResources([updated], this.hass!);
       },
-      removeResource: async () => {
-        if (
-          !(await showConfirmationDialog(this, {
-            title: this.hass!.localize(
-              "ui.panel.config.lovelace.resources.confirm_delete_title"
-            ),
-            text: this.hass!.localize(
-              "ui.panel.config.lovelace.resources.confirm_delete_text",
-              { url: resource!.url }
-            ),
-            dismissText: this.hass!.localize("ui.common.cancel"),
-            confirmText: this.hass!.localize("ui.common.delete"),
-            destructive: true,
-          }))
-        ) {
-          return false;
-        }
-
-        try {
-          await deleteResource(this.hass!, resource!.id);
-          this._resources = this._resources!.filter((res) => res !== resource);
-          showConfirmationDialog(this, {
-            title: this.hass!.localize(
-              "ui.panel.config.lovelace.resources.refresh_header"
-            ),
-            text: this.hass!.localize(
-              "ui.panel.config.lovelace.resources.refresh_body"
-            ),
-            confirmText: this.hass.localize("ui.common.refresh"),
-            dismissText: this.hass.localize("ui.common.not_now"),
-            confirm: () => location.reload(),
-          });
-          return true;
-        } catch (err: any) {
-          return false;
-        }
-      },
     });
   }
+
+  private _removeResource = async (event: any) => {
+    const resource = event.currentTarget.resource as LovelaceResource;
+
+    if (
+      !(await showConfirmationDialog(this, {
+        title: this.hass!.localize(
+          "ui.panel.config.lovelace.resources.confirm_delete_title"
+        ),
+        text: this.hass!.localize(
+          "ui.panel.config.lovelace.resources.confirm_delete_text",
+          { url: resource.url }
+        ),
+        dismissText: this.hass!.localize("ui.common.cancel"),
+        confirmText: this.hass!.localize("ui.common.delete"),
+        destructive: true,
+      }))
+    ) {
+      return false;
+    }
+
+    try {
+      await deleteResource(this.hass!, resource.id);
+      this._resources = this._resources!.filter(({ id }) => id !== resource.id);
+      showConfirmationDialog(this, {
+        title: this.hass!.localize(
+          "ui.panel.config.lovelace.resources.refresh_header"
+        ),
+        text: this.hass!.localize(
+          "ui.panel.config.lovelace.resources.refresh_body"
+        ),
+        confirmText: this.hass.localize("ui.common.refresh"),
+        dismissText: this.hass.localize("ui.common.not_now"),
+        confirm: () => location.reload(),
+      });
+      return true;
+    } catch (err: any) {
+      return false;
+    }
+  };
 
   private _handleSortingChanged(ev: CustomEvent) {
     this._activeSorting = ev.detail;

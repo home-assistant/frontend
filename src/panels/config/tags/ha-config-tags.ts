@@ -5,23 +5,23 @@ import {
   mdiPlus,
   mdiRobot,
 } from "@mdi/js";
-import { html, LitElement, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
+import type { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-relative-time";
-import { showAutomationEditor, TagTrigger } from "../../../data/automation";
+import type { TagTrigger } from "../../../data/automation";
+import { showAutomationEditor } from "../../../data/automation";
+import type { Tag, TagScannedEvent, UpdateTagParams } from "../../../data/tag";
 import {
   createTag,
   deleteTag,
   EVENT_TAG_SCANNED,
   fetchTags,
-  Tag,
-  TagScannedEvent,
   updateTag,
-  UpdateTagParams,
 } from "../../../data/tag";
 import {
   showAlertDialog,
@@ -29,8 +29,8 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { HomeAssistant, Route } from "../../../types";
-import { LocalizeFunc } from "../../../common/translations/localize";
+import type { HomeAssistant, Route } from "../../../types";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import { documentationUrl } from "../../../util/documentation-url";
 import { configSections } from "../ha-panel-config";
 import { showTagDetailDialog } from "./show-dialog-tag-detail";
@@ -213,7 +213,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
       alias: this.hass.localize("ui.panel.config.tag.automation_title", {
         name: tag.name || tag.id,
       }),
-      trigger: [{ platform: "tag", tag_id: tag.id } as TagTrigger],
+      trigger: [{ trigger: "tag", tag_id: tag.id } as TagTrigger],
     };
     showAutomationEditor(data);
   };

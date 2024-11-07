@@ -1,15 +1,16 @@
 import "@material/mwc-button";
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import {
   mdiContentCopy,
   mdiContentCut,
-  mdiContentDuplicate,
+  mdiCursorMove,
   mdiDelete,
   mdiDotsVertical,
   mdiPencil,
+  mdiPlusCircleMultipleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { storage } from "../../../common/decorators/storage";
@@ -18,17 +19,17 @@ import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
-import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
+import type { LovelaceCardPath } from "../editor/lovelace-path";
 import {
-  LovelaceCardPath,
   findLovelaceItems,
   getLovelaceContainerPath,
   parseLovelaceCardPath,
 } from "../editor/lovelace-path";
-import { Lovelace } from "../types";
+import type { Lovelace } from "../types";
 
 @customElement("hui-card-edit-mode")
 export class HuiCardEditMode extends LitElement {
@@ -38,7 +39,14 @@ export class HuiCardEditMode extends LitElement {
 
   @property({ type: Array }) public path!: LovelaceCardPath;
 
-  @property({ type: Boolean }) public hiddenOverlay = false;
+  @property({ type: Boolean, attribute: "hidden-overlay" })
+  public hiddenOverlay = false;
+
+  @property({ type: Boolean, attribute: "no-edit" })
+  public noEdit = false;
+
+  @property({ type: Boolean, attribute: "no-duplicate" })
+  public noDuplicate = false;
 
   @state()
   public _menuOpened: boolean = false;
@@ -109,15 +117,24 @@ export class HuiCardEditMode extends LitElement {
     return html`
       <div class="card-wrapper" inert><slot></slot></div>
       <div class="card-overlay ${classMap({ visible: showOverlay })}">
-        <div
-          class="edit"
-          @click=${this._editCard}
-          @keydown=${this._editCard}
-          tabindex="0"
-        >
-          <div class="edit-overlay"></div>
-          <ha-svg-icon class="edit" .path=${mdiPencil}> </ha-svg-icon>
-        </div>
+        ${this.noEdit
+          ? html`
+              <div class="control">
+                <div class="control-overlay"></div>
+                <ha-svg-icon .path=${mdiCursorMove}> </ha-svg-icon>
+              </div>
+            `
+          : html`
+              <div
+                class="control"
+                @click=${this._handleOverlayClick}
+                @keydown=${this._handleOverlayClick}
+                tabindex="0"
+              >
+                <div class="control-overlay"></div>
+                <ha-svg-icon .path=${mdiPencil}> </ha-svg-icon>
+              </div>
+            `}
         <ha-button-menu
           class="more"
           corner="BOTTOM_END"
@@ -129,25 +146,60 @@ export class HuiCardEditMode extends LitElement {
         >
           <ha-icon-button slot="trigger" .path=${mdiDotsVertical}>
           </ha-icon-button>
-          <ha-list-item graphic="icon">
-            <ha-svg-icon
-              slot="graphic"
-              .path=${mdiContentDuplicate}
-            ></ha-svg-icon>
-            ${this.hass.localize(
-              "ui.panel.lovelace.editor.edit_card.duplicate"
-            )}
-          </ha-list-item>
-          <ha-list-item graphic="icon">
+          ${this.noEdit
+            ? nothing
+            : html`
+                <ha-list-item
+                  graphic="icon"
+                  @click=${this._handleAction}
+                  .action=${"edit"}
+                >
+                  <ha-svg-icon slot="graphic" .path=${mdiPencil}></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.editor.edit_card.edit"
+                  )}
+                </ha-list-item>
+              `}
+          ${this.noDuplicate
+            ? nothing
+            : html`
+                <ha-list-item
+                  graphic="icon"
+                  @click=${this._handleAction}
+                  .action=${"duplicate"}
+                >
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiPlusCircleMultipleOutline}
+                  ></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.editor.edit_card.duplicate"
+                  )}
+                </ha-list-item>
+              `}
+          <ha-list-item
+            graphic="icon"
+            @click=${this._handleAction}
+            .action=${"copy"}
+          >
             <ha-svg-icon slot="graphic" .path=${mdiContentCopy}></ha-svg-icon>
             ${this.hass.localize("ui.panel.lovelace.editor.edit_card.copy")}
           </ha-list-item>
-          <ha-list-item graphic="icon">
+          <ha-list-item
+            graphic="icon"
+            @click=${this._handleAction}
+            .action=${"cut"}
+          >
             <ha-svg-icon slot="graphic" .path=${mdiContentCut}></ha-svg-icon>
             ${this.hass.localize("ui.panel.lovelace.editor.edit_card.cut")}
           </ha-list-item>
           <li divider role="separator"></li>
-          <ha-list-item graphic="icon" class="warning">
+          <ha-list-item
+            graphic="icon"
+            class="warning"
+            @click=${this._handleAction}
+            .action=${"delete"}
+          >
             ${this.hass.localize("ui.panel.lovelace.editor.edit_card.delete")}
             <ha-svg-icon
               class="warning"
@@ -168,19 +220,34 @@ export class HuiCardEditMode extends LitElement {
     this._menuOpened = false;
   }
 
-  private _handleAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
+  private _handleOverlayClick(ev): void {
+    if (ev.defaultPrevented) {
+      return;
+    }
+    if (ev.type === "keydown" && ev.key !== "Enter" && ev.key !== " ") {
+      return;
+    }
+    ev.preventDefault();
+    ev.stopPropagation();
+    this._editCard();
+  }
+
+  private _handleAction(ev) {
+    switch (ev.currentTarget.action) {
+      case "edit":
+        this._editCard();
+        break;
+      case "duplicate":
         this._duplicateCard();
         break;
-      case 1:
+      case "copy":
         this._copyCard();
         break;
-      case 2:
+      case "cut":
         this._cutCard();
         break;
-      case 3:
-        this._deleteCard(true);
+      case "delete":
+        this._deleteCard();
         break;
     }
   }
@@ -197,21 +264,13 @@ export class HuiCardEditMode extends LitElement {
     });
   }
 
-  private _editCard(ev): void {
-    if (ev.defaultPrevented) {
-      return;
-    }
-    if (ev.type === "keydown" && ev.key !== "Enter" && ev.key !== " ") {
-      return;
-    }
-    ev.preventDefault();
-    ev.stopPropagation();
+  private _editCard(): void {
     fireEvent(this, "ll-edit-card", { path: this.path! });
   }
 
   private _cutCard(): void {
     this._copyCard();
-    this._deleteCard(false);
+    fireEvent(this, "ll-delete-card", { path: this.path!, silent: true });
   }
 
   private _copyCard(): void {
@@ -220,8 +279,8 @@ export class HuiCardEditMode extends LitElement {
     this._clipboard = deepClone(cardConfig);
   }
 
-  private _deleteCard(confirm: boolean): void {
-    fireEvent(this, "ll-delete-card", { path: this.path!, confirm });
+  private _deleteCard(): void {
+    fireEvent(this, "ll-delete-card", { path: this.path!, silent: false });
   }
 
   static get styles(): CSSResultGroup {
@@ -250,7 +309,7 @@ export class HuiCardEditMode extends LitElement {
           z-index: 0;
         }
 
-        .edit {
+        .control {
           outline: none !important;
           cursor: pointer;
           position: absolute;
@@ -261,7 +320,7 @@ export class HuiCardEditMode extends LitElement {
           border-radius: var(--ha-card-border-radius, 12px);
           z-index: 0;
         }
-        .edit-overlay {
+        .control-overlay {
           position: absolute;
           inset: 0;
           opacity: 0.8;
@@ -270,14 +329,14 @@ export class HuiCardEditMode extends LitElement {
           border-radius: var(--ha-card-border-radius, 12px);
           z-index: 0;
         }
-        .edit ha-svg-icon {
+        .control ha-svg-icon {
           display: flex;
           position: relative;
           color: var(--primary-text-color);
           border-radius: 50%;
-          padding: 12px;
+          padding: 8px;
           background: var(--secondary-background-color);
-          --mdc-icon-size: 24px;
+          --mdc-icon-size: 20px;
         }
         .more {
           position: absolute;

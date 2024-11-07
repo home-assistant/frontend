@@ -1,6 +1,7 @@
 import { mdiExclamationThick, mdiHelp } from "@mdi/js";
-import { HassEntity } from "home-assistant-js-websocket";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
@@ -24,7 +25,7 @@ import "../../../components/tile/ha-tile-info";
 import { cameraUrlWithWidthHeight } from "../../../data/camera";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import "../../../state-display/state-display";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import "../card-features/hui-card-features";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
@@ -33,7 +34,7 @@ import { hasAction } from "../common/has-action";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
-  LovelaceLayoutOptions,
+  LovelaceGridOptions,
 } from "../types";
 import { renderTileBadge } from "./tile/badges/tile-badge";
 import type { ThermostatCardConfig, TileCardConfig } from "./types";
@@ -108,22 +109,22 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     );
   }
 
-  public getLayoutOptions(): LovelaceLayoutOptions {
-    const grid_columns = 2;
-    let grid_min_columns = 2;
-    let grid_rows = 1;
+  public getGridOptions(): LovelaceGridOptions {
+    const columns = 6;
+    let min_columns = 6;
+    let rows = 1;
     if (this._config?.features?.length) {
-      grid_rows += this._config.features.length;
+      rows += this._config.features.length;
     }
     if (this._config?.vertical) {
-      grid_rows++;
-      grid_min_columns = 1;
+      rows++;
+      min_columns = 3;
     }
     return {
-      grid_columns,
-      grid_rows,
-      grid_min_rows: grid_rows,
-      grid_min_columns,
+      columns,
+      rows,
+      min_columns,
+      min_rows: rows,
     };
   }
 
@@ -136,8 +137,10 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     const config = {
       entity: this._config!.entity,
       tap_action: this._config!.icon_tap_action,
+      hold_action: this._config!.icon_hold_action,
+      double_tap_action: this._config!.icon_double_tap_action,
     };
-    handleAction(this, this.hass!, config, "tap");
+    handleAction(this, this.hass!, config, ev.detail.action!);
   }
 
   private _getImageUrl(entity: HassEntity): string | undefined {
@@ -286,7 +289,10 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
               role=${ifDefined(this.hasIconAction ? "button" : undefined)}
               tabindex=${ifDefined(this.hasIconAction ? "0" : undefined)}
               @action=${this._handleIconAction}
-              .actionHandler=${actionHandler()}
+              .actionHandler=${actionHandler({
+                hasHold: hasAction(this._config!.icon_hold_action),
+                hasDoubleClick: hasAction(this._config!.icon_double_tap_action),
+              })}
             >
               ${imageUrl
                 ? html`
