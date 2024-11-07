@@ -11,6 +11,7 @@ import {
   mdiRefresh,
   mdiWrap,
   mdiWrapDisabled,
+  mdiFolderTextOutline,
 } from "@mdi/js";
 import {
   css,
@@ -58,7 +59,7 @@ import {
   downloadFileSupported,
   fileDownload,
 } from "../../../util/file_download";
-import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
 import type { ConnectionStatus } from "../../../data/connection-status";
 import { atLeastVersion } from "../../../common/config/version";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -80,8 +81,6 @@ class ErrorLogCard extends LitElement {
   @property() public header?: string;
 
   @property() public provider!: string;
-
-  @property({ type: Boolean, attribute: true }) public show = false;
 
   @query(".error-log") private _logElement?: HTMLElement;
 
@@ -141,7 +140,7 @@ class ErrorLogCard extends LitElement {
         ${this._error
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
           : nothing}
-        <ha-card outlined class=${classMap({ hidden: this.show === false })}>
+        <ha-card outlined>
           <div class="header">
             <h1 class="card-header">
               ${this.header || localize("ui.panel.config.logs.show_full_logs")}
@@ -239,20 +238,34 @@ class ErrorLogCard extends LitElement {
                     .label=${localize("ui.common.refresh")}
                   ></ha-icon-button>`
                 : nothing}
-              ${this._streamSupported && Array.isArray(this._boots)
+              ${this.provider === "core" ||
+              (this._streamSupported && Array.isArray(this._boots))
                 ? html`
                     <ha-button-menu @action=${this._handleOverflowAction}>
                       <ha-icon-button slot="trigger" .path=${mdiDotsVertical}>
                       </ha-icon-button>
-                      <ha-list-item graphic="icon">
-                        <ha-svg-icon
-                          slot="graphic"
-                          .path=${mdiFormatListNumbered}
-                        ></ha-svg-icon>
-                        ${localize(
-                          `ui.panel.config.logs.${this._showBootsSelect ? "hide" : "show"}_haos_boots`
-                        )}
-                      </ha-list-item>
+                      ${this.provider === "core"
+                        ? html`<ha-list-item graphic="icon">
+                            <ha-svg-icon
+                              slot="graphic"
+                              .path=${mdiFolderTextOutline}
+                            ></ha-svg-icon>
+                            ${this.hass.localize(
+                              "ui.panel.config.logs.show_condensed_logs"
+                            )}
+                          </ha-list-item>`
+                        : nothing}
+                      ${this._streamSupported && Array.isArray(this._boots)
+                        ? html`<ha-list-item graphic="icon">
+                            <ha-svg-icon
+                              slot="graphic"
+                              .path=${mdiFormatListNumbered}
+                            ></ha-svg-icon>
+                            ${localize(
+                              `ui.panel.config.logs.${this._showBootsSelect ? "hide" : "show"}_haos_boots`
+                            )}
+                          </ha-list-item>`
+                        : nothing}
                     </ha-button-menu>
                   `
                 : nothing}
@@ -315,21 +328,6 @@ class ErrorLogCard extends LitElement {
               </div>`
             : nothing}
         </ha-card>
-        ${this.show === false
-          ? html`
-              ${this._downloadSupported
-                ? html`
-                    <ha-button outlined @click=${this._downloadLogs}>
-                      <ha-svg-icon .path=${mdiDownload}></ha-svg-icon>
-                      ${localize("ui.panel.config.logs.download_logs")}
-                    </ha-button>
-                  `
-                : nothing}
-              <mwc-button raised @click=${this._showLogs}>
-                ${localize("ui.panel.config.logs.load_logs")}
-              </mwc-button>
-            `
-          : nothing}
       </div>
     `;
   }
@@ -359,9 +357,7 @@ class ErrorLogCard extends LitElement {
 
     window.addEventListener("connection-status", this._handleConnectionStatus);
 
-    if (this.hass?.config.recovery_mode || this.show) {
-      this.hass.loadFragmentTranslation("config");
-    }
+    this.hass.loadFragmentTranslation("config");
 
     // just needs to be loaded once, because only the host endpoints provide boots information
     this._loadBoots();
@@ -370,10 +366,7 @@ class ErrorLogCard extends LitElement {
   protected updated(changedProps) {
     super.updated(changedProps);
 
-    if (
-      (changedProps.has("show") && this.show) ||
-      (changedProps.has("provider") && this.show)
-    ) {
+    if (changedProps.has("provider")) {
       this._boot = 0;
       this._loadLogs();
     }
@@ -431,10 +424,6 @@ class ErrorLogCard extends LitElement {
       const signedUrl = await getSignedPath(this.hass, downloadUrl);
       fileDownload(signedUrl.path, logFileName);
     }
-  }
-
-  private _showLogs(): void {
-    this.show = true;
   }
 
   private async _loadLogs(): Promise<void> {
@@ -599,7 +588,7 @@ class ErrorLogCard extends LitElement {
     if (ev.detail === "disconnected" && this._logStreamAborter) {
       this._logStreamAborter.abort();
     }
-    if (ev.detail === "connected" && this.show) {
+    if (ev.detail === "connected") {
       this._loadLogs();
     }
   };
@@ -694,7 +683,15 @@ class ErrorLogCard extends LitElement {
   }
 
   private _handleOverflowAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
+    let index = ev.detail.index;
+    if (this.provider === "core") {
+      index--;
+    }
+    switch (index) {
+      case -1:
+        // @ts-ignore
+        fireEvent(this, "switch-log-view");
+        break;
       case 0:
         this._showBootsSelect = !this._showBootsSelect;
         break;

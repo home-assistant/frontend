@@ -3,20 +3,20 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { navigate } from "../../../common/navigate";
 import { extractSearchParam } from "../../../common/url/search-params";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-button";
+import "../../../components/ha-button-menu";
 import "../../../components/search-input";
 import type { LogProvider } from "../../../data/error_log";
 import { fetchHassioAddonsInfo } from "../../../data/hassio/addon";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import "./error-log-card";
 import "./system-log-card";
 import type { SystemLogCard } from "./system-log-card";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
-import { navigate } from "../../../common/navigate";
 
 const logProviders: LogProvider[] = [
   {
@@ -56,6 +56,8 @@ export class HaConfigLogs extends LitElement {
   @property({ attribute: false }) public route!: Route;
 
   @state() private _filter = extractSearchParam("filter") || "";
+
+  @state() private _detail = false;
 
   @query("system-log-card") private systemLog?: SystemLogCard;
 
@@ -141,7 +143,7 @@ export class HaConfigLogs extends LitElement {
           : ""}
         ${search}
         <div class="content">
-          ${this._selectedLogProvider === "core"
+          ${this._selectedLogProvider === "core" && !this._detail
             ? html`
                 <system-log-card
                   .hass=${this.hass}
@@ -149,21 +151,25 @@ export class HaConfigLogs extends LitElement {
                     (p) => p.key === this._selectedLogProvider
                   )!.name}
                   .filter=${this._filter}
+                  @switch-log-view=${this._showDetail}
                 ></system-log-card>
               `
-            : ""}
-          <error-log-card
-            .hass=${this.hass}
-            .header=${this._logProviders.find(
-              (p) => p.key === this._selectedLogProvider
-            )!.name}
-            .filter=${this._filter}
-            .provider=${this._selectedLogProvider}
-            .show=${this._selectedLogProvider !== "core"}
-          ></error-log-card>
+            : html`<error-log-card
+                .hass=${this.hass}
+                .header=${this._logProviders.find(
+                  (p) => p.key === this._selectedLogProvider
+                )!.name}
+                .filter=${this._filter}
+                .provider=${this._selectedLogProvider}
+                @switch-log-view=${this._showDetail}
+              ></error-log-card>`}
         </div>
       </hass-subpage>
     `;
+  }
+
+  private _showDetail() {
+    this._detail = !this._detail;
   }
 
   private _selectProvider(ev) {
