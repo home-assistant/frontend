@@ -185,6 +185,15 @@ export const fetchHassioInfo = async (
 export const fetchHassioBoots = async (hass: HomeAssistant) =>
   hass.callApi<HassioResponse<HassioBoots>>("GET", `hassio/host/logs/boots`);
 
+export const fetchHassioLogsLegacy = async (
+  hass: HomeAssistant,
+  provider: string
+) =>
+  hass.callApi<string>(
+    "GET",
+    `hassio/${provider.includes("_") ? `addons/${provider}` : provider}/logs`
+  );
+
 export const fetchHassioLogs = async (
   hass: HomeAssistant,
   provider: string,
