@@ -45,7 +45,7 @@ class ZWaveJSCapabilityColorSwitch extends LitElement {
             .endpoint=${this.endpoint}
             .command_class=${this.command_class}
             .version=${this.version}
-            .extra_cc_options=${{ colorComponent: "red" }}
+            .extra_cc_options=${{ colorComponent: color }}
           ></zwave_js-capability-control-multilevel_switch>`
     );
   }
