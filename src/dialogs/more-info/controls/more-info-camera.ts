@@ -7,7 +7,6 @@ import type { HomeAssistant } from "../../../types";
 import "../../../components/buttons/ha-progress-button";
 import { UNAVAILABLE } from "../../../data/entity";
 import { fileDownload } from "../../../util/file_download";
-import { b64toBlob } from "../../../common/file/b64-to-blob";
 
 class MoreInfoCamera extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -53,16 +52,16 @@ class MoreInfoCamera extends LitElement {
   }
 
   private async _downloadSnapshot() {
-    const result: string | undefined = await this.hass?.callWS({
-      type: "camera/snapshot",
-      entity_id: this.stateObj!.entity_id,
-    });
+    const result: Response | undefined = await this.hass?.callApiRaw(
+      "GET",
+      `camera_proxy/${this.stateObj!.entity_id}`
+    );
 
     if (!result) {
       return;
     }
 
-    const blob = b64toBlob(result, "image/jpeg");
+    const blob = await result.blob();
     const url = window.URL.createObjectURL(blob);
     fileDownload(url, "image.jpg");
   }
