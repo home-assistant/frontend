@@ -1,0 +1,74 @@
+import { LitElement, html } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import type { HomeAssistant } from "../../../../../../types";
+import { invokeZWaveCCApi } from "../../../../../../data/zwave_js";
+import "../../../../../../components/ha-alert";
+import "../../../../../../components/ha-circular-progress";
+import { extractApiErrorMessage } from "../../../../../../data/hassio/common";
+import "./zwave_js-capability-control-multilevel-switch";
+
+@customElement("zwave_js-capability-control-color_switch")
+class ZWaveJSCapabilityColorSwitch extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public device!: DeviceRegistryEntry;
+
+  @property({ type: Number }) public endpoint!: number;
+
+  @property({ type: Number }) public command_class!: number;
+
+  @property({ type: Number }) public version!: number;
+
+  @state() private _color_components?: number[];
+
+  @state() private _error?: string;
+
+  protected render() {
+    if (this._error) {
+      return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
+    }
+    if (!this._color_components) {
+      return html`<ha-circular-progress indeterminate></ha-circular-progress>`;
+    }
+    return this._color_components.map(
+      (color) =>
+        html` <h5>
+            ${this.hass.localize(
+              "ui.panel.config.zwave_js.node_installer.capability_controls.color_switch.color_component"
+            )}:
+            ${color}
+          </h5>
+          <zwave_js-capability-control-multilevel_switch
+            .hass=${this.hass}
+            .device=${this.device}
+            .endpoint=${this.endpoint}
+            .command_class=${this.command_class}
+            .version=${this.version}
+            .extra_cc_options=${{ colorComponent: "red" }}
+          ></zwave_js-capability-control-multilevel_switch>`
+    );
+  }
+
+  protected async firstUpdated() {
+    try {
+      this._color_components = (await invokeZWaveCCApi(
+        this.hass,
+        this.device.id,
+        this.command_class,
+        this.endpoint,
+        "getSupported",
+        [],
+        true
+      )) as number[];
+    } catch (error) {
+      this._error = extractApiErrorMessage(error);
+    }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "zwave_js-capability-control-color_switch": ZWaveJSCapabilityColorSwitch;
+  }
+}
