@@ -318,7 +318,11 @@ class ErrorLogCard extends LitElement {
           ? html`
               ${this._downloadSupported
                 ? html`
-                    <ha-button outlined @click=${this._downloadLogs}>
+                    <ha-button
+                      .downloadDialog=${false}
+                      outlined
+                      @click=${this._downloadLogs}
+                    >
                       <ha-svg-icon .path=${mdiDownload}></ha-svg-icon>
                       ${localize("ui.panel.config.logs.download_logs")}
                     </ha-button>
@@ -409,8 +413,10 @@ class ErrorLogCard extends LitElement {
     );
   }
 
-  private async _downloadLogs(): Promise<void> {
-    if (this._streamSupported) {
+  private async _downloadLogs(ev: any): Promise<void> {
+    const useDialog = ev.target?.downloadDialog ?? true;
+
+    if (useDialog && this._streamSupported) {
       showDownloadLogsDialog(this, {
         header: this.header,
         provider: this.provider,
