@@ -1,8 +1,9 @@
-import {
+import type {
   HassEntityAttributeBase,
   HassEntityBase,
   HassServiceTarget,
 } from "home-assistant-js-websocket";
+import type { Describe } from "superstruct";
 import {
   object,
   optional,
@@ -12,21 +13,20 @@ import {
   assign,
   literal,
   is,
-  Describe,
   boolean,
 } from "superstruct";
 import { arrayLiteralIncludes } from "../common/array/literal-includes";
 import { navigate } from "../common/navigate";
-import { HomeAssistant } from "../types";
-import {
+import type { HomeAssistant } from "../types";
+import type {
   Condition,
-  migrateAutomationTrigger,
   ShorthandAndCondition,
   ShorthandNotCondition,
   ShorthandOrCondition,
   Trigger,
 } from "./automation";
-import { BlueprintInput } from "./blueprint";
+import { migrateAutomationTrigger } from "./automation";
+import type { BlueprintInput } from "./blueprint";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { createSearchParam } from "../common/url/search-params";
 
@@ -224,13 +224,14 @@ export interface ForEachRepeat extends BaseRepeat {
   for_each: string | any[];
 }
 
-export interface ChooseActionChoice extends BaseAction {
+export interface Option {
+  alias?: string;
   conditions: string | Condition[];
   sequence: Action | Action[];
 }
 
 export interface ChooseAction extends BaseAction {
-  choose: ChooseActionChoice | ChooseActionChoice[] | null;
+  choose: Option | Option[] | null;
   default?: Action | Action[];
 }
 

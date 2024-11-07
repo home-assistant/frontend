@@ -6,15 +6,8 @@ import {
   mdiCloseCircle,
   mdiProgressClock,
 } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { groupBy } from "../../../../../common/util/group-by";
@@ -27,11 +20,13 @@ import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-textfield";
 import "../../../../../components/ha-selector/ha-selector-boolean";
 import { computeDeviceName } from "../../../../../data/device_registry";
-import {
+import type {
   ZWaveJSNodeConfigParam,
   ZWaveJSNodeConfigParams,
   ZWaveJSSetConfigParamResult,
   ZwaveJSNodeMetadata,
+} from "../../../../../data/zwave_js";
+import {
   fetchZwaveNodeConfigParameters,
   fetchZwaveNodeMetadata,
   setZwaveNodeConfigParameter,
@@ -288,7 +283,7 @@ class ZWaveJSNodeConfig extends LitElement {
             .propertyKey=${item.property_key}
             .value=${item.value === 1}
             .key=${id}
-            @change=${this._switchToggled}
+            @value-changed=${this._switchToggled}
             .disabled=${!item.metadata.writeable}
             .helper=${defaultLabel}
           ></ha-selector-boolean>
@@ -371,7 +366,7 @@ class ZWaveJSNodeConfig extends LitElement {
 
   private _switchToggled(ev) {
     this.setResult(ev.target.key, undefined);
-    this._updateConfigParameter(ev.target, ev.target.checked ? 1 : 0);
+    this._updateConfigParameter(ev.target, ev.detail.value ? 1 : 0);
   }
 
   private _dropdownSelected(ev) {

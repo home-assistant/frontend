@@ -1,4 +1,4 @@
-import { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import {
   BINARY_STATE_OFF,
   BINARY_STATE_ON,
@@ -7,9 +7,9 @@ import {
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { autoCaseNoun } from "../common/translations/auto_case_noun";
-import { LocalizeFunc } from "../common/translations/localize";
-import { HaEntityPickerEntityFilterFunc } from "../components/entity/ha-entity-picker";
-import { HomeAssistant } from "../types";
+import type { LocalizeFunc } from "../common/translations/localize";
+import type { HaEntityPickerEntityFilterFunc } from "../components/entity/ha-entity-picker";
+import type { HomeAssistant } from "../types";
 import { UNAVAILABLE, UNKNOWN } from "./entity";
 
 const LOGBOOK_LOCALIZE_PATH = "ui.components.logbook.messages";
@@ -50,14 +50,23 @@ export interface LogbookEntry {
 // Localization mapping for all the triggers in core
 // in homeassistant.components.homeassistant.triggers
 //
-const triggerPhrases = {
-  "numeric state of": "triggered_by_numeric_state_of", // number state trigger
-  "state of": "triggered_by_state_of", // state trigger
-  event: "triggered_by_event", // event trigger
-  time: "triggered_by_time", // time trigger
-  "time pattern": "triggered_by_time_pattern", // time trigger
-  "Home Assistant stopping": "triggered_by_homeassistant_stopping", // stop event
-  "Home Assistant starting": "triggered_by_homeassistant_starting", // start event
+type TriggerPhraseKeys =
+  | "triggered_by_numeric_state_of"
+  | "triggered_by_state_of"
+  | "triggered_by_event"
+  | "triggered_by_time"
+  | "triggered_by_time_pattern"
+  | "triggered_by_homeassistant_stopping"
+  | "triggered_by_homeassistant_starting";
+
+const triggerPhrases: Record<TriggerPhraseKeys, string> = {
+  triggered_by_numeric_state_of: "numeric state of", // number state trigger
+  triggered_by_state_of: "state of", // state trigger
+  triggered_by_event: "event", // event trigger
+  triggered_by_time: "time", // time trigger
+  triggered_by_time_pattern: "time pattern", // time trigger
+  triggered_by_homeassistant_stopping: "Home Assistant stopping", // stop event
+  triggered_by_homeassistant_starting: "Home Assistant starting", // start event
 };
 
 export const getLogbookDataForContext = async (
@@ -167,11 +176,14 @@ export const localizeTriggerSource = (
   localize: LocalizeFunc,
   source: string
 ) => {
-  for (const triggerPhrase in triggerPhrases) {
-    if (source.startsWith(triggerPhrase)) {
+  for (const triggerPhraseKey of Object.keys(
+    triggerPhrases
+  ) as TriggerPhraseKeys[]) {
+    const phrase = triggerPhrases[triggerPhraseKey];
+    if (source.startsWith(phrase)) {
       return source.replace(
-        triggerPhrase,
-        `${localize(`ui.components.logbook.${triggerPhrases[triggerPhrase]}`)}`
+        phrase,
+        `${localize(`ui.components.logbook.${triggerPhraseKey}`)}`
       );
     }
   }

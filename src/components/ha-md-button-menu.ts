@@ -1,5 +1,6 @@
-import { Button } from "@material/mwc-button";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { Button } from "@material/mwc-button";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { FOCUS_TARGET } from "../dialogs/make-dialog-manager";
 import type { HaIconButton } from "./ha-icon-button";

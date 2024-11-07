@@ -1,11 +1,11 @@
 import "@material/mwc-list/mwc-list-item";
 import {
   css,
-  CSSResultGroup,
+  type CSSResultGroup,
   html,
   LitElement,
-  PropertyValues,
   nothing,
+  type PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -16,16 +16,16 @@ import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-checkbox";
 import "../../../src/components/ha-faded";
-import "../../../src/components/ha-formfield";
 import "../../../src/components/ha-icon-button";
 import "../../../src/components/ha-markdown";
 import "../../../src/components/ha-settings-row";
 import "../../../src/components/ha-svg-icon";
 import "../../../src/components/ha-switch";
+import type { HaSwitch } from "../../../src/components/ha-switch";
+import type { HassioAddonDetails } from "../../../src/data/hassio/addon";
 import {
   fetchHassioAddonChangelog,
   fetchHassioAddonInfo,
-  HassioAddonDetails,
   updateHassioAddon,
 } from "../../../src/data/hassio/addon";
 import {
@@ -39,10 +39,11 @@ import {
   updateSupervisor,
 } from "../../../src/data/hassio/supervisor";
 import { updateCore } from "../../../src/data/supervisor/core";
-import { StoreAddon } from "../../../src/data/supervisor/store";
-import { Supervisor } from "../../../src/data/supervisor/supervisor";
+import type { StoreAddon } from "../../../src/data/supervisor/store";
+import type { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
-import { HomeAssistant, Route } from "../../../src/types";
+import { haStyle } from "../../../src/resources/styles";
+import type { HomeAssistant, Route } from "../../../src/types";
 import { addonArchIsSupported, extractChangelog } from "../util/addon";
 
 declare global {
@@ -149,7 +150,7 @@ class UpdateAvailableCard extends LitElement {
                           </ha-markdown>
                         </ha-faded>
                       `
-                    : ""}
+                    : nothing}
                   <div class="versions">
                     <p>
                       ${this.supervisor.localize(
@@ -164,15 +165,17 @@ class UpdateAvailableCard extends LitElement {
                   </div>
                   ${["core", "addon"].includes(this._updateType)
                     ? html`
-                        <ha-formfield
-                          .label=${this.supervisor.localize(
-                            "update_available.create_backup"
-                          )}
-                        >
-                          <ha-checkbox checked></ha-checkbox>
-                        </ha-formfield>
+                        <hr />
+                        <ha-settings-row>
+                          <span slot="heading">
+                            ${this.supervisor.localize(
+                              "update_available.create_backup"
+                            )}
+                          </span>
+                          <ha-switch id="create_backup" checked></ha-switch>
+                        </ha-settings-row>
                       `
-                    : ""}
+                    : nothing}
                 `
               : html`<ha-circular-progress
                     aria-label="Updating"
@@ -191,22 +194,24 @@ class UpdateAvailableCard extends LitElement {
           ? html`
               <div class="card-actions">
                 ${changelog
-                  ? html`<a .href=${changelog} target="_blank" rel="noreferrer">
-                      <mwc-button
-                        .label=${this.supervisor.localize(
-                          "update_available.open_release_notes"
-                        )}
-                      >
-                      </mwc-button>
-                    </a>`
-                  : ""}
+                  ? html`
+                      <a href=${changelog} target="_blank" rel="noreferrer">
+                        <ha-button
+                          .label=${this.supervisor.localize(
+                            "update_available.open_release_notes"
+                          )}
+                        >
+                        </ha-button>
+                      </a>
+                    `
+                  : nothing}
                 <span></span>
-                <ha-progress-button @click=${this._update} raised>
+                <ha-progress-button @click=${this._update}>
                   ${this.supervisor.localize("common.update")}
                 </ha-progress-button>
               </div>
             `
-          : ""}
+          : nothing}
       </ha-card>
     `;
   }
@@ -242,9 +247,11 @@ class UpdateAvailableCard extends LitElement {
     if (this._updateType && !["core", "addon"].includes(this._updateType)) {
       return false;
     }
-    const checkbox = this.shadowRoot?.querySelector("ha-checkbox");
-    if (checkbox) {
-      return checkbox.checked;
+    const createBackupSwitch = this.shadowRoot?.getElementById(
+      "create-backup"
+    ) as HaSwitch;
+    if (createBackupSwitch) {
+      return createBackupSwitch.checked;
     }
     return true;
   }
@@ -397,41 +404,50 @@ class UpdateAvailableCard extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-      }
-      ha-card {
-        margin: auto;
-      }
-      a {
-        text-decoration: none;
-        color: var(--primary-text-color);
-      }
-      ha-settings-row {
-        padding: 0;
-      }
-      .card-actions {
-        display: flex;
-        justify-content: space-between;
-        border-top: none;
-        padding: 0 8px 8px;
-      }
+    return [
+      haStyle,
+      css`
+        :host {
+          display: block;
+        }
+        ha-card {
+          margin: auto;
+        }
+        a {
+          text-decoration: none;
+          color: var(--primary-text-color);
+        }
+        .card-actions {
+          display: flex;
+          justify-content: space-between;
+        }
 
-      ha-circular-progress {
-        display: block;
-        margin: 32px;
-        text-align: center;
-      }
+        ha-circular-progress {
+          display: block;
+          margin: 32px;
+          text-align: center;
+        }
 
-      .progress-text {
-        text-align: center;
-      }
+        .progress-text {
+          text-align: center;
+        }
 
-      ha-markdown {
-        padding-bottom: 8px;
-      }
-    `;
+        ha-markdown {
+          padding-bottom: 8px;
+        }
+
+        ha-settings-row {
+          padding: 0;
+          margin-bottom: -16px;
+        }
+
+        hr {
+          border-color: var(--divider-color);
+          border-bottom: none;
+          margin: 16px 0 0 0;
+        }
+      `,
+    ];
   }
 }
 

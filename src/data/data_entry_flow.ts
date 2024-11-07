@@ -1,6 +1,6 @@
-import { Connection } from "home-assistant-js-websocket";
+import type { Connection } from "home-assistant-js-websocket";
 import type { HaFormSchema } from "../components/ha-form/types";
-import { ConfigEntry } from "./config_entries";
+import type { ConfigEntry } from "./config_entries";
 
 export type FlowType = "config_flow" | "options_flow" | "repair_flow";
 

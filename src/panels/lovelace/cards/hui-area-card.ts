@@ -9,15 +9,8 @@ import {
   mdiWaterAlert,
 } from "@mdi/js";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
@@ -37,30 +30,24 @@ import "../../../components/ha-card";
 import "../../../components/ha-domain-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-state-icon";
-import {
-  AreaRegistryEntry,
-  subscribeAreaRegistry,
-} from "../../../data/area_registry";
-import {
-  DeviceRegistryEntry,
-  subscribeDeviceRegistry,
-} from "../../../data/device_registry";
+import type { AreaRegistryEntry } from "../../../data/area_registry";
+import { subscribeAreaRegistry } from "../../../data/area_registry";
+import type { DeviceRegistryEntry } from "../../../data/device_registry";
+import { subscribeDeviceRegistry } from "../../../data/device_registry";
 import { isUnavailableState } from "../../../data/entity";
-import {
-  EntityRegistryEntry,
-  subscribeEntityRegistry,
-} from "../../../data/entity_registry";
+import type { EntityRegistryEntry } from "../../../data/entity_registry";
+import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import { forwardHaptic } from "../../../data/haptics";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import "../components/hui-image";
 import "../components/hui-warning";
-import {
+import type {
   LovelaceCard,
   LovelaceCardEditor,
-  LovelaceLayoutOptions,
+  LovelaceGridOptions,
 } from "../types";
-import { AreaCardConfig } from "./types";
+import type { AreaCardConfig } from "./types";
 
 export const DEFAULT_ASPECT_RATIO = "16:9";
 
@@ -547,10 +534,11 @@ export class HuiAreaCard
     forwardHaptic("light");
   }
 
-  getLayoutOptions(): LovelaceLayoutOptions {
+  getGridOptions(): LovelaceGridOptions {
     return {
-      grid_columns: 4,
-      grid_rows: 3,
+      columns: 12,
+      rows: 3,
+      min_columns: 3,
     };
   }
 

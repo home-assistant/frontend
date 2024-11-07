@@ -1,24 +1,23 @@
 import "@material/mwc-list/mwc-list-item";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-circular-progress";
 import "../../../../src/components/ha-select";
+import "../../../../src/components/ha-dialog";
 import {
   extractApiErrorMessage,
   ignoreSupervisorError,
 } from "../../../../src/data/hassio/common";
-import {
-  DatadiskList,
-  listDatadisks,
-  moveDatadisk,
-} from "../../../../src/data/hassio/host";
-import { Supervisor } from "../../../../src/data/supervisor/supervisor";
+import type { DatadiskList } from "../../../../src/data/hassio/host";
+import { listDatadisks, moveDatadisk } from "../../../../src/data/hassio/host";
+import type { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import { showAlertDialog } from "../../../../src/dialogs/generic/show-dialog-box";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
-import { HomeAssistant } from "../../../../src/types";
-import { HassioDatatiskDialogParams } from "./show-dialog-hassio-datadisk";
+import type { HomeAssistant } from "../../../../src/types";
+import type { HassioDatatiskDialogParams } from "./show-dialog-hassio-datadisk";
 
 const calculateMoveTime = memoizeOne((supervisor: Supervisor): number => {
   const speed = supervisor.host.disk_life_time !== "" ? 30 : 10;

@@ -1,5 +1,5 @@
 import { consume } from "@lit-labs/context";
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import {
   mdiArrowDown,
@@ -16,14 +16,8 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { storage } from "../../../../common/decorators/storage";
@@ -40,17 +34,16 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-textfield";
-import { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import type { AutomationClipboard } from "../../../../data/automation";
+import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import type { AutomationClipboard, Trigger } from "../../../../data/automation";
 import {
-  Trigger,
   migrateAutomationTrigger,
   subscribeTrigger,
 } from "../../../../data/automation";
 import { describeTrigger } from "../../../../data/automation_i18n";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
-import { EntityRegistryEntry } from "../../../../data/entity_registry";
+import type { EntityRegistryEntry } from "../../../../data/entity_registry";
 import { TRIGGER_ICONS, isTriggerList } from "../../../../data/trigger";
 import {
   showAlertDialog,
@@ -58,7 +51,7 @@ import {
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant, ItemPath } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 import "./types/ha-automation-trigger-calendar";
 import "./types/ha-automation-trigger-conversation";
 import "./types/ha-automation-trigger-device";
@@ -111,8 +104,6 @@ export default class HaAutomationTriggerRow extends LitElement {
   @property({ attribute: false }) public trigger!: Trigger;
 
   @property({ type: Boolean }) public disabled = false;
-
-  @property({ type: Array }) public path?: ItemPath;
 
   @property({ type: Boolean }) public first?: boolean;
 
@@ -383,7 +374,6 @@ export default class HaAutomationTriggerRow extends LitElement {
                       hass: this.hass,
                       trigger: this.trigger,
                       disabled: this.disabled,
-                      path: this.path,
                     })}
                   </div>
                 `}

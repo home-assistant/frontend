@@ -1,7 +1,8 @@
-import { ActionDetail } from "@material/mwc-list";
+import type { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiClose, mdiDotsVertical } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { atLeastVersion } from "../../../../src/common/config/version";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
@@ -14,9 +15,9 @@ import "../../../../src/components/ha-button-menu";
 import "../../../../src/components/ha-header-bar";
 import "../../../../src/components/ha-icon-button";
 import { getSignedPath } from "../../../../src/data/auth";
+import type { HassioBackupDetail } from "../../../../src/data/hassio/backup";
 import {
   fetchHassioBackupInfo,
-  HassioBackupDetail,
   removeBackup,
 } from "../../../../src/data/hassio/backup";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
@@ -24,14 +25,14 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../src/dialogs/generic/show-dialog-box";
-import { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
+import type { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
-import { HomeAssistant } from "../../../../src/types";
+import type { HomeAssistant } from "../../../../src/types";
 import { fileDownload } from "../../../../src/util/file_download";
 import "../../components/supervisor-backup-content";
 import type { SupervisorBackupContent } from "../../components/supervisor-backup-content";
-import { HassioBackupDialogParams } from "./show-dialog-hassio-backup";
-import { BackupOrRestoreKey } from "../../util/translations";
+import type { HassioBackupDialogParams } from "./show-dialog-hassio-backup";
+import type { BackupOrRestoreKey } from "../../util/translations";
 
 @customElement("dialog-hassio-backup")
 class HassioBackupDialog

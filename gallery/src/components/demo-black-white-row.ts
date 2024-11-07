@@ -1,5 +1,7 @@
-import { Button } from "@material/mwc-button";
-import { html, LitElement, css, TemplateResult, nothing } from "lit";
+import "@material/mwc-button/mwc-button";
+import type { Button } from "@material/mwc-button";
+import type { TemplateResult } from "lit";
+import { html, LitElement, css, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { applyThemesOnElement } from "../../../src/common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../src/common/dom/fire_event";

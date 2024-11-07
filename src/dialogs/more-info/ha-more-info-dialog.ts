@@ -10,7 +10,8 @@ import {
   mdiPencilOutline,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import { LitElement, PropertyValues, css, html, nothing } from "lit";
+import type { PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
@@ -27,16 +28,16 @@ import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-prev";
 import "../../components/ha-list-item";
 import "../../components/ha-related-items";
-import {
+import type {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
-  getExtendedEntityRegistryEntry,
 } from "../../data/entity_registry";
+import { getExtendedEntityRegistryEntry } from "../../data/entity_registry";
 import { lightSupportsFavoriteColors } from "../../data/light";
 import { SearchableDomains } from "../../data/search";
 import { haStyleDialog } from "../../resources/styles";
 import "../../state-summary/state-card-content";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import {
   DOMAINS_WITH_MORE_INFO,
   EDITABLE_DOMAINS_WITH_ID,

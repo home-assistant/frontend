@@ -1,10 +1,11 @@
 import { mdiArrowBottomLeft, mdiArrowTopRight, mdiStop } from "@mdi/js";
-import { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-button";
+import "../../../components/ha-svg-icon";
 import "../../../components/ha-control-button-group";
 import {
   CoverEntityFeature,
@@ -12,10 +13,10 @@ import {
   canOpenTilt,
   canStopTilt,
 } from "../../../data/cover";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCardFeature } from "../types";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
-import { CoverTiltCardFeatureConfig } from "./types";
+import type { CoverTiltCardFeatureConfig } from "./types";
 
 export const supportsCoverTiltCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);

@@ -1,4 +1,5 @@
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 

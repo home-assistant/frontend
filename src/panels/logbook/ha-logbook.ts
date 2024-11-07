@@ -1,17 +1,16 @@
-import { css, html, LitElement, PropertyValues, nothing } from "lit";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { throttle } from "../../common/util/throttle";
 import "../../components/ha-circular-progress";
-import {
-  LogbookEntry,
-  LogbookStreamMessage,
-  subscribeLogbook,
-} from "../../data/logbook";
-import { loadTraceContexts, TraceContexts } from "../../data/trace";
+import type { LogbookEntry, LogbookStreamMessage } from "../../data/logbook";
+import { subscribeLogbook } from "../../data/logbook";
+import type { TraceContexts } from "../../data/trace";
+import { loadTraceContexts } from "../../data/trace";
 import { fetchUsers } from "../../data/user";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import "./ha-logbook-renderer";
 
 interface LogbookTimePeriod {
@@ -140,6 +139,8 @@ export class HaLogbook extends LitElement {
     this._updateTraceContexts.cancel();
     this._updateUsers.cancel();
     this._unsubscribeSetLoading();
+
+    this._liveUpdatesEnabled = true;
 
     if (force) {
       this._getLogBookData();

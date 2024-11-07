@@ -1,23 +1,18 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-card";
-import { ImageEntity, computeImageUrl } from "../../../data/image";
-import { HomeAssistant } from "../../../types";
+import type { ImageEntity } from "../../../data/image";
+import { computeImageUrl } from "../../../data/image";
+import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
-import { LovelaceElement, LovelaceElementConfig } from "../elements/types";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
+import type { LovelaceElement, LovelaceElementConfig } from "../elements/types";
+import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import { createStyledHuiElement } from "./picture-elements/create-styled-hui-element";
-import { PictureElementsCardConfig } from "./types";
-import { PersonEntity } from "../../../data/person";
+import type { PictureElementsCardConfig } from "./types";
+import type { PersonEntity } from "../../../data/person";
 
 @customElement("hui-picture-elements-card")
 class HuiPictureElementsCard extends LitElement implements LovelaceCard {

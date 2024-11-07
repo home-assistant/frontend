@@ -1,11 +1,5 @@
-import {
-  css,
-  CSSResultGroup,
-  LitElement,
-  nothing,
-  svg,
-  SVGTemplateResult,
-} from "lit";
+import type { CSSResultGroup, SVGTemplateResult } from "lit";
+import { css, LitElement, nothing, svg } from "lit";
 import { customElement, property } from "lit/decorators";
 
 @customElement("ha-svg-icon")

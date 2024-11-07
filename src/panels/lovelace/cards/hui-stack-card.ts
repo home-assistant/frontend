@@ -1,12 +1,13 @@
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
-import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import "./hui-card";
 import type { HuiCard } from "./hui-card";
-import { StackCardConfig } from "./types";
+import type { StackCardConfig } from "./types";
 
 export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
   extends LitElement
@@ -109,7 +110,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
       :host([ispanel]) #root {
         --ha-card-border-radius: var(--restore-card-border-radius);
         --ha-card-border-width: var(--restore-card-border-width);
-        --ha-card-box-shadow: var(--restore-card-border-shadow);
+        --ha-card-box-shadow: var(--restore-card-box-shadow);
       }
     `;
   }
