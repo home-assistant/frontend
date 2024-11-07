@@ -47,7 +47,6 @@ class HassioAddonLogDashboard extends LitElement {
           .localizeFunc=${this.supervisor.localize}
           .header=${this.addon.name}
           .provider=${this.addon.slug}
-          show
           .filter=${this._filter}
         >
         </error-log-card>
