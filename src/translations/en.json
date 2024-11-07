@@ -1277,6 +1277,9 @@
             "button": "[%key:ui::dialogs::more_info_control::cover::switch_mode::button%]",
             "position": "[%key:ui::dialogs::more_info_control::cover::switch_mode::position%]"
           }
+        },
+        "camera": {
+          "take_snapshot": "Take snapshot"
         }
       },
       "entity_registry": {
