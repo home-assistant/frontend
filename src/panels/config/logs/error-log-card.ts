@@ -49,6 +49,7 @@ import {
   fetchHassioBoots,
   fetchHassioLogs,
   fetchHassioLogsFollow,
+  fetchHassioLogsLegacy,
   getHassioLogDownloadLinesUrl,
   getHassioLogDownloadUrl,
 } from "../../../data/hassio/supervisor";
@@ -545,8 +546,7 @@ class ErrorLogCard extends LitElement {
         this._streamSupported = false;
         let logs = "";
         if (isComponentLoaded(this.hass, "hassio") && this.provider) {
-          const repsonse = await fetchHassioLogs(this.hass, this.provider);
-          logs = await repsonse.text();
+          logs = await fetchHassioLogsLegacy(this.hass, this.provider);
         } else {
           logs = await fetchErrorLog(this.hass);
         }
