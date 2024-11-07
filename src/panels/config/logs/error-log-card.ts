@@ -240,7 +240,7 @@ class ErrorLogCard extends LitElement {
                   `ui.panel.config.logs.${this._wrapLines ? "full_width" : "wrap_lines"}`
                 )}
               ></ha-icon-button>
-              ${!streaming
+              ${!streaming || this._error
                 ? html`<ha-icon-button
                     .path=${mdiRefresh}
                     @click=${this._loadLogs}
