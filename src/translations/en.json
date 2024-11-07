@@ -1279,7 +1279,7 @@
           }
         },
         "camera": {
-          "take_snapshot": "Take snapshot"
+          "download_snapshot": "Download snapshot"
         }
       },
       "entity_registry": {

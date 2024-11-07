@@ -6,6 +6,8 @@ import type { CameraEntity } from "../../../data/camera";
 import type { HomeAssistant } from "../../../types";
 import "../../../components/buttons/ha-progress-button";
 import { UNAVAILABLE } from "../../../data/entity";
+import { fileDownload } from "../../../util/file_download";
+import { b64toBlob } from "../../../common/file/b64-to-blob";
 
 class MoreInfoCamera extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -39,29 +41,30 @@ class MoreInfoCamera extends LitElement {
 
       <div class="actions">
         <ha-progress-button
-          @click=${this._takeSnapshot}
+          @click=${this._downloadSnapshot}
           .disabled=${this.stateObj.state === UNAVAILABLE}
         >
           ${this.hass.localize(
-            "ui.dialogs.more_info_control.camera.take_snapshot"
+            "ui.dialogs.more_info_control.camera.download_snapshot"
           )}
         </ha-progress-button>
       </div>
     `;
   }
 
-  private async _takeSnapshot() {
-    const progressElement =
-      this.shadowRoot!.querySelector("ha-progress-button")!;
+  private async _downloadSnapshot() {
+    const result: string | undefined = await this.hass?.callWS({
+      type: "camera/snapshot",
+      entity_id: this.stateObj!.entity_id,
+    });
 
-    try {
-      await this.hass!.callService("camera", "snapshot", {
-        entity_id: this.stateObj!.entity_id,
-      });
-      progressElement.actionSuccess();
-    } catch (e) {
-      progressElement.actionError();
+    if (!result) {
+      return;
     }
+
+    const blob = b64toBlob(result, "image/jpeg");
+    const url = window.URL.createObjectURL(blob);
+    fileDownload(url, "image.jpg");
   }
 
   static get styles(): CSSResultGroup {
