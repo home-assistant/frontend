@@ -1,6 +1,6 @@
 import { customElement, property } from "lit/decorators";
 import { MdTabs } from "@material/web/tabs/tabs";
-import { css } from "lit";
+import { css, html, nothing } from "lit";
 import "./ha-icon-button-prev";
 import "./ha-icon-button-next";
 import { HomeAssistant } from "../types";
@@ -8,6 +8,40 @@ import { HomeAssistant } from "../types";
 @customElement("ha-md-tabs")
 export class HaMdTabs extends MdTabs {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public buttons: boolean = false;
+
+  protected render() {
+    return html`
+      ${this.buttons
+        ? html`<ha-icon-button-prev
+            .label=${this.hass?.localize(
+              "ui.panel.lovelace.components.energy_period_selector.previous"
+            ) || "Prev"}
+            @click=${this._pickPrevious}
+          ></ha-icon-button-prev>`
+        : nothing}
+      ${super.render()}
+      ${this.buttons
+        ? html`<ha-icon-button-next
+            .label=${this.hass?.localize(
+              "ui.panel.lovelace.components.energy_period_selector.next"
+            ) || "Next"}
+            @click=${this._pickNext}
+          ></ha-icon-button-next>`
+        : nothing}
+    `;
+  }
+
+  private _pickPrevious() {
+    this.activeTabIndex -= 1;
+    this.scrollToTab();
+  }
+
+  private _pickNext() {
+    this.activeTabIndex += 1;
+    this.scrollToTab();
+  }
 
   protected updated(c) {
     super.updated(c);
@@ -71,8 +105,21 @@ export class HaMdTabs extends MdTabs {
       ::-webkit-scrollbar {
         display: none;
       }
+
       :host {
         scroll-behavior: unset;
+
+        flex-direction: row;
+      }
+
+      md-divider {
+        display: none;
+        position: absolute;
+      }
+
+      ha-icon-button-prev,
+      ha-icon-button-next {
+        margin: 3px;
       }
 
       :host(.inline) .tabs {

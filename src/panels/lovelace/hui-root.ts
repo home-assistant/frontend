@@ -341,6 +341,7 @@ class HUIRoot extends LitElement {
                           <ha-md-tabs
                             slot="title"
                             class="scrolling inline"
+                            .buttons=${true}
                             .activeTabIndex=${this._curView}
                             @change=${this._handleViewSelected}
                           >
