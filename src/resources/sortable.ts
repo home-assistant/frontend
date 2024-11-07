@@ -1,10 +1,11 @@
 import type Sortable from "sortablejs";
 import SortableCore, {
-  OnSpill,
   AutoScroll,
+  OnSpill,
 } from "sortablejs/modular/sortable.core.esm";
 
-SortableCore.mount(OnSpill, new AutoScroll());
+SortableCore.mount(OnSpill);
+SortableCore.mount(new AutoScroll());
 
 export default SortableCore as typeof Sortable;
 
