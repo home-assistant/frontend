@@ -45,7 +45,7 @@ class ZWaveJSCapabilityColorSwitch extends LitElement {
             .endpoint=${this.endpoint}
             .command_class=${this.command_class}
             .version=${this.version}
-            .extra_cc_options=${{ colorComponent: color }}
+            .transform_options=${this._transformOptions(color)}
           ></zwave_js-capability-control-multilevel_switch>`
     );
   }
@@ -64,6 +64,10 @@ class ZWaveJSCapabilityColorSwitch extends LitElement {
     } catch (error) {
       this._error = extractApiErrorMessage(error);
     }
+  }
+
+  private _transformOptions(color: number) {
+    return () => color;
   }
 }
 

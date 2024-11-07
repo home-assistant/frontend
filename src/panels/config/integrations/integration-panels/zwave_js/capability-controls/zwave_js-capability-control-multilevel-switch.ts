@@ -28,7 +28,9 @@ class ZWaveJSCapabilityMultiLevelSwitch extends LitElement {
 
   @property({ type: Number }) public version!: number;
 
-  @property({ attribute: false }) public extra_cc_options?: Record<string, any>;
+  @property({ attribute: false }) public transform_options?: (
+    opts: Record<string, any>
+  ) => unknown;
 
   @state() private _error?: string;
 
@@ -115,7 +117,6 @@ class ZWaveJSCapabilityMultiLevelSwitch extends LitElement {
       direction,
       ignoreStartLevel,
       startLevel,
-      ...this.extra_cc_options,
     };
 
     try {
@@ -126,7 +127,7 @@ class ZWaveJSCapabilityMultiLevelSwitch extends LitElement {
         this.command_class,
         this.endpoint,
         control,
-        [options],
+        [this.transform_options ? this.transform_options(options) : options],
         true
       );
     } catch (err) {
