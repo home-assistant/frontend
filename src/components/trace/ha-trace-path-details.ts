@@ -201,12 +201,12 @@ export class HaTracePathDetails extends LitElement {
             ${Object.keys(rest).length === 0
               ? nothing
               : html`<pre>${dump(rest)}</pre>`}
-            ${currentDetail.entity_id !== undefined &&
+            ${currentDetail.entity_id &&
             curPath
               .substring(this.selected.path.length + 1)
               .includes("entity_id")
               ? html`<pre>entity: ${currentDetail.entity_id}</pre>`
-              : ""}
+              : nothing}
           `;
         })
       );
