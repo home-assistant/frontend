@@ -67,7 +67,13 @@ class ZWaveJSCapabilityColorSwitch extends LitElement {
   }
 
   private _transformOptions(color: number) {
-    return () => color;
+    return (opts: Record<string, any>, control: string) =>
+      control === "startLevelChange"
+        ? {
+            ...opts,
+            colorComponent: color,
+          }
+        : color;
   }
 }
 

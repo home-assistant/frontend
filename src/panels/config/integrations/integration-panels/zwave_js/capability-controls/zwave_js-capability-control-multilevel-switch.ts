@@ -29,7 +29,8 @@ class ZWaveJSCapabilityMultiLevelSwitch extends LitElement {
   @property({ type: Number }) public version!: number;
 
   @property({ attribute: false }) public transform_options?: (
-    opts: Record<string, any>
+    opts: Record<string, any>,
+    control: string
   ) => unknown;
 
   @state() private _error?: string;
@@ -127,7 +128,11 @@ class ZWaveJSCapabilityMultiLevelSwitch extends LitElement {
         this.command_class,
         this.endpoint,
         control,
-        [this.transform_options ? this.transform_options(options) : options],
+        [
+          this.transform_options
+            ? this.transform_options(options, control)
+            : options,
+        ],
         true
       );
     } catch (err) {
