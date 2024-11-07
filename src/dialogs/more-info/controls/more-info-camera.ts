@@ -63,7 +63,7 @@ class MoreInfoCamera extends LitElement {
 
     const blob = await result.blob();
     const url = window.URL.createObjectURL(blob);
-    fileDownload(url, "image.jpg");
+    fileDownload(url);
   }
 
   static get styles(): CSSResultGroup {
