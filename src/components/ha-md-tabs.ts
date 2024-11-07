@@ -3,7 +3,7 @@ import { MdTabs } from "@material/web/tabs/tabs";
 import { css, html, nothing } from "lit";
 import "./ha-icon-button-prev";
 import "./ha-icon-button-next";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 
 @customElement("ha-md-tabs")
 export class HaMdTabs extends MdTabs {
@@ -34,13 +34,19 @@ export class HaMdTabs extends MdTabs {
   }
 
   private _pickPrevious() {
-    this.activeTabIndex -= 1;
-    this.scrollToTab();
+    /*this.activeTabIndex -= 1;
+    this.scrollToTab(); */
+
+    const slider = this.shadowRoot?.querySelector(".tabs");
+    slider.scrollLeft -= 50;
   }
 
   private _pickNext() {
-    this.activeTabIndex += 1;
-    this.scrollToTab();
+    /*this.activeTabIndex += 1;
+    this.scrollToTab();*/
+
+    const slider = this.shadowRoot?.querySelector(".tabs");
+    slider.scrollLeft += 50;
   }
 
   protected updated(c) {
