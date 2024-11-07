@@ -162,6 +162,7 @@ export class HaConfigLogs extends LitElement {
                 .filter=${this._filter}
                 .provider=${this._selectedLogProvider}
                 @switch-log-view=${this._showDetail}
+                allow-switch
               ></error-log-card>`}
         </div>
       </hass-subpage>
