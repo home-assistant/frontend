@@ -307,6 +307,7 @@ class ErrorLogCard extends LitElement {
           </ha-button>
           ${this._streamSupported &&
           this._loadingState !== "loading" &&
+          this._boot === 0 &&
           !this._error
             ? html`<div class="live-indicator">
                 <ha-svg-icon path=${mdiCircle}></ha-svg-icon>
