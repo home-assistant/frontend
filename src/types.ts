@@ -259,7 +259,7 @@ export interface HomeAssistant {
     parameters?: Record<string, any>,
     headers?: Record<string, string>
   ): Promise<T>;
-  callApiRaw(
+  callApiRaw( // introduced in 2024.11
     method: "GET" | "POST" | "PUT" | "DELETE",
     path: string,
     parameters?: Record<string, any>,

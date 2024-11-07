@@ -158,6 +158,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         },
         callApi: async (method, path, parameters, headers) =>
           hassCallApi(auth, method, path, parameters, headers),
+        // callApiRaw introduced in 2024.11
         callApiRaw: async (method, path, parameters, headers, signal) =>
           hassCallApiRaw(auth, method, path, parameters, headers, signal),
         fetchWithAuth: (
