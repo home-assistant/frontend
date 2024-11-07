@@ -1,13 +1,14 @@
 import { LitElement, css, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
-import { HomeAssistant } from "../../../../../../types";
+import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import type { HomeAssistant } from "../../../../../../types";
 import { invokeZWaveCCApi } from "../../../../../../data/zwave_js";
 import "../../../../../../components/ha-button";
 import "../../../../../../components/buttons/ha-progress-button";
 import "../../../../../../components/ha-textfield";
 import "../../../../../../components/ha-select";
 import "../../../../../../components/ha-list-item";
+import "../../../../../../components/ha-alert";
 import type { HaSelect } from "../../../../../../components/ha-select";
 import type { HaTextField } from "../../../../../../components/ha-textfield";
 import { extractApiErrorMessage } from "../../../../../../data/hassio/common";

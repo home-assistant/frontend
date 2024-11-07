@@ -1,21 +1,16 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list-item";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
 import "../../../../../components/ha-card";
 import { computeDeviceName } from "../../../../../data/device_registry";
-import {
+import type {
   ZWaveJSNodeCapabilities,
   ZwaveJSNodeMetadata,
+} from "../../../../../data/zwave_js";
+import {
   fetchZwaveNodeCapabilities,
   fetchZwaveNodeMetadata,
 } from "../../../../../data/zwave_js";
