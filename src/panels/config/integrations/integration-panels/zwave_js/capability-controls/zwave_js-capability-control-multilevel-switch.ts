@@ -1,8 +1,8 @@
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../../components/buttons/ha-progress-button";
-import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
-import { HomeAssistant } from "../../../../../../types";
+import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import type { HomeAssistant } from "../../../../../../types";
 import { invokeZWaveCCApi } from "../../../../../../data/zwave_js";
 import "../../../../../../components/ha-textfield";
 import "../../../../../../components/ha-select";
