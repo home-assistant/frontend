@@ -148,9 +148,9 @@ export class HaTracePathDetails extends LitElement {
 
           return html`
             ${curPath === this.selected.path
-              ? currentDetail.alias !== undefined
+              ? currentDetail.alias
                 ? html`<h2>${currentDetail.alias}</h2>`
-                : ""
+                : nothing
               : html`<h2>
                   ${curPath.substring(this.selected.path.length + 1)}
                 </h2>`}
