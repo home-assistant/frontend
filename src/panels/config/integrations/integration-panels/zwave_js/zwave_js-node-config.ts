@@ -30,7 +30,7 @@ import type {
 import {
   fetchZwaveNodeConfigParameters,
   fetchZwaveNodeMetadata,
-  resetAllZwaveNodeConfigParameter,
+  invokeZWaveCCApi,
   setZwaveNodeConfigParameter,
 } from "../../../../../data/zwave_js";
 import "../../../../../layouts/hass-error-screen";
@@ -488,7 +488,15 @@ class ZWaveJSNodeConfig extends LitElement {
       if (!device) {
         throw new Error("device_not_found");
       }
-      await resetAllZwaveNodeConfigParameter(this.hass, device.id);
+      await invokeZWaveCCApi(
+        this.hass,
+        device.id,
+        0x70, // 0x70 is the command class for Configuration
+        undefined,
+        "resetAll",
+        [],
+        true
+      );
 
       fireEvent(this, "hass-notification", {
         message: this.hass.localize(
