@@ -2470,9 +2470,9 @@
           "search": "Search logs",
           "failed_get_logs": "Failed to get {provider} logs, {error}",
           "no_issues_search": "No issues found for search term ''{term}''",
-          "load_logs": "Load full logs",
+          "load_logs": "Load logs",
           "nr_of_lines": "Number of lines",
-          "loading_log": "Loading full log…",
+          "loading_log": "Loading log…",
           "no_errors": "No errors have been reported",
           "no_issues": "There are no new issues!",
           "clear": "Clear",
@@ -2489,7 +2489,8 @@
           },
           "custom_integration": "custom integration",
           "error_from_custom_integration": "This error originated from a custom integration.",
-          "show_full_logs": "Show full logs",
+          "show_full_logs": "Show raw logs",
+          "show_condensed_logs": "Show condensed logs",
           "select_number_of_lines": "Select number of lines to download",
           "lines": "Lines",
           "download_logs": "Download logs",
@@ -4977,6 +4978,19 @@
             "unsigned": "Unsigned",
             "enumerated": "Enumerated",
             "bitfield": "Bitfield"
+            "reset_to_default": {
+              "button_label": "Reset to default configuration",
+              "dialog": {
+                "title": "Reset to default",
+                "text": "All device parameters will be reset to their default values.",
+                "text_loading": "Resetting in progress…",
+                "text_success": "The device configuration has been reset to its default values.",
+                "text_error": "Something went wrong while resetting the device to its default values. Please check your logs!",
+                "reset": "Reset",
+                "cancel": "Cancel"
+              }
+            },
+            "default": "Default"
           },
           "network_status": {
             "connected": "Connected",
