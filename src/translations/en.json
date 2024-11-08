@@ -1279,7 +1279,8 @@
           }
         },
         "camera": {
-          "download_snapshot": "Download snapshot"
+          "download_snapshot": "Download snapshot",
+          "failed_to_download": "Failed to download snapshot. Please check the logs for more information."
         }
       },
       "entity_registry": {

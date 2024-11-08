@@ -7,13 +7,16 @@ import type { HomeAssistant } from "../../../types";
 import "../../../components/buttons/ha-progress-button";
 import { UNAVAILABLE } from "../../../data/entity";
 import { fileDownload } from "../../../util/file_download";
+import { showToast } from "../../../util/toast";
 
 class MoreInfoCamera extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: CameraEntity;
 
   @state() private _attached = false;
+
+  @state() private _waiting = false;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -26,7 +29,7 @@ class MoreInfoCamera extends LitElement {
   }
 
   protected render() {
-    if (!this._attached || !this.hass || !this.stateObj) {
+    if (!this._attached || !this.stateObj) {
       return nothing;
     }
 
@@ -41,6 +44,7 @@ class MoreInfoCamera extends LitElement {
       <div class="actions">
         <ha-progress-button
           @click=${this._downloadSnapshot}
+          .progress=${this._waiting}
           .disabled=${this.stateObj.state === UNAVAILABLE}
         >
           ${this.hass.localize(
@@ -51,19 +55,33 @@ class MoreInfoCamera extends LitElement {
     `;
   }
 
-  private async _downloadSnapshot() {
-    const result: Response | undefined = await this.hass?.callApiRaw(
+  private async _downloadSnapshot(ev: CustomEvent) {
+    const button = ev.currentTarget as any;
+    this._waiting = true;
+
+    const result: Response | undefined = await this.hass.callApiRaw(
       "GET",
       `camera_proxy/${this.stateObj!.entity_id}`
     );
 
     if (!result) {
+      this._waiting = false;
+      button.actionError();
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.dialogs.more_info_control.camera.failed_to_download"
+        ),
+      });
+
       return;
     }
 
     const blob = await result.blob();
     const url = window.URL.createObjectURL(blob);
     fileDownload(url);
+
+    this._waiting = false;
+    button.actionSuccess();
   }
 
   static get styles(): CSSResultGroup {
