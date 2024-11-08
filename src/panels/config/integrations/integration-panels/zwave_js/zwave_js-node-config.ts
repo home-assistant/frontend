@@ -619,6 +619,8 @@ class ZWaveJSNodeConfig extends LitElement {
 
         .custom-config {
           padding: 16px;
+        }
+
         .reset {
           display: flex;
           justify-content: flex-end;
