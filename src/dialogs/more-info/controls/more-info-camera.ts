@@ -64,23 +64,23 @@ class MoreInfoCamera extends LitElement {
         "GET",
         `camera_proxy/${this.stateObj!.entity_id}`
       );
-  
+
       if (!result) {
         throw new Error("No response from API");
       }
-  
+
       const blob = await result.blob();
       const url = window.URL.createObjectURL(blob);
       fileDownload(url);
     } catch (err) {
-        this._waiting = false;
-        button.actionError();
-        showToast(this, {
-          message: this.hass.localize(
-            "ui.dialogs.more_info_control.camera.failed_to_download"
-          ),
-        });
-        return;
+      this._waiting = false;
+      button.actionError();
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.dialogs.more_info_control.camera.failed_to_download"
+        ),
+      });
+      return;
     }
 
     this._waiting = false;
