@@ -768,8 +768,8 @@ class ErrorLogCard extends LitElement {
       overflow-y: scroll;
       min-height: var(--error-log-card-height, calc(100vh - 240px));
       max-height: var(--error-log-card-height, calc(100vh - 240px));
-
       border-top: 1px solid var(--divider-color);
+      direction: ltr;
     }
 
     @media all and (max-width: 870px) {
