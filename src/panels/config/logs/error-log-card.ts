@@ -339,31 +339,26 @@ class ErrorLogCard extends LitElement {
 
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
-    if (
-      this._downloadSupported === undefined ||
-      this._streamSupported === undefined
-    ) {
+    if (!this.hasUpdated) {
       this._downloadSupported = downloadFileSupported(this.hass);
-      this._streamSupported = atLeastVersion(
-        this.hass.config.version,
-        2024,
-        11
+      this._streamSupported =
+        !__SUPERVISOR__ || atLeastVersion(this.hass.config.version, 2024, 11);
+
+      // just needs to be loaded once, because only the host endpoints provide boots information
+      this._loadBoots();
+
+      window.addEventListener(
+        "connection-status",
+        this._handleConnectionStatus
       );
+
+      this.hass.loadFragmentTranslation("config");
     }
 
     if (changedProps.has("provider")) {
       this._boot = 0;
       this._loadLogs();
     }
-    if (this.hasUpdated) {
-      return;
-    }
-    // just needs to be loaded once, because only the host endpoints provide boots information
-    this._loadBoots();
-
-    window.addEventListener("connection-status", this._handleConnectionStatus);
-
-    this.hass.loadFragmentTranslation("config");
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
