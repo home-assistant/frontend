@@ -4969,7 +4969,6 @@
             "size": "Size",
             "value": "Value",
             "format": "Format",
-            "default": "Default",
             "custom_config": "Custom configuration",
             "custom_config_description": "You can use this section to get/set custom configuration parameters for your device. This is useful when working with devices that are not fully supported.",
             "get_value": "Get value",
@@ -4977,7 +4976,7 @@
             "signed": "Signed",
             "unsigned": "Unsigned",
             "enumerated": "Enumerated",
-            "bitfield": "Bitfield"
+            "bitfield": "Bitfield",
             "reset_to_default": {
               "button_label": "Reset to default configuration",
               "dialog": {
