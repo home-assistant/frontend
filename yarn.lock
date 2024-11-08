@@ -1308,12 +1308,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/legacy-modes@npm:6.4.1":
-  version: 6.4.1
-  resolution: "@codemirror/legacy-modes@npm:6.4.1"
+"@codemirror/legacy-modes@npm:6.4.2":
+  version: 6.4.2
+  resolution: "@codemirror/legacy-modes@npm:6.4.2"
   dependencies:
     "@codemirror/language": "npm:^6.0.0"
-  checksum: 10/3b2256905d62d7b700495ecec296db10f77b3ecd41cb9a55441c45b21b067da67a1e6fe28bef1bf079957e4c33376f3a282b68f8745c6ef522e1cd992c9f9119
+  checksum: 10/2d32742b6fb457aad8bc3de4d8019ef305000038e488ed7a564d62e1c1f5d8c45fade2bd4fdadf1b6e80401ef5694b2b48a86c5a955e06c81cfa6b33504a14fb
   languageName: node
   linkType: hard
 
@@ -1335,14 +1335,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/view@npm:6.34.1, @codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.17.0, @codemirror/view@npm:^6.23.0, @codemirror/view@npm:^6.27.0":
-  version: 6.34.1
-  resolution: "@codemirror/view@npm:6.34.1"
+"@codemirror/view@npm:6.34.2, @codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.17.0, @codemirror/view@npm:^6.23.0, @codemirror/view@npm:^6.27.0":
+  version: 6.34.2
+  resolution: "@codemirror/view@npm:6.34.2"
   dependencies:
     "@codemirror/state": "npm:^6.4.0"
     style-mod: "npm:^4.1.0"
     w3c-keyname: "npm:^2.2.4"
-  checksum: 10/012f195d7c9da2f9693b2192e0e52c7d3f94d9c887c46e218ddb36ee1a050978ee6a13c7d0207dd3fb970b4454198962112b9afe17e1f23d2b89a274b7d186a0
+  checksum: 10/3ed42621c1e604b77488d28b2601e2131624497d33460c6fc0e5f74b1ec51842ca2490806fd105ba09f08ccfc4ce37c803e9ca43c5a2641335bb899cb3cd3088
   languageName: node
   linkType: hard
 
@@ -8658,10 +8658,10 @@ __metadata:
     "@codemirror/autocomplete": "npm:6.18.2"
     "@codemirror/commands": "npm:6.7.1"
     "@codemirror/language": "npm:6.10.3"
-    "@codemirror/legacy-modes": "npm:6.4.1"
+    "@codemirror/legacy-modes": "npm:6.4.2"
     "@codemirror/search": "npm:6.5.7"
     "@codemirror/state": "npm:6.4.1"
-    "@codemirror/view": "npm:6.34.1"
+    "@codemirror/view": "npm:6.34.2"
     "@egjs/hammerjs": "npm:2.0.17"
     "@formatjs/intl-datetimeformat": "npm:6.16.3"
     "@formatjs/intl-displaynames": "npm:6.8.3"
