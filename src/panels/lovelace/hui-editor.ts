@@ -2,14 +2,8 @@ import { undoDepth } from "@codemirror/commands";
 import "@material/mwc-button";
 import { mdiClose } from "@mdi/js";
 import { dump, load } from "js-yaml";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { array, assert, object, optional, string, type } from "superstruct";
@@ -27,10 +21,8 @@ import type { HomeAssistant } from "../../types";
 import { showToast } from "../../util/toast";
 import type { Lovelace } from "./types";
 import "../../components/ha-top-app-bar-fixed";
-import {
-  LovelaceRawConfig,
-  isStrategyDashboard,
-} from "../../data/lovelace/config/types";
+import type { LovelaceRawConfig } from "../../data/lovelace/config/types";
+import { isStrategyDashboard } from "../../data/lovelace/config/types";
 
 const lovelaceStruct = type({
   title: optional(string()),

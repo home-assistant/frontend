@@ -18,12 +18,14 @@ import {
   mdiRoomService,
   mdiShuffleDisabled,
 } from "@mdi/js";
-import { LitElement, PropertyValues, css, html, nothing } from "lit";
+import type { PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
-import { Condition, Trigger } from "../../data/automation";
-import {
+import type { Condition, Trigger } from "../../data/automation";
+import { flattenTriggers } from "../../data/automation";
+import type {
   Action,
   ChooseAction,
   IfAction,
@@ -34,15 +36,15 @@ import {
   ServiceAction,
   WaitAction,
   WaitForTriggerAction,
-  getActionType,
 } from "../../data/script";
-import {
+import { getActionType } from "../../data/script";
+import type {
   ChooseActionTraceStep,
   ConditionTraceStep,
   IfActionTraceStep,
   TraceExtended,
 } from "../../data/trace";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import "../ha-icon-button";
 import "../ha-service-icon";
 import "./hat-graph-branch";
@@ -94,7 +96,7 @@ export class HatScriptGraph extends LitElement {
         @focus=${this.selectNode(config, path)}
         ?active=${this.selected === path}
         .iconPath=${mdiAsterisk}
-        .notEnabled=${config.enabled === false}
+        .notEnabled=${"enabled" in config && config.enabled === false}
         .error=${this.trace.trace[path]?.some((tr) => tr.error)}
         tabindex=${track ? "0" : "-1"}
       ></hat-graph-node>
@@ -569,11 +571,16 @@ export class HatScriptGraph extends LitElement {
   }
 
   protected render() {
+    const triggerKey = "triggers" in this.trace.config ? "triggers" : "trigger";
+    const conditionKey =
+      "conditions" in this.trace.config ? "conditions" : "condition";
+    const actionKey = "actions" in this.trace.config ? "actions" : "action";
+
     const paths = Object.keys(this.trackedNodes);
     const trigger_nodes =
-      "trigger" in this.trace.config
-        ? ensureArray(this.trace.config.trigger).map((trigger, i) =>
-            this.render_trigger(trigger, i)
+      triggerKey in this.trace.config
+        ? flattenTriggers(ensureArray(this.trace.config[triggerKey])).map(
+            (trigger, i) => this.render_trigger(trigger, i)
           )
         : undefined;
     try {
@@ -584,14 +591,14 @@ export class HatScriptGraph extends LitElement {
                 ${trigger_nodes}
               </hat-graph-branch>`
             : ""}
-          ${"condition" in this.trace.config
-            ? html`${ensureArray(this.trace.config.condition)?.map(
+          ${conditionKey in this.trace.config
+            ? html`${ensureArray(this.trace.config[conditionKey])?.map(
                 (condition, i) => this.render_condition(condition, i)
               )}`
             : ""}
-          ${"action" in this.trace.config
-            ? html`${ensureArray(this.trace.config.action).map((action, i) =>
-                this.render_action_node(action, `action/${i}`)
+          ${actionKey in this.trace.config
+            ? html`${ensureArray(this.trace.config[actionKey]).map(
+                (action, i) => this.render_action_node(action, `action/${i}`)
               )}`
             : ""}
           ${"sequence" in this.trace.config

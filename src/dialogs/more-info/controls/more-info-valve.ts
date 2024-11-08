@@ -1,19 +1,13 @@
 import { mdiMenu, mdiSwapVertical } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
+import type { ValveEntity } from "../../../data/valve";
 import {
-  ValveEntity,
   ValveEntityFeature,
   computeValvePositionStateDisplay,
 } from "../../../data/valve";
@@ -83,10 +77,11 @@ class MoreInfoValve extends LitElement {
       supportsFeature(this.stateObj, ValveEntityFeature.CLOSE) ||
       supportsFeature(this.stateObj, ValveEntityFeature.STOP);
 
-    const supportsOpenCloseWithoutStop =
+    const supportsOpenCloseOnly =
       supportsFeature(this.stateObj, ValveEntityFeature.OPEN) &&
       supportsFeature(this.stateObj, ValveEntityFeature.CLOSE) &&
-      !supportsFeature(this.stateObj, ValveEntityFeature.STOP);
+      !supportsFeature(this.stateObj, ValveEntityFeature.STOP) &&
+      !supportsPosition;
 
     return html`
       <ha-more-info-state-header
@@ -113,7 +108,7 @@ class MoreInfoValve extends LitElement {
           ${
             this._mode === "button"
               ? html`
-                  ${supportsOpenCloseWithoutStop
+                  ${supportsOpenCloseOnly
                     ? html`
                         <ha-state-control-valve-toggle
                           .stateObj=${this.stateObj}

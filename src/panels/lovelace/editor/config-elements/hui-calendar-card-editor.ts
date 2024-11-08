@@ -12,7 +12,7 @@ import {
   union,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { LocalizeFunc } from "../../../../common/translations/localize";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/entity/ha-entities-picker";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";

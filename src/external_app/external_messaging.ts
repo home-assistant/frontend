@@ -1,4 +1,4 @@
-import { AutomationConfig } from "../data/automation";
+import type { AutomationConfig } from "../data/automation";
 
 const CALLBACK_EXTERNAL_BUS = "externalBus";
 
@@ -57,6 +57,12 @@ interface EMOutgoingMessageBarCodeNotify extends EMMessage {
 
 interface EMOutgoingMessageMatterCommission extends EMMessage {
   type: "matter/commission";
+  payload?: {
+    mac_extended_address: string | null;
+    extended_pan_id: string | null;
+    border_agent_id: string | null;
+    active_operational_dataset: string | null;
+  };
 }
 
 interface EMOutgoingMessageImportThreadCredentials extends EMMessage {
@@ -135,9 +141,10 @@ interface EMOutgoingMessageImprovScan extends EMMessage {
 interface EMOutgoingMessageThreadStoreInPlatformKeychain extends EMMessage {
   type: "thread/store_in_platform_keychain";
   payload: {
-    mac_extended_address: string;
+    mac_extended_address: string | null;
     border_agent_id: string | null;
     active_operational_dataset: string;
+    extended_pan_id: string;
   };
 }
 
@@ -257,6 +264,7 @@ export interface ExternalConfig {
   hasAssist: boolean;
   hasBarCodeScanner: number;
   canSetupImprov: boolean;
+  downloadFileSupported: boolean;
 }
 
 export class ExternalMessaging {

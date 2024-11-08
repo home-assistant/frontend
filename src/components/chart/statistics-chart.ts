@@ -4,14 +4,8 @@ import type {
   ChartOptions,
   ChartType,
 } from "chart.js";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { getGraphColorByIndex } from "../../common/color/colors";
@@ -22,15 +16,17 @@ import {
   numberFormatToLocale,
   getNumberFormatOptions,
 } from "../../common/number/format_number";
+import type {
+  Statistics,
+  StatisticsMetaData,
+  StatisticType,
+} from "../../data/recorder";
 import {
   getDisplayUnit,
   getStatisticLabel,
   getStatisticMetadata,
   isExternalStatistic,
-  Statistics,
   statisticsHaveType,
-  StatisticsMetaData,
-  StatisticType,
 } from "../../data/recorder";
 import type { HomeAssistant } from "../../types";
 import "./ha-chart-base";

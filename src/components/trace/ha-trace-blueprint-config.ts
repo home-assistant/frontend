@@ -1,10 +1,11 @@
 import { dump } from "js-yaml";
-import { html, LitElement, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../ha-code-editor";
 import "../ha-icon-button";
-import { TraceExtended } from "../../data/trace";
-import { HomeAssistant } from "../../types";
+import type { TraceExtended } from "../../data/trace";
+import type { HomeAssistant } from "../../types";
 
 @customElement("ha-trace-blueprint-config")
 export class HaTraceBlueprintConfig extends LitElement {

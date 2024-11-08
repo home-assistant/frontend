@@ -6,13 +6,13 @@ import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
+import type { SupervisorMounts } from "../data/supervisor/mounts";
 import {
   fetchSupervisorMounts,
-  SupervisorMounts,
   SupervisorMountType,
   SupervisorMountUsage,
 } from "../data/supervisor/mounts";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "./ha-alert";
 import "./ha-list-item";
 import "./ha-select";

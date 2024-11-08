@@ -1,4 +1,5 @@
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { HomeAssistant } from "../../types";
 import "./ha-form";
@@ -28,6 +29,10 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
   @property({ attribute: false }) public computeHelper?: (
     schema: HaFormSchema,
     options?: { path?: string[] }
+  ) => string;
+
+  @property({ attribute: false }) public localizeValue?: (
+    key: string
   ) => string;
 
   private _renderDescription() {
@@ -86,6 +91,7 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
             .disabled=${this.disabled}
             .computeLabel=${this._computeLabel}
             .computeHelper=${this._computeHelper}
+            .localizeValue=${this.localizeValue}
           ></ha-form>
         </div>
       </ha-expansion-panel>

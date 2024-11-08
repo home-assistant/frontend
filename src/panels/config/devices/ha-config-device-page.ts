@@ -5,18 +5,13 @@ import {
   mdiDelete,
   mdiDotsVertical,
   mdiDownload,
+  mdiMicrophone,
   mdiOpenInNew,
   mdiPencil,
   mdiPlusCircle,
 } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
@@ -34,35 +29,41 @@ import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-expansion-panel";
 import { getSignedPath } from "../../../data/auth";
-import {
+import type {
   ConfigEntry,
   DisableConfigEntryResult,
+} from "../../../data/config_entries";
+import {
   disableConfigEntry,
   sortConfigEntries,
 } from "../../../data/config_entries";
 import { fullEntitiesContext } from "../../../data/context";
+import type { DeviceRegistryEntry } from "../../../data/device_registry";
 import {
-  DeviceRegistryEntry,
   computeDeviceName,
   removeConfigEntryFromDevice,
   updateDeviceRegistryEntry,
 } from "../../../data/device_registry";
+import type { DiagnosticInfo } from "../../../data/diagnostics";
 import {
-  DiagnosticInfo,
   fetchDiagnosticHandler,
   getConfigEntryDiagnosticsDownloadUrl,
   getDeviceDiagnosticsDownloadUrl,
 } from "../../../data/diagnostics";
+import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import {
-  EntityRegistryEntry,
   findBatteryChargingEntity,
   findBatteryEntity,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
-import { IntegrationManifest, domainToName } from "../../../data/integration";
-import { SceneEntities, showSceneEditor } from "../../../data/scene";
-import { RelatedResult, findRelated } from "../../../data/search";
+import type { IntegrationManifest } from "../../../data/integration";
+import { domainToName } from "../../../data/integration";
+import type { SceneEntities } from "../../../data/scene";
+import { showSceneEditor } from "../../../data/scene";
+import type { RelatedResult } from "../../../data/search";
+import { findRelated } from "../../../data/search";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -82,6 +83,8 @@ import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
 } from "./device-registry-detail/show-dialog-device-registry-detail";
+import { showVoiceAssistantSetupDialog } from "../../../dialogs/voice-assistant-setup/show-voice-assistant-setup-dialog";
+import { assistSatelliteSupportsSetupFlow } from "../../../data/assist_satellite";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
@@ -189,20 +192,20 @@ export class HaConfigDevicePage extends LitElement {
       const result = groupBy(entities, (entry) => {
         const domain = computeDomain(entry.entity_id);
 
-        if (entry.entity_category) {
-          return entry.entity_category;
+        if (ASSIST_ENTITIES.includes(domain)) {
+          return "assist";
         }
 
         if (domain === "event" || domain === "notify") {
           return domain;
         }
 
-        if (SENSOR_ENTITIES.includes(domain)) {
-          return "sensor";
+        if (entry.entity_category) {
+          return entry.entity_category;
         }
 
-        if (ASSIST_ENTITIES.includes(domain)) {
-          return "assist";
+        if (SENSOR_ENTITIES.includes(domain)) {
+          return "sensor";
         }
 
         return "control";
@@ -344,6 +347,8 @@ export class HaConfigDevicePage extends LitElement {
               })}
               crossorigin="anonymous"
               referrerpolicy="no-referrer"
+              @error=${this._onImageError}
+              @load=${this._onImageLoad}
             />
 
             ${domainToName(this.hass.localize, integration.domain)}
@@ -1062,6 +1067,25 @@ export class HaConfigDevicePage extends LitElement {
       });
     }
 
+    const entities = this._entities(this.deviceId, this._entityReg);
+
+    const assistSatellite = entities.find(
+      (ent) => computeDomain(ent.entity_id) === "assist_satellite"
+    );
+
+    if (
+      assistSatellite &&
+      assistSatelliteSupportsSetupFlow(
+        this.hass.states[assistSatellite.entity_id]
+      )
+    ) {
+      deviceActions.push({
+        action: this._voiceAssistantSetup,
+        label: "Set up voice assistant",
+        icon: mdiMicrophone,
+      });
+    }
+
     const domains = this._integrations(
       device,
       this.entries,
@@ -1097,12 +1121,17 @@ export class HaConfigDevicePage extends LitElement {
       const matter = await import(
         "./device-detail/integration-elements/matter/device-actions"
       );
-      const actions = await matter.getMatterDeviceActions(
+      const defaultActions = matter.getMatterDeviceDefaultActions(
         this,
         this.hass,
         device
       );
-      deviceActions.push(...actions);
+      deviceActions.push(...defaultActions);
+
+      // load matter device actions async to avoid an UI with 0 actions when the matter integration needs very long to get node diagnostics
+      matter.getMatterDeviceActions(this, this.hass, device).then((actions) => {
+        this._deviceActions = [...actions, ...(this._deviceActions || [])];
+      });
     }
 
     this._deviceActions = deviceActions;
@@ -1308,19 +1337,102 @@ export class HaConfigDevicePage extends LitElement {
         }
         const entities = this._entities(this.deviceId, this._entityReg);
 
-        const renameEntityid =
-          this.showAdvanced &&
-          (await showConfirmationDialog(this, {
-            title: this.hass.localize(
-              "ui.panel.config.devices.confirm_rename_entity_ids"
-            ),
-            text: this.hass.localize(
-              "ui.panel.config.devices.confirm_rename_entity_ids_warning"
-            ),
-            confirmText: this.hass.localize("ui.common.rename"),
-            dismissText: this.hass.localize("ui.common.no"),
-            warning: true,
-          }));
+        let renameEntityid = false;
+        let entityIdRenames: { oldId: string; newId?: string }[] = [];
+
+        if (this.showAdvanced) {
+          const oldDeviceSlug = slugify(oldDeviceName);
+          const newDeviceSlug = slugify(newDeviceName);
+          entityIdRenames = entities.map((entity) => {
+            const oldId = entity.entity_id;
+            if (oldId.includes(oldDeviceSlug)) {
+              const newId = oldId.replace(oldDeviceSlug, newDeviceSlug);
+              return { oldId, newId };
+            }
+            return { oldId };
+          });
+
+          const dialogRenames = entityIdRenames
+            .filter((entity) => entity.newId)
+            .map(
+              (entity) =>
+                html`<tr>
+                  <td>${entity.oldId}</td>
+                  <td>${entity.newId}</td>
+                </tr>`
+            );
+          const dialogNoRenames = entityIdRenames
+            .filter((entity) => !entity.newId)
+            .map((entity) => html`<li>${entity.oldId}</li>`);
+
+          if (dialogRenames.length) {
+            renameEntityid = await showConfirmationDialog(this, {
+              title: this.hass.localize(
+                "ui.panel.config.devices.confirm_rename_entity_ids"
+              ),
+              text: html`${this.hass.localize(
+                  "ui.panel.config.devices.confirm_rename_entity_ids_warning"
+                )} <br /><br />
+                <ha-expansion-panel outlined>
+                  <span slot="header"
+                    >${this.hass.localize(
+                      "ui.panel.config.devices.confirm_rename_entity_will_rename",
+                      { count: dialogRenames.length }
+                    )}</span
+                  >
+                  <div style="overflow: auto;">
+                    <table style="width: 100%; text-align: var(--float-start);">
+                      <tr>
+                        <th>
+                          ${this.hass.localize(
+                            "ui.panel.config.devices.confirm_rename_old"
+                          )}
+                        </th>
+                        <th>
+                          ${this.hass.localize(
+                            "ui.panel.config.devices.confirm_rename_new"
+                          )}
+                        </th>
+                      </tr>
+                      ${dialogRenames}
+                    </table>
+                  </div>
+                </ha-expansion-panel>
+                ${dialogNoRenames.length
+                  ? html`<ha-expansion-panel outlined>
+                      <span slot="header"
+                        >${this.hass.localize(
+                          "ui.panel.config.devices.confirm_rename_entity_wont_rename",
+                          {
+                            count: dialogNoRenames.length,
+                            deviceSlug: oldDeviceSlug,
+                          }
+                        )}</span
+                      >
+                      ${dialogNoRenames}</ha-expansion-panel
+                    >`
+                  : nothing} `,
+              confirmText: this.hass.localize("ui.common.rename"),
+              dismissText: this.hass.localize("ui.common.no"),
+              warning: true,
+            });
+          } else if (dialogNoRenames.length) {
+            await showAlertDialog(this, {
+              title: this.hass.localize(
+                "ui.panel.config.devices.confirm_rename_entity_no_renamable_entity_ids"
+              ),
+              text: html`<ha-expansion-panel outlined>
+                <span slot="header"
+                  >${this.hass.localize(
+                    "ui.panel.config.devices.confirm_rename_entity_wont_rename",
+                    { deviceSlug: oldDeviceSlug, count: dialogNoRenames.length }
+                  )}</span
+                >
+                ${dialogNoRenames}
+              </ha-expansion-panel>`,
+            });
+          }
+        }
 
         const updateProms = entities.map((entity) => {
           const name = entity.name || entity.stateName;
@@ -1347,13 +1459,12 @@ export class HaConfigDevicePage extends LitElement {
           }
 
           if (renameEntityid) {
-            const oldSearch = slugify(oldDeviceName);
-            if (entity.entity_id.includes(oldSearch)) {
+            const entityRename = entityIdRenames?.find(
+              (item) => item.oldId === entity.entity_id
+            );
+            if (entityRename?.newId) {
               shouldUpdateEntityId = true;
-              newEntityId = entity.entity_id.replace(
-                oldSearch,
-                slugify(newDeviceName)
-              );
+              newEntityId = entityRename.newId;
             }
           }
 
@@ -1395,6 +1506,12 @@ export class HaConfigDevicePage extends LitElement {
 
     (ev.currentTarget as any).action(ev);
   }
+
+  private _voiceAssistantSetup = () => {
+    showVoiceAssistantSetupDialog(this, {
+      deviceId: this.deviceId,
+    });
+  };
 
   static get styles(): CSSResultGroup {
     return [

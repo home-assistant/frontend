@@ -13,10 +13,11 @@
       <% for (const entry of es5EntryJS) { %>
         loadES5("<%= entry %>");
       <% } %>
+    }
   } else {
     <% for (const entry of es5EntryJS) { %>
       loadES5("<%= entry %>");
     <% } %>
   }
-  }
 })();
+ 

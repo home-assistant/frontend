@@ -1,6 +1,7 @@
 import { mdiDrag } from "@mdi/js";
-import { HassEntity } from "home-assistant-js-websocket";
-import { LitElement, PropertyValues, css, html, nothing } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
@@ -11,8 +12,11 @@ import {
   STATE_DISPLAY_SPECIAL_CONTENT,
   STATE_DISPLAY_SPECIAL_CONTENT_DOMAINS,
 } from "../../state-display/state-display";
-import { HomeAssistant, ValueChangedEvent } from "../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-combo-box";
+import "../ha-sortable";
+import "../chips/ha-input-chip";
+import "../chips/ha-chip-set";
 import type { HaComboBox } from "../ha-combo-box";
 
 const HIDDEN_ATTRIBUTES = [
@@ -173,6 +177,7 @@ class HaEntityStatePicker extends LitElement {
               no-style
               @item-moved=${this._moveItem}
               .disabled=${this.disabled}
+              filter="button.trailing.action"
             >
               <ha-chip-set>
                 ${repeat(

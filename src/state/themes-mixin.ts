@@ -2,11 +2,11 @@ import {
   applyThemesOnElement,
   invalidateThemeCache,
 } from "../common/dom/apply_themes_on_element";
-import { HASSDomEvent } from "../common/dom/fire_event";
+import type { HASSDomEvent } from "../common/dom/fire_event";
 import { subscribeThemes } from "../data/ws-themes";
-import { Constructor, HomeAssistant } from "../types";
+import type { Constructor, HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
-import { HassBaseEl } from "./hass-base-mixin";
+import type { HassBaseEl } from "./hass-base-mixin";
 
 declare global {
   // for add event listener

@@ -1,26 +1,19 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { mdiDelete, mdiDownload, mdiPlus } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { relativeTime } from "../../../common/datetime/relative_time";
-import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
+import type { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-svg-icon";
 import { getSignedPath } from "../../../data/auth";
+import type { BackupContent, BackupData } from "../../../data/backup";
 import {
-  BackupContent,
-  BackupData,
   fetchBackupInfo,
   generateBackup,
   getBackupDownloadUrl,
@@ -32,8 +25,8 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
-import { HomeAssistant, Route } from "../../../types";
-import { LocalizeFunc } from "../../../common/translations/localize";
+import type { HomeAssistant, Route } from "../../../types";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import { fileDownload } from "../../../util/file_download";
 
 @customElement("ha-config-backup")

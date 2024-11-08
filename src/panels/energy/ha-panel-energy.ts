@@ -1,34 +1,30 @@
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { mdiPencil, mdiDownload } from "@mdi/js";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-menu-button";
 import "../../components/ha-list-item";
 import "../../components/ha-top-app-bar-fixed";
-import { LovelaceConfig } from "../../data/lovelace/config/types";
+import type { LovelaceConfig } from "../../data/lovelace/config/types";
 import { haStyle } from "../../resources/styles";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import "../lovelace/components/hui-energy-period-selector";
-import { Lovelace } from "../lovelace/types";
+import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
+import "../lovelace/views/hui-view-container";
 import { navigate } from "../../common/navigate";
-import {
-  getEnergyDataCollection,
-  getEnergyGasUnit,
-  getEnergyWaterUnit,
+import type {
   GridSourceTypeEnergyPreference,
   SolarSourceTypeEnergyPreference,
   BatterySourceTypeEnergyPreference,
   GasSourceTypeEnergyPreference,
   WaterSourceTypeEnergyPreference,
   DeviceConsumptionEnergyPreference,
+} from "../../data/energy";
+import {
+  getEnergyDataCollection,
+  getEnergyGasUnit,
+  getEnergyWaterUnit,
 } from "../../data/energy";
 import { fileDownload } from "../../util/file_download";
 
@@ -108,14 +104,18 @@ class PanelEnergy extends LitElement {
           </hui-energy-period-selector>
         </div>
       </div>
-      <div id="view" @reload-energy-panel=${this._reloadView}>
+
+      <hui-view-container
+        .hass=${this.hass}
+        @reload-energy-panel=${this._reloadView}
+      >
         <hui-view
           .hass=${this.hass}
           .narrow=${this.narrow}
           .lovelace=${this._lovelace}
           .index=${this._viewIndex}
         ></hui-view>
-      </div>
+      </hui-view-container>
     `;
   }
 
@@ -131,6 +131,7 @@ class PanelEnergy extends LitElement {
       saveConfig: async () => undefined,
       deleteConfig: async () => undefined,
       setEditMode: () => undefined,
+      showToast: () => undefined,
     };
   }
 
@@ -187,9 +188,7 @@ class PanelEnergy extends LitElement {
       row.push(type);
       row.push(unit.normalize("NFKD"));
       times.forEach((t) => {
-        if (stats[stat][n].start > t) {
-          row.push("");
-        } else if (n < stats[stat].length && stats[stat][n].start === t) {
+        if (n < stats[stat].length && stats[stat][n].start === t) {
           row.push((stats[stat][n].change ?? "").toString());
           n++;
         } else {
@@ -390,23 +389,19 @@ class PanelEnergy extends LitElement {
           line-height: 20px;
           flex-grow: 1;
         }
-        #view {
+        hui-view-container {
           position: relative;
           display: flex;
-          padding-top: calc(var(--header-height) + env(safe-area-inset-top));
           min-height: 100vh;
           box-sizing: border-box;
+          padding-top: calc(var(--header-height) + env(safe-area-inset-top));
           padding-left: env(safe-area-inset-left);
           padding-right: env(safe-area-inset-right);
           padding-inline-start: env(safe-area-inset-left);
           padding-inline-end: env(safe-area-inset-right);
           padding-bottom: env(safe-area-inset-bottom);
-          background: var(
-            --lovelace-background,
-            var(--primary-background-color)
-          );
         }
-        #view > * {
+        hui-view {
           flex: 1 1 100%;
           max-width: 100%;
         }

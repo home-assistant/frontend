@@ -1,22 +1,23 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import {
+import type {
   LovelaceSectionElement,
   LovelaceViewElement,
 } from "../../../data/lovelace";
-import { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
-import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
-import { LovelaceViewConfig } from "../../../data/lovelace/config/view";
+import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
+import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import {
   isCustomType,
   stripCustomPrefix,
 } from "../../../data/lovelace_custom_cards";
-import { LovelaceCardFeatureConfig } from "../card-features/types";
+import type { LovelaceCardFeatureConfig } from "../card-features/types";
 import type { ErrorCardConfig } from "../cards/types";
-import { LovelaceElement, LovelaceElementConfig } from "../elements/types";
-import { LovelaceRow, LovelaceRowConfig } from "../entity-rows/types";
-import { LovelaceHeaderFooterConfig } from "../header-footer/types";
-import {
+import type { LovelaceElement, LovelaceElementConfig } from "../elements/types";
+import type { LovelaceRow, LovelaceRowConfig } from "../entity-rows/types";
+import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
+import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
+import type {
   LovelaceBadge,
   LovelaceBadgeConstructor,
   LovelaceCard,
@@ -26,6 +27,8 @@ import {
   LovelaceElementConstructor,
   LovelaceHeaderFooter,
   LovelaceHeaderFooterConstructor,
+  LovelaceHeadingBadge,
+  LovelaceHeadingBadgeConstructor,
   LovelaceRowConstructor,
 } from "../types";
 
@@ -72,6 +75,11 @@ interface CreateElementConfigTypes {
     element: LovelaceSectionElement;
     constructor: unknown;
   };
+  "heading-badge": {
+    config: LovelaceHeadingBadgeConfig;
+    element: LovelaceHeadingBadge;
+    constructor: LovelaceHeadingBadgeConstructor;
+  };
 }
 
 export const createErrorCardElement = (config: ErrorCardConfig) => {
@@ -102,6 +110,20 @@ export const createErrorBadgeElement = (config: ErrorCardConfig) => {
   return el;
 };
 
+export const createErrorHeadingBadgeElement = (config: ErrorCardConfig) => {
+  const el = document.createElement("hui-error-heading-badge");
+  if (customElements.get("hui-error-heading-badge")) {
+    el.setConfig(config);
+  } else {
+    import("../heading-badges/hui-error-heading-badge");
+    customElements.whenDefined("hui-error-heading-badge").then(() => {
+      customElements.upgrade(el);
+      el.setConfig(config);
+    });
+  }
+  return el;
+};
+
 export const createErrorCardConfig = (error, origConfig) => ({
   type: "error",
   error,
@@ -109,6 +131,12 @@ export const createErrorCardConfig = (error, origConfig) => ({
 });
 
 export const createErrorBadgeConfig = (error, origConfig) => ({
+  type: "error",
+  error,
+  origConfig,
+});
+
+export const createErrorHeadingBadgeConfig = (error, origConfig) => ({
   type: "error",
   error,
   origConfig,
@@ -133,6 +161,11 @@ const _createErrorElement = <T extends keyof CreateElementConfigTypes>(
 ): CreateElementConfigTypes[T]["element"] => {
   if (tagSuffix === "badge") {
     return createErrorBadgeElement(createErrorBadgeConfig(error, config));
+  }
+  if (tagSuffix === "heading-badge") {
+    return createErrorHeadingBadgeElement(
+      createErrorHeadingBadgeConfig(error, config)
+    );
   }
   return createErrorCardElement(createErrorCardConfig(error, config));
 };

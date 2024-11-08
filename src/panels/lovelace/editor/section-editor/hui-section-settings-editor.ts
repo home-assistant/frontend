@@ -2,16 +2,16 @@ import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import {
+import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
-import { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
-import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
-import { HomeAssistant } from "../../../../types";
+import "../../../../components/ha-form/ha-form";
+import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
+import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import type { HomeAssistant } from "../../../../types";
 
 type SettingsData = {
-  title: string;
   column_span?: number;
 };
 
@@ -27,10 +27,6 @@ export class HuiDialogEditSection extends LitElement {
     (maxColumns: number) =>
       [
         {
-          name: "title",
-          selector: { text: {} },
-        },
-        {
           name: "column_span",
           selector: {
             number: {
@@ -45,7 +41,6 @@ export class HuiDialogEditSection extends LitElement {
 
   render() {
     const data: SettingsData = {
-      title: this.config.title || "",
       column_span: this.config.column_span || 1,
     };
 
@@ -83,13 +78,8 @@ export class HuiDialogEditSection extends LitElement {
 
     const newConfig: LovelaceSectionRawConfig = {
       ...this.config,
-      title: newData.title,
       column_span: newData.column_span,
     };
-
-    if (!newConfig.title) {
-      delete newConfig.title;
-    }
 
     fireEvent(this, "value-changed", { value: newConfig });
   }

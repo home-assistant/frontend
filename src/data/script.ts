@@ -1,8 +1,9 @@
-import {
+import type {
   HassEntityAttributeBase,
   HassEntityBase,
   HassServiceTarget,
 } from "home-assistant-js-websocket";
+import type { Describe } from "superstruct";
 import {
   object,
   optional,
@@ -12,21 +13,22 @@ import {
   assign,
   literal,
   is,
-  Describe,
   boolean,
 } from "superstruct";
 import { arrayLiteralIncludes } from "../common/array/literal-includes";
 import { navigate } from "../common/navigate";
-import { HomeAssistant } from "../types";
-import {
+import type { HomeAssistant } from "../types";
+import type {
   Condition,
   ShorthandAndCondition,
   ShorthandNotCondition,
   ShorthandOrCondition,
   Trigger,
 } from "./automation";
-import { BlueprintInput } from "./blueprint";
+import { migrateAutomationTrigger } from "./automation";
+import type { BlueprintInput } from "./blueprint";
 import { computeObjectId } from "../common/entity/compute_object_id";
+import { createSearchParam } from "../common/url/search-params";
 
 export const MODES = ["single", "restart", "queued", "parallel"] as const;
 export const MODES_MAX = ["queued", "parallel"] as const;
@@ -222,13 +224,14 @@ export interface ForEachRepeat extends BaseRepeat {
   for_each: string | any[];
 }
 
-export interface ChooseActionChoice extends BaseAction {
+export interface Option {
+  alias?: string;
   conditions: string | Condition[];
   sequence: Action | Action[];
 }
 
 export interface ChooseAction extends BaseAction {
-  choose: ChooseActionChoice | ChooseActionChoice[] | null;
+  choose: Option | Option[] | null;
   default?: Action | Action[];
 }
 
@@ -346,9 +349,13 @@ export const getScriptStateConfig = (hass: HomeAssistant, entity_id: string) =>
     entity_id,
   });
 
-export const showScriptEditor = (data?: Partial<ScriptConfig>) => {
+export const showScriptEditor = (
+  data?: Partial<ScriptConfig>,
+  expanded?: boolean
+) => {
   inititialScriptEditorData = data;
-  navigate("/config/script/edit/new");
+  const params = expanded ? `?${createSearchParam({ expanded: "1" })}` : "";
+  navigate(`/config/script/edit/new${params}`);
 };
 
 export const getScriptEditorInitData = () => {
@@ -404,7 +411,7 @@ export const getActionType = (action: Action): ActionType => {
   if ("set_conversation_response" in action) {
     return "set_conversation_response";
   }
-  if ("action" in action) {
+  if ("action" in action || "service" in action) {
     if ("metadata" in action) {
       if (is(action, activateSceneActionStruct)) {
         return "activate_scene";
@@ -478,6 +485,11 @@ export const migrateAutomationAction = (
     if (_action.else) {
       migrateAutomationAction(_action.else);
     }
+  }
+
+  if (actionType === "wait_for_trigger") {
+    const _action = action as WaitForTriggerAction;
+    migrateAutomationTrigger(_action.wait_for_trigger);
   }
 
   return action;
