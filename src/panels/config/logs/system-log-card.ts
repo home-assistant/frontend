@@ -1,6 +1,6 @@
 import "@material/mwc-list/mwc-list";
 import { mdiDotsVertical, mdiDownload, mdiRefresh, mdiText } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -23,7 +23,10 @@ import {
   isCustomIntegrationError,
 } from "../../../data/system_log";
 import type { HomeAssistant } from "../../../types";
-import { fileDownload } from "../../../util/file_download";
+import {
+  downloadFileSupported,
+  fileDownload,
+} from "../../../util/file_download";
 import { showSystemLogDetailDialog } from "./show-dialog-system-log-detail";
 import { formatSystemLogTime } from "./util";
 
@@ -38,6 +41,10 @@ export class SystemLogCard extends LitElement {
   public loaded = false;
 
   @state() private _items?: LoggedError[];
+
+  @state() private _downloadSupported?: boolean;
+
+  @state() private _downloadUrl?: string;
 
   public async fetchData(): Promise<void> {
     this._items = undefined;
@@ -97,6 +104,12 @@ export class SystemLogCard extends LitElement {
     const integrations = filteredItems.length
       ? filteredItems.map((item) => getLoggedErrorIntegration(item))
       : [];
+
+    const downloadButton = html` <ha-icon-button
+      .path=${mdiDownload}
+      @click=${this._downloadSupported ? this._downloadLogs : undefined}
+      .label=${this.hass.localize("ui.panel.config.logs.download_logs")}
+    ></ha-icon-button>`;
     return html`
       <div class="system-log-intro">
         <ha-card outlined>
@@ -110,13 +123,21 @@ export class SystemLogCard extends LitElement {
                 <div class="header">
                   <h1 class="card-header">${this.header || "Logs"}</h1>
                   <div class="header-buttons">
-                    <ha-icon-button
-                      .path=${mdiDownload}
-                      @click=${this._downloadLogs}
-                      .label=${this.hass.localize(
-                        "ui.panel.config.logs.download_logs"
-                      )}
-                    ></ha-icon-button>
+                    ${this._downloadUrl
+                      ? html`
+                          ${!this._downloadSupported
+                            ? html`<a
+                                href=${this._downloadUrl}
+                                target="_blank"
+                                .ariaLabel=${this.hass.localize(
+                                  "ui.panel.config.logs.download_logs"
+                                )}
+                              >
+                                ${downloadButton}
+                              </a>`
+                            : downloadButton}
+                        `
+                      : nothing}
                     <ha-icon-button
                       .path=${mdiRefresh}
                       @click=${this.fetchData}
@@ -204,6 +225,17 @@ export class SystemLogCard extends LitElement {
     `;
   }
 
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+
+    if (this.hasUpdated) {
+      return;
+    }
+
+    this._downloadSupported = downloadFileSupported(this.hass);
+    this._prepareDownloadUrl();
+  }
+
   protected firstUpdated(changedProps): void {
     super.firstUpdated(changedProps);
     this.fetchData();
@@ -228,12 +260,16 @@ export class SystemLogCard extends LitElement {
     fireEvent(this, "switch-log-view");
   }
 
+  private async _prepareDownloadUrl() {
+    const downloadUrl = getErrorLogDownloadUrl;
+    const { path } = await getSignedPath(this.hass, downloadUrl);
+    this._downloadUrl = path;
+  }
+
   private async _downloadLogs() {
     const timeString = new Date().toISOString().replace(/:/g, "-");
-    const downloadUrl = getErrorLogDownloadUrl;
     const logFileName = `home-assistant_${timeString}.log`;
-    const signedUrl = await getSignedPath(this.hass, downloadUrl);
-    fileDownload(signedUrl.path, logFileName);
+    fileDownload(this._downloadUrl!, logFileName);
   }
 
   private _openLog(ev: Event): void {
@@ -256,6 +292,10 @@ export class SystemLogCard extends LitElement {
       .header-buttons {
         display: flex;
         align-items: center;
+      }
+
+      .header-buttons a {
+        color: var(--text-color);
       }
 
       .card-header {
