@@ -1,5 +1,6 @@
-import { HassEntity } from "home-assistant-js-websocket";
-import { CSSResultGroup, LitElement, html } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup } from "lit";
+import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/entity/state-info";
 import "../components/ha-lawn_mower-action-button";

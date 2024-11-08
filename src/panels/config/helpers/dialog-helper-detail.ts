@@ -1,14 +1,8 @@
 import "@material/mwc-button/mwc-button";
-import { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item-base";
+import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item-base";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  TemplateResult,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -33,9 +27,10 @@ import { createSchedule } from "../../../data/schedule";
 import { createTimer } from "../../../data/timer";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import { Helper, HelperDomain, isHelperDomain } from "./const";
+import type { Helper, HelperDomain } from "./const";
+import { isHelperDomain } from "./const";
 import type { ShowDialogHelperDetailParams } from "./show-dialog-helper-detail";
 
 type HelperCreators = {

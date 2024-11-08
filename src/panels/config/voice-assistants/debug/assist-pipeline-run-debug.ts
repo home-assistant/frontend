@@ -1,4 +1,5 @@
-import { css, html, LitElement, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { extractSearchParam } from "../../../../common/url/search-params";
 import "../../../../components/ha-assist-pipeline-picker";
@@ -8,11 +9,11 @@ import type { HaCheckbox } from "../../../../components/ha-checkbox";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../components/ha-textfield";
-import {
+import type {
   PipelineRun,
   PipelineRunOptions,
-  runDebugAssistPipeline,
 } from "../../../../data/assist_pipeline";
+import { runDebugAssistPipeline } from "../../../../data/assist_pipeline";
 import {
   showAlertDialog,
   showPromptDialog,

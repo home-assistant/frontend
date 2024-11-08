@@ -1,6 +1,7 @@
 import { atLeastVersion } from "../../common/config/version";
-import { HomeAssistant } from "../../types";
-import { hassioApiResultExtractor, HassioResponse } from "./common";
+import type { HomeAssistant } from "../../types";
+import type { HassioResponse } from "./common";
+import { hassioApiResultExtractor } from "./common";
 
 interface IpConfiguration {
   address: string[];
@@ -17,7 +18,7 @@ export interface NetworkInterface {
   ipv4?: Partial<IpConfiguration>;
   ipv6?: Partial<IpConfiguration>;
   type: "ethernet" | "wireless" | "vlan";
-  wifi?: Partial<WifiConfiguration>;
+  wifi?: Partial<WifiConfiguration> | null;
 }
 
 interface DockerNetwork {
@@ -27,7 +28,7 @@ interface DockerNetwork {
   interface: string;
 }
 
-interface AccessPoint {
+export interface AccessPoint {
   mode: "infrastructure" | "mesh" | "adhoc" | "ap";
   ssid: string;
   mac: string;

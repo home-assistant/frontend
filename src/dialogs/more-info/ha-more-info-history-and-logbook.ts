@@ -1,7 +1,8 @@
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
-import { ChartResizeOptions } from "../../components/chart/ha-chart-base";
-import { HomeAssistant } from "../../types";
+import type { ChartResizeOptions } from "../../components/chart/ha-chart-base";
+import type { HomeAssistant } from "../../types";
 import {
   computeShowHistoryComponent,
   computeShowLogBookComponent,

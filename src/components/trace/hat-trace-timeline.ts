@@ -7,45 +7,42 @@ import {
   mdiProgressWrench,
   mdiRecordCircleOutline,
 } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import { relativeTime } from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import { toggleAttribute } from "../../common/dom/toggle_attribute";
-import { fullEntitiesContext, labelsContext } from "../../data/context";
-import { EntityRegistryEntry } from "../../data/entity_registry";
-import { LabelRegistryEntry } from "../../data/label_registry";
-import { LogbookEntry } from "../../data/logbook";
 import {
+  floorsContext,
+  fullEntitiesContext,
+  labelsContext,
+} from "../../data/context";
+import type { EntityRegistryEntry } from "../../data/entity_registry";
+import type { FloorRegistryEntry } from "../../data/floor_registry";
+import type { LabelRegistryEntry } from "../../data/label_registry";
+import type { LogbookEntry } from "../../data/logbook";
+import type {
   ChooseAction,
-  ChooseActionChoice,
+  Option,
   IfAction,
   ParallelAction,
   RepeatAction,
   SequenceAction,
-  getActionType,
 } from "../../data/script";
+import { getActionType } from "../../data/script";
 import { describeAction } from "../../data/script_i18n";
-import {
+import type {
   ActionTraceStep,
   AutomationTraceExtended,
   ChooseActionTraceStep,
   IfActionTraceStep,
   TriggerTraceStep,
-  getDataFromPath,
-  isTriggerPath,
 } from "../../data/trace";
-import { HomeAssistant } from "../../types";
+import { getDataFromPath, isTriggerPath } from "../../data/trace";
+import type { HomeAssistant } from "../../types";
 import "./ha-timeline";
 import type { HaTimeline } from "./ha-timeline";
 
@@ -201,6 +198,7 @@ class ActionRenderer {
     private hass: HomeAssistant,
     private entityReg: EntityRegistryEntry[],
     private labelReg: LabelRegistryEntry[],
+    private floorReg: { [id: string]: FloorRegistryEntry },
     private entries: TemplateResult[],
     private trace: AutomationTraceExtended,
     private logbookRenderer: LogbookRenderer,
@@ -319,6 +317,7 @@ class ActionRenderer {
         this.hass,
         this.entityReg,
         this.labelReg,
+        this.floorReg,
         data,
         actionType
       ),
@@ -406,7 +405,7 @@ class ActionRenderer {
           : undefined;
       const choiceConfig = this._getDataFromPath(
         `${this.keys[index]}/choose/${chooseTrace.result.choice}`
-      ) as ChooseActionChoice | undefined;
+      ) as Option | undefined;
       const choiceName = choiceConfig
         ? `${
             choiceConfig.alias ||
@@ -486,7 +485,13 @@ class ActionRenderer {
 
     const name =
       repeatConfig.alias ||
-      describeAction(this.hass, this.entityReg, this.labelReg, repeatConfig);
+      describeAction(
+        this.hass,
+        this.entityReg,
+        this.labelReg,
+        this.floorReg,
+        repeatConfig
+      );
 
     this._renderEntry(repeatPath, name, undefined, disabled);
 
@@ -584,6 +589,7 @@ class ActionRenderer {
           this.hass,
           this.entityReg,
           this.labelReg,
+          this.floorReg,
           sequenceConfig,
           "sequence"
         ),
@@ -680,6 +686,10 @@ export class HaAutomationTracer extends LitElement {
   @consume({ context: labelsContext, subscribe: true })
   _labelReg!: LabelRegistryEntry[];
 
+  @state()
+  @consume({ context: floorsContext, subscribe: true })
+  _floorReg!: { [id: string]: FloorRegistryEntry };
+
   protected render() {
     if (!this.trace) {
       return nothing;
@@ -697,6 +707,7 @@ export class HaAutomationTracer extends LitElement {
       this.hass,
       this._entityReg,
       this._labelReg,
+      this._floorReg,
       entries,
       this.trace,
       logbookRenderer,

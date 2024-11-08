@@ -2,14 +2,12 @@ import type { PropertyValues } from "lit";
 import { tinykeys } from "tinykeys";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { mainWindow } from "../common/dom/get_main_window";
-import {
-  QuickBarParams,
-  showQuickBar,
-} from "../dialogs/quick-bar/show-dialog-quick-bar";
-import { Constructor, HomeAssistant } from "../types";
+import type { QuickBarParams } from "../dialogs/quick-bar/show-dialog-quick-bar";
+import { showQuickBar } from "../dialogs/quick-bar/show-dialog-quick-bar";
+import type { Constructor, HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import { showToast } from "../util/toast";
-import { HassElement } from "./hass-element";
+import type { HassElement } from "./hass-element";
 import { extractSearchParamsObject } from "../common/url/search-params";
 
 declare global {

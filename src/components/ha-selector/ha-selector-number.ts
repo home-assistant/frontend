@@ -1,16 +1,10 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../common/dom/fire_event";
-import { NumberSelector } from "../../data/selector";
-import { HomeAssistant } from "../../types";
+import type { NumberSelector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
 import "../ha-input-helper-text";
 import "../ha-slider";
 import "../ha-textfield";

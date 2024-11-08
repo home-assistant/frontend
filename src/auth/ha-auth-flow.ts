@@ -1,22 +1,23 @@
 /* eslint-disable lit/prefer-static-styles */
 import "@material/mwc-button";
 import { genClientId } from "home-assistant-js-websocket";
-import { html, LitElement, nothing, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { LocalizeFunc } from "../common/translations/localize";
+import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
 import "../components/ha-checkbox";
 import { computeInitialHaFormData } from "../components/ha-form/compute-initial-ha-form-data";
 import "../components/ha-formfield";
+import type { AuthProvider } from "../data/auth";
 import {
-  AuthProvider,
   autocompleteLoginFields,
   createLoginFlow,
   deleteLoginFlow,
   redirectWithAuthCode,
   submitLoginFlow,
 } from "../data/auth";
-import {
+import type {
   DataEntryFlowStep,
   DataEntryFlowStepForm,
 } from "../data/data_entry_flow";

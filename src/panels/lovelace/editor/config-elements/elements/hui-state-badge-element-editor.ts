@@ -5,8 +5,8 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../../types";
 import "../../../../../components/ha-form/ha-form";
-import { LovelacePictureElementEditor } from "../../../types";
-import { StateBadgeElementConfig } from "../../../elements/types";
+import type { LovelacePictureElementEditor } from "../../../types";
+import type { StateBadgeElementConfig } from "../../../elements/types";
 import { actionConfigStruct } from "../../structs/action-struct";
 
 const stateBadgeElementConfigStruct = object({

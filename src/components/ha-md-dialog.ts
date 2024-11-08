@@ -41,6 +41,7 @@ MdDialog.addInitializer(async (instance) => {
   };
 });
 
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 let DIALOG_POLYFILL: Promise<typeof import("dialog-polyfill")>;
 
 /**
@@ -179,6 +180,10 @@ export class HaMdDialog extends MdDialog {
 
       :host ::slotted(ha-dialog-header) {
         display: contents;
+      }
+
+      .scroller {
+        overflow: var(--dialog-content-overflow, auto);
       }
 
       slot[name="content"]::slotted(*) {

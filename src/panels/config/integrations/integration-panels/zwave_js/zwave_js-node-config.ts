@@ -6,15 +6,8 @@ import {
   mdiCloseCircle,
   mdiProgressClock,
 } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { groupBy } from "../../../../../common/util/group-by";
@@ -27,11 +20,13 @@ import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-textfield";
 import "../../../../../components/ha-selector/ha-selector-boolean";
 import { computeDeviceName } from "../../../../../data/device_registry";
-import {
+import type {
   ZWaveJSNodeConfigParam,
   ZWaveJSNodeConfigParams,
   ZWaveJSSetConfigParamResult,
   ZwaveJSNodeMetadata,
+} from "../../../../../data/zwave_js";
+import {
   fetchZwaveNodeConfigParameters,
   fetchZwaveNodeMetadata,
   setZwaveNodeConfigParameter,

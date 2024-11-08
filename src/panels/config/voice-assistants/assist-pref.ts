@@ -8,7 +8,8 @@ import {
   mdiStar,
   mdiTrashCan,
 } from "@mdi/js";
-import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { formatLanguageCode } from "../../../common/language/format_language";
@@ -20,18 +21,16 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
+import type { AssistPipeline } from "../../../data/assist_pipeline";
 import {
-  AssistDevice,
-  AssistPipeline,
   createAssistPipeline,
   deleteAssistPipeline,
-  listAssistDevices,
   listAssistPipelines,
   setAssistPipelinePreferred,
   updateAssistPipeline,
 } from "../../../data/assist_pipeline";
-import { CloudStatus } from "../../../data/cloud";
-import { ExposeEntitySettings } from "../../../data/expose";
+import type { CloudStatus } from "../../../data/cloud";
+import type { ExposeEntitySettings } from "../../../data/expose";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -42,6 +41,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { showVoiceAssistantPipelineDetailDialog } from "./show-dialog-voice-assistant-pipeline-detail";
 import { showVoiceCommandDialog } from "../../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { computeDomain } from "../../../common/entity/compute_domain";
 
 @customElement("assist-pref")
 export class AssistPref extends LitElement {
@@ -58,7 +58,7 @@ export class AssistPref extends LitElement {
 
   @state() private _preferred: string | null = null;
 
-  @state() private _devices: AssistDevice[] = [];
+  @state() private _pipelineEntitiesCount = 0;
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
@@ -67,9 +67,9 @@ export class AssistPref extends LitElement {
       this._pipelines = pipelines.pipelines;
       this._preferred = pipelines.preferred_pipeline;
     });
-    listAssistDevices(this.hass).then((devices) => {
-      this._devices = devices;
-    });
+    this._pipelineEntitiesCount = Object.values(this.hass.entities).filter(
+      (entity) => computeDomain(entity.entity_id) === "assist_satellite"
+    ).length;
   }
 
   private _exposedEntitiesCount = memoizeOne(
@@ -205,13 +205,13 @@ export class AssistPref extends LitElement {
               )}
             </ha-button>
           </a>
-          ${this._devices?.length
+          ${this._pipelineEntitiesCount > 0
             ? html`
                 <a href="/config/voice-assistants/assist/devices">
                   <ha-button>
                     ${this.hass.localize(
                       "ui.panel.config.voice_assistants.assistants.pipeline.assist_devices",
-                      { number: this._devices.length }
+                      { number: this._pipelineEntitiesCount }
                     )}
                   </ha-button>
                 </a>
