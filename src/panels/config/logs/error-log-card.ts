@@ -339,6 +339,18 @@ class ErrorLogCard extends LitElement {
 
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
+    if (
+      this._downloadSupported === undefined ||
+      this._streamSupported === undefined
+    ) {
+      this._downloadSupported = downloadFileSupported(this.hass);
+      this._streamSupported = atLeastVersion(
+        this.hass.config.version,
+        2024,
+        11
+      );
+    }
+
     if (changedProps.has("provider")) {
       this._boot = 0;
       this._loadLogs();
@@ -346,8 +358,6 @@ class ErrorLogCard extends LitElement {
     if (this.hasUpdated) {
       return;
     }
-    this._streamSupported = atLeastVersion(this.hass.config.version, 2024, 11);
-    this._downloadSupported = downloadFileSupported(this.hass);
     // just needs to be loaded once, because only the host endpoints provide boots information
     this._loadBoots();
 
