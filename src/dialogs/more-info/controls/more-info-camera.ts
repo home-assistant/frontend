@@ -59,26 +59,29 @@ class MoreInfoCamera extends LitElement {
     const button = ev.currentTarget as any;
     this._waiting = true;
 
-    const result: Response | undefined = await this.hass.callApiRaw(
-      "GET",
-      `camera_proxy/${this.stateObj!.entity_id}`
-    );
-
-    if (!result) {
-      this._waiting = false;
-      button.actionError();
-      showToast(this, {
-        message: this.hass.localize(
-          "ui.dialogs.more_info_control.camera.failed_to_download"
-        ),
-      });
-
-      return;
+    try {
+      const result: Response | undefined = await this.hass.callApiRaw(
+        "GET",
+        `camera_proxy/${this.stateObj!.entity_id}`
+      );
+  
+      if (!result) {
+        throw new Error("No response from API");
+      }
+  
+      const blob = await result.blob();
+      const url = window.URL.createObjectURL(blob);
+      fileDownload(url);
+    } catch (err) {
+        this._waiting = false;
+        button.actionError();
+        showToast(this, {
+          message: this.hass.localize(
+            "ui.dialogs.more_info_control.camera.failed_to_download"
+          ),
+        });
+        return;
     }
-
-    const blob = await result.blob();
-    const url = window.URL.createObjectURL(blob);
-    fileDownload(url);
 
     this._waiting = false;
     button.actionSuccess();
