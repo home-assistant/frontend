@@ -2343,7 +2343,8 @@
             },
             "create_helper": "Create helper",
             "no_helpers": "Looks like you don't have any helpers yet!",
-            "search": "Search {number} helpers"
+            "search": "Search {number} helpers",
+            "error_information": "Error information"
           },
           "dialog": {
             "create": "Create",
