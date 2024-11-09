@@ -57,8 +57,8 @@ import {
   createCategoryRegistryEntry,
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
+import type { ConfigEntry } from "../../../data/config_entries";
 import {
-  ConfigEntry,
   ERROR_STATES,
   deleteConfigEntry,
   subscribeConfigEntries,
