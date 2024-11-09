@@ -237,7 +237,7 @@
     "webpack-dev-server": "5.1.0",
     "webpack-manifest-plugin": "5.0.0",
     "webpack-stats-plugin": "1.1.3",
-    "webpackbar": "6.0.1",
+    "webpackbar": "7.0.0",
     "workbox-build": "patch:workbox-build@npm%3A7.1.1#~/.yarn/patches/workbox-build-npm-7.1.1-a854f3faae.patch"
   },
   "_comment": "Polymer 3.2 contained a bug, fixed in https://github.com/Polymer/polymer/pull/5569, add as patch",
