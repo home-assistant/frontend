@@ -1,10 +1,12 @@
-import { PropertyValues, ReactiveElement } from "lit";
+import type { PropertyValues } from "lit";
+import { ReactiveElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { MediaQueriesListener } from "../../../common/dom/media_query";
+import type { MediaQueriesListener } from "../../../common/dom/media_query";
 import "../../../components/ha-svg-icon";
-import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../types";
+import { migrateLayoutToGridOptions } from "../common/compute-card-grid-size";
 import { computeCardSize } from "../common/compute-card-size";
 import {
   attachConditionMediaQueriesListeners,
@@ -12,7 +14,7 @@ import {
 } from "../common/validate-condition";
 import { createCardElement } from "../create-element/create-card-element";
 import { createErrorCardConfig } from "../create-element/create-element-base";
-import type { LovelaceCard, LovelaceLayoutOptions } from "../types";
+import type { LovelaceCard, LovelaceGridOptions } from "../types";
 
 declare global {
   interface HASSDomEvents {
@@ -67,20 +69,45 @@ export class HuiCard extends ReactiveElement {
     return 1;
   }
 
-  public getLayoutOptions(): LovelaceLayoutOptions {
-    const configOptions = this.config?.layout_options ?? {};
-    if (this._element) {
-      const cardOptions = this._element.getLayoutOptions?.() ?? {};
-      return {
-        ...cardOptions,
-        ...configOptions,
-      };
-    }
-    return configOptions;
+  public getGridOptions(): LovelaceGridOptions {
+    const elementOptions = this.getElementGridOptions();
+    const configOptions = this.getConfigGridOptions();
+    return {
+      ...elementOptions,
+      ...configOptions,
+    };
   }
 
-  public getElementLayoutOptions(): LovelaceLayoutOptions {
-    return this._element?.getLayoutOptions?.() ?? {};
+  // options provided by the element
+  public getElementGridOptions(): LovelaceGridOptions {
+    if (!this._element) return {};
+
+    if (this._element.getGridOptions) {
+      return this._element.getGridOptions();
+    }
+    if (this._element.getLayoutOptions) {
+      // Disabled for now to avoid spamming the console, need to be re-enabled when hui-card performance are fixed
+      // eslint-disable-next-line no-console
+      // console.warn(
+      //   `This card (${this.config?.type}) is using "getLayoutOptions" and it is deprecated, contact the developer to suggest to use "getGridOptions" instead`
+      // );
+      const options = migrateLayoutToGridOptions(
+        this._element.getLayoutOptions()
+      );
+      return options;
+    }
+    return {};
+  }
+
+  // options provided by the config
+  public getConfigGridOptions(): LovelaceGridOptions {
+    if (this.config?.grid_options) {
+      return this.config.grid_options;
+    }
+    if (this.config?.layout_options) {
+      return migrateLayoutToGridOptions(this.config.layout_options);
+    }
+    return {};
   }
 
   private _updateElement(config: LovelaceCardConfig) {

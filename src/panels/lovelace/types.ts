@@ -1,19 +1,20 @@
-import { HassEntity } from "home-assistant-js-websocket";
-import { LocalizeFunc } from "../../common/translations/localize";
-import { HaFormSchema } from "../../components/ha-form/types";
-import { LovelaceBadgeConfig } from "../../data/lovelace/config/badge";
-import { LovelaceCardConfig } from "../../data/lovelace/config/card";
-import {
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { LocalizeFunc } from "../../common/translations/localize";
+import type { HaFormSchema } from "../../components/ha-form/types";
+import type { LovelaceBadgeConfig } from "../../data/lovelace/config/badge";
+import type { LovelaceCardConfig } from "../../data/lovelace/config/card";
+import type {
   LovelaceConfig,
   LovelaceRawConfig,
 } from "../../data/lovelace/config/types";
-import { FrontendLocaleData } from "../../data/translation";
-import { Constructor, HomeAssistant } from "../../types";
-import { LovelaceRow, LovelaceRowConfig } from "./entity-rows/types";
-import { LovelaceHeaderFooterConfig } from "./header-footer/types";
-import { LovelaceCardFeatureConfig } from "./card-features/types";
-import { LovelaceElement, LovelaceElementConfig } from "./elements/types";
-import { LovelaceHeadingBadgeConfig } from "./heading-badges/types";
+import type { FrontendLocaleData } from "../../data/translation";
+import type { Constructor, HomeAssistant } from "../../types";
+import type { LovelaceRow, LovelaceRowConfig } from "./entity-rows/types";
+import type { LovelaceHeaderFooterConfig } from "./header-footer/types";
+import type { LovelaceCardFeatureConfig } from "./card-features/types";
+import type { LovelaceElement, LovelaceElementConfig } from "./elements/types";
+import type { LovelaceHeadingBadgeConfig } from "./heading-badges/types";
+import type { ShowToastParams } from "../../managers/notification-manager";
 
 declare global {
   // eslint-disable-next-line
@@ -35,6 +36,7 @@ export interface Lovelace {
   setEditMode: (editMode: boolean) => void;
   saveConfig: (newConfig: LovelaceRawConfig) => Promise<void>;
   deleteConfig: () => Promise<void>;
+  showToast: (params: ShowToastParams) => void;
 }
 
 export interface LovelaceBadge extends HTMLElement {
@@ -51,12 +53,23 @@ export type LovelaceLayoutOptions = {
   grid_max_rows?: number;
 };
 
+export type LovelaceGridOptions = {
+  columns?: number | "full";
+  rows?: number | "auto";
+  max_columns?: number;
+  min_columns?: number;
+  min_rows?: number;
+  max_rows?: number;
+};
+
 export interface LovelaceCard extends HTMLElement {
   hass?: HomeAssistant;
   preview?: boolean;
   layout?: string;
   getCardSize(): number | Promise<number>;
+  /** @deprecated Use `getGridOptions` instead */
   getLayoutOptions?(): LovelaceLayoutOptions;
+  getGridOptions?(): LovelaceGridOptions;
   setConfig(config: LovelaceCardConfig): void;
 }
 

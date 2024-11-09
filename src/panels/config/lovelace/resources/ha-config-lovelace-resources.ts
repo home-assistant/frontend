@@ -1,17 +1,11 @@
 import { mdiDelete, mdiPlus } from "@mdi/js";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { stringCompare } from "../../../../common/string/compare";
-import { LocalizeFunc } from "../../../../common/translations/localize";
-import {
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import type {
   DataTableColumnContainer,
   RowClickedEvent,
   SortingChangedEvent,
@@ -19,11 +13,11 @@ import {
 import "../../../../components/ha-card";
 import "../../../../components/ha-fab";
 import "../../../../components/ha-svg-icon";
+import type { LovelaceResource } from "../../../../data/lovelace/resource";
 import {
   createResource,
   deleteResource,
   fetchResources,
-  LovelaceResource,
   updateResource,
 } from "../../../../data/lovelace/resource";
 import {
@@ -34,7 +28,7 @@ import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-subpage";
 import "../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../resources/styles";
-import { HomeAssistant, Route } from "../../../../types";
+import type { HomeAssistant, Route } from "../../../../types";
 import { loadLovelaceResources } from "../../../lovelace/common/load-resources";
 import { lovelaceResourcesTabs } from "../ha-config-lovelace";
 import { showResourceDetailDialog } from "./show-dialog-lovelace-resource-detail";

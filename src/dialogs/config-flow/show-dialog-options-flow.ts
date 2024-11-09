@@ -1,5 +1,5 @@
 import { html } from "lit";
-import { ConfigEntry } from "../../data/config_entries";
+import type { ConfigEntry } from "../../data/config_entries";
 import { domainToName } from "../../data/integration";
 import {
   createOptionsFlow,
@@ -7,8 +7,8 @@ import {
   fetchOptionsFlow,
   handleOptionsFlowStep,
 } from "../../data/options_flow";
+import type { DataEntryFlowDialogParams } from "./show-dialog-data-entry-flow";
 import {
-  DataEntryFlowDialogParams,
   loadDataEntryFlowDialog,
   showFlowDialog,
 } from "./show-dialog-data-entry-flow";
@@ -29,7 +29,7 @@ export const showOptionsFlowDialog = (
     },
     {
       flowType: "options_flow",
-      loadDevicesAndAreas: false,
+      showDevices: false,
       createFlow: async (hass, handler) => {
         const [step] = await Promise.all([
           createOptionsFlow(hass, handler),

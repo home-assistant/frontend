@@ -5,8 +5,8 @@ import { styleMap } from "lit/directives/style-map";
 import { computeCssColor, THEME_COLORS } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
-import { LocalizeKeys } from "../common/translations/localize";
-import { HomeAssistant } from "../types";
+import type { LocalizeKeys } from "../common/translations/localize";
+import type { HomeAssistant } from "../types";
 import "./ha-list-item";
 import "./ha-md-divider";
 import "./ha-select";
@@ -33,12 +33,12 @@ export class HaColorPicker extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @query("ha-select") private _select!: HaSelect;
+  @query("ha-select") private _select?: HaSelect;
 
   connectedCallback(): void {
     super.connectedCallback();
     // Refresh layout options when the field is connected to the DOM to ensure current value displayed
-    this._select.layoutOptions();
+    this._select?.layoutOptions();
   }
 
   private _valueSelected(ev) {

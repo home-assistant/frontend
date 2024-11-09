@@ -1,4 +1,5 @@
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
@@ -7,12 +8,12 @@ import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import type { HomeAssistant } from "../../../types";
 import { IFRAME_SANDBOX } from "../../../util/iframe";
-import {
+import type {
   LovelaceCard,
   LovelaceCardEditor,
-  LovelaceLayoutOptions,
+  LovelaceGridOptions,
 } from "../types";
-import { IframeCardConfig } from "./types";
+import type { IframeCardConfig } from "./types";
 
 @customElement("hui-iframe-card")
 export class HuiIframeCard extends LitElement implements LovelaceCard {
@@ -112,11 +113,12 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  public getLayoutOptions(): LovelaceLayoutOptions {
+  public getGridOptions(): LovelaceGridOptions {
     return {
-      grid_columns: "full",
-      grid_rows: 4,
-      grid_min_rows: 2,
+      columns: "full",
+      rows: 4,
+      min_columns: 3,
+      min_rows: 2,
     };
   }
 

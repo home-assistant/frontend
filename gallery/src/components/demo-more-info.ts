@@ -4,7 +4,7 @@ import "../../../src/components/ha-card";
 import "../../../src/dialogs/more-info/more-info-content";
 import "../../../src/state-summary/state-card-content";
 import "../ha-demo-options";
-import { HomeAssistant } from "../../../src/types";
+import type { HomeAssistant } from "../../../src/types";
 
 @customElement("demo-more-info")
 class DemoMoreInfo extends LitElement {

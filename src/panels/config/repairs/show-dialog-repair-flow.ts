@@ -1,9 +1,9 @@
 import { html, nothing } from "lit";
-import { DataEntryFlowStep } from "../../../data/data_entry_flow";
+import type { DataEntryFlowStep } from "../../../data/data_entry_flow";
 import { domainToName } from "../../../data/integration";
 import "./dialog-repairs-issue-subtitle";
+import type { RepairsIssue } from "../../../data/repairs";
 import {
-  RepairsIssue,
   createRepairsFlow,
   deleteRepairsFlow,
   fetchRepairsFlow,
@@ -13,7 +13,7 @@ import {
   loadDataEntryFlowDialog,
   showFlowDialog,
 } from "../../../dialogs/config-flow/show-dialog-data-entry-flow";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 
 const mergePlaceholders = (issue: RepairsIssue, step: DataEntryFlowStep) =>
   step.description_placeholders && issue.translation_placeholders
@@ -47,7 +47,7 @@ export const showRepairsFlowDialog = (
     },
     {
       flowType: "repair_flow",
-      loadDevicesAndAreas: false,
+      showDevices: false,
       createFlow: async (hass, handler) => {
         const [step] = await Promise.all([
           createRepairsFlow(hass, handler, issue.issue_id),

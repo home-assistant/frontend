@@ -1,5 +1,5 @@
-import { Context, HomeAssistant } from "../types";
-import { Action } from "./script";
+import type { Context, HomeAssistant } from "../types";
+import type { Action } from "./script";
 
 export const callExecuteScript = (
   hass: HomeAssistant,

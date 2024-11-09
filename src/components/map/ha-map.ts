@@ -9,20 +9,19 @@ import type {
   Marker,
   Polyline,
 } from "leaflet";
-import { CSSResultGroup, PropertyValues, ReactiveElement, css } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { ReactiveElement, css } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import {
   formatTimeWeekday,
   formatTimeWithSeconds,
 } from "../../common/datetime/format_time";
-import {
-  LeafletModuleType,
-  setupLeafletMap,
-} from "../../common/dom/setup-leaflet-map";
+import type { LeafletModuleType } from "../../common/dom/setup-leaflet-map";
+import { setupLeafletMap } from "../../common/dom/setup-leaflet-map";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import { HomeAssistant, ThemeMode } from "../../types";
+import type { HomeAssistant, ThemeMode } from "../../types";
 import { isTouch } from "../../util/is_touch";
 import "../ha-icon-button";
 import "./ha-entity-marker";
@@ -86,6 +85,8 @@ export class HaMap extends ReactiveElement {
   private _mapFocusItems: Array<Marker | Circle> = [];
 
   private _mapZones: Array<Marker | Circle> = [];
+
+  private _mapFocusZones: Array<Marker | Circle> = [];
 
   private _mapPaths: Array<Polyline | CircleMarker> = [];
 
@@ -202,7 +203,11 @@ export class HaMap extends ReactiveElement {
       return;
     }
 
-    if (!this._mapFocusItems.length && !this.layers?.length) {
+    if (
+      !this._mapFocusItems.length &&
+      !this._mapFocusZones.length &&
+      !this.layers?.length
+    ) {
       this.leafletMap.setView(
         new this.Leaflet.LatLng(
           this.hass.config.latitude,
@@ -219,13 +224,9 @@ export class HaMap extends ReactiveElement {
         : []
     );
 
-    if (this.fitZones) {
-      this._mapZones?.forEach((zone) => {
-        bounds.extend(
-          "getBounds" in zone ? zone.getBounds() : zone.getLatLng()
-        );
-      });
-    }
+    this._mapFocusZones?.forEach((zone) => {
+      bounds.extend("getBounds" in zone ? zone.getBounds() : zone.getLatLng());
+    });
 
     this.layers?.forEach((layer: any) => {
       bounds.extend(
@@ -396,6 +397,7 @@ export class HaMap extends ReactiveElement {
     if (this._mapZones.length) {
       this._mapZones.forEach((marker) => marker.remove());
       this._mapZones = [];
+      this._mapFocusZones = [];
     }
 
     if (!this.entities) {
@@ -467,13 +469,18 @@ export class HaMap extends ReactiveElement {
         );
 
         // create circle around it
-        this._mapZones.push(
-          Leaflet.circle([latitude, longitude], {
-            interactive: false,
-            color: passive ? passiveZoneColor : zoneColor,
-            radius,
-          })
-        );
+        const circle = Leaflet.circle([latitude, longitude], {
+          interactive: false,
+          color: passive ? passiveZoneColor : zoneColor,
+          radius,
+        });
+        this._mapZones.push(circle);
+        if (
+          this.fitZones &&
+          (typeof entity === "string" || entity.focus !== false)
+        ) {
+          this._mapFocusZones.push(circle);
+        }
 
         continue;
       }

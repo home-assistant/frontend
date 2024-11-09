@@ -1,21 +1,15 @@
 import { mdiArrowLeft, mdiArrowRight, mdiPlus } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
-import { HuiBadge } from "../badges/hui-badge";
+import type { HuiBadge } from "../badges/hui-badge";
 import "../badges/hui-view-badges";
-import { HuiCard } from "../cards/hui-card";
-import { HuiCardOptions } from "../components/hui-card-options";
+import type { HuiCard } from "../cards/hui-card";
+import type { HuiCardOptions } from "../components/hui-card-options";
 import { replaceCard } from "../editor/config-util";
 import type { Lovelace } from "../types";
 
@@ -203,7 +197,7 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
 
       hui-view-badges {
         display: block;
-        margin: 12px 8px 20px 8px;
+        margin: 4px 8px 4px 8px;
         font-size: 85%;
       }
 

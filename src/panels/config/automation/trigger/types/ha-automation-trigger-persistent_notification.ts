@@ -7,11 +7,12 @@ import "../../../../../components/ha-button-menu";
 import "../../../../../components/ha-check-list-item";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-textfield";
-import { PersistentNotificationTrigger } from "../../../../../data/automation";
-import { HomeAssistant } from "../../../../../types";
+import type { PersistentNotificationTrigger } from "../../../../../data/automation";
+import type { HomeAssistant } from "../../../../../types";
 import type { TriggerElement } from "../ha-automation-trigger-row";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
+import "../../../../../components/ha-form/ha-form";
 
 const DEFAULT_UPDATE_TYPES = ["added", "removed"];
 const DEFAULT_NOTIFICATION_ID = "";

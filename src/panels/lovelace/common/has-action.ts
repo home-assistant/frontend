@@ -1,5 +1,5 @@
-import { ActionConfig } from "../../../data/lovelace/config/action";
-import { ConfigEntity } from "../cards/types";
+import type { ActionConfig } from "../../../data/lovelace/config/action";
+import type { ConfigEntity } from "../cards/types";
 
 export function hasAction(config?: ActionConfig): boolean {
   return config !== undefined && config.action !== "none";

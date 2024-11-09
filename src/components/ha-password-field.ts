@@ -1,4 +1,4 @@
-import { TextAreaCharCounter } from "@material/mwc-textfield/mwc-textfield-base";
+import type { TextAreaCharCounter } from "@material/mwc-textfield/mwc-textfield-base";
 import { mdiEye, mdiEyeOff } from "@mdi/js";
 import { LitElement, css, html } from "lit";
 import {
@@ -8,7 +8,7 @@ import {
   query,
   state,
 } from "lit/decorators";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "./ha-icon-button";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
@@ -117,7 +117,8 @@ export class HaPasswordField extends LitElement {
         .autocapitalize=${this.autocapitalize}
         .type=${this._unmaskedPassword ? "text" : "password"}
         .suffix=${html`<div style="width: 24px"></div>`}
-        @input=${this._handleInputChange}
+        @input=${this._handleInputEvent}
+        @change=${this._handleChangeEvent}
       ></ha-textfield>
       <ha-icon-button
         toggles
@@ -152,8 +153,19 @@ export class HaPasswordField extends LitElement {
   }
 
   @eventOptions({ passive: true })
-  private _handleInputChange(ev) {
+  private _handleInputEvent(ev) {
     this.value = ev.target.value;
+  }
+
+  @eventOptions({ passive: true })
+  private _handleChangeEvent(ev) {
+    this.value = ev.target.value;
+    this._reDispatchEvent(ev);
+  }
+
+  private _reDispatchEvent(oldEvent: Event) {
+    const newEvent = new Event(oldEvent.type, oldEvent);
+    this.dispatchEvent(newEvent);
   }
 
   static styles = css`
