@@ -1029,7 +1029,9 @@
         "temperature_down": "Decrease temperature"
       },
       "yaml-editor": {
-        "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
+        "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]",
+        "error": "Error in parsing YAML: {reason}",
+        "error_location": "line: {line}, column: {column}"
       },
       "state-content-picker": {
         "state": "State",

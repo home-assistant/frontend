@@ -103,6 +103,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   @state() private _errors?: string;
 
+  @state() private _yamlErrors?: string;
+
   @state() private _entityId?: string;
 
   @state() private _mode: "gui" | "yaml" = "gui";
@@ -421,7 +423,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         </div>
         <ha-fab
           slot="fab"
-          class=${classMap({ dirty: !this._readOnly && this._dirty })}
+          class=${classMap({
+            dirty: !this._readOnly && (this._dirty || !!this._yamlErrors),
+          })}
           .label=${this.hass.localize("ui.panel.config.automation.editor.save")}
           extended
           @click=${this._saveAutomation}
@@ -630,8 +634,10 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   private _yamlChanged(ev: CustomEvent) {
     ev.stopPropagation();
     if (!ev.detail.isValid) {
+      this._yamlErrors = ev.detail.errorMsg;
       return;
     }
+    this._yamlErrors = undefined;
     this._config = {
       id: this._config?.id,
       ...normalizeAutomationConfig(ev.detail.value),
@@ -749,6 +755,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   }
 
   private _switchUiMode() {
+    this._yamlErrors = undefined;
     this._mode = "gui";
   }
 
@@ -788,6 +795,13 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   }
 
   private async _saveAutomation(): Promise<void> {
+    if (this._yamlErrors) {
+      showToast(this, {
+        message: this._yamlErrors,
+      });
+      return;
+    }
+
     const id = this.automationId || String(Date.now());
     if (!this.automationId) {
       const saved = await this._promptAutomationAlias();
