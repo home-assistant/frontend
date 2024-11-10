@@ -111,7 +111,7 @@ export const computeShowLogBookComponent = (
 
   const domain = computeDomain(entityId);
   if (
-    CONTINUOUS_DOMAINS.includes(domain) ||
+    (CONTINUOUS_DOMAINS.includes(domain) && !isNaN(Number(stateObj.state))) ||
     DOMAINS_MORE_INFO_NO_HISTORY.includes(domain)
   ) {
     return false;
