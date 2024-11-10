@@ -6045,6 +6045,10 @@
                 "change": "Change"
               },
               "chart_type": "Chart type",
+              "chart_type_labels": {
+                "line": "Line",
+                "bar": "Bar"
+              },
               "periods": {
                 "hour": "Hour",
                 "day": "Day",
