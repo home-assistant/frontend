@@ -3420,7 +3420,7 @@
                   "label": "Wait for time to pass (delay)",
                   "delay": "Duration",
                   "description": {
-                    "picker": "Wait some time to perform a sequence of actions.",
+                    "picker": "Wait some time before continuing the sequence of actions.",
                     "full": "Delay {duration}",
                     "duration_string": "for {string}",
                     "duration_template": "based on a template",
