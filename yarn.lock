@@ -6279,10 +6279,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"comlink@npm:4.4.1":
-  version: 4.4.1
-  resolution: "comlink@npm:4.4.1"
-  checksum: 10/3d953e987874bf0d60c02a3dd96e9f661141e58709eaab82097369c585382935651ce61f004e7bb1a5eb868ca8d8734d1cec885965ae53c56567d91b9539f2d0
+"comlink@npm:4.4.2":
+  version: 4.4.2
+  resolution: "comlink@npm:4.4.2"
+  checksum: 10/ecee53b5b4536b3aa3f7636c383f831e68fbc013def77665cc7fad873d72cfa23b994e1ec4b49e83e4e909c1089a03acae03a523e33a5e5ed938cdb613456434
   languageName: node
   linkType: hard
 
@@ -8749,7 +8749,7 @@ __metadata:
     chai: "npm:5.1.2"
     chart.js: "npm:4.4.6"
     color-name: "npm:2.0.0"
-    comlink: "npm:4.4.1"
+    comlink: "npm:4.4.2"
     core-js: "npm:3.39.0"
     cropperjs: "npm:1.6.2"
     date-fns: "npm:4.1.0"
