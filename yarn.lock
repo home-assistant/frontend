@@ -8798,7 +8798,7 @@ __metadata:
     luxon: "npm:3.5.0"
     magic-string: "npm:0.30.12"
     map-stream: "npm:0.0.7"
-    marked: "npm:14.1.3"
+    marked: "npm:14.1.4"
     memoize-one: "npm:6.0.0"
     mocha: "npm:10.8.2"
     node-vibrant: "npm:3.2.1-alpha.1"
@@ -10522,12 +10522,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked@npm:14.1.3":
-  version: 14.1.3
-  resolution: "marked@npm:14.1.3"
+"marked@npm:14.1.4":
+  version: 14.1.4
+  resolution: "marked@npm:14.1.4"
   bin:
     marked: bin/marked.js
-  checksum: 10/70eb4bb86761531e3d4ebab9ac0eac8bd2a6605cc4f3acff9b2164bbfcb7b0a5434e5459de42fadab245109f75d55aa44cd329c72a6b70f4ca4155561e00e46e
+  checksum: 10/e3526e7907aa1c13481d205b667a178bd372c01318439e4cd8a3d4b55e3983bccef8c17489129c6a0e31dbecb0b417deff6c27f9f16083faa4eea16a22784a86
   languageName: node
   linkType: hard
 
