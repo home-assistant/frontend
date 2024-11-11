@@ -101,7 +101,8 @@ class ZWaveJSCapabilityDoorLock extends LitElement {
                 )}
                 .value=${this._configuration.lockTimeoutConfiguration?.toString() ??
                 ""}
-                @change=${this._lockTimeoutChanged}
+                @change=${this._numberChanged}
+                key="lockTimeoutConfiguration"
                 min="1"
                 .helper=${this.hass.localize(
                   "ui.panel.config.zwave_js.node_installer.capability_controls.door_lock.lock_timeout_helper"
@@ -120,7 +121,8 @@ class ZWaveJSCapabilityDoorLock extends LitElement {
                 )}
               >
                 <ha-switch
-                  @change=${this._twistAssistChanged}
+                  @change=${this._booleanChanged}
+                  key="twistAssist"
                   .checked=${this._configuration?.twistAssist}
                 >
                 </ha-switch>
@@ -137,7 +139,8 @@ class ZWaveJSCapabilityDoorLock extends LitElement {
                 )}
               >
                 <ha-switch
-                  @change=${this._blockToBlockChanged}
+                  @change=${this._booleanChanged}
+                  key="blockToBlock"
                   .checked=${this._configuration?.blockToBlock}
                 >
                 </ha-switch>
@@ -154,7 +157,8 @@ class ZWaveJSCapabilityDoorLock extends LitElement {
                   "ui.panel.config.zwave_js.node_installer.capability_controls.door_lock.auto_relock_time"
                 )}
                 .value=${this._configuration?.autoRelockTime?.toString() ?? ""}
-                @change=${this._autoRelockTimeChanged}
+                @change=${this._numberChanged}
+                key="autoRelockTime"
               >
               </ha-textfield>
             </div>
@@ -170,7 +174,8 @@ class ZWaveJSCapabilityDoorLock extends LitElement {
                 )}
                 .value=${this._configuration?.holdAndReleaseTime?.toString() ??
                 ""}
-                @change=${this._holdReleaseTimeChanged}
+                @change=${this._numberChanged}
+                key="holdAndReleaseTime"
               >
               </ha-textfield>
             </div>
@@ -247,52 +252,24 @@ class ZWaveJSCapabilityDoorLock extends LitElement {
     }
   }
 
-  private _twistAssistChanged(ev: Event) {
+  private _booleanChanged(ev: CustomEvent) {
     const target = ev.target as HaSwitch;
+    const key = ev.detail.key;
     if (this._configuration) {
       this._configuration = {
         ...this._configuration,
-        twistAssist: target.checked,
+        [key]: target.checked,
       };
     }
   }
 
-  private _blockToBlockChanged(ev: Event) {
-    const target = ev.target as HaSwitch;
-    if (this._configuration) {
-      this._configuration = {
-        ...this._configuration,
-        blockToBlock: target.checked,
-      };
-    }
-  }
-
-  private _autoRelockTimeChanged(ev: Event) {
+  private _numberChanged(ev: CustomEvent) {
     const target = ev.target as HTMLInputElement;
+    const key = ev.detail.key;
     if (this._configuration) {
       this._configuration = {
         ...this._configuration,
-        autoRelockTime: parseInt(target.value),
-      };
-    }
-  }
-
-  private _holdReleaseTimeChanged(ev: Event) {
-    const target = ev.target as HTMLInputElement;
-    if (this._configuration) {
-      this._configuration = {
-        ...this._configuration,
-        holdAndReleaseTime: parseInt(target.value),
-      };
-    }
-  }
-
-  private _lockTimeoutChanged(ev: Event) {
-    const target = ev.target as HTMLInputElement;
-    if (this._configuration) {
-      this._configuration = {
-        ...this._configuration,
-        lockTimeoutConfiguration: parseInt(target.value),
+        [key]: parseInt(target.value),
       };
     }
   }
