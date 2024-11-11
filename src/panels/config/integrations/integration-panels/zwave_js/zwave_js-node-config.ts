@@ -40,6 +40,7 @@ import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
 import { configTabs } from "./zwave_js-config-router";
+import "./zwave_js-custom-param";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 
@@ -193,6 +194,22 @@ class ZWaveJSNodeConfig extends LitElement {
               )}
             </ha-progress-button>
           </div>
+          <h3>
+            ${this.hass.localize(
+              "ui.panel.config.zwave_js.node_config.custom_config"
+            )}
+          </h3>
+          <span class="secondary">
+            ${this.hass.localize(
+              "ui.panel.config.zwave_js.node_config.custom_config_description"
+            )}
+          </span>
+          <ha-card class="custom-config">
+            <zwave_js-custom-param
+              .hass=${this.hass}
+              .deviceId=${this.deviceId}
+            ></zwave_js-custom-param>
+          </ha-card>
         </ha-config-section>
       </hass-tabs-subpage>
     `;
@@ -598,6 +615,10 @@ class ZWaveJSNodeConfig extends LitElement {
 
         .switch {
           text-align: right;
+        }
+
+        .custom-config {
+          padding: 16px;
         }
 
         .reset {
