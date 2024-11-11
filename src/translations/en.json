@@ -5184,6 +5184,20 @@
                 "start_transition": "Start transition",
                 "stop_transition": "Stop transition",
                 "control_failed": "Failed to control transition. {error}"
+              },
+              "door_lock": {
+                "title": "Door Lock",
+                "twist_assist": "Twist assist",
+                "block_to_block": "Block to block",
+                "auto_relock_time": "Auto relock time",
+                "hold_release_time": "Hold and release time",
+                "operation_type": "Operation type",
+                "operation_types": {
+                  "1": "Constant",
+                  "2": "Timed"
+                },
+                "lock_timeout": "Lock timeout",
+                "lock_timeout_helper": "Number of seconds before the lock automatically locks after being unlocked"
               }
             }
           }
