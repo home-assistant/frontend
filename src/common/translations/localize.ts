@@ -16,6 +16,8 @@ export type LocalizeKeys =
   | `ui.card.lawn_mower.actions.${string}`
   | `ui.components.calendar.event.rrule.${string}`
   | `ui.components.selectors.file.${string}`
+  | `ui.components.logbook.messages.detected_device_classes.${string}`
+  | `ui.components.logbook.messages.cleared_device_classes.${string}`
   | `ui.dialogs.entity_registry.editor.${string}`
   | `ui.dialogs.more_info_control.lawn_mower.${string}`
   | `ui.dialogs.more_info_control.vacuum.${string}`
