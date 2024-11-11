@@ -423,9 +423,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         </div>
         <ha-fab
           slot="fab"
-          class=${classMap({
-            dirty: !this._readOnly && this._dirty,
-          })}
+          class=${classMap({ dirty: !this._readOnly && this._dirty })}
           .label=${this.hass.localize("ui.panel.config.automation.editor.save")}
           extended
           @click=${this._saveAutomation}
