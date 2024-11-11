@@ -60,6 +60,8 @@ class ZWaveJSCapabilityDoorLock extends LitElement {
       return html`<ha-circular-progress indeterminate></ha-circular-progress>`;
     }
 
+    const isValid = this._isValid();
+
     return html`
       <h3>
         ${this.hass.localize(
@@ -103,6 +105,7 @@ class ZWaveJSCapabilityDoorLock extends LitElement {
                 ""}
                 @change=${this._numberChanged}
                 key="lockTimeoutConfiguration"
+                required
                 min="1"
                 .helper=${this.hass.localize(
                   "ui.panel.config.zwave_js.node_installer.capability_controls.door_lock.lock_timeout_helper"
@@ -183,7 +186,10 @@ class ZWaveJSCapabilityDoorLock extends LitElement {
         : nothing}
 
       <div class="actions">
-        <ha-progress-button @click=${this._saveConfig}>
+        <ha-progress-button
+          @click=${isValid ? this._saveConfig : undefined}
+          .disabled=${!isValid}
+        >
           ${this.hass.localize("ui.common.save")}
         </ha-progress-button>
       </div>
@@ -236,6 +242,14 @@ class ZWaveJSCapabilityDoorLock extends LitElement {
     }
   }
 
+  private _isValid() {
+    return (
+      this._configuration &&
+      (this._configuration.operationType !== 2 ||
+        this._configuration.lockTimeoutConfiguration)
+    );
+  }
+
   private _operationTypeChanged(ev: CustomEvent) {
     const target = ev.target as HTMLSelectElement;
     const newType = parseInt(target.value);
@@ -265,7 +279,7 @@ class ZWaveJSCapabilityDoorLock extends LitElement {
 
   private _numberChanged(ev: CustomEvent) {
     const target = ev.target as HTMLInputElement;
-    const key = target.getAttribute("key");
+    const key = target.getAttribute("key")!;
     if (this._configuration) {
       this._configuration = {
         ...this._configuration,
