@@ -265,7 +265,7 @@ class ZWaveJSCapabilityDoorLock extends LitElement {
 
   private _numberChanged(ev: CustomEvent) {
     const target = ev.target as HTMLInputElement;
-    const key = ev.detail.key;
+    const key = target.getAttribute("key");
     if (this._configuration) {
       this._configuration = {
         ...this._configuration,
