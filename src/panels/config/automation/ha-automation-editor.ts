@@ -424,7 +424,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         <ha-fab
           slot="fab"
           class=${classMap({
-            dirty: !this._readOnly && (this._dirty || !!this._yamlErrors),
+            dirty: !this._readOnly && this._dirty,
           })}
           .label=${this.hass.localize("ui.panel.config.automation.editor.save")}
           extended
@@ -633,6 +633,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   private _yamlChanged(ev: CustomEvent) {
     ev.stopPropagation();
+    this._dirty = true;
     if (!ev.detail.isValid) {
       this._yamlErrors = ev.detail.errorMsg;
       return;
@@ -643,7 +644,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       ...normalizeAutomationConfig(ev.detail.value),
     };
     this._errors = undefined;
-    this._dirty = true;
   }
 
   private async confirmUnsavedChanged(): Promise<boolean> {
