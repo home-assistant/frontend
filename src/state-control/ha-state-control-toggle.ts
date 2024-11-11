@@ -24,6 +24,10 @@ export class HaStateControlToggle extends LitElement {
 
   @property({ attribute: false }) public iconPathOff?: string;
 
+  @property({ attribute: false }) public turnOnData?: Record<string, any>;
+
+  @property({ attribute: false }) public turnOffData?: Record<string, any>;
+
   private _valueChanged(ev) {
     const checked = ev.target.checked as boolean;
 
@@ -61,6 +65,7 @@ export class HaStateControlToggle extends LitElement {
 
     await this.hass.callService(serviceDomain, service, {
       entity_id: this.stateObj.entity_id,
+      ...(turnOn ? this.turnOnData : this.turnOffData),
     });
   }
 

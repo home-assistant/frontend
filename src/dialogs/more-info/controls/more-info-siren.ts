@@ -2,7 +2,7 @@ import { mdiVolumeHigh, mdiVolumeOff } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { LitElement, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-attributes";
 import "../../../state-control/ha-state-control-toggle";
 import "../../../components/ha-control-select-menu";
@@ -20,6 +20,8 @@ class MoreInfoSiren extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
+
+  @state() private _tone?: string;
 
   protected render() {
     if (!this.hass || !this.stateObj) {
@@ -41,6 +43,9 @@ class MoreInfoSiren extends LitElement {
           .hass=${this.hass}
           .iconPathOn=${mdiVolumeHigh}
           .iconPathOff=${mdiVolumeOff}
+          .turnOnData=${{
+            tone: this._tone,
+          }}
         ></ha-state-control-toggle>
       </div>
       ${supportsTones
@@ -50,7 +55,11 @@ class MoreInfoSiren extends LitElement {
                 .hass=${this.hass}
                 .label=${this.hass.localize("ui.components.siren.tone")}
                 @closed=${stopPropagation}
+                @change=${this._handleToneChange}
               >
+                <ha-list-item value="">
+                  ${this.hass.localize("ui.common.default")}
+                </ha-list-item>
                 ${Object.entries(this.stateObj.attributes.available_tones).map(
                   ([toneId, toneName]) => html`
                     <ha-list-item .value=${toneId}>${toneName}</ha-list-item>
@@ -65,6 +74,10 @@ class MoreInfoSiren extends LitElement {
         .stateObj=${this.stateObj}
       ></ha-attributes>
     `;
+  }
+
+  private _handleToneChange(ev) {
+    this._tone = ev.target.value;
   }
 
   static get styles(): CSSResultGroup {

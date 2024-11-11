@@ -367,7 +367,8 @@
       "copied": "Copied",
       "copied_clipboard": "Copied to clipboard",
       "name": "Name",
-      "optional": "optional"
+      "optional": "optional",
+      "default": "Default"
     },
     "components": {
       "selectors": {
