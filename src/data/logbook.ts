@@ -221,7 +221,7 @@ export const localizeStateMessage = (
       if (device_class && (isOn || isOff)) {
         return (
           localize(
-            `${LOGBOOK_LOCALIZE_PATH}.${isOn ? "detected_device_classes" : "cleared_device_classes"}.${device_class}` as any,
+            `${LOGBOOK_LOCALIZE_PATH}.${isOn ? "detected_device_classes" : "cleared_device_classes"}.${device_class}`,
             {
               device_class: autoCaseNoun(
                 localize(
