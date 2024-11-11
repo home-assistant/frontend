@@ -881,6 +881,9 @@
           "restore": "Restore defaults"
         }
       },
+      "siren": {
+        "tone": "Tone"
+      },
       "media-browser": {
         "tts": {
           "message": "Message",
