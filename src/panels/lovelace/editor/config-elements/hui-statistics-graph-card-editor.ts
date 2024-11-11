@@ -233,7 +233,7 @@ export class HuiStatisticsGraphCardEditor
                 },
               ],
             },
-            
+
             ...(showFitOption
               ? [
                   {
@@ -254,7 +254,6 @@ export class HuiStatisticsGraphCardEditor
               required: false,
               selector: { boolean: {} },
             },
-              
           ],
         },
       ];
