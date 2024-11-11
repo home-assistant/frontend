@@ -178,7 +178,7 @@ export class HaMdDialog extends MdDialog {
         }
       }
 
-      ::slotted(ha-dialog-header) {
+      ::slotted(ha-dialog-header[slot="headline"]) {
         display: contents;
       }
 
