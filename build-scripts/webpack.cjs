@@ -1,16 +1,16 @@
 const { existsSync } = require("fs");
 const path = require("path");
-const webpack = require("webpack");
+const webpack = require("@rspack/core");
 const { StatsWriterPlugin } = require("webpack-stats-plugin");
 const filterStats = require("@bundle-stats/plugin-webpack-filter").default;
 const TerserPlugin = require("terser-webpack-plugin");
-const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
+const { WebpackManifestPlugin } = require("rspack-manifest-plugin");
 const log = require("fancy-log");
-const WebpackBar = require("webpackbar");
-const {
-  TransformAsyncModulesPlugin,
-} = require("transform-async-modules-webpack-plugin");
-const { dependencies } = require("../package.json");
+const WebpackBar = require("webpackbar/rspack");
+// const {
+//   TransformAsyncModulesPlugin,
+// } = require("transform-async-modules-webpack-plugin");
+// const { dependencies } = require("../package.json");
 const paths = require("./paths.cjs");
 const bundle = require("./bundle.cjs");
 
@@ -61,6 +61,26 @@ const createWebpackConfig = ({
     node: false,
     module: {
       rules: [
+        // {
+        //   test: /\.ts$/,
+        //   exclude: [/node_modules/],
+        //   loader: 'builtin:swc-loader',
+        //   use: (info) => ({
+        //     options: {
+        //       target: latestBuild ? "modern" : `legacy${info.issuerLayer === "sw" ? "-sw" : ""}`,
+        //       jsc: {
+        //         parser: {
+        //           syntax: 'typescript',
+        //           decorators: true,
+        //         },
+        //       },
+        //     },
+        //   }),
+        //   parser: {
+        //     worker: ["*context.audioWorklet.addModule()", "..."],
+        //   },
+        //   type: 'javascript/auto',
+        // },
         {
           test: /\.m?js$|\.ts$/,
           use: (info) => ({
@@ -168,11 +188,11 @@ const createWebpackConfig = ({
           stats: { assets: true, chunks: true, modules: true },
           transform: (stats) => JSON.stringify(filterStats(stats)),
         }),
-      !latestBuild &&
-        new TransformAsyncModulesPlugin({
-          browserslistEnv: "legacy",
-          runtime: { version: dependencies["@babel/runtime"] },
-        }),
+      // !latestBuild &&
+      //   new TransformAsyncModulesPlugin({
+      //     browserslistEnv: "legacy",
+      //     runtime: { version: dependencies["@babel/runtime"] },
+      //   }),
     ].filter(Boolean),
     resolve: {
       extensions: [".ts", ".js", ".json"],
@@ -209,8 +229,8 @@ const createWebpackConfig = ({
         isProdBuild && !isStatsBuild ? "[id].[contenthash][ext]" : "[id][ext]",
       crossOriginLoading: "use-credentials",
       hashFunction: "xxhash64",
-      hashDigest: "base64url",
-      hashDigestLength: 11, // full length of 64 bit base64url
+      // hashDigest: "base64url",
+      // hashDigestLength: 11, // full length of 64 bit base64url
       path: outputPath,
       publicPath,
       // To silence warning in worker plugin

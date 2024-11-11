@@ -4,8 +4,8 @@ import fs from "fs";
 import path from "path";
 import log from "fancy-log";
 import gulp from "gulp";
-import webpack from "webpack";
-import WebpackDevServer from "webpack-dev-server";
+import webpack from "@rspack/core";
+import WebpackDevServer from "@rspack/dev-server";
 import env from "../env.cjs";
 import paths from "../paths.cjs";
 import {
