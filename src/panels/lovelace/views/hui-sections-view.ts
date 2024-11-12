@@ -20,6 +20,7 @@ import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
@@ -240,8 +241,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                 <ha-sortable
                   group="card"
                   @item-added=${this._handleCardAdded}
-                  .filter=${"button"}
-                  .rollback=${true}
+                  filter="button"
+                  .rollback=${false}
                 >
                   <div class="create-section-container">
                     <div class="drop-helper" aria-hidden="true">
@@ -302,6 +303,20 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     `;
   }
 
+  private _defaultSection(): LovelaceSectionConfig {
+    return {
+      type: "grid",
+      cards: [
+        {
+          type: "heading",
+          heading: this.hass!.localize(
+            "ui.panel.lovelace.editor.section.default_section_title"
+          ),
+        },
+      ],
+    };
+  }
+
   private _handleCardAdded(ev) {
     const { data } = ev.detail;
     const oldPath = data as LovelaceCardPath;
@@ -309,10 +324,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     const configWithNewSection = addSection(
       this.lovelace!.config,
       this.index!,
-      {
-        type: "grid",
-        cards: [],
-      }
+      this._defaultSection()
     );
     const viewConfig = configWithNewSection.views[
       this.index!
@@ -320,7 +332,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     const newPath = [
       this.index!,
       viewConfig.sections!.length - 1,
-      0,
+      1,
     ] as LovelaceCardPath;
     const newConfig = moveCard(configWithNewSection, oldPath, newPath);
     this.lovelace!.saveConfig(newConfig);
@@ -334,17 +346,11 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   );
 
   private _createSection(): void {
-    const newConfig = addSection(this.lovelace!.config, this.index!, {
-      type: "grid",
-      cards: [
-        {
-          type: "heading",
-          heading: this.hass!.localize(
-            "ui.panel.lovelace.editor.section.default_section_title"
-          ),
-        },
-      ],
-    });
+    const newConfig = addSection(
+      this.lovelace!.config,
+      this.index!,
+      this._defaultSection()
+    );
     this.lovelace!.saveConfig(newConfig);
   }
 
@@ -490,7 +496,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         cursor: pointer;
         border-radius: var(--ha-card-border-radius, 12px);
         border: 2px dashed var(--primary-color);
-        order: 1;
         height: calc(var(--row-height) + 2 * (var(--row-gap) + 2px));
         padding: 8px;
         box-sizing: border-box;
@@ -498,7 +503,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         --ha-ripple-color: var(--primary-color);
         --ha-ripple-hover-opacity: 0.04;
         --ha-ripple-pressed-opacity: 0.12;
-        order: 1;
       }
 
       .drop-helper p {
@@ -525,7 +529,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         --ha-ripple-color: var(--primary-color);
         --ha-ripple-hover-opacity: 0.04;
         --ha-ripple-pressed-opacity: 0.12;
-        order: 1;
       }
 
       .create-section:focus {
