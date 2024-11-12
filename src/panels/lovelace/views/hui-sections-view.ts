@@ -35,7 +35,12 @@ import {
   moveSection,
 } from "../editor/config-util";
 import type { LovelaceCardPath } from "../editor/lovelace-path";
-import { findLovelaceContainer } from "../editor/lovelace-path";
+import {
+  findLovelaceContainer,
+  findLovelaceItems,
+  getLovelaceContainerPath,
+  parseLovelaceCardPath,
+} from "../editor/lovelace-path";
 import { showEditSectionDialog } from "../editor/section-editor/show-edit-section-dialog";
 import type { HuiSection } from "../sections/hui-section";
 import type { Lovelace } from "../types";
@@ -303,17 +308,19 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     `;
   }
 
-  private _defaultSection(): LovelaceSectionConfig {
+  private _defaultSection(includeHeading: boolean): LovelaceSectionConfig {
     return {
       type: "grid",
-      cards: [
-        {
-          type: "heading",
-          heading: this.hass!.localize(
-            "ui.panel.lovelace.editor.section.default_section_title"
-          ),
-        },
-      ],
+      cards: includeHeading
+        ? [
+            {
+              type: "heading",
+              heading: this.hass!.localize(
+                "ui.panel.lovelace.editor.section.default_section_title"
+              ),
+            },
+          ]
+        : [],
     };
   }
 
@@ -321,10 +328,19 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     const { data } = ev.detail;
     const oldPath = data as LovelaceCardPath;
 
+    const { cardIndex } = parseLovelaceCardPath(oldPath);
+    const containerPath = getLovelaceContainerPath(oldPath);
+    const cards = findLovelaceItems(
+      "cards",
+      this.lovelace!.config,
+      containerPath
+    );
+    const cardConfig = cards![cardIndex];
+
     const configWithNewSection = addSection(
       this.lovelace!.config,
       this.index!,
-      this._defaultSection()
+      this._defaultSection(cardConfig.type !== "heading") // If we move a heading card, we don't want to include a heading in the new section
     );
     const viewConfig = configWithNewSection.views[
       this.index!
@@ -349,7 +365,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     const newConfig = addSection(
       this.lovelace!.config,
       this.index!,
-      this._defaultSection()
+      this._defaultSection(true)
     );
     this.lovelace!.saveConfig(newConfig);
   }
