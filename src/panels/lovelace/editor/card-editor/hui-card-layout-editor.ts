@@ -296,7 +296,7 @@ export class HuiCardLayoutEditor extends LitElement {
     const value = ev.target.checked;
     this._updateGridOptions({
       ...this.config.grid_options,
-      columns: value ? "full" : (this._defaultGridOptions?.min_columns ?? 1),
+      columns: value ? "full" : undefined,
     });
   }
 
