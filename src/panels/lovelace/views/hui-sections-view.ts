@@ -245,7 +245,11 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                 >
                   <div class="create-section-container">
                     <div class="drop-helper" aria-hidden="true">
-                      <p>Drop your card here to create a new section</p>
+                      <p>
+                        ${this.hass.localize(
+                          "ui.panel.lovelace.editor.section.drop_card_create_section"
+                        )}
+                      </p>
                     </div>
                     <button
                       class="create-section"

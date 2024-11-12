@@ -5878,6 +5878,7 @@
           "section": {
             "add_badge": "Add badge",
             "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
+            "drop_card_create_section": "Drop card here to create a new section",
             "create_section": "Create section",
             "default_section_title": "New section",
             "imported_cards_title": "Imported cards",
