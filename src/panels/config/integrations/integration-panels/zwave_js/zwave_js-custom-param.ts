@@ -117,21 +117,31 @@ class ZWaveJSCustomParam extends LitElement {
     `;
   }
 
+  private _tryParseNumber(value: string): number | undefined {
+    if (!value) return undefined;
+    const parsed = Number(value);
+    if (Number.isNaN(parsed)) return undefined;
+    return parsed;
+  }
+
   private _customParamNumberChanged(ev: Event) {
-    this._customParamNumber =
-      Number((ev.target as HTMLInputElement).value) || undefined;
+    this._customParamNumber = this._tryParseNumber(
+      (ev.target as HTMLInputElement).value
+    );
   }
 
   private _customValueSizeChanged(ev: Event) {
-    this._valueSize = Number((ev.target as HTMLSelectElement).value) || 1;
+    this._valueSize =
+      this._tryParseNumber((ev.target as HTMLSelectElement).value) ?? 1;
   }
 
   private _customValueChanged(ev: Event) {
-    this._value = Number((ev.target as HTMLInputElement).value) || undefined;
+    this._value = this._tryParseNumber((ev.target as HTMLInputElement).value);
   }
 
   private _customValueFormatChanged(ev: Event) {
-    this._valueFormat = Number((ev.target as HTMLSelectElement).value) || 0;
+    this._valueFormat =
+      this._tryParseNumber((ev.target as HTMLSelectElement).value) ?? 0;
   }
 
   private async _getCustomConfigValue() {
