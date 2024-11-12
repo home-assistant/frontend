@@ -118,10 +118,9 @@ class ZWaveJSCustomParam extends LitElement {
   }
 
   private _tryParseNumber(value: string): number | undefined {
-    if (!value) return;
+    if (!value) return undefined;
     const parsed = Number(value);
-    if (Number.isNaN(parsed)) return;
-    // eslint-disable-next-line consistent-return -- not sure why eslint expects no return here
+    if (Number.isNaN(parsed)) return undefined;
     return parsed;
   }
 
