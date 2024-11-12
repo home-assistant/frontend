@@ -3,6 +3,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 export interface ScheduleBlockInfo {
   from: string;
   to: string;
+  data: Record<string, any>;
 }
 
 export interface ScheduleBlockInfoDialogParams {

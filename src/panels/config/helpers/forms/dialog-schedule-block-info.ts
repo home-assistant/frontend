@@ -24,6 +24,11 @@ const SCHEMA = [
     required: true,
     selector: { time: { no_second: true } },
   },
+  {
+    name: "data",
+    required: false,
+    selector: { object: {} },
+  },
 ];
 
 class DialogScheduleBlockInfo extends LitElement {
@@ -116,6 +121,8 @@ class DialogScheduleBlockInfo extends LitElement {
         return this.hass!.localize("ui.dialogs.helper_settings.schedule.start");
       case "to":
         return this.hass!.localize("ui.dialogs.helper_settings.schedule.end");
+      case "data":
+        return this.hass!.localize("ui.dialogs.helper_settings.schedule.data");
     }
     return "";
   };
