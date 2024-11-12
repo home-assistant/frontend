@@ -28,6 +28,11 @@ class ZWaveJSCapabilityMultiLevelSwitch extends LitElement {
 
   @property({ type: Number }) public version!: number;
 
+  @property({ attribute: false }) public transform_options?: (
+    opts: Record<string, any>,
+    control: string
+  ) => unknown;
+
   @state() private _error?: string;
 
   protected render() {
@@ -109,6 +114,12 @@ class ZWaveJSCapabilityMultiLevelSwitch extends LitElement {
       (this.shadowRoot!.getElementById("start_level") as HaTextField).value
     );
 
+    const options = {
+      direction,
+      ignoreStartLevel,
+      startLevel,
+    };
+
     try {
       button.actionSuccess();
       await invokeZWaveCCApi(
@@ -117,7 +128,11 @@ class ZWaveJSCapabilityMultiLevelSwitch extends LitElement {
         this.command_class,
         this.endpoint,
         control,
-        [{ direction, ignoreStartLevel, startLevel }],
+        [
+          this.transform_options
+            ? this.transform_options(options, control)
+            : options,
+        ],
         true
       );
     } catch (err) {
