@@ -30,6 +30,8 @@ import "./date-range-picker";
 import "./ha-icon-button";
 import "./ha-svg-icon";
 import "./ha-textfield";
+import "./ha-icon-button-next";
+import "./ha-icon-button-prev";
 
 export interface DateRangePickerRanges {
   [key: string]: [Date, Date];
@@ -231,90 +233,123 @@ export class HaDateRangePicker extends LitElement {
   }
 
   protected render(): TemplateResult {
-    return html`
-      <date-range-picker
-        ?disabled=${this.disabled}
-        ?auto-apply=${this.autoApply}
-        time-picker=${this.timePicker}
-        twentyfour-hours=${this._hour24format}
-        start-date=${this.startDate.toISOString()}
-        end-date=${this.endDate.toISOString()}
-        ?ranges=${this.ranges !== false}
-        opening-direction=${ifDefined(
-          this.openingDirection || this._calcedOpeningDirection
-        )}
-        first-day=${firstWeekdayIndex(this.hass.locale)}
-        language=${this.hass.locale.language}
-      >
-        <div slot="input" class="date-range-inputs" @click=${this._handleClick}>
-          ${!this.minimal
-            ? html`<ha-svg-icon .path=${mdiCalendar}></ha-svg-icon>
-                <ha-textfield
-                  .value=${this.timePicker
-                    ? formatDateTime(
-                        this.startDate,
-                        this.hass.locale,
-                        this.hass.config
-                      )
-                    : formatDate(
-                        this.startDate,
-                        this.hass.locale,
-                        this.hass.config
-                      )}
-                  .label=${this.hass.localize(
-                    "ui.components.date-range-picker.start_date"
-                  )}
-                  .disabled=${this.disabled}
-                  @click=${this._handleInputClick}
-                  readonly
-                ></ha-textfield>
-                <ha-textfield
-                  .value=${this.timePicker
-                    ? formatDateTime(
-                        this.endDate,
-                        this.hass.locale,
-                        this.hass.config
-                      )
-                    : formatDate(
-                        this.endDate,
-                        this.hass.locale,
-                        this.hass.config
-                      )}
-                  .label=${this.hass.localize(
-                    "ui.components.date-range-picker.end_date"
-                  )}
-                  .disabled=${this.disabled}
-                  @click=${this._handleInputClick}
-                  readonly
-                ></ha-textfield>`
-            : html`<ha-icon-button
+    return html`<date-range-picker
+      ?disabled=${this.disabled}
+      ?auto-apply=${this.autoApply}
+      time-picker=${this.timePicker}
+      twentyfour-hours=${this._hour24format}
+      start-date=${this.startDate.toISOString()}
+      end-date=${this.endDate.toISOString()}
+      ?ranges=${this.ranges !== false}
+      opening-direction=${ifDefined(
+        this.openingDirection || this._calcedOpeningDirection
+      )}
+      first-day=${firstWeekdayIndex(this.hass.locale)}
+      language=${this.hass.locale.language}
+    >
+      <div slot="input" class="date-range-inputs" @click=${this._handleClick}>
+        ${!this.minimal
+          ? html` <ha-svg-icon .path=${mdiCalendar}></ha-svg-icon>
+
+              <ha-icon-button-prev
+                .label=${this.hass.localize("ui.common.previous")}
+                class="prev"
+                @click=${this._handlePrev}
+              >
+              </ha-icon-button-prev>
+              <ha-textfield
+                .value=${this.timePicker
+                  ? formatDateTime(
+                      this.startDate,
+                      this.hass.locale,
+                      this.hass.config
+                    )
+                  : formatDate(
+                      this.startDate,
+                      this.hass.locale,
+                      this.hass.config
+                    )}
                 .label=${this.hass.localize(
-                  "ui.components.date-range-picker.select_date_range"
+                  "ui.components.date-range-picker.start_date"
                 )}
-                .path=${mdiCalendar}
-              ></ha-icon-button>`}
-        </div>
-        ${this.ranges !== false && (this.ranges || this._ranges)
-          ? html`<div slot="ranges" class="date-range-ranges">
-              <mwc-list @action=${this._setDateRange} activatable>
-                ${Object.keys(this.ranges || this._ranges!).map(
-                  (name) => html`<mwc-list-item>${name}</mwc-list-item>`
+                .disabled=${this.disabled}
+                @click=${this._handleInputClick}
+                readonly
+              ></ha-textfield>
+              <ha-textfield
+                .value=${this.timePicker
+                  ? formatDateTime(
+                      this.endDate,
+                      this.hass.locale,
+                      this.hass.config
+                    )
+                  : formatDate(
+                      this.endDate,
+                      this.hass.locale,
+                      this.hass.config
+                    )}
+                .label=${this.hass.localize(
+                  "ui.components.date-range-picker.end_date"
                 )}
-              </mwc-list>
-            </div>`
-          : nothing}
-        <div slot="footer" class="date-range-footer">
-          <mwc-button @click=${this._cancelDateRange}
-            >${this.hass.localize("ui.common.cancel")}</mwc-button
-          >
-          <mwc-button @click=${this._applyDateRange}
-            >${this.hass.localize(
-              "ui.components.date-range-picker.select"
-            )}</mwc-button
-          >
-        </div>
-      </date-range-picker>
-    `;
+                .disabled=${this.disabled}
+                @click=${this._handleInputClick}
+                readonly
+              ></ha-textfield
+              ><ha-icon-button-next
+                .label=${this.hass.localize("ui.common.next")}
+                class="next"
+                @click=${this._handleNext}
+              >
+              </ha-icon-button-next>`
+          : html`<ha-icon-button
+              .label=${this.hass.localize(
+                "ui.components.date-range-picker.select_date_range"
+              )}
+              .path=${mdiCalendar}
+            ></ha-icon-button>`}
+      </div>
+      ${this.ranges !== false && (this.ranges || this._ranges)
+        ? html`<div slot="ranges" class="date-range-ranges">
+            <mwc-list @action=${this._setDateRange} activatable>
+              ${Object.keys(this.ranges || this._ranges!).map(
+                (name) => html`<mwc-list-item>${name}</mwc-list-item>`
+              )}
+            </mwc-list>
+          </div>`
+        : nothing}
+      <div slot="footer" class="date-range-footer">
+        <mwc-button @click=${this._cancelDateRange}
+          >${this.hass.localize("ui.common.cancel")}</mwc-button
+        >
+        <mwc-button @click=${this._applyDateRange}
+          >${this.hass.localize(
+            "ui.components.date-range-picker.select"
+          )}</mwc-button
+        >
+      </div>
+    </date-range-picker> `;
+  }
+
+  private _handleNext(): void {
+    const diff = this.endDate.getTime() - this.startDate.getTime();
+    const dateRange = [
+      new Date(this.endDate.getTime() + 1),
+      new Date(this.endDate.getTime() + 1 + diff),
+    ];
+    const dateRangePicker = this._dateRangePicker;
+    dateRangePicker.clickRange(dateRange);
+    dateRangePicker.clickedApply();
+  }
+
+  private _handlePrev(): void {
+    const diff = this.endDate.getTime() - this.startDate.getTime() + 1;
+    const dateRange = [
+      new Date(this.startDate.getTime() - diff),
+      new Date(this.startDate.getTime() - 1),
+    ];
+    const dateRangePicker = this._dateRangePicker;
+    dateRangePicker.clickRange(dateRange);
+    dateRangePicker.clickedApply();
   }
 
   private _setDateRange(ev: CustomEvent<ActionDetail>) {
