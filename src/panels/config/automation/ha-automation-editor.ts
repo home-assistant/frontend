@@ -756,7 +756,20 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     }
   }
 
-  private _switchUiMode() {
+  private async _switchUiMode() {
+    if (this._yamlErrors) {
+      const result = await showConfirmationDialog(this, {
+        text: html`${this.hass.localize(
+            "ui.panel.config.automation.editor.switch_ui_yaml_error"
+          )}<br /><br />${this._yamlErrors}`,
+        confirmText: this.hass!.localize("ui.common.continue"),
+        destructive: true,
+        dismissText: this.hass!.localize("ui.common.cancel"),
+      });
+      if (!result) {
+        return;
+      }
+    }
     this._yamlErrors = undefined;
     this._mode = "gui";
   }

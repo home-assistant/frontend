@@ -2942,6 +2942,7 @@
             "search_in": "Search · {group}",
             "unknown_entity": "unknown entity",
             "edit_unknown_device": "Editor not available for unknown device",
+            "switch_ui_yaml_error": "There are currently YAML errors in the automation, and it cannot be parsed. Switching to UI mode may cause pending changes to be lost. Press cancel to correct any errors before proceeding to prevent loss of pending changes, or continue if you are sure.",
             "triggers": {
               "name": "Triggers",
               "header": "When",
