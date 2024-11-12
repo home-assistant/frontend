@@ -199,8 +199,18 @@ export class HuiStatisticsGraphCardEditor
               required: true,
               type: "select",
               options: [
-                ["line", "Line"],
-                ["bar", "Bar"],
+                [
+                  "line",
+                  localize(
+                    `ui.panel.lovelace.editor.card.statistics-graph.chart_type_labels.line`
+                  ),
+                ],
+                [
+                  "bar",
+                  localize(
+                    `ui.panel.lovelace.editor.card.statistics-graph.chart_type_labels.bar`
+                  ),
+                ],
               ],
             },
             {

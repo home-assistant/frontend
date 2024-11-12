@@ -103,6 +103,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   @state() private _errors?: string;
 
+  @state() private _yamlErrors?: string;
+
   @state() private _entityId?: string;
 
   @state() private _mode: "gui" | "yaml" = "gui";
@@ -629,15 +631,17 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   private _yamlChanged(ev: CustomEvent) {
     ev.stopPropagation();
+    this._dirty = true;
     if (!ev.detail.isValid) {
+      this._yamlErrors = ev.detail.errorMsg;
       return;
     }
+    this._yamlErrors = undefined;
     this._config = {
       id: this._config?.id,
       ...normalizeAutomationConfig(ev.detail.value),
     };
     this._errors = undefined;
-    this._dirty = true;
   }
 
   private async confirmUnsavedChanged(): Promise<boolean> {
@@ -752,7 +756,21 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     }
   }
 
-  private _switchUiMode() {
+  private async _switchUiMode() {
+    if (this._yamlErrors) {
+      const result = await showConfirmationDialog(this, {
+        text: html`${this.hass.localize(
+            "ui.panel.config.automation.editor.switch_ui_yaml_error"
+          )}<br /><br />${this._yamlErrors}`,
+        confirmText: this.hass!.localize("ui.common.continue"),
+        destructive: true,
+        dismissText: this.hass!.localize("ui.common.cancel"),
+      });
+      if (!result) {
+        return;
+      }
+    }
+    this._yamlErrors = undefined;
     this._mode = "gui";
   }
 
@@ -792,6 +810,13 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   }
 
   private async _saveAutomation(): Promise<void> {
+    if (this._yamlErrors) {
+      showToast(this, {
+        message: this._yamlErrors,
+      });
+      return;
+    }
+
     const id = this.automationId || String(Date.now());
     if (!this.automationId) {
       const saved = await this._promptAutomationAlias();
