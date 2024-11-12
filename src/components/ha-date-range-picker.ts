@@ -30,6 +30,8 @@ import "./date-range-picker";
 import "./ha-icon-button";
 import "./ha-svg-icon";
 import "./ha-textfield";
+import "./ha-icon-button-next";
+import "./ha-icon-button-prev";
 
 export interface DateRangePickerRanges {
   [key: string]: [Date, Date];
@@ -249,6 +251,12 @@ export class HaDateRangePicker extends LitElement {
         <div slot="input" class="date-range-inputs" @click=${this._handleClick}>
           ${!this.minimal
             ? html`<ha-svg-icon .path=${mdiCalendar}></ha-svg-icon>
+                <ha-icon-button-prev
+                  .label=${this.hass.localize("ui.common.previous")}
+                  class="prev"
+                  @click=${this._handlePrev}
+                >
+                </ha-icon-button-prev>
                 <ha-textfield
                   .value=${this.timePicker
                     ? formatDateTime(
@@ -286,7 +294,13 @@ export class HaDateRangePicker extends LitElement {
                   .disabled=${this.disabled}
                   @click=${this._handleInputClick}
                   readonly
-                ></ha-textfield>`
+                ></ha-textfield>
+                <ha-icon-button-next
+                  .label=${this.hass.localize("ui.common.next")}
+                  class="next"
+                  @click=${this._handleNext}
+                >
+                </ha-icon-button-next>`
             : html`<ha-icon-button
                 .label=${this.hass.localize(
                   "ui.components.date-range-picker.select_date_range"
@@ -315,6 +329,28 @@ export class HaDateRangePicker extends LitElement {
         </div>
       </date-range-picker>
     `;
+  }
+
+  private _handleNext(): void {
+    const diff = this.endDate.getTime() - this.startDate.getTime();
+    const dateRange = [
+      new Date(this.endDate.getTime() + 1),
+      new Date(this.endDate.getTime() + 1 + diff),
+    ];
+    const dateRangePicker = this._dateRangePicker;
+    dateRangePicker.clickRange(dateRange);
+    dateRangePicker.clickedApply();
+  }
+
+  private _handlePrev(): void {
+    const diff = this.endDate.getTime() - this.startDate.getTime() + 1;
+    const dateRange = [
+      new Date(this.startDate.getTime() - diff),
+      new Date(this.startDate.getTime() - 1),
+    ];
+    const dateRangePicker = this._dateRangePicker;
+    dateRangePicker.clickRange(dateRange);
+    dateRangePicker.clickedApply();
   }
 
   private _setDateRange(ev: CustomEvent<ActionDetail>) {
