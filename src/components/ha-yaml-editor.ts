@@ -1,12 +1,7 @@
-import { DEFAULT_SCHEMA, dump, load, Schema } from "js-yaml";
-import {
-  CSSResultGroup,
-  css,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import type { Schema } from "js-yaml";
+import { DEFAULT_SCHEMA, dump, load } from "js-yaml";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HomeAssistant } from "../types";
@@ -135,6 +130,7 @@ export class HaYamlEditor extends LitElement {
     this._yaml = ev.detail.value;
     let parsed;
     let isValid = true;
+    let errorMsg;
 
     if (this._yaml) {
       try {
@@ -142,6 +138,7 @@ export class HaYamlEditor extends LitElement {
       } catch (err: any) {
         // Invalid YAML
         isValid = false;
+        errorMsg = `${this.hass.localize("ui.components.yaml-editor.error", { reason: err.reason })}${err.mark ? ` (${this.hass.localize("ui.components.yaml-editor.error_location", { line: err.mark.line + 1, column: err.mark.column + 1 })})` : ""}`;
       }
     } else {
       parsed = {};
@@ -150,7 +147,11 @@ export class HaYamlEditor extends LitElement {
     this.value = parsed;
     this.isValid = isValid;
 
-    fireEvent(this, "value-changed", { value: parsed, isValid } as any);
+    fireEvent(this, "value-changed", {
+      value: parsed,
+      isValid,
+      errorMsg,
+    } as any);
   }
 
   get yaml() {

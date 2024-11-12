@@ -1,10 +1,10 @@
-import {
+import type {
   Collection,
   Connection,
-  getCollection,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket";
-import { Store } from "home-assistant-js-websocket/dist/store";
+import { getCollection } from "home-assistant-js-websocket";
+import type { Store } from "home-assistant-js-websocket/dist/store";
 
 interface OptimisticCollection<T> extends Collection<T> {
   save(data: T): Promise<unknown>;

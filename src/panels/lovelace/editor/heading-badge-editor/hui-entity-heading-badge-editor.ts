@@ -13,7 +13,7 @@ import {
   union,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { LocalizeFunc } from "../../../../common/translations/localize";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-form/ha-form";
 import type {
@@ -21,8 +21,8 @@ import type {
   SchemaUnion,
 } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
-import { Condition } from "../../common/validate-condition";
-import { EntityHeadingBadgeConfig } from "../../heading-badges/types";
+import type { Condition } from "../../common/validate-condition";
+import type { EntityHeadingBadgeConfig } from "../../heading-badges/types";
 import type { LovelaceGenericElementEditor } from "../../types";
 import "../conditions/ha-card-conditions-editor";
 import { configElementStyle } from "../config-elements/config-elements-style";
@@ -36,7 +36,7 @@ export const DEFAULT_CONFIG: Partial<EntityHeadingBadgeConfig> = {
 
 const entityConfigStruct = object({
   type: optional(string()),
-  entity: string(),
+  entity: optional(string()),
   name: optional(string()),
   icon: optional(string()),
   state_content: optional(union([string(), array(string())])),

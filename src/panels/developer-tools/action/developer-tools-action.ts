@@ -1,23 +1,26 @@
 import { mdiHelpCircle } from "@mdi/js";
-import { ERR_CONNECTION_LOST, HassService } from "home-assistant-js-websocket";
+import type { HassService } from "home-assistant-js-websocket";
+import { ERR_CONNECTION_LOST } from "home-assistant-js-websocket";
 import { load } from "js-yaml";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../common/decorators/storage";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { hasTemplate } from "../../../common/string/has-template";
-import { LocalizeFunc } from "../../../common/translations/localize";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
-import { HaProgressButton } from "../../../components/buttons/ha-progress-button";
+import type { HaProgressButton } from "../../../components/buttons/ha-progress-button";
 import { showToast } from "../../../util/toast";
 
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
+import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-service-control";
@@ -25,17 +28,14 @@ import "../../../components/ha-service-picker";
 import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import { forwardHaptic } from "../../../data/haptics";
-import {
-  Action,
-  migrateAutomationAction,
-  ServiceAction,
-} from "../../../data/script";
+import type { Action, ServiceAction } from "../../../data/script";
+import { migrateAutomationAction } from "../../../data/script";
 import {
   callExecuteScript,
   serviceCallWillDisconnect,
 } from "../../../data/service";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 
 @customElement("developer-tools-action")
@@ -67,6 +67,16 @@ class HaPanelDevAction extends LitElement {
   private _yamlMode = false;
 
   @query("#yaml-editor") private _yamlEditor?: HaYamlEditor;
+
+  protected willUpdate() {
+    if (
+      !this.hasUpdated &&
+      this._serviceData?.action &&
+      typeof this._serviceData.action !== "string"
+    ) {
+      this._serviceData.action = "";
+    }
+  }
 
   protected firstUpdated(params) {
     super.firstUpdated(params);

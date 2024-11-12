@@ -1,7 +1,7 @@
-import { TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HaFormSchema } from "../../components/ha-form/types";
-import {
+import type {
   DataEntryFlowStep,
   DataEntryFlowStepAbort,
   DataEntryFlowStepCreateEntry,
@@ -17,7 +17,7 @@ import type { HomeAssistant } from "../../types";
 export interface FlowConfig {
   flowType: FlowType;
 
-  loadDevicesAndAreas: boolean;
+  showDevices: boolean;
 
   createFlow(hass: HomeAssistant, handler: string): Promise<DataEntryFlowStep>;
 
@@ -134,8 +134,7 @@ export interface FlowConfig {
 export type LoadingReason =
   | "loading_handlers"
   | "loading_flow"
-  | "loading_step"
-  | "loading_devices_areas";
+  | "loading_step";
 
 export interface DataEntryFlowDialogParams {
   startFlowHandler?: string;

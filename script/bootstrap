@@ -18,5 +18,9 @@ if [[ -n "$DEVCONTAINER" ]]; then
     fi
 fi
 
+if ! command -v yarn &> /dev/null; then
+    echo "Error: yarn not found. Please install it following the official instructions: https://yarnpkg.com/getting-started/install" >&2
+    exit 1
+fi
 # Install node modules
-    yarn install
+yarn install

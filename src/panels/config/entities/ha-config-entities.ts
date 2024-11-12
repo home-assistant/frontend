@@ -15,15 +15,9 @@ import {
   mdiToggleSwitch,
   mdiToggleSwitchOffOutline,
 } from "@mdi/js";
-import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
@@ -37,14 +31,15 @@ import {
   isDeletableEntity,
   deleteEntity,
 } from "../../../common/entity/delete_entity";
-import { Helper, isHelperDomain } from "../helpers/const";
+import type { Helper } from "../helpers/const";
+import { isHelperDomain } from "../helpers/const";
 import { HELPERS_CRUD } from "../../../data/helpers_crud";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
-import { LocalizeFunc } from "../../../common/translations/localize";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
   hasRejectedItems,
   rejectedItems,
@@ -71,30 +66,31 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
-import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
+import type { ConfigEntry } from "../../../data/config_entries";
+import { getConfigEntries } from "../../../data/config_entries";
 import { fullEntitiesContext } from "../../../data/context";
-import {
+import type {
   DataTableFiltersItems,
   DataTableFiltersValues,
 } from "../../../data/data_table_filters";
 import { UNAVAILABLE } from "../../../data/entity";
-import {
+import type {
   EntityRegistryEntry,
   UpdateEntityRegistryEntryResult,
+} from "../../../data/entity_registry";
+import {
   computeEntityRegistryName,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
+import type { IntegrationManifest } from "../../../data/integration";
 import {
-  EntitySources,
-  fetchEntitySourcesWithCache,
-} from "../../../data/entity_sources";
-import {
-  domainToName,
-  IntegrationManifest,
   fetchIntegrationManifests,
+  domainToName,
 } from "../../../data/integration";
+import type { EntitySources } from "../../../data/entity_sources";
+import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
+import type { LabelRegistryEntry } from "../../../data/label_registry";
 import {
-  LabelRegistryEntry,
   createLabelRegistryEntry,
   subscribeLabelRegistry,
 } from "../../../data/label_registry";
@@ -1024,8 +1020,9 @@ ${
   private _setFiltersFromUrl() {
     const domain = this._searchParms.get("domain");
     const configEntry = this._searchParms.get("config_entry");
+    const label = this._searchParms.has("label");
 
-    if (!domain && !configEntry) {
+    if (!domain && !configEntry && !label) {
       return;
     }
 
@@ -1036,10 +1033,7 @@ ${
       "ha-filter-integrations": domain ? [domain] : [],
       config_entry: configEntry ? [configEntry] : [],
     };
-
-    if (this._searchParms.has("label")) {
-      this._filterLabel();
-    }
+    this._filterLabel();
   }
 
   private _filterLabel() {

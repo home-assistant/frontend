@@ -1,4 +1,5 @@
 import { consume } from "@lit-labs/context";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -9,16 +10,18 @@ import "../../../../../components/device/ha-device-trigger-picker";
 import "../../../../../components/ha-form/ha-form";
 import { computeInitialHaFormData } from "../../../../../components/ha-form/compute-initial-ha-form-data";
 import { fullEntitiesContext } from "../../../../../data/context";
-import {
-  deviceAutomationsEqual,
+import type {
   DeviceCapabilities,
   DeviceTrigger,
+} from "../../../../../data/device_automation";
+import {
+  deviceAutomationsEqual,
   fetchDeviceTriggerCapabilities,
   localizeExtraFieldsComputeLabelCallback,
   localizeExtraFieldsComputeHelperCallback,
 } from "../../../../../data/device_automation";
-import { EntityRegistryEntry } from "../../../../../data/entity_registry";
-import { HomeAssistant } from "../../../../../types";
+import type { EntityRegistryEntry } from "../../../../../data/entity_registry";
+import type { HomeAssistant } from "../../../../../types";
 
 @customElement("ha-automation-trigger-device")
 export class HaDeviceTrigger extends LitElement {
@@ -60,6 +63,28 @@ export class HaDeviceTrigger extends LitElement {
       return extraFieldsData;
     }
   );
+
+  public shouldUpdate(changedProperties: PropertyValues) {
+    if (!changedProperties.has("trigger")) {
+      return true;
+    }
+    if (
+      this.trigger.device_id &&
+      !(this.trigger.device_id in this.hass.devices)
+    ) {
+      fireEvent(
+        this,
+        "ui-mode-not-available",
+        Error(
+          this.hass.localize(
+            "ui.panel.config.automation.editor.edit_unknown_device"
+          )
+        )
+      );
+      return false;
+    }
+    return true;
+  }
 
   protected render() {
     const deviceId = this._deviceId || this.trigger.device_id;

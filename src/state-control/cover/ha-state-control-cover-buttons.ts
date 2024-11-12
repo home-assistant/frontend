@@ -1,12 +1,6 @@
 import { mdiArrowBottomLeft, mdiArrowTopRight, mdiStop } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
@@ -19,8 +13,8 @@ import "../../components/ha-control-button";
 import "../../components/ha-control-button-group";
 import "../../components/ha-control-slider";
 import "../../components/ha-svg-icon";
+import type { CoverEntity } from "../../data/cover";
 import {
-  CoverEntity,
   CoverEntityFeature,
   canClose,
   canCloseTilt,
@@ -29,7 +23,7 @@ import {
   canStop,
   canStopTilt,
 } from "../../data/cover";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 
 type CoverButton =
   | "open"

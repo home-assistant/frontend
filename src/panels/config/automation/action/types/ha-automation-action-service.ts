@@ -1,11 +1,5 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { assert } from "superstruct";
@@ -14,9 +8,10 @@ import { computeDomain } from "../../../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../../../common/entity/compute_object_id";
 import { hasTemplate } from "../../../../../common/string/has-template";
 import "../../../../../components/ha-service-control";
-import { ServiceAction, serviceActionStruct } from "../../../../../data/script";
+import type { ServiceAction } from "../../../../../data/script";
+import { serviceActionStruct } from "../../../../../data/script";
 import type { HomeAssistant } from "../../../../../types";
-import { ActionElement } from "../ha-automation-action-row";
+import type { ActionElement } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-service")
 export class HaServiceAction extends LitElement implements ActionElement {
@@ -117,6 +112,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
         .value=${this._action}
         .disabled=${this.disabled}
         .showAdvanced=${this.hass.userData?.showAdvanced}
+        .hidePicker=${!!this._action.metadata}
         @value-changed=${this._actionChanged}
       ></ha-service-control>
       ${domain && service && this.hass.services[domain]?.[service]?.response
