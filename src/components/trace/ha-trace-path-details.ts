@@ -128,7 +128,9 @@ export class HaTracePathDetails extends LitElement {
         .split("/");
       let currentDetail = this.selected.config;
       for (let i = 0; i < nestPath.length; i++) {
-        if (!['undefined', 'string'].includes(typeof currentDetail[nestPath[i]])) {
+        if (
+          !["undefined", "string"].includes(typeof currentDetail[nestPath[i]])
+        ) {
           currentDetail = currentDetail[nestPath[i]];
         }
       }
