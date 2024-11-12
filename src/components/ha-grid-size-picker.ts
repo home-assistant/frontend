@@ -118,7 +118,10 @@ export class HaGridSizeEditor extends LitElement {
                       .fill(0)
                       .map((__, columnIndex) => {
                         const column = columnIndex + 1;
-                        if (column % this.step !== 0) {
+                        if (
+                          column % this.step !== 0 ||
+                          (this.columns > 24 && column % 3 !== 0)
+                        ) {
                           return nothing;
                         }
                         return html`
