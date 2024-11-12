@@ -1343,6 +1343,10 @@
         "camera": {
           "download_snapshot": "Download snapshot",
           "failed_to_download": "Failed to download snapshot. Please check the logs for more information."
+        },
+        "image": {
+          "download": "Download image",
+          "failed_to_download": "Failed to download image. Please check the logs for more information."
         }
       },
       "entity_registry": {
