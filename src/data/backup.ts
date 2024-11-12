@@ -34,3 +34,19 @@ export const generateBackup = (hass: HomeAssistant): Promise<BackupContent> =>
   hass.callWS({
     type: "backup/generate",
   });
+
+export const uploadBackup = async (
+  hass: HomeAssistant,
+  file: File
+): Promise<void> => {
+  const fd = new FormData();
+  fd.append("file", file);
+  const resp = await hass.fetchWithAuth("/api/backup/upload", {
+    method: "POST",
+    body: fd,
+  });
+
+  if (!resp.ok) {
+    throw new Error(`${resp.status} ${resp.statusText}`);
+  }
+};
