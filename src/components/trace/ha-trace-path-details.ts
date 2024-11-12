@@ -168,7 +168,7 @@ export class HaTracePathDetails extends LitElement {
                     this.hass,
                     currentDetail.alias
                   )}]<br />`
-              : ""}
+              : nothing}
             ${this.hass!.localize(
               "ui.panel.config.automation.trace.path.executed",
               {
