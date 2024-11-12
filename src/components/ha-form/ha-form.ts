@@ -1,20 +1,13 @@
 /* eslint-disable lit/prefer-static-styles */
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  ReactiveElement,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, ReactiveElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import "../ha-alert";
 import "../ha-selector/ha-selector";
-import { HaFormDataContainer, HaFormElement, HaFormSchema } from "./types";
+import type { HaFormDataContainer, HaFormElement, HaFormSchema } from "./types";
 
 const LOAD_ELEMENTS = {
   boolean: () => import("./ha-form-boolean"),
@@ -31,7 +24,7 @@ const LOAD_ELEMENTS = {
 };
 
 const getValue = (obj, item) =>
-  obj ? (!item.name ? obj : obj[item.name]) : null;
+  obj ? (!item.name || item.flatten ? obj : obj[item.name]) : null;
 
 const getError = (obj, item) => (obj && item.name ? obj[item.name] : null);
 
@@ -163,6 +156,7 @@ export class HaForm extends LitElement implements HaFormElement {
                   localize: this.hass?.localize,
                   computeLabel: this.computeLabel,
                   computeHelper: this.computeHelper,
+                  localizeValue: this.localizeValue,
                   context: this._generateContext(item),
                   ...this.getFormProperties(),
                 })}
@@ -204,9 +198,10 @@ export class HaForm extends LitElement implements HaFormElement {
 
       if (ev.target === this) return;
 
-      const newValue = !schema.name
-        ? ev.detail.value
-        : { [schema.name]: ev.detail.value };
+      const newValue =
+        !schema.name || ("flatten" in schema && schema.flatten)
+          ? ev.detail.value
+          : { [schema.name]: ev.detail.value };
 
       this.data = {
         ...this.data,

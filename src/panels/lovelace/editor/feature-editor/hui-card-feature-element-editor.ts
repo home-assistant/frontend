@@ -1,6 +1,6 @@
 import { customElement } from "lit/decorators";
 import { getCardFeatureElementClass } from "../../create-element/create-card-feature-element";
-import {
+import type {
   LovelaceCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
@@ -8,10 +8,10 @@ import type {
   LovelaceConfigForm,
   LovelaceCardFeatureEditor,
 } from "../../types";
-import { HuiElementEditor } from "../hui-element-editor";
+import { HuiTypedElementEditor } from "../hui-typed-element-editor";
 
 @customElement("hui-card-feature-element-editor")
-export class HuiCardFeatureElementEditor extends HuiElementEditor<
+export class HuiCardFeatureElementEditor extends HuiTypedElementEditor<
   LovelaceCardFeatureConfig,
   LovelaceCardFeatureContext
 > {

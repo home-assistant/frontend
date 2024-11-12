@@ -1,6 +1,7 @@
 import { mdiCheck } from "@mdi/js";
-import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 
@@ -12,9 +13,10 @@ import {
   canOpen,
   LockEntityFeature,
 } from "../../../data/lock";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCardFeature } from "../types";
-import { LockOpenDoorCardFeatureConfig } from "./types";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardFeature } from "../types";
+import type { LockOpenDoorCardFeatureConfig } from "./types";
+import { cardFeatureStyles } from "./common/card-feature-styles";
 
 export const supportsLockOpenDoorCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -112,35 +114,34 @@ class HuiLockOpenDoorCardFeature
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      ha-control-button {
-        font-size: 14px;
-      }
-      ha-control-button-group {
-        margin: 0 12px 12px 12px;
-        --control-button-group-spacing: 12px;
-      }
-      .open-button {
-        width: 130px;
-      }
-      .open-button.confirm {
-        --control-button-background-color: var(--warning-color);
-      }
-      .open-done {
-        font-size: 14px;
-        line-height: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: row;
-        gap: 8px;
-        font-weight: 500;
-        color: var(--success-color);
-        margin: 0 12px 12px 12px;
-        height: 40px;
-        text-align: center;
-      }
-    `;
+    return [
+      cardFeatureStyles,
+      css`
+        ha-control-button {
+          font-size: 14px;
+        }
+        .open-button {
+          width: 130px;
+        }
+        .open-button.confirm {
+          --control-button-background-color: var(--warning-color);
+        }
+        .open-done {
+          font-size: 14px;
+          line-height: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: row;
+          gap: 8px;
+          font-weight: 500;
+          color: var(--success-color);
+          margin: 0 12px 12px 12px;
+          height: 40px;
+          text-align: center;
+        }
+      `,
+    ];
   }
 }
 

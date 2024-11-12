@@ -16,8 +16,9 @@
   ) {
     _ls("/static/polyfills/webcomponents-bundle.js", true);
   }
-  var isS11_12 =
-    /(?:.*(?:iPhone|iPad).*OS (?:11|12)_\d)|(?:.*Version\/(?:11|12)(?:\.\d+)*.*Safari\/)/.test(
-      navigator.userAgent
-    );
+  // Modern browsers are detected primarily using the user agent string.
+  // A feature detection which roughly lines up with the modern targets is used
+  // as a fallback to guard against spoofs. It should be updated periodically.
+  var isModern = <%= modernRegex %>.test(navigator.userAgent) &&
+    "findLast" in Array.prototype;
 </script>

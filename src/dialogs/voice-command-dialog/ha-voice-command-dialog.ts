@@ -8,15 +8,8 @@ import {
   mdiSend,
   mdiStar,
 } from "@mdi/js";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { storage } from "../../common/decorators/storage";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -28,9 +21,10 @@ import "../../components/ha-dialog-header";
 import "../../components/ha-icon-button";
 import "../../components/ha-list-item";
 import "../../components/ha-textfield";
+import "../../components/ha-alert";
 import type { HaTextField } from "../../components/ha-textfield";
+import type { AssistPipeline } from "../../data/assist_pipeline";
 import {
-  AssistPipeline,
   getAssistPipeline,
   listAssistPipelines,
   runAssistPipeline,
@@ -40,7 +34,9 @@ import type { HomeAssistant } from "../../types";
 import { AudioRecorder } from "../../util/audio-recorder";
 import { documentationUrl } from "../../util/documentation-url";
 import { showAlertDialog } from "../generic/show-dialog-box";
-import { VoiceCommandDialogParams } from "./show-ha-voice-command-dialog";
+import type { VoiceCommandDialogParams } from "./show-ha-voice-command-dialog";
+import { supportsFeature } from "../../common/entity/supports-feature";
+import { ConversationEntityFeature } from "../../data/conversation";
 
 interface Message {
   who: string;
@@ -136,6 +132,14 @@ export class HaVoiceCommandDialog extends LitElement {
       return nothing;
     }
 
+    const controlHA = !this._pipeline
+      ? false
+      : this.hass.states[this._pipeline?.conversation_engine]
+        ? supportsFeature(
+            this.hass.states[this._pipeline?.conversation_engine],
+            ConversationEntityFeature.CONTROL
+          )
+        : true;
     const supportsMicrophone = AudioRecorder.isSupported;
     const supportsSTT = this._pipeline?.stt_engine;
 
@@ -212,13 +216,22 @@ export class HaVoiceCommandDialog extends LitElement {
             ></ha-icon-button>
           </a>
         </ha-dialog-header>
+        ${controlHA
+          ? nothing
+          : html`
+              <ha-alert>
+                ${this.hass.localize(
+                  "ui.dialogs.voice_command.conversation_no_control"
+                )}
+              </ha-alert>
+            `}
         <div class="messages">
           <div class="messages-container" id="scroll-container">
             ${this._conversation!.map(
+              // New lines matter for messages
+              // prettier-ignore
               (message) => html`
-                <div class=${this._computeMessageClasses(message)}>
-                  ${message.text}
-                </div>
+                <div class=${this._computeMessageClasses(message)}>${message.text}</div>
               `
             )}
           </div>
@@ -355,7 +368,7 @@ export class HaVoiceCommandDialog extends LitElement {
 
   private _handleSendMessage() {
     if (this._messageInput.value) {
-      this._processText(this._messageInput.value);
+      this._processText(this._messageInput.value.trim());
       this._messageInput.value = "";
       this._showSendButton = false;
     }
@@ -427,34 +440,28 @@ export class HaVoiceCommandDialog extends LitElement {
   private async _showNotSupportedMessage() {
     this._addMessage({
       who: "hass",
-      text: html`
-        <p>
-          ${this.hass.localize(
-            "ui.dialogs.voice_command.not_supported_microphone_browser"
-          )}
-        </p>
-        <p>
-          ${this.hass.localize(
-            "ui.dialogs.voice_command.not_supported_microphone_documentation",
-            {
-              documentation_link: html`
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href=${documentationUrl(
-                    this.hass,
-                    "/docs/configuration/securing/#remote-access"
-                  )}
-                >
-                  ${this.hass.localize(
-                    "ui.dialogs.voice_command.not_supported_microphone_documentation_link"
-                  )}
-                </a>
-              `,
-            }
-          )}
-        </p>
-      `,
+      text:
+        // New lines matter for messages
+        // prettier-ignore
+        html`${this.hass.localize(
+          "ui.dialogs.voice_command.not_supported_microphone_browser"
+        )}
+
+        ${this.hass.localize(
+          "ui.dialogs.voice_command.not_supported_microphone_documentation",
+          {
+            documentation_link: html`<a
+                target="_blank"
+                rel="noopener noreferrer"
+                href=${documentationUrl(
+                  this.hass,
+                  "/docs/configuration/securing/#remote-access"
+                )}
+              >${this.hass.localize(
+                  "ui.dialogs.voice_command.not_supported_microphone_documentation_link"
+                )}</a>`,
+          }
+        )}`,
     });
   }
 
@@ -475,10 +482,11 @@ export class HaVoiceCommandDialog extends LitElement {
       who: "user",
       text: "…",
     };
-    this._audioRecorder.start().then(() => {
-      this._addMessage(userMessage);
-      this.requestUpdate("_audioRecorder");
-    });
+    await this._audioRecorder.start();
+
+    this._addMessage(userMessage);
+    this.requestUpdate("_audioRecorder");
+
     const hassMessage: Message = {
       who: "hass",
       text: "…",
@@ -636,6 +644,7 @@ export class HaVoiceCommandDialog extends LitElement {
           margin-inline-end: -24px;
           margin-inline-start: initial;
           direction: var(--direction);
+          transform: scaleX(var(--scale-direction));
         }
 
         .listening-icon[active] {
@@ -756,6 +765,7 @@ export class HaVoiceCommandDialog extends LitElement {
           max-height: 100%;
         }
         .message {
+          white-space: pre-line;
           font-size: 18px;
           clear: both;
           margin: 8px 0;
@@ -792,8 +802,12 @@ export class HaVoiceCommandDialog extends LitElement {
           direction: var(--direction);
         }
 
-        .message a {
+        .message.user a {
           color: var(--text-primary-color);
+        }
+
+        .message.hass a {
+          color: var(--primary-text-color);
         }
 
         .message img {

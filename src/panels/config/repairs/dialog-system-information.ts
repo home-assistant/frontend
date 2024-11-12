@@ -1,13 +1,7 @@
 import "@material/mwc-button/mwc-button";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  TemplateResult,
-  nothing,
-} from "lit";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
@@ -19,17 +13,16 @@ import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-metric";
-import { fetchHassioStats, HassioStats } from "../../../data/hassio/common";
-import {
-  fetchHassioResolution,
-  HassioResolution,
-} from "../../../data/hassio/resolution";
+import type { HassioStats } from "../../../data/hassio/common";
+import { fetchHassioStats } from "../../../data/hassio/common";
+import type { HassioResolution } from "../../../data/hassio/resolution";
+import { fetchHassioResolution } from "../../../data/hassio/resolution";
 import { domainToName } from "../../../data/integration";
-import {
-  subscribeSystemHealthInfo,
+import type {
   SystemCheckValueObject,
   SystemHealthInfo,
 } from "../../../data/system_health";
+import { subscribeSystemHealthInfo } from "../../../data/system_health";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -143,8 +136,6 @@ class DialogSystemInformation extends LitElement {
       <ha-dialog
         open
         @closed=${this.closeDialog}
-        scrimClickAction
-        escapeKeyAction
         .heading=${createCloseHeading(
           this.hass,
           this.hass.localize("ui.panel.config.repairs.system_information")

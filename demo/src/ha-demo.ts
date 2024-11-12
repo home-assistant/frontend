@@ -3,12 +3,10 @@ import "../../src/resources/compatibility";
 import { customElement } from "lit/decorators";
 import { isNavigationClick } from "../../src/common/dom/is-navigation-click";
 import { navigate } from "../../src/common/navigate";
-import {
-  MockHomeAssistant,
-  provideHass,
-} from "../../src/fake_data/provide_hass";
+import type { MockHomeAssistant } from "../../src/fake_data/provide_hass";
+import { provideHass } from "../../src/fake_data/provide_hass";
 import { HomeAssistantAppEl } from "../../src/layouts/home-assistant";
-import { HomeAssistant } from "../../src/types";
+import type { HomeAssistant } from "../../src/types";
 import { selectedDemoConfig } from "./configs/demo-configs";
 import { mockAreaRegistry } from "./stubs/area_registry";
 import { mockAuth } from "./stubs/auth";
@@ -82,6 +80,8 @@ export class HaDemo extends HomeAssistantAppEl {
         has_entity_name: false,
         unique_id: "co2_intensity",
         options: null,
+        created_at: 0,
+        modified_at: 0,
       },
       {
         config_entry_id: "co2signal",
@@ -100,6 +100,8 @@ export class HaDemo extends HomeAssistantAppEl {
         has_entity_name: false,
         unique_id: "grid_fossil_fuel_percentage",
         options: null,
+        created_at: 0,
+        modified_at: 0,
       },
     ]);
 

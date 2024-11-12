@@ -1,15 +1,14 @@
-import {
-  Connection,
-  getCollection,
-  HassEventBase,
-} from "home-assistant-js-websocket";
+import type { Connection, HassEventBase } from "home-assistant-js-websocket";
+import { getCollection } from "home-assistant-js-websocket";
+import type { HuiBadge } from "../panels/lovelace/badges/hui-badge";
 import type { HuiCard } from "../panels/lovelace/cards/hui-card";
 import type { HuiSection } from "../panels/lovelace/sections/hui-section";
-import { Lovelace, LovelaceBadge } from "../panels/lovelace/types";
-import { HomeAssistant } from "../types";
-import { LovelaceSectionConfig } from "./lovelace/config/section";
-import { fetchConfig, LegacyLovelaceConfig } from "./lovelace/config/types";
-import { LovelaceViewConfig } from "./lovelace/config/view";
+import type { Lovelace } from "../panels/lovelace/types";
+import type { HomeAssistant } from "../types";
+import type { LovelaceSectionConfig } from "./lovelace/config/section";
+import type { LegacyLovelaceConfig } from "./lovelace/config/types";
+import { fetchConfig } from "./lovelace/config/types";
+import type { LovelaceViewConfig } from "./lovelace/config/view";
 
 export interface LovelacePanelConfig {
   mode: "yaml" | "storage";
@@ -21,7 +20,7 @@ export interface LovelaceViewElement extends HTMLElement {
   narrow?: boolean;
   index?: number;
   cards?: HuiCard[];
-  badges?: LovelaceBadge[];
+  badges?: HuiBadge[];
   sections?: HuiSection[];
   isStrategy: boolean;
   setConfig(config: LovelaceViewConfig): void;
@@ -30,10 +29,12 @@ export interface LovelaceViewElement extends HTMLElement {
 export interface LovelaceSectionElement extends HTMLElement {
   hass?: HomeAssistant;
   lovelace?: Lovelace;
+  preview?: boolean;
   viewIndex?: number;
   index?: number;
   cards?: HuiCard[];
   isStrategy: boolean;
+  importOnly?: boolean;
   setConfig(config: LovelaceSectionConfig): void;
 }
 

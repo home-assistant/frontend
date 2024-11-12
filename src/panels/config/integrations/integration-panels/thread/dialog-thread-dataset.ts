@@ -1,9 +1,9 @@
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { HassDialog } from "../../../../../dialogs/make-dialog-manager";
-import { HomeAssistant } from "../../../../../types";
-import { DialogThreadDatasetParams } from "./show-dialog-thread-dataset";
+import type { HassDialog } from "../../../../../dialogs/make-dialog-manager";
+import type { HomeAssistant } from "../../../../../types";
+import type { DialogThreadDatasetParams } from "./show-dialog-thread-dataset";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 
 @customElement("ha-dialog-thread-dataset")
@@ -36,14 +36,8 @@ class DialogThreadDataset extends LitElement implements HassDialog {
       dataset.extended_pan_id &&
       otbrInfo.active_dataset_tlvs?.includes(dataset.extended_pan_id);
 
-    const canImportKeychain =
-      hasOTBR &&
-      !this.hass.auth.external?.config.canTransferThreadCredentialsToKeychain &&
-      network.routers?.length;
-
     return html`<ha-dialog
       open
-      .hideActions=${!canImportKeychain}
       @closed=${this.closeDialog}
       .heading=${createCloseHeading(this.hass, network.name)}
     >
@@ -59,27 +53,7 @@ class DialogThreadDataset extends LitElement implements HassDialog {
               Active dataset TLVs: ${otbrInfo.active_dataset_tlvs}`
           : nothing}
       </div>
-      ${canImportKeychain
-        ? html`<ha-button slot="primary-action" @click=${this._sendCredentials}
-            >Send credentials to phone</ha-button
-          >`
-        : nothing}
     </ha-dialog>`;
-  }
-
-  private _sendCredentials() {
-    this.hass.auth.external!.fireMessage({
-      type: "thread/store_in_platform_keychain",
-      payload: {
-        mac_extended_address:
-          this._params?.network.dataset?.preferred_extended_address ||
-          this._params!.network.routers![0]!.extended_address,
-        border_agent_id:
-          this._params?.network.dataset?.preferred_border_agent_id ||
-          this._params!.network.routers![0]!.border_agent_id,
-        active_operational_dataset: this._params!.otbrInfo!.active_dataset_tlvs,
-      },
-    });
   }
 }
 

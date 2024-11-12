@@ -1,7 +1,7 @@
-import { Connection } from "home-assistant-js-websocket";
+import type { Connection } from "home-assistant-js-websocket";
 import { computeStateName } from "../common/entity/compute_state_name";
-import { HaDurationData } from "../components/ha-duration-input";
-import { HomeAssistant } from "../types";
+import type { HaDurationData } from "../components/ha-duration-input";
+import type { HomeAssistant } from "../types";
 
 export interface RecorderInfo {
   backlog: number | null;
@@ -10,14 +10,6 @@ export interface RecorderInfo {
   migration_is_live: boolean;
   recording: boolean;
   thread_running: boolean;
-}
-
-export interface RecordedEntities {
-  entity_ids: string[];
-}
-export interface RecordedExcludedEntities {
-  recorded_ids: string[];
-  excluded_ids: string[];
 }
 
 export type StatisticType = "change" | "state" | "sum" | "min" | "max" | "mean";
@@ -55,11 +47,19 @@ export interface StatisticsMetaData {
   unit_class: string | null;
 }
 
+export const STATISTIC_TYPES: StatisticsValidationResult["type"][] = [
+  "entity_not_recorded",
+  "entity_no_longer_recorded",
+  "state_class_removed",
+  "units_changed",
+  "no_state",
+];
+
 export type StatisticsValidationResult =
   | StatisticsValidationResultNoState
   | StatisticsValidationResultEntityNotRecorded
   | StatisticsValidationResultEntityNoLongerRecorded
-  | StatisticsValidationResultUnsupportedStateClass
+  | StatisticsValidationResultStateClassRemoved
   | StatisticsValidationResultUnitsChanged;
 
 export interface StatisticsValidationResultNoState {
@@ -77,9 +77,9 @@ export interface StatisticsValidationResultEntityNotRecorded {
   data: { statistic_id: string };
 }
 
-export interface StatisticsValidationResultUnsupportedStateClass {
-  type: "unsupported_state_class";
-  data: { statistic_id: string; state_class: string };
+export interface StatisticsValidationResultStateClassRemoved {
+  type: "state_class_removed";
+  data: { statistic_id: string };
 }
 
 export interface StatisticsValidationResultUnitsChanged {
@@ -333,24 +333,5 @@ export const getDisplayUnit = (
 export const isExternalStatistic = (statisticsId: string): boolean =>
   statisticsId.includes(":");
 
-let recordedExcludedEntitiesCache: RecordedExcludedEntities | undefined;
-
-export const getRecordedExcludedEntities = async (
-  hass: HomeAssistant
-): Promise<RecordedExcludedEntities> => {
-  if (recordedExcludedEntitiesCache) {
-    return recordedExcludedEntitiesCache;
-  }
-  const recordedEntities = await hass.callWS<RecordedEntities>({
-    type: "recorder/recorded_entities",
-  });
-
-  recordedExcludedEntitiesCache = {
-    recorded_ids: recordedEntities.entity_ids,
-    excluded_ids: Object.keys(hass.states).filter(
-      (id) => !recordedEntities.entity_ids.includes(id)
-    ),
-  };
-
-  return recordedExcludedEntitiesCache;
-};
+export const updateStatisticsIssues = (hass: HomeAssistant) =>
+  hass.callWS({ type: "recorder/update_statistics_issues" });

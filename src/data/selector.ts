@@ -2,19 +2,19 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
-import { UiAction } from "../panels/lovelace/components/hui-action-editor";
-import { HomeAssistant, ItemPath } from "../types";
+import type { CropOptions } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
+import { isHelperDomain } from "../panels/config/helpers/const";
+import type { UiAction } from "../panels/lovelace/components/hui-action-editor";
+import type { HomeAssistant } from "../types";
 import {
-  DeviceRegistryEntry,
+  type DeviceRegistryEntry,
   getDeviceIntegrationLookup,
 } from "./device_registry";
-import {
+import type {
   EntityRegistryDisplayEntry,
   EntityRegistryEntry,
 } from "./entity_registry";
-import { EntitySources } from "./entity_sources";
-import { isHelperDomain } from "../panels/config/helpers/const";
-import type { CropOptions } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
+import type { EntitySources } from "./entity_sources";
 
 export type Selector =
   | ActionSelector
@@ -64,12 +64,12 @@ export type Selector =
   | TTSSelector
   | TTSVoiceSelector
   | UiActionSelector
-  | UiColorSelector;
+  | UiColorSelector
+  | UiStateContentSelector;
 
 export interface ActionSelector {
-  action: {
-    path?: ItemPath;
-  } | null;
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  action: {} | null;
 }
 
 export interface AddonSelector {
@@ -120,9 +120,8 @@ export interface ColorTempSelector {
 }
 
 export interface ConditionSelector {
-  condition: {
-    path?: ItemPath;
-  } | null;
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  condition: {} | null;
 }
 
 export interface ConversationAgentSelector {
@@ -202,6 +201,7 @@ export interface LegacyDeviceSelector {
 export interface DurationSelector {
   duration: {
     enable_day?: boolean;
+    enable_millisecond?: boolean;
   } | null;
 }
 
@@ -321,6 +321,7 @@ export interface NumberSelector {
     step?: number | "any";
     mode?: "box" | "slider";
     unit_of_measurement?: string;
+    slider_ticks?: boolean;
   } | null;
 }
 
@@ -425,14 +426,12 @@ export interface ThemeSelector {
   theme: { include_default?: boolean } | null;
 }
 export interface TimeSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  time: {} | null;
+  time: { no_second?: boolean } | null;
 }
 
 export interface TriggerSelector {
-  trigger: {
-    path?: ItemPath;
-  } | null;
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  trigger: {} | null;
 }
 
 export interface TTSSelector {
@@ -452,7 +451,19 @@ export interface UiActionSelector {
 
 export interface UiColorSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
-  ui_color: { default_color?: boolean } | null;
+  ui_color: {
+    default_color?: string;
+    include_none?: boolean;
+    include_state?: boolean;
+  } | null;
+}
+
+export interface UiStateContentSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  ui_state_content: {
+    entity_id?: string;
+    allow_name?: boolean;
+  } | null;
 }
 
 export const expandLabelTarget = (
@@ -696,7 +707,7 @@ export const entityMeetsTargetSelector = (
 export const filterSelectorDevices = (
   filterDevice: DeviceSelectorFilter,
   device: DeviceRegistryEntry,
-  deviceIntegrationLookup?: Record<string, string[]> | undefined
+  deviceIntegrationLookup?: Record<string, Set<string>> | undefined
 ): boolean => {
   const {
     manufacturer: filterManufacturer,
@@ -713,7 +724,7 @@ export const filterSelectorDevices = (
   }
 
   if (filterIntegration && deviceIntegrationLookup) {
-    if (!deviceIntegrationLookup?.[device.id]?.includes(filterIntegration)) {
+    if (!deviceIntegrationLookup?.[device.id]?.has(filterIntegration)) {
       return false;
     }
   }

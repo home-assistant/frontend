@@ -1,10 +1,10 @@
-import { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { stateIcon } from "../common/entity/state_icon";
-import { HomeAssistant } from "../types";
-import {
+import type { HomeAssistant } from "../types";
+import type {
   EntityRegistryDisplayEntry,
   EntityRegistryEntry,
 } from "./entity_registry";
@@ -62,7 +62,7 @@ export interface ComponentIcons {
 }
 
 interface ServiceIcons {
-  [service: string]: string;
+  [service: string]: { service: string; sections?: { [name: string]: string } };
 }
 
 export type IconCategory = "entity" | "entity_component" | "services";
@@ -288,12 +288,28 @@ export const serviceIcon = async (
   const serviceName = computeObjectId(service);
   const serviceIcons = await getServiceIcons(hass, domain);
   if (serviceIcons) {
-    icon = serviceIcons[serviceName] as string;
+    const srvceIcon = serviceIcons[serviceName] as ServiceIcons[string];
+    icon = srvceIcon?.service;
   }
   if (!icon) {
     icon = await domainIcon(hass, domain);
   }
   return icon;
+};
+
+export const serviceSectionIcon = async (
+  hass: HomeAssistant,
+  service: string,
+  section: string
+): Promise<string | undefined> => {
+  const domain = computeDomain(service);
+  const serviceName = computeObjectId(service);
+  const serviceIcons = await getServiceIcons(hass, domain);
+  if (serviceIcons) {
+    const srvceIcon = serviceIcons[serviceName] as ServiceIcons[string];
+    return srvceIcon?.sections?.[section];
+  }
+  return undefined;
 };
 
 export const domainIcon = async (

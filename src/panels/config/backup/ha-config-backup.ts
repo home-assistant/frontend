@@ -1,26 +1,19 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { mdiDelete, mdiDownload, mdiPlus } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { relativeTime } from "../../../common/datetime/relative_time";
-import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
+import type { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-svg-icon";
 import { getSignedPath } from "../../../data/auth";
+import type { BackupContent, BackupData } from "../../../data/backup";
 import {
-  BackupContent,
-  BackupData,
   fetchBackupInfo,
   generateBackup,
   getBackupDownloadUrl,
@@ -32,8 +25,8 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
-import { HomeAssistant, Route } from "../../../types";
-import { LocalizeFunc } from "../../../common/translations/localize";
+import type { HomeAssistant, Route } from "../../../types";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import { fileDownload } from "../../../util/file_download";
 
 @customElement("ha-config-backup")
@@ -59,24 +52,26 @@ class HaConfigBackup extends LitElement {
         main: true,
         sortable: true,
         filterable: true,
-        grows: true,
-        template: (backup) =>
-          html`${backup.name}
-            <div class="secondary">${backup.path}</div>`,
+        flex: 2,
+        template: narrow
+          ? undefined
+          : (backup) =>
+              html`${backup.name}
+                <div class="secondary">${backup.path}</div>`,
+      },
+      path: {
+        title: localize("ui.panel.config.backup.path"),
+        hidden: !narrow,
       },
       size: {
         title: localize("ui.panel.config.backup.size"),
-        width: "15%",
-        hidden: narrow,
         filterable: true,
         sortable: true,
         template: (backup) => Math.ceil(backup.size * 10) / 10 + " MB",
       },
       date: {
         title: localize("ui.panel.config.backup.created"),
-        width: "15%",
         direction: "desc",
-        hidden: narrow,
         filterable: true,
         sortable: true,
         template: (backup) =>
@@ -85,8 +80,10 @@ class HaConfigBackup extends LitElement {
 
       actions: {
         title: "",
-        width: "15%",
         type: "overflow-menu",
+        showNarrow: true,
+        hideable: false,
+        moveable: false,
         template: (backup) =>
           html`<ha-icon-overflow-menu
             .hass=${this.hass}

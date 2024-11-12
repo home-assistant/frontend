@@ -1,5 +1,5 @@
 import { html } from "lit";
-import { ConfigEntry } from "../../data/config_entries";
+import type { ConfigEntry } from "../../data/config_entries";
 import { domainToName } from "../../data/integration";
 import {
   createOptionsFlow,
@@ -7,8 +7,8 @@ import {
   fetchOptionsFlow,
   handleOptionsFlowStep,
 } from "../../data/options_flow";
+import type { DataEntryFlowDialogParams } from "./show-dialog-data-entry-flow";
 import {
-  DataEntryFlowDialogParams,
   loadDataEntryFlowDialog,
   showFlowDialog,
 } from "./show-dialog-data-entry-flow";
@@ -29,7 +29,7 @@ export const showOptionsFlowDialog = (
     },
     {
       flowType: "options_flow",
-      loadDevicesAndAreas: false,
+      showDevices: false,
       createFlow: async (hass, handler) => {
         const [step] = await Promise.all([
           createOptionsFlow(hass, handler),
@@ -93,15 +93,33 @@ export const showOptionsFlowDialog = (
           : "";
       },
 
-      renderShowFormStepFieldLabel(hass, step, field) {
-        return hass.localize(
-          `component.${configEntry.domain}.options.step.${step.step_id}.data.${field.name}`
+      renderShowFormStepFieldLabel(hass, step, field, options) {
+        if (field.type === "expandable") {
+          return hass.localize(
+            `component.${configEntry.domain}.options.step.${step.step_id}.sections.${field.name}.name`
+          );
+        }
+
+        const prefix = options?.path?.[0] ? `sections.${options.path[0]}.` : "";
+
+        return (
+          hass.localize(
+            `component.${configEntry.domain}.options.step.${step.step_id}.${prefix}data.${field.name}`
+          ) || field.name
         );
       },
 
-      renderShowFormStepFieldHelper(hass, step, field) {
+      renderShowFormStepFieldHelper(hass, step, field, options) {
+        if (field.type === "expandable") {
+          return hass.localize(
+            `component.${step.translation_domain || configEntry.domain}.options.step.${step.step_id}.sections.${field.name}.description`
+          );
+        }
+
+        const prefix = options?.path?.[0] ? `sections.${options.path[0]}.` : "";
+
         const description = hass.localize(
-          `component.${step.translation_domain || configEntry.domain}.options.step.${step.step_id}.data_description.${field.name}`,
+          `component.${step.translation_domain || configEntry.domain}.options.step.${step.step_id}.${prefix}data_description.${field.name}`,
           step.description_placeholders
         );
         return description

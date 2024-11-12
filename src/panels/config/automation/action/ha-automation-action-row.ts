@@ -1,5 +1,5 @@
 import { consume } from "@lit-labs/context";
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import {
   mdiAlertCircleCheck,
@@ -17,19 +17,14 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { storage } from "../../../../common/decorators/storage";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-alert";
@@ -40,20 +35,20 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-service-icon";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { ACTION_ICONS, YAML_ONLY_ACTION_TYPES } from "../../../../data/action";
-import { AutomationClipboard } from "../../../../data/automation";
+import type { AutomationClipboard } from "../../../../data/automation";
 import { validateConfig } from "../../../../data/config";
 import {
   floorsContext,
   fullEntitiesContext,
   labelsContext,
 } from "../../../../data/context";
-import { EntityRegistryEntry } from "../../../../data/entity_registry";
-import { FloorRegistryEntry } from "../../../../data/floor_registry";
-import { LabelRegistryEntry } from "../../../../data/label_registry";
+import type { EntityRegistryEntry } from "../../../../data/entity_registry";
+import type { FloorRegistryEntry } from "../../../../data/floor_registry";
+import type { LabelRegistryEntry } from "../../../../data/label_registry";
+import type { Action, NonConditionAction } from "../../../../data/script";
 import {
-  Action,
-  NonConditionAction,
   getActionType,
+  migrateAutomationAction,
 } from "../../../../data/script";
 import { describeAction } from "../../../../data/script_i18n";
 import { callExecuteScript } from "../../../../data/service";
@@ -63,7 +58,7 @@ import {
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant, ItemPath } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import "./types/ha-automation-action-activate_scene";
 import "./types/ha-automation-action-choose";
@@ -72,10 +67,10 @@ import "./types/ha-automation-action-delay";
 import "./types/ha-automation-action-device_id";
 import "./types/ha-automation-action-event";
 import "./types/ha-automation-action-if";
-import "./types/ha-automation-action-sequence";
 import "./types/ha-automation-action-parallel";
 import "./types/ha-automation-action-play_media";
 import "./types/ha-automation-action-repeat";
+import "./types/ha-automation-action-sequence";
 import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-set_conversation_response";
 import "./types/ha-automation-action-stop";
@@ -86,8 +81,8 @@ export const getType = (action: Action | undefined) => {
   if (!action) {
     return undefined;
   }
-  if ("service" in action || "scene" in action) {
-    return getActionType(action) as "activate_scene" | "service" | "play_media";
+  if ("action" in action || "scene" in action) {
+    return getActionType(action) as "activate_scene" | "action" | "play_media";
   }
   if (["and", "or", "not"].some((key) => key in action)) {
     return "condition" as const;
@@ -135,8 +130,6 @@ export default class HaAutomationActionRow extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Array }) public path?: ItemPath;
-
   @property({ type: Boolean }) public first?: boolean;
 
   @property({ type: Boolean }) public last?: boolean;
@@ -159,7 +152,7 @@ export default class HaAutomationActionRow extends LitElement {
 
   @state()
   @consume({ context: floorsContext, subscribe: true })
-  _floorReg!: FloorRegistryEntry[];
+  _floorReg!: { [id: string]: FloorRegistryEntry };
 
   @state() private _warnings?: string[];
 
@@ -213,12 +206,12 @@ export default class HaAutomationActionRow extends LitElement {
         <ha-expansion-panel leftChevron>
           <h3 slot="header">
             ${type === "service" &&
-            "service" in this.action &&
-            this.action.service
+            "action" in this.action &&
+            this.action.action
               ? html`<ha-service-icon
                   class="action-icon"
                   .hass=${this.hass}
-                  .service=${this.action.service}
+                  .service=${this.action.action}
                 ></ha-service-icon>`
               : html`<ha-svg-icon
                   class="action-icon"
@@ -253,6 +246,7 @@ export default class HaAutomationActionRow extends LitElement {
             slot="icons"
             @action=${this._handleAction}
             @click=${preventDefault}
+            @closed=${stopPropagation}
             fixed
           >
             <ha-icon-button
@@ -429,7 +423,6 @@ export default class HaAutomationActionRow extends LitElement {
                       action: this.action,
                       narrow: this.narrow,
                       disabled: this.disabled,
-                      path: this.path,
                     })}
                   </div>
                 `}
@@ -508,15 +501,15 @@ export default class HaAutomationActionRow extends LitElement {
 
   private async _runAction() {
     const validated = await validateConfig(this.hass, {
-      action: this.action,
+      actions: this.action,
     });
 
-    if (!validated.action.valid) {
+    if (!validated.actions.valid) {
       showAlertDialog(this, {
         title: this.hass.localize(
           "ui.panel.config.automation.editor.actions.invalid_action"
         ),
-        text: validated.action.error,
+        text: validated.actions.error,
       });
       return;
     }
@@ -562,7 +555,9 @@ export default class HaAutomationActionRow extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    fireEvent(this, "value-changed", { value: ev.detail.value });
+    fireEvent(this, "value-changed", {
+      value: migrateAutomationAction(ev.detail.value),
+    });
   }
 
   private _onUiChanged(ev: CustomEvent) {

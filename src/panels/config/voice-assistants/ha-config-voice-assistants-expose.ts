@@ -6,19 +6,21 @@ import {
   mdiPlus,
   mdiPlusBoxMultiple,
 } from "@mdi/js";
-import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoize from "memoize-one";
-import { HASSDomEvent, fireEvent } from "../../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import type { EntityFilter } from "../../../common/entity/entity_filter";
 import {
-  EntityFilter,
   generateFilter,
   isEmptyFilter,
 } from "../../../common/entity/entity_filter";
 import { navigate } from "../../../common/navigate";
-import {
+import type {
   DataTableColumnContainer,
   DataTableRowData,
   RowClickedEvent,
@@ -26,29 +28,23 @@ import {
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-fab";
-import { AlexaEntity, fetchCloudAlexaEntities } from "../../../data/alexa";
-import { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
+import type { AlexaEntity } from "../../../data/alexa";
+import { fetchCloudAlexaEntities } from "../../../data/alexa";
+import type { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
 import { entitiesContext } from "../../../data/context";
-import {
-  ExtEntityRegistryEntry,
-  getExtendedEntityRegistryEntries,
-} from "../../../data/entity_registry";
-import {
-  ExposeEntitySettings,
-  exposeEntities,
-  voiceAssistants,
-} from "../../../data/expose";
-import {
-  GoogleEntity,
-  fetchCloudGoogleEntities,
-} from "../../../data/google_assistant";
+import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
+import { getExtendedEntityRegistryEntries } from "../../../data/entity_registry";
+import type { ExposeEntitySettings } from "../../../data/expose";
+import { exposeEntities, voiceAssistants } from "../../../data/expose";
+import type { GoogleEntity } from "../../../data/google_assistant";
+import { fetchCloudGoogleEntities } from "../../../data/google_assistant";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant, Route } from "../../../types";
-import { LocalizeFunc } from "../../../common/translations/localize";
+import type { HomeAssistant, Route } from "../../../types";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "./expose/expose-assistant-icon";
 import { voiceAssistantTabs } from "./ha-config-voice-assistants";
 import { showExposeEntityDialog } from "./show-dialog-expose-entity";
@@ -80,7 +76,13 @@ export class VoiceAssistantsExpose extends LitElement {
 
   @state() private _extEntities?: Record<string, ExtEntityRegistryEntry>;
 
-  @state() private _filter: string = history.state?.filter || "";
+  @storage({
+    storage: "sessionStorage",
+    key: "voice-expose-table-search",
+    state: true,
+    subscribe: false,
+  })
+  private _filter = "";
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
@@ -112,6 +114,20 @@ export class VoiceAssistantsExpose extends LitElement {
   })
   private _activeCollapsed?: string;
 
+  @storage({
+    key: "voice-expose-table-column-order",
+    state: false,
+    subscribe: false,
+  })
+  private _activeColumnOrder?: string[];
+
+  @storage({
+    key: "voice-expose-table-hidden-columns",
+    state: false,
+    subscribe: false,
+  })
+  private _activeHiddenColumns?: string[];
+
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
 
@@ -131,6 +147,7 @@ export class VoiceAssistantsExpose extends LitElement {
       icon: {
         title: "",
         type: "icon",
+        moveable: false,
         hidden: narrow,
         template: (entry) => html`
           <ha-state-icon
@@ -146,11 +163,21 @@ export class VoiceAssistantsExpose extends LitElement {
         sortable: true,
         filterable: true,
         direction: "asc",
-        grows: true,
-        template: (entry) => html`
-          ${entry.name}<br />
-          <div class="secondary">${entry.entity_id}</div>
-        `,
+        flex: 2,
+        template: narrow
+          ? undefined
+          : (entry) => html`
+              ${entry.name}<br />
+              <div class="secondary">${entry.entity_id}</div>
+            `,
+      },
+      // For search & narrow
+      entity_id: {
+        title: localize(
+          "ui.panel.config.voice_assistants.expose.headers.entity_id"
+        ),
+        hidden: !narrow,
+        filterable: true,
       },
       domain: {
         title: localize(
@@ -165,17 +192,17 @@ export class VoiceAssistantsExpose extends LitElement {
         title: localize("ui.panel.config.voice_assistants.expose.headers.area"),
         sortable: true,
         groupable: true,
-        hidden: narrow,
         filterable: true,
-        width: "15%",
       },
       assistants: {
         title: localize(
           "ui.panel.config.voice_assistants.expose.headers.assistants"
         ),
+        showNarrow: true,
         sortable: true,
         filterable: true,
-        width: "160px",
+        minWidth: "160px",
+        maxWidth: "160px",
         type: "flex",
         template: (entry) =>
           html`${availableAssistants.map((key) => {
@@ -202,8 +229,6 @@ export class VoiceAssistantsExpose extends LitElement {
         ),
         sortable: true,
         filterable: true,
-        hidden: narrow,
-        width: "15%",
         template: (entry) =>
           entry.aliases.length === 0
             ? "-"
@@ -223,12 +248,6 @@ export class VoiceAssistantsExpose extends LitElement {
             @click=${this._removeEntity}
             .path=${mdiCloseCircleOutline}
           ></ha-icon-button>`,
-      },
-      // For search
-      entity_id: {
-        title: "",
-        hidden: true,
-        filterable: true,
       },
     })
   );
@@ -546,6 +565,9 @@ export class VoiceAssistantsExpose extends LitElement {
         .initialSorting=${this._activeSorting}
         .initialGroupColumn=${this._activeGrouping}
         .initialCollapsedGroups=${this._activeCollapsed}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
+        @columns-changed=${this._handleColumnsChanged}
         @sorting-changed=${this._handleSortingChanged}
         @selection-changed=${this._handleSelectionChanged}
         @grouping-changed=${this._handleGroupingChanged}
@@ -634,7 +656,6 @@ export class VoiceAssistantsExpose extends LitElement {
 
   private _handleSearchChange(ev: CustomEvent) {
     this._filter = ev.detail.value;
-    history.replaceState({ filter: this._filter }, "");
   }
 
   private _handleSelectionChanged(
@@ -750,6 +771,11 @@ export class VoiceAssistantsExpose extends LitElement {
 
   private _handleCollapseChanged(ev: CustomEvent) {
     this._activeCollapsed = ev.detail.value;
+  }
+
+  private _handleColumnsChanged(ev: CustomEvent) {
+    this._activeColumnOrder = ev.detail.columnOrder;
+    this._activeHiddenColumns = ev.detail.hiddenColumns;
   }
 
   static get styles(): CSSResultGroup {

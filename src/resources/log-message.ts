@@ -1,4 +1,3 @@
-import "core-js/modules/web.url.can-parse";
 import { fromError } from "stacktrace-js";
 import { UAParser } from "ua-parser-js";
 

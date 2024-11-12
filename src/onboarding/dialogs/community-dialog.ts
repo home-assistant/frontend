@@ -3,7 +3,7 @@ import { mdiOpenInNew } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import { LocalizeFunc } from "../../common/translations/localize";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-list-item";
 
@@ -72,11 +72,11 @@ class DialogCommunity extends LitElement {
         <a
           target="_blank"
           rel="noreferrer noopener"
-          href="https://twitter.com/home_assistant"
+          href="https://x.com/home_assistant"
         >
           <ha-list-item hasMeta graphic="icon">
-            <img src="/static/images/logo_twitter.png" slot="graphic" />
-            ${this.localize("ui.panel.page-onboarding.welcome.twitter")}
+            <img class="x" src="/static/images/logo_x.svg" slot="graphic" />
+            ${this.localize("ui.panel.page-onboarding.welcome.x")}
             <ha-svg-icon slot="meta" .path=${mdiOpenInNew}></ha-svg-icon>
           </ha-list-item>
         </a>
@@ -95,6 +95,12 @@ class DialogCommunity extends LitElement {
     }
     a {
       text-decoration: none;
+    }
+
+    @media (prefers-color-scheme: light) {
+      img.x {
+        filter: invert(1) hue-rotate(180deg);
+      }
     }
   `;
 }

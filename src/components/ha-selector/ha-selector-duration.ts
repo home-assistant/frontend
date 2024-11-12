@@ -30,6 +30,7 @@ export class HaTimeDuration extends LitElement {
         .disabled=${this.disabled}
         .required=${this.required}
         ?enableDay=${this.selector.duration?.enable_day}
+        ?enableMillisecond=${this.selector.duration?.enable_millisecond}
       ></ha-duration-input>
     `;
   }

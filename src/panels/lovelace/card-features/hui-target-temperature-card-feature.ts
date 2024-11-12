@@ -1,5 +1,6 @@
-import { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing, PropertyValues } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { UNIT_F } from "../../../common/const";
@@ -10,15 +11,15 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-number-buttons";
-import { ClimateEntity, ClimateEntityFeature } from "../../../data/climate";
+import type { ClimateEntity } from "../../../data/climate";
+import { ClimateEntityFeature } from "../../../data/climate";
 import { UNAVAILABLE } from "../../../data/entity";
-import {
-  WaterHeaterEntity,
-  WaterHeaterEntityFeature,
-} from "../../../data/water_heater";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCardFeature } from "../types";
-import { TargetTemperatureCardFeatureConfig } from "./types";
+import type { WaterHeaterEntity } from "../../../data/water_heater";
+import { WaterHeaterEntityFeature } from "../../../data/water_heater";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardFeature } from "../types";
+import { cardFeatureStyles } from "./common/card-feature-styles";
+import type { TargetTemperatureCardFeatureConfig } from "./types";
 
 type Target = "value" | "low" | "high";
 
@@ -283,12 +284,7 @@ class HuiTargetTemperatureCardFeature
   }
 
   static get styles() {
-    return css`
-      ha-control-button-group {
-        margin: 0 12px 12px 12px;
-        --control-button-group-spacing: 12px;
-      }
-    `;
+    return cardFeatureStyles;
   }
 }
 

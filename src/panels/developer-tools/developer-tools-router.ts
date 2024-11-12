@@ -1,6 +1,7 @@
 import { customElement, property } from "lit/decorators";
-import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
-import { HomeAssistant } from "../../types";
+import type { RouterOptions } from "../../layouts/hass-router-page";
+import { HassRouterPage } from "../../layouts/hass-router-page";
+import type { HomeAssistant } from "../../types";
 
 @customElement("developer-tools-router")
 class DeveloperToolsRouter extends HassRouterPage {
@@ -24,9 +25,10 @@ class DeveloperToolsRouter extends HassRouterPage {
         tag: "developer-tools-event",
         load: () => import("./event/developer-tools-event"),
       },
-      service: {
-        tag: "developer-tools-service",
-        load: () => import("./service/developer-tools-service"),
+      service: "action",
+      action: {
+        tag: "developer-tools-action",
+        load: () => import("./action/developer-tools-action"),
       },
       state: {
         tag: "developer-tools-state",

@@ -1,25 +1,19 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { debounce } from "../common/util/debounce";
-import { listSTTEngines, STTEngine } from "../data/stt";
-import { HomeAssistant } from "../types";
+import type { STTEngine } from "../data/stt";
+import { listSTTEngines } from "../data/stt";
+import type { HomeAssistant } from "../types";
 import "./ha-list-item";
 import "./ha-select";
 import type { HaSelect } from "./ha-select";
+import { computeDomain } from "../common/entity/compute_domain";
 
 const NONE = "__NONE_OPTION__";
-
-const NAME_MAP = { cloud: "Home Assistant Cloud" };
 
 @customElement("ha-stt-picker")
 export class HaSTTPicker extends LitElement {
@@ -41,13 +35,32 @@ export class HaSTTPicker extends LitElement {
     if (!this._engines) {
       return nothing;
     }
-    const value =
-      this.value ??
-      (this.required
-        ? this._engines.find(
-            (engine) => engine.supported_languages?.length !== 0
-          )
-        : NONE);
+
+    let value = this.value;
+    if (!value && this.required) {
+      for (const entity of Object.values(this.hass.entities)) {
+        if (
+          entity.platform === "cloud" &&
+          computeDomain(entity.entity_id) === "stt"
+        ) {
+          value = entity.entity_id;
+          break;
+        }
+      }
+
+      if (!value) {
+        for (const sttEngine of this._engines) {
+          if (sttEngine?.supported_languages?.length !== 0) {
+            value = sttEngine.engine_id;
+            break;
+          }
+        }
+      }
+    }
+    if (!value) {
+      value = NONE;
+    }
+
     return html`
       <ha-select
         .label=${this.label ||
@@ -66,12 +79,15 @@ export class HaSTTPicker extends LitElement {
             </ha-list-item>`
           : nothing}
         ${this._engines.map((engine) => {
-          let label = engine.engine_id;
+          if (engine.deprecated && engine.engine_id !== value) {
+            return nothing;
+          }
+          let label: string;
           if (engine.engine_id.includes(".")) {
             const stateObj = this.hass!.states[engine.engine_id];
             label = stateObj ? computeStateName(stateObj) : engine.engine_id;
-          } else if (engine.engine_id in NAME_MAP) {
-            label = NAME_MAP[engine.engine_id];
+          } else {
+            label = engine.name || engine.engine_id;
           }
           return html`<ha-list-item
             .value=${engine.engine_id}

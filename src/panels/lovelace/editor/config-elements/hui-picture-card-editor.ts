@@ -2,12 +2,12 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert, assign, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { SchemaUnion } from "../../../../components/ha-form/types";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
 import "../../../../components/ha-theme-picker";
-import { HomeAssistant } from "../../../../types";
-import { PictureCardConfig } from "../../cards/types";
+import type { HomeAssistant } from "../../../../types";
+import type { PictureCardConfig } from "../../cards/types";
 import "../../components/hui-action-editor";
-import { LovelaceCardEditor } from "../../types";
+import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
@@ -25,7 +25,10 @@ const cardConfigStruct = assign(
 
 const SCHEMA = [
   { name: "image", selector: { image: {} } },
-  { name: "image_entity", selector: { entity: { domain: "image" } } },
+  {
+    name: "image_entity",
+    selector: { entity: { domain: ["image", "person"] } },
+  },
   { name: "alt_text", selector: { text: {} } },
   { name: "theme", selector: { theme: {} } },
   {

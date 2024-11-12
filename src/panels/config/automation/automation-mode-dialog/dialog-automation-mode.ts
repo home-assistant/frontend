@@ -1,22 +1,24 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import { mdiClose, mdiHelpCircle } from "@mdi/js";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-list-item-new";
-import "../../../../components/ha-list-new";
+import "../../../../components/ha-md-list-item";
+import "../../../../components/ha-md-list";
 import "../../../../components/ha-radio";
 import "../../../../components/ha-textfield";
+import "../../../../components/ha-dialog";
 
 import {
   AUTOMATION_DEFAULT_MAX,
   AUTOMATION_DEFAULT_MODE,
 } from "../../../../data/automation";
 import { MODES, isMaxMode } from "../../../../data/script";
-import { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
@@ -90,7 +92,7 @@ class DialogAutomationMode extends LitElement implements HassDialog {
             ></ha-icon-button>
           </a>
         </ha-dialog-header>
-        <ha-list-new
+        <ha-md-list
           role="listbox"
           tabindex="0"
           aria-activedescendant="option-${this._newMode}"
@@ -103,7 +105,7 @@ class DialogAutomationMode extends LitElement implements HassDialog {
               `ui.panel.config.automation.editor.modes.${mode}`
             );
             return html`
-              <ha-list-item-new
+              <ha-md-list-item
                 class="option"
                 type="button"
                 @click=${this._modeChanged}
@@ -132,10 +134,10 @@ class DialogAutomationMode extends LitElement implements HassDialog {
                     `ui.panel.config.automation.editor.modes.${mode}_description`
                   )}
                 </div>
-              </ha-list-item-new>
+              </ha-md-list-item>
             `;
           })}
-        </ha-list-new>
+        </ha-md-list>
 
         ${isMaxMode(this._newMode)
           ? html`
@@ -147,7 +149,7 @@ class DialogAutomationMode extends LitElement implements HassDialog {
                   type="number"
                   name="max"
                   .value=${this._newMax?.toString() ?? ""}
-                  @change=${this._valueChanged}
+                  @input=${this._valueChanged}
                   class="max"
                 >
                 </ha-textfield>

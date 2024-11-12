@@ -1,8 +1,9 @@
-import {
+import type {
   HassEntityAttributeBase,
   HassEntityBase,
   HassServiceTarget,
 } from "home-assistant-js-websocket";
+import type { Describe } from "superstruct";
 import {
   object,
   optional,
@@ -12,21 +13,22 @@ import {
   assign,
   literal,
   is,
-  Describe,
   boolean,
 } from "superstruct";
 import { arrayLiteralIncludes } from "../common/array/literal-includes";
 import { navigate } from "../common/navigate";
-import { HomeAssistant } from "../types";
-import {
+import type { HomeAssistant } from "../types";
+import type {
   Condition,
   ShorthandAndCondition,
   ShorthandNotCondition,
   ShorthandOrCondition,
   Trigger,
 } from "./automation";
-import { BlueprintInput } from "./blueprint";
+import { migrateAutomationTrigger } from "./automation";
+import type { BlueprintInput } from "./blueprint";
 import { computeObjectId } from "../common/entity/compute_object_id";
+import { createSearchParam } from "../common/url/search-params";
 
 export const MODES = ["single", "restart", "queued", "parallel"] as const;
 export const MODES_MAX = ["queued", "parallel"] as const;
@@ -49,7 +51,7 @@ const targetStruct = object({
 export const serviceActionStruct: Describe<ServiceAction> = assign(
   baseActionStruct,
   object({
-    service: optional(string()),
+    action: optional(string()),
     service_template: optional(string()),
     entity_id: optional(string()),
     target: optional(targetStruct),
@@ -62,7 +64,7 @@ export const serviceActionStruct: Describe<ServiceAction> = assign(
 const playMediaActionStruct: Describe<PlayMediaAction> = assign(
   baseActionStruct,
   object({
-    service: literal("media_player.play_media"),
+    action: literal("media_player.play_media"),
     target: optional(object({ entity_id: optional(string()) })),
     entity_id: optional(string()),
     data: object({ media_content_id: string(), media_content_type: string() }),
@@ -73,7 +75,7 @@ const playMediaActionStruct: Describe<PlayMediaAction> = assign(
 const activateSceneActionStruct: Describe<ServiceSceneAction> = assign(
   baseActionStruct,
   object({
-    service: literal("scene.turn_on"),
+    action: literal("scene.turn_on"),
     target: optional(object({ entity_id: optional(string()) })),
     entity_id: optional(string()),
     metadata: object(),
@@ -132,7 +134,7 @@ export interface EventAction extends BaseAction {
 }
 
 export interface ServiceAction extends BaseAction {
-  service?: string;
+  action?: string;
   service_template?: string;
   entity_id?: string;
   target?: HassServiceTarget;
@@ -160,7 +162,7 @@ export interface DelayAction extends BaseAction {
 }
 
 export interface ServiceSceneAction extends BaseAction {
-  service: "scene.turn_on";
+  action: "scene.turn_on";
   target?: { entity_id?: string };
   entity_id?: string;
   metadata: Record<string, unknown>;
@@ -191,7 +193,7 @@ export interface WaitForTriggerAction extends BaseAction {
 }
 
 export interface PlayMediaAction extends BaseAction {
-  service: "media_player.play_media";
+  action: "media_player.play_media";
   target?: { entity_id?: string };
   entity_id?: string;
   data: { media_content_id: string; media_content_type: string };
@@ -222,13 +224,14 @@ export interface ForEachRepeat extends BaseRepeat {
   for_each: string | any[];
 }
 
-export interface ChooseActionChoice extends BaseAction {
+export interface Option {
+  alias?: string;
   conditions: string | Condition[];
   sequence: Action | Action[];
 }
 
 export interface ChooseAction extends BaseAction {
-  choose: ChooseActionChoice | ChooseActionChoice[] | null;
+  choose: Option | Option[] | null;
   default?: Action | Action[];
 }
 
@@ -346,9 +349,13 @@ export const getScriptStateConfig = (hass: HomeAssistant, entity_id: string) =>
     entity_id,
   });
 
-export const showScriptEditor = (data?: Partial<ScriptConfig>) => {
+export const showScriptEditor = (
+  data?: Partial<ScriptConfig>,
+  expanded?: boolean
+) => {
   inititialScriptEditorData = data;
-  navigate("/config/script/edit/new");
+  const params = expanded ? `?${createSearchParam({ expanded: "1" })}` : "";
+  navigate(`/config/script/edit/new${params}`);
 };
 
 export const getScriptEditorInitData = () => {
@@ -404,7 +411,7 @@ export const getActionType = (action: Action): ActionType => {
   if ("set_conversation_response" in action) {
     return "set_conversation_response";
   }
-  if ("service" in action) {
+  if ("action" in action || "service" in action) {
     if ("metadata" in action) {
       if (is(action, activateSceneActionStruct)) {
         return "activate_scene";
@@ -424,4 +431,66 @@ export const hasScriptFields = (
 ): boolean => {
   const fields = hass.services.script[computeObjectId(entityId)]?.fields;
   return fields !== undefined && Object.keys(fields).length > 0;
+};
+
+export const migrateAutomationAction = (
+  action: Action | Action[]
+): Action | Action[] => {
+  if (Array.isArray(action)) {
+    return action.map(migrateAutomationAction) as Action[];
+  }
+
+  if ("service" in action) {
+    if (!("action" in action)) {
+      action.action = action.service;
+    }
+    delete action.service;
+  }
+
+  if ("sequence" in action) {
+    for (const sequenceAction of (action as SequenceAction).sequence) {
+      migrateAutomationAction(sequenceAction);
+    }
+  }
+
+  const actionType = getActionType(action);
+
+  if (actionType === "parallel") {
+    const _action = action as ParallelAction;
+    migrateAutomationAction(_action.parallel);
+  }
+
+  if (actionType === "choose") {
+    const _action = action as ChooseAction;
+    if (Array.isArray(_action.choose)) {
+      for (const choice of _action.choose) {
+        migrateAutomationAction(choice.sequence);
+      }
+    } else if (_action.choose) {
+      migrateAutomationAction(_action.choose.sequence);
+    }
+    if (_action.default) {
+      migrateAutomationAction(_action.default);
+    }
+  }
+
+  if (actionType === "repeat") {
+    const _action = action as RepeatAction;
+    migrateAutomationAction(_action.repeat.sequence);
+  }
+
+  if (actionType === "if") {
+    const _action = action as IfAction;
+    migrateAutomationAction(_action.then);
+    if (_action.else) {
+      migrateAutomationAction(_action.else);
+    }
+  }
+
+  if (actionType === "wait_for_trigger") {
+    const _action = action as WaitForTriggerAction;
+    migrateAutomationTrigger(_action.wait_for_trigger);
+  }
+
+  return action;
 };

@@ -1,7 +1,7 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { StatisticSelector } from "../../data/selector";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import "../entity/ha-statistics-picker";
 
 @customElement("ha-selector-statistic")

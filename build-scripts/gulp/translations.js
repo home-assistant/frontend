@@ -244,11 +244,11 @@ const createTranslations = async () => {
   // TODO: This is a naive interpretation of BCP47 that should be improved.
   //       Will be OK for now as long as we don't have anything more complicated
   // than a base translation + region.
-  gulp
+  const masterStream = gulp
     .src(`${workDir}/en.json`)
-    .pipe(new PassThrough({ objectMode: true }))
-    .pipe(hashStream, { end: false });
-  const mergesFinished = [];
+    .pipe(new PassThrough({ objectMode: true }));
+  masterStream.pipe(hashStream, { end: false });
+  const mergesFinished = [finished(masterStream)];
   for (const translationFile of translationFiles) {
     const locale = basename(translationFile, ".json");
     const subtags = locale.split("-");

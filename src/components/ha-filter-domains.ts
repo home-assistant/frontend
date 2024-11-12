@@ -1,5 +1,7 @@
+import "@material/mwc-list/mwc-list";
 import { mdiFilterVariantRemove } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
@@ -9,6 +11,8 @@ import { domainToName } from "../data/integration";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-domain-icon";
+import "./ha-expansion-panel";
+import "./ha-check-list-item";
 import "./search-input-outlined";
 import { computeDomain } from "../common/entity/compute_domain";
 
@@ -89,13 +93,18 @@ export class HaFilterDomains extends LitElement {
     });
 
     return Array.from(domains.values())
+      .map((domain) => ({
+        domain,
+        name: domainToName(this.hass.localize, domain),
+      }))
       .filter(
         (entry) =>
           !filter ||
-          entry.toLowerCase().includes(filter) ||
-          domainToName(this.hass.localize, entry).toLowerCase().includes(filter)
+          entry.domain.toLowerCase().includes(filter) ||
+          entry.name.toLowerCase().includes(filter)
       )
-      .sort((a, b) => stringCompare(a, b, this.hass.locale.language));
+      .sort((a, b) => stringCompare(a.name, b.name, this.hass.locale.language))
+      .map((entry) => entry.domain);
   });
 
   protected updated(changed) {

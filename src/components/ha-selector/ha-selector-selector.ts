@@ -1,8 +1,12 @@
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
-import { LocalizeFunc, LocalizeKeys } from "../../common/translations/localize";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../common/translations/localize";
 import type { HomeAssistant } from "../../types";
 import "../ha-alert";
 import "../ha-form/ha-form";
@@ -57,8 +61,18 @@ const SELECTOR_SCHEMAS = {
       name: "enable_day",
       selector: { boolean: {} },
     },
+    {
+      name: "enable_millisecond",
+      selector: { boolean: {} },
+    },
   ] as const,
   entity: [
+    {
+      name: "multiple",
+      selector: { boolean: {} },
+    },
+  ] as const,
+  floor: [
     {
       name: "multiple",
       selector: { boolean: {} },

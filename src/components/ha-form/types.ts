@@ -1,5 +1,5 @@
 import type { LitElement } from "lit";
-import { Selector } from "../../data/selector";
+import type { Selector } from "../../data/selector";
 import type { HaDurationData } from "../ha-duration-input";
 
 export type HaFormSchema =
@@ -31,15 +31,15 @@ export interface HaFormBaseSchema {
 
 export interface HaFormGridSchema extends HaFormBaseSchema {
   type: "grid";
-  name: string;
+  flatten?: boolean;
   column_min_width?: string;
   schema: readonly HaFormSchema[];
 }
 
 export interface HaFormExpandableSchema extends HaFormBaseSchema {
   type: "expandable";
-  name: "";
-  title: string;
+  flatten?: boolean;
+  title?: string;
   icon?: string;
   iconPath?: string;
   expanded?: boolean;
@@ -100,7 +100,7 @@ export type SchemaUnion<
   SchemaArray extends readonly HaFormSchema[],
   Schema = SchemaArray[number],
 > = Schema extends HaFormGridSchema | HaFormExpandableSchema
-  ? SchemaUnion<Schema["schema"]>
+  ? SchemaUnion<Schema["schema"]> | Schema
   : Schema;
 
 export interface HaFormDataContainer {

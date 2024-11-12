@@ -1,15 +1,9 @@
 import { mdiClose, mdiMagnify } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "./ha-icon-button";
 import "./ha-outlined-text-field";
 import type { HaOutlinedTextField } from "./ha-outlined-text-field";
@@ -79,7 +73,7 @@ class SearchInputOutlined extends LitElement {
   }
 
   private async _filterInputChanged(e) {
-    this._filterChanged(e.target.value?.trim());
+    this._filterChanged(e.target.value);
   }
 
   private async _clearSearch() {

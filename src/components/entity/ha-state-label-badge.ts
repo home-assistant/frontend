@@ -1,13 +1,7 @@
 import { mdiAlert } from "@mdi/js";
-import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { arrayLiteralIncludes } from "../../common/array/literal-includes";
@@ -21,9 +15,9 @@ import {
   isNumericState,
 } from "../../common/number/format_number";
 import { isUnavailableState, UNAVAILABLE, UNKNOWN } from "../../data/entity";
-import { EntityRegistryDisplayEntry } from "../../data/entity_registry";
+import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
 import { timerTimeRemaining } from "../../data/timer";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import "../ha-label-badge";
 import "../ha-state-icon";
 
@@ -134,7 +128,7 @@ export class HaStateLabelBadge extends LitElement {
           this._timerTimeRemaining
         )}
         .description=${this.showName
-          ? this.name ?? computeStateName(entityState)
+          ? (this.name ?? computeStateName(entityState))
           : undefined}
       >
         ${!image && showIcon

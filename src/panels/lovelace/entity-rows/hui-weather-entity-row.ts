@@ -1,20 +1,13 @@
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { isUnavailableState } from "../../../data/entity";
-import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import type { ForecastEvent, WeatherEntity } from "../../../data/weather";
 import {
-  ForecastEvent,
-  WeatherEntity,
   getDefaultForecastType,
   getForecast,
   getSecondaryWeatherAttribute,
@@ -26,7 +19,7 @@ import type { HomeAssistant } from "../../../types";
 import type { EntitiesCardEntityConfig } from "../cards/types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
-import { hasAction } from "../common/has-action";
+import { hasAction, hasAnyAction } from "../common/has-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -118,9 +111,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
       `;
     }
 
-    const pointer = !(
-      this._config.tap_action && this._config.tap_action.action !== "none"
-    );
+    const pointer = hasAnyAction(this._config);
 
     const hasSecondary = this._config.secondary_info;
     const weatherStateIcon = getWeatherStateIcon(stateObj.state, this);
@@ -138,7 +129,11 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
-        tabindex=${ifDefined(pointer ? "0" : undefined)}
+        tabindex=${ifDefined(
+          !this._config.tap_action || hasAction(this._config.tap_action)
+            ? "0"
+            : undefined
+        )}
       >
         ${weatherStateIcon ||
         html`

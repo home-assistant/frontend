@@ -1,6 +1,7 @@
-import { PropertyValues, ReactiveElement } from "lit";
+import type { PropertyValues } from "lit";
+import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { evaluateStateFilter } from "../common/evaluate-filter";
 import { processConfigEntities } from "../common/process-config-entities";
 import {
@@ -8,21 +9,24 @@ import {
   checkConditionsMet,
   extractConditionEntityIds,
 } from "../common/validate-condition";
-import { createBadgeElement } from "../create-element/create-badge-element";
-import { EntityFilterEntityConfig } from "../entity-rows/types";
-import { LovelaceBadge } from "../types";
-import { EntityFilterBadgeConfig } from "./types";
+import type { EntityFilterEntityConfig } from "../entity-rows/types";
+import type { LovelaceBadge } from "../types";
+import "./hui-badge";
+import type { HuiBadge } from "./hui-badge";
+import type { EntityFilterBadgeConfig } from "./types";
 
 @customElement("hui-entity-filter-badge")
 export class HuiEntityFilterBadge
   extends ReactiveElement
   implements LovelaceBadge
 {
+  @property({ attribute: false }) public preview = false;
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EntityFilterBadgeConfig;
 
-  private _elements?: LovelaceBadge[];
+  private _elements?: HuiBadge[];
 
   private _configEntities?: EntityFilterEntityConfig[];
 
@@ -121,8 +125,14 @@ export class HuiEntityFilterBadge
     if (!isSame) {
       this._elements = [];
       for (const badgeConfig of entitiesList) {
-        const element = createBadgeElement(badgeConfig);
+        const element = document.createElement("hui-badge");
         element.hass = this.hass;
+        element.preview = this.preview;
+        element.config = {
+          type: "entity",
+          ...badgeConfig,
+        };
+        element.load();
         this._elements.push(element);
       }
       this._oldEntities = entitiesList;
@@ -140,7 +150,10 @@ export class HuiEntityFilterBadge
       this.appendChild(element);
     }
 
-    this.style.display = "inline";
+    this.style.display = "flex";
+    this.style.flexWrap = "wrap";
+    this.style.justifyContent = "center";
+    this.style.gap = "8px";
   }
 
   private haveEntitiesChanged(oldHass?: HomeAssistant): boolean {

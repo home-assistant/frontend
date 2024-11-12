@@ -4,20 +4,20 @@ import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { formatListWithAnds } from "../common/string/format-list";
 import { isTemplate } from "../common/string/has-template";
-import { HomeAssistant } from "../types";
-import { Condition } from "./automation";
+import type { HomeAssistant } from "../types";
+import type { Condition } from "./automation";
 import { describeCondition } from "./automation_i18n";
 import { localizeDeviceAutomationAction } from "./device_automation";
 import { computeDeviceName } from "./device_registry";
+import type { EntityRegistryEntry } from "./entity_registry";
 import {
-  EntityRegistryEntry,
   computeEntityRegistryName,
   entityRegistryById,
 } from "./entity_registry";
-import { FloorRegistryEntry } from "./floor_registry";
+import type { FloorRegistryEntry } from "./floor_registry";
 import { domainToName } from "./integration";
-import { LabelRegistryEntry } from "./label_registry";
-import {
+import type { LabelRegistryEntry } from "./label_registry";
+import type {
   ActionType,
   ActionTypes,
   ChooseAction,
@@ -34,8 +34,8 @@ import {
   StopAction,
   VariablesAction,
   WaitForTriggerAction,
-  getActionType,
 } from "./script";
+import { getActionType } from "./script";
 
 const actionTranslationBaseKey =
   "ui.panel.config.automation.editor.actions.type";
@@ -44,13 +44,13 @@ export const describeAction = <T extends ActionType>(
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],
   labelRegistry: LabelRegistryEntry[],
-  floorRegistry: FloorRegistryEntry[],
+  floorRegistry: { [id: string]: FloorRegistryEntry },
   action: ActionTypes[T],
   actionType?: T,
   ignoreAlias = false
 ): string => {
   try {
-    return tryDescribeAction(
+    const description = tryDescribeAction(
       hass,
       entityRegistry,
       labelRegistry,
@@ -59,6 +59,10 @@ export const describeAction = <T extends ActionType>(
       actionType,
       ignoreAlias
     );
+    if (typeof description !== "string") {
+      throw new Error(String(description));
+    }
+    return description;
   } catch (error: any) {
     // eslint-disable-next-line no-console
     console.error(error);
@@ -74,7 +78,7 @@ const tryDescribeAction = <T extends ActionType>(
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],
   labelRegistry: LabelRegistryEntry[],
-  floorRegistry: FloorRegistryEntry[],
+  floorRegistry: { [id: string]: FloorRegistryEntry },
   action: ActionTypes[T],
   actionType?: T,
   ignoreAlias = false
@@ -127,6 +131,12 @@ const tryDescribeAction = <T extends ActionType>(
                 targets.push(
                   computeEntityRegistryName(hass, entityReg) || targetThing
                 );
+              } else if (targetThing === "all") {
+                targets.push(
+                  hass.localize(
+                    `${actionTranslationBaseKey}.service.description.target_every_entity`
+                  )
+                );
               } else {
                 targets.push(
                   hass.localize(
@@ -158,9 +168,7 @@ const tryDescribeAction = <T extends ActionType>(
               );
             }
           } else if (key === "floor_id") {
-            const floor = floorRegistry.find(
-              (flr) => flr.floor_id === targetThing
-            );
+            const floor = floorRegistry[targetThing] ?? undefined;
             if (floor?.name) {
               targets.push(floor.name);
             } else {
@@ -192,7 +200,7 @@ const tryDescribeAction = <T extends ActionType>(
 
     if (
       config.service_template ||
-      (config.service && isTemplate(config.service))
+      (config.action && isTemplate(config.action))
     ) {
       return hass.localize(
         targets.length
@@ -204,8 +212,8 @@ const tryDescribeAction = <T extends ActionType>(
       );
     }
 
-    if (config.service) {
-      const [domain, serviceName] = config.service.split(".", 2);
+    if (config.action) {
+      const [domain, serviceName] = config.action.split(".", 2);
       const service =
         hass.localize(`component.${domain}.services.${serviceName}.name`) ||
         hass.services[domain][serviceName]?.name;
@@ -217,7 +225,7 @@ const tryDescribeAction = <T extends ActionType>(
             : `${actionTranslationBaseKey}.service.description.service_name_no_targets`,
           {
             domain: domainToName(hass.localize, domain),
-            name: service || config.service,
+            name: service || config.action,
             targets: formatListWithAnds(hass.locale, targets),
           }
         );
@@ -230,7 +238,7 @@ const tryDescribeAction = <T extends ActionType>(
         {
           name: service
             ? `${domainToName(hass.localize, domain)}: ${service}`
-            : config.service,
+            : config.action,
           targets: formatListWithAnds(hass.locale, targets),
         }
       );

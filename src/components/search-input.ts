@@ -1,11 +1,12 @@
 import { mdiClose, mdiMagnify } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import "./ha-icon-button";
 import "./ha-svg-icon";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import { fireEvent } from "../common/dom/fire_event";
 
 @customElement("search-input")
@@ -67,7 +68,7 @@ class SearchInput extends LitElement {
   }
 
   private async _filterInputChanged(e) {
-    this._filterChanged(e.target.value?.trim());
+    this._filterChanged(e.target.value);
   }
 
   private async _clearSearch() {

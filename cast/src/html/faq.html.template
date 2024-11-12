@@ -36,13 +36,7 @@
   </head>
   <body>
     <%= renderTemplate("../../../src/html/_js_base.html.template") %>
-    <script>
-      <% for (const entry of latestEntryJS) { %>
-        import("<%= entry %>");
-      <% } %>
-      window.latestJS = true;
-    </script>
-    <%= renderTemplate("../../../src/html/_script_load_es5.html.template") %>
+    <%= renderTemplate("../../../src/html/_script_loader.html.template") %>
     <hc-layout subtitle="FAQ">
       <style>
         a {
@@ -145,7 +139,7 @@
         </p>
       </div>
 
-      <div class="section-header">Wat does Home Assistant Cast do?</div>
+      <div class="section-header">What does Home Assistant Cast do?</div>
       <div class="card-content">
         <p>
           Home Assistant Cast is a receiver application for the Chromecast. When
@@ -232,17 +226,5 @@ http:
         </p>
       </div>
     </hc-layout>
-
-    <script>
-      var _gaq = [["_setAccount", "UA-57927901-9"], ["_trackPageview"]];
-      (function (d, t) {
-        var g = d.createElement(t),
-          s = d.getElementsByTagName(t)[0];
-        g.src =
-          ("https:" == location.protocol ? "//ssl" : "//www") +
-          ".google-analytics.com/ga.js";
-        s.parentNode.insertBefore(g, s);
-      })(document, "script");
-    </script>
   </body>
 </html>
