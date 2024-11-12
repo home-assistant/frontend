@@ -250,7 +250,6 @@ export class HaDateRangePicker extends LitElement {
       <div slot="input" class="date-range-inputs" @click=${this._handleClick}>
         ${!this.minimal
           ? html` <ha-svg-icon .path=${mdiCalendar}></ha-svg-icon>
-
               <ha-icon-button-prev
                 .label=${this.hass.localize("ui.common.previous")}
                 class="prev"
