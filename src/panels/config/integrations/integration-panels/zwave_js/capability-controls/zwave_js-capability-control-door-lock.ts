@@ -37,6 +37,10 @@ type DoorLockCapabilities = {
   autoRelockSupported?: boolean;
 };
 
+const DEFAULT_CAPABILITIES: DoorLockCapabilities = {
+  supportedOperationTypes: [1, 2],
+};
+
 @customElement("zwave_js-capability-control-door_lock")
 class ZWaveJSCapabilityDoorLock extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -234,11 +238,17 @@ class ZWaveJSCapabilityDoorLock extends LitElement {
         [],
         true
       );
-      this._capabilities = capabilities ?? {
-        supportedOperationTypes: [1, 2],
-      };
-    } catch (err) {
-      this._error = extractApiErrorMessage(err);
+      this._capabilities = capabilities ?? DEFAULT_CAPABILITIES;
+    } catch (err: any) {
+      if (
+        err?.code === "FailedZWaveCommand" &&
+        err?.message.includes("ZW0302")
+      ) {
+        // getCapabilities is not supported by some devices
+        this._capabilities = DEFAULT_CAPABILITIES;
+      } else {
+        this._error = extractApiErrorMessage(err);
+      }
     }
   }
 
@@ -280,10 +290,11 @@ class ZWaveJSCapabilityDoorLock extends LitElement {
   private _numberChanged(ev: CustomEvent) {
     const target = ev.target as HTMLInputElement;
     const key = target.getAttribute("key")!;
+    const value = parseInt(target.value);
     if (this._configuration) {
       this._configuration = {
         ...this._configuration,
-        [key]: parseInt(target.value),
+        [key]: Number.isNaN(value) ? undefined : value,
       };
     }
   }
