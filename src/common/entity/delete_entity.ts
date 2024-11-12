@@ -1,14 +1,14 @@
-import { HomeAssistant } from "../../types";
-import { IntegrationManifest } from "../../data/integration";
+import type { HomeAssistant } from "../../types";
+import type { IntegrationManifest } from "../../data/integration";
 import { computeDomain } from "./compute_domain";
 import { HELPERS_CRUD } from "../../data/helpers_crud";
-import { Helper, isHelperDomain } from "../../panels/config/helpers/const";
+import type { Helper } from "../../panels/config/helpers/const";
+import { isHelperDomain } from "../../panels/config/helpers/const";
 import { isComponentLoaded } from "../config/is_component_loaded";
-import {
-  removeEntityRegistryEntry,
-  EntityRegistryEntry,
-} from "../../data/entity_registry";
-import { ConfigEntry, deleteConfigEntry } from "../../data/config_entries";
+import type { EntityRegistryEntry } from "../../data/entity_registry";
+import { removeEntityRegistryEntry } from "../../data/entity_registry";
+import type { ConfigEntry } from "../../data/config_entries";
+import { deleteConfigEntry } from "../../data/config_entries";
 
 export const isDeletableEntity = (
   hass: HomeAssistant,
