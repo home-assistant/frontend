@@ -252,7 +252,8 @@ class HaWebRtcPlayer extends LitElement {
           this.hass,
           this.entityid!,
           event.session_id,
-          candidate
+          // toJSON returns RTCIceCandidateInit
+          candidate.toJSON()
         )
       );
       this._candidatesList = [];
@@ -266,9 +267,17 @@ class HaWebRtcPlayer extends LitElement {
       this._logEvent("remote ice candidate", event.candidate);
 
       try {
-        await this._peerConnection?.addIceCandidate(
-          new RTCIceCandidate(event.candidate)
-        );
+        // The spdMid or sdpMLineIndex is required so set sdpMid="0" if not
+        // sent from the backend.
+        const candidate =
+          event.candidate.sdpMid || event.candidate.sdpMLineIndex != null
+            ? new RTCIceCandidate(event.candidate)
+            : new RTCIceCandidate({
+                candidate: event.candidate.candidate,
+                sdpMid: "0",
+              });
+
+        await this._peerConnection?.addIceCandidate(candidate);
       } catch (err: any) {
         // eslint-disable-next-line no-console
         console.error(err);
@@ -296,7 +305,8 @@ class HaWebRtcPlayer extends LitElement {
         this.hass,
         this.entityid,
         this._sessionId,
-        event.candidate
+        // toJSON returns RTCIceCandidateInit
+        event.candidate.toJSON()
       );
     } else {
       this._candidatesList.push(event.candidate);
