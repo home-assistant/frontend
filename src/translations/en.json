@@ -2995,7 +2995,8 @@
                   "before": "Before",
                   "after": "After",
                   "description": {
-                    "picker": "When a calendar event starts or ends."
+                    "picker": "When a calendar event starts or ends.",
+                    "full": "When{offsetChoice, select, \n before { it's {offset} before}\n after { it's {offset} after}\n other {}\n} a calendar event{eventChoice, select, \n start { starts}\n end { ends}\n other { starts or ends}\n}{hasCalendar, select, \n true { in {calendar}}\n other {}\n}"
                   }
                 },
                 "device": {
