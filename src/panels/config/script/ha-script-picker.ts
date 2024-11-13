@@ -1296,7 +1296,6 @@ ${rejected
         ha-label {
           --ha-label-background-color: var(--color, var(--grey-color));
           --ha-label-background-opacity: 0.5;
-          border: 1px solid var(--outline-color);
         }
       `,
     ];
