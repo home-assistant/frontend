@@ -1,10 +1,9 @@
-import { PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
-import {
-  HassRouterPage,
-  RouterOptions,
-} from "../../../layouts/hass-router-page";
-import { HomeAssistant } from "../../../types";
+import type { RouterOptions } from "../../../layouts/hass-router-page";
+import { HassRouterPage } from "../../../layouts/hass-router-page";
+import "../../../layouts/hass-tabs-subpage-data-table";
+import type { HomeAssistant } from "../../../types";
 import "./ha-config-backup-dashboard";
 
 @customElement("ha-config-backup")

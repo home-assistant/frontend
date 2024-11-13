@@ -1,11 +1,5 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
@@ -15,8 +9,9 @@ import "../../components/ha-control-switch";
 import "../../components/ha-state-icon";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
 import { forwardHaptic } from "../../data/haptics";
-import { callProtectedLockService, LockEntity } from "../../data/lock";
-import { HomeAssistant } from "../../types";
+import type { LockEntity } from "../../data/lock";
+import { callProtectedLockService } from "../../data/lock";
+import type { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 
 declare global {

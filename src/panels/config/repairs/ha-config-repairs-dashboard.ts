@@ -1,7 +1,8 @@
-import { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item-base";
+import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item-base";
 import { mdiDotsVertical } from "@mdi/js";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, html, LitElement, TemplateResult } from "lit";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -10,8 +11,8 @@ import { navigate } from "../../../common/navigate";
 import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-card";
 import "../../../components/ha-check-list-item";
+import type { RepairsIssue } from "../../../data/repairs";
 import {
-  RepairsIssue,
   severitySort,
   subscribeRepairsIssueRegistry,
 } from "../../../data/repairs";

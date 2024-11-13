@@ -1,19 +1,13 @@
 import { mdiMenu, mdiSwapVertical } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
+import type { CoverEntity } from "../../../data/cover";
 import {
-  CoverEntity,
   CoverEntityFeature,
   computeCoverPositionStateDisplay,
 } from "../../../data/cover";
@@ -93,12 +87,13 @@ class MoreInfoCover extends LitElement {
       supportsFeature(this.stateObj, CoverEntityFeature.CLOSE_TILT) ||
       supportsFeature(this.stateObj, CoverEntityFeature.STOP_TILT);
 
-    const supportsOpenCloseWithoutStop =
+    const supportsOpenCloseOnly =
       supportsFeature(this.stateObj, CoverEntityFeature.OPEN) &&
       supportsFeature(this.stateObj, CoverEntityFeature.CLOSE) &&
       !supportsFeature(this.stateObj, CoverEntityFeature.STOP) &&
-      !supportsFeature(this.stateObj, CoverEntityFeature.OPEN_TILT) &&
-      !supportsFeature(this.stateObj, CoverEntityFeature.CLOSE_TILT);
+      !supportsTilt &&
+      !supportsPosition &&
+      !supportsTiltPosition;
 
     return html`
       <ha-more-info-state-header
@@ -133,7 +128,7 @@ class MoreInfoCover extends LitElement {
           ${
             this._mode === "button"
               ? html`
-                  ${supportsOpenCloseWithoutStop
+                  ${supportsOpenCloseOnly
                     ? html`
                         <ha-state-control-cover-toggle
                           .stateObj=${this.stateObj}

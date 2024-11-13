@@ -5,24 +5,21 @@ import {
   mdiPaletteSwatch,
   mdiSofa,
 } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
-import { Blueprints, fetchBlueprints } from "../data/blueprint";
-import { ConfigEntry, getConfigEntries } from "../data/config_entries";
-import { ItemType, RelatedResult, findRelated } from "../data/search";
+import type { Blueprints } from "../data/blueprint";
+import { fetchBlueprints } from "../data/blueprint";
+import type { ConfigEntry } from "../data/config_entries";
+import { getConfigEntries } from "../data/config_entries";
+import type { ItemType, RelatedResult } from "../data/search";
+import { findRelated } from "../data/search";
 import { haStyle } from "../resources/styles";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import { brandsUrl } from "../util/brands-url";
 import "./ha-icon-next";
 import "./ha-list-item";

@@ -1,6 +1,7 @@
 import { TextFieldBase } from "@material/mwc-textfield/mwc-textfield-base";
 import { styles } from "@material/mwc-textfield/mwc-textfield.css";
-import { TemplateResult, html, PropertyValues, css } from "lit";
+import type { TemplateResult, PropertyValues } from "lit";
+import { html, css } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { mainWindow } from "../common/dom/get_main_window";
 

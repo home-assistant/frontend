@@ -1,4 +1,5 @@
-import { css, CSSResultGroup } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 import { HaIconButton } from "./ha-icon-button";
 

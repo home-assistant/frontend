@@ -1,12 +1,6 @@
 import { mdiPlus } from "@mdi/js";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { nextRender } from "../../../common/util/render-status";
@@ -15,9 +9,9 @@ import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
-import { HuiBadge } from "../badges/hui-badge";
+import type { HuiBadge } from "../badges/hui-badge";
 import "../badges/hui-view-badges";
-import { HuiCard } from "../cards/hui-card";
+import type { HuiCard } from "../cards/hui-card";
 import { computeCardSize } from "../common/compute-card-size";
 import type { Lovelace } from "../types";
 
@@ -296,7 +290,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
       hui-view-badges {
         display: block;
-        margin: 12px 8px 20px 8px;
+        margin: 4px 8px 4px 8px;
         font-size: 85%;
       }
 

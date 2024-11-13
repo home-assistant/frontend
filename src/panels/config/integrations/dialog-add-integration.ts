@@ -1,15 +1,10 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list";
-import Fuse, { IFuseOptions } from "fuse.js";
-import { HassConfig } from "home-assistant-js-websocket";
-import {
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { IFuseOptions } from "fuse.js";
+import Fuse from "fuse.js";
+import type { HassConfig } from "home-assistant-js-websocket";
+import type { PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
@@ -22,21 +17,23 @@ import {
 } from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
-import { LocalizeFunc } from "../../../common/translations/localize";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-icon-button-prev";
 import "../../../components/search-input";
 import { fetchConfigFlowInProgress } from "../../../data/config_flow";
-import { DataEntryFlowProgress } from "../../../data/data_entry_flow";
+import type { DataEntryFlowProgress } from "../../../data/data_entry_flow";
 import {
   domainToName,
   fetchIntegrationManifest,
 } from "../../../data/integration";
-import {
+import type {
   Brand,
   Brands,
   Integration,
   Integrations,
+} from "../../../data/integrations";
+import {
   findIntegration,
   getIntegrationDescriptions,
 } from "../../../data/integrations";
@@ -50,10 +47,8 @@ import { loadVirtualizer } from "../../../resources/virtualizer";
 import type { HomeAssistant } from "../../../types";
 import "./ha-domain-integrations";
 import "./ha-integration-list-item";
-import {
-  AddIntegrationDialogParams,
-  showYamlIntegrationDialog,
-} from "./show-add-integration-dialog";
+import type { AddIntegrationDialogParams } from "./show-add-integration-dialog";
+import { showYamlIntegrationDialog } from "./show-add-integration-dialog";
 import { getConfigEntries } from "../../../data/config_entries";
 import { stripDiacritics } from "../../../common/string/strip-diacritics";
 import { getStripDiacriticsFn } from "../../../util/fuse";
@@ -589,6 +584,10 @@ class AddIntegrationDialog extends LitElement {
       });
       if (configEntries.length > 0) {
         this.closeDialog();
+        const localize = await this.hass.loadBackendTranslation(
+          "title",
+          integration.name
+        );
         showAlertDialog(this, {
           title: this.hass.localize(
             "ui.panel.config.integrations.config_flow.single_config_entry_title"
@@ -596,7 +595,7 @@ class AddIntegrationDialog extends LitElement {
           text: this.hass.localize(
             "ui.panel.config.integrations.config_flow.single_config_entry",
             {
-              integration_name: integration.name,
+              integration_name: domainToName(localize, integration.name),
             }
           ),
         });

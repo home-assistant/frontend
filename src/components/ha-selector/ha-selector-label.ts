@@ -1,9 +1,10 @@
-import { CSSResultGroup, LitElement, css, html } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
-import { LabelSelector } from "../../data/selector";
-import { HomeAssistant } from "../../types";
+import type { LabelSelector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
 import "../ha-labels-picker";
 
 @customElement("ha-selector-label")

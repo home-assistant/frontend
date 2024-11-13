@@ -1,15 +1,13 @@
 import type { LitElement } from "lit";
-import {
-  HassioAddonDetails,
-  restartHassioAddon,
-} from "../../../src/data/hassio/addon";
+import type { HassioAddonDetails } from "../../../src/data/hassio/addon";
+import { restartHassioAddon } from "../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
-import { Supervisor } from "../../../src/data/supervisor/supervisor";
+import type { Supervisor } from "../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../src/dialogs/generic/show-dialog-box";
-import { HomeAssistant } from "../../../src/types";
+import type { HomeAssistant } from "../../../src/types";
 
 export const suggestAddonRestart = async (
   element: LitElement,
