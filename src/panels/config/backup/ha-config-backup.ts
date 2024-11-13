@@ -12,10 +12,6 @@ class HaConfigBackup extends HassRouterPage {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide = false;
-
-  @property({ type: Boolean }) public showAdvanced = false;
-
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",
     routes: {
@@ -31,15 +27,16 @@ class HaConfigBackup extends HassRouterPage {
         tag: "ha-config-backup-details",
         load: () => import("./ha-config-backup-details"),
       },
+      locations: {
+        tag: "ha-config-backup-locations",
+        load: () => import("./ha-config-backup-locations"),
+      },
     },
   };
 
   protected updatePageEl(pageEl, changedProps: PropertyValues) {
     pageEl.hass = this.hass;
-    pageEl.narrow = this.narrow;
-    pageEl.isWide = this.isWide;
     pageEl.route = this.routeTail;
-    pageEl.showAdvanced = this.showAdvanced;
 
     if (
       (!changedProps || changedProps.has("route")) &&
