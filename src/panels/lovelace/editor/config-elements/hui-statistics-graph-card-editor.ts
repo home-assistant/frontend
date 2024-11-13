@@ -1,11 +1,5 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import {
@@ -28,13 +22,15 @@ import { supportedStatTypeMap } from "../../../../components/chart/statistics-ch
 import "../../../../components/entity/ha-statistics-picker";
 import "../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../components/ha-form/types";
+import type {
+  StatisticsMetaData,
+  StatisticType,
+} from "../../../../data/recorder";
 import {
   getDisplayUnit,
   getStatisticMetadata,
   isExternalStatistic,
-  StatisticsMetaData,
   statisticsMetaHasType,
-  StatisticType,
 } from "../../../../data/recorder";
 import type { HomeAssistant } from "../../../../types";
 import type { StatisticsGraphCardConfig } from "../../cards/types";
@@ -203,8 +199,18 @@ export class HuiStatisticsGraphCardEditor
               required: true,
               type: "select",
               options: [
-                ["line", "Line"],
-                ["bar", "Bar"],
+                [
+                  "line",
+                  localize(
+                    `ui.panel.lovelace.editor.card.statistics-graph.chart_type_labels.line`
+                  ),
+                ],
+                [
+                  "bar",
+                  localize(
+                    `ui.panel.lovelace.editor.card.statistics-graph.chart_type_labels.bar`
+                  ),
+                ],
               ],
             },
             {

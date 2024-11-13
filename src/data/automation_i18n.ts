@@ -1,4 +1,4 @@
-import { HassConfig } from "home-assistant-js-websocket";
+import type { HassConfig } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
 import { formatDuration } from "../common/datetime/format_duration";
 import {
@@ -8,20 +8,21 @@ import {
 import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { computeAttributeNameDisplay } from "../common/entity/compute_attribute_display";
 import { computeStateName } from "../common/entity/compute_state_name";
+import { isValidEntityId } from "../common/entity/valid_entity_id";
 import type { HomeAssistant } from "../types";
-import { Condition, ForDict, Trigger } from "./automation";
+import type { Condition, ForDict, Trigger } from "./automation";
+import type { DeviceCondition, DeviceTrigger } from "./device_automation";
 import {
-  DeviceCondition,
-  DeviceTrigger,
   localizeDeviceAutomationCondition,
   localizeDeviceAutomationTrigger,
 } from "./device_automation";
-import { EntityRegistryEntry } from "./entity_registry";
-import { FrontendLocaleData } from "./translation";
+import type { EntityRegistryEntry } from "./entity_registry";
+import type { FrontendLocaleData } from "./translation";
 import {
   formatListWithAnds,
   formatListWithOrs,
 } from "../common/string/format-list";
+import { isTriggerList } from "./trigger";
 
 const triggerTranslationBaseKey =
   "ui.panel.config.automation.editor.triggers.type";
@@ -98,12 +99,26 @@ const tryDescribeTrigger = (
   entityRegistry: EntityRegistryEntry[],
   ignoreAlias = false
 ) => {
+  if (isTriggerList(trigger)) {
+    const triggers = ensureArray(trigger.triggers);
+
+    if (!triggers || triggers.length === 0) {
+      return hass.localize(
+        `${triggerTranslationBaseKey}.list.description.no_trigger`
+      );
+    }
+    const count = triggers.length;
+    return hass.localize(`${triggerTranslationBaseKey}.list.description.full`, {
+      count: count,
+    });
+  }
+
   if (trigger.alias && !ignoreAlias) {
     return trigger.alias;
   }
 
   // Event Trigger
-  if (trigger.platform === "event" && trigger.event_type) {
+  if (trigger.trigger === "event" && trigger.event_type) {
     const eventTypes: string[] = [];
 
     if (Array.isArray(trigger.event_type)) {
@@ -122,7 +137,7 @@ const tryDescribeTrigger = (
   }
 
   // Home Assistant Trigger
-  if (trigger.platform === "homeassistant" && trigger.event) {
+  if (trigger.trigger === "homeassistant" && trigger.event) {
     return hass.localize(
       trigger.event === "start"
         ? `${triggerTranslationBaseKey}.homeassistant.description.started`
@@ -131,7 +146,7 @@ const tryDescribeTrigger = (
   }
 
   // Numeric State Trigger
-  if (trigger.platform === "numeric_state" && trigger.entity_id) {
+  if (trigger.trigger === "numeric_state" && trigger.entity_id) {
     const entities: string[] = [];
     const states = hass.states;
 
@@ -206,7 +221,7 @@ const tryDescribeTrigger = (
   }
 
   // State Trigger
-  if (trigger.platform === "state") {
+  if (trigger.trigger === "state") {
     const entities: string[] = [];
     const states = hass.states;
 
@@ -329,7 +344,7 @@ const tryDescribeTrigger = (
   }
 
   // Sun Trigger
-  if (trigger.platform === "sun" && trigger.event) {
+  if (trigger.trigger === "sun" && trigger.event) {
     let duration = "";
     if (trigger.offset) {
       if (typeof trigger.offset === "number") {
@@ -350,19 +365,28 @@ const tryDescribeTrigger = (
   }
 
   // Tag Trigger
-  if (trigger.platform === "tag") {
+  if (trigger.trigger === "tag") {
     return hass.localize(`${triggerTranslationBaseKey}.tag.description.full`);
   }
 
   // Time Trigger
-  if (trigger.platform === "time" && trigger.at) {
-    const result = ensureArray(trigger.at).map((at) =>
-      typeof at !== "string"
-        ? at
-        : at.includes(".")
-          ? `entity ${hass.states[at] ? computeStateName(hass.states[at]) : at}`
-          : localizeTimeString(at, hass.locale, hass.config)
-    );
+  if (trigger.trigger === "time" && trigger.at) {
+    const result = ensureArray(trigger.at).map((at) => {
+      if (typeof at === "string") {
+        if (isValidEntityId(at)) {
+          return `entity ${hass.states[at] ? computeStateName(hass.states[at]) : at}`;
+        }
+        return localizeTimeString(at, hass.locale, hass.config);
+      }
+      const entityStr = `entity ${hass.states[at.entity_id] ? computeStateName(hass.states[at.entity_id]) : at.entity_id}`;
+      const offsetStr = at.offset
+        ? " " +
+          hass.localize(`${triggerTranslationBaseKey}.time.offset_by`, {
+            offset: describeDuration(hass.locale, at.offset),
+          })
+        : "";
+      return `${entityStr}${offsetStr}`;
+    });
 
     return hass.localize(`${triggerTranslationBaseKey}.time.description.full`, {
       time: formatListWithOrs(hass.locale, result),
@@ -370,7 +394,7 @@ const tryDescribeTrigger = (
   }
 
   // Time Pattern Trigger
-  if (trigger.platform === "time_pattern") {
+  if (trigger.trigger === "time_pattern") {
     if (!trigger.seconds && !trigger.minutes && !trigger.hours) {
       return hass.localize(
         `${triggerTranslationBaseKey}.time_pattern.description.initial`
@@ -547,7 +571,7 @@ const tryDescribeTrigger = (
   }
 
   // Zone Trigger
-  if (trigger.platform === "zone" && trigger.entity_id && trigger.zone) {
+  if (trigger.trigger === "zone" && trigger.entity_id && trigger.zone) {
     const entities: string[] = [];
     const zones: string[] = [];
 
@@ -590,7 +614,7 @@ const tryDescribeTrigger = (
   }
 
   // Geo Location Trigger
-  if (trigger.platform === "geo_location" && trigger.source && trigger.zone) {
+  if (trigger.trigger === "geo_location" && trigger.source && trigger.zone) {
     const sources: string[] = [];
     const zones: string[] = [];
     const states = hass.states;
@@ -629,12 +653,12 @@ const tryDescribeTrigger = (
   }
 
   // MQTT Trigger
-  if (trigger.platform === "mqtt") {
+  if (trigger.trigger === "mqtt") {
     return hass.localize(`${triggerTranslationBaseKey}.mqtt.description.full`);
   }
 
   // Template Trigger
-  if (trigger.platform === "template") {
+  if (trigger.trigger === "template") {
     let duration = "";
     if (trigger.for) {
       duration = describeDuration(hass.locale, trigger.for) ?? "";
@@ -647,14 +671,14 @@ const tryDescribeTrigger = (
   }
 
   // Webhook Trigger
-  if (trigger.platform === "webhook") {
+  if (trigger.trigger === "webhook") {
     return hass.localize(
       `${triggerTranslationBaseKey}.webhook.description.full`
     );
   }
 
   // Conversation Trigger
-  if (trigger.platform === "conversation") {
+  if (trigger.trigger === "conversation") {
     if (!trigger.command) {
       return hass.localize(
         `${triggerTranslationBaseKey}.conversation.description.empty`
@@ -673,14 +697,14 @@ const tryDescribeTrigger = (
   }
 
   // Persistent Notification Trigger
-  if (trigger.platform === "persistent_notification") {
+  if (trigger.trigger === "persistent_notification") {
     return hass.localize(
       `${triggerTranslationBaseKey}.persistent_notification.description.full`
     );
   }
 
   // Device Trigger
-  if (trigger.platform === "device" && trigger.device_id) {
+  if (trigger.trigger === "device" && trigger.device_id) {
     const config = trigger as DeviceTrigger;
     const localized = localizeDeviceAutomationTrigger(
       hass,
@@ -698,7 +722,7 @@ const tryDescribeTrigger = (
 
   return (
     hass.localize(
-      `ui.panel.config.automation.editor.triggers.type.${trigger.platform}.label`
+      `ui.panel.config.automation.editor.triggers.type.${trigger.trigger}.label`
     ) ||
     hass.localize(`ui.panel.config.automation.editor.triggers.unknown_trigger`)
   );
@@ -907,8 +931,14 @@ const tryDescribeCondition = (
 
   // Numeric State Condition
   if (condition.condition === "numeric_state" && condition.entity_id) {
-    const stateObj = hass.states[condition.entity_id];
-    const entity = stateObj ? computeStateName(stateObj) : condition.entity_id;
+    const entity_ids = ensureArray(condition.entity_id);
+    const stateObj = hass.states[entity_ids[0]];
+    const entity = formatListWithAnds(
+      hass.locale,
+      entity_ids.map((id) =>
+        hass.states[id] ? computeStateName(hass.states[id]) : id || ""
+      )
+    );
 
     const attribute = condition.attribute
       ? computeAttributeNameDisplay(
@@ -923,8 +953,9 @@ const tryDescribeCondition = (
       return hass.localize(
         `${conditionsTranslationBaseKey}.numeric_state.description.above-below`,
         {
-          attribute: attribute,
-          entity: entity,
+          attribute,
+          entity,
+          numberOfEntities: entity_ids.length,
           above: condition.above,
           below: condition.below,
         }
@@ -934,8 +965,9 @@ const tryDescribeCondition = (
       return hass.localize(
         `${conditionsTranslationBaseKey}.numeric_state.description.above`,
         {
-          attribute: attribute,
-          entity: entity,
+          attribute,
+          entity,
+          numberOfEntities: entity_ids.length,
           above: condition.above,
         }
       );
@@ -944,8 +976,9 @@ const tryDescribeCondition = (
       return hass.localize(
         `${conditionsTranslationBaseKey}.numeric_state.description.below`,
         {
-          attribute: attribute,
-          entity: entity,
+          attribute,
+          entity,
+          numberOfEntities: entity_ids.length,
           below: condition.below,
         }
       );

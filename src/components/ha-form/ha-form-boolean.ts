@@ -1,5 +1,6 @@
 import "@material/mwc-formfield";
-import { html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import type {
@@ -17,6 +18,8 @@ export class HaFormBoolean extends LitElement implements HaFormElement {
   @property({ attribute: false }) public data!: HaFormBooleanData;
 
   @property() public label!: string;
+
+  @property() public helper?: string;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -36,6 +39,12 @@ export class HaFormBoolean extends LitElement implements HaFormElement {
           .disabled=${this.disabled}
           @change=${this._valueChanged}
         ></ha-checkbox>
+        <span slot="label">
+          <p class="primary">${this.label}</p>
+          ${this.helper
+            ? html`<p class="secondary">${this.helper}</p>`
+            : nothing}
+        </span>
       </mwc-formfield>
     `;
   }
@@ -44,6 +53,28 @@ export class HaFormBoolean extends LitElement implements HaFormElement {
     fireEvent(this, "value-changed", {
       value: (ev.target as HaCheckbox).checked,
     });
+  }
+
+  static get styles(): CSSResultGroup {
+    return css`
+      ha-formfield {
+        display: flex;
+        min-height: 56px;
+        align-items: center;
+        --mdc-typography-body2-font-size: 1em;
+      }
+      p {
+        margin: 0;
+      }
+      .secondary {
+        direction: var(--direction);
+        padding-top: 4px;
+        box-sizing: border-box;
+        color: var(--secondary-text-color);
+        font-size: 0.875rem;
+        font-weight: var(--mdc-typography-body2-font-weight, 400);
+      }
+    `;
   }
 }
 

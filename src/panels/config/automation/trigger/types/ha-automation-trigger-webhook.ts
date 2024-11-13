@@ -1,7 +1,8 @@
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { mdiCog, mdiContentCopy } from "@mdi/js";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, html, LitElement, PropertyValues } from "lit";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { slugify } from "../../../../../common/string/slugify";
@@ -12,11 +13,11 @@ import "../../../../../components/ha-check-list-item";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../../components/ha-textfield";
-import {
+import type {
   AutomationConfig,
   WebhookTrigger,
 } from "../../../../../data/automation";
-import { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant } from "../../../../../types";
 import { showToast } from "../../../../../util/toast";
 import { handleChangeEvent } from "../ha-automation-trigger-row";
 
@@ -38,7 +39,7 @@ export class HaWebhookTrigger extends LitElement {
 
   public static get defaultConfig(): WebhookTrigger {
     return {
-      platform: "webhook",
+      trigger: "webhook",
       allowed_methods: [...DEFAULT_METHODS],
       local_only: true,
       webhook_id: DEFAULT_WEBHOOK_ID,

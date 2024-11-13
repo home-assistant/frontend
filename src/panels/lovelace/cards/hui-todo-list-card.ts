@@ -10,16 +10,9 @@ import {
   mdiSort,
 } from "@mdi/js";
 import { endOfDay, isSameDay } from "date-fns";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValueMap,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValueMap, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
@@ -40,8 +33,8 @@ import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
 import { isUnavailableState } from "../../../data/entity";
+import type { TodoItem } from "../../../data/todo";
 import {
-  TodoItem,
   TodoItemStatus,
   TodoListEntityFeature,
   createItem,
@@ -51,12 +44,12 @@ import {
   updateItem,
 } from "../../../data/todo";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { showTodoItemEditDialog } from "../../todo/show-dialog-todo-item-editor";
 import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { TodoListCardConfig } from "./types";
+import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type { TodoListCardConfig } from "./types";
 
 @customElement("hui-todo-list-card")
 export class HuiTodoListCard extends LitElement implements LovelaceCard {
@@ -275,7 +268,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                     "ui.panel.lovelace.cards.todo-list.no_unchecked_items"
                   )}
                 </p>`}
-            ${checkedItems.length
+            ${!this._config.hide_completed && checkedItems.length
               ? html`
                   <div role="separator">
                     <div class="divider"></div>

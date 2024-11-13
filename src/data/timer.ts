@@ -1,11 +1,11 @@
-import {
+import type {
   HassEntity,
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
 import durationToSeconds from "../common/datetime/duration_to_seconds";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 
 export type TimerEntity = HassEntityBase & {
   attributes: HassEntityAttributeBase & {
@@ -72,8 +72,8 @@ export const timerTimeRemaining = (
 
   if (stateObj.state === "active") {
     const now = new Date().getTime();
-    const madeActive = new Date(stateObj.last_changed).getTime();
-    timeRemaining = Math.max(timeRemaining - (now - madeActive) / 1000, 0);
+    const finishes = new Date(stateObj.attributes.finishes_at).getTime();
+    timeRemaining = Math.max((finishes - now) / 1000, 0);
   }
 
   return timeRemaining;

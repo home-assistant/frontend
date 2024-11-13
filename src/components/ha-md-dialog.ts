@@ -1,7 +1,47 @@
 import { MdDialog } from "@material/web/dialog/dialog";
+import {
+  type DialogAnimation,
+  DIALOG_DEFAULT_CLOSE_ANIMATION,
+  DIALOG_DEFAULT_OPEN_ANIMATION,
+} from "@material/web/dialog/internal/animations";
 import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 
+// workaround to be able to overlay an dialog with another dialog
+MdDialog.addInitializer(async (instance) => {
+  await instance.updateComplete;
+
+  const dialogInstance = instance as MdDialog;
+
+  // @ts-expect-error dialog is private
+  dialogInstance.dialog.prepend(dialogInstance.scrim);
+  // @ts-expect-error scrim is private
+  dialogInstance.scrim.style.inset = 0;
+  // @ts-expect-error scrim is private
+  dialogInstance.scrim.style.zIndex = 0;
+
+  const { getOpenAnimation, getCloseAnimation } = dialogInstance;
+  dialogInstance.getOpenAnimation = () => {
+    const animations = getOpenAnimation.call(this);
+    animations.container = [
+      ...(animations.container ?? []),
+      ...(animations.dialog ?? []),
+    ];
+    animations.dialog = [];
+    return animations;
+  };
+  dialogInstance.getCloseAnimation = () => {
+    const animations = getCloseAnimation.call(this);
+    animations.container = [
+      ...(animations.container ?? []),
+      ...(animations.dialog ?? []),
+    ];
+    animations.dialog = [];
+    return animations;
+  };
+});
+
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 let DIALOG_POLYFILL: Promise<typeof import("dialog-polyfill")>;
 
 /**
@@ -20,7 +60,6 @@ export class HaMdDialog extends MdDialog {
 
   constructor() {
     super();
-
     this.addEventListener("cancel", this._handleCancel);
 
     if (typeof HTMLDialogElement !== "function") {
@@ -29,6 +68,11 @@ export class HaMdDialog extends MdDialog {
       if (!DIALOG_POLYFILL) {
         DIALOG_POLYFILL = import("dialog-polyfill");
       }
+    }
+
+    // if browser doesn't support animate API disable open/close animations
+    if (this.animate === undefined) {
+      this.quick = true;
     }
 
     // if browser doesn't support animate API disable open/close animations
@@ -75,7 +119,7 @@ export class HaMdDialog extends MdDialog {
   _handleCancel(closeEvent: Event) {
     if (this.disableCancelAction) {
       closeEvent.preventDefault();
-      const dialogElement = this.shadowRoot?.querySelector("dialog");
+      const dialogElement = this.shadowRoot?.querySelector("dialog .container");
       if (this.animate !== undefined) {
         dialogElement?.animate(
           [
@@ -114,8 +158,14 @@ export class HaMdDialog extends MdDialog {
         --md-dialog-headline-size: 1.574rem;
         --md-dialog-supporting-text-size: 1rem;
         --md-dialog-supporting-text-line-height: 1.5rem;
+      }
 
-        @media all and (max-width: 450px), all and (max-height: 500px) {
+      :host([type="alert"]) {
+        min-width: 320px;
+      }
+
+      @media all and (max-width: 450px), all and (max-height: 500px) {
+        :host(:not([type="alert"])) {
           min-width: calc(
             100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
           );
@@ -124,20 +174,79 @@ export class HaMdDialog extends MdDialog {
           );
           min-height: 100%;
           max-height: 100%;
-          border-radius: 0;
+          --md-dialog-container-shape: 0;
         }
       }
 
-      :host ::slotted(ha-dialog-header) {
+      ::slotted(ha-dialog-header[slot="headline"]) {
         display: contents;
       }
 
+      .scroller {
+        overflow: var(--dialog-content-overflow, auto);
+      }
+
+      slot[name="content"]::slotted(*) {
+        padding: var(--dialog-content-padding, 24px);
+      }
       .scrim {
-        z-index: 10; // overlay navigation
+        z-index: 10; /* overlay navigation */
       }
     `,
   ];
 }
+
+// by default the dialog open/close animation will be from/to the top
+// but if we have a special mobile dialog which is at the bottom of the screen, an from bottom animation can be used:
+const OPEN_FROM_BOTTOM_ANIMATION: DialogAnimation = {
+  ...DIALOG_DEFAULT_OPEN_ANIMATION,
+  dialog: [
+    [
+      // Dialog slide up
+      [{ transform: "translateY(50px)" }, { transform: "translateY(0)" }],
+      { duration: 500, easing: "cubic-bezier(.3,0,0,1)" },
+    ],
+  ],
+  container: [
+    [
+      // Container fade in
+      [{ opacity: 0 }, { opacity: 1 }],
+      { duration: 50, easing: "linear", pseudoElement: "::before" },
+    ],
+  ],
+};
+
+const CLOSE_TO_BOTTOM_ANIMATION: DialogAnimation = {
+  ...DIALOG_DEFAULT_CLOSE_ANIMATION,
+  dialog: [
+    [
+      // Dialog slide down
+      [{ transform: "translateY(0)" }, { transform: "translateY(50px)" }],
+      { duration: 150, easing: "cubic-bezier(.3,0,0,1)" },
+    ],
+  ],
+  container: [
+    [
+      // Container fade out
+      [{ opacity: "1" }, { opacity: "0" }],
+      { delay: 100, duration: 50, easing: "linear", pseudoElement: "::before" },
+    ],
+  ],
+};
+
+export const getMobileOpenFromBottomAnimation = () => {
+  const matches = window.matchMedia(
+    "all and (max-width: 450px), all and (max-height: 500px)"
+  ).matches;
+  return matches ? OPEN_FROM_BOTTOM_ANIMATION : DIALOG_DEFAULT_OPEN_ANIMATION;
+};
+
+export const getMobileCloseToBottomAnimation = () => {
+  const matches = window.matchMedia(
+    "all and (max-width: 450px), all and (max-height: 500px)"
+  ).matches;
+  return matches ? CLOSE_TO_BOTTOM_ANIMATION : DIALOG_DEFAULT_CLOSE_ANIMATION;
+};
 
 declare global {
   interface HTMLElementTagNameMap {

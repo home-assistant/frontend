@@ -1,4 +1,4 @@
-import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import "../cards/hui-entity-card";
 import "../cards/hui-entities-card";
 import "../cards/hui-button-card";
@@ -10,6 +10,7 @@ import "../cards/hui-sensor-card";
 import "../cards/hui-thermostat-card";
 import "../cards/hui-weather-forecast-card";
 import "../cards/hui-tile-card";
+import "../cards/hui-heading-card";
 import {
   createLovelaceElement,
   getLovelaceElementClass,
@@ -29,6 +30,7 @@ const ALWAYS_LOADED_TYPES = new Set([
   "thermostat",
   "weather-forecast",
   "tile",
+  "heading",
 ]);
 
 const LAZY_LOAD_TYPES = {

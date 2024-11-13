@@ -1,12 +1,13 @@
 import { mdiCalendar } from "@mdi/js";
-import { HassConfig } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import type { HassConfig } from "home-assistant-js-websocket";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { firstWeekdayIndex } from "../common/datetime/first_weekday";
 import { formatDateNumeric } from "../common/datetime/format_date";
 import { fireEvent } from "../common/dom/fire_event";
 import { TimeZone } from "../data/translation";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "./ha-svg-icon";
 import "./ha-textfield";
 

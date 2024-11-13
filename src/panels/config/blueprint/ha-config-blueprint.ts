@@ -1,11 +1,10 @@
-import { PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
-import { Blueprints, fetchBlueprints } from "../../../data/blueprint";
-import {
-  HassRouterPage,
-  RouterOptions,
-} from "../../../layouts/hass-router-page";
-import { HomeAssistant } from "../../../types";
+import type { Blueprints } from "../../../data/blueprint";
+import { fetchBlueprints } from "../../../data/blueprint";
+import type { RouterOptions } from "../../../layouts/hass-router-page";
+import { HassRouterPage } from "../../../layouts/hass-router-page";
+import type { HomeAssistant } from "../../../types";
 import "./ha-blueprint-overview";
 
 declare global {

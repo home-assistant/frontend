@@ -1,9 +1,11 @@
+import "@material/mwc-list/mwc-list-item";
 import { consume } from "@lit-labs/context";
 import "@material/mwc-button";
 import "@material/mwc-list";
 import { mdiDelete, mdiDotsVertical, mdiImagePlus, mdiPencil } from "@mdi/js";
-import { HassEntity } from "home-assistant-js-websocket/dist/types";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket/dist/types";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
@@ -17,32 +19,34 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list-item";
+import "../../../components/ha-button-menu";
+import type { AreaRegistryEntry } from "../../../data/area_registry";
 import {
-  AreaRegistryEntry,
   deleteAreaRegistryEntry,
   updateAreaRegistryEntry,
 } from "../../../data/area_registry";
-import { AutomationEntity } from "../../../data/automation";
+import type { AutomationEntity } from "../../../data/automation";
 import { fullEntitiesContext } from "../../../data/context";
+import type { DeviceRegistryEntry } from "../../../data/device_registry";
 import {
-  DeviceRegistryEntry,
   computeDeviceName,
   sortDeviceRegistryByName,
 } from "../../../data/device_registry";
+import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import {
-  EntityRegistryEntry,
   computeEntityRegistryName,
   sortEntityRegistryByName,
 } from "../../../data/entity_registry";
-import { SceneEntity } from "../../../data/scene";
-import { ScriptEntity } from "../../../data/script";
-import { RelatedResult, findRelated } from "../../../data/search";
+import type { SceneEntity } from "../../../data/scene";
+import type { ScriptEntity } from "../../../data/script";
+import type { RelatedResult } from "../../../data/search";
+import { findRelated } from "../../../data/search";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import "../../logbook/ha-logbook";
 import {
   loadAreaRegistryDetailDialog,

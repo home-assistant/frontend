@@ -13,7 +13,7 @@ const srcMeta = "src/translations/translationMetadata.json";
 const encoding = "utf8";
 
 function hasHtml(data) {
-  return /<[a-z][\s\S]*>/i.test(data);
+  return /<\S*>/i.test(data);
 }
 
 function recursiveCheckHasHtml(file, data, errors, recKey) {

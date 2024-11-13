@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import { ActionDetail } from "@material/mwc-list";
+import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiDeleteOutline,
   mdiDevices,
@@ -7,14 +7,8 @@ import {
   mdiInformationOutline,
   mdiCellphoneKey,
 } from "@mdi/js";
-import {
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
@@ -25,18 +19,17 @@ import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-card";
 import { getSignedPath } from "../../../../../data/auth";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../../../data/diagnostics";
+import type { OTBRInfo, OTBRInfoDict } from "../../../../../data/otbr";
 import {
   OTBRCreateNetwork,
-  OTBRInfo,
-  OTBRInfoDict,
   OTBRSetChannel,
   OTBRSetNetwork,
   getOTBRInfo,
 } from "../../../../../data/otbr";
+import type { ThreadDataSet, ThreadRouter } from "../../../../../data/thread";
 import {
-  ThreadDataSet,
-  ThreadRouter,
   addThreadDataSet,
+  getThreadDataSetTLV,
   listThreadDataSets,
   removeThreadDataSet,
   setPreferredBorderAgent,
@@ -52,7 +45,7 @@ import {
 import "../../../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
-import { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
 import { fileDownload } from "../../../../../util/file_download";
 import { documentationUrl } from "../../../../../util/documentation-url";
@@ -106,13 +99,11 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
               "ui.panel.config.thread.add_dataset_from_tlv"
             )}</mwc-list-item
           >
-          ${!this._otbrInfo
-            ? html`<mwc-list-item @click=${this._addOTBR}
-                >${this.hass.localize(
-                  "ui.panel.config.thread.add_open_thread_border_router"
-                )}</mwc-list-item
-              >`
-            : ""}
+          <mwc-list-item @click=${this._addOTBR}
+            >${this.hass.localize(
+              "ui.panel.config.thread.add_open_thread_border_router"
+            )}</mwc-list-item
+          >
         </ha-button-menu>
         <div class="content">
           <h1>${this.hass.localize("ui.panel.config.thread.my_network")}</h1>
@@ -170,8 +161,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
           (otbr) => otbr.extended_pan_id === network.dataset!.extended_pan_id
         ));
     const canImportKeychain =
-      this.hass.auth.external?.config.canTransferThreadCredentialsToKeychain &&
-      otbrForNetwork;
+      this.hass.auth.external?.config.canTransferThreadCredentialsToKeychain;
 
     return html`<ha-card>
       <div class="card-header">
@@ -210,8 +200,12 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
             ${network.routers.map((router) => {
               const otbr =
                 this._otbrInfo && this._otbrInfo[router.extended_address];
-              const showOverflow =
-                ("dataset" in network && router.border_agent_id) || otbr;
+              const showDefaultRouter = !!network.dataset;
+              const isDefaultRouter =
+                showDefaultRouter &&
+                router.extended_address ===
+                  network.dataset!.preferred_extended_address;
+              const showOverflow = showDefaultRouter || otbr;
               return html`<ha-list-item
                 class="router"
                 twoline
@@ -232,14 +226,13 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                   @error=${this._onImageError}
                   @load=${this._onImageLoad}
                 />
-                ${router.model_name ||
+                ${router.instance_name ||
+                router.model_name ||
                 router.server?.replace(".local.", "") ||
                 ""}
                 <span slot="secondary">${router.server}</span>
                 ${showOverflow
-                  ? html`${network.dataset &&
-                      router.extended_address ===
-                        network.dataset.preferred_extended_address
+                  ? html`${isDefaultRouter
                         ? html`<ha-svg-icon
                             .path=${mdiCellphoneKey}
                             .title=${this.hass.localize(
@@ -261,13 +254,9 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                           .path=${mdiDotsVertical}
                           slot="trigger"
                         ></ha-icon-button>
-                        ${network.dataset && router.border_agent_id
-                          ? html`<ha-list-item
-                              .disabled=${router.border_agent_id ===
-                              network.dataset.preferred_border_agent_id}
-                            >
-                              ${router.border_agent_id ===
-                              network.dataset.preferred_border_agent_id
+                        ${showDefaultRouter
+                          ? html`<ha-list-item .disabled=${isDefaultRouter}>
+                              ${isDefaultRouter
                                 ? this.hass.localize(
                                     "ui.panel.config.thread.default_router"
                                   )
@@ -323,9 +312,13 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
             >
           </div>`
         : ""}
-      ${canImportKeychain
+      ${canImportKeychain &&
+      network.dataset?.preferred &&
+      network.routers?.length
         ? html`<div class="card-actions">
-            <mwc-button .otbr=${otbrForNetwork} @click=${this._sendCredentials}
+            <mwc-button
+              .networkDataset=${network.dataset}
+              @click=${this._sendCredentials}
               >Send credentials to phone</mwc-button
             >
           </div>`
@@ -333,17 +326,30 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     </ha-card>`;
   }
 
-  private _sendCredentials(ev) {
-    const otbr = (ev.currentTarget as any).otbr as OTBRInfo;
-    if (!otbr) {
+  private async _sendCredentials(ev) {
+    const dataset = (ev.currentTarget as any).networkDataset as ThreadDataSet;
+    if (!dataset) {
+      return;
+    }
+    if (
+      !dataset.preferred_extended_address &&
+      !dataset.preferred_border_agent_id
+    ) {
+      showAlertDialog(this, {
+        title: "Error",
+        text: this.hass.localize("ui.panel.config.thread.no_preferred_router"),
+      });
       return;
     }
     this.hass.auth.external!.fireMessage({
       type: "thread/store_in_platform_keychain",
       payload: {
-        mac_extended_address: otbr.extended_address,
-        border_agent_id: otbr.border_agent_id ?? "",
-        active_operational_dataset: otbr.active_dataset_tlvs ?? "",
+        mac_extended_address: dataset.preferred_extended_address,
+        border_agent_id: dataset.preferred_border_agent_id,
+        active_operational_dataset: (
+          await getThreadDataSetTLV(this.hass, dataset.dataset_id)
+        ).tlv,
+        extended_pan_id: dataset.extended_pan_id,
       },
     });
   }
@@ -469,10 +475,9 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     const network = (ev.currentTarget as any).network as ThreadNetwork;
     const router = (ev.currentTarget as any).router as ThreadRouter;
     const otbr = (ev.currentTarget as any).otbr as OTBRInfo;
-    const index =
-      network.dataset && router.border_agent_id
-        ? Number(ev.detail.index)
-        : Number(ev.detail.index) + 1;
+    const index = network.dataset
+      ? Number(ev.detail.index)
+      : Number(ev.detail.index) + 1;
     switch (index) {
       case 0:
         this._setPreferredBorderAgent(network.dataset!, router);

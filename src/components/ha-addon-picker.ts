@@ -1,11 +1,12 @@
-import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
-import { fetchHassioAddonsInfo, HassioAddonInfo } from "../data/hassio/addon";
-import { HomeAssistant, ValueChangedEvent } from "../types";
+import type { HassioAddonInfo } from "../data/hassio/addon";
+import { fetchHassioAddonsInfo } from "../data/hassio/addon";
+import type { HomeAssistant, ValueChangedEvent } from "../types";
 import "./ha-alert";
 import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";

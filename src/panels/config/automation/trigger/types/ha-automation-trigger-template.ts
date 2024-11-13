@@ -1,5 +1,6 @@
 import "../../../../../components/ha-textarea";
-import { html, LitElement, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { TemplateTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
@@ -23,7 +24,7 @@ export class HaTemplateTrigger extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   public static get defaultConfig(): TemplateTrigger {
-    return { platform: "template", value_template: "" };
+    return { trigger: "template", value_template: "" };
   }
 
   public willUpdate(changedProperties: PropertyValues) {

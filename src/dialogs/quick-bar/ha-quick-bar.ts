@@ -8,7 +8,8 @@ import {
   mdiReload,
   mdiServerNetwork,
 } from "@mdi/js";
-import { css, html, LitElement, nothing, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
@@ -20,10 +21,9 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { navigate } from "../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
+import type { MatchToken, ScorableTextItem } from "../../common/string/filter/sequence-matching";
 import {
   fuzzyFilterSort,
-  MatchToken,
-  ScorableTextItem,
   tokenizeConcatenatedMatchInfo,
   tokenizeMatchInfo,
 } from "../../common/string/filter/sequence-matching";
@@ -37,13 +37,13 @@ import "../../components/ha-match-segment";
 import { fetchHassioAddonsInfo } from "../../data/hassio/addon";
 import { domainToName } from "../../data/integration";
 import { getPanelNameTranslationKey } from "../../data/panel";
-import { PageNavigation } from "../../layouts/hass-tabs-subpage";
+import type { PageNavigation } from "../../layouts/hass-tabs-subpage";
 import { configSections } from "../../panels/config/ha-panel-config";
 import { haStyleDialog, haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
-import { QuickBarParams } from "./show-dialog-quick-bar";
+import type { QuickBarParams } from "./show-dialog-quick-bar";
 
 interface QuickBarItem extends ScorableTextItem {
   primaryText: string;

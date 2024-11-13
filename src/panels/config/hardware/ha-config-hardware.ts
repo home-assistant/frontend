@@ -2,8 +2,9 @@ import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiPower } from "@mdi/js";
 import type { ChartOptions } from "chart.js";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing, PropertyValues } from "lit";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { numberFormatToLocale } from "../../../common/number/format_number";
@@ -17,19 +18,15 @@ import "../../../components/ha-clickable-list-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-settings-row";
-import {
-  ConfigEntry,
-  subscribeConfigEntries,
-} from "../../../data/config_entries";
-import {
-  BOARD_NAMES,
+import type { ConfigEntry } from "../../../data/config_entries";
+import { subscribeConfigEntries } from "../../../data/config_entries";
+import type {
   HardwareInfo,
   SystemStatusStreamMessage,
 } from "../../../data/hardware";
-import {
-  fetchHassioHassOsInfo,
-  HassioHassOSInfo,
-} from "../../../data/hassio/host";
+import { BOARD_NAMES } from "../../../data/hardware";
+import type { HassioHassOSInfo } from "../../../data/hassio/host";
+import { fetchHassioHassOsInfo } from "../../../data/hassio/host";
 import { scanUSBDevices } from "../../../data/usb";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";

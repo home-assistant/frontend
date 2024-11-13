@@ -14,7 +14,7 @@ import {
   union,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { LocalizeFunc } from "../../../../common/translations/localize";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
@@ -26,7 +26,7 @@ import {
   DISPLAY_TYPES,
   migrateLegacyEntityBadgeConfig,
 } from "../../badges/hui-entity-badge";
-import { EntityBadgeConfig } from "../../badges/types";
+import type { EntityBadgeConfig } from "../../badges/types";
 import type { LovelaceBadgeEditor } from "../../types";
 import "../hui-sub-element-editor";
 import { actionConfigStruct } from "../structs/action-struct";
@@ -92,7 +92,9 @@ export class HuiEntityBadgeEditor
                 {
                   name: "color",
                   selector: {
-                    ui_color: { default_color: true },
+                    ui_color: {
+                      include_state: true,
+                    },
                   },
                 },
                 {
@@ -203,6 +205,7 @@ export class HuiEntityBadgeEditor
         .data=${data}
         .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
+        .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
     `;
@@ -247,6 +250,19 @@ export class HuiEntityBadgeEditor
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
         );
+    }
+  };
+
+  private _computeHelperCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
+    switch (schema.name) {
+      case "color":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.badge.entity.${schema.name}_helper`
+        );
+      default:
+        return undefined;
     }
   };
 
