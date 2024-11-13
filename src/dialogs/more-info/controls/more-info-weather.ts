@@ -47,8 +47,6 @@ class MoreInfoWeather extends LitElement {
 
   @state() private _subscribed?: Promise<() => void>;
 
-  @property({ attribute: false }) public changedOverride?: number;
-
   private _unsubscribeForecastEvents() {
     if (this._subscribed) {
       this._subscribed.then((unsub) => unsub());
