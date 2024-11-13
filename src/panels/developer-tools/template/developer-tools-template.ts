@@ -181,10 +181,7 @@ class HaPanelDevTemplate extends LitElement {
                 >`
               : nothing}
             ${this._templateResult
-              ? html`${this.hass.localize(
-                    "ui.panel.developer-tools.tabs.templates.result_type"
-                  )}:
-                  ${resultType}
+              ? html`
                   <!-- prettier-ignore -->
                   <pre class="rendered ${classMap({
                     [resultType]: resultType,
@@ -192,6 +189,12 @@ class HaPanelDevTemplate extends LitElement {
                   >${type === "object"
                     ? JSON.stringify(this._templateResult.result, null, 2)
                     : this._templateResult.result}</pre>
+                  <p>
+                    ${this.hass.localize(
+                      "ui.panel.developer-tools.tabs.templates.result_type"
+                    )}:
+                    ${resultType}
+                  </p>
                   ${this._templateResult.listeners.time
                     ? html`
                         <p>
@@ -249,11 +252,11 @@ class HaPanelDevTemplate extends LitElement {
                             </ul>
                           `
                         : !this._templateResult.listeners.time
-                          ? html`<span class="all_listeners">
+                          ? html`<p class="all_listeners">
                               ${this.hass.localize(
                                 "ui.panel.developer-tools.tabs.templates.no_listeners"
                               )}
-                            </span>`
+                            </p>`
                           : nothing}`
               : nothing}
           </div>
@@ -325,10 +328,16 @@ class HaPanelDevTemplate extends LitElement {
           white-space: pre-wrap;
           background-color: var(--secondary-background-color);
           padding: 8px;
+          margin-top: 0;
+          margin-bottom: 0;
           direction: ltr;
           overflow: auto;
         }
-
+        
+        p, ul {
+          margin-block-end: 0;
+        }
+        
         .content.horizontal .render-pane .card-content {
           display: flex;
           flex-direction: column;
