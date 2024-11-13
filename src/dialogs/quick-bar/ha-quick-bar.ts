@@ -21,7 +21,10 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { navigate } from "../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
-import type { MatchToken, ScorableTextItem } from "../../common/string/filter/sequence-matching";
+import type {
+  MatchToken,
+  ScorableTextItem,
+} from "../../common/string/filter/sequence-matching";
 import {
   fuzzyFilterSort,
   tokenizeConcatenatedMatchInfo,

@@ -1,6 +1,7 @@
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import { MatchToken } from "../common/string/filter/sequence-matching";
+import type { MatchToken } from "../common/string/filter/sequence-matching";
 
 @customElement("ha-match-segment")
 class HaMatchSegment extends LitElement {
