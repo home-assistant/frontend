@@ -4,7 +4,8 @@ import { customElement, property, state } from "lit/decorators";
 import "../../layouts/hass-tabs-subpage";
 import { profileSections } from "./ha-panel-profile";
 import type { RefreshToken } from "../../data/refresh_token";
-import { AuthProvider, fetchAuthProviders } from "../../data/auth";
+import type { AuthProvider } from "../../data/auth";
+import { fetchAuthProviders } from "../../data/auth";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
 import "./ha-change-password-card";
@@ -12,7 +13,7 @@ import "./ha-long-lived-access-tokens-card";
 import "./ha-mfa-modules-card";
 import "./ha-refresh-tokens-card";
 import "./ha-setup-passkey-card";
-import { Passkey } from "../../data/webauthn";
+import type { Passkey } from "../../data/webauthn";
 
 @customElement("ha-profile-section-security")
 class HaProfileSectionSecurity extends LitElement {

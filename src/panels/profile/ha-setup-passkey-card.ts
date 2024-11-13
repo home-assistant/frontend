@@ -1,15 +1,19 @@
 import "@material/mwc-button";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { mdiKey, mdiDotsVertical, mdiDelete, mdiRename } from "@mdi/js";
 import { customElement, property } from "lit/decorators";
-import { ActionDetail } from "@material/mwc-list";
+import type { ActionDetail } from "@material/mwc-list";
 import { relativeTime } from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
 import "../../components/ha-circular-progress";
 import "../../components/ha-textfield";
+import "../../components/ha-settings-row";
+import "../../components/ha-list-item";
+import "../../components/ha-button-menu";
+import type { Passkey } from "../../data/webauthn";
 import {
-  Passkey,
   registerPasskey,
   deletePasskey,
   renamePasskey,
