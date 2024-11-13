@@ -1,11 +1,11 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import "../../../../components/ha-card";
 import type { HomeAssistant } from "../../../../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import "../../components/hui-energy-period-selector";
-import "../../../../components/ha-card";
-import type { LovelaceCard, LovelaceLayoutOptions } from "../../types";
+import type { LovelaceCard, LovelaceGridOptions } from "../../types";
 import type { EnergyCardBaseConfig } from "../types";
 
 @customElement("hui-energy-date-selection-card")
@@ -21,10 +21,10 @@ export class HuiEnergyDateSelectionCard
     return 1;
   }
 
-  public getLayoutOptions(): LovelaceLayoutOptions {
+  public getGridOptions(): LovelaceGridOptions {
     return {
-      grid_rows: 1,
-      grid_columns: 4,
+      rows: 1,
+      columns: 12,
     };
   }
 
