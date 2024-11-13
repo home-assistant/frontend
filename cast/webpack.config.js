@@ -1,7 +1,7 @@
-import webpack from "../build-scripts/webpack.cjs";
+import rspack from "../build-scripts/rspack.cjs";
 import env from "../build-scripts/env.cjs";
 
-export default webpack.createCastConfig({
+export default rspack.createCastConfig({
   isProdBuild: env.isProdBuild(),
   isStatsBuild: env.isStatsBuild(),
   latestBuild: true,

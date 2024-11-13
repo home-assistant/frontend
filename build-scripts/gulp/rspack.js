@@ -1,11 +1,11 @@
-// Tasks to run webpack.
+// Tasks to run rspack.
 
 import fs from "fs";
 import path from "path";
 import log from "fancy-log";
 import gulp from "gulp";
-import webpack from "@rspack/core";
-import WebpackDevServer from "@rspack/dev-server";
+import rspack from "@rspack/core";
+import { RspackDevServer } from "@rspack/dev-server";
 import env from "../env.cjs";
 import paths from "../paths.cjs";
 import {
@@ -14,7 +14,7 @@ import {
   createDemoConfig,
   createGalleryConfig,
   createHassioConfig,
-} from "../webpack.cjs";
+} from "../rspack.cjs";
 
 const bothBuilds = (createConfigFunc, params) => [
   createConfigFunc({ ...params, latestBuild: true }),
@@ -30,7 +30,7 @@ const isWsl =
 
 /**
  * @param {{
- *   compiler: import("webpack").Compiler,
+ *   compiler: import("@rspack/core").Compiler,
  *   contentBase: string,
  *   port: number,
  *   listenHost?: string
@@ -46,7 +46,7 @@ const runDevServer = async ({
     // For dev container, we need to listen on all hosts
     listenHost = env.isDevContainer() ? "0.0.0.0" : "localhost";
   }
-  const server = new WebpackDevServer(
+  const server = new RspackDevServer(
     {
       hot: false,
       open: true,
@@ -62,7 +62,7 @@ const runDevServer = async ({
 
   await server.start();
   // Server listening
-  log("[webpack-dev-server]", `Project is running at http://localhost:${port}`);
+  log("[rspack-dev-server]", `Project is running at http://localhost:${port}`);
 };
 
 const doneHandler = (done) => (err, stats) => {
@@ -87,16 +87,16 @@ const doneHandler = (done) => (err, stats) => {
 
 const prodBuild = (conf) =>
   new Promise((resolve) => {
-    webpack(
+    rspack(
       conf,
-      // Resolve promise when done. Because we pass a callback, webpack closes itself
+      // Resolve promise when done. Because we pass a callback, rspack closes itself
       doneHandler(resolve)
     );
   });
 
-gulp.task("webpack-watch-app", () => {
+gulp.task("rspack-watch-app", () => {
   // This command will run forever because we don't close compiler
-  webpack(
+  rspack(
     process.env.ES5
       ? bothBuilds(createAppConfig, { isProdBuild: false })
       : createAppConfig({ isProdBuild: false, latestBuild: true })
@@ -107,7 +107,7 @@ gulp.task("webpack-watch-app", () => {
   );
 });
 
-gulp.task("webpack-prod-app", () =>
+gulp.task("rspack-prod-app", () =>
   prodBuild(
     bothBuilds(createAppConfig, {
       isProdBuild: true,
@@ -117,9 +117,9 @@ gulp.task("webpack-prod-app", () =>
   )
 );
 
-gulp.task("webpack-dev-server-demo", () =>
+gulp.task("rspack-dev-server-demo", () =>
   runDevServer({
-    compiler: webpack(
+    compiler: rspack(
       createDemoConfig({ isProdBuild: false, latestBuild: true })
     ),
     contentBase: paths.demo_output_root,
@@ -127,7 +127,7 @@ gulp.task("webpack-dev-server-demo", () =>
   })
 );
 
-gulp.task("webpack-prod-demo", () =>
+gulp.task("rspack-prod-demo", () =>
   prodBuild(
     bothBuilds(createDemoConfig, {
       isProdBuild: true,
@@ -135,9 +135,9 @@ gulp.task("webpack-prod-demo", () =>
   )
 );
 
-gulp.task("webpack-dev-server-cast", () =>
+gulp.task("rspack-dev-server-cast", () =>
   runDevServer({
-    compiler: webpack(
+    compiler: rspack(
       createCastConfig({ isProdBuild: false, latestBuild: true })
     ),
     contentBase: paths.cast_output_root,
@@ -147,7 +147,7 @@ gulp.task("webpack-dev-server-cast", () =>
   })
 );
 
-gulp.task("webpack-prod-cast", () =>
+gulp.task("rspack-prod-cast", () =>
   prodBuild(
     bothBuilds(createCastConfig, {
       isProdBuild: true,
@@ -155,9 +155,9 @@ gulp.task("webpack-prod-cast", () =>
   )
 );
 
-gulp.task("webpack-watch-hassio", () => {
+gulp.task("rspack-watch-hassio", () => {
   // This command will run forever because we don't close compiler
-  webpack(
+  rspack(
     createHassioConfig({
       isProdBuild: false,
       latestBuild: true,
@@ -170,7 +170,7 @@ gulp.task("webpack-watch-hassio", () => {
   );
 });
 
-gulp.task("webpack-prod-hassio", () =>
+gulp.task("rspack-prod-hassio", () =>
   prodBuild(
     bothBuilds(createHassioConfig, {
       isProdBuild: true,
@@ -180,9 +180,9 @@ gulp.task("webpack-prod-hassio", () =>
   )
 );
 
-gulp.task("webpack-dev-server-gallery", () =>
+gulp.task("rspack-dev-server-gallery", () =>
   runDevServer({
-    compiler: webpack(
+    compiler: rspack(
       createGalleryConfig({ isProdBuild: false, latestBuild: true })
     ),
     contentBase: paths.gallery_output_root,
@@ -191,7 +191,7 @@ gulp.task("webpack-dev-server-gallery", () =>
   })
 );
 
-gulp.task("webpack-prod-gallery", () =>
+gulp.task("rspack-prod-gallery", () =>
   prodBuild(
     createGalleryConfig({
       isProdBuild: true,

@@ -1,6 +1,6 @@
 const { existsSync } = require("fs");
 const path = require("path");
-const webpack = require("@rspack/core");
+const rspack = require("@rspack/core");
 const { StatsWriterPlugin } = require("webpack-stats-plugin");
 const filterStats = require("@bundle-stats/plugin-webpack-filter").default;
 const TerserPlugin = require("terser-webpack-plugin");
@@ -24,7 +24,7 @@ class LogStartCompilePlugin {
   }
 }
 
-const createWebpackConfig = ({
+const createRspackConfig = ({
   name,
   entry,
   outputPath,
@@ -113,10 +113,10 @@ const createWebpackConfig = ({
         // Only include the JS of entrypoints
         filter: (file) => file.isInitial && !file.name.endsWith(".map"),
       }),
-      new webpack.DefinePlugin(
+      new rspack.DefinePlugin(
         bundle.definedVars({ isProdBuild, latestBuild, defineOverlay })
       ),
-      new webpack.IgnorePlugin({
+      new rspack.IgnorePlugin({
         checkResource(resource, context) {
           // Only use ignore to intercept imports that we don't control
           // inside node_module dependencies.
@@ -148,7 +148,7 @@ const createWebpackConfig = ({
           );
         },
       }),
-      new webpack.NormalModuleReplacementPlugin(
+      new rspack.NormalModuleReplacementPlugin(
         new RegExp(
           bundle.emptyPackages({ latestBuild, isHassioBuild }).join("|")
         ),
@@ -243,17 +243,17 @@ const createAppConfig = ({
   isStatsBuild,
   isTestBuild,
 }) =>
-  createWebpackConfig(
+  createRspackConfig(
     bundle.config.app({ isProdBuild, latestBuild, isStatsBuild, isTestBuild })
   );
 
 const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) =>
-  createWebpackConfig(
+  createRspackConfig(
     bundle.config.demo({ isProdBuild, latestBuild, isStatsBuild })
   );
 
 const createCastConfig = ({ isProdBuild, latestBuild }) =>
-  createWebpackConfig(bundle.config.cast({ isProdBuild, latestBuild }));
+  createRspackConfig(bundle.config.cast({ isProdBuild, latestBuild }));
 
 const createHassioConfig = ({
   isProdBuild,
@@ -261,7 +261,7 @@ const createHassioConfig = ({
   isStatsBuild,
   isTestBuild,
 }) =>
-  createWebpackConfig(
+  createRspackConfig(
     bundle.config.hassio({
       isProdBuild,
       latestBuild,
@@ -271,7 +271,7 @@ const createHassioConfig = ({
   );
 
 const createGalleryConfig = ({ isProdBuild, latestBuild }) =>
-  createWebpackConfig(bundle.config.gallery({ isProdBuild, latestBuild }));
+  createRspackConfig(bundle.config.gallery({ isProdBuild, latestBuild }));
 
 module.exports = {
   createAppConfig,
@@ -279,5 +279,5 @@ module.exports = {
   createCastConfig,
   createHassioConfig,
   createGalleryConfig,
-  createWebpackConfig,
+  createRspackConfig,
 };

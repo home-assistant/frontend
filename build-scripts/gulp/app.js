@@ -9,7 +9,7 @@ import "./locale-data.js";
 import "./service-worker.js";
 import "./translations.js";
 import "./wds.js";
-import "./webpack.js";
+import "./rspack.js";
 
 gulp.task(
   "develop-app",
@@ -26,7 +26,7 @@ gulp.task(
       "build-locale-data"
     ),
     "copy-static-app",
-    env.useWDS() ? "wds-watch-app" : "webpack-watch-app"
+    env.useWDS() ? "wds-watch-app" : "rspack-watch-app"
   )
 );
 
@@ -39,7 +39,7 @@ gulp.task(
     "clean",
     gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
     "copy-static-app",
-    "webpack-prod-app",
+    "rspack-prod-app",
     gulp.parallel("gen-pages-app-prod", "gen-service-worker-app-prod"),
     // Don't compress running tests
     ...(env.isTestBuild() ? [] : ["compress-app"])

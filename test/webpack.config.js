@@ -1,6 +1,6 @@
-import webpack from "../build-scripts/webpack.cjs";
+import rspack from "../build-scripts/rspack.cjs";
 
-const config = webpack.createAppConfig({
+const config = rspack.createAppConfig({
   isProdBuild: false,
   latestBuild: true,
   isStatsBuild: false,
