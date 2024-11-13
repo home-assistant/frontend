@@ -1,17 +1,19 @@
-import { css, html, LitElement, TemplateResult } from "lit";
 import "@material/mwc-list/mwc-list";
+import type { TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
+import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list-item";
 import "../../../layouts/hass-subpage";
 
+import { navigate } from "../../../common/navigate";
+import { fetchBackupAgentsInfo } from "../../../data/backup";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import { navigate } from "../../../common/navigate";
-import { fetchBackupAgentsInfo } from "../../../data/backup";
 
 @customElement("ha-config-backup-dashboard")
 class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {

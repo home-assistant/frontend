@@ -1,17 +1,18 @@
 import { mdiClose, mdiFolderUpload } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-alert";
 import "../../components/ha-file-upload";
 import "../../components/ha-header-bar";
 import "../../components/ha-icon-button";
+import { uploadBackup } from "../../data/backup";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import { BackupUploadDialogParams } from "./show-dialog-backup-upload";
-import { HassDialog } from "../make-dialog-manager";
 import { showAlertDialog } from "../generic/show-dialog-box";
-import { uploadBackup } from "../../data/backup";
+import type { HassDialog } from "../make-dialog-manager";
+import type { BackupUploadDialogParams } from "./show-dialog-backup-upload";
 
 const SUPPORTED_FORMAT = "application/x-tar";
 

@@ -1,18 +1,17 @@
-import { css, html, LitElement, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../layouts/hass-subpage";
 
-import "../../../components/ha-relative-time";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
+import "../../../components/ha-circular-progress";
+import "../../../components/ha-relative-time";
 import "../../../components/ha-settings-row";
 
+import type { BackupAgentsInfo, BackupContent } from "../../../data/backup";
+import { fetchBackupDetails } from "../../../data/backup";
 import type { HomeAssistant } from "../../../types";
-import {
-  BackupAgentsInfo,
-  BackupContent,
-  fetchBackupDetails,
-} from "../../../data/backup";
 
 @customElement("ha-config-backup-details")
 class HaConfigBackupDetails extends LitElement {
@@ -62,18 +61,9 @@ class HaConfigBackupDetails extends LitElement {
                   <ha-card header="Backup">
                     <div class="card-content">
                       <ha-settings-row>
-                        <span slot="heading">
-                          ${this._backup.type || "partial"}
-                        </span>
+                        <span slot="heading">Partial</span>
                         <span slot="description">Type</span>
                       </ha-settings-row>
-                      ${this._backup.homeassistant?.version &&
-                      html`<ha-settings-row>
-                        <span slot="heading">
-                          ${this._backup.homeassistant.version}
-                        </span>
-                        <span slot="description">Home Assistant Version</span>
-                      </ha-settings-row>`}
 
                       <ha-settings-row>
                         <span slot="heading">

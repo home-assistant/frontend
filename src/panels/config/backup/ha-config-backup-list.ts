@@ -1,18 +1,12 @@
 import { mdiPlus } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { navigate } from "../../../common/navigate";
-import { LocalizeFunc } from "../../../common/translations/localize";
-import {
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import type {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
@@ -20,9 +14,8 @@ import "../../../components/ha-circular-progress";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon";
 import "../../../components/ha-svg-icon";
+import type { BackupContent, BackupData } from "../../../data/backup";
 import {
-  BackupContent,
-  BackupData,
   fetchBackupAgentsSynced,
   fetchBackupInfo,
   generateBackup,
@@ -33,7 +26,7 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
-import { HomeAssistant, Route } from "../../../types";
+import type { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 
 const localAgent = "backup.local";
