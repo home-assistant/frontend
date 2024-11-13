@@ -5,7 +5,6 @@ import "./compress.js";
 import "./entry-html.js";
 import "./gather-static.js";
 import "./gen-icons-json.js";
-import "./rollup.js";
 import "./translations.js";
 import "./webpack.js";
 
@@ -22,7 +21,7 @@ gulp.task(
     "copy-translations-supervisor",
     "build-locale-data",
     "copy-static-supervisor",
-    env.useRollup() ? "rollup-watch-hassio" : "webpack-watch-hassio"
+    "webpack-watch-hassio"
   )
 );
 
@@ -38,7 +37,7 @@ gulp.task(
     "copy-translations-supervisor",
     "build-locale-data",
     "copy-static-supervisor",
-    env.useRollup() ? "rollup-prod-hassio" : "webpack-prod-hassio",
+    "webpack-prod-hassio",
     "gen-pages-hassio-prod",
     ...// Don't compress running tests
     (env.isTestBuild() ? [] : ["compress-hassio"])
