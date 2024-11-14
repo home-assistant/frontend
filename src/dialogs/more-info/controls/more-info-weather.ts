@@ -225,7 +225,6 @@ class MoreInfoWeather extends LitElement {
       <div class="flex badges">
         ${this._showValue(this.stateObj.attributes.pressure)
           ? html` <ha-badge
-              class="flex"
               label=${this.hass.localize(
                 "ui.card.weather.attributes.air_pressure"
               )}
@@ -242,7 +241,6 @@ class MoreInfoWeather extends LitElement {
         ${this._showValue(this.stateObj.attributes.humidity)
           ? html`
               <ha-badge
-                class="flex"
                 label=${this.hass.localize(
                   "ui.card.weather.attributes.humidity"
                 )}
@@ -259,7 +257,6 @@ class MoreInfoWeather extends LitElement {
           : ""}
         ${this._showValue(this.stateObj.attributes.wind_speed)
           ? html` <ha-badge
-              class="flex"
               label=${this.hass.localize(
                 "ui.card.weather.attributes.wind_speed"
               )}
@@ -277,7 +274,6 @@ class MoreInfoWeather extends LitElement {
           : ""}
         ${this._showValue(this.stateObj.attributes.visibility)
           ? html` <ha-badge
-              class="flex"
               label=${this.hass.localize(
                 "ui.card.weather.attributes.visibility"
               )}
