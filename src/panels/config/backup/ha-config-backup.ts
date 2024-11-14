@@ -19,10 +19,6 @@ class HaConfigBackup extends HassRouterPage {
         tag: "ha-config-backup-dashboard",
         cache: true,
       },
-      list: {
-        tag: "ha-config-backup-list",
-        load: () => import("./ha-config-backup-list"),
-      },
       details: {
         tag: "ha-config-backup-details",
         load: () => import("./ha-config-backup-details"),
