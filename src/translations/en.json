@@ -3242,7 +3242,7 @@
                   "description": {
                     "picker": "Test if multiple conditions are true.",
                     "no_conditions": "If multiple conditions match",
-                    "full": "If {count} {count, plural,\n one {condition match}\n other {conditions matches}\n}"
+                    "full": "If {count} {count, plural,\n one {condition matches}\n other {conditions match}\n}"
                   }
                 },
                 "device": {
