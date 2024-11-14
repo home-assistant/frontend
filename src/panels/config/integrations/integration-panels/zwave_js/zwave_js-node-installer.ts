@@ -23,11 +23,13 @@ import "../../../ha-config-section";
 import "./capability-controls/zwave_js-capability-control-multilevel-switch";
 import "./capability-controls/zwave_js-capability-control-thermostat-setback";
 import "./capability-controls/zwave_js-capability-control-door-lock";
+import "./capability-controls/zwave_js-capability-control-color-switch";
 
 const CAPABILITY_CONTROLS = {
   38: "multilevel_switch",
   71: "thermostat_setback",
   98: "door_lock",
+  51: "color_switch",
 };
 
 @customElement("zwave_js-node-installer")

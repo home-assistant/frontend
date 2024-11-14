@@ -851,7 +851,7 @@ class DialogZWaveJSAddNode extends LitElement {
     this._addNodeTimeoutHandle = window.setTimeout(() => {
       this._unsubscribe();
       this._status = "timed_out";
-    }, 90000);
+    }, 300000);
   }
 
   private _onBeforeUnload = (event: BeforeUnloadEvent) => {
