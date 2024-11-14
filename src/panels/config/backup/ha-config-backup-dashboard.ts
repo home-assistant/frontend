@@ -19,11 +19,10 @@ import "../../../components/ha-icon-next";
 import "../../../components/ha-summary-card";
 import "../../../components/ha-svg-icon";
 import {
-  fetchBackupAgentsSynced,
+  fetchBackupAgentsBackups,
   fetchBackupInfo,
   generateBackup,
   type BackupContent,
-  type BackupData,
 } from "../../../data/backup";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
@@ -34,8 +33,6 @@ import {
   showConfirmationDialog,
 } from "../../lovelace/custom-card-helpers";
 
-const localAgent = "backup.local";
-
 @customElement("ha-config-backup-dashboard")
 class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -44,7 +41,9 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public route!: Route;
 
-  @state() private _backupData?: BackupData;
+  @state() private _backingUp = false;
+
+  @state() private _backups: BackupContent[] = [];
 
   private _columns = memoizeOne(
     (
@@ -86,10 +85,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
       locations: {
         title: "Locations",
         template: (backup) =>
-          html` ${[
-            ...(backup.path ? [localAgent] : []),
-            ...(backup.agents || []).sort(),
-          ].map((agent) => {
+          html`${(backup.agents || []).sort().map((agent) => {
             const [domain, name] = agent.split(".");
             return html`
               <img
@@ -113,8 +109,6 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   );
 
   protected render(): TemplateResult {
-    const backingUp = this._backupData?.backing_up;
-
     return html`
       <hass-tabs-subpage-data-table
         hasFab
@@ -136,7 +130,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
           this.hass.language,
           this.hass.localize
         )}
-        .data=${this._backupData?.backups ?? []}
+        .data=${this._backups ?? []}
         .noDataText=${this.hass.localize("ui.panel.config.backup.no_backups")}
         .searchLabel=${this.hass.localize(
           "ui.panel.config.backup.picker.search"
@@ -147,7 +141,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
             title="Automatically backed up"
             description="Your configuration has been backed up."
             has-action
-            .status=${backingUp ? "loading" : "success"}
+            .status=${this._backingUp ? "loading" : "success"}
           >
             <ha-button slot="action" @click=${this._configureAutomaticBackup}>
               Configure
@@ -166,14 +160,14 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
         </div>
         <ha-fab
           slot="fab"
-          ?disabled=${backingUp}
-          .label=${backingUp
+          ?disabled=${this._backingUp}
+          .label=${this._backingUp
             ? this.hass.localize("ui.panel.config.backup.creating_backup")
             : this.hass.localize("ui.panel.config.backup.create_backup")}
           extended
           @click=${this._generateBackup}
         >
-          ${backingUp
+          ${this._backingUp
             ? html`
                 <div slot="icon">
                   <ha-circular-progress indeterminate></ha-circular-progress>
@@ -188,19 +182,20 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this._fetchBackups();
+    this._fetchStatus();
+  }
+
+  private async _fetchStatus() {
+    const info = await fetchBackupInfo(this.hass);
+    this._backingUp = info.backing_up;
   }
 
   private async _fetchBackups(): Promise<void> {
     const backupData: Record<string, BackupContent> = {};
-    const [local, synced] = await Promise.all([
-      fetchBackupInfo(this.hass),
-      fetchBackupAgentsSynced(this.hass),
-    ]);
 
-    for (const backup of local.backups) {
-      backupData[backup.slug] = backup;
-    }
-    for (const agent of synced) {
+    const agentsBackups = await fetchBackupAgentsBackups(this.hass);
+
+    for (const agent of agentsBackups) {
       if (!(agent.slug in backupData)) {
         backupData[agent.slug] = { ...agent, agents: [agent.agent_id] };
       } else if (!("agents" in backupData[agent.slug])) {
@@ -209,10 +204,8 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
         backupData[agent.slug].agents!.push(agent.agent_id);
       }
     }
-    this._backupData = {
-      backing_up: local.backing_up,
-      backups: Object.values(backupData),
-    };
+
+    this._backups = Object.values(backupData);
   }
 
   private async _generateBackup(): Promise<void> {
@@ -225,11 +218,22 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
       return;
     }
 
-    generateBackup(this.hass)
-      .then(() => this._fetchBackups())
-      .catch((err) => showAlertDialog(this, { text: (err as Error).message }));
+    // Todo subscribe for status updates
+    try {
+      await generateBackup(this.hass, { agent_ids: ["backup.local"] });
+    } catch (err) {
+      showAlertDialog(this, { text: (err as Error).message });
+    }
 
-    await this._fetchBackups();
+    await this._fetchStatus();
+
+    const interval = setInterval(async () => {
+      await this._fetchStatus();
+      if (!this._backingUp) {
+        clearInterval(interval);
+        this._fetchBackups();
+      }
+    }, 2000);
   }
 
   private _showBackupDetails(ev: CustomEvent): void {

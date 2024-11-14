@@ -4,26 +4,28 @@ export interface BackupAgent {
   agent_id: string;
 }
 
-interface BaseBackupContent {
+interface BackupAgentBackup {
+  agent_id: string;
+  date: string;
+  id: string;
+  name: string;
+  path: string;
+  protected: boolean;
+  size: number;
+  slug: string;
+}
+
+export interface BackupContent {
   slug: string;
   date: string;
   name: string;
   size: number;
   agents?: string[];
-}
-
-export interface BackupContent extends BaseBackupContent {
   path?: string;
-}
-
-export interface BackupSyncedContent extends BaseBackupContent {
-  id: string;
-  agent_id: string;
 }
 
 export interface BackupData {
   backing_up: boolean;
-  backups: BackupContent[];
 }
 
 export interface BackupAgentsInfo {
@@ -54,11 +56,11 @@ export const fetchBackupAgentsInfo = (
     type: "backup/agents/info",
   });
 
-export const fetchBackupAgentsSynced = (
+export const fetchBackupAgentsBackups = (
   hass: HomeAssistant
-): Promise<BackupSyncedContent[]> =>
+): Promise<BackupAgentBackup[]> =>
   hass.callWS({
-    type: "backup/agents/synced",
+    type: "backup/agents/list_backups",
   });
 
 export const removeBackup = (
@@ -70,9 +72,22 @@ export const removeBackup = (
     slug,
   });
 
-export const generateBackup = (hass: HomeAssistant): Promise<BackupContent> =>
+type GenerateBackupParams = {
+  agent_ids: string[];
+  database_included?: boolean;
+  folders_included?: string[];
+  addons_included?: string[];
+  name?: string;
+  password?: string;
+};
+
+export const generateBackup = (
+  hass: HomeAssistant,
+  params: GenerateBackupParams
+): Promise<BackupContent> =>
   hass.callWS({
     type: "backup/generate",
+    ...params,
   });
 
 export const uploadBackup = async (
