@@ -6,6 +6,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-alert";
 import "../../components/ha-file-upload";
 import "../../components/ha-header-bar";
+import "../../components/ha-dialog";
 import "../../components/ha-icon-button";
 import { uploadBackup } from "../../data/backup";
 import { haStyleDialog } from "../../resources/styles";

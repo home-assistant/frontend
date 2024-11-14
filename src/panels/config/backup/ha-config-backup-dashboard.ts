@@ -112,7 +112,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   );
 
   protected render(): TemplateResult {
-    const backingUp = true;
+    const backingUp = this._backupData?.backing_up;
 
     return html`
       <hass-tabs-subpage-data-table
