@@ -16,6 +16,7 @@ import "../../../components/ha-circular-progress";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-summary-card";
 import "../../../components/ha-svg-icon";
 import {
   fetchBackupAgentsSynced,
@@ -142,40 +143,26 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
         )}
       >
         <div slot="top_header" class="header">
-          <ha-card outlined>
-            <div class="summary">
-              <div class="summary-icon success">
-                <ha-icon icon="mdi:check"></ha-icon>
-              </div>
-              <div class="summary-content">
-                <p class="summary-title">Automatically backed up</p>
-                <p class="summary-description">
-                  Your configuration has been backed up.
-                </p>
-              </div>
-              <div class="summary-action">
-                <ha-button @click=${this._configureAutomaticBackup}
-                  >Configure</ha-button
-                >
-              </div>
-            </div>
-          </ha-card>
-          <ha-card outlined>
-            <div class="summary">
-              <div class="summary-icon success">
-                <ha-icon icon="mdi:check"></ha-icon>
-              </div>
-              <div class="summary-content">
-                <p class="summary-title">3 automatic backup locations</p>
-                <p class="summary-description">One is off-site</p>
-              </div>
-              <div class="summary-action">
-                <ha-button @click=${this._configureBackupLocations}>
-                  Configure
-                </ha-button>
-              </div>
-            </div>
-          </ha-card>
+          <ha-summary-card
+            title="Automatically backed up"
+            description="Your configuration has been backed up."
+            has-action
+            .status=${backingUp ? "loading" : "success"}
+          >
+            <ha-button slot="action" @click=${this._configureAutomaticBackup}>
+              Configure
+            </ha-button>
+          </ha-summary-card>
+          <ha-summary-card
+            title="3 automatic backup locations"
+            description="One is off-site"
+            has-action
+            .status=${"success"}
+          >
+            <ha-button slot="action" @click=${this._configureBackupLocations}>
+              Configure
+            </ha-button>
+          </ha-summary-card>
         </div>
         <ha-fab
           slot="fab"
@@ -275,76 +262,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
       flex: 1;
       min-width: 0;
     }
-    .summary {
-      display: flex;
-      flex-direction: row;
-      gap: 16px;
-      align-items: center;
-      padding: 20px;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    .summary-icon {
-      position: relative;
-      border-radius: 20px;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-    .summary-icon.success {
-      --icon-color: var(--success-color);
-    }
-    .summary-icon.warning {
-      --icon-color: var(--warning-color);
-    }
-    .summary-icon.error {
-      --icon-color: var(--error-color);
-    }
-    .summary-icon::before {
-      display: block;
-      content: "";
-      position: absolute;
-      inset: 0;
-      background-color: var(--icon-color, var(--primary-color));
-      opacity: 0.2;
-    }
-    .summary-icon ha-icon {
-      color: var(--icon-color, var(--primary-color));
-      width: 24px;
-      height: 24px;
-    }
-    .summary-content {
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      min-width: 0;
-    }
-    .summary-title {
-      font-size: 22px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: 28px;
-      color: var(--primary-text-color);
-      margin: 0;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
-    }
-    .summary-description {
-      font-size: 14px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: 20px;
-      letter-spacing: 0.25px;
-      color: var(--secondary-text-color);
-      margin: 0;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
-    }
+
     ha-fab[disabled] {
       --mdc-theme-secondary: var(--disabled-text-color) !important;
     }
