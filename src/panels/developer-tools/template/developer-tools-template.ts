@@ -334,7 +334,8 @@ class HaPanelDevTemplate extends LitElement {
           overflow: auto;
         }
         
-        p, ul {
+        p,
+        ul {
           margin-block-end: 0;
         }
         
@@ -345,7 +346,7 @@ class HaPanelDevTemplate extends LitElement {
             100vh - var(--header-height) - var(--paper-font-body1_-_line-height) * 3 - 1em * 2
             - max(16px,env(safe-area-inset-top)) * 2 - max(16px,env(safe-area-inset-bottom)) * 2
             - var(--ha-card-border-width,1px) * 2 - 132px
-          ); 
+          );
         }
 
         .all_listeners {
