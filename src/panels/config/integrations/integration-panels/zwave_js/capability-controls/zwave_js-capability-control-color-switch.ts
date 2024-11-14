@@ -8,6 +8,18 @@ import "../../../../../../components/ha-circular-progress";
 import { extractApiErrorMessage } from "../../../../../../data/hassio/common";
 import "./zwave_js-capability-control-multilevel-switch";
 
+enum ColorComponent {
+  "Warm White" = 0,
+  "Cold White",
+  Red,
+  Green,
+  Blue,
+  Amber,
+  Cyan,
+  Purple,
+  Index,
+}
+
 @customElement("zwave_js-capability-control-color_switch")
 class ZWaveJSCapabilityColorSwitch extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -20,7 +32,7 @@ class ZWaveJSCapabilityColorSwitch extends LitElement {
 
   @property({ type: Number }) public version!: number;
 
-  @state() private _color_components?: number[];
+  @state() private _color_components?: ColorComponent[];
 
   @state() private _error?: string;
 
@@ -37,7 +49,9 @@ class ZWaveJSCapabilityColorSwitch extends LitElement {
             ${this.hass.localize(
               "ui.panel.config.zwave_js.node_installer.capability_controls.color_switch.color_component"
             )}:
-            ${color}
+            ${this.hass.localize(
+              `ui.panel.config.zwave_js.node_installer.capability_controls.color_switch.colors.${color}`
+            )}
           </h5>
           <zwave_js-capability-control-multilevel_switch
             .hass=${this.hass}
