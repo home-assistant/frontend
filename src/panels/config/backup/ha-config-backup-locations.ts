@@ -26,7 +26,7 @@ class HaConfigBackupLocations extends LitElement {
   protected render(): TemplateResult {
     return html`
       <hass-subpage
-        back-path="/config/system"
+        back-path="/config/backup"
         .hass=${this.hass}
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.backup.caption")}
@@ -71,7 +71,7 @@ class HaConfigBackupLocations extends LitElement {
                           </ha-md-list-item>
                         `;
                       })}
-                    </mwc-list>
+                    </ha-md-list>
                   `
                 : html`<p>No sync agents configured</p>`}
             </div>
@@ -102,6 +102,8 @@ class HaConfigBackupLocations extends LitElement {
       font-weight: 400;
       line-height: 28px;
       color: var(--primary-text-color);
+      margin: 0;
+      margin-bottom: 8px;
     }
 
     .header .description {
@@ -111,6 +113,7 @@ class HaConfigBackupLocations extends LitElement {
       line-height: 20px;
       letter-spacing: 0.25px;
       color: var(--secondary-text-color);
+      margin: 0;
     }
 
     .agents ha-md-list {

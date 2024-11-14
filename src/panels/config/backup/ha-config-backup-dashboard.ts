@@ -1,7 +1,7 @@
 import "@material/mwc-list/mwc-list";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
@@ -10,23 +10,14 @@ import "../../../components/ha-list-item";
 import "../../../layouts/hass-subpage";
 
 import { navigate } from "../../../common/navigate";
-import { fetchBackupAgentsInfo } from "../../../data/backup";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
-import { brandsUrl } from "../../../util/brands-url";
 
 @customElement("ha-config-backup-dashboard")
 class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
-
-  @state() private _agents: { id: string }[] = [];
-
-  protected firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
-    this._fetchAgents();
-  }
 
   protected render(): TemplateResult {
     return html`
@@ -36,136 +27,139 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.backup.caption")}
       >
-        <div class="content">
-          <div class="backup-status">
-            <ha-card outlined>
-              <div class="card-content">
-                <div class="backup-status-contents">
-                  <div class="status-icon">
-                    <ha-icon icon="mdi:check-circle"></ha-icon>
-                  </div>
-                  <span>
-                    <div class="status-header">Backed up</div>
-                    <div class="status-text">
-                      Your configuration has been backed up.
-                    </div>
-                  </span>
-                </div>
-                <ha-button
-                  @click=${this._showBackupList}
-                  class="show-all-backups"
+        <div class="header">
+          <ha-card outlined>
+            <div class="summary">
+              <div class="summary-icon success">
+                <ha-icon icon="mdi:check"></ha-icon>
+              </div>
+              <div class="summary-content">
+                <p class="summary-title">Automatically backed up</p>
+                <p class="summary-description">
+                  Your configuration has been backed up.
+                </p>
+              </div>
+              <div class="summary-action">
+                <ha-button @click=${this._configureAutomaticBackup}
+                  >Configure</ha-button
                 >
-                  Show all backups
-                </ha-button>
               </div>
-            </ha-card>
-          </div>
-          <div class="backup-agents">
-            <ha-card outlined>
-              <div class="card-content">
-                <div class="status-header">Locations</div>
-                <div class="status-text">
-                  To keep your data safe it is recommended your backups is at
-                  least on two different locations and one of them is off-site.
-                </div>
-                ${this._agents.length > 0
-                  ? html`<mwc-list>
-                      ${this._agents.map((agent) => {
-                        const [domain, name] = agent.id.split(".");
-                        return html` <ha-list-item
-                          graphic="medium"
-                          hasMeta
-                          .agent=${agent.id}
-                          @click=${this._showAgentSyncs}
-                        >
-                          <img
-                            .src=${brandsUrl({
-                              domain,
-                              type: "icon",
-                              useFallback: true,
-                              darkOptimized: this.hass.themes?.darkMode,
-                            })}
-                            crossorigin="anonymous"
-                            referrerpolicy="no-referrer"
-                            alt="cloud"
-                            slot="graphic"
-                          />
-                          <span>
-                            ${this.hass.localize(`component.${domain}.title`) ||
-                            domain}:
-                            ${name}
-                          </span>
-                          <ha-icon-next slot="meta"></ha-icon-next>
-                        </ha-list-item>`;
-                      })}
-                    </mwc-list>`
-                  : html`<p>No sync agents configured</p>`}
+            </div>
+          </ha-card>
+          <ha-card outlined>
+            <div class="summary">
+              <div class="summary-icon success">
+                <ha-icon icon="mdi:check"></ha-icon>
               </div>
-            </ha-card>
-          </div>
+              <div class="summary-content">
+                <p class="summary-title">3 automatic backup locations</p>
+                <p class="summary-description">One is off-site</p>
+              </div>
+              <div class="summary-action">
+                <ha-button @click=${this._configureBackupLocations}
+                  >Configure</ha-button
+                >
+              </div>
+            </div>
+          </ha-card>
         </div>
       </hass-subpage>
     `;
   }
 
-  private async _fetchAgents() {
-    const resp = await fetchBackupAgentsInfo(this.hass);
-    this._agents = resp.agents;
+  private _configureAutomaticBackup() {
+    navigate("/config/backup/automatic_config");
   }
 
-  private _showBackupList(): void {
-    navigate("/config/backup/list");
-  }
-
-  private _showAgentSyncs(event: Event): void {
-    const agent = (event.currentTarget as any).agent;
-    navigate(`/config/backup/list?agent=${agent}`);
+  private _configureBackupLocations() {
+    navigate("/config/backup/locations");
   }
 
   static styles = css`
-    .content {
-      padding: 28px 20px 0;
-      max-width: 690px;
-      margin: 0 auto;
-      gap: 24px;
-      display: grid;
-    }
-
-    .backup-status .card-content {
+    .header {
+      padding: 24px 16px;
       display: flex;
       flex-direction: row;
-      justify-content: space-between;
+      gap: 16px;
     }
-
-    .backup-status-contents {
+    @media (max-width: 1000px) {
+      .header {
+        flex-direction: column;
+      }
+    }
+    .header > * {
+      flex: 1;
+      min-width: 0;
+    }
+    .summary {
       display: flex;
       flex-direction: row;
-    }
-
-    .status-icon {
-      color: var(--success-color);
-      height: 100%;
-      align-content: center;
-    }
-
-    .status-icon ha-icon {
-      --mdc-icon-size: 40px;
-      padding: 8px 16px 8px 8px;
-    }
-
-    .status-header {
-      font-size: 22px;
-      line-height: 28px;
-    }
-
-    .status-text {
-      font-size: 14px;
-      line-height: 20px;
-      color: var(--secondary-text-color);
-    }
-
-    ha-button.show-all-backups {
+      gap: 16px;
       align-items: center;
+      padding: 20px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .summary-icon {
+      position: relative;
+      border-radius: 20px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .summary-icon.success {
+      --icon-color: var(--success-color);
+    }
+    .summary-icon.warning {
+      --icon-color: var(--warning-color);
+    }
+    .summary-icon.error {
+      --icon-color: var(--error-color);
+    }
+    .summary-icon::before {
+      display: block;
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-color: var(--icon-color, var(--primary-color));
+      opacity: 0.2;
+    }
+    .summary-icon ha-icon {
+      color: var(--icon-color, var(--primary-color));
+      width: 24px;
+      height: 24px;
+    }
+    .summary-content {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 0;
+    }
+    .summary-title {
+      font-size: 22px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 28px;
+      color: var(--primary-text-color);
+      margin: 0;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .summary-description {
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 20px;
+      letter-spacing: 0.25px;
+      color: var(--secondary-text-color);
+      margin: 0;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
     }
   `;
 }
