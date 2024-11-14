@@ -5,6 +5,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
+import type { BackupAgent } from "../../../data/backup";
 import { fetchBackupAgentsInfo } from "../../../data/backup";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
@@ -16,7 +17,7 @@ class HaConfigBackupLocations extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @state() private _agents: { id: string }[] = [];
+  @state() private _agents: BackupAgent[] = [];
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
@@ -45,14 +46,14 @@ class HaConfigBackupLocations extends LitElement {
                 ? html`
                     <ha-md-list>
                       ${this._agents.map((agent) => {
-                        const [domain, name] = agent.id.split(".");
+                        const [domain, name] = agent.agent_id.split(".");
                         const domainName =
                           this.hass.localize(`component.${domain}.title`) ||
                           domain;
                         return html`
                           <ha-md-list-item
                             type="link"
-                            href="/config/backup/locations/${agent.id}"
+                            href="/config/backup/locations/${agent.agent_id}"
                           >
                             <img
                               .src=${brandsUrl({
@@ -82,8 +83,8 @@ class HaConfigBackupLocations extends LitElement {
   }
 
   private async _fetchAgents() {
-    const resp = await fetchBackupAgentsInfo(this.hass);
-    this._agents = resp.agents;
+    const data = await fetchBackupAgentsInfo(this.hass);
+    this._agents = data.agents;
   }
 
   static styles = css`

@@ -1,7 +1,7 @@
 import type { HomeAssistant } from "../types";
 
-interface BackupSyncAgent {
-  id: string;
+export interface BackupAgent {
+  agent_id: string;
 }
 
 interface BaseBackupContent {
@@ -27,8 +27,7 @@ export interface BackupData {
 }
 
 export interface BackupAgentsInfo {
-  agents: BackupSyncAgent[];
-  syncing: boolean;
+  agents: BackupAgent[];
 }
 
 export const getBackupDownloadUrl = (slug: string) =>
