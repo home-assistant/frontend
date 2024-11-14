@@ -5268,6 +5268,17 @@
                   "1": "Constant",
                   "2": "Timed"
                 },
+                "mode": "Mode",
+                "modes": {
+                  "0": "Unsecured",
+                  "1": "Unsecured with timeout",
+                  "16": "Inside unsecured",
+                  "17": "Inside unsecured with timeout",
+                  "32": "Outside unsecured",
+                  "33": "Outside unsecured with timeout",
+                  "254": "Unknown",
+                  "255": "Secured"
+                },
                 "lock_timeout": "Lock timeout",
                 "lock_timeout_helper": "Number of seconds before the lock automatically locks after being unlocked"
               }
