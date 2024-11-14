@@ -1,4 +1,4 @@
-import { assert, describe } from "vitest";
+import { assert, describe, it } from "vitest";
 import { slugify } from "../../../src/common/string/slugify";
 
 describe("slugify", () => {

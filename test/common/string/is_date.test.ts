@@ -1,12 +1,12 @@
-import { assert, describe } from "vitest";
+import { expect, test } from "vitest";
 import { isDate } from "../../../src/common/string/is_date";
 
-describe("isDate", () => {
-  assert.strictEqual(isDate("ABC"), false);
+test("isDate", () => {
+  expect(isDate("ABC")).toBe(false);
 
-  assert.strictEqual(isDate("2021-02-03", false), true);
-  assert.strictEqual(isDate("2021-02-03", true), true);
+  expect(isDate("2021-02-03", false)).toBe(true);
+  expect(isDate("2021-02-03", true)).toBe(true);
 
-  assert.strictEqual(isDate("2021-05-25T19:23:52+00:00", true), true);
-  assert.strictEqual(isDate("2021-05-25T19:23:52+00:00", false), false);
+  expect(isDate("2021-05-25T19:23:52+00:00", true)).toBe(true);
+  expect(isDate("2021-05-25T19:23:52+00:00", false)).toBe(false);
 });
