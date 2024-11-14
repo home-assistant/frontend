@@ -67,7 +67,7 @@ describe("computeStateDisplay", () => {
         demoConfig,
         {}
       ),
-      "component.binary_sensor.state.moisture.off"
+      "component.binary_sensor.entity_component.moisture.state.off"
     );
   });
 
@@ -94,7 +94,7 @@ describe("computeStateDisplay", () => {
         demoConfig,
         {}
       ),
-      "component.binary_sensor.state.invalid_device_class.off"
+      "component.binary_sensor.entity_component.invalid_device_class.state.off"
     );
   });
 

@@ -19,7 +19,7 @@
     "postinstall": "husky",
     "prepack": "pinst --disable",
     "postpack": "pinst --enable",
-    "test": "vitest --config test/vitest.config.ts"
+    "test": "vitest run --config test/vitest.config.ts"
   },
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "Apache-2.0",
