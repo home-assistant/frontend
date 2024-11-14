@@ -65,7 +65,9 @@ jobs:
           node-version-file: ".nvmrc"
           cache: yarn
       - name: Install dependencies
-        run: yarn workspaces focus --production && yarn add vitest
+        run: yarn install --immutable
+      - name: Build resources
+        run: ./node_modules/.bin/gulp gen-icons-json build-translations build-locale-data
       - name: Run Tests
         run: yarn run test
   build:
