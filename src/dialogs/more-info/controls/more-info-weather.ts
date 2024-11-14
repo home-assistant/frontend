@@ -426,27 +426,13 @@ class MoreInfoWeather extends LitElement {
           font-size: 1.2em;
         }
 
-        .flex {
-          display: flex;
-          height: 32px;
-          align-items: center;
-        }
-        .flex > div:last-child {
-          direction: ltr;
-        }
-
         .badges {
+          display: flex;
           justify-content: center;
         }
+
         .badges ha-badge {
           margin: 8px 8px;
-        }
-
-        .main {
-          flex: 1;
-          margin-left: 24px;
-          margin-inline-start: 24px;
-          margin-inline-end: initial;
         }
 
         .attribution {
