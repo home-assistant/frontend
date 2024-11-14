@@ -182,7 +182,6 @@ class HaPanelDevTemplate extends LitElement {
               : nothing}
             ${this._templateResult
               ? html`
-                  <!-- prettier-ignore -->
                   <pre class="rendered ${classMap({
                     [resultType]: resultType,
                   })}"
