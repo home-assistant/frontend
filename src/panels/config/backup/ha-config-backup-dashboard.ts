@@ -251,7 +251,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   }
 
   private _configureAutomaticBackup() {
-    navigate("/config/backup/automatic_config");
+    navigate("/config/backup/automatic-config");
   }
 
   private _configureBackupLocations() {
