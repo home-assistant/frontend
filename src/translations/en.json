@@ -883,7 +883,10 @@
         }
       },
       "siren": {
-        "tone": "Tone"
+        "advanced_controls": "Advanced controls",
+        "tone": "Tone",
+        "duration": "Duration",
+        "volume": "Volume"
       },
       "media-browser": {
         "tts": {
