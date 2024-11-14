@@ -181,8 +181,8 @@ class HaPanelDevTemplate extends LitElement {
                 >`
               : nothing}
             ${this._templateResult
-              ? html`
-                  <pre class="rendered ${classMap({
+              ? html`<pre
+                  class="rendered ${classMap({
                     [resultType]: resultType,
                   })}"
                   >${type === "object"
