@@ -228,7 +228,7 @@ class MoreInfoWeather extends LitElement {
           </div>
         </div>
       </div>
-      <div class="flex badges">
+      <div class="badges">
         ${this._showValue(this.stateObj.attributes.pressure)
           ? html` <ha-badge
               label=${this.hass.localize(
@@ -429,6 +429,7 @@ class MoreInfoWeather extends LitElement {
         .badges {
           display: flex;
           justify-content: center;
+          flex-wrap: wrap;
         }
 
         .badges ha-badge {
