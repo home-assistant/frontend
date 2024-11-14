@@ -15,6 +15,9 @@ import {
   startOfMonth,
   startOfWeek,
   startOfYear,
+  differenceInMilliseconds,
+  addMilliseconds,
+  subMilliseconds,
 } from "date-fns";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -332,10 +335,12 @@ export class HaDateRangePicker extends LitElement {
   }
 
   private _handleNext(): void {
-    const diff = this.endDate.getTime() - this.startDate.getTime();
     const dateRange = [
-      new Date(this.endDate.getTime() + 1),
-      new Date(this.endDate.getTime() + 1 + diff),
+      addMilliseconds(this.endDate, 1),
+      addMilliseconds(
+        this.endDate,
+        1 + differenceInMilliseconds(this.endDate, this.startDate)
+      ),
     ];
     const dateRangePicker = this._dateRangePicker;
     dateRangePicker.clickRange(dateRange);
@@ -343,10 +348,12 @@ export class HaDateRangePicker extends LitElement {
   }
 
   private _handlePrev(): void {
-    const diff = this.endDate.getTime() - this.startDate.getTime() + 1;
     const dateRange = [
-      new Date(this.startDate.getTime() - diff),
-      new Date(this.startDate.getTime() - 1),
+      subMilliseconds(
+        this.startDate,
+        differenceInMilliseconds(this.endDate, this.startDate) + 1
+      ),
+      subMilliseconds(this.startDate, 1),
     ];
     const dateRangePicker = this._dateRangePicker;
     dateRangePicker.clickRange(dateRange);
@@ -449,7 +456,7 @@ export class HaDateRangePicker extends LitElement {
         }
       }
 
-      @media only screen and (max-width: 500px) {
+      @media only screen and (max-width: 560px) {
         ha-textfield {
           min-width: inherit;
         }
