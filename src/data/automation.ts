@@ -1,13 +1,14 @@
-import {
+import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
 import { navigate } from "../common/navigate";
 import { ensureArray } from "../common/array/ensure-array";
-import { Context, HomeAssistant } from "../types";
-import { BlueprintInput } from "./blueprint";
-import { DeviceCondition, DeviceTrigger } from "./device_automation";
-import { Action, MODES, migrateAutomationAction } from "./script";
+import type { Context, HomeAssistant } from "../types";
+import type { BlueprintInput } from "./blueprint";
+import type { DeviceCondition, DeviceTrigger } from "./device_automation";
+import type { Action, MODES } from "./script";
+import { migrateAutomationAction } from "./script";
 import { createSearchParam } from "../common/url/search-params";
 
 export const AUTOMATION_DEFAULT_MODE: (typeof MODES)[number] = "single";
@@ -167,7 +168,7 @@ export interface TagTrigger extends BaseTrigger {
 
 export interface TimeTrigger extends BaseTrigger {
   trigger: "time";
-  at: string;
+  at: string | { entity_id: string; offset?: string };
 }
 
 export interface TemplateTrigger extends BaseTrigger {

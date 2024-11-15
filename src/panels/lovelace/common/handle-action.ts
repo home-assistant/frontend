@@ -2,10 +2,10 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { forwardHaptic } from "../../../data/haptics";
 import { domainToName } from "../../../data/integration";
-import { ActionConfig } from "../../../data/lovelace/config/action";
+import type { ActionConfig } from "../../../data/lovelace/config/action";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { showVoiceCommandDialog } from "../../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
 import { toggleEntity } from "./entity/toggle-entity";
 
@@ -94,12 +94,13 @@ export const handleAction = async (
 
   switch (actionConfig.action) {
     case "more-info": {
-      if (config.entity || config.camera_image || config.image_entity) {
-        fireEvent(node, "hass-more-info", {
-          entityId: (config.entity ||
-            config.camera_image ||
-            config.image_entity)!,
-        });
+      const entityId =
+        actionConfig.entity ||
+        config.entity ||
+        config.camera_image ||
+        config.image_entity;
+      if (entityId) {
+        fireEvent(node, "hass-more-info", { entityId });
       } else {
         showToast(node, {
           message: hass.localize(

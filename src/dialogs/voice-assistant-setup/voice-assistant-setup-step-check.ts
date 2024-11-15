@@ -1,9 +1,12 @@
-import { html, LitElement, PropertyValues } from "lit";
+import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-button";
+import "../../components/ha-circular-progress";
 import { testAssistSatelliteConnection } from "../../data/assist_satellite";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import { AssistantSetupStyles } from "./styles";
+import { documentationUrl } from "../../util/documentation-url";
 
 @customElement("ha-voice-assistant-setup-step-check")
 export class HaVoiceAssistantSetupStepCheck extends LitElement {
@@ -12,6 +15,8 @@ export class HaVoiceAssistantSetupStepCheck extends LitElement {
   @property() public assistEntityId?: string;
 
   @state() private _status?: "success" | "timeout";
+
+  @state() private _showLoader = false;
 
   protected override willUpdate(changedProperties: PropertyValues): void {
     super.willUpdate(changedProperties);
@@ -30,39 +35,51 @@ export class HaVoiceAssistantSetupStepCheck extends LitElement {
 
   protected override render() {
     return html`<div class="content">
-      ${this._status === "success"
-        ? html`<img src="/static/icons/casita/smiling.png" />
+      ${this._status === "timeout"
+        ? html`<img src="/static/images/voice-assistant/error.png" />
+            <h1>The voice assistant is unable to connect to Home Assistant</h1>
+            <p class="secondary">
+              To play audio, the voice assistant device has to connect to Home
+              Assistant to fetch the files. Our test shows that the device is
+              unable to reach the Home Assistant server.
+            </p>
+            <div class="footer">
+              <a
+                href=${documentationUrl(
+                  this.hass,
+                  "/voice_control/troubleshooting/#i-dont-get-a-voice-response"
+                )}
+                ><ha-button>Help me</ha-button></a
+              >
+              <ha-button @click=${this._testConnection}>Retry</ha-button>
+            </div>`
+        : html`<img src="/static/images/voice-assistant/hi.png" />
             <h1>Hi</h1>
             <p class="secondary">
-              With a couple of steps we are going to setup your voice assistant.
-            </p>`
-        : this._status === "timeout"
-          ? html`<img src="/static/icons/casita/sad.png" />
-              <h1>Voice assistant can not connect to Home Assistant</h1>
-              <p class="secondary">
-                A good explanation what is happening and what action you should
-                take.
-              </p>
-              <div class="footer">
-                <a href="#"><ha-button>Help me</ha-button></a>
-                <ha-button @click=${this._testConnection}>Retry</ha-button>
-              </div>`
-          : html`<img src="/static/icons/casita/loading.png" />
-              <h1>Checking...</h1>
-              <p class="secondary">
-                We are checking if the device can reach your Home Assistant
-                instance.
-              </p>
-              <ha-circular-progress indeterminate></ha-circular-progress>`}
+              Over the next couple steps we're going to personalize your voice
+              assistant.
+            </p>
+
+            ${this._showLoader
+              ? html`<ha-circular-progress
+                  indeterminate
+                ></ha-circular-progress>`
+              : nothing} `}
     </div>`;
   }
 
   private async _testConnection() {
     this._status = undefined;
+    this._showLoader = false;
+    const timeout = setTimeout(() => {
+      this._showLoader = true;
+    }, 3000);
     const result = await testAssistSatelliteConnection(
       this.hass,
       this.assistEntityId!
     );
+    clearTimeout(timeout);
+    this._showLoader = false;
     this._status = result.status;
   }
 

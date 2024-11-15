@@ -1,12 +1,6 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { formatDateWeekdayShort } from "../../../common/datetime/format_date";
@@ -18,10 +12,9 @@ import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
 import { UNAVAILABLE } from "../../../data/entity";
-import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import type { ForecastEvent, WeatherEntity } from "../../../data/weather";
 import {
-  ForecastEvent,
-  WeatherEntity,
   getForecast,
   getSecondaryWeatherAttribute,
   getWeatherStateIcon,
@@ -41,7 +34,7 @@ import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
-  LovelaceLayoutOptions,
+  LovelaceGridOptions,
 } from "../types";
 import type { WeatherForecastCardConfig } from "./types";
 
@@ -425,31 +418,31 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     return typeof item !== "undefined" && item !== null;
   }
 
-  public getLayoutOptions(): LovelaceLayoutOptions {
+  public getGridOptions(): LovelaceGridOptions {
     if (
       this._config?.show_current !== false &&
       this._config?.show_forecast !== false
     ) {
       return {
-        grid_columns: 4,
-        grid_min_columns: 2,
-        grid_rows: 4,
-        grid_min_rows: 4,
+        columns: 12,
+        rows: 4,
+        min_columns: 6,
+        min_rows: 4,
       };
     }
     if (this._config?.show_forecast !== false) {
       return {
-        grid_columns: 4,
-        grid_min_columns: 2,
-        grid_rows: 3,
-        grid_min_rows: 3,
+        columns: 12,
+        rows: 3,
+        min_columns: 6,
+        min_rows: 3,
       };
     }
     return {
-      grid_columns: 4,
-      grid_min_columns: 2,
-      grid_rows: 2,
-      grid_min_rows: 2,
+      columns: 12,
+      rows: 2,
+      min_columns: 6,
+      min_rows: 2,
     };
   }
 

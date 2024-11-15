@@ -1,17 +1,11 @@
 import { mdiHelpCircle } from "@mdi/js";
-import {
+import type {
   HassService,
   HassServices,
   HassServiceTarget,
 } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../common/array/ensure-array";
@@ -19,10 +13,9 @@ import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { supportsFeature } from "../common/entity/supports-feature";
-import { nestedArrayMove } from "../common/util/array-move";
 import {
   fetchIntegrationManifest,
-  IntegrationManifest,
+  type IntegrationManifest,
 } from "../data/integration";
 import {
   areaMeetsTargetSelector,
@@ -32,10 +25,10 @@ import {
   expandDeviceTarget,
   expandFloorTarget,
   expandLabelTarget,
-  Selector,
-  TargetSelector,
+  type Selector,
+  type TargetSelector,
 } from "../data/selector";
-import { HomeAssistant, ValueChangedEvent } from "../types";
+import type { HomeAssistant, ValueChangedEvent } from "../types";
 import { documentationUrl } from "../util/documentation-url";
 import "./ha-checkbox";
 import "./ha-icon-button";
@@ -61,6 +54,11 @@ const showOptionalToggle = (field) =>
   !field.required &&
   !("boolean" in field.selector && field.default);
 
+interface Field extends Omit<HassService["fields"][string], "selector"> {
+  key: string;
+  selector?: Selector;
+}
+
 interface ExtHassService extends Omit<HassService, "fields"> {
   fields: Array<
     Omit<HassService["fields"][string], "selector"> & {
@@ -70,6 +68,7 @@ interface ExtHassService extends Omit<HassService, "fields"> {
       collapsed?: boolean;
     }
   >;
+  flatFields: Array<Field>;
   hasSelector: string[];
 }
 
@@ -177,7 +176,7 @@ export class HaServiceControl extends LitElement {
         if (!this._value.data) {
           this._value.data = {};
         }
-        serviceData.fields.forEach((field) => {
+        serviceData.flatFields.forEach((field) => {
           if (
             field.selector &&
             field.required &&
@@ -241,22 +240,28 @@ export class HaServiceControl extends LitElement {
         selector: value.selector as Selector | undefined,
       }));
 
+      const flatFields: Field[] = [];
       const hasSelector: string[] = [];
       fields.forEach((field) => {
         if ((field as any).fields) {
           Object.entries((field as any).fields).forEach(([key, subField]) => {
+            flatFields.push({ ...(subField as Field), key });
             if ((subField as any).selector) {
               hasSelector.push(key);
             }
           });
-        } else if (field.selector) {
-          hasSelector.push(field.key);
+        } else {
+          flatFields.push(field);
+          if (field.selector) {
+            hasSelector.push(field.key);
+          }
         }
       });
 
       return {
         ...serviceDomains[domain][serviceName],
         fields,
+        flatFields,
         hasSelector,
       };
     }
@@ -397,7 +402,7 @@ export class HaServiceControl extends LitElement {
 
     const hasOptional = Boolean(
       !shouldRenderServiceDataYaml &&
-        serviceData?.fields.some((field) => showOptionalToggle(field))
+        serviceData?.flatFields.some((field) => showOptionalToggle(field))
     );
 
     const targetEntities = this._getTargetedEntities(
@@ -499,8 +504,23 @@ export class HaServiceControl extends LitElement {
           .defaultValue=${this._value?.data}
           @value-changed=${this._dataChanged}
         ></ha-yaml-editor>`
-      : serviceData?.fields.map((dataField) =>
-          dataField.fields
+      : serviceData?.fields.map((dataField) => {
+          if (!dataField.fields) {
+            return this._renderField(
+              dataField,
+              hasOptional,
+              domain,
+              serviceName,
+              targetEntities
+            );
+          }
+
+          const fields = Object.entries(dataField.fields).map(
+            ([key, field]) => ({ key, ...field })
+          );
+
+          return fields.length &&
+            this._hasFilteredFields(fields, targetEntities)
             ? html`<ha-expansion-panel
                 leftChevron
                 .expanded=${!dataField.collapsed}
@@ -531,14 +551,8 @@ export class HaServiceControl extends LitElement {
                   )
                 )}
               </ha-expansion-panel>`
-            : this._renderField(
-                dataField,
-                hasOptional,
-                domain,
-                serviceName,
-                targetEntities
-              )
-        )} `;
+            : nothing;
+        })} `;
   }
 
   private _getSectionDescription(
@@ -548,6 +562,16 @@ export class HaServiceControl extends LitElement {
   ) {
     return this.hass!.localize(
       `component.${domain}.services.${serviceName}.sections.${dataField.key}.description`
+    );
+  }
+
+  private _hasFilteredFields(
+    dataFields: ExtHassService["fields"],
+    targetEntities: string[]
+  ) {
+    return dataFields.some(
+      (dataField) =>
+        !dataField.filter || this._filterField(dataField.filter, targetEntities)
     );
   }
 
@@ -566,15 +590,6 @@ export class HaServiceControl extends LitElement {
     }
 
     const selector = dataField?.selector ?? { text: undefined };
-    const type = Object.keys(selector)[0];
-    const enhancedSelector = ["action", "condition", "trigger"].includes(type)
-      ? {
-          [type]: {
-            ...selector[type],
-            path: [dataField.key],
-          },
-        }
-      : selector;
 
     const showOptional = showOptionalToggle(dataField);
 
@@ -615,7 +630,7 @@ export class HaServiceControl extends LitElement {
               (!this._value?.data ||
                 this._value.data[dataField.key] === undefined))}
             .hass=${this.hass}
-            .selector=${enhancedSelector}
+            .selector=${selector}
             .key=${dataField.key}
             @value-changed=${this._serviceDataChanged}
             .value=${this._value?.data
@@ -623,7 +638,6 @@ export class HaServiceControl extends LitElement {
               : undefined}
             .placeholder=${dataField.default}
             .localizeValue=${this._localizeValueCallback}
-            @item-moved=${this._itemMoved}
           ></ha-selector>
         </ha-settings-row>`
       : "";
@@ -648,7 +662,7 @@ export class HaServiceControl extends LitElement {
       const field = this._getServiceInfo(
         this._value?.action,
         this.hass.services
-      )?.fields.find((_field) => _field.key === key);
+      )?.flatFields.find((_field) => _field.key === key);
 
       let defaultValue = field?.default;
 
@@ -821,22 +835,6 @@ export class HaServiceControl extends LitElement {
       value: {
         ...this._value,
         data,
-      },
-    });
-  }
-
-  private _itemMoved(ev) {
-    ev.stopPropagation();
-    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
-
-    const data = this.value?.data ?? {};
-
-    const newData = nestedArrayMove(data, oldIndex, newIndex, oldPath, newPath);
-
-    fireEvent(this, "value-changed", {
-      value: {
-        ...this.value,
-        data: newData,
       },
     });
   }

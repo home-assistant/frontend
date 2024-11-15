@@ -1,22 +1,13 @@
 import "@material/mwc-button";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-circular-progress";
-import {
-  DEVICE_MESSAGE_TYPES,
-  LOG_OUTPUT,
-  ZHADevice,
-} from "../../../../../data/zha";
+import type { ZHADevice } from "../../../../../data/zha";
+import { DEVICE_MESSAGE_TYPES, LOG_OUTPUT } from "../../../../../data/zha";
 import "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
-import { HomeAssistant, Route } from "../../../../../types";
+import type { HomeAssistant, Route } from "../../../../../types";
 import { documentationUrl } from "../../../../../util/documentation-url";
 import { zhaTabs } from "./zha-config-dashboard";
 import "./zha-device-pairing-status-card";

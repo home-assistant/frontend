@@ -1,5 +1,6 @@
 import { mdiPencil } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
@@ -22,9 +23,9 @@ import {
   showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { showAdminChangePasswordDialog } from "./show-dialog-admin-change-password";
-import { UserDetailDialogParams } from "./show-dialog-user-detail";
+import type { UserDetailDialogParams } from "./show-dialog-user-detail";
 
 @customElement("dialog-user-detail")
 class DialogUserDetail extends LitElement {

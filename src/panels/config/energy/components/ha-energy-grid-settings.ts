@@ -6,39 +6,40 @@ import {
   mdiPencil,
   mdiTransmissionTower,
 } from "@mdi/js";
-import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
+import type { ConfigEntry } from "../../../../data/config_entries";
 import {
-  ConfigEntry,
   deleteConfigEntry,
   getConfigEntries,
 } from "../../../../data/config_entries";
-import {
-  emptyGridSourceEnergyPreference,
+import type {
   EnergyPreferences,
   EnergyPreferencesValidation,
-  energySourcesByType,
   EnergyValidationIssue,
   EnergySource,
   FlowFromGridSourceEnergyPreference,
   FlowToGridSourceEnergyPreference,
   GridSourceTypeEnergyPreference,
-  saveEnergyPreferences,
 } from "../../../../data/energy";
 import {
-  StatisticsMetaData,
-  getStatisticLabel,
-} from "../../../../data/recorder";
+  emptyGridSourceEnergyPreference,
+  energySourcesByType,
+  saveEnergyPreferences,
+} from "../../../../data/energy";
+import type { StatisticsMetaData } from "../../../../data/recorder";
+import { getStatisticLabel } from "../../../../data/recorder";
 import { showConfigFlowDialog } from "../../../../dialogs/config-flow/show-dialog-config-flow";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import { HomeAssistant } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
 import { documentationUrl } from "../../../../util/documentation-url";
 import {

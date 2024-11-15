@@ -1,15 +1,16 @@
-import { PropertyValues, ReactiveElement } from "lit";
+import type { PropertyValues } from "lit";
+import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { MediaQueriesListener } from "../../../common/dom/media_query";
+import type { MediaQueriesListener } from "../../../common/dom/media_query";
 import "../../../components/ha-svg-icon";
 import type { LovelaceSectionElement } from "../../../data/lovelace";
-import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import {
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type {
   LovelaceSectionConfig,
   LovelaceSectionRawConfig,
-  isStrategySection,
 } from "../../../data/lovelace/config/section";
+import { isStrategySection } from "../../../data/lovelace/config/section";
 import type { HomeAssistant } from "../../../types";
 import "../cards/hui-card";
 import type { HuiCard } from "../cards/hui-card";
@@ -20,8 +21,7 @@ import {
 import { createSectionElement } from "../create-element/create-section-element";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-import { deleteCard } from "../editor/config-util";
-import { confDeleteCard } from "../editor/delete-card";
+import { performDeleteCard } from "../editor/delete-card";
 import { parseLovelaceCardPath } from "../editor/lovelace-path";
 import { generateLovelaceSectionStrategy } from "../strategies/get-strategy";
 import type { Lovelace } from "../types";
@@ -42,6 +42,9 @@ export class HuiSection extends ReactiveElement {
   @property({ attribute: false }) public lovelace?: Lovelace;
 
   @property({ type: Boolean, reflect: true }) public preview = false;
+
+  @property({ type: Boolean, attribute: "import-only" })
+  public importOnly = false;
 
   @property({ type: Number }) public index!: number;
 
@@ -127,6 +130,9 @@ export class HuiSection extends ReactiveElement {
         this._cards.forEach((element) => {
           element.preview = this.preview;
         });
+      }
+      if (changedProperties.has("importOnly")) {
+        this._layoutElement.importOnly = this.importOnly;
       }
       if (changedProperties.has("_cards")) {
         this._layoutElement.cards = this._cards;
@@ -257,12 +263,7 @@ export class HuiSection extends ReactiveElement {
     this._layoutElement.addEventListener("ll-delete-card", (ev) => {
       ev.stopPropagation();
       if (!this.lovelace) return;
-      if (ev.detail.confirm) {
-        confDeleteCard(this, this.hass!, this.lovelace!, ev.detail.path);
-      } else {
-        const newLovelace = deleteCard(this.lovelace!.config, ev.detail.path);
-        this.lovelace.saveConfig(newLovelace);
-      }
+      performDeleteCard(this.hass, this.lovelace, ev.detail);
     });
   }
 

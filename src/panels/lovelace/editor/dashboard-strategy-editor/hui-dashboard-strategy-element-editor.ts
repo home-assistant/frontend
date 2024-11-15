@@ -1,7 +1,7 @@
 import { customElement } from "lit/decorators";
-import { LovelaceDashboardStrategyConfig } from "../../../../data/lovelace/config/types";
+import type { LovelaceDashboardStrategyConfig } from "../../../../data/lovelace/config/types";
 import { getLovelaceStrategy } from "../../strategies/get-strategy";
-import { LovelaceStrategyEditor } from "../../strategies/types";
+import type { LovelaceStrategyEditor } from "../../strategies/types";
 import { HuiTypedElementEditor } from "../hui-typed-element-editor";
 
 @customElement("hui-dashboard-strategy-element-editor")

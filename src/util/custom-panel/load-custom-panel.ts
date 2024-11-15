@@ -1,5 +1,5 @@
 import { loadJS, loadModule } from "../../common/dom/load_resource";
-import { CustomPanelConfig } from "../../data/panel_custom";
+import type { CustomPanelConfig } from "../../data/panel_custom";
 
 // Make sure we only import every JS-based panel once (HTML import has this built-in)
 const JS_CACHE = {};

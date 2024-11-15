@@ -1,4 +1,5 @@
-import { css, html, LitElement, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/buttons/ha-progress-button";
@@ -9,7 +10,7 @@ import type { HaTextField } from "../../../../components/ha-textfield";
 import { cloudRegister, cloudResendVerification } from "../../../../data/cloud";
 import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
-import { HomeAssistant } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 import "../../ha-config-section";
 import "../../../../components/ha-password-field";
 

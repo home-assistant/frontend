@@ -15,7 +15,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
-import { ConfigEntity, GlanceCardConfig } from "../../cards/types";
+import type { ConfigEntity, GlanceCardConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
 import type { LovelaceCardEditor } from "../../types";
 import { processEditorEntities } from "../process-editor-entities";
