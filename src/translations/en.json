@@ -5268,7 +5268,18 @@
                 "control_failed": "Failed to control transition. {error}"
               },
               "color_switch": {
-                "color_component": "Color component"
+                "color_component": "Color component",
+                "colors": {
+                  "0": "Warm White",
+                  "1": "Cold White",
+                  "2": "Red",
+                  "3": "Green",
+                  "4": "Blue",
+                  "5": "Amber",
+                  "6": "Cyan",
+                  "7": "Purple",
+                  "8": "Index"
+                }
               }
             }
           }
