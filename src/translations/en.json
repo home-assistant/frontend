@@ -1609,7 +1609,8 @@
           "edit_schedule_block": "Edit schedule block",
           "start": "Start",
           "end": "End",
-          "data": "Additional data"
+          "data": "Additional data",
+          "advanced_settings": "Advanced settings"
         },
         "template": {
           "time": "[%key:ui::panel::developer-tools::tabs::templates::time%]",
