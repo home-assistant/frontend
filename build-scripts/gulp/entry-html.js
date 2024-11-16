@@ -56,7 +56,6 @@ const getCommonTemplateVars = () => {
     { ignorePatch: true, allowHigherVersions: true }
   );
   return {
-    useRollup: env.useRollup(),
     useWDS: env.useWDS(),
     modernRegex: compileRegex(browserRegexes.concat(haMacOSRegex)).toString(),
   };

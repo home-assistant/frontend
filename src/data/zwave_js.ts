@@ -209,6 +209,17 @@ export interface ZWaveJSNodeStatus {
   has_firmware_update_cc: boolean;
 }
 
+export type ZWaveJSNodeCapabilities = {
+  [endpoint: number]: ZWaveJSEndpointCapability[];
+};
+
+export interface ZWaveJSEndpointCapability {
+  id: number;
+  name: string;
+  version: number;
+  is_secure: boolean;
+}
+
 export interface ZwaveJSNodeMetadata {
   node_id: number;
   exclusion: string;
@@ -262,6 +273,15 @@ export interface ZWaveJSSetConfigParamData {
   endpoint: number;
   property_key?: number;
   value: string | number;
+}
+
+export interface ZWaveJSSetRawConfigParamData {
+  type: string;
+  device_id: string;
+  property: number;
+  value: number;
+  value_size: number;
+  value_format: number;
 }
 
 export interface ZWaveJSSetConfigParamResult {
@@ -403,6 +423,25 @@ export interface RequestedGrant {
   /** Whether client side authentication is requested or to be granted */
   clientSideAuth: boolean;
 }
+
+export const invokeZWaveCCApi = (
+  hass: HomeAssistant,
+  device_id: string,
+  command_class: number,
+  endpoint: number | undefined,
+  method_name: string,
+  parameters: any[],
+  wait_for_result?: boolean
+): Promise<unknown> =>
+  hass.callWS({
+    type: "zwave_js/invoke_cc_api",
+    device_id,
+    command_class,
+    endpoint,
+    method_name,
+    parameters,
+    wait_for_result,
+  });
 
 export const fetchZwaveNetworkStatus = (
   hass: HomeAssistant,
@@ -579,6 +618,15 @@ export const fetchZwaveNodeStatus = (
     device_id,
   });
 
+export const fetchZwaveNodeCapabilities = (
+  hass: HomeAssistant,
+  device_id: string
+): Promise<ZWaveJSNodeCapabilities> =>
+  hass.callWS({
+    type: "zwave_js/node_capabilities",
+    device_id,
+  });
+
 export const subscribeZwaveNodeStatus = (
   hass: HomeAssistant,
   device_id: string,
@@ -637,6 +685,36 @@ export const setZwaveNodeConfigParameter = (
   };
   return hass.callWS(data);
 };
+
+export const setZwaveNodeRawConfigParameter = (
+  hass: HomeAssistant,
+  device_id: string,
+  property: number,
+  value: number,
+  value_size: number,
+  value_format: number
+): Promise<ZWaveJSSetConfigParamResult> => {
+  const data: ZWaveJSSetRawConfigParamData = {
+    type: "zwave_js/set_raw_config_parameter",
+    device_id,
+    property,
+    value,
+    value_size,
+    value_format,
+  };
+  return hass.callWS(data);
+};
+
+export const getZwaveNodeRawConfigParameter = (
+  hass: HomeAssistant,
+  device_id: string,
+  property: number
+): Promise<number> =>
+  hass.callWS({
+    type: "zwave_js/get_raw_config_parameter",
+    device_id,
+    property,
+  });
 
 export const reinterviewZwaveNode = (
   hass: HomeAssistant,
