@@ -1,5 +1,6 @@
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { MdTabs } from "@material/web/tabs/tabs";
+import { classMap } from "lit/directives/class-map";
 import { css, html, nothing } from "lit";
 import "./ha-icon-button-prev";
 import "./ha-icon-button-next";
@@ -11,10 +12,19 @@ export class HaMdTabs extends MdTabs {
 
   @property({ attribute: false }) public buttons: boolean = false;
 
+  @state() private tabWidth = 0;
+
+  @state() private hasPrevious = true;
+
+  @state() private hasNext = true;
+
   protected render() {
     return html`
       ${this.buttons
         ? html`<ha-icon-button-prev
+            class=${classMap({
+              hidden: !this.hasPrevious,
+            })}
             .label=${this.hass?.localize(
               "ui.panel.lovelace.components.energy_period_selector.previous"
             ) || "Prev"}
@@ -24,6 +34,9 @@ export class HaMdTabs extends MdTabs {
       ${super.render()}
       ${this.buttons
         ? html`<ha-icon-button-next
+            class=${classMap({
+              hidden: !this.hasNext,
+            })}
             .label=${this.hass?.localize(
               "ui.panel.lovelace.components.energy_period_selector.next"
             ) || "Next"}
@@ -33,20 +46,38 @@ export class HaMdTabs extends MdTabs {
     `;
   }
 
-  private _pickPrevious() {
-    /*this.activeTabIndex -= 1;
-    this.scrollToTab(); */
-
+  private _calculateTabWidth(): number {
     const slider = this.shadowRoot?.querySelector(".tabs");
-    slider.scrollLeft -= 50;
+    const tabs = slider
+      ?.querySelector("slot")
+      ?.assignedElements({ flatten: true });
+    return tabs
+      ? Array.from(tabs).reduce((sum, tab) => sum + tab.clientWidth, 0)
+      : 0;
+  }
+
+  private _updatePreviousAndNext(slider) {
+    const hasPrevious = slider!.scrollLeft !== 0;
+    const hasNext = slider!.scrollLeft + slider!.clientWidth < this.tabWidth;
+
+    if (this.hasPrevious !== hasPrevious) {
+      this.hasPrevious = hasPrevious;
+    }
+    if (this.hasNext !== hasNext) {
+      this.hasNext = hasNext;
+    }
+  }
+
+  private _pickPrevious() {
+    const slider = this.shadowRoot?.querySelector(".tabs");
+    slider!.scrollLeft = Math.max(0, slider!.scrollLeft - 50);
+    this._updatePreviousAndNext(slider);
   }
 
   private _pickNext() {
-    /*this.activeTabIndex += 1;
-    this.scrollToTab();*/
-
     const slider = this.shadowRoot?.querySelector(".tabs");
-    slider.scrollLeft += 50;
+    slider!.scrollLeft = Math.min(slider!.clientWidth, slider!.scrollLeft + 50);
+    this._updatePreviousAndNext(slider);
   }
 
   protected updated(c) {
@@ -60,6 +91,9 @@ export class HaMdTabs extends MdTabs {
     if (!slider) {
       return;
     }
+
+    this.tabWidth = this._calculateTabWidth();
+    this._updatePreviousAndNext(slider);
 
     slider!.addEventListener("mousedown", (e) => {
       isDown = true;
@@ -89,6 +123,7 @@ export class HaMdTabs extends MdTabs {
       const x = e.pageX - (slider! as any).offsetLeft;
       const walk = (x - startX) * 1;
       slider!.scrollLeft = scrollLeft - walk;
+      this._updatePreviousAndNext(slider);
       if (x > 5) {
         isMoving = true;
       }
@@ -126,6 +161,11 @@ export class HaMdTabs extends MdTabs {
       ha-icon-button-prev,
       ha-icon-button-next {
         margin: 3px;
+      }
+
+      ha-icon-button-prev.hidden,
+      ha-icon-button-next.hidden {
+        display: none;
       }
 
       :host(.inline) .tabs {
