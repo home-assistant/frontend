@@ -1612,7 +1612,9 @@
           "confirm_delete": "Do you want to delete this item?",
           "edit_schedule_block": "Edit schedule block",
           "start": "Start",
-          "end": "End"
+          "end": "End",
+          "data": "Additional data",
+          "advanced_settings": "Advanced settings"
         },
         "template": {
           "time": "[%key:ui::panel::developer-tools::tabs::templates::time%]",
@@ -2995,7 +2997,8 @@
                   "before": "Before",
                   "after": "After",
                   "description": {
-                    "picker": "When a calendar event starts or ends."
+                    "picker": "When a calendar event starts or ends.",
+                    "full": "When{offsetChoice, select, \n before { it's {offset} before}\n after { it's {offset} after}\n other {}\n} a calendar event{eventChoice, select, \n start { starts}\n end { ends}\n other { starts or ends}\n}{hasCalendar, select, \n true { in {calendar}}\n other {}\n}"
                   }
                 },
                 "device": {
@@ -3242,7 +3245,7 @@
                   "description": {
                     "picker": "Test if multiple conditions are true.",
                     "no_conditions": "If multiple conditions match",
-                    "full": "If {count} {count, plural,\n one {condition match}\n other {conditions matches}\n}"
+                    "full": "If {count} {count, plural,\n one {condition matches}\n other {conditions match}\n}"
                   }
                 },
                 "device": {
@@ -3290,7 +3293,7 @@
                   "state": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]",
                   "description": {
                     "picker": "If an entity (or attribute) is in a specific state.",
-                    "no_entity": "Confirm state",
+                    "no_entity": "If state confirmed",
                     "full": "If{hasAttribute, select, \n true { {attribute} of}\n other {}\n} {numberOfEntities, plural,\n =0 {an entity is}\n one {{entities} is}\n other {{entities} are}\n} {numberOfStates, plural,\n =0 {a state}\n other {{states}}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n }"
                   }
                 },
@@ -3353,7 +3356,7 @@
                   "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]",
                   "description": {
                     "picker": "If someone (or something) is in a zone.",
-                    "full": "Confirm {entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} in {zone} {numberOfZones, plural,\n one {zone} \n other {zones}\n} "
+                    "full": "If {entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} in {zone} {numberOfZones, plural,\n one {zone} \n other {zones}\n}"
                   }
                 }
               }
@@ -5265,7 +5268,18 @@
                 "control_failed": "Failed to control transition. {error}"
               },
               "color_switch": {
-                "color_component": "Color component"
+                "color_component": "Color component",
+                "colors": {
+                  "0": "Warm White",
+                  "1": "Cold White",
+                  "2": "Red",
+                  "3": "Green",
+                  "4": "Blue",
+                  "5": "Amber",
+                  "6": "Cyan",
+                  "7": "Purple",
+                  "8": "Index"
+                }
               }
             }
           }
