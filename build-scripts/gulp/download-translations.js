@@ -127,6 +127,7 @@ gulp.task("fetch-lokalise", async function () {
           replace_breaks: false,
           json_unescaped_slashes: true,
           export_empty_as: "skip",
+          filter_data: ["verified"],
         })
         .then((download) => fetch(download.bundle_url))
         .then((response) => {
