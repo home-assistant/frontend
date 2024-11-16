@@ -644,21 +644,12 @@ export class HaSceneEditor extends SubscribeMixin(
         this._deviceEntityLookup[entity.device_id].push(entity.entity_id);
         if (
           this._entities.includes(entity.entity_id) &&
-          !this._single_entities.includes(entity.device_id) &&
+          !this._single_entities.includes(entity.entity_id) &&
           !this._devices.includes(entity.device_id)
         ) {
           this._devices = [...this._devices, entity.device_id];
         }
       }
-    }
-    if (
-      changedProps.has("scenes") &&
-      this._mode === "live" &&
-      this.sceneId &&
-      this._config &&
-      !this._scene
-    ) {
-      this._setScene();
     }
     if (this._scenesSet && changedProps.has("scenes")) {
       this._scenesSet();
@@ -760,7 +751,8 @@ export class HaSceneEditor extends SubscribeMixin(
 
     this._entities.forEach((entity) => this._storeState(entity));
     this._mode = "live";
-    this._setScene();
+    await this._setScene();
+    this._subscribeEvents();
   }
 
   private _exitLiveMode() {
@@ -791,6 +783,9 @@ export class HaSceneEditor extends SubscribeMixin(
     }
     const { context } = await activateScene(this.hass, this._scene.entity_id);
     this._activateContextId = context.id;
+  }
+
+  private async _subscribeEvents() {
     this._unsubscribeEvents =
       await this.hass!.connection.subscribeEvents<HassEvent>(
         (event) => this._stateChanged(event),
