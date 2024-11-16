@@ -3848,6 +3848,7 @@
             "edit_scene": "Edit scene",
             "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
             "activate": "Activate",
+            "apply": "Apply",
             "delete_scene": "Delete scene",
             "delete": "[%key:ui::common::delete%]",
             "delete_confirm_title": "Delete scene?",
@@ -3872,6 +3873,12 @@
             "search": "Search {number} scenes"
           },
           "editor": {
+            "review_mode": "Review Mode",
+            "review_mode_detail": "You can adjust the scene's details and remove devices or entities. To fully edit, switch to Live Preview, which will apply the scene.",
+            "live_preview": "Live Preview",
+            "live_preview_detail": "In Live Preview, all changes to this scene are applied in real-time to your devices and entities.",
+            "enter_live_mode_unsaved": "If you have unsaved changes for this scene, continuing to live preview will apply the saved scene, which may erase your unsaved changes. Consider if you would like to save the scene first before activating it.",
+            "back_to_review_mode": "Back to review mode",
             "default_name": "New scene",
             "load_error_not_editable": "Only scenes in scenes.yaml are editable.",
             "load_error_unknown": "Error loading scene ({err_no}).",
