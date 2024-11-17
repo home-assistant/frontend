@@ -9,6 +9,7 @@ import {
   mdiDotsVertical,
   mdiInformationOutline,
   mdiPlay,
+  mdiTag,
 } from "@mdi/js";
 import type { HassEvent } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
@@ -23,6 +24,7 @@ import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { afterNextRender } from "../../../common/util/render-status";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
+import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import "../../../components/device/ha-device-picker";
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-area-picker";
@@ -150,6 +152,16 @@ export class HaSceneEditor extends SubscribeMixin(
     }
   );
 
+  private _getCategory = memoizeOne(
+    (entries: EntityRegistryEntry[], entity_id: string | undefined) => {
+      if (!entity_id) {
+        return undefined;
+      }
+      const entry = entries.find((ent) => ent.entity_id === entity_id);
+      return entry?.categories?.scene;
+    }
+  );
+
   private _getEntitiesDevices = memoizeOne(
     (
       entities: string[],
@@ -263,6 +275,17 @@ export class HaSceneEditor extends SubscribeMixin(
               class="selected_menu_item"
               slot="graphic"
               .path=${mdiCog}
+            ></ha-svg-icon>
+          </ha-list-item>
+
+          <ha-list-item graphic="icon" .disabled=${!this.sceneId}>
+            ${this.hass.localize(
+              `ui.panel.config.scene.picker.${this._getCategory(this._entityRegistryEntries, this._scene?.entity_id) ? "edit_category" : "assign_category"}`
+            )}
+            <ha-svg-icon
+              class="selected_menu_item"
+              slot="graphic"
+              .path=${mdiTag}
             ></ha-svg-icon>
           </ha-list-item>
 
@@ -685,20 +708,23 @@ export class HaSceneEditor extends SubscribeMixin(
         });
         break;
       case 3:
+        this._editCategory(this._scene!);
+        break;
+      case 4:
         if (this._mode === "yaml") {
           this._initEntities(this._config!);
           this._exitYamlMode();
         }
         break;
-      case 4:
+      case 5:
         if (this._mode !== "yaml") {
           this._enterYamlMode();
         }
         break;
-      case 5:
+      case 6:
         this._duplicate();
         break;
-      case 6:
+      case 7:
         this._deleteTapped();
         break;
     }
@@ -1193,6 +1219,27 @@ export class HaSceneEditor extends SubscribeMixin(
           this._scene.entity_id
         )
       : undefined;
+  }
+
+  private _editCategory(scene: any) {
+    const entityReg = this._entityRegistryEntries.find(
+      (reg) => reg.entity_id === scene.entity_id
+    );
+    if (!entityReg) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.scene.picker.no_category_support"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.scene.picker.no_category_entity_reg"
+        ),
+      });
+      return;
+    }
+    showAssignCategoryDialog(this, {
+      scope: "scene",
+      entityReg,
+    });
   }
 
   static get styles(): CSSResultGroup {
