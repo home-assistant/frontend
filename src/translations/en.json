@@ -1619,7 +1619,9 @@
           "confirm_delete": "Do you want to delete this item?",
           "edit_schedule_block": "Edit schedule block",
           "start": "Start",
-          "end": "End"
+          "end": "End",
+          "data": "Additional data",
+          "advanced_settings": "Advanced settings"
         },
         "template": {
           "time": "[%key:ui::panel::developer-tools::tabs::templates::time%]",
@@ -5273,7 +5275,18 @@
                 "control_failed": "Failed to control transition. {error}"
               },
               "color_switch": {
-                "color_component": "Color component"
+                "color_component": "Color component",
+                "colors": {
+                  "0": "Warm White",
+                  "1": "Cold White",
+                  "2": "Red",
+                  "3": "Green",
+                  "4": "Blue",
+                  "5": "Amber",
+                  "6": "Cyan",
+                  "7": "Purple",
+                  "8": "Index"
+                }
               }
             }
           }
@@ -5889,6 +5902,7 @@
           "section": {
             "add_badge": "Add badge",
             "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
+            "drop_card_create_section": "Drop card here to create a new section",
             "create_section": "Create section",
             "default_section_title": "New section",
             "imported_cards_title": "Imported cards",
