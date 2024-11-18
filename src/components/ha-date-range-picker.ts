@@ -18,6 +18,7 @@ import {
   differenceInMilliseconds,
   addMilliseconds,
   subMilliseconds,
+  roundToNearestHours,
 } from "date-fns";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -336,10 +337,15 @@ export class HaDateRangePicker extends LitElement {
 
   private _handleNext(): void {
     const dateRange = [
-      addMilliseconds(this.endDate, 1),
+      roundToNearestHours(this.endDate),
       addMilliseconds(
-        this.endDate,
-        1 + differenceInMilliseconds(this.endDate, this.startDate)
+        roundToNearestHours(this.endDate),
+        Math.max(
+          3600000,
+          roundToNearestHours(
+            differenceInMilliseconds(this.endDate, this.startDate)
+          )
+        ) - 1
       ),
     ];
     const dateRangePicker = this._dateRangePicker;
@@ -349,11 +355,16 @@ export class HaDateRangePicker extends LitElement {
 
   private _handlePrev(): void {
     const dateRange = [
-      subMilliseconds(
-        this.startDate,
-        differenceInMilliseconds(this.endDate, this.startDate) + 1
+      roundToNearestHours(
+        subMilliseconds(
+          this.startDate,
+          Math.max(
+            3600000,
+            differenceInMilliseconds(this.endDate, this.startDate)
+          )
+        )
       ),
-      subMilliseconds(this.startDate, 1),
+      subMilliseconds(roundToNearestHours(this.startDate), 1),
     ];
     const dateRangePicker = this._dateRangePicker;
     dateRangePicker.clickRange(dateRange);
@@ -456,12 +467,14 @@ export class HaDateRangePicker extends LitElement {
         }
       }
 
-      @media only screen and (max-width: 560px) {
+      @media only screen and (max-width: 500px) {
         ha-textfield {
           min-width: inherit;
         }
 
-        ha-svg-icon {
+        ha-svg-icon,
+        .prev,
+        .next {
           display: none;
         }
       }
