@@ -12,11 +12,9 @@ import type {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
-import "../../../components/ha-circular-progress";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-summary-card";
 import "../../../components/ha-svg-icon";
 import {
   fetchBackupAgentsBackups,
@@ -32,6 +30,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../lovelace/custom-card-helpers";
+import "./components/ha-backup-summary-card";
 
 @customElement("ha-config-backup-dashboard")
 class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
@@ -85,7 +84,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
       locations: {
         title: "Locations",
         template: (backup) =>
-          html`${(backup.agents || []).sort().map((agent) => {
+          html`${(backup.agents || []).map((agent) => {
             const [domain, name] = agent.split(".");
             return html`
               <img
@@ -137,7 +136,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
         )}
       >
         <div slot="top_header" class="header">
-          <ha-summary-card
+          <ha-backup-summary-card
             title="Automatically backed up"
             description="Your configuration has been backed up."
             has-action
@@ -146,8 +145,8 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
             <ha-button slot="action" @click=${this._configureAutomaticBackup}>
               Configure
             </ha-button>
-          </ha-summary-card>
-          <ha-summary-card
+          </ha-backup-summary-card>
+          <ha-backup-summary-card
             title="3 automatic backup locations"
             description="One is off-site"
             has-action
@@ -156,24 +155,16 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
             <ha-button slot="action" @click=${this._configureBackupLocations}>
               Configure
             </ha-button>
-          </ha-summary-card>
+          </ha-backup-summary-card>
         </div>
         <ha-fab
           slot="fab"
           ?disabled=${this._backingUp}
-          .label=${this._backingUp
-            ? this.hass.localize("ui.panel.config.backup.creating_backup")
-            : this.hass.localize("ui.panel.config.backup.create_backup")}
+          .label=${this.hass.localize("ui.panel.config.backup.create_backup")}
           extended
           @click=${this._generateBackup}
         >
-          ${this._backingUp
-            ? html`
-                <div slot="icon">
-                  <ha-circular-progress indeterminate></ha-circular-progress>
-                </div>
-              `
-            : html`<ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>`}
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </ha-fab>
       </hass-tabs-subpage-data-table>
     `;
@@ -204,8 +195,6 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
         backupData[agent.slug].agents!.push(agent.agent_id);
       }
     }
-
-    this._backups = Object.values(backupData);
   }
 
   private async _generateBackup(): Promise<void> {
@@ -269,10 +258,6 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
 
     ha-fab[disabled] {
       --mdc-theme-secondary: var(--disabled-text-color) !important;
-    }
-    ha-circular-progress {
-      --md-sys-color-primary: var(--secondary-text-color);
-      --md-circular-progress-size: 36px;
     }
   `;
 }

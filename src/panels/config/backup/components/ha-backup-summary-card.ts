@@ -7,10 +7,10 @@ import {
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import "./ha-button";
-import "./ha-card";
-import "./ha-circular-progress";
-import "./ha-icon";
+import "../../../../components/ha-button";
+import "../../../../components/ha-card";
+import "../../../../components/ha-circular-progress";
+import "../../../../components/ha-icon";
 
 type SummaryStatus = "success" | "error" | "info" | "warning" | "loading";
 
@@ -22,8 +22,8 @@ const ICONS: Record<SummaryStatus, string> = {
   loading: mdiSync,
 };
 
-@customElement("ha-summary-card")
-class HaSummaryCard extends LitElement {
+@customElement("ha-backup-summary-card")
+class HaBackupSummaryCard extends LitElement {
   @property()
   public title!: string;
 
@@ -144,6 +144,6 @@ class HaSummaryCard extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-summary-card": HaSummaryCard;
+    "ha-backup-summary-card": HaBackupSummaryCard;
   }
 }
