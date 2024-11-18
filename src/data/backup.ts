@@ -10,7 +10,7 @@ export interface BackupContent {
   name: string;
   protected: boolean;
   size: number;
-  agents?: string[];
+  agent_ids?: string[];
 }
 
 export interface BackupInfo {

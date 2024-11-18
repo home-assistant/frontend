@@ -70,7 +70,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
       locations: {
         title: "Locations",
         template: (backup) =>
-          html`${(backup.agents || []).map((agent) => {
+          html`${(backup.agent_ids || []).map((agent) => {
             const [domain, name] = agent.split(".");
             return html`
               <img
