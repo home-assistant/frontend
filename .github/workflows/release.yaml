@@ -55,7 +55,7 @@ jobs:
           script/release
 
       - name: Upload release assets
-        uses: softprops/action-gh-release@v2.0.9
+        uses: softprops/action-gh-release@v2.1.0
         with:
           files: |
             dist/*.whl
