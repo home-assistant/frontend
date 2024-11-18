@@ -3,7 +3,6 @@ export const demoThemeJimpower = () => ({
   "paper-item-icon-color": "var(--primary-text-color)",
   "primary-color": "#5294E2",
   "label-badge-red": "var(--accent-color)",
-  "paper-tabs-selection-bar-color": "green",
   "light-primary-color": "var(--accent-color)",
   "primary-background-color": "#383C45",
   "primary-text-color": "#FFFFFF",
