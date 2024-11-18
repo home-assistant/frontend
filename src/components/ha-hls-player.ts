@@ -20,6 +20,8 @@ class HaHLSPlayer extends LitElement {
 
   @property() public entityid?: string;
 
+  @property() public url?: string;
+
   @property({ attribute: "poster-url" }) public posterUrl?: string;
 
   @property({ type: Boolean, attribute: "controls" })
@@ -94,14 +96,27 @@ class HaHLSPlayer extends LitElement {
     super.updated(changedProps);
 
     const entityChanged = changedProps.has("entityid");
-
-    if (!entityChanged) {
-      return;
+    if (entityChanged) {
+      this._getStreamUrlFromEntityId();
     }
-    this._getStreamUrl();
+
+    const urlChanged = changedProps.has("url");
+    if (urlChanged) {
+      this._cleanUp();
+      this._resetError();
+      try {
+        this._startHls();
+      } catch (err: any) {
+        // Fails if we were unable to get a stream
+        // eslint-disable-next-line
+        console.error(err);
+
+        fireEvent(this, "streams", { hasAudio: false, hasVideo: false });
+      }
+    }
   }
 
-  private async _getStreamUrl(): Promise<void> {
+  private async _getStreamUrlFromEntityId(): Promise<void> {
     this._cleanUp();
     this._resetError();
 
