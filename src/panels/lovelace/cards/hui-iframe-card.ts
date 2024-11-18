@@ -11,7 +11,7 @@ import { IFRAME_SANDBOX } from "../../../util/iframe";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
-  LovelaceLayoutOptions,
+  LovelaceGridOptions,
 } from "../types";
 import type { IframeCardConfig } from "./types";
 
@@ -113,11 +113,12 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  public getLayoutOptions(): LovelaceLayoutOptions {
+  public getGridOptions(): LovelaceGridOptions {
     return {
-      grid_columns: "full",
-      grid_rows: 4,
-      grid_min_rows: 2,
+      columns: "full",
+      rows: 4,
+      min_columns: 3,
+      min_rows: 2,
     };
   }
 

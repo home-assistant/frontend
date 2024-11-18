@@ -47,7 +47,7 @@ class HuiViewContainer extends LitElement {
 
   private _isFixedBackground(background?: BackgroundConfig) {
     if (typeof background === "string") {
-      return background.includes(" fixed");
+      return background.split(" ").includes("fixed");
     }
     return false;
   }
@@ -126,7 +126,7 @@ class HuiViewContainer extends LitElement {
         );
         background-attachment: scroll !important;
       }
-      :host(:not(fixed-background)) {
+      :host(:not([fixed-background])) {
         background: var(
           --view-background,
           var(--lovelace-background, var(--primary-background-color))
