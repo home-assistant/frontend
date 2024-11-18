@@ -1,8 +1,8 @@
 import { assert } from "chai";
 import { computeStateDisplay } from "../../../src/common/entity/compute_state_display";
 import { UNKNOWN } from "../../../src/data/entity";
+import type { FrontendLocaleData } from "../../../src/data/translation";
 import {
-  FrontendLocaleData,
   NumberFormat,
   TimeFormat,
   FirstWeekday,
@@ -116,6 +116,33 @@ describe("computeStateDisplay", () => {
         {}
       ),
       "123 m"
+    );
+  });
+
+  it("Localizes a numeric sensor value with translated unit_of_measurement", () => {
+    const stateObj: any = {
+      entity_id: "sensor.test",
+      state: "1234",
+      attributes: {
+        state_class: "measurement",
+      },
+    };
+    const entities: any = {
+      "sensor.test": {
+        translation_key: "custom_translation",
+        platform: "custom_integration",
+      },
+    };
+    assert.strictEqual(
+      computeStateDisplay(
+        localize,
+        stateObj,
+        localeData,
+        numericDeviceClasses,
+        demoConfig,
+        entities
+      ),
+      "1,234 component.custom_integration.entity.sensor.custom_translation.native_unit_of_measurement"
     );
   });
 
