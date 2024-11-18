@@ -28,7 +28,7 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "../components/ha-backup-agents-select";
-import type { CreateBackupDialogParams } from "./show-dialog-create-backup";
+import type { GenerateBackupDialogParams } from "./show-dialog-generate-backup";
 
 type FormData = {
   name: string;
@@ -54,8 +54,8 @@ const INITIAL_FORM_DATA: FormData = {
 
 const STEPS = ["data", "sync"] as const;
 
-@customElement("ha-dialog-create-backup")
-class DialogCreateBackup extends LitElement implements HassDialog {
+@customElement("ha-dialog-generate-backup")
+class DialogGenerateBackup extends LitElement implements HassDialog {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _formData?: FormData;
@@ -64,11 +64,11 @@ class DialogCreateBackup extends LitElement implements HassDialog {
 
   @state() private _agents: BackupAgent[] = [];
 
-  @state() private _params?: CreateBackupDialogParams;
+  @state() private _params?: GenerateBackupDialogParams;
 
   @query("ha-md-dialog") private _dialog?: HaMdDialog;
 
-  public showDialog(_params: CreateBackupDialogParams): void {
+  public showDialog(_params: GenerateBackupDialogParams): void {
     this._step = STEPS[0];
     this._formData = INITIAL_FORM_DATA;
     this._params = _params;
@@ -367,6 +367,6 @@ class DialogCreateBackup extends LitElement implements HassDialog {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-dialog-create-backup": DialogCreateBackup;
+    "ha-dialog-generate-backup": DialogGenerateBackup;
   }
 }

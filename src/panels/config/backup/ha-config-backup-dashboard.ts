@@ -22,7 +22,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import "./components/ha-backup-summary-card";
-import { showCreateBackupDialog } from "./dialogs/show-dialog-create-backup";
+import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
 
 @customElement("ha-config-backup-dashboard")
 class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
@@ -157,7 +157,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   }
 
   private async _generateBackup(): Promise<void> {
-    const response = await showCreateBackupDialog(this, {});
+    const response = await showGenerateBackupDialog(this, {});
 
     if (!response) {
       return;
