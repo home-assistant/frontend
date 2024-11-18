@@ -8,8 +8,8 @@
   "version": "1.0.0",
   "scripts": {
     "build": "script/build_frontend",
-    "lint:eslint": "eslint \"**/src/**/*.{js,ts,html}\" --cache --cache-strategy=content --cache-location=node_modules/.cache/eslint/.eslintcache --ignore-path=.gitignore",
-    "format:eslint": "eslint \"**/src/**/*.{js,ts,html}\" --cache --cache-strategy=content --cache-location=node_modules/.cache/eslint/.eslintcache --ignore-path=.gitignore --fix",
+    "lint:eslint": "eslint --flag unstable_config_lookup_from_file \"**/src/**/*.{js,ts,html}\" --cache --cache-strategy=content --cache-location=node_modules/.cache/eslint/.eslintcache --ignore-pattern=.gitignore",
+    "format:eslint": "eslint --flag unstable_config_lookup_from_file \"**/src/**/*.{js,ts,html}\" --cache --cache-strategy=content --cache-location=node_modules/.cache/eslint/.eslintcache --ignore-pattern=.gitignore --fix",
     "lint:prettier": "prettier . --cache --check",
     "format:prettier": "prettier . --cache --write",
     "lint:types": "tsc",
@@ -27,13 +27,13 @@
   "dependencies": {
     "@babel/runtime": "7.26.0",
     "@braintree/sanitize-url": "7.1.0",
-    "@codemirror/autocomplete": "6.18.2",
+    "@codemirror/autocomplete": "6.18.3",
     "@codemirror/commands": "6.7.1",
     "@codemirror/language": "6.10.3",
     "@codemirror/legacy-modes": "6.4.2",
     "@codemirror/search": "6.5.7",
     "@codemirror/state": "6.4.1",
-    "@codemirror/view": "6.34.2",
+    "@codemirror/view": "6.34.3",
     "@egjs/hammerjs": "2.0.17",
     "@formatjs/intl-datetimeformat": "6.16.4",
     "@formatjs/intl-displaynames": "6.8.4",
@@ -121,7 +121,7 @@
     "leaflet-draw": "patch:leaflet-draw@npm%3A1.0.4#./.yarn/patches/leaflet-draw-npm-1.0.4-0ca0ebcf65.patch",
     "lit": "2.8.0",
     "luxon": "3.5.0",
-    "marked": "14.1.4",
+    "marked": "15.0.0",
     "memoize-one": "6.0.0",
     "node-vibrant": "3.2.1-alpha.1",
     "proxy-polyfill": "0.3.2",
@@ -166,7 +166,7 @@
     "@octokit/rest": "21.0.2",
     "@open-wc/dev-server-hmr": "0.1.4",
     "@types/babel__plugin-transform-runtime": "7.9.5",
-    "@types/chromecast-caf-receiver": "6.0.17",
+    "@types/chromecast-caf-receiver": "6.0.18",
     "@types/chromecast-caf-sender": "1.0.10",
     "@types/color-name": "2.0.0",
     "@types/glob": "8.1.0",
@@ -191,7 +191,7 @@
     "browserslist-useragent-regexp": "4.1.3",
     "chai": "5.1.2",
     "del": "8.0.0",
-    "eslint": "8.57.1",
+    "eslint": "9.14.0",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-config-airbnb-typescript": "18.0.0",
     "eslint-config-prettier": "9.1.0",
@@ -247,7 +247,8 @@
     "lit": "2.8.0",
     "clean-css": "5.3.3",
     "@lit/reactive-element": "1.6.3",
-    "@fullcalendar/daygrid": "6.1.15"
+    "@fullcalendar/daygrid": "6.1.15",
+    "globals": "15.12.0"
   },
   "packageManager": "yarn@4.5.1"
 }
