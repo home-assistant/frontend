@@ -7,7 +7,7 @@ import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { DateCondition } from "../../../../../data/automation";
-import { FrontendLocaleData } from "../../../../../data/translation";
+import type { FrontendLocaleData } from "../../../../../data/translation";
 import type { HomeAssistant } from "../../../../../types";
 import type { ConditionElement } from "../ha-automation-condition-row";
 

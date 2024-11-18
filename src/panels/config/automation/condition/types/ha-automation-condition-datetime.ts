@@ -7,14 +7,17 @@ import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { DatetimeCondition } from "../../../../../data/automation";
-import { FrontendLocaleData } from "../../../../../data/translation";
+import type { FrontendLocaleData } from "../../../../../data/translation";
 import type { HomeAssistant } from "../../../../../types";
 import type { ConditionElement } from "../ha-automation-condition-row";
 
 const DAYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
 
 @customElement("ha-automation-condition-datetime")
-export class HaDatetimeCondition extends LitElement implements ConditionElement {
+export class HaDatetimeCondition
+  extends LitElement
+  implements ConditionElement
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public condition!: DatetimeCondition;
