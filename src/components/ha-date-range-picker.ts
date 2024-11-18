@@ -338,14 +338,17 @@ export class HaDateRangePicker extends LitElement {
   private _handleNext(): void {
     const dateRange = [
       roundToNearestHours(this.endDate),
-      addMilliseconds(
-        roundToNearestHours(this.endDate),
-        Math.max(
-          3600000,
-          roundToNearestHours(
-            differenceInMilliseconds(this.endDate, this.startDate)
+      subMilliseconds(
+        roundToNearestHours(
+          addMilliseconds(
+            this.endDate,
+            Math.max(
+              3600000,
+              differenceInMilliseconds(this.endDate, this.startDate)
+            )
           )
-        ) - 1
+        ),
+        1
       ),
     ];
     const dateRangePicker = this._dateRangePicker;
