@@ -17,7 +17,6 @@ import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
 import {
-  fetchBackupAgentsBackups,
   fetchBackupInfo,
   generateBackup,
   type BackupContent,
@@ -45,27 +44,14 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   @state() private _backups: BackupContent[] = [];
 
   private _columns = memoizeOne(
-    (
-      narrow,
-      _language,
-      localize: LocalizeFunc
-    ): DataTableColumnContainer<BackupContent> => ({
+    (localize: LocalizeFunc): DataTableColumnContainer<BackupContent> => ({
       name: {
         title: localize("ui.panel.config.backup.name"),
         main: true,
         sortable: true,
         filterable: true,
         flex: 2,
-        template: (backup) =>
-          narrow || !backup.path
-            ? backup.name
-            : html`${backup.name}
-                <div class="secondary">${backup.path}</div>`,
-      },
-      path: {
-        title: localize("ui.panel.config.backup.path"),
-        hidden: !narrow,
-        template: (backup) => backup.path || "-",
+        template: (backup) => backup.name,
       },
       size: {
         title: localize("ui.panel.config.backup.size"),
@@ -124,11 +110,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
         id="slug"
         .route=${this.route}
         @row-click=${this._showBackupDetails}
-        .columns=${this._columns(
-          this.narrow,
-          this.hass.language,
-          this.hass.localize
-        )}
+        .columns=${this._columns(this.hass.localize)}
         .data=${this._backups ?? []}
         .noDataText=${this.hass.localize("ui.panel.config.backup.no_backups")}
         .searchLabel=${this.hass.localize(
@@ -172,29 +154,13 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    this._fetchBackups();
-    this._fetchStatus();
+    this._fetchBackupInfo();
   }
 
-  private async _fetchStatus() {
+  private async _fetchBackupInfo() {
     const info = await fetchBackupInfo(this.hass);
+    this._backups = info.backups;
     this._backingUp = info.backing_up;
-  }
-
-  private async _fetchBackups(): Promise<void> {
-    const backupData: Record<string, BackupContent> = {};
-
-    const agentsBackups = await fetchBackupAgentsBackups(this.hass);
-
-    for (const agent of agentsBackups) {
-      if (!(agent.slug in backupData)) {
-        backupData[agent.slug] = { ...agent, agents: [agent.agent_id] };
-      } else if (!("agents" in backupData[agent.slug])) {
-        backupData[agent.slug].agents = [agent.agent_id];
-      } else {
-        backupData[agent.slug].agents!.push(agent.agent_id);
-      }
-    }
   }
 
   private async _generateBackup(): Promise<void> {
@@ -207,20 +173,21 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
       return;
     }
 
-    // Todo subscribe for status updates
     try {
-      await generateBackup(this.hass, { agent_ids: ["backup.local"] });
+      await generateBackup(this.hass, {
+        agent_ids: ["backup.local"],
+      });
     } catch (err) {
       showAlertDialog(this, { text: (err as Error).message });
     }
 
-    await this._fetchStatus();
+    await this._fetchBackupInfo();
 
+    // Todo subscribe for status updates instead of polling
     const interval = setInterval(async () => {
-      await this._fetchStatus();
+      await this._fetchBackupInfo();
       if (!this._backingUp) {
         clearInterval(interval);
-        this._fetchBackups();
       }
     }, 2000);
   }

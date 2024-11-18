@@ -4,38 +4,41 @@ export interface BackupAgent {
   agent_id: string;
 }
 
-interface BackupAgentBackup {
-  agent_id: string;
-  date: string;
-  id: string;
-  name: string;
-  path: string;
-  protected: boolean;
-  size: number;
-  slug: string;
-}
-
 export interface BackupContent {
   slug: string;
   date: string;
   name: string;
+  protected: boolean;
   size: number;
   agents?: string[];
-  path?: string;
 }
 
-export interface BackupData {
+export interface BackupInfo {
+  backups: BackupContent[];
   backing_up: boolean;
+}
+
+export interface BackupDetails {
+  backup: BackupContent;
 }
 
 export interface BackupAgentsInfo {
   agents: BackupAgent[];
 }
 
+export type GenerateBackupParams = {
+  agent_ids: string[];
+  database_included?: boolean;
+  folders_included?: string[];
+  addons_included?: string[];
+  name?: string;
+  password?: string;
+};
+
 export const getBackupDownloadUrl = (slug: string) =>
   `/api/backup/download/${slug}`;
 
-export const fetchBackupInfo = (hass: HomeAssistant): Promise<BackupData> =>
+export const fetchBackupInfo = (hass: HomeAssistant): Promise<BackupInfo> =>
   hass.callWS({
     type: "backup/info",
   });
@@ -43,7 +46,7 @@ export const fetchBackupInfo = (hass: HomeAssistant): Promise<BackupData> =>
 export const fetchBackupDetails = (
   hass: HomeAssistant,
   slug: string
-): Promise<{ backup: BackupContent }> =>
+): Promise<BackupDetails> =>
   hass.callWS({
     type: "backup/details",
     slug,
@@ -56,13 +59,6 @@ export const fetchBackupAgentsInfo = (
     type: "backup/agents/info",
   });
 
-export const fetchBackupAgentsBackups = (
-  hass: HomeAssistant
-): Promise<BackupAgentBackup[]> =>
-  hass.callWS({
-    type: "backup/agents/list_backups",
-  });
-
 export const removeBackup = (
   hass: HomeAssistant,
   slug: string
@@ -72,19 +68,10 @@ export const removeBackup = (
     slug,
   });
 
-type GenerateBackupParams = {
-  agent_ids: string[];
-  database_included?: boolean;
-  folders_included?: string[];
-  addons_included?: string[];
-  name?: string;
-  password?: string;
-};
-
 export const generateBackup = (
   hass: HomeAssistant,
   params: GenerateBackupParams
-): Promise<BackupContent> =>
+): Promise<{ slug: string }> =>
   hass.callWS({
     type: "backup/generate",
     ...params,
