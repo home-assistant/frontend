@@ -50,12 +50,12 @@ class MoreInfoSiren extends LitElement {
           .iconPathOn=${mdiVolumeHigh}
           .iconPathOff=${mdiVolumeOff}
         ></ha-state-control-toggle>
+        ${allowAdvanced
+          ? html`<ha-button @click=${this._showAdvancedControlsDialog}>
+              ${this.hass.localize("ui.components.siren.advanced_controls")}
+            </ha-button>`
+          : nothing}
       </div>
-      ${allowAdvanced
-        ? html`<ha-button @click=${this._showAdvancedControlsDialog}>
-            ${this.hass.localize("ui.components.siren.advanced_controls")}
-          </ha-button>`
-        : nothing}
       <ha-attributes
         .hass=${this.hass}
         .stateObj=${this.stateObj}

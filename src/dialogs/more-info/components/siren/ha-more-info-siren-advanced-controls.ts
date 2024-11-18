@@ -95,9 +95,6 @@ class MoreInfoSirenAdvancedControls extends LitElement {
                     @change=${this._handleToneChange}
                     .value=${this._tone}
                   >
-                    <ha-list-item value="">
-                      ${this.hass.localize("ui.common.default")}
-                    </ha-list-item>
                     ${Object.entries(
                       this._stateObj.attributes.available_tones
                     ).map(
@@ -115,11 +112,12 @@ class MoreInfoSirenAdvancedControls extends LitElement {
                   <ha-textfield
                     type="number"
                     .label=${this.hass.localize("ui.components.siren.volume")}
-                    .value=${this._volume}
+                    .suffix=${"%"}
+                    .value=${this._volume ? this._volume / 100 : undefined}
                     @change=${this._handleVolumeChange}
                     .min=${0}
-                    .max=${1}
-                    .step=${0.1}
+                    .max=${100}
+                    .step=${1}
                   ></ha-textfield>
                 `
               : nothing}
@@ -163,7 +161,7 @@ class MoreInfoSirenAdvancedControls extends LitElement {
   }
 
   private _handleVolumeChange(ev) {
-    this._volume = parseFloat(ev.target.value);
+    this._volume = parseFloat(ev.target.value) * 100;
     if (isNaN(this._volume)) {
       this._volume = undefined;
     }
