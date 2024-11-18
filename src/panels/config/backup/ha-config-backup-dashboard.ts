@@ -25,11 +25,9 @@ import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import {
-  showAlertDialog,
-  showConfirmationDialog,
-} from "../../lovelace/custom-card-helpers";
+import { showAlertDialog } from "../../lovelace/custom-card-helpers";
 import "./components/ha-backup-summary-card";
+import { showCreateBackupDialog } from "./dialogs/show-dialog-create-backup";
 
 @customElement("ha-config-backup-dashboard")
 class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
@@ -164,14 +162,9 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   }
 
   private async _generateBackup(): Promise<void> {
-    const confirm = await showConfirmationDialog(this, {
-      title: this.hass.localize("ui.panel.config.backup.create.title"),
-      text: this.hass.localize("ui.panel.config.backup.create.description"),
-      confirmText: this.hass.localize("ui.panel.config.backup.create.confirm"),
-    });
-    if (!confirm) {
-      return;
-    }
+    showCreateBackupDialog(this, {});
+
+    return;
 
     try {
       await generateBackup(this.hass, {
