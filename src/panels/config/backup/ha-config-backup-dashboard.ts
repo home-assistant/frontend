@@ -16,16 +16,11 @@ import "../../../components/ha-fab";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
-import {
-  fetchBackupInfo,
-  generateBackup,
-  type BackupContent,
-} from "../../../data/backup";
+import { fetchBackupInfo, type BackupContent } from "../../../data/backup";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import { showAlertDialog } from "../../lovelace/custom-card-helpers";
 import "./components/ha-backup-summary-card";
 import { showCreateBackupDialog } from "./dialogs/show-dialog-create-backup";
 
@@ -162,16 +157,10 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   }
 
   private async _generateBackup(): Promise<void> {
-    showCreateBackupDialog(this, {});
+    const response = await showCreateBackupDialog(this, {});
 
-    return;
-
-    try {
-      await generateBackup(this.hass, {
-        agent_ids: ["backup.local"],
-      });
-    } catch (err) {
-      showAlertDialog(this, { text: (err as Error).message });
+    if (!response) {
+      return;
     }
 
     await this._fetchBackupInfo();

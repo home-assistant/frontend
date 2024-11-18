@@ -11,6 +11,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-button-prev";
 import "../../../../components/ha-md-dialog";
@@ -20,9 +21,13 @@ import "../../../../components/ha-md-select-option";
 import "../../../../components/ha-settings-row";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-switch";
+import "../../../../components/ha-textfield";
+import type { BackupAgent } from "../../../../data/backup";
+import { fetchBackupAgentsInfo, generateBackup } from "../../../../data/backup";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import "../components/ha-backup-agents-select";
 import type { CreateBackupDialogParams } from "./show-dialog-create-backup";
 
 type FormData = {
@@ -57,17 +62,30 @@ class DialogCreateBackup extends LitElement implements HassDialog {
 
   @state() private _step?: "data" | "sync";
 
+  @state() private _agents: BackupAgent[] = [];
+
+  @state() private _params?: CreateBackupDialogParams;
+
   @query("ha-md-dialog") private _dialog?: HaMdDialog;
 
   public showDialog(_params: CreateBackupDialogParams): void {
     this._step = STEPS[0];
     this._formData = INITIAL_FORM_DATA;
+    this._params = _params;
+    this._fetchAgents();
   }
 
   private _dialogClosed() {
     this._step = undefined;
     this._formData = undefined;
+    this._agents = [];
+    this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  private async _fetchAgents() {
+    const { agents } = await fetchBackupAgentsInfo(this.hass);
+    this._agents = agents;
   }
 
   public closeDialog() {
@@ -95,7 +113,8 @@ class DialogCreateBackup extends LitElement implements HassDialog {
       return nothing;
     }
 
-    const dialogTitle = "Backup data";
+    const dialogTitle =
+      this._step === "sync" ? "Synchronization" : "Backup data";
 
     const isFirstStep = this._step === STEPS[0];
     const isLastStep = this._step === STEPS[STEPS.length - 1];
@@ -142,7 +161,7 @@ class DialogCreateBackup extends LitElement implements HassDialog {
     return html`
       <ha-settings-row>
         <ha-svg-icon slot="prefix" .path=${mdiCog}></ha-svg-icon>
-        <span slot="heading"> Home Assistant settings </span>
+        <span slot="heading">Home Assistant settings</span>
         <span slot="description">
           With these settings you are able to restore your system.
         </span>
@@ -151,7 +170,7 @@ class DialogCreateBackup extends LitElement implements HassDialog {
       <ha-settings-row>
         <ha-svg-icon slot="prefix" .path=${mdiChartBox}></ha-svg-icon>
         <span slot="heading">History</span>
-        <span slot="description"> For example of your energy dashboard. </span>
+        <span slot="description">For example of your energy dashboard.</span>
         <ha-switch
           id="history"
           name="history"
@@ -209,12 +228,26 @@ class DialogCreateBackup extends LitElement implements HassDialog {
           @change=${this._agentModeChanged}
           .value=${this._formData.agents_mode}
         >
-          <ha-md-select-option value="all">All (3)</ha-md-select-option>
+          <ha-md-select-option value="all">
+            <div slot="headline">All (${this._agents.length})</div>
+          </ha-md-select-option>
           <ha-md-select-option value="custom">
-            Custom (${this._formData.agents.length})
+            <div slot="headline">Custom</div>
           </ha-md-select-option>
         </ha-md-select>
       </ha-settings-row>
+      ${this._formData.agents_mode === "custom"
+        ? html`
+            <ha-expansion-panel .header=${"Location"} outlined expanded>
+              <ha-backup-agent-select
+                .hass=${this.hass}
+                .value=${this._formData.agents}
+                @value-changed=${this._agentsChanged}
+                .agents=${this._agents}
+              ></ha-backup-agent-select>
+            </ha-expansion-panel>
+          `
+        : nothing}
     `;
   }
 
@@ -223,6 +256,13 @@ class DialogCreateBackup extends LitElement implements HassDialog {
     this._formData = {
       ...this._formData!,
       agents_mode: select.value,
+    };
+  }
+
+  private _agentsChanged(ev) {
+    this._formData = {
+      ...this._formData!,
+      agents: ev.detail.value,
     };
   }
 
@@ -241,9 +281,45 @@ class DialogCreateBackup extends LitElement implements HassDialog {
     };
   }
 
-  private _submit() {
-    // eslint-disable-next-line no-console
-    console.log(this._formData);
+  private async _submit() {
+    if (!this._formData) {
+      return;
+    }
+
+    const {
+      addons,
+      addons_mode,
+      agents,
+      agents_mode,
+      history,
+      media,
+      name,
+      share,
+    } = this._formData;
+
+    const folders: string[] = [];
+    if (media) {
+      folders.push("media");
+    }
+    if (share) {
+      folders.push("share");
+    }
+
+    // TODO: Fetch all addons
+    const ALL_ADDONS = [];
+    const { slug } = await generateBackup(this.hass, {
+      name,
+      agent_ids:
+        agents_mode === "all"
+          ? this._agents.map((agent) => agent.agent_id)
+          : agents,
+      database_included: history,
+      folders_included: folders,
+      addons_included: addons_mode === "all" ? ALL_ADDONS : addons,
+    });
+
+    this._params!.submit?.({ slug });
+    this.closeDialog();
   }
 
   static get styles(): CSSResultGroup {
@@ -267,7 +343,11 @@ class DialogCreateBackup extends LitElement implements HassDialog {
         }
         ha-settings-row > ha-md-select {
           min-width: 150px;
-          width: 150px;
+        }
+        ha-settings-row > ha-md-select > span {
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
         }
         ha-settings-row > ha-md-select-option {
           white-space: nowrap;
