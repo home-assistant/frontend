@@ -105,6 +105,8 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: false })
   public configEntriesInProgress?: DataEntryFlowProgressExtended[];
 
+  @state() private _improvDiscovered = [];
+
   @state()
   private _entityRegistryEntries: EntityRegistryEntry[] = [];
 
@@ -252,8 +254,36 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
   private _filterConfigEntriesInProgress = memoizeOne(
     (
       configEntriesInProgress: DataEntryFlowProgressExtended[],
+      improvDiscovered: [],
       filter?: string
     ): DataEntryFlowProgressExtended[] => {
+      let inProgress = [...configEntriesInProgress];
+
+      if (improvDiscovered.length) {
+        // filter out native flows that have been discovered by both mobile and local bluetooth
+        inProgress = inProgress.filter(
+          (flow) =>
+            !improvDiscovered.some(
+              (discovered) => discovered.name === flow.localized_title
+            )
+        );
+
+        // add mobile flows to the list
+        improvDiscovered.forEach((discovered) => {
+          inProgress.push({
+            flow_id: "external",
+            handler: "improv_ble",
+            context: {
+              title_placeholders: {
+                name: discovered.name,
+              },
+            },
+            step_id: "bluetooth_confirm",
+            localized_title: discovered.name,
+          });
+        });
+      }
+
       let filteredEntries: DataEntryFlowProgressExtended[];
       if (filter) {
         const options: IFuseOptions<DataEntryFlowProgressExtended> = {
@@ -263,12 +293,12 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
           threshold: 0.2,
           getFn: getStripDiacriticsFn,
         };
-        const fuse = new Fuse(configEntriesInProgress, options);
+        const fuse = new Fuse(inProgress, options);
         filteredEntries = fuse
           .search(stripDiacritics(filter))
           .map((result) => result.item);
       } else {
-        filteredEntries = configEntriesInProgress;
+        filteredEntries = inProgress;
       }
       return filteredEntries.sort((a, b) =>
         caseInsensitiveStringCompare(
@@ -343,6 +373,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
       );
     const configEntriesInProgress = this._filterConfigEntriesInProgress(
       this.configEntriesInProgress,
+      this._improvDiscovered,
       this._filter
     );
 
@@ -631,9 +662,21 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     });
   }
 
+  private _reScanImprovDevices() {
+    if (!this.hass.auth.external?.config.canSetupImprov) {
+      return;
+    }
+    this._improvDiscovered = [];
+    this.hass.auth.external!.fireMessage({
+      type: "improv/scan",
+    });
+  }
+
   private _handleImprovDiscovered(ev) {
     // eslint-disable-next-line no-console
     console.log(ev.detail);
+    this._fetchManifests(["improv_ble"]);
+    this._improvDiscovered.push(ev.detail);
   }
 
   private async _fetchEntitySources() {
@@ -685,6 +728,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
 
   private _handleFlowUpdated() {
     getConfigFlowInProgressCollection(this.hass.connection).refresh();
+    this._reScanImprovDevices();
     this._fetchManifests();
   }
 

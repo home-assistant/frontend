@@ -142,7 +142,7 @@ interface EMOutgoingMessageImprovScan extends EMMessage {
 interface EMOutgoingMessageImprovConfigureDevice extends EMMessage {
   type: "improv/configure_device";
   payload: {
-    mac_address: string;
+    name: string;
   };
 }
 
@@ -252,7 +252,6 @@ interface EMIncomingMessageImprovDeviceDiscovered extends EMMessage {
   command: "improv/discovered_device";
   payload: {
     name: string;
-    mac_address: string;
   };
 }
 
