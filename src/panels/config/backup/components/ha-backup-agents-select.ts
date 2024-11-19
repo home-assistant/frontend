@@ -16,13 +16,13 @@ class HaBackupAgentsSelect extends LitElement {
   @property({ type: Boolean })
   public disabled = false;
 
-  @property()
+  @property({ attribute: false })
   public agents!: BackupAgent[];
 
   @property({ attribute: false })
   public disabledAgents?: string[];
 
-  @property()
+  @property({ attribute: false })
   public value!: string[];
 
   render() {
