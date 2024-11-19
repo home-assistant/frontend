@@ -22,22 +22,22 @@ import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-svg-icon";
 import {
   fetchBackupInfo,
-  generateBackup,
   removeBackup,
   type BackupContent,
 } from "../../../data/backup";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import {
-  showAlertDialog,
-  showConfirmationDialog,
-} from "../../lovelace/custom-card-helpers";
 import "./components/ha-backup-summary-card";
+import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
 
 @customElement("ha-config-backup-dashboard")
 class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
@@ -244,21 +244,10 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   }
 
   private async _generateBackup(): Promise<void> {
-    const confirm = await showConfirmationDialog(this, {
-      title: this.hass.localize("ui.panel.config.backup.create.title"),
-      text: this.hass.localize("ui.panel.config.backup.create.description"),
-      confirmText: this.hass.localize("ui.panel.config.backup.create.confirm"),
-    });
-    if (!confirm) {
-      return;
-    }
+    const response = await showGenerateBackupDialog(this, {});
 
-    try {
-      await generateBackup(this.hass, {
-        agent_ids: ["backup.local"],
-      });
-    } catch (err) {
-      showAlertDialog(this, { text: (err as Error).message });
+    if (!response) {
+      return;
     }
 
     await this._fetchBackupInfo();
