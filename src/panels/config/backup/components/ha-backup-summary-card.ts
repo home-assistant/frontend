@@ -34,7 +34,7 @@ class HaBackupSummaryCard extends LitElement {
   public hasAction = false;
 
   @property()
-  private status: SummaryStatus = "info";
+  public status: SummaryStatus = "info";
 
   render() {
     return html`
