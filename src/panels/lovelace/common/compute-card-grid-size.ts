@@ -3,15 +3,10 @@ import type { LovelaceGridOptions, LovelaceLayoutOptions } from "../types";
 
 export const GRID_COLUMN_MULTIPLIER = 3;
 
-export const multiplyBy = <T extends number | string | undefined>(
+const multiplyBy = <T extends number | string | undefined>(
   value: T,
   multiplier: number
 ): T => (typeof value === "number" ? ((value * multiplier) as T) : value);
-
-export const divideBy = <T extends number | string | undefined>(
-  value: T,
-  divider: number
-): T => (typeof value === "number" ? (Math.ceil(value / divider) as T) : value);
 
 export const migrateLayoutToGridOptions = (
   options: LovelaceLayoutOptions
@@ -41,6 +36,9 @@ export type CardGridSize = {
   rows: number | "auto";
   columns: number | "full";
 };
+
+export const isPreciseMode = (options: LovelaceGridOptions) =>
+  typeof options.columns === "number" && options.columns % 3 !== 0;
 
 export const computeCardGridSize = (
   options: LovelaceGridOptions
