@@ -113,7 +113,7 @@ class MoreInfoSirenAdvancedControls extends LitElement {
                     type="number"
                     .label=${this.hass.localize("ui.components.siren.volume")}
                     .suffix=${"%"}
-                    .value=${this._volume ? this._volume / 100 : undefined}
+                    .value=${this._volume ? this._volume * 100 : undefined}
                     @change=${this._handleVolumeChange}
                     .min=${0}
                     .max=${100}
@@ -161,7 +161,7 @@ class MoreInfoSirenAdvancedControls extends LitElement {
   }
 
   private _handleVolumeChange(ev) {
-    this._volume = parseFloat(ev.target.value) * 100;
+    this._volume = parseFloat(ev.target.value) / 100;
     if (isNaN(this._volume)) {
       this._volume = undefined;
     }
