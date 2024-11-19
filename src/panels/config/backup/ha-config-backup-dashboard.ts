@@ -107,7 +107,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         back-path="/config/system"
         clickable
-        id="slug"
+        id="backup_id"
         .route=${this.route}
         @row-click=${this._showBackupDetails}
         .columns=${this._columns(this.hass.localize)}
@@ -193,8 +193,8 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   }
 
   private _showBackupDetails(ev: CustomEvent): void {
-    const slug = (ev.detail as RowClickedEvent).id;
-    navigate(`/config/backup/details/${slug}`);
+    const id = (ev.detail as RowClickedEvent).id;
+    navigate(`/config/backup/details/${id}`);
   }
 
   private _configureAutomaticBackup() {
