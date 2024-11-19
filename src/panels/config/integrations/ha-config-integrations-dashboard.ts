@@ -676,7 +676,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     // eslint-disable-next-line no-console
     console.log(ev.detail);
     this._fetchManifests(["improv_ble"]);
-    this._improvDiscovered.push(ev.detail);
+    this._improvDiscovered = [...this._improvDiscovered, ev.detail];
   }
 
   private async _fetchEntitySources() {
