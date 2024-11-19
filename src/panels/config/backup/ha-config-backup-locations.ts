@@ -119,10 +119,10 @@ class HaConfigBackupLocations extends LitElement {
       margin: 0;
     }
 
-    .agents ha-md-list {
+    ha-md-list {
       background: none;
     }
-    .agents ha-md-list-item img {
+    ha-md-list-item img {
       width: 48px;
     }
     .card-content {

@@ -1,17 +1,17 @@
-import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../layouts/hass-subpage";
-
+import { formatDateTime } from "../../../common/datetime/format_date_time";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
-import "../../../components/ha-relative-time";
-import "../../../components/ha-settings-row";
-
+import "../../../components/ha-md-list";
+import "../../../components/ha-md-list-item";
 import type { BackupContent } from "../../../data/backup";
 import { fetchBackupDetails } from "../../../data/backup";
+import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
+import { brandsUrl } from "../../../util/brands-url";
+import { domainToName } from "../../../data/integration";
 
 @customElement("ha-config-backup-details")
 class HaConfigBackupDetails extends LitElement {
@@ -35,10 +35,11 @@ class HaConfigBackupDetails extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass) {
-      return html`:(`;
+      return nothing;
     }
+
     return html`
       <hass-subpage
         back-path="/config/backup"
@@ -58,27 +59,53 @@ class HaConfigBackupDetails extends LitElement {
               : html`
                   <ha-card header="Backup">
                     <div class="card-content">
-                      <ha-settings-row>
-                        <span slot="heading">Partial</span>
-                        <span slot="description">Type</span>
-                      </ha-settings-row>
+                      <ha-md-list>
+                        <ha-md-list-item>
+                          <span slot="headline">
+                            ${Math.ceil(this._backup.size * 10) / 10 + " MB"}
+                          </span>
+                          <span slot="supporting-text">Size</span>
+                        </ha-md-list-item>
+                        <ha-md-list-item>
+                          ${formatDateTime(
+                            new Date(this._backup.date),
+                            this.hass.locale,
+                            this.hass.config
+                          )}
+                          <span slot="supporting-text">Created</span>
+                        </ha-md-list-item>
+                      </ha-md-list>
+                    </div>
+                  </ha-card>
+                  <ha-card header="Locations">
+                    <div class="card-content">
+                      <ha-md-list>
+                        ${this._backup.agent_ids?.map((agent) => {
+                          const [domain, name] = agent.split(".");
+                          const domainName = domainToName(
+                            this.hass.localize,
+                            domain
+                          );
 
-                      <ha-settings-row>
-                        <span slot="heading">
-                          ${Math.ceil(this._backup.size * 10) / 10 + " MB"}
-                        </span>
-                        <span slot="description">Size</span>
-                      </ha-settings-row>
-                      <ha-settings-row>
-                        <ha-relative-time
-                          .hass=${this.hass}
-                          .datetime=${this._backup.date}
-                          slot="heading"
-                          capitalize
-                        >
-                        </ha-relative-time>
-                        <span slot="description">Created</span>
-                      </ha-settings-row>
+                          return html`
+                            <ha-md-list-item>
+                              <img
+                                .src=${brandsUrl({
+                                  domain,
+                                  type: "icon",
+                                  useFallback: true,
+                                  darkOptimized: this.hass.themes?.darkMode,
+                                })}
+                                crossorigin="anonymous"
+                                referrerpolicy="no-referrer"
+                                alt=""
+                                slot="start"
+                              />
+                              <div slot="headline">${domainName}: ${name}</div>
+                            </ha-md-list-item>
+                          `;
+                        })}
+                      </ha-md-list>
                     </div>
                   </ha-card>
                 `}
@@ -103,6 +130,20 @@ class HaConfigBackupDetails extends LitElement {
       margin: 0 auto;
       gap: 24px;
       display: grid;
+    }
+    .card-content {
+      padding: 0 20px 8px 20px;
+    }
+    ha-md-list {
+      background: none;
+      padding: 0;
+    }
+    ha-md-list-item {
+      --md-list-item-leading-space: 0;
+      --md-list-item-trailing-space: 0;
+    }
+    ha-md-list-item img {
+      width: 48px;
     }
   `;
 }
