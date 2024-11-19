@@ -61,7 +61,7 @@ class LandingPageLogs extends LitElement {
         </ha-button>
         ${this._show
           ? html`<ha-icon-button
-              .label=${this.localize("logs.download_full_log")}
+              .label=${this.localize("logs.download_logs")}
               .path=${mdiDownload}
               @click=${this._downloadFullLog}
             ></ha-icon-button>`
