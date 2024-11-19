@@ -24,6 +24,7 @@ import "../../panels/lovelace/entity-rows/hui-select-entity-row";
 import type { HomeAssistant } from "../../types";
 import { AssistantSetupStyles } from "./styles";
 import { STEP } from "./voice-assistant-setup-dialog";
+import { getTranslation } from "../../util/common-translation";
 
 @customElement("ha-voice-assistant-setup-step-success")
 export class HaVoiceAssistantSetupStepSuccess extends LitElement {
@@ -213,8 +214,19 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
     });
   }
 
-  private _testTts() {
-    this._announce("Hello, how can I help you?");
+  private async _testTts() {
+    const [pipeline] = await this._getPipeline();
+
+    if (!pipeline) {
+      return;
+    }
+
+    if (pipeline.language !== this.hass.locale.language) {
+      const result = await getTranslation(null, pipeline.language);
+      this._announce(result.data["ui.dialogs.tts-try.message_example"]);
+    } else {
+      this._announce(this.hass.localize("ui.dialogs.tts-try.message_example"));
+    }
   }
 
   private async _announce(message: string) {
