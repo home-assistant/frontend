@@ -8,7 +8,7 @@ import type { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
 import { domainToName } from "../../../../data/integration";
 
-@customElement("ha-backup-agent-select")
+@customElement("ha-backup-agents-select")
 class HaBackupAgentsSelect extends LitElement {
   @property({ attribute: false })
   public hass!: HomeAssistant;

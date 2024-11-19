@@ -239,12 +239,12 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
       ${this._formData.agents_mode === "custom"
         ? html`
             <ha-expansion-panel .header=${"Location"} outlined expanded>
-              <ha-backup-agent-select
+              <ha-backup-agents-select
                 .hass=${this.hass}
                 .value=${this._formData.agents}
                 @value-changed=${this._agentsChanged}
                 .agents=${this._agents}
-              ></ha-backup-agent-select>
+              ></ha-backup-agents-select>
             </ha-expansion-panel>
           `
         : nothing}
