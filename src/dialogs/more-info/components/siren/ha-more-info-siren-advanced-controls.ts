@@ -127,6 +127,7 @@ class MoreInfoSirenAdvancedControls extends LitElement {
                     type="number"
                     .label=${this.hass.localize("ui.components.siren.duration")}
                     .value=${this._duration}
+                    suffix="s"
                     @change=${this._handleDurationChange}
                   ></ha-textfield>
                 `
