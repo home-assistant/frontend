@@ -2,6 +2,8 @@ import { mdiRefresh } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
+import memoizeOne from "memoize-one";
 import { navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
@@ -15,10 +17,14 @@ import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
 import "../../components/ha-top-app-bar-fixed";
+import "../../components/ha-target-picker";
 import { filterLogbookCompatibleEntities } from "../../data/logbook";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "./ha-logbook";
+import { storage } from "../../common/decorators/storage";
+import { ensureArray } from "../../common/array/ensure-array";
+import { resolveEntityIDs } from "../../data/selector";
 
 @customElement("ha-panel-logbook")
 export class HaPanelLogbook extends LitElement {
@@ -32,6 +38,13 @@ export class HaPanelLogbook extends LitElement {
 
   @state()
   private _showBack?: boolean;
+
+  @storage({
+    key: "logbookPickedValue",
+    state: true,
+    subscribe: false,
+  })
+  private _targetPickerValue: HassServiceTarget = {};
 
   public constructor() {
     super();
@@ -82,21 +95,19 @@ export class HaPanelLogbook extends LitElement {
             @change=${this._dateRangeChanged}
           ></ha-date-range-picker>
 
-          <ha-entity-picker
+          <ha-target-picker
             .hass=${this.hass}
-            .value=${this._entityIds ? this._entityIds[0] : undefined}
-            .label=${this.hass.localize(
-              "ui.components.entity.entity-picker.entity"
-            )}
             .entityFilter=${filterLogbookCompatibleEntities}
-            @change=${this._entityPicked}
-          ></ha-entity-picker>
+            .value=${this._targetPickerValue}
+            addOnTop
+            @value-changed=${this._targetsChanged}
+          ></ha-target-picker>
         </div>
 
         <ha-logbook
           .hass=${this.hass}
           .time=${this._time}
-          .entityIds=${this._entityIds}
+          .entityIds=${this._getEntityIds()}
           virtualize
         ></ha-logbook>
       </ha-top-app-bar-fixed>
@@ -140,32 +151,62 @@ export class HaPanelLogbook extends LitElement {
     this._applyURLParams();
   };
 
+  private _getEntityIds(): string[] | undefined {
+    const entities = this.__getEntityIds(
+      this._targetPickerValue,
+      this.hass.entities,
+      this.hass.devices,
+      this.hass.areas
+    );
+    if (entities.length === 0) {
+      return undefined;
+    }
+    return entities;
+  }
+
+  private __getEntityIds = memoizeOne(
+    (
+      targetPickerValue: HassServiceTarget,
+      entities: HomeAssistant["entities"],
+      devices: HomeAssistant["devices"],
+      areas: HomeAssistant["areas"]
+    ): string[] =>
+      resolveEntityIDs(this.hass, targetPickerValue, entities, devices, areas)
+  );
+
   private _applyURLParams() {
-    const searchParams = new URLSearchParams(location.search);
-
-    if (searchParams.has("entity_id")) {
-      const entityIdsRaw = searchParams.get("entity_id");
-
-      if (!entityIdsRaw) {
-        this._entityIds = undefined;
-      } else {
-        const entityIds = entityIdsRaw.split(",").sort();
-
-        // Check if different
-        if (
-          !this._entityIds ||
-          entityIds.length !== this._entityIds.length ||
-          !this._entityIds.every((val, idx) => val === entityIds[idx])
-        ) {
-          this._entityIds = entityIds;
-        }
-      }
-    } else {
-      this._entityIds = undefined;
+    const searchParams = extractSearchParamsObject();
+    const entityIds = searchParams.entity_id;
+    const deviceIds = searchParams.device_id;
+    const areaIds = searchParams.area_id;
+    const floorIds = searchParams.floor_id;
+    const labelsIds = searchParams.label_id;
+    if (entityIds || deviceIds || areaIds || floorIds || labelsIds) {
+      this._targetPickerValue = {};
+    }
+    if (entityIds) {
+      const splitIds = entityIds.split(",");
+      this._targetPickerValue!.entity_id = splitIds;
+    }
+    if (deviceIds) {
+      const splitIds = deviceIds.split(",");
+      this._targetPickerValue!.device_id = splitIds;
+    }
+    if (areaIds) {
+      const splitIds = areaIds.split(",");
+      this._targetPickerValue!.area_id = splitIds;
+    }
+    if (floorIds) {
+      const splitIds = floorIds.split(",");
+      this._targetPickerValue!.floor_id = splitIds;
+    }
+    if (labelsIds) {
+      const splitIds = labelsIds.split(",");
+      this._targetPickerValue!.label_id = splitIds;
     }
 
-    const startDateStr = searchParams.get("start_date");
-    const endDateStr = searchParams.get("end_date");
+    const startDateStr = searchParams.start_date;
+    const endDateStr = searchParams.end_date;
 
     if (startDateStr || endDateStr) {
       const startDate = startDateStr
@@ -195,27 +236,48 @@ export class HaPanelLogbook extends LitElement {
       endDate.setDate(endDate.getDate() + 1);
       endDate.setMilliseconds(endDate.getMilliseconds() - 1);
     }
-    this._updatePath({
-      start_date: startDate.toISOString(),
-      end_date: endDate.toISOString(),
-    });
+    this._time = {
+      range: [startDate, endDate],
+    };
+    this._updatePath();
   }
 
-  private _entityPicked(ev) {
-    this._updatePath({
-      entity_id: ev.target.value || undefined,
-    });
+  private _targetsChanged(ev) {
+    this._targetPickerValue = ev.detail.value || {};
+    this._updatePath();
   }
 
-  private _updatePath(update: Record<string, string | undefined>) {
-    const params = extractSearchParamsObject();
-    for (const [key, value] of Object.entries(update)) {
-      if (value === undefined) {
-        delete params[key];
-      } else {
-        params[key] = value;
-      }
+  private _updatePath() {
+    const params: Record<string, string> = {};
+
+    if (this._targetPickerValue.entity_id) {
+      params.entity_id = ensureArray(this._targetPickerValue.entity_id).join(
+        ","
+      );
     }
+    if (this._targetPickerValue.label_id) {
+      params.label_id = ensureArray(this._targetPickerValue.label_id).join(",");
+    }
+    if (this._targetPickerValue.floor_id) {
+      params.floor_id = ensureArray(this._targetPickerValue.floor_id).join(",");
+    }
+    if (this._targetPickerValue.area_id) {
+      params.area_id = ensureArray(this._targetPickerValue.area_id).join(",");
+    }
+    if (this._targetPickerValue.device_id) {
+      params.device_id = ensureArray(this._targetPickerValue.device_id).join(
+        ","
+      );
+    }
+
+    if (this._time.range[0]) {
+      params.start_date = this._time.range[0].toISOString();
+    }
+
+    if (this._time.range[1]) {
+      params.end_date = this._time.range[1].toISOString();
+    }
+
     navigate(`/logbook?${createSearchParam(params)}`, { replace: true });
   }
 
@@ -253,7 +315,6 @@ export class HaPanelLogbook extends LitElement {
 
         .filters {
           display: flex;
-          align-items: flex-end;
           padding: 8px 16px 0;
         }
 
