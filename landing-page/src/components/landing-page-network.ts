@@ -14,27 +14,14 @@ import type {
 } from "../../../src/common/translations/localize";
 import "../../../src/components/ha-button";
 import "../../../src/components/ha-alert";
-import { getSupervisorNetworkInfo } from "../data/supervisor";
+import {
+  ALTERNATIVE_DNS_SERVERS,
+  getSupervisorNetworkInfo,
+  setSupervisorNetworkDns,
+} from "../data/supervisor";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 
 const SCHEDULE_FETCH_NETWORK_INFO_SECONDS = 5;
-
-const ALTERNATIVE_DNS_SERVERS: {
-  ipv4: string[];
-  ipv6: string[];
-  translationKey: LandingPageKeys;
-}[] = [
-  {
-    ipv4: ["1.1.1.1", "1.0.0.1"],
-    ipv6: ["2606:4700:4700::1111", "2606:4700:4700::1001"],
-    translationKey: "network_issue.use_cloudflare",
-  },
-  {
-    ipv4: ["8.8.8.8", "8.8.4.4"],
-    ipv6: ["2001:4860:4860::8888", "2001:4860:4860::8844"],
-    translationKey: "network_issue.use_google",
-  },
-];
 
 @customElement("landing-page-network")
 class LandingPageNetwork extends LitElement {
@@ -145,22 +132,7 @@ class LandingPageNetwork extends LitElement {
   private async _setDns(ev) {
     const index = ev.target?.index;
     try {
-      const response = await fetch("/supervisor/network/dns", {
-        method: "POST",
-        body: JSON.stringify({
-          ipv4: {
-            method: "auto",
-            nameservers: ALTERNATIVE_DNS_SERVERS[index].ipv4,
-          },
-          ipv6: {
-            method: "auto",
-            nameservers: ALTERNATIVE_DNS_SERVERS[index].ipv6,
-          },
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await setSupervisorNetworkDns(index);
       if (!response.ok) {
         throw new Error("Failed to set DNS");
       }

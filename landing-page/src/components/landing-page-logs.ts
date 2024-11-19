@@ -15,7 +15,7 @@ import "../../../src/components/ha-svg-icon";
 import "../../../src/components/ha-ansi-to-html";
 import "../../../src/components/ha-alert";
 import type { HaAnsiToHtml } from "../../../src/components/ha-ansi-to-html";
-import { getObserverLogs, getSupervisorLogsFollow } from "../data/supervisor";
+import { getObserverLogs } from "../data/observer";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import { fileDownload } from "../../../src/util/file_download";
 
@@ -73,7 +73,7 @@ class LandingPageLogs extends LitElement {
               alert-type="error"
               .title=${this.localize("logs.fetch_error")}
             >
-              <ha-button @click=${this._startLogStream}>
+              <ha-button @click=${this._loadObserverLogs}>
                 ${this.localize("logs.retry")}
               </ha-button>
             </ha-alert>
@@ -113,7 +113,7 @@ class LandingPageLogs extends LitElement {
 
     this._scrolledToBottomController.observe(this._scrollBottomMarkerElement!);
 
-    this._startLogStream();
+    this._loadObserverLogs();
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -139,20 +139,13 @@ class LandingPageLogs extends LitElement {
     }
   }
 
-  private _writeChunk(chunk: string, tempLogLine = ""): string {
-    const showError = ERROR_CHECK.test(chunk);
+  private _displayLogs(logs: string) {
+    this._ansiToHtmlElement?.clear();
+
+    const showError = ERROR_CHECK.test(logs);
 
     const scrolledToBottom = this._scrolledToBottomController.value;
-    const lines = `${tempLogLine}${chunk}`
-      .split("\n")
-      .filter((line) => line.trim() !== "");
-
-    // handle edge case where the last line is not complete
-    if (chunk.endsWith("\n")) {
-      tempLogLine = "";
-    } else {
-      tempLogLine = lines.splice(-1, 1)[0];
-    }
+    const lines = logs.split("\n").filter((line) => line.trim() !== "");
 
     if (lines.length) {
       this._ansiToHtmlElement?.parseLinesToColoredPre(lines);
@@ -167,45 +160,6 @@ class LandingPageLogs extends LitElement {
       this._scrollToBottom();
     } else {
       this._newLogsIndicator = true;
-    }
-
-    return tempLogLine;
-  }
-
-  private async _startLogStream() {
-    this._error = false;
-    this._newLogsIndicator = false;
-    this._ansiToHtmlElement?.clear();
-
-    try {
-      const response = await getSupervisorLogsFollow();
-
-      if (!response.ok || !response.body) {
-        throw new Error("No stream body found");
-      }
-
-      let tempLogLine = "";
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let done = false;
-
-      while (!done) {
-        // eslint-disable-next-line no-await-in-loop
-        const { value, done: readerDone } = await reader.read();
-        done = readerDone;
-
-        if (value) {
-          const chunk = decoder.decode(value, { stream: !done });
-          tempLogLine = this._writeChunk(chunk, tempLogLine);
-        }
-      }
-    } catch (err: any) {
-      // eslint-disable-next-line no-console
-      console.error(err);
-
-      // fallback to observerlogs if there is a problem with supervisor
-      this._loadObserverLogs();
     }
   }
 
@@ -225,7 +179,7 @@ class LandingPageLogs extends LitElement {
 
       if (this._observerLogs !== logs) {
         this._observerLogs = logs;
-        this._writeChunk(logs);
+        this._displayLogs(logs);
       }
 
       this._scheduleObserverLogs();
@@ -238,10 +192,7 @@ class LandingPageLogs extends LitElement {
 
   private async _downloadFullLog() {
     const timeString = new Date().toISOString().replace(/:/g, "-");
-    fileDownload(
-      "/supervisor/supervisor/logs?lines=1000",
-      `home-assistant_${timeString}.log`
-    );
+    fileDownload("/observer/logs", `home-assistant_${timeString}.log`);
   }
 
   static styles = [
