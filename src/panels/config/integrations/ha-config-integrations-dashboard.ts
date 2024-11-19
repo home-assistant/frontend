@@ -131,6 +131,14 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     [integration: string]: IntegrationLogInfo;
   };
 
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.removeEventListener(
+      "improv-discovered-device",
+      this._handleImprovDiscovered
+    );
+  }
+
   public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
     return [
       subscribeEntityRegistry(this.hass.connection, (entries) => {
@@ -280,6 +288,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
       this._handleAdd();
     }
     this._scanUSBDevices();
+    this._scanImprovDevices();
     if (isComponentLoaded(this.hass, "diagnostics")) {
       fetchDiagnosticHandlers(this.hass).then((infos) => {
         const handlers = {};
@@ -608,6 +617,25 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     await scanUSBDevices(this.hass);
   }
 
+  private _scanImprovDevices() {
+    if (!this.hass.auth.external?.config.canSetupImprov) {
+      return;
+    }
+    window.addEventListener(
+      "improv-discovered-device",
+      this._handleImprovDiscovered
+    );
+
+    this.hass.auth.external!.fireMessage({
+      type: "improv/scan",
+    });
+  }
+
+  private _handleImprovDiscovered(ev) {
+    // eslint-disable-next-line no-console
+    console.log(ev.detail);
+  }
+
   private async _fetchEntitySources() {
     const entitySources = await fetchEntitySourcesWithCache(this.hass);
 
@@ -664,11 +692,6 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     showAddIntegrationDialog(this, {
       initialFilter: this._filter,
     });
-    if (this.hass.auth.external?.config.canSetupImprov) {
-      this.hass.auth.external!.fireMessage({
-        type: "improv/scan",
-      });
-    }
   }
 
   private _handleMenuAction(ev: CustomEvent<ActionDetail>) {

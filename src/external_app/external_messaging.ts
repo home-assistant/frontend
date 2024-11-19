@@ -134,8 +134,16 @@ interface EMOutgoingMessageAssistShow extends EMMessage {
     start_listening: boolean;
   };
 }
+
 interface EMOutgoingMessageImprovScan extends EMMessage {
   type: "improv/scan";
+}
+
+interface EMOutgoingMessageImprovConfigureDevice extends EMMessage {
+  type: "improv/configure_device";
+  payload: {
+    device_id: string;
+  };
 }
 
 interface EMOutgoingMessageThreadStoreInPlatformKeychain extends EMMessage {
@@ -167,7 +175,8 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageTagWrite
   | EMOutgoingMessageThemeUpdate
   | EMOutgoingMessageThreadStoreInPlatformKeychain
-  | EMOutgoingMessageImprovScan;
+  | EMOutgoingMessageImprovScan
+  | EMOutgoingMessageImprovConfigureDevice;
 
 interface EMIncomingMessageRestart {
   id: number;
@@ -237,6 +246,15 @@ export interface EMIncomingMessageBarCodeScanAborted {
   };
 }
 
+interface EMIncomingMessageImprovDeviceDiscovered extends EMMessage {
+  id: number;
+  type: "command";
+  command: "improv/discovered_device";
+  payload: {
+    device_id: string;
+  };
+}
+
 export type EMIncomingMessageCommands =
   | EMIncomingMessageRestart
   | EMIncomingMessageShowNotifications
@@ -244,7 +262,8 @@ export type EMIncomingMessageCommands =
   | EMIncomingMessageShowSidebar
   | EMIncomingMessageShowAutomationEditor
   | EMIncomingMessageBarCodeScanResult
-  | EMIncomingMessageBarCodeScanAborted;
+  | EMIncomingMessageBarCodeScanAborted
+  | EMIncomingMessageImprovDeviceDiscovered;
 
 type EMIncomingMessage =
   | EMMessageResultSuccess

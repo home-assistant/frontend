@@ -113,6 +113,14 @@ const handleExternalMessage = (
       success: true,
       result: null,
     });
+  } else if (msg.command === "improv/discovered_device") {
+    fireEvent(window, "improv-discovered-device", msg.payload);
+    bus.fireMessage({
+      id: msg.id,
+      type: "result",
+      success: true,
+      result: null,
+    });
   } else if (msg.command === "bar_code/scan_result") {
     barCodeListeners.forEach((listener) => listener(msg));
     bus.fireMessage({
