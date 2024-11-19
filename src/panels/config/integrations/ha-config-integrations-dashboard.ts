@@ -319,6 +319,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     }
     this._scanUSBDevices();
     this._scanImprovDevices();
+
     if (isComponentLoaded(this.hass, "diagnostics")) {
       fetchDiagnosticHandlers(this.hass).then((infos) => {
         const handlers = {};
@@ -652,6 +653,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     if (!this.hass.auth.external?.config.canSetupImprov) {
       return;
     }
+
     window.addEventListener(
       "improv-discovered-device",
       this._handleImprovDiscovered
@@ -672,12 +674,12 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _handleImprovDiscovered(ev) {
+  private _handleImprovDiscovered = (ev) => {
     // eslint-disable-next-line no-console
     console.log(ev.detail);
     this._fetchManifests(["improv_ble"]);
     this._improvDiscovered = [...this._improvDiscovered, ev.detail];
-  }
+  };
 
   private async _fetchEntitySources() {
     const entitySources = await fetchEntitySourcesWithCache(this.hass);
