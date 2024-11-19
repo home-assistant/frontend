@@ -3282,8 +3282,8 @@
                   "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::value_template%]",
                   "description": {
                     "picker": "If the numeric value of an entity''s state (or attribute''s value) is above or below a given threshold.",
-                    "above": "if {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above}",
-                    "below": "if {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} below {below}",
+                    "above": "If {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above}",
+                    "below": "If {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} below {below}",
                     "above-below": "If {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above} and below {below}"
                   }
                 },
