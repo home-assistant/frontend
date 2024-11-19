@@ -5,7 +5,7 @@ export interface BackupAgent {
 }
 
 export interface BackupContent {
-  slug: string;
+  backup_id: string;
   date: string;
   name: string;
   protected: boolean;
@@ -35,8 +35,8 @@ export type GenerateBackupParams = {
   password?: string;
 };
 
-export const getBackupDownloadUrl = (slug: string) =>
-  `/api/backup/download/${slug}`;
+export const getBackupDownloadUrl = (id: string) =>
+  `/api/backup/download/${id}`;
 
 export const fetchBackupInfo = (hass: HomeAssistant): Promise<BackupInfo> =>
   hass.callWS({
@@ -45,11 +45,11 @@ export const fetchBackupInfo = (hass: HomeAssistant): Promise<BackupInfo> =>
 
 export const fetchBackupDetails = (
   hass: HomeAssistant,
-  slug: string
+  id: string
 ): Promise<BackupDetails> =>
   hass.callWS({
     type: "backup/details",
-    slug,
+    backup_id: id,
   });
 
 export const fetchBackupAgentsInfo = (
@@ -59,19 +59,16 @@ export const fetchBackupAgentsInfo = (
     type: "backup/agents/info",
   });
 
-export const removeBackup = (
-  hass: HomeAssistant,
-  slug: string
-): Promise<void> =>
+export const removeBackup = (hass: HomeAssistant, id: string): Promise<void> =>
   hass.callWS({
     type: "backup/remove",
-    slug,
+    backup_id: id,
   });
 
 export const generateBackup = (
   hass: HomeAssistant,
   params: GenerateBackupParams
-): Promise<{ slug: string }> =>
+): Promise<{ backup_id: string }> =>
   hass.callWS({
     type: "backup/generate",
     ...params,

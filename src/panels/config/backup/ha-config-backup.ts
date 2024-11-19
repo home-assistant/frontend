@@ -42,7 +42,7 @@ class HaConfigBackup extends HassRouterPage {
       (!changedProps || changedProps.has("route")) &&
       this._currentPage === "details"
     ) {
-      pageEl.backupSlug = this.routeTail.path.substr(1);
+      pageEl.backupId = this.routeTail.path.substr(1);
     }
   }
 }

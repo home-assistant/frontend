@@ -9,7 +9,7 @@ import "../../../components/ha-circular-progress";
 import "../../../components/ha-relative-time";
 import "../../../components/ha-settings-row";
 
-import type { BackupAgentsInfo, BackupContent } from "../../../data/backup";
+import type { BackupContent } from "../../../data/backup";
 import { fetchBackupDetails } from "../../../data/backup";
 import type { HomeAssistant } from "../../../types";
 
@@ -17,11 +17,9 @@ import type { HomeAssistant } from "../../../types";
 class HaConfigBackupDetails extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public backupAgentsInfo?: BackupAgentsInfo;
-
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: "backup-slug" }) public backupSlug!: string;
+  @property({ attribute: "backup-id" }) public backupId!: string;
 
   @state() private _backup?: BackupContent | null;
 
@@ -30,10 +28,10 @@ class HaConfigBackupDetails extends LitElement {
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
 
-    if (this.backupSlug) {
+    if (this.backupId) {
       this._fetchBackup();
     } else {
-      this._error = "Backup slug not defined";
+      this._error = "Backup id not defined";
     }
   }
 
@@ -53,7 +51,7 @@ class HaConfigBackupDetails extends LitElement {
           html`<ha-alert alert-type="error">${this._error}</ha-alert>`}
           ${this._backup === null
             ? html`<ha-alert alert-type="warning" title="Not found">
-                Backup matching ${this.backupSlug} not found
+                Backup matching ${this.backupId} not found
               </ha-alert>`
             : !this._backup
               ? html`<ha-circular-progress active></ha-circular-progress>`
@@ -91,7 +89,7 @@ class HaConfigBackupDetails extends LitElement {
 
   private async _fetchBackup() {
     try {
-      const response = await fetchBackupDetails(this.hass, this.backupSlug);
+      const response = await fetchBackupDetails(this.hass, this.backupId);
       this._backup = response.backup;
     } catch (err: any) {
       this._error = err?.message || "Could not fetch backup details";
