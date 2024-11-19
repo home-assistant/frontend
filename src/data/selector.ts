@@ -1,4 +1,7 @@
-import type { HassEntity } from "home-assistant-js-websocket";
+import type {
+  HassEntity,
+  HassServiceTarget,
+} from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
@@ -870,4 +873,66 @@ export const computeCreateDomains = (
   );
 
   return [...new Set(createDomains)];
+};
+
+export const resolveEntityIDs = (
+  hass: HomeAssistant,
+  targetPickerValue: HassServiceTarget,
+  entities: HomeAssistant["entities"],
+  devices: HomeAssistant["devices"],
+  areas: HomeAssistant["areas"]
+): string[] => {
+  if (!targetPickerValue) {
+    return [];
+  }
+
+  const targetSelector = { target: {} };
+  const targetEntities = new Set(ensureArray(targetPickerValue.entity_id));
+  const targetDevices = new Set(ensureArray(targetPickerValue.device_id));
+  const targetAreas = new Set(ensureArray(targetPickerValue.area_id));
+  const targetFloors = new Set(ensureArray(targetPickerValue.floor_id));
+  const targetLabels = new Set(ensureArray(targetPickerValue.label_id));
+
+  targetLabels.forEach((labelId) => {
+    const expanded = expandLabelTarget(
+      hass,
+      labelId,
+      areas,
+      devices,
+      entities,
+      targetSelector
+    );
+    expanded.devices.forEach((id) => targetDevices.add(id));
+    expanded.entities.forEach((id) => targetEntities.add(id));
+    expanded.areas.forEach((id) => targetAreas.add(id));
+  });
+
+  targetFloors.forEach((floorId) => {
+    const expanded = expandFloorTarget(hass, floorId, areas, targetSelector);
+    expanded.areas.forEach((id) => targetAreas.add(id));
+  });
+
+  targetAreas.forEach((areaId) => {
+    const expanded = expandAreaTarget(
+      hass,
+      areaId,
+      devices,
+      entities,
+      targetSelector
+    );
+    expanded.devices.forEach((id) => targetDevices.add(id));
+    expanded.entities.forEach((id) => targetEntities.add(id));
+  });
+
+  targetDevices.forEach((deviceId) => {
+    const expanded = expandDeviceTarget(
+      hass,
+      deviceId,
+      entities,
+      targetSelector
+    );
+    expanded.entities.forEach((id) => targetEntities.add(id));
+  });
+
+  return Array.from(targetEntities);
 };

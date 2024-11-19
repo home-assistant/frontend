@@ -188,6 +188,7 @@ const createWebpackConfig = ({
         "lit/directives/cache$": "lit/directives/cache.js",
         "lit/directives/repeat$": "lit/directives/repeat.js",
         "lit/directives/live$": "lit/directives/live.js",
+        "lit/directives/keyed$": "lit/directives/keyed.js",
         "lit/polyfill-support$": "lit/polyfill-support.js",
         "@lit-labs/virtualizer/layouts/grid":
           "@lit-labs/virtualizer/layouts/grid.js",
