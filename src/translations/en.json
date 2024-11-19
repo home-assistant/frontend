@@ -2719,6 +2719,7 @@
                 "try_tts": "Try voice",
                 "debug": "Debug",
                 "set_as_preferred": "Set as preferred",
+                "add_streaming_wake_word": "Add streaming wake word",
                 "form": {
                   "name": "[%key:ui::common::name%]",
                   "conversation_engine": "Conversation agent",
@@ -2750,10 +2751,9 @@
                     "description": "When you are controlling your assistant with voice, the text-to-speech engine turns the conversation text responses into audio."
                   },
                   "wakeword": {
-                    "title": "Wake word",
-                    "description": "If a device supports wake words, you can activate Assist by saying this word.",
-                    "no_wake_words": "It looks like you don't have a wake word engine setup yet.",
-                    "no_wake_words_link": "Find out more about wake words."
+                    "title": "Streaming wake word engine",
+                    "description": " If a device supports streaming wake word engines, you can activate Assist by saying this word.",
+                    "note": "Most recent devices support on-device wake word engines and are configured on their device page."
                   }
                 },
                 "no_cloud_message": "You should have an active cloud subscription to use cloud speech services.",

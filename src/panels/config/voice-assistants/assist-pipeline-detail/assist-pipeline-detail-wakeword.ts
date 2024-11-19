@@ -8,7 +8,6 @@ import type { AssistPipeline } from "../../../../data/assist_pipeline";
 import type { HomeAssistant } from "../../../../types";
 import type { WakeWord } from "../../../../data/wake_word";
 import { fetchWakeWordInfo } from "../../../../data/wake_word";
-import { documentationUrl } from "../../../../util/documentation-url";
 import { fireEvent } from "../../../../common/dom/fire_event";
 
 @customElement("assist-pipeline-detail-wakeword")
@@ -85,6 +84,11 @@ export class AssistPipelineDetailWakeWord extends LitElement {
 
   protected render() {
     const hasWakeWorkEntities = this._hasWakeWorkEntities(this.hass.states);
+
+    if (!hasWakeWorkEntities) {
+      return nothing;
+    }
+
     return html`
       <div class="section">
         <div class="content">
@@ -99,23 +103,12 @@ export class AssistPipelineDetailWakeWord extends LitElement {
                 `ui.panel.config.voice_assistants.assistants.pipeline.detail.steps.wakeword.description`
               )}
             </p>
+            <ha-alert alert-type="info">
+              ${this.hass.localize(
+                `ui.panel.config.voice_assistants.assistants.pipeline.detail.steps.wakeword.note`
+              )}
+            </ha-alert>
           </div>
-          ${!hasWakeWorkEntities
-            ? html`${this.hass.localize(
-                  `ui.panel.config.voice_assistants.assistants.pipeline.detail.steps.wakeword.no_wake_words`
-                )}
-                <a
-                  href=${documentationUrl(
-                    this.hass,
-                    "/voice_control/install_wake_word_add_on/"
-                  )}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  >${this.hass.localize(
-                    `ui.panel.config.voice_assistants.assistants.pipeline.detail.steps.wakeword.no_wake_words_link`
-                  )}</a
-                >`
-            : nothing}
           <ha-form
             .schema=${this._schema(this._wakeWords)}
             .data=${this.data}
