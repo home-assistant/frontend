@@ -22,7 +22,6 @@ import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-svg-icon";
 import {
   fetchBackupInfo,
-  generateBackup,
   removeBackup,
   type BackupContent,
 } from "../../../data/backup";
@@ -33,6 +32,10 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../lovelace/custom-card-helpers";
 import "./components/ha-backup-summary-card";
 import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
 

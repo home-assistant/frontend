@@ -10,6 +10,7 @@ import { fetchBackupAgentsInfo } from "../../../data/backup";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
+import { domainToName } from "../../../data/integration";
 
 @customElement("ha-config-backup-locations")
 class HaConfigBackupLocations extends LitElement {
@@ -47,9 +48,10 @@ class HaConfigBackupLocations extends LitElement {
                     <ha-md-list>
                       ${this._agents.map((agent) => {
                         const [domain, name] = agent.agent_id.split(".");
-                        const domainName =
-                          this.hass.localize(`component.${domain}.title`) ||
-                          domain;
+                        const domainName = domainToName(
+                          this.hass.localize,
+                          domain
+                        );
                         return html`
                           <ha-md-list-item
                             type="link"

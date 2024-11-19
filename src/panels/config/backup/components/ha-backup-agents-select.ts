@@ -6,6 +6,7 @@ import "../../../../components/ha-formfield";
 import type { BackupAgent } from "../../../../data/backup";
 import type { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
+import { domainToName } from "../../../../data/integration";
 
 @customElement("ha-backup-agent-select")
 class HaBackupAgentsSelect extends LitElement {
@@ -34,8 +35,7 @@ class HaBackupAgentsSelect extends LitElement {
 
   private _renderAgent(agent: BackupAgent) {
     const [domain, name] = agent.agent_id.split(".");
-    const domainName =
-      this.hass.localize(`component.${domain}.title`) || domain;
+    const domainName = domainToName(this.hass.localize, domain);
     return html`
       <ha-formfield>
         <span class="label" slot="label">
