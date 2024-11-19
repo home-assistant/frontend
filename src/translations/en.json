@@ -367,7 +367,8 @@
       "copied": "Copied",
       "copied_clipboard": "Copied to clipboard",
       "name": "Name",
-      "optional": "optional"
+      "optional": "optional",
+      "default": "Default"
     },
     "components": {
       "selectors": {
@@ -881,6 +882,12 @@
           "restore": "Restore defaults"
         }
       },
+      "siren": {
+        "advanced_controls": "Advanced controls",
+        "tone": "Tone",
+        "duration": "Duration",
+        "volume": "Volume"
+      },
       "media-browser": {
         "tts": {
           "message": "Message",
@@ -1089,7 +1096,9 @@
         "temperature_down": "Decrease temperature"
       },
       "yaml-editor": {
-        "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
+        "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]",
+        "error": "Error in parsing YAML: {reason}",
+        "error_location": "line: {line}, column: {column}"
       },
       "state-content-picker": {
         "state": "State",
@@ -1337,6 +1346,10 @@
             "button": "[%key:ui::dialogs::more_info_control::cover::switch_mode::button%]",
             "position": "[%key:ui::dialogs::more_info_control::cover::switch_mode::position%]"
           }
+        },
+        "camera": {
+          "download_snapshot": "Download snapshot",
+          "failed_to_download": "Failed to download snapshot. Please check the logs for more information."
         }
       },
       "entity_registry": {
@@ -1606,7 +1619,9 @@
           "confirm_delete": "Do you want to delete this item?",
           "edit_schedule_block": "Edit schedule block",
           "start": "Start",
-          "end": "End"
+          "end": "End",
+          "data": "Additional data",
+          "advanced_settings": "Advanced settings"
         },
         "template": {
           "time": "[%key:ui::panel::developer-tools::tabs::templates::time%]",
@@ -2940,6 +2955,7 @@
             "search_in": "Search · {group}",
             "unknown_entity": "unknown entity",
             "edit_unknown_device": "Editor not available for unknown device",
+            "switch_ui_yaml_error": "There are currently YAML errors in the automation, and it cannot be parsed. Switching to UI mode may cause pending changes to be lost. Press cancel to correct any errors before proceeding to prevent loss of pending changes, or continue if you are sure.",
             "triggers": {
               "name": "Triggers",
               "header": "When",
@@ -2988,7 +3004,8 @@
                   "before": "Before",
                   "after": "After",
                   "description": {
-                    "picker": "When a calendar event starts or ends."
+                    "picker": "When a calendar event starts or ends.",
+                    "full": "When{offsetChoice, select, \n before { it's {offset} before}\n after { it's {offset} after}\n other {}\n} a calendar event{eventChoice, select, \n start { starts}\n end { ends}\n other { starts or ends}\n}{hasCalendar, select, \n true { in {calendar}}\n other {}\n}"
                   }
                 },
                 "device": {
@@ -3235,7 +3252,7 @@
                   "description": {
                     "picker": "Test if multiple conditions are true.",
                     "no_conditions": "If multiple conditions match",
-                    "full": "If {count} {count, plural,\n one {condition match}\n other {conditions matches}\n}"
+                    "full": "If {count} {count, plural,\n one {condition matches}\n other {conditions match}\n}"
                   }
                 },
                 "device": {
@@ -3283,7 +3300,7 @@
                   "state": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]",
                   "description": {
                     "picker": "If an entity (or attribute) is in a specific state.",
-                    "no_entity": "Confirm state",
+                    "no_entity": "If state confirmed",
                     "full": "If{hasAttribute, select, \n true { {attribute} of}\n other {}\n} {numberOfEntities, plural,\n =0 {an entity is}\n one {{entities} is}\n other {{entities} are}\n} {numberOfStates, plural,\n =0 {a state}\n other {{states}}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n }"
                   }
                 },
@@ -3346,7 +3363,7 @@
                   "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]",
                   "description": {
                     "picker": "If someone (or something) is in a zone.",
-                    "full": "Confirm {entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} in {zone} {numberOfZones, plural,\n one {zone} \n other {zones}\n} "
+                    "full": "If {entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} in {zone} {numberOfZones, plural,\n one {zone} \n other {zones}\n}"
                   }
                 }
               }
@@ -5256,6 +5273,20 @@
                 "start_transition": "Start transition",
                 "stop_transition": "Stop transition",
                 "control_failed": "Failed to control transition. {error}"
+              },
+              "color_switch": {
+                "color_component": "Color component",
+                "colors": {
+                  "0": "Warm White",
+                  "1": "Cold White",
+                  "2": "Red",
+                  "3": "Green",
+                  "4": "Blue",
+                  "5": "Amber",
+                  "6": "Cyan",
+                  "7": "Purple",
+                  "8": "Index"
+                }
               }
             }
           }
@@ -5871,6 +5902,7 @@
           "section": {
             "add_badge": "Add badge",
             "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
+            "drop_card_create_section": "Drop card here to create a new section",
             "create_section": "Create section",
             "default_section_title": "New section",
             "imported_cards_title": "Imported cards",
@@ -6130,7 +6162,10 @@
               "pick_statistic": "Add a statistic",
               "picked_statistic": "Statistic",
               "hide_legend": "Hide legend",
-              "logarithmic_scale": "Logarithmic scale"
+              "logarithmic_scale": "Logarithmic scale",
+              "min_y_axis": "Y axis minimum",
+              "max_y_axis": "Y axis maximum",
+              "fit_y_data": "Extend Y axis limits to fit data"
             },
             "statistic": {
               "name": "Statistic",
