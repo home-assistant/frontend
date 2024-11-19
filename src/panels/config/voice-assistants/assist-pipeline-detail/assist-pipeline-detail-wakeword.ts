@@ -1,5 +1,5 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
@@ -78,17 +78,7 @@ export class AssistPipelineDetailWakeWord extends LitElement {
     }
   }
 
-  private _hasWakeWorkEntities = memoizeOne((states: HomeAssistant["states"]) =>
-    Object.keys(states).some((entityId) => entityId.startsWith("wake_word."))
-  );
-
   protected render() {
-    const hasWakeWorkEntities = this._hasWakeWorkEntities(this.hass.states);
-
-    if (!hasWakeWorkEntities) {
-      return nothing;
-    }
-
     return html`
       <div class="section">
         <div class="content">
@@ -114,7 +104,6 @@ export class AssistPipelineDetailWakeWord extends LitElement {
             .data=${this.data}
             .hass=${this.hass}
             .computeLabel=${this._computeLabel}
-            .disabled=${!hasWakeWorkEntities}
           ></ha-form>
         </div>
       </div>
