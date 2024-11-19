@@ -100,23 +100,11 @@ class HaHLSPlayer extends LitElement {
 
     if (entityChanged) {
       this._getStreamUrlFromEntityId();
-    } else if (urlChanged) {
+    } else if (urlChanged && this.url) {
       this._cleanUp();
       this._resetError();
-      if (!this.url) {
-        return;
-      }
-
-      try {
-        this._url = this.url;
-        this._startHls();
-      } catch (err: any) {
-        // Fails if we were unable to get a stream
-        // eslint-disable-next-line
-        console.error(err);
-
-        fireEvent(this, "streams", { hasAudio: false, hasVideo: false });
-      }
+      this._url = this.url;
+      this._startHls();
     }
   }
 
