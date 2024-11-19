@@ -7106,7 +7106,7 @@
             "fire_event": "Fire event",
             "event_fired": "Event {name} fired",
             "active_listeners": "Active listeners",
-            "count_listeners": " ({count}  listeners)",
+            "count_listeners": "({count} {count, plural,\n  one {listener}\n  other {listeners}\n})",
             "listen_to_events": "Listen to events",
             "listening_to": "Listening to",
             "subscribe_to": "Event to subscribe to",
