@@ -3415,8 +3415,8 @@
                 "service": {
                   "label": "Perform action",
                   "response_variable": "Response variable",
-                  "has_optional_response": "This action can return a response, if you want to use the response, enter the name for a variable the response will be saved in",
-                  "has_response": "This action returns a response, enter the name for a variable the response will be saved in",
+                  "has_optional_response": "This action can return a response, if you want to use the response, enter the name for a variable the response will be saved in.",
+                  "has_response": "This action returns a response, enter the name for a variable the response will be saved in.",
                   "description": {
                     "picker": "Previously known as call service.",
                     "service_based_on_template": "Perform an action based on a template on {targets}",
