@@ -71,6 +71,13 @@ export class AssistPipelineDetailConversation extends LitElement {
         )
       : "";
 
+  private _computeHelper = (schema): string =>
+    schema.name
+      ? this.hass.localize(
+          `ui.panel.config.voice_assistants.assistants.pipeline.detail.form.${schema.name}_description` as LocalizeKeys
+        )
+      : "";
+
   protected render() {
     return html`
       <div class="section">
@@ -95,6 +102,7 @@ export class AssistPipelineDetailConversation extends LitElement {
           .data=${this.data}
           .hass=${this.hass}
           .computeLabel=${this._computeLabel}
+          .computeHelper=${this._computeHelper}
           @supported-languages-changed=${this._supportedLanguagesChanged}
         ></ha-form>
       </div>
