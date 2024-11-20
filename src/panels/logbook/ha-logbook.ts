@@ -138,7 +138,7 @@ export class HaLogbook extends LitElement {
     this._throttleGetLogbookEntries.cancel();
     this._updateTraceContexts.cancel();
     this._updateUsers.cancel();
-    this._unsubscribeSetLoading();
+    await this._unsubscribeSetLoading();
 
     this._liveUpdatesEnabled = true;
 
@@ -223,19 +223,17 @@ export class HaLogbook extends LitElement {
     }
   }
 
-  public connectedCallback() {
+  public async connectedCallback() {
     super.connectedCallback();
     if (this.hasUpdated) {
       // Ensure clean state before subscribing
-      this._unsubscribe().then(() => {
-        this._subscribeLogbookPeriod(this._calculateLogbookPeriod());
-      });
+      await this._subscribeLogbookPeriod(this._calculateLogbookPeriod());
     }
   }
 
-  public disconnectedCallback() {
+  public async disconnectedCallback() {
     super.disconnectedCallback();
-    this._unsubscribeSetLoading();
+    await this._unsubscribeSetLoading();
   }
 
   /** Unsubscribe because we are unloading
@@ -243,8 +241,8 @@ export class HaLogbook extends LitElement {
    * Setting this._logbookEntries to undefined
    * will put the page in a loading state.
    */
-  private _unsubscribeSetLoading() {
-    this._unsubscribe();
+  private async _unsubscribeSetLoading() {
+    await this._unsubscribe();
     this._logbookEntries = undefined;
     this._pendingStreamMessages = [];
   }
@@ -253,8 +251,8 @@ export class HaLogbook extends LitElement {
    * Setting this._logbookEntries to an empty
    * list will show a no results message.
    */
-  private _unsubscribeNoResults() {
-    this._unsubscribe();
+  private async _unsubscribeNoResults() {
+    await this._unsubscribe();
     this._logbookEntries = [];
     this._pendingStreamMessages = [];
   }
@@ -285,32 +283,31 @@ export class HaLogbook extends LitElement {
     throw new Error("Unexpected time specified");
   }
 
-  private _subscribeLogbookPeriod(logbookPeriod: LogbookTimePeriod) {
+  private async _subscribeLogbookPeriod(logbookPeriod: LogbookTimePeriod) {
     if (this._subscribed) {
       return true;
     }
     // Ensure any previous subscription is cleaned up
-    this._unsubscribe().then(() => {
-      this._subscribed = subscribeLogbook(
-        this.hass,
-        (streamMessage) => {
-          // "recent" means start time is a sliding window
-          // so we need to calculate an expireTime to
-          // purge old events
-          if (!this._subscribed) {
-            // Message came in before we had a chance to unload
-            return;
-          }
-          this._processOrQueueStreamMessage(streamMessage);
-        },
-        logbookPeriod.startTime.toISOString(),
-        logbookPeriod.endTime.toISOString(),
-        this.entityIds,
-        this.deviceIds
-      ).catch((err) => {
-        this._subscribed = undefined;
-        this._error = err;
-      });
+    await this._unsubscribe();
+    this._subscribed = subscribeLogbook(
+      this.hass,
+      (streamMessage) => {
+        // "recent" means start time is a sliding window
+        // so we need to calculate an expireTime to
+        // purge old events
+        if (!this._subscribed) {
+          // Message came in before we had a chance to unload
+          return;
+        }
+        this._processOrQueueStreamMessage(streamMessage);
+      },
+      logbookPeriod.startTime.toISOString(),
+      logbookPeriod.endTime.toISOString(),
+      this.entityIds,
+      this.deviceIds
+    ).catch((err) => {
+      this._subscribed = undefined;
+      this._error = err;
     });
     return true;
   }
@@ -319,7 +316,7 @@ export class HaLogbook extends LitElement {
     this._error = undefined;
 
     if (this._filterAlwaysEmptyResults) {
-      this._unsubscribeNoResults();
+      await this._unsubscribeNoResults();
       return;
     }
 
@@ -327,7 +324,7 @@ export class HaLogbook extends LitElement {
 
     if (logbookPeriod.startTime > logbookPeriod.now) {
       // Time Travel not yet invented
-      this._unsubscribeNoResults();
+      await this._unsubscribeNoResults();
       return;
     }
 
