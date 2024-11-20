@@ -7382,6 +7382,7 @@
           "open_home_newsletter": "Building the Open Home newsletter",
           "discord": "Discord chat",
           "x": "[%key:ui::panel::config::tips::join_x%]",
+          "mastodon": "Mastodon",
           "playstore": "Get it on Google Play",
           "appstore": "Download on the App Store"
         },
@@ -7528,6 +7529,51 @@
       "key_c_hint": "Press 'c' on any page to open the command dialog",
       "key_e_hint": "Press 'e' on any page to open the entity search dialog",
       "key_m_hint": "Press 'm' on any page to get the My Home Assistant link"
+    }
+  },
+  "landing-page": {
+    "header": "Preparing Home Assistant",
+    "subheader": "This may take 20 minutes or more",
+    "show_details": "Show details",
+    "hide_details": "Hide details",
+    "network_issue": {
+      "title": "Networking issue detected",
+      "error_get_network_info": "Cannot get network information",
+      "description": "Home Assistant OS detected a networking issue in your setup. As part of the initial setup, Home Assistant OS downloads the latest version of Home Assistant Core. This networking issue prevents this download. The network issue might be DNS related. The currently used DNS service is: {dns}.",
+      "resolve_different": "To resolve this, you can try a different DNS server. Select one of the options below. Alternatively, change your router configuration to use your own custom DNS server.",
+      "use_cloudflare": "Use Cloudflare DNS",
+      "use_google": "Use Google DNS",
+      "no_primary_interface": "Home Assistant OS wasn't able to detect a primary network interface, so you cannot define a DNS server!",
+      "failed": "Failed",
+      "set_dns_failed": "An error occurred while setting the DNS server. Please check the logs for more information and try again.",
+      "error": "Error",
+      "close": "[%key:ui::common::close%]"
+    },
+    "logs": {
+      "scroll_down_button": "New logs - Click to scroll",
+      "fetch_error": "Failed to fetch logs",
+      "retry": "Retry",
+      "download_logs": "[%key:ui::panel::config::logs::download_logs%]"
+    },
+    "error_title": "Error installing Home Assistant",
+    "error_description": "An error occurred while installing Home Assistant. Please check the logs for more information.",
+    "ui": {
+      "panel": {
+        "page-onboarding": {
+          "welcome": {
+            "vision": "[%key:ui::panel::page-onboarding::welcome::vision%]",
+            "community": "[%key:ui::panel::page-onboarding::welcome::community%]",
+            "download_app": "[%key:ui::panel::page-onboarding::welcome::download_app%]",
+            "forums": "[%key:ui::panel::page-onboarding::welcome::forums%]",
+            "open_home_newsletter": "[%key:ui::panel::page-onboarding::welcome::open_home_newsletter%]",
+            "discord": "[%key:ui::panel::page-onboarding::welcome::discord%]",
+            "mastodon": "[%key:ui::panel::page-onboarding::welcome::mastodon%]",
+            "playstore": "[%key:ui::panel::page-onboarding::welcome::playstore%]",
+            "appstore": "[%key:ui::panel::page-onboarding::welcome::appstore%]"
+          },
+          "help": "[%key:ui::panel::page-onboarding::help%]"
+        }
+      }
     }
   },
   "supervisor": {
