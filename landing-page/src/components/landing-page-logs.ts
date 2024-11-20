@@ -59,8 +59,6 @@ class LandingPageLogs extends LitElement {
 
   @state() private _logLinesCount = 0;
 
-  @state() private _observerFallback = false;
-
   protected render() {
     return html`
       <div class="actions">
@@ -187,7 +185,6 @@ class LandingPageLogs extends LitElement {
   }
 
   private async _startLogStream() {
-    this._observerFallback = false;
     this._error = false;
     this._newLogsIndicator = false;
     this._ansiToHtmlElement?.clear();
@@ -220,7 +217,6 @@ class LandingPageLogs extends LitElement {
       console.error(err);
 
       // fallback to observerlogs if there is a problem with supervisor
-      this._observerFallback = true;
       this._loadObserverLogs();
     }
   }
