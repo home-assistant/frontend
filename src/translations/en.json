@@ -5325,8 +5325,8 @@
           "manage_fabrics": {
             "title": "Connected fabrics",
             "fabrics": "Manage the fabrics that have access to this device.",
-            "remove_fabric_confirm_header": "Remove {fabric} fabric from device",
-            "remove_fabric_confirm_text": "Are you sure you want to remove the {fabric} from the device? You will not be able to control/access the device from that ecosystem/fabric after this action!",
+            "remove_fabric_confirm_header": "Remove {fabric} fabric from device?",
+            "remove_fabric_confirm_text": "Are you sure you want to remove {fabric} from the device? You will not be able to control/access the device from that ecosystem/fabric after this action!",
             "remove_fabric_failed_header": "Remove {fabric} fabric failed",
             "remove_fabric_failed_text": "The action did not succeed, check the logs for more information."
           },
