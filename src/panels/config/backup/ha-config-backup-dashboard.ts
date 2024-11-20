@@ -24,7 +24,7 @@ import { getSignedPath } from "../../../data/auth";
 import {
   fetchBackupInfo,
   getBackupDownloadUrl,
-  removeBackup,
+  deleteBackup,
   type BackupContent,
   getPreferredAgentForDownload,
 } from "../../../data/backup";
@@ -311,7 +311,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
       return;
     }
 
-    await removeBackup(this.hass, backup.backup_id);
+    await deleteBackup(this.hass, backup.backup_id);
     this._fetchBackupInfo();
   }
 
@@ -329,7 +329,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
 
     try {
       await Promise.all(
-        this._selected.map((slug) => removeBackup(this.hass, slug))
+        this._selected.map((slug) => deleteBackup(this.hass, slug))
       );
     } catch (err: any) {
       showAlertDialog(this, {

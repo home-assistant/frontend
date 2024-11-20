@@ -15,10 +15,10 @@ import "../../../components/ha-md-list-item";
 import { getSignedPath } from "../../../data/auth";
 import type { BackupContent } from "../../../data/backup";
 import {
+  deleteBackup,
   fetchBackupDetails,
   getBackupDownloadUrl,
   getPreferredAgentForDownload,
-  removeBackup,
 } from "../../../data/backup";
 import { domainToName } from "../../../data/integration";
 import "../../../layouts/hass-subpage";
@@ -210,7 +210,7 @@ class HaConfigBackupDetails extends LitElement {
       return;
     }
 
-    await removeBackup(this.hass, this._backup!.backup_id);
+    await deleteBackup(this.hass, this._backup!.backup_id);
     navigate("/config/backup");
   }
 
