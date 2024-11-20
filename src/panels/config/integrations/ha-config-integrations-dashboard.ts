@@ -69,6 +69,7 @@ import type { HaIntegrationCard } from "./ha-integration-card";
 import "./ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
 import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
+import type { ImprovDiscoveredDevice } from "../../../external_app/external_messaging";
 
 export interface ConfigEntryExtended extends Omit<ConfigEntry, "entry_id"> {
   entry_id?: string;
@@ -105,7 +106,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: false })
   public configEntriesInProgress?: DataEntryFlowProgressExtended[];
 
-  @state() private _improvDiscovered = [];
+  @state() private _improvDiscovered: ImprovDiscoveredDevice[] = [];
 
   @state()
   private _entityRegistryEntries: EntityRegistryEntry[] = [];
@@ -138,6 +139,10 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     window.removeEventListener(
       "improv-discovered-device",
       this._handleImprovDiscovered
+    );
+    window.removeEventListener(
+      "improv-device-setup",
+      this._reScanImprovDevices
     );
   }
 
@@ -254,7 +259,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
   private _filterConfigEntriesInProgress = memoizeOne(
     (
       configEntriesInProgress: DataEntryFlowProgressExtended[],
-      improvDiscovered: [],
+      improvDiscovered: ImprovDiscoveredDevice[],
       filter?: string
     ): DataEntryFlowProgressExtended[] => {
       let inProgress = [...configEntriesInProgress];
@@ -659,12 +664,14 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
       this._handleImprovDiscovered
     );
 
+    window.addEventListener("improv-device-setup", this._reScanImprovDevices);
+
     this.hass.auth.external!.fireMessage({
       type: "improv/scan",
     });
   }
 
-  private _reScanImprovDevices() {
+  private _reScanImprovDevices = () => {
     if (!this.hass.auth.external?.config.canSetupImprov) {
       return;
     }
@@ -672,11 +679,9 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     this.hass.auth.external!.fireMessage({
       type: "improv/scan",
     });
-  }
+  };
 
   private _handleImprovDiscovered = (ev) => {
-    // eslint-disable-next-line no-console
-    console.log(ev.detail);
     this._fetchManifests(["improv_ble"]);
     this._improvDiscovered = [...this._improvDiscovered, ev.detail];
   };

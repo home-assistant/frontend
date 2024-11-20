@@ -246,13 +246,21 @@ export interface EMIncomingMessageBarCodeScanAborted {
   };
 }
 
+export interface ImprovDiscoveredDevice {
+  name: string;
+}
+
 interface EMIncomingMessageImprovDeviceDiscovered extends EMMessage {
   id: number;
   type: "command";
   command: "improv/discovered_device";
-  payload: {
-    name: string;
-  };
+  payload: ImprovDiscoveredDevice;
+}
+
+interface EMIncomingMessageImprovDeviceSetup extends EMMessage {
+  id: number;
+  type: "command";
+  command: "improv/device_setup";
 }
 
 export type EMIncomingMessageCommands =
@@ -263,7 +271,8 @@ export type EMIncomingMessageCommands =
   | EMIncomingMessageShowAutomationEditor
   | EMIncomingMessageBarCodeScanResult
   | EMIncomingMessageBarCodeScanAborted
-  | EMIncomingMessageImprovDeviceDiscovered;
+  | EMIncomingMessageImprovDeviceDiscovered
+  | EMIncomingMessageImprovDeviceSetup;
 
 type EMIncomingMessage =
   | EMMessageResultSuccess
