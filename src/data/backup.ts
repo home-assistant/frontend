@@ -35,8 +35,8 @@ export type GenerateBackupParams = {
   password?: string;
 };
 
-export const getBackupDownloadUrl = (id: string) =>
-  `/api/backup/download/${id}`;
+export const getBackupDownloadUrl = (id: string, agentId: string) =>
+  `/api/backup/download/${id}?agent_id=${agentId}`;
 
 export const fetchBackupInfo = (hass: HomeAssistant): Promise<BackupInfo> =>
   hass.callWS({
@@ -88,4 +88,11 @@ export const uploadBackup = async (
   if (!resp.ok) {
     throw new Error(`${resp.status} ${resp.statusText}`);
   }
+};
+
+export const getPreferredAgentForDownload = (agents: string[]) => {
+  const localAgents = agents.filter(
+    (agent) => agent.split(".")[0] === "backup"
+  );
+  return localAgents[0] || agents[0];
 };
