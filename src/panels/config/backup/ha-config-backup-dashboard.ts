@@ -25,6 +25,7 @@ import {
   getBackupDownloadUrl,
   removeBackup,
   type BackupContent,
+  getPreferredAgentForDownload,
 } from "../../../data/backup";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
@@ -275,9 +276,10 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   }
 
   private async _downloadBackup(backup: BackupContent): Promise<void> {
+    const preferedAgent = getPreferredAgentForDownload(backup!.agent_ids!);
     const signedUrl = await getSignedPath(
       this.hass,
-      getBackupDownloadUrl(backup.backup_id)
+      getBackupDownloadUrl(backup.backup_id, preferedAgent)
     );
     fileDownload(signedUrl.path);
   }

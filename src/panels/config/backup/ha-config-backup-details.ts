@@ -1,7 +1,7 @@
+import type { ActionDetail } from "@material/mwc-list";
 import { mdiDelete, mdiDotsVertical, mdiDownload } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { ActionDetail } from "@material/mwc-list";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { navigate } from "../../../common/navigate";
 import "../../../components/ha-alert";
@@ -17,6 +17,7 @@ import type { BackupContent } from "../../../data/backup";
 import {
   fetchBackupDetails,
   getBackupDownloadUrl,
+  getPreferredAgentForDownload,
   removeBackup,
 } from "../../../data/backup";
 import { domainToName } from "../../../data/integration";
@@ -163,9 +164,12 @@ class HaConfigBackupDetails extends LitElement {
   }
 
   private async _downloadBackup(): Promise<void> {
+    const preferedAgent = getPreferredAgentForDownload(
+      this._backup!.agent_ids!
+    );
     const signedUrl = await getSignedPath(
       this.hass,
-      getBackupDownloadUrl(this._backup!.backup_id)
+      getBackupDownloadUrl(this._backup!.backup_id, preferedAgent)
     );
     fileDownload(signedUrl.path);
   }
