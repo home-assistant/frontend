@@ -3,19 +3,16 @@ import {
   STATE_RUNNING,
   STATE_STARTING,
 } from "home-assistant-js-websocket";
-import { PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import { deepActiveElement } from "../common/dom/deep-active-element";
 import { deepEqual } from "../common/util/deep-equal";
 import { getDefaultPanel } from "../data/panel";
-import { CustomPanelInfo } from "../data/panel_custom";
-import { HomeAssistant, Panels } from "../types";
+import type { CustomPanelInfo } from "../data/panel_custom";
+import type { HomeAssistant, Panels } from "../types";
 import { removeLaunchScreen } from "../util/launch-screen";
-import {
-  HassRouterPage,
-  RouteOptions,
-  RouterOptions,
-} from "./hass-router-page";
+import type { RouteOptions, RouterOptions } from "./hass-router-page";
+import { HassRouterPage } from "./hass-router-page";
 
 const CACHE_URL_PATHS = ["lovelace", "developer-tools"];
 const COMPONENTS = {

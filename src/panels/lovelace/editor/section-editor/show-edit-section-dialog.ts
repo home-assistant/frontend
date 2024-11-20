@@ -1,5 +1,5 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { LovelaceConfig } from "../../../../data/lovelace/config/types";
+import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 
 export type EditSectionDialogParams = {
   lovelaceConfig: LovelaceConfig;

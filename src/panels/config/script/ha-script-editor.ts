@@ -14,15 +14,8 @@ import {
   mdiRobotConfused,
   mdiTransitConnection,
 } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -39,10 +32,9 @@ import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
 import { validateConfig } from "../../../data/config";
 import { UNAVAILABLE } from "../../../data/entity";
-import { EntityRegistryEntry } from "../../../data/entity_registry";
+import type { EntityRegistryEntry } from "../../../data/entity_registry";
+import type { BlueprintScriptConfig, ScriptConfig } from "../../../data/script";
 import {
-  BlueprintScriptConfig,
-  ScriptConfig,
   deleteScript,
   fetchScriptFileConfig,
   getScriptEditorInitData,
@@ -86,6 +78,8 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   @state() private _dirty = false;
 
   @state() private _errors?: string;
+
+  @state() private _yamlErrors?: string;
 
   @state() private _entityId?: string;
 
@@ -610,12 +604,14 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   private _yamlChanged(ev: CustomEvent) {
     ev.stopPropagation();
+    this._dirty = true;
     if (!ev.detail.isValid) {
+      this._yamlErrors = ev.detail.errorMsg;
       return;
     }
+    this._yamlErrors = undefined;
     this._config = ev.detail.value;
     this._errors = undefined;
-    this._dirty = true;
   }
 
   private async confirmUnsavedChanged(): Promise<boolean> {
@@ -689,8 +685,12 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   private async _duplicate() {
     const result = this._readOnly
       ? await showConfirmationDialog(this, {
-          title: "Migrate script?",
-          text: "You can migrate this script, so it can be edited from the UI. After it is migrated and you have saved it, you will have to manually delete your old script from your configuration. Do you want to migrate this script?",
+          title: this.hass.localize(
+            "ui.panel.config.script.picker.migrate_script"
+          ),
+          text: this.hass.localize(
+            "ui.panel.config.script.picker.migrate_script_description"
+          ),
         })
       : await this.confirmUnsavedChanged();
     if (result) {
@@ -727,7 +727,21 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     history.back();
   }
 
-  private _switchUiMode() {
+  private async _switchUiMode() {
+    if (this._yamlErrors) {
+      const result = await showConfirmationDialog(this, {
+        text: html`${this.hass.localize(
+            "ui.panel.config.automation.editor.switch_ui_yaml_error"
+          )}<br /><br />${this._yamlErrors}`,
+        confirmText: this.hass!.localize("ui.common.continue"),
+        destructive: true,
+        dismissText: this.hass!.localize("ui.common.cancel"),
+      });
+      if (!result) {
+        return;
+      }
+    }
+    this._yamlErrors = undefined;
     this._mode = "gui";
   }
 
@@ -767,6 +781,13 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   }
 
   private async _saveScript(): Promise<void> {
+    if (this._yamlErrors) {
+      showToast(this, {
+        message: this._yamlErrors,
+      });
+      return;
+    }
+
     if (!this.scriptId) {
       const saved = await this._promptScriptAlias();
       if (!saved) {

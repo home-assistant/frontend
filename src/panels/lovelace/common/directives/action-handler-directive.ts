@@ -1,14 +1,10 @@
 /* eslint-disable max-classes-per-file */
 import { noChange } from "lit";
-import {
-  AttributePart,
-  directive,
-  Directive,
-  DirectiveParameters,
-} from "lit/directive";
+import type { AttributePart, DirectiveParameters } from "lit/directive";
+import { directive, Directive } from "lit/directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { deepEqual } from "../../../../common/util/deep-equal";
-import {
+import type {
   ActionHandlerDetail,
   ActionHandlerOptions,
 } from "../../../../data/lovelace/action_handler";
@@ -153,7 +149,10 @@ class ActionHandler extends HTMLElement implements ActionHandlerType {
 
     element.actionHandler.end = (ev: Event) => {
       // Don't respond when moved or scrolled while touch
-      if (["touchend", "touchcancel"].includes(ev.type) && this.cancelled) {
+      if (
+        ev.type === "touchcancel" ||
+        (ev.type === "touchend" && this.cancelled)
+      ) {
         return;
       }
       const target = ev.target as HTMLElement;

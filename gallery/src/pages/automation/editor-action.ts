@@ -1,5 +1,6 @@
 /* eslint-disable lit/no-template-arrow */
-import { LitElement, TemplateResult, html, css } from "lit";
+import type { TemplateResult } from "lit";
+import { LitElement, html, css } from "lit";
 import { customElement, state } from "lit/decorators";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import type { HomeAssistant } from "../../../../src/types";
@@ -17,7 +18,7 @@ import { HaRepeatAction } from "../../../../src/panels/config/automation/action/
 import { HaServiceAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-service";
 import { HaWaitForTriggerAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-wait_for_trigger";
 import { HaWaitAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-wait_template";
-import { Action } from "../../../../src/data/script";
+import type { Action } from "../../../../src/data/script";
 import { HaConditionAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-condition";
 import { HaSequenceAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-sequence";
 import { HaParallelAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-parallel";

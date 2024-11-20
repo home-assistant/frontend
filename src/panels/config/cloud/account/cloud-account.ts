@@ -9,12 +9,15 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
 import "../../../../components/ha-tip";
 import "../../../../components/ha-list-item";
+import "../../../../components/ha-button-menu";
+import type {
+  CloudStatusLoggedIn,
+  SubscriptionInfo,
+} from "../../../../data/cloud";
 import {
   cloudLogout,
-  CloudStatusLoggedIn,
   fetchCloudSubscriptionInfo,
   removeCloudData,
-  SubscriptionInfo,
 } from "../../../../data/cloud";
 import {
   showAlertDialog,
@@ -23,8 +26,9 @@ import {
 import "../../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../resources/styles";
-import { HomeAssistant } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 import "../../ha-config-section";
+import "./cloud-ice-servers-pref";
 import "./cloud-remote-pref";
 import "./cloud-tts-pref";
 import "./cloud-webhooks";
@@ -195,6 +199,11 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
               .hass=${this.hass}
               .cloudStatus=${this.cloudStatus}
             ></cloud-tts-pref>
+
+            <cloud-ice-servers-pref
+              .hass=${this.hass}
+              .cloudStatus=${this.cloudStatus}
+            ></cloud-ice-servers-pref>
 
             <ha-tip .hass=${this.hass}>
               <a href="/config/voice-assistants">

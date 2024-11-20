@@ -10,13 +10,13 @@ import {
   type,
   union,
 } from "superstruct";
-import { BaseActionConfig } from "../../../../data/lovelace/config/action";
+import type { BaseActionConfig } from "../../../../data/lovelace/config/action";
 
 const actionConfigStructUser = object({
   user: string(),
 });
 
-const actionConfigStructConfirmation = union([
+export const actionConfigStructConfirmation = union([
   boolean(),
   object({
     text: optional(string()),
@@ -63,7 +63,7 @@ const actionConfigStructAssist = type({
 
 const actionConfigStructMoreInfo = type({
   action: literal("more-info"),
-  entity_id: optional(string()),
+  entity: optional(string()),
 });
 
 export const actionConfigStructType = object({

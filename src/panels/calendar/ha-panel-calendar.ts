@@ -2,19 +2,12 @@ import { ResizeController } from "@lit-labs/observers/resize-controller";
 import "@material/mwc-list";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { mdiChevronDown, mdiPlus, mdiRefresh } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { storage } from "../../common/decorators/storage";
-import { HASSDomEvent } from "../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import "../../components/ha-button";
 import "../../components/ha-button-menu";
@@ -26,12 +19,8 @@ import "../../components/ha-menu-button";
 import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
 import "../../components/ha-two-pane-top-app-bar-fixed";
-import {
-  Calendar,
-  CalendarEvent,
-  fetchCalendarEvents,
-  getCalendars,
-} from "../../data/calendar";
+import type { Calendar, CalendarEvent } from "../../data/calendar";
+import { fetchCalendarEvents, getCalendars } from "../../data/calendar";
 import { fetchIntegrationManifest } from "../../data/integration";
 import { showConfigFlowDialog } from "../../dialogs/config-flow/show-dialog-config-flow";
 import { haStyle } from "../../resources/styles";

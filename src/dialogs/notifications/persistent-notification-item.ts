@@ -1,12 +1,13 @@
 import "@material/mwc-button";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import "../../components/ha-markdown";
 import "../../components/ha-relative-time";
-import { PersistentNotification } from "../../data/persistent_notification";
-import { HomeAssistant } from "../../types";
+import type { PersistentNotification } from "../../data/persistent_notification";
+import type { HomeAssistant } from "../../types";
 import "./notification-item-template";
 
 @customElement("persistent-notification-item")

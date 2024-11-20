@@ -1,7 +1,8 @@
 import type { ActionDetail } from "@material/mwc-list";
 import { mdiCheck, mdiDotsVertical } from "@mdi/js";
-import { css, html, LitElement, nothing, PropertyValues } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -17,17 +18,19 @@ import "../../../../components/ha-slider";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-switch";
 import "../../../../components/ha-yaml-editor";
-import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
-import { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
+import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import { haStyle } from "../../../../resources/styles";
-import { HomeAssistant } from "../../../../types";
-import { HuiCard } from "../../cards/hui-card";
+import type { HomeAssistant } from "../../../../types";
+import type { HuiCard } from "../../cards/hui-card";
+import type { CardGridSize } from "../../common/compute-card-grid-size";
 import {
-  CardGridSize,
   computeCardGridSize,
+  GRID_COLUMN_MULTIPLIER,
+  isPreciseMode,
+  migrateLayoutToGridOptions,
 } from "../../common/compute-card-grid-size";
-import { LovelaceLayoutOptions } from "../../types";
+import type { LovelaceGridOptions } from "../../types";
 
 @customElement("hui-card-layout-editor")
 export class HuiCardLayoutEditor extends LitElement {
@@ -37,21 +40,18 @@ export class HuiCardLayoutEditor extends LitElement {
 
   @property({ attribute: false }) public sectionConfig!: LovelaceSectionConfig;
 
-  @state() _defaultLayoutOptions?: LovelaceLayoutOptions;
+  @state() private _defaultGridOptions?: LovelaceGridOptions;
 
-  @state() public _yamlMode = false;
+  @state() private _yamlMode = false;
 
-  @state() public _uiAvailable = true;
+  @state() private _uiAvailable = true;
 
-  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+  @state() private _preciseMode = false;
 
   private _cardElement?: HuiCard;
 
   private _mergedOptions = memoizeOne(
-    (
-      options?: LovelaceLayoutOptions,
-      defaultOptions?: LovelaceLayoutOptions
-    ) => ({
+    (options?: LovelaceGridOptions, defaultOptions?: LovelaceGridOptions) => ({
       ...defaultOptions,
       ...options,
     })
@@ -60,19 +60,32 @@ export class HuiCardLayoutEditor extends LitElement {
   private _computeCardGridSize = memoizeOne(computeCardGridSize);
 
   private _isDefault = memoizeOne(
-    (options?: LovelaceLayoutOptions) =>
-      options?.grid_columns === undefined && options?.grid_rows === undefined
+    (options?: LovelaceGridOptions) =>
+      options?.columns === undefined && options?.rows === undefined
   );
 
+  private _configGridOptions = (config: LovelaceCardConfig) => {
+    if (config.grid_options) {
+      return config.grid_options;
+    }
+    if (config.layout_options) {
+      return migrateLayoutToGridOptions(config.layout_options);
+    }
+    return {};
+  };
+
   render() {
+    const configOptions = this._configGridOptions(this.config);
     const options = this._mergedOptions(
-      this.config.layout_options,
-      this._defaultLayoutOptions
+      configOptions,
+      this._defaultGridOptions
     );
 
-    const value = this._computeCardGridSize(options);
+    const gridOptions = options;
+    const gridValue = this._computeCardGridSize(gridOptions);
 
-    const totalColumns = (this.sectionConfig.column_span ?? 1) * 4;
+    const columnSpan = this.sectionConfig.column_span ?? 1;
+    const gridTotalColumns = 12 * columnSpan;
 
     return html`
       <div class="header">
@@ -130,24 +143,25 @@ export class HuiCardLayoutEditor extends LitElement {
         ? html`
             <ha-yaml-editor
               .hass=${this.hass}
-              .defaultValue=${this.config.layout_options}
-              @value-changed=${this._valueChanged}
+              .defaultValue=${configOptions}
+              @value-changed=${this._yamlChanged}
             ></ha-yaml-editor>
           `
         : html`
             <ha-grid-size-picker
               style=${styleMap({
-                "max-width": `${totalColumns * 45 + 50}px`,
+                "max-width": `${(this.sectionConfig.column_span ?? 1) * 250 + 40}px`,
               })}
-              .columns=${totalColumns}
+              .columns=${gridTotalColumns}
               .hass=${this.hass}
-              .value=${value}
-              .isDefault=${this._isDefault(this.config.layout_options)}
+              .value=${gridValue}
+              .isDefault=${this._isDefault(configOptions)}
               @value-changed=${this._gridSizeChanged}
-              .rowMin=${options.grid_min_rows}
-              .rowMax=${options.grid_max_rows}
-              .columnMin=${options.grid_min_columns}
-              .columnMax=${options.grid_max_columns}
+              .rowMin=${gridOptions.min_rows}
+              .rowMax=${gridOptions.max_rows}
+              .columnMin=${gridOptions.min_columns}
+              .columnMax=${gridOptions.max_columns}
+              .step=${this._preciseMode ? 1 : GRID_COLUMN_MULTIPLIER}
             ></ha-grid-size-picker>
             <ha-settings-row>
               <span slot="heading" data-for="full-width">
@@ -162,8 +176,26 @@ export class HuiCardLayoutEditor extends LitElement {
               </span>
               <ha-switch
                 @change=${this._fullWidthChanged}
-                .checked=${value.columns === "full"}
+                .checked=${options.columns === "full"}
                 name="full-width"
+              >
+              </ha-switch>
+            </ha-settings-row>
+            <ha-settings-row>
+              <span slot="heading" data-for="precise-mode">
+                ${this.hass.localize(
+                  "ui.panel.lovelace.editor.edit_card.layout.precise_mode"
+                )}
+              </span>
+              <span slot="description" data-for="precise-mode">
+                ${this.hass.localize(
+                  "ui.panel.lovelace.editor.edit_card.layout.precise_mode_helper"
+                )}
+              </span>
+              <ha-switch
+                @change=${this._preciseModeChanged}
+                .checked=${this._preciseMode}
+                name="precise-mode"
               >
               </ha-switch>
             </ha-settings-row>
@@ -180,15 +212,22 @@ export class HuiCardLayoutEditor extends LitElement {
       this._cardElement.config = this.config;
       this._cardElement.addEventListener("card-updated", (ev: Event) => {
         ev.stopPropagation();
-        this._defaultLayoutOptions =
-          this._cardElement?.getElementLayoutOptions();
+        this._updateDefaultGridOptions();
       });
       this._cardElement.load();
-      this._defaultLayoutOptions = this._cardElement.getElementLayoutOptions();
+      this._updateDefaultGridOptions();
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(err);
     }
+  }
+
+  private _updateDefaultGridOptions() {
+    if (!this._cardElement) {
+      this._defaultGridOptions = undefined;
+      return;
+    }
+    this._defaultGridOptions = this._cardElement.getElementGridOptions();
   }
 
   protected updated(changedProps: PropertyValues<this>): void {
@@ -203,6 +242,27 @@ export class HuiCardLayoutEditor extends LitElement {
     }
   }
 
+  protected willUpdate(changedProps: PropertyValues<this>): void {
+    super.willUpdate(changedProps);
+    if (changedProps.has("config")) {
+      const options = this.config.grid_options;
+
+      // Reset precise mode when grid options config is reset
+      if (!options) {
+        this._preciseMode = this._defaultGridOptions
+          ? isPreciseMode(this._defaultGridOptions)
+          : false;
+        return;
+      }
+
+      // Force precise mode if columns count is not a multiple of 3
+      const preciseMode = isPreciseMode(options);
+      if (!this._preciseMode && preciseMode) {
+        this._preciseMode = preciseMode;
+      }
+    }
+  }
+
   private async _handleAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
@@ -211,68 +271,73 @@ export class HuiCardLayoutEditor extends LitElement {
       case 1:
         this._yamlMode = true;
         break;
-      case 2:
-        this._reset();
-        break;
     }
-  }
-
-  private async _reset() {
-    const newConfig = { ...this.config };
-    delete newConfig.layout_options;
-    this._yamlEditor?.setValue({});
-    fireEvent(this, "value-changed", { value: newConfig });
   }
 
   private _gridSizeChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     const value = ev.detail.value as CardGridSize;
 
-    const newConfig: LovelaceCardConfig = {
-      ...this.config,
-      layout_options: {
-        ...this.config.layout_options,
-        grid_columns: value.columns,
-        grid_rows: value.rows,
-      },
-    };
-
-    if (newConfig.layout_options!.grid_columns === undefined) {
-      delete newConfig.layout_options!.grid_columns;
-    }
-    if (newConfig.layout_options!.grid_rows === undefined) {
-      delete newConfig.layout_options!.grid_rows;
-    }
-    if (Object.keys(newConfig.layout_options!).length === 0) {
-      delete newConfig.layout_options;
-    }
-
-    fireEvent(this, "value-changed", { value: newConfig });
+    this._updateGridOptions({
+      ...this.config.grid_options,
+      columns: value.columns,
+      rows: value.rows,
+    });
   }
 
-  private _valueChanged(ev: CustomEvent): void {
+  private _yamlChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    const options = ev.detail.value as LovelaceLayoutOptions;
-    const newConfig: LovelaceCardConfig = {
-      ...this.config,
-      layout_options: options,
-    };
-    fireEvent(this, "value-changed", { value: newConfig });
+    const options = ev.detail.value as LovelaceGridOptions;
+    this._updateGridOptions(options);
   }
 
   private _fullWidthChanged(ev): void {
     ev.stopPropagation();
     const value = ev.target.checked;
-    const newConfig: LovelaceCardConfig = {
+    this._updateGridOptions({
+      ...this.config.grid_options,
+      columns: value ? "full" : undefined,
+    });
+  }
+
+  private _preciseModeChanged(ev): void {
+    ev.stopPropagation();
+    this._preciseMode = ev.target.checked;
+    if (this._preciseMode) return;
+
+    const columns = this.config.grid_options?.columns;
+
+    if (typeof columns === "number" && columns % GRID_COLUMN_MULTIPLIER !== 0) {
+      const newColumns =
+        Math.ceil(columns / GRID_COLUMN_MULTIPLIER) * GRID_COLUMN_MULTIPLIER;
+      this._updateGridOptions({
+        ...this.config.grid_options,
+        columns: newColumns,
+      });
+    }
+  }
+
+  private _updateGridOptions(options: LovelaceGridOptions): void {
+    const value: LovelaceCardConfig = {
       ...this.config,
-      layout_options: {
-        ...this.config.layout_options,
-        grid_columns: value
-          ? "full"
-          : (this._defaultLayoutOptions?.grid_min_columns ?? 1),
+      grid_options: {
+        ...options,
       },
     };
-    fireEvent(this, "value-changed", { value: newConfig });
+    if (value.grid_options) {
+      for (const [k, v] of Object.entries(value.grid_options)) {
+        if (v === undefined) {
+          delete value.grid_options[k];
+        }
+      }
+      if (Object.keys(value.grid_options).length === 0) {
+        delete value.grid_options;
+      }
+    }
+    if (value.layout_options) {
+      delete value.layout_options;
+    }
+    fireEvent(this, "value-changed", { value });
   }
 
   static styles = [

@@ -1,4 +1,4 @@
-import { AutomationConfig } from "../data/automation";
+import type { AutomationConfig } from "../data/automation";
 
 const CALLBACK_EXTERNAL_BUS = "externalBus";
 
@@ -264,6 +264,7 @@ export interface ExternalConfig {
   hasAssist: boolean;
   hasBarCodeScanner: number;
   canSetupImprov: boolean;
+  downloadFileSupported: boolean;
 }
 
 export class ExternalMessaging {

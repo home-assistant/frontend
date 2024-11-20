@@ -1,18 +1,13 @@
-import {
-  ensureBadgeConfig,
-  LovelaceBadgeConfig,
-} from "../../../data/lovelace/config/badge";
-import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
-import { LovelaceConfig } from "../../../data/lovelace/config/types";
-import {
-  LovelaceViewConfig,
-  isStrategyView,
-} from "../../../data/lovelace/config/view";
+import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
+import { ensureBadgeConfig } from "../../../data/lovelace/config/badge";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
+import type { LovelaceConfig } from "../../../data/lovelace/config/types";
+import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
+import { isStrategyView } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardPath, LovelaceContainerPath } from "./lovelace-path";
 import {
-  LovelaceCardPath,
-  LovelaceContainerPath,
   findLovelaceContainer,
   findLovelaceItems,
   getLovelaceContainerPath,
