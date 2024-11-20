@@ -454,10 +454,10 @@ export class HaSceneEditor extends SubscribeMixin(
                   "ui.panel.config.scene.editor.devices.header"
                 )}
               </div>
-              ${this._mode === "live"
-                ? html` <div slot="introduction">
+              ${this._mode === "live" || devices.length === 0
+                ? html`<div slot="introduction">
                     ${this.hass.localize(
-                      "ui.panel.config.scene.editor.devices.introduction"
+                      `ui.panel.config.scene.editor.devices.introduction${this._mode === "review" ? "_review" : ""}`
                     )}
                   </div>`
                 : nothing}
@@ -536,22 +536,16 @@ export class HaSceneEditor extends SubscribeMixin(
                       "ui.panel.config.scene.editor.entities.header"
                     )}
                   </div>
-                  ${this._mode === "live"
-                    ? html` <div slot="introduction">
+                  ${this._mode === "live" || entities.length === 0
+                    ? html`<div slot="introduction">
                         ${this.hass.localize(
-                          "ui.panel.config.scene.editor.entities.introduction"
+                          `ui.panel.config.scene.editor.entities.introduction${this._mode === "review" ? "_review" : ""}`
                         )}
                       </div>`
                     : nothing}
                   ${entities.length
                     ? html`
-                        <ha-card
-                          outlined
-                          class="entities"
-                          .header=${this.hass.localize(
-                            "ui.panel.config.scene.editor.entities.without_device"
-                          )}
-                        >
+                        <ha-card outlined class="entities">
                           <mwc-list>
                             ${entities.map((entityId) => {
                               const entityStateObj = this.hass.states[entityId];
@@ -1248,6 +1242,7 @@ export class HaSceneEditor extends SubscribeMixin(
       css`
         ha-card {
           overflow: hidden;
+          margin-top: 8px;
         }
         .container {
           padding: 28px 20px 0;
@@ -1261,6 +1256,9 @@ export class HaSceneEditor extends SubscribeMixin(
           padding: 20px;
           font-weight: bold;
           color: var(--error-color);
+        }
+        ha-config-section {
+          --config-section-content-together-margin-top: 8px;
         }
         ha-config-section:last-child {
           padding-bottom: 20px;
