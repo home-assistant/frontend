@@ -223,17 +223,17 @@ export class HaLogbook extends LitElement {
     }
   }
 
-  public async connectedCallback() {
+  public connectedCallback() {
     super.connectedCallback();
     if (this.hasUpdated) {
       // Ensure clean state before subscribing
-      await this._subscribeLogbookPeriod(this._calculateLogbookPeriod());
+      this._subscribeLogbookPeriod(this._calculateLogbookPeriod());
     }
   }
 
-  public async disconnectedCallback() {
+  public disconnectedCallback() {
     super.disconnectedCallback();
-    await this._unsubscribeSetLoading();
+    this._unsubscribeSetLoading();
   }
 
   /** Unsubscribe because we are unloading
