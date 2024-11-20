@@ -407,6 +407,10 @@ export const hasScriptFields = (
 export const migrateAutomationAction = (
   action: Action | Action[]
 ): Action | Action[] => {
+  if (!action) {
+    return action;
+  }
+
   if (Array.isArray(action)) {
     return action.map(migrateAutomationAction) as Action[];
   }
