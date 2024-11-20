@@ -48,7 +48,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
     this._cloudActive = this._params.cloudActiveSubscription;
 
     if (this._params.pipeline) {
-      this._data = this._params.pipeline;
+      this._data = { prefer_local_intents: false, ...this._params.pipeline };
 
       this._hideWakeWord =
         this._params.hideWakeWord || !this._data.wake_word_entity;
