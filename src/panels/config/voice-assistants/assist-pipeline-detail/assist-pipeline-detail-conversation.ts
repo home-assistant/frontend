@@ -52,8 +52,7 @@ export class AssistPipelineDetailConversation extends LitElement {
 
       if (engine !== "conversation.home_assistant") {
         fields.push({
-          name: "conversation_process_local",
-          required: true,
+          name: "prefer_local_intents",
           default: true,
           selector: {
             boolean: {},

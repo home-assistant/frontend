@@ -2724,7 +2724,7 @@
                   "name": "[%key:ui::common::name%]",
                   "conversation_engine": "Conversation agent",
                   "conversation_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
-                  "conversation_process_local": "Prefer local matching first",
+                  "prefer_local_intents": "Prefer local matching first",
                   "language": "Language",
                   "stt_engine": "Speech-to-text",
                   "stt_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
