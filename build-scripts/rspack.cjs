@@ -100,11 +100,11 @@ const createRspackConfig = ({
         // external chunks are broken for:
         // - ESM output: https://github.com/webpack/webpack/issues/17014
         // - Worklets use `importScripts`: https://github.com/webpack/webpack/issues/11543
-        chunks: (chunk) =>
-          !chunk.canBeInitial() &&
-          !new RegExp(`^.+-work${latestBuild ? "(?:let|er)" : "let"}$`).test(
-            chunk.name
-          ),
+        // entry contains the names of the initial chunks
+        // we exclude them and anything that ends with "-worklet" or "-worker"
+        chunks: new RegExp(
+          `^(?!.*(${Object.keys(entry).join("|")}|work(?:er|let))$)`
+        ),
       },
     },
     plugins: [
