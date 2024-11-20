@@ -20,7 +20,7 @@ import { fireEvent } from "../../../src/common/dom/fire_event";
 import { fileDownload } from "../../../src/util/file_download";
 import { getSupervisorLogs, getSupervisorLogsFollow } from "../data/supervisor";
 
-const ERROR_CHECK = /^[\d -:]+(ERROR|CRITICAL)(.*)/gm;
+const ERROR_CHECK = /^[\d\s-:]+(ERROR|CRITICAL)(.*)/gm;
 declare global {
   interface HASSDomEvents {
     "landing-page-error": undefined;
