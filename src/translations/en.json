@@ -2449,7 +2449,7 @@
                 "unit_system_metric": "Metric",
                 "us_customary_example": "Fahrenheit, pounds",
                 "metric_example": "Celsius, kilograms",
-                "find_currency_value": "Find my value",
+                "find_currency_value": "Find my ISO code",
                 "save_button": "Save",
                 "currency": "Currency",
                 "edit_location": "Edit location",
