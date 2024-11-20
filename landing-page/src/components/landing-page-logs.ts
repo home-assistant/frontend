@@ -15,10 +15,17 @@ import "../../../src/components/ha-svg-icon";
 import "../../../src/components/ha-ansi-to-html";
 import "../../../src/components/ha-alert";
 import type { HaAnsiToHtml } from "../../../src/components/ha-ansi-to-html";
-import { getObserverLogs } from "../data/observer";
+import {
+  getObserverLogs,
+  downloadUrl as observerLogsDownloadUrl,
+} from "../data/observer";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import { fileDownload } from "../../../src/util/file_download";
-import { getSupervisorLogs, getSupervisorLogsFollow } from "../data/supervisor";
+import {
+  getDownloadUrl,
+  getSupervisorLogs,
+  getSupervisorLogsFollow,
+} from "../data/supervisor";
 
 const ERROR_CHECK = /^[\d\s-:]+(ERROR|CRITICAL)(.*)/gm;
 declare global {
@@ -54,7 +61,9 @@ class LandingPageLogs extends LitElement {
 
   @state() private _newLogsIndicator?: boolean;
 
-  @state() private _observerLogs = "";
+  @state() private _logLinesCount = 0;
+
+  @state() private _observerFallback = false;
 
   protected render() {
     return html`
@@ -66,7 +75,7 @@ class LandingPageLogs extends LitElement {
           ? html`<ha-icon-button
               .label=${this.localize("logs.download_logs")}
               .path=${mdiDownload}
-              @click=${this._downloadFullLog}
+              @click=${this._downloadLogs}
             ></ha-icon-button>`
           : nothing}
       </div>
@@ -145,6 +154,7 @@ class LandingPageLogs extends LitElement {
   private _displayLogs(logs: string, tempLogLine = "", clear = false): string {
     if (clear) {
       this._ansiToHtmlElement?.clear();
+      this._logLinesCount = 0;
     }
 
     const showError = ERROR_CHECK.test(logs);
@@ -163,6 +173,7 @@ class LandingPageLogs extends LitElement {
 
     if (lines.length) {
       this._ansiToHtmlElement?.parseLinesToColoredPre(lines);
+      this._logLinesCount += lines.length;
     }
 
     if (showError) {
@@ -180,6 +191,7 @@ class LandingPageLogs extends LitElement {
   }
 
   private async _startLogStream() {
+    this._observerFallback = false;
     this._error = false;
     this._newLogsIndicator = false;
     this._ansiToHtmlElement?.clear();
@@ -212,6 +224,7 @@ class LandingPageLogs extends LitElement {
       console.error(err);
 
       // fallback to observerlogs if there is a problem with supervisor
+      this._observerFallback = true;
       this._loadObserverLogs();
     }
   }
@@ -242,10 +255,7 @@ class LandingPageLogs extends LitElement {
 
       const logs = await response.text();
 
-      if (this._observerLogs !== logs) {
-        this._observerLogs = logs;
-        this._displayLogs(logs, "", true);
-      }
+      this._displayLogs(logs, "", true);
 
       this._scheduleObserverLogs();
     } catch (err) {
@@ -255,9 +265,14 @@ class LandingPageLogs extends LitElement {
     }
   }
 
-  private async _downloadFullLog() {
+  private _downloadLogs() {
     const timeString = new Date().toISOString().replace(/:/g, "-");
-    fileDownload("/observer/logs", `home-assistant_${timeString}.log`);
+    const downloadUrl = this._observerFallback
+      ? observerLogsDownloadUrl
+      : getDownloadUrl(this._logLinesCount);
+    const downloadName = `${this._observerFallback ? "observer" : "supervisor"}_${timeString}.log`;
+
+    fileDownload(downloadUrl, downloadName);
   }
 
   static styles = [
