@@ -74,7 +74,7 @@ class DialogNewBackup extends LitElement implements HassDialog {
           >
             <ha-md-list-item @click=${this._automatic} type="button">
               <ha-svg-icon slot="start" .path=${mdiBackupRestore}></ha-svg-icon>
-              <span slot="headline">Use automatic backups configuration</span>
+              <span slot="headline">Use automatic backups settings</span>
               <span slot="supporting-text">
                 Trigger a backup using the settings used in automatic backups
               </span>
