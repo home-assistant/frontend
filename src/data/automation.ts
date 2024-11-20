@@ -426,7 +426,7 @@ export const migrateAutomationTrigger = (
   trigger: Trigger | Trigger[]
 ): Trigger | Trigger[] => {
   if (!trigger) {
-    return [];
+    return trigger;
   }
 
   if (Array.isArray(trigger)) {

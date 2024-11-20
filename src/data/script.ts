@@ -437,7 +437,7 @@ export const migrateAutomationAction = (
   action: Action | Action[]
 ): Action | Action[] => {
   if (!action) {
-    return [];
+    return action;
   }
 
   if (Array.isArray(action)) {
