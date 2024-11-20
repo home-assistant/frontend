@@ -34,7 +34,6 @@ import {
 import type { HomeAssistant } from "../../../types";
 import "../../../components/ha-relative-time";
 import "../../../components/ha-state-icon";
-import "../../../components/ha-badge";
 
 @customElement("more-info-weather")
 class MoreInfoWeather extends LitElement {
@@ -230,46 +229,45 @@ class MoreInfoWeather extends LitElement {
           </div>
         </div>
       </div>
-      <div class="badges">
-        ${this._showValue(this.stateObj.attributes.pressure)
-          ? html` <ha-badge
-              label=${this.hass.localize(
-                "ui.card.weather.attributes.air_pressure"
-              )}
-            >
-              <ha-svg-icon slot="icon" .path=${mdiGauge}></ha-svg-icon>
+      ${this._showValue(this.stateObj.attributes.pressure)
+        ? html`
+            <div class="flex">
+              <ha-svg-icon .path=${mdiGauge}></ha-svg-icon>
+              <div class="main">
+                ${this.hass.localize("ui.card.weather.attributes.air_pressure")}
+              </div>
               <div>
                 ${this.hass.formatEntityAttributeValue(
                   this.stateObj,
                   "pressure"
                 )}
               </div>
-            </ha-badge>`
-          : ""}
-        ${this._showValue(this.stateObj.attributes.humidity)
-          ? html`
-              <ha-badge
-                label=${this.hass.localize(
-                  "ui.card.weather.attributes.humidity"
+            </div>
+          `
+        : ""}
+      ${this._showValue(this.stateObj.attributes.humidity)
+        ? html`
+            <div class="flex">
+              <ha-svg-icon .path=${mdiWaterPercent}></ha-svg-icon>
+              <div class="main">
+                ${this.hass.localize("ui.card.weather.attributes.humidity")}
+              </div>
+              <div>
+                ${this.hass.formatEntityAttributeValue(
+                  this.stateObj,
+                  "humidity"
                 )}
-              >
-                <ha-svg-icon slot="icon" .path=${mdiWaterPercent}></ha-svg-icon>
-                <div>
-                  ${this.hass.formatEntityAttributeValue(
-                    this.stateObj,
-                    "humidity"
-                  )}
-                </div>
-              </ha-badge>
-            `
-          : ""}
-        ${this._showValue(this.stateObj.attributes.wind_speed)
-          ? html` <ha-badge
-              label=${this.hass.localize(
-                "ui.card.weather.attributes.wind_speed"
-              )}
-            >
-              <ha-svg-icon slot="icon" .path=${mdiWeatherWindy}></ha-svg-icon>
+              </div>
+            </div>
+          `
+        : ""}
+      ${this._showValue(this.stateObj.attributes.wind_speed)
+        ? html`
+            <div class="flex">
+              <ha-svg-icon .path=${mdiWeatherWindy}></ha-svg-icon>
+              <div class="main">
+                ${this.hass.localize("ui.card.weather.attributes.wind_speed")}
+              </div>
               <div>
                 ${getWind(
                   this.hass,
@@ -278,24 +276,25 @@ class MoreInfoWeather extends LitElement {
                   this.stateObj.attributes.wind_bearing
                 )}
               </div>
-            </ha-badge>`
-          : ""}
-        ${this._showValue(this.stateObj.attributes.visibility)
-          ? html` <ha-badge
-              label=${this.hass.localize(
-                "ui.card.weather.attributes.visibility"
-              )}
-            >
-              <ha-svg-icon slot="icon" .path=${mdiEye}></ha-svg-icon>
+            </div>
+          `
+        : ""}
+      ${this._showValue(this.stateObj.attributes.visibility)
+        ? html`
+            <div class="flex">
+              <ha-svg-icon .path=${mdiEye}></ha-svg-icon>
+              <div class="main">
+                ${this.hass.localize("ui.card.weather.attributes.visibility")}
+              </div>
               <div>
                 ${this.hass.formatEntityAttributeValue(
                   this.stateObj,
                   "visibility"
                 )}
               </div>
-            </ha-badge>`
-          : ""}
-      </div>
+            </div>
+          `
+        : ""}
       ${forecast
         ? html`
             <div class="section">
@@ -417,6 +416,9 @@ class MoreInfoWeather extends LitElement {
       css`
         ha-svg-icon {
           color: var(--paper-item-icon-color);
+          margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
         }
 
         mwc-tab-bar {
@@ -428,14 +430,20 @@ class MoreInfoWeather extends LitElement {
           font-size: 1.2em;
         }
 
-        .badges {
+        .flex {
           display: flex;
-          justify-content: center;
-          flex-wrap: wrap;
+          height: 32px;
+          align-items: center;
+        }
+        .flex > div:last-child {
+          direction: ltr;
         }
 
-        .badges ha-badge {
-          margin: 8px 8px;
+        .main {
+          flex: 1;
+          margin-left: 24px;
+          margin-inline-start: 24px;
+          margin-inline-end: initial;
         }
 
         .attribution {
