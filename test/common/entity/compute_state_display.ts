@@ -142,7 +142,7 @@ describe("computeStateDisplay", () => {
         demoConfig,
         entities
       ),
-      "1,234 component.custom_integration.entity.sensor.custom_translation.native_unit_of_measurement"
+      "1,234 component.custom_integration.entity.sensor.custom_translation.unit_of_measurement"
     );
   });
 

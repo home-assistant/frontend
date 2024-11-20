@@ -106,7 +106,7 @@ export const computeStateDisplayFromEntityAttributes = (
     const unit =
       (entity?.translation_key &&
         localize(
-          `component.${entity.platform}.entity.${domain}.${entity.translation_key}.native_unit_of_measurement`
+          `component.${entity.platform}.entity.${domain}.${entity.translation_key}.unit_of_measurement`
         )) ||
       attributes.unit_of_measurement;
 
