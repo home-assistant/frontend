@@ -406,9 +406,13 @@ export const hasScriptFields = (
 
 export const migrateAutomationAction = (
   action: Action | Action[]
-): Action | Action[] => {
+): Action | Action[] | null => {
   if (Array.isArray(action)) {
     return action.map(migrateAutomationAction) as Action[];
+  }
+
+  if (!action) {
+    return null;
   }
 
   if ("service" in action) {
@@ -416,6 +420,15 @@ export const migrateAutomationAction = (
       action.action = action.service;
     }
     delete action.service;
+  }
+
+  // legacy scene (scene: scene_name)
+  if ("scene" in action) {
+    action.action = "scene.turn_on";
+    action.target = {
+      entity_id: action.scene,
+    };
+    delete action.scene;
   }
 
   if ("sequence" in action) {

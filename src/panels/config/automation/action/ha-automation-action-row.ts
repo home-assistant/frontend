@@ -80,7 +80,7 @@ export const getType = (action: Action | undefined) => {
   if (!action) {
     return undefined;
   }
-  if ("action" in action || "scene" in action) {
+  if ("action" in action) {
     return getActionType(action) as "action" | "play_media";
   }
   if (["and", "or", "not"].some((key) => key in action)) {
