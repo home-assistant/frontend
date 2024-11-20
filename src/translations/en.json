@@ -1458,7 +1458,7 @@
           "change_device_settings": "You can {link} in the device settings",
           "change_device_area_link": "change the device area",
           "configure_state": "{integration} options",
-          "configure_state_secondary": "Specific options for {integration}",
+          "configure_state_secondary": "Specific settings for {integration}",
           "stream": {
             "preload_stream": "Preload camera stream",
             "preload_stream_description": "This keeps the camera stream open in the background so it shows quicker. Warning! This is device intensive.",
