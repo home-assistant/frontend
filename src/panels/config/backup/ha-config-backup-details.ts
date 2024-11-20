@@ -24,6 +24,7 @@ import { domainToName } from "../../../data/integration";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
+import { bytesToString } from "../../../util/bytes-to-string";
 import { fileDownload } from "../../../util/file_download";
 import { showConfirmationDialog } from "../../lovelace/custom-card-helpers";
 
@@ -91,7 +92,7 @@ class HaConfigBackupDetails extends LitElement {
                       <ha-md-list>
                         <ha-md-list-item>
                           <span slot="headline">
-                            ${Math.ceil(this._backup.size * 10) / 10 + " MB"}
+                            ${bytesToString(this._backup.size)}
                           </span>
                           <span slot="supporting-text">Size</span>
                         </ha-md-list-item>
