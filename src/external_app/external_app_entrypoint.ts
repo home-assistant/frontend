@@ -122,8 +122,8 @@ const handleExternalMessage = (
       success: true,
       result: null,
     });
-  } else if (msg.command === "improv/device_setup") {
-    fireEvent(window, "improv-device-setup");
+  } else if (msg.command === "improv/device_setup_done") {
+    fireEvent(window, "improv-device-setup-done");
     bus.fireMessage({
       id: msg.id,
       type: "result",
@@ -156,6 +156,6 @@ const handleExternalMessage = (
 declare global {
   interface HASSDomEvents {
     "improv-discovered-device": ImprovDiscoveredDevice;
-    "improv-device-setup": undefined;
+    "improv-device-setup-done": undefined;
   }
 }

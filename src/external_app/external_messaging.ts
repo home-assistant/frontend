@@ -257,10 +257,10 @@ interface EMIncomingMessageImprovDeviceDiscovered extends EMMessage {
   payload: ImprovDiscoveredDevice;
 }
 
-interface EMIncomingMessageImprovDeviceSetup extends EMMessage {
+interface EMIncomingMessageImprovDeviceSetupDone extends EMMessage {
   id: number;
   type: "command";
-  command: "improv/device_setup";
+  command: "improv/device_setup_done";
 }
 
 export type EMIncomingMessageCommands =
@@ -272,7 +272,7 @@ export type EMIncomingMessageCommands =
   | EMIncomingMessageBarCodeScanResult
   | EMIncomingMessageBarCodeScanAborted
   | EMIncomingMessageImprovDeviceDiscovered
-  | EMIncomingMessageImprovDeviceSetup;
+  | EMIncomingMessageImprovDeviceSetupDone;
 
 type EMIncomingMessage =
   | EMMessageResultSuccess

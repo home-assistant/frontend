@@ -141,7 +141,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
       this._handleImprovDiscovered
     );
     window.removeEventListener(
-      "improv-device-setup",
+      "improv-device-setup-done",
       this._reScanImprovDevices
     );
   }
@@ -664,7 +664,10 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
       this._handleImprovDiscovered
     );
 
-    window.addEventListener("improv-device-setup", this._reScanImprovDevices);
+    window.addEventListener(
+      "improv-device-setup-done",
+      this._reScanImprovDevices
+    );
 
     this.hass.auth.external!.fireMessage({
       type: "improv/scan",
