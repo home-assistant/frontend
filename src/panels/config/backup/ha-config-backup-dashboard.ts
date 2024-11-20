@@ -20,6 +20,7 @@ import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-svg-icon";
+import { getSignedPath } from "../../../data/auth";
 import {
   fetchBackupInfo,
   getBackupDownloadUrl,
@@ -37,10 +38,10 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
+import { fileDownload } from "../../../util/file_download";
 import "./components/ha-backup-summary-card";
 import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
-import { getSignedPath } from "../../../data/auth";
-import { fileDownload } from "../../../util/file_download";
+import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
 
 @customElement("ha-config-backup-dashboard")
 class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
@@ -232,7 +233,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
           ?disabled=${this._backingUp}
           .label=${this.hass.localize("ui.panel.config.backup.create_backup")}
           extended
-          @click=${this._generateBackup}
+          @click=${this._newBackup}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </ha-fab>
@@ -249,6 +250,20 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
     const info = await fetchBackupInfo(this.hass);
     this._backups = info.backups;
     this._backingUp = info.backing_up;
+  }
+
+  private async _newBackup(): Promise<void> {
+    const type = await showNewBackupDialog(this, {});
+
+    if (!type) {
+      return;
+    }
+
+    if (type === "manual") {
+      await this._generateBackup();
+    } else {
+      // Todo: implement trigger automatic backup
+    }
   }
 
   private async _generateBackup(): Promise<void> {

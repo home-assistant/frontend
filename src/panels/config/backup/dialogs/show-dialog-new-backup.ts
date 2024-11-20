@@ -1,23 +1,23 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
 
-export interface GenerateBackupDialogParams {
-  submit?: (response: { backup_id: string }) => void;
+export type NewBackupType = "automatic" | "manual";
+export interface NewBackupDialogParams {
+  submit?: (type: NewBackupType) => void;
   cancel?: () => void;
 }
 
-export const loadGenerateBackupDialog = () =>
-  import("./dialog-generate-backup");
+export const loadNewBackupDialog = () => import("./dialog-new-backup");
 
-export const showGenerateBackupDialog = (
+export const showNewBackupDialog = (
   element: HTMLElement,
-  params: GenerateBackupDialogParams
+  params: NewBackupDialogParams
 ) =>
-  new Promise<{ backup_id: string } | null>((resolve) => {
+  new Promise<NewBackupType | null>((resolve) => {
     const origCancel = params.cancel;
     const origSubmit = params.submit;
     fireEvent(element, "show-dialog", {
-      dialogTag: "ha-dialog-generate-backup",
-      dialogImport: loadGenerateBackupDialog,
+      dialogTag: "ha-dialog-new-backup",
+      dialogImport: loadNewBackupDialog,
       dialogParams: {
         ...params,
         cancel: () => {
