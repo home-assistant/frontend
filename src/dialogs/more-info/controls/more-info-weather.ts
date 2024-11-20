@@ -141,7 +141,7 @@ class MoreInfoWeather extends LitElement {
       this.stateObj.attributes,
       this._forecastEvent
     );
-    const forecast = forecastData?.forecast.slice(0, 6);
+    const forecast = forecastData?.forecast;
     const hourly = forecastData?.type === "hourly";
     const dayNight = forecastData?.type === "twice_daily";
 
@@ -543,11 +543,23 @@ class MoreInfoWeather extends LitElement {
         .forecast {
           display: flex;
           justify-content: space-around;
-          padding-top: 16px;
+          padding: 16px;
+          padding-bottom: 0px;
+          overflow-x: auto;
+          scrollbar-color: var(--scrollbar-thumb-color) transparent;
+          scrollbar-width: thin;
+          mask-image: linear-gradient(
+            90deg,
+            transparent 0%,
+            black 5%,
+            black 94%,
+            transparent 100%
+          );
         }
 
         .forecast > div {
           text-align: center;
+          padding: 0 10px;
         }
 
         .forecast .icon,
