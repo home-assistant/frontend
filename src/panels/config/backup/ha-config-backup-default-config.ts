@@ -10,8 +10,8 @@ import "../../../components/ha-list-item";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 
-@customElement("ha-config-backup-automatic-config")
-class HaConfigBackupAutomaticConfig extends LitElement {
+@customElement("ha-config-backup-default-config")
+class HaConfigBackupDefaultConfig extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -22,7 +22,7 @@ class HaConfigBackupAutomaticConfig extends LitElement {
         back-path="/config/backup"
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .header=${"Automatic backups"}
+        .header=${"Default backup"}
       >
         <div class="content">
           <ha-card>
@@ -47,11 +47,11 @@ class HaConfigBackupAutomaticConfig extends LitElement {
                 </ha-select>
               </ha-settings-row>
               <ha-settings-row>
-                <span slot="heading">Locations</span>
+                <span slot="heading">Default locations</span>
                 <span slot="description">
                   What locations you want to automatically backup to.
                 </span>
-                <ha-button> Configure </ha-button>
+                <ha-button>Configure</ha-button>
               </ha-settings-row>
               <ha-settings-row>
                 <span slot="heading">Password</span>
@@ -127,6 +127,6 @@ class HaConfigBackupAutomaticConfig extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-config-backup-automatic-config": HaConfigBackupAutomaticConfig;
+    "ha-config-backup-default-config": HaConfigBackupDefaultConfig;
   }
 }

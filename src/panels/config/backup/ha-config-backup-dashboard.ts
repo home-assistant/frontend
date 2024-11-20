@@ -21,12 +21,14 @@ import "../../../components/ha-icon-next";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-svg-icon";
 import { getSignedPath } from "../../../data/auth";
+import type { BackupContent, GenerateBackupParams } from "../../../data/backup";
 import {
   deleteBackup,
+  fetchBackupAgentsInfo,
   fetchBackupInfo,
+  generateBackup,
   getBackupDownloadUrl,
   getPreferredAgentForDownload,
-  type BackupContent,
 } from "../../../data/backup";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
@@ -180,7 +182,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
             has-action
             .status=${this._backingUp ? "loading" : "success"}
           >
-            <ha-button slot="action" @click=${this._configureAutomaticBackup}>
+            <ha-button slot="action" @click=${this._configureDefaultBackup}>
               Configure
             </ha-button>
           </ha-backup-summary-card>
@@ -248,6 +250,13 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
     this._fetchBackupInfo();
   }
 
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this.hasUpdated) {
+      this._fetchBackupInfo();
+    }
+  }
+
   private async _fetchBackupInfo() {
     const info = await fetchBackupInfo(this.hass);
     this._backups = info.backups;
@@ -261,19 +270,29 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
       return;
     }
 
-    if (type === "manual") {
-      await this._generateBackup();
-    } else {
-      // Todo: implement trigger automatic backup
+    if (type === "custom") {
+      const params = await showGenerateBackupDialog(this, {});
+
+      if (!params) {
+        return;
+      }
+
+      this._generateBackup(params);
+      return;
+    }
+    if (type === "default") {
+      // Todo : Use default config instead of hardcoded one
+      const { agents } = await fetchBackupAgentsInfo(this.hass);
+
+      this._generateBackup({
+        agent_ids: agents.map((agent) => agent.agent_id),
+        database_included: true,
+      });
     }
   }
 
-  private async _generateBackup(): Promise<void> {
-    const response = await showGenerateBackupDialog(this, {});
-
-    if (!response) {
-      return;
-    }
+  private async _generateBackup(params: GenerateBackupParams): Promise<void> {
+    await generateBackup(this.hass, params);
 
     await this._fetchBackupInfo();
 
@@ -343,8 +362,8 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
     this._dataTable.clearSelection();
   }
 
-  private _configureAutomaticBackup() {
-    navigate("/config/backup/automatic-config");
+  private _configureDefaultBackup() {
+    navigate("/config/backup/default-config");
   }
 
   private _configureBackupLocations() {

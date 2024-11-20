@@ -22,8 +22,11 @@ import "../../../../components/ha-settings-row";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-switch";
 import "../../../../components/ha-textfield";
-import type { BackupAgent } from "../../../../data/backup";
-import { fetchBackupAgentsInfo, generateBackup } from "../../../../data/backup";
+import type {
+  BackupAgent,
+  GenerateBackupParams,
+} from "../../../../data/backup";
+import { fetchBackupAgentsInfo } from "../../../../data/backup";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -310,7 +313,8 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
 
     // TODO: Fetch all addons
     const ALL_ADDONS = [];
-    const { backup_id } = await generateBackup(this.hass, {
+
+    const params: GenerateBackupParams = {
       name,
       agent_ids:
         agents_mode === "all"
@@ -319,9 +323,9 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
       database_included: history,
       folders_included: folders,
       addons_included: addons_mode === "all" ? ALL_ADDONS : addons,
-    });
+    };
 
-    this._params!.submit?.({ backup_id });
+    this._params!.submit?.(params);
     this.closeDialog();
   }
 

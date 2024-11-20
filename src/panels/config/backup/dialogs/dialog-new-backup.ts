@@ -1,4 +1,4 @@
-import { mdiBackupRestore, mdiClose, mdiCogs } from "@mdi/js";
+import { mdiClose, mdiCog, mdiPencil } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -44,15 +44,8 @@ class DialogNewBackup extends LitElement implements HassDialog {
       return nothing;
     }
 
-    const heading = "New backup";
-
     return html`
-      <ha-md-dialog
-        open
-        @closed=${this.closeDialog}
-        aria-labelledby="dialog-box-title"
-        aria-describedby="dialog-box-description"
-      >
+      <ha-md-dialog open @closed=${this.closeDialog}>
         <ha-dialog-header slot="headline">
           <ha-icon-button
             slot="navigationIcon"
@@ -60,33 +53,29 @@ class DialogNewBackup extends LitElement implements HassDialog {
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
-          <span slot="title" id="dialog-light-color-favorite-title">
-            ${heading}
-          </span>
+          <span slot="title">Backup now</span>
         </ha-dialog-header>
         <div slot="content">
           <ha-md-list
             innerRole="listbox"
             itemRoles="option"
-            innerAriaLabel=${heading}
+            innerAriaLabel="Backup options"
             rootTabbable
             dialogInitialFocus
           >
-            <ha-md-list-item @click=${this._automatic} type="button">
-              <ha-svg-icon slot="start" .path=${mdiBackupRestore}></ha-svg-icon>
-              <span slot="headline">Use automatic backup settings</span>
+            <ha-md-list-item @click=${this._default} type="button">
+              <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
+              <span slot="headline">My default backup</span>
               <span slot="supporting-text">
-                Trigger a backup using the configured settings for automatic backups
+                Create a backup with the data and locations you have configured.
               </span>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
-            <ha-md-list-item @click=${this._manual} type="button">
-              <ha-svg-icon slot="start" .path=${mdiCogs}></ha-svg-icon>
-
-              <span slot="headline"> Create a manual backup</span>
+            <ha-md-list-item @click=${this._custom} type="button">
+              <ha-svg-icon slot="start" .path=${mdiPencil}></ha-svg-icon>
+              <span slot="headline">Custom backup</span>
               <span slot="supporting-text">
-                Create a backup with custom settings (e.g. specific add-ons,
-                database, etc.)
+                Select specific data and locations for a custom backup.
               </span>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
@@ -96,13 +85,13 @@ class DialogNewBackup extends LitElement implements HassDialog {
     `;
   }
 
-  private async _manual() {
-    this._params!.submit?.("manual");
+  private async _custom() {
+    this._params!.submit?.("custom");
     this.closeDialog();
   }
 
-  private async _automatic() {
-    this._params!.submit?.("automatic");
+  private async _default() {
+    this._params!.submit?.("default");
     this.closeDialog();
   }
 
