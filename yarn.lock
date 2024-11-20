@@ -2031,12 +2031,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit-labs/observers@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@lit-labs/observers@npm:2.0.2"
+"@lit-labs/observers@npm:2.0.4":
+  version: 2.0.4
+  resolution: "@lit-labs/observers@npm:2.0.4"
   dependencies:
     "@lit/reactive-element": "npm:^1.0.0 || ^2.0.0"
-  checksum: 10/66622f1aa8f3d3245917490b6faced4762ad9d87c9674358bba9c41427301dd7a682bb2098dab34858c1725e668c3b4de692fbfbbf823b88aa7711c13389642f
+    lit-html: "npm:^3.2.0"
+  checksum: 10/b1deb80e88d7de01e90e084a5b7e0a22938d6ef0ddb4e2da86a8356e37ca7be1bd7c94f5abe51883f787f650b2a9c7a024b1eef854da3ac59870a5abf7fdf74b
   languageName: node
   linkType: hard
 
@@ -8696,7 +8697,7 @@ __metadata:
     "@lezer/highlight": "npm:1.2.1"
     "@lit-labs/context": "npm:0.4.1"
     "@lit-labs/motion": "npm:1.0.7"
-    "@lit-labs/observers": "npm:2.0.2"
+    "@lit-labs/observers": "npm:2.0.4"
     "@lit-labs/virtualizer": "npm:2.0.14"
     "@lokalise/node-api": "npm:12.8.0"
     "@lrnwebcomponents/simple-tooltip": "npm:8.0.2"
@@ -8819,6 +8820,7 @@ __metadata:
     lint-staged: "npm:15.2.10"
     lit: "npm:2.8.0"
     lit-analyzer: "npm:2.0.3"
+    lit-html: "npm:2.8.0"
     lodash.merge: "npm:4.6.2"
     lodash.template: "npm:4.5.0"
     luxon: "npm:3.5.0"
@@ -10249,7 +10251,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit-html@npm:^2.8.0":
+"lit-html@npm:2.8.0":
   version: 2.8.0
   resolution: "lit-html@npm:2.8.0"
   dependencies:
