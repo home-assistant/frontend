@@ -222,11 +222,16 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
     }
 
     if (pipeline.language !== this.hass.locale.language) {
-      const result = await getTranslation(null, pipeline.language);
-      this._announce(result.data["ui.dialogs.tts-try.message_example"]);
-    } else {
-      this._announce(this.hass.localize("ui.dialogs.tts-try.message_example"));
+      try {
+        const result = await getTranslation(null, pipeline.language, false);
+        this._announce(result.data["ui.dialogs.tts-try.message_example"]);
+        return;
+      } catch (e) {
+        // ignore fallback to user language
+      }
     }
+
+    this._announce(this.hass.localize("ui.dialogs.tts-try.message_example"));
   }
 
   private async _announce(message: string) {
