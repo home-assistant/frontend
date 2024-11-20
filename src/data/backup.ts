@@ -59,9 +59,9 @@ export const fetchBackupAgentsInfo = (
     type: "backup/agents/info",
   });
 
-export const removeBackup = (hass: HomeAssistant, id: string): Promise<void> =>
+export const deleteBackup = (hass: HomeAssistant, id: string): Promise<void> =>
   hass.callWS({
-    type: "backup/remove",
+    type: "backup/delete",
     backup_id: id,
   });
 
