@@ -3350,7 +3350,7 @@
                 },
                 "trigger": {
                   "label": "Triggered by",
-                  "no_triggers": "No triggers have an ID set. You can set an ID using the trigger menu button.",
+                  "no_triggers": "No triggers have an ID set. You can edit IDs using each trigger's menu.",
                   "id": "Trigger",
                   "description": {
                     "picker": "If the automation has been triggered by a specific trigger.",
