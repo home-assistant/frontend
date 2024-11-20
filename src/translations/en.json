@@ -1914,7 +1914,7 @@
       "no_matching_link_found": "No matching My link found for {path}"
     },
     "sidebar": {
-      "external_app_configuration": "App configuration",
+      "external_app_configuration": "App settings",
       "sidebar_toggle": "Sidebar toggle",
       "done": "Done",
       "hide_panel": "Hide panel",
