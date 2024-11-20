@@ -6026,8 +6026,7 @@
               "state": {
                 "label": "Entity state",
                 "state_equal": "State is equal to",
-                "state_not_equal": "State is not equal to",
-                "current_state": "current"
+                "state_not_equal": "State is not equal to"
               },
               "user": {
                 "label": "User"
