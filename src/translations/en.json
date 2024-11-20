@@ -1195,7 +1195,7 @@
             "addon_info": "{addon} Info"
           }
         },
-        "filter_placeholder": "Entity filter",
+        "filter_placeholder": "Search entities",
         "title": "Quick search",
         "key_c_hint": "Press 'c' on any page to open the search bar",
         "nothing_found": "Nothing found!"
@@ -5752,7 +5752,7 @@
         "menu": {
           "configure_ui": "Edit dashboard",
           "help": "Help",
-          "search": "Search",
+          "search": "Entity search",
           "assist": "Assist",
           "reload_resources": "Reload resources",
           "exit_edit_mode": "Done",
