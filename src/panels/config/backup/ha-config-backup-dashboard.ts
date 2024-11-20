@@ -22,11 +22,11 @@ import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-svg-icon";
 import { getSignedPath } from "../../../data/auth";
 import {
+  deleteBackup,
   fetchBackupInfo,
   getBackupDownloadUrl,
-  deleteBackup,
-  type BackupContent,
   getPreferredAgentForDownload,
+  type BackupContent,
 } from "../../../data/backup";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
@@ -39,6 +39,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
+import { bytesToString } from "../../../util/bytes-to-string";
 import { fileDownload } from "../../../util/file_download";
 import "./components/ha-backup-summary-card";
 import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
@@ -75,7 +76,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
         title: localize("ui.panel.config.backup.size"),
         filterable: true,
         sortable: true,
-        template: (backup) => Math.ceil(backup.size * 10) / 10 + " MB",
+        template: (backup) => bytesToString(backup.size),
       },
       date: {
         title: localize("ui.panel.config.backup.created"),
