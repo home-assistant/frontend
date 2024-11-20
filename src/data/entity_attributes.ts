@@ -23,6 +23,7 @@ export const STATE_ATTRIBUTES = [
   "state_class",
   "supported_features",
   "unit_of_measurement",
+  "available_tones",
 ];
 
 export const TEMPERATURE_ATTRIBUTES = new Set([
