@@ -1,6 +1,7 @@
 import { html } from "lit";
 import { customElement } from "lit/decorators";
 import { FlowPreviewGeneric } from "./flow-preview-generic";
+import "../../../components/ha-hls-player";
 
 @customElement("flow-preview-generic_camera")
 class FlowPreviewGenericCamera extends FlowPreviewGeneric {
