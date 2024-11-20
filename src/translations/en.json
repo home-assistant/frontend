@@ -5651,7 +5651,7 @@
               "self_consumed_solar_could_not_calc": "Self-consumed solar energy couldn't be calculated"
             },
             "self_sufficiency_gauge": {
-              "card_indicates_self_sufficiency_quota": "This card indicates how much of the energy consumed by your home came from on-site sources (such as solar panels or batteries).",
+              "card_indicates_self_sufficiency_quota": "This card indicates how much of the electricity consumed by your home came from on-site sources (such as solar panels or batteries).",
               "self_sufficiency_quota": "Self-sufficiency",
               "self_sufficiency_could_not_calc": "Self-sufficiency couldn't be calculated"
             },
@@ -5681,7 +5681,7 @@
               "untracked_consumption": "Untracked consumption"
             },
             "carbon_consumed_gauge": {
-              "card_indicates_energy_used": "This card indicates how much of the energy consumed by your home was generated using non-fossil fuels like solar, wind, and nuclear. The higher, the better!",
+              "card_indicates_energy_used": "This card indicates how much of the electricity consumed by your home was generated using non-fossil fuels like solar, wind, and nuclear. The higher, the better!",
               "low_carbon_energy_consumed": "Low-carbon energy consumed",
               "low_carbon_energy_not_calculated": "Consumed low-carbon energy couldn't be calculated"
             }
