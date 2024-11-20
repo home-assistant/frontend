@@ -131,6 +131,25 @@ class HaConfigBackupDetails extends LitElement {
                                 slot="start"
                               />
                               <div slot="headline">${domainName}: ${name}</div>
+                              <ha-button-menu
+                                slot="end"
+                                @action=${this._handleAgentAction}
+                                .agent=${agent}
+                                fixed
+                              >
+                                <ha-icon-button
+                                  slot="trigger"
+                                  .label=${this.hass.localize("ui.common.menu")}
+                                  .path=${mdiDotsVertical}
+                                ></ha-icon-button>
+                                <ha-list-item graphic="icon">
+                                  <ha-svg-icon
+                                    slot="graphic"
+                                    .path=${mdiDownload}
+                                  ></ha-svg-icon>
+                                  Download from this location
+                                </ha-list-item>
+                              </ha-button-menu>
                             </ha-md-list-item>
                           `;
                         })}
@@ -163,10 +182,15 @@ class HaConfigBackupDetails extends LitElement {
     }
   }
 
-  private async _downloadBackup(): Promise<void> {
-    const preferedAgent = getPreferredAgentForDownload(
-      this._backup!.agent_ids!
-    );
+  private _handleAgentAction(ev: CustomEvent<ActionDetail>) {
+    const button = ev.currentTarget;
+    const agentId = (button as any).agent;
+    this._downloadBackup(agentId);
+  }
+
+  private async _downloadBackup(agentId?: string): Promise<void> {
+    const preferedAgent =
+      agentId ?? getPreferredAgentForDownload(this._backup!.agent_ids!);
     const signedUrl = await getSignedPath(
       this.hass,
       getBackupDownloadUrl(this._backup!.backup_id, preferedAgent)
