@@ -558,7 +558,7 @@
           "no_entities": "You don't have any entities",
           "no_match": "No matching entities found",
           "show_entities": "Show entities",
-          "new_entity": "Create a new entity",
+          "new_entity": "Creates a new entity",
           "create_helper": "Create a new {domain, select, \n undefined {} \n other {{domain} }\n } helper."
         },
         "entity-attribute-picker": {
