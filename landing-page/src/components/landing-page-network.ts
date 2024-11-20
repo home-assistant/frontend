@@ -127,7 +127,7 @@ class LandingPageNetwork extends LitElement {
     }
 
     fireEvent(this, "value-changed", {
-      value: this._networkIssue || this._getNetworkInfoError,
+      value: this._networkIssue,
     });
     this._scheduleFetchSupervisorInfo();
   }
