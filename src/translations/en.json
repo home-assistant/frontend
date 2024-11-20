@@ -3495,14 +3495,6 @@
                     "no_device": "Device action"
                   }
                 },
-                "activate_scene": {
-                  "label": "Scene",
-                  "scene": "Scene",
-                  "description": {
-                    "activate_scene": "Activate a scene",
-                    "activate_scene_with_name": "Activate scene {name}"
-                  }
-                },
                 "repeat": {
                   "label": "Repeat",
                   "type_select": "Repeat type",
