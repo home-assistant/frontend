@@ -424,7 +424,7 @@ export interface RequestedGrant {
   clientSideAuth: boolean;
 }
 
-export const invokeZWaveCCApi = (
+export const invokeZWaveCCApi = <T = unknown>(
   hass: HomeAssistant,
   device_id: string,
   command_class: number,
@@ -432,7 +432,7 @@ export const invokeZWaveCCApi = (
   method_name: string,
   parameters: any[],
   wait_for_result?: boolean
-): Promise<unknown> =>
+): Promise<T> =>
   hass.callWS({
     type: "zwave_js/invoke_cc_api",
     device_id,
