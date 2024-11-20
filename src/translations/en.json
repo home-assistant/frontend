@@ -2020,7 +2020,7 @@
           },
           "check_updates": "Check for updates",
           "no_new_updates": "No new updates found",
-          "updates_refreshed": "{count} {count, plural,\n  one {update}\n  other {updates}\n} refreshed",
+          "updates_refreshed": "State of {count} {count, plural,\n  one {update}\n  other {updates}\n} refreshed",
           "checking_updates": "Checking for updates...",
           "title": "{count} {count, plural,\n  one {update}\n  other {updates}\n}",
           "unable_to_fetch": "Unable to load updates",
