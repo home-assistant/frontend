@@ -207,17 +207,29 @@ export class HaLogbook extends LitElement {
     );
   }
 
-  private _unsubscribe() {
+  private async _unsubscribe(): Promise<void> {
     if (this._subscribed) {
-      this._subscribed.then((unsub) => unsub?.());
-      this._subscribed = undefined;
+      try {
+        const unsub = await this._subscribed;
+        if (unsub) {
+          await unsub();
+          this._subscribed = undefined;
+          this._pendingStreamMessages = [];
+        }
+      } catch (err: any) {
+        // eslint-disable-next-line
+        console.error("Error unsubscribing:", err);
+      }
     }
   }
 
   public connectedCallback() {
     super.connectedCallback();
     if (this.hasUpdated) {
-      this._subscribeLogbookPeriod(this._calculateLogbookPeriod());
+      // Ensure clean state before subscribing
+      this._unsubscribe().then(() => {
+        this._subscribeLogbookPeriod(this._calculateLogbookPeriod());
+      });
     }
   }
 
@@ -277,25 +289,28 @@ export class HaLogbook extends LitElement {
     if (this._subscribed) {
       return true;
     }
-    this._subscribed = subscribeLogbook(
-      this.hass,
-      (streamMessage) => {
-        // "recent" means start time is a sliding window
-        // so we need to calculate an expireTime to
-        // purge old events
-        if (!this._subscribed) {
-          // Message came in before we had a chance to unload
-          return;
-        }
-        this._processOrQueueStreamMessage(streamMessage);
-      },
-      logbookPeriod.startTime.toISOString(),
-      logbookPeriod.endTime.toISOString(),
-      this.entityIds,
-      this.deviceIds
-    ).catch((err) => {
-      this._subscribed = undefined;
-      this._error = err;
+    // Ensure any previous subscription is cleaned up
+    this._unsubscribe().then(() => {
+      this._subscribed = subscribeLogbook(
+        this.hass,
+        (streamMessage) => {
+          // "recent" means start time is a sliding window
+          // so we need to calculate an expireTime to
+          // purge old events
+          if (!this._subscribed) {
+            // Message came in before we had a chance to unload
+            return;
+          }
+          this._processOrQueueStreamMessage(streamMessage);
+        },
+        logbookPeriod.startTime.toISOString(),
+        logbookPeriod.endTime.toISOString(),
+        this.entityIds,
+        this.deviceIds
+      ).catch((err) => {
+          this._subscribed = undefined;
+          this._error = err;
+      });
     });
     return true;
   }
