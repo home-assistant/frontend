@@ -140,12 +140,15 @@ class LandingPageNetwork extends LitElement {
         throw new Error("Failed to set DNS");
       }
       this._networkIssue = false;
-    } catch (err) {
+    } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error(err);
       showAlertDialog(this, {
         title: this.localize("network_issue.failed"),
-        text: this.localize("network_issue.set_dns_failed"),
+        warning: true,
+        text: `${this.localize(
+          "network_issue.set_dns_failed"
+        )}${err?.message ? ` ${this.localize("network_issue.error")}: ${err.message}` : ""}`,
         confirmText: this.localize("network_issue.close"),
       });
     }

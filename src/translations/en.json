@@ -7522,6 +7522,7 @@
       "no_primary_interface": "Home Assistant OS wasn't able to detect a primary network interface, so you cannot define a DNS server!",
       "failed": "Failed",
       "set_dns_failed": "An error occurred while setting the DNS server. Please check the logs for more information and try again.",
+      "error": "Error",
       "close": "[%key:ui::common::close%]"
     },
     "logs": {
