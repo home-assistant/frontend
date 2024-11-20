@@ -458,7 +458,7 @@ export class RecurrenceRuleEditor extends LitElement {
     let contentline = RRule.optionsToString(options);
     if (this._untilDay) {
       // The UNTIL value should be inclusive of the last event instance
-      const until = toDate(
+      const untilLocal = toDate(
         this._formatDate(this._untilDay!) +
           "T" +
           this._formatTime(this.dtstart!),
@@ -466,13 +466,10 @@ export class RecurrenceRuleEditor extends LitElement {
       );
       // rrule.js can't compute some UNTIL variations so we compute that ourself. Must be
       // in the same format as dtstart.
-      const format = this.allDay ? "yyyyMMdd" : "yyyyMMdd'T'HHmmss";
-      const newUntilValue = formatInTimeZone(
-        until,
-        this.hass.config.time_zone,
-        format
-      );
-      contentline += `;UNTIL=${newUntilValue}`;
+      // untilDate has to be in UTC format according to RFC5545 specification
+      const format = this.allDay ? "yyyyMMdd" : "yyyyMMdd'T'HHmmss'Z'";
+      const untilUTC = formatInTimeZone(untilLocal, "UTC", format);
+      contentline += `;UNTIL=${untilUTC}`;
     }
     return contentline.slice(6); // Strip "RRULE:" prefix
   }
