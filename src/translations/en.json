@@ -6748,8 +6748,8 @@
           "description": "Should we close the connection to the server after being hidden for 5 minutes?"
         },
         "push_notifications": {
-          "header": "Push notifications",
-          "description": "Send notifications to this device.",
+          "header": "Receive notifications",
+          "description": "Enable HTML5 browser notifications on this device.",
           "error_load_platform": "Configure notify.html5.",
           "error_use_https": "Requires SSL enabled for frontend.",
           "push_notifications": "Push notifications",
