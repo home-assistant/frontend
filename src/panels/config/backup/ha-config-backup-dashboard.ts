@@ -1,4 +1,4 @@
-import { mdiDelete, mdiPlus } from "@mdi/js";
+import { mdiDelete, mdiDownload, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -22,6 +22,7 @@ import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-svg-icon";
 import {
   fetchBackupInfo,
+  getBackupDownloadUrl,
   removeBackup,
   type BackupContent,
 } from "../../../data/backup";
@@ -38,6 +39,8 @@ import type { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import "./components/ha-backup-summary-card";
 import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
+import { getSignedPath } from "../../../data/auth";
+import { fileDownload } from "../../../util/file_download";
 
 @customElement("ha-config-backup-dashboard")
 class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
@@ -115,6 +118,11 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
             .hass=${this.hass}
             narrow
             .items=${[
+              {
+                label: this.hass.localize("ui.common.download"),
+                path: mdiDownload,
+                action: () => this._downloadBackup(backup),
+              },
               {
                 label: this.hass.localize("ui.common.delete"),
                 path: mdiDelete,
@@ -264,6 +272,14 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   private _showBackupDetails(ev: CustomEvent): void {
     const id = (ev.detail as RowClickedEvent).id;
     navigate(`/config/backup/details/${id}`);
+  }
+
+  private async _downloadBackup(backup: BackupContent): Promise<void> {
+    const signedUrl = await getSignedPath(
+      this.hass,
+      getBackupDownloadUrl(backup.backup_id)
+    );
+    fileDownload(signedUrl.path);
   }
 
   private async _deleteBackup(backup: BackupContent): Promise<void> {
