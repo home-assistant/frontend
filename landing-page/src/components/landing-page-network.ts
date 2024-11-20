@@ -20,6 +20,7 @@ import {
   setSupervisorNetworkDns,
 } from "../data/supervisor";
 import { fireEvent } from "../../../src/common/dom/fire_event";
+import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
 
 const SCHEDULE_FETCH_NETWORK_INFO_SECONDS = 5;
 
@@ -93,34 +94,36 @@ class LandingPageNetwork extends LitElement {
   }
 
   private async _fetchSupervisorInfo() {
+    let data;
     try {
       const response = await getSupervisorNetworkInfo();
       if (!response.ok) {
         throw new Error("Failed to fetch network info");
       }
 
-      const { data } = await response.json();
-
-      this._getNetworkInfoError = false;
-
-      if (!data.host_internet) {
-        this._networkIssue = true;
-        const primaryInterface = data.interfaces.find(
-          (intf) => intf.primary && intf.enabled
-        );
-        if (primaryInterface) {
-          this._dnsPrimaryInterface = [
-            ...(primaryInterface.ipv4?.nameservers || []),
-            ...(primaryInterface.ipv6?.nameservers || []),
-          ].join(", ");
-        }
-      } else {
-        this._networkIssue = false;
-      }
+      ({ data } = await response.json());
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(err);
       this._getNetworkInfoError = true;
+      return;
+    }
+
+    this._getNetworkInfoError = false;
+
+    if (!data.host_internet) {
+      this._networkIssue = true;
+      const primaryInterface = data.interfaces.find(
+        (intf) => intf.primary && intf.enabled
+      );
+      if (primaryInterface) {
+        this._dnsPrimaryInterface = [
+          ...(primaryInterface.ipv4?.nameservers || []),
+          ...(primaryInterface.ipv6?.nameservers || []),
+        ].join(", ");
+      }
+    } else {
+      this._networkIssue = false;
     }
 
     fireEvent(this, "value-changed", {
@@ -140,7 +143,11 @@ class LandingPageNetwork extends LitElement {
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(err);
-      this._getNetworkInfoError = true;
+      showAlertDialog(this, {
+        title: this.localize("network_issue.failed"),
+        text: this.localize("network_issue.set_dns_failed"),
+        confirmText: this.localize("network_issue.close"),
+      });
     }
   }
 

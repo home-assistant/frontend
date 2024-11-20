@@ -7519,7 +7519,10 @@
       "resolve_different": "To resolve this, you can try a different DNS server. Select one of the options below. Alternatively, change your router configuration to use your own custom DNS server.",
       "use_cloudflare": "Use Cloudflare DNS",
       "use_google": "Use Google DNS",
-      "no_primary_interface": "Home Assistant OS wasn't able to detect a primary network interface, so you cannot define a DNS server!"
+      "no_primary_interface": "Home Assistant OS wasn't able to detect a primary network interface, so you cannot define a DNS server!",
+      "failed": "Failed",
+      "set_dns_failed": "An error occurred while setting the DNS server. Please check the logs for more information and try again.",
+      "close": "[%key:ui::common::close%]"
     },
     "logs": {
       "scroll_down_button": "New logs - Click to scroll",
