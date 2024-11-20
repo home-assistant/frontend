@@ -951,3 +951,14 @@ export const setZWaveJSLogLevel = (
     entry_id,
     config: { level },
   });
+
+export interface ZWaveJSIntegrationSettings {
+  installer_mode: boolean;
+}
+
+export const fetchZwaveIntegrationSettings = (
+  hass: HomeAssistant
+): Promise<ZWaveJSIntegrationSettings> =>
+  hass.callWS({
+    type: "zwave_js/get_integration_settings",
+  });
