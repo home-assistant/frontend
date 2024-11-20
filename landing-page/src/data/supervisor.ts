@@ -17,10 +17,6 @@ export const ALTERNATIVE_DNS_SERVERS: {
   },
 ];
 
-export function getDownloadUrl(lines = 500) {
-  return `/supervisor/supervisor/logs?lines=${lines}`;
-}
-
 export async function getSupervisorLogs(lines = 100) {
   return fetch(`/supervisor/supervisor/logs?lines=${lines}`, {
     headers: {

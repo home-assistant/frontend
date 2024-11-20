@@ -21,11 +21,7 @@ import {
 } from "../data/observer";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import { fileDownload } from "../../../src/util/file_download";
-import {
-  getDownloadUrl,
-  getSupervisorLogs,
-  getSupervisorLogsFollow,
-} from "../data/supervisor";
+import { getSupervisorLogs, getSupervisorLogsFollow } from "../data/supervisor";
 
 const ERROR_CHECK = /^[\d\s-:]+(ERROR|CRITICAL)(.*)/gm;
 declare global {
@@ -267,12 +263,8 @@ class LandingPageLogs extends LitElement {
 
   private _downloadLogs() {
     const timeString = new Date().toISOString().replace(/:/g, "-");
-    const downloadUrl = this._observerFallback
-      ? observerLogsDownloadUrl
-      : getDownloadUrl(this._logLinesCount);
-    const downloadName = `${this._observerFallback ? "observer" : "supervisor"}_${timeString}.log`;
 
-    fileDownload(downloadUrl, downloadName);
+    fileDownload(observerLogsDownloadUrl, `observer_${timeString}.log`);
   }
 
   static styles = [
