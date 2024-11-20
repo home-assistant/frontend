@@ -308,8 +308,8 @@ export class HaLogbook extends LitElement {
         this.entityIds,
         this.deviceIds
       ).catch((err) => {
-          this._subscribed = undefined;
-          this._error = err;
+        this._subscribed = undefined;
+        this._error = err;
       });
     });
     return true;
