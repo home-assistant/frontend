@@ -76,6 +76,9 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
   }
 
   private _dialogClosed() {
+    if (this._params!.cancel) {
+      this._params!.cancel();
+    }
     this._step = undefined;
     this._formData = undefined;
     this._agents = [];
@@ -307,7 +310,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
 
     // TODO: Fetch all addons
     const ALL_ADDONS = [];
-    const { slug } = await generateBackup(this.hass, {
+    const { backup_id } = await generateBackup(this.hass, {
       name,
       agent_ids:
         agents_mode === "all"
@@ -318,7 +321,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
       addons_included: addons_mode === "all" ? ALL_ADDONS : addons,
     });
 
-    this._params!.submit?.({ slug });
+    this._params!.submit?.({ backup_id });
     this.closeDialog();
   }
 
