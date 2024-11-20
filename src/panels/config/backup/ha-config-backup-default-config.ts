@@ -47,7 +47,7 @@ class HaConfigBackupDefaultConfig extends LitElement {
                 </ha-select>
               </ha-settings-row>
               <ha-settings-row>
-                <span slot="heading">Locations</span>
+                <span slot="heading">Default locations</span>
                 <span slot="description">
                   What locations you want to automatically backup to.
                 </span>
