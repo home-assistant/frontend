@@ -7184,7 +7184,7 @@
             "attributes": "Attributes",
             "state_attributes": "State attributes (YAML, optional)",
             "set_state": "Set state",
-            "current_entities": "Current entities",
+            "current_entities": "Current entity states",
             "filter_entities": "Filter entities",
             "filter_states": "Filter states",
             "filter_attributes": "Filter attributes",
