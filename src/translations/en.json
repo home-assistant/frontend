@@ -2439,7 +2439,7 @@
                 "location_name": "Name",
                 "latitude": "Latitude",
                 "longitude": "Longitude",
-                "elevation": "Elevation",
+                "elevation": "Elevation above sea level",
                 "elevation_meters": "meters",
                 "time_zone": "Time zone",
                 "language": "Language",
