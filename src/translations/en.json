@@ -7527,7 +7527,7 @@
     },
     "tips": {
       "key_c_hint": "Press 'c' on any page to open the command dialog",
-      "key_e_hint": "Press 'e' on any page to open the Entity search dialog",
+      "key_e_hint": "Press 'e' on any page to open the entity search dialog",
       "key_m_hint": "Press 'm' on any page to get the My Home Assistant link"
     }
   },
