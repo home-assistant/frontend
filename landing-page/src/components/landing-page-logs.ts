@@ -18,6 +18,7 @@ import type { HaAnsiToHtml } from "../../../src/components/ha-ansi-to-html";
 import { getObserverLogs } from "../data/observer";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import { fileDownload } from "../../../src/util/file_download";
+import { getSupervisorLogs, getSupervisorLogsFollow } from "../data/supervisor";
 
 const ERROR_CHECK = /^[\d -:]+(ERROR|CRITICAL)(.*)/gm;
 declare global {
@@ -25,6 +26,8 @@ declare global {
     "landing-page-error": undefined;
   }
 }
+
+const SCHEDULE_FETCH_OBSERVER_LOGS = 5;
 
 @customElement("landing-page-logs")
 class LandingPageLogs extends LitElement {
@@ -73,7 +76,7 @@ class LandingPageLogs extends LitElement {
               alert-type="error"
               .title=${this.localize("logs.fetch_error")}
             >
-              <ha-button @click=${this._loadObserverLogs}>
+              <ha-button @click=${this._startLogStream}>
                 ${this.localize("logs.retry")}
               </ha-button>
             </ha-alert>
@@ -113,7 +116,7 @@ class LandingPageLogs extends LitElement {
 
     this._scrolledToBottomController.observe(this._scrollBottomMarkerElement!);
 
-    this._loadObserverLogs();
+    this._startLogStream();
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -139,13 +142,24 @@ class LandingPageLogs extends LitElement {
     }
   }
 
-  private _displayLogs(logs: string) {
-    this._ansiToHtmlElement?.clear();
+  private _displayLogs(logs: string, tempLogLine = "", clear = false): string {
+    if (clear) {
+      this._ansiToHtmlElement?.clear();
+    }
 
     const showError = ERROR_CHECK.test(logs);
 
     const scrolledToBottom = this._scrolledToBottomController.value;
-    const lines = logs.split("\n").filter((line) => line.trim() !== "");
+    const lines = `${tempLogLine}${logs}`
+      .split("\n")
+      .filter((line) => line.trim() !== "");
+
+    // handle edge case where the last line is not complete
+    if (logs.endsWith("\n")) {
+      tempLogLine = "";
+    } else {
+      tempLogLine = lines.splice(-1, 1)[0];
+    }
 
     if (lines.length) {
       this._ansiToHtmlElement?.parseLinesToColoredPre(lines);
@@ -161,10 +175,61 @@ class LandingPageLogs extends LitElement {
     } else {
       this._newLogsIndicator = true;
     }
+
+    return tempLogLine;
+  }
+
+  private async _startLogStream() {
+    this._error = false;
+    this._newLogsIndicator = false;
+    this._ansiToHtmlElement?.clear();
+
+    try {
+      const response = await getSupervisorLogsFollow();
+
+      if (!response.ok || !response.body) {
+        throw new Error("No stream body found");
+      }
+
+      let tempLogLine = "";
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let done = false;
+
+      while (!done) {
+        // eslint-disable-next-line no-await-in-loop
+        const { value, done: readerDone } = await reader.read();
+        done = readerDone;
+
+        if (value) {
+          const chunk = decoder.decode(value, { stream: !done });
+          tempLogLine = this._displayLogs(chunk, tempLogLine);
+        }
+      }
+    } catch (err: any) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+
+      // fallback to observerlogs if there is a problem with supervisor
+      this._loadObserverLogs();
+    }
   }
 
   private _scheduleObserverLogs() {
-    setTimeout(() => this._loadObserverLogs(), 5000);
+    setTimeout(async () => {
+      try {
+        // check if supervisor logs are available
+        const superVisorLogsResponse = await getSupervisorLogs(1);
+        if (superVisorLogsResponse.ok) {
+          this._startLogStream();
+          return;
+        }
+      } catch (err) {
+        // ignore and continue with observer logs
+      }
+      this._loadObserverLogs();
+    }, SCHEDULE_FETCH_OBSERVER_LOGS * 1000);
   }
 
   private async _loadObserverLogs() {
@@ -179,7 +244,7 @@ class LandingPageLogs extends LitElement {
 
       if (this._observerLogs !== logs) {
         this._observerLogs = logs;
-        this._displayLogs(logs);
+        this._displayLogs(logs, "", true);
       }
 
       this._scheduleObserverLogs();

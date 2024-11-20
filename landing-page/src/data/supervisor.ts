@@ -17,6 +17,22 @@ export const ALTERNATIVE_DNS_SERVERS: {
   },
 ];
 
+export async function getSupervisorLogs(lines = 100) {
+  return fetch(`/supervisor/supervisor/logs?lines=${lines}`, {
+    headers: {
+      Accept: "text/plain",
+    },
+  });
+}
+
+export async function getSupervisorLogsFollow(lines = 500) {
+  return fetch(`/supervisor/supervisor/logs/follow?lines=${lines}`, {
+    headers: {
+      Accept: "text/plain",
+    },
+  });
+}
+
 export async function getSupervisorNetworkInfo() {
   return fetch("/supervisor/network/info");
 }
