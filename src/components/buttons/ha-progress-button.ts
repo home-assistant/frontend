@@ -16,12 +16,6 @@ export class HaProgressButton extends LitElement {
 
   @state() private _result?: "success" | "error";
 
-  constructor() {
-    super();
-
-    this.addEventListener("click", this._buttonTapped);
-  }
-
   public render(): TemplateResult {
     const overlay = this._result || this.progress;
     return html`
@@ -70,8 +64,8 @@ export class HaProgressButton extends LitElement {
   }
 
   private _buttonTapped(ev: Event): void {
-    if (this.disabled || this.progress) {
-      ev.stopImmediatePropagation();
+    if (this.progress) {
+      ev.stopPropagation();
     }
   }
 
@@ -81,6 +75,7 @@ export class HaProgressButton extends LitElement {
         outline: none;
         display: inline-block;
         position: relative;
+        set-pointer-events: none;
       }
 
       mwc-button {
