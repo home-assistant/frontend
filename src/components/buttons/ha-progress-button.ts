@@ -16,13 +16,17 @@ export class HaProgressButton extends LitElement {
 
   @state() private _result?: "success" | "error";
 
+  constructor() {
+    super();
+    this.addEventListener("click", this._handleClick);
+  }
+
   public render(): TemplateResult {
     const overlay = this._result || this.progress;
     return html`
       <mwc-button
         ?raised=${this.raised}
         .disabled=${this.disabled || this.progress}
-        @click=${this._buttonTapped}
         class=${this._result || ""}
       >
         <slot></slot>
@@ -56,17 +60,17 @@ export class HaProgressButton extends LitElement {
     this._setResult("error");
   }
 
+  private _handleClick(ev: Event): void {
+    if (this.progress || this.disabled) {
+      ev.stopImmediatePropagation();
+    }
+  }
+
   private _setResult(result: "success" | "error"): void {
     this._result = result;
     setTimeout(() => {
       this._result = undefined;
     }, 2000);
-  }
-
-  private _buttonTapped(ev: Event): void {
-    if (this.progress) {
-      ev.stopPropagation();
-    }
   }
 
   static get styles(): CSSResultGroup {
@@ -75,7 +79,6 @@ export class HaProgressButton extends LitElement {
         outline: none;
         display: inline-block;
         position: relative;
-        set-pointer-events: none;
       }
 
       mwc-button {
