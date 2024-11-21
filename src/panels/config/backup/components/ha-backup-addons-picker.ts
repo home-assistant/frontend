@@ -17,7 +17,7 @@ type BackupAddon = {
   icon?: string;
 };
 
-const SELF_CREATED_ADDONS_FOLDER = "addons/local";
+export const SELF_CREATED_ADDONS_FOLDER = "addons/local";
 
 @customElement("ha-backup-addons-picker")
 export class HaBackupAddonsPicker extends LitElement {
@@ -32,40 +32,36 @@ export class HaBackupAddonsPicker extends LitElement {
       <div class="items">
         ${this.addons.map(
           (item) => html`
-            <ha-formfield
-              .label=${html`
-                <ha-backup-formfield-label
-                  .label=${item.name}
-                  .version=${item.version}
-                  .iconPath=${mdiPuzzle}
-                  .imageUrl=${this.addons?.find((a) => a.slug === item.slug)
-                    ?.icon
-                    ? `/api/hassio/addons/${item.slug}/icon`
-                    : undefined}
-                >
-                </ha-backup-formfield-label>
-              `}
-            >
+            <ha-formfield>
+              <ha-backup-formfield-label
+                slot="label"
+                .label=${item.name}
+                .version=${item.version}
+                .iconPath=${mdiPuzzle}
+                .imageUrl=${this.addons?.find((a) => a.slug === item.slug)?.icon
+                  ? `/api/hassio/addons/${item.slug}/icon`
+                  : undefined}
+              >
+              </ha-backup-formfield-label>
               <ha-checkbox
                 .id=${item.slug}
-                .checked=${this.value?.includes(item.slug)}
+                .checked=${this.value?.includes(item.slug) || false}
                 @change=${this._checkboxChanged}
               ></ha-checkbox>
             </ha-formfield>
           `
         )}
-        <ha-formfield
-          .label=${html`
-            <ha-backup-formfield-label
-              .label=${"Self created add-ons"}
-              .iconPath=${mdiFolder}
-            >
-            </ha-backup-formfield-label>
-          `}
-        >
+        <ha-formfield>
+          <ha-backup-formfield-label
+            slot="label"
+            .label=${"Self created add-ons"}
+            .iconPath=${mdiFolder}
+          >
+          </ha-backup-formfield-label>
           <ha-checkbox
             .id=${SELF_CREATED_ADDONS_FOLDER}
-            .checked=${this.value?.includes(SELF_CREATED_ADDONS_FOLDER)}
+            .checked=${this.value?.includes(SELF_CREATED_ADDONS_FOLDER) ||
+            false}
             @change=${this._checkboxChanged}
           ></ha-checkbox>
         </ha-formfield>

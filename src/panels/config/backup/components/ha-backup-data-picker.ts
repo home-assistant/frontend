@@ -197,15 +197,13 @@ export class HaBackupDataPicker extends LitElement {
       ${homeAssistantItems.length
         ? html`
             <div class="section">
-              <ha-formfield
-                .label=${html`
-                  <ha-backup-formfield-label
-                    .label=${"Home Assistant"}
-                    .iconPath=${mdiHomeAssistant}
-                  >
-                  </ha-backup-formfield-label>
-                `}
-              >
+              <ha-formfield>
+                <ha-backup-formfield-label
+                  slot="label"
+                  .label=${"Home Assistant"}
+                  .iconPath=${mdiHomeAssistant}
+                >
+                </ha-backup-formfield-label>
                 <ha-checkbox
                   .id=${"homeassistant"}
                   .checked=${selectedItems.homeassistant.length ===
@@ -219,16 +217,14 @@ export class HaBackupDataPicker extends LitElement {
               <div class="items">
                 ${homeAssistantItems.map(
                   (item) => html`
-                    <ha-formfield
-                      .label=${html`
-                        <ha-backup-formfield-label
-                          .label=${item.label}
-                          .version=${item.version}
-                          .iconPath=${ITEM_ICONS[item.id] || mdiFolder}
-                        >
-                        </ha-backup-formfield-label>
-                      `}
-                    >
+                    <ha-formfield>
+                      <ha-backup-formfield-label
+                        slot="label"
+                        .label=${item.label}
+                        .version=${item.version}
+                        .iconPath=${ITEM_ICONS[item.id] || mdiFolder}
+                      >
+                      </ha-backup-formfield-label>
                       <ha-checkbox
                         .id=${item.id}
                         .checked=${selectedItems.homeassistant.includes(
@@ -247,15 +243,13 @@ export class HaBackupDataPicker extends LitElement {
       ${addonsItems.length
         ? html`
             <div class="section">
-              <ha-formfield
-                .label=${html`
-                  <ha-backup-formfield-label
-                    .label=${"Add-ons"}
-                    .iconPath=${mdiPuzzle}
-                  >
-                  </ha-backup-formfield-label>
-                `}
-              >
+              <ha-formfield>
+                <ha-backup-formfield-label
+                  slot="label"
+                  .label=${"Add-ons"}
+                  .iconPath=${mdiPuzzle}
+                >
+                </ha-backup-formfield-label>
                 <ha-checkbox
                   .id=${"addons"}
                   .checked=${selectedItems.addons.length === addonsItems.length}
@@ -267,16 +261,14 @@ export class HaBackupDataPicker extends LitElement {
               <div class="items">
                 ${addonsItems.map(
                   (item) => html`
-                    <ha-formfield
-                      .label=${html`
-                        <ha-backup-formfield-label
-                          .label=${item.label}
-                          .version=${item.version}
-                          .iconPath=${ITEM_ICONS[item.id] || mdiPuzzle}
-                        >
-                        </ha-backup-formfield-label>
-                      `}
-                    >
+                    <ha-formfield>
+                      <ha-backup-formfield-label
+                        slot="label"
+                        .label=${item.label}
+                        .version=${item.version}
+                        .iconPath=${ITEM_ICONS[item.id] || mdiPuzzle}
+                      >
+                      </ha-backup-formfield-label>
                       <ha-checkbox
                         .id=${item.id}
                         .checked=${selectedItems.addons.includes(item.id)}
