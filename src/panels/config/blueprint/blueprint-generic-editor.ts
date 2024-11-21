@@ -1,25 +1,24 @@
 import "@material/mwc-button/mwc-button";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { nestedArrayMove } from "../../../common/util/array-move";
-import "../../../components/ha-alert";
 import "../../../components/ha-blueprint-picker";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-markdown";
 import "../../../components/ha-selector/ha-selector";
 import "../../../components/ha-settings-row";
-import { BlueprintAutomationConfig } from "../../../data/automation";
-import {
+import type { BlueprintAutomationConfig } from "../../../data/automation";
+import type {
   BlueprintInput,
   BlueprintInputSection,
   BlueprintOrError,
   Blueprints,
 } from "../../../data/blueprint";
-import { BlueprintScriptConfig } from "../../../data/script";
+import type { BlueprintScriptConfig } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 
 @customElement("blueprint-generic-editor")
 export abstract class HaBlueprintGenericEditor extends LitElement {
@@ -126,14 +125,14 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
       );
     const expanded = !section.collapsed || anyRequired;
 
-    return html` <ha-expansion-panel
+    return html`<ha-expansion-panel
       outlined
       .expanded=${expanded}
       .noCollapse=${anyRequired}
     >
       <div slot="header" role="heading" aria-level="3" class="section-header">
         ${section?.icon
-          ? html` <ha-icon
+          ? html`<ha-icon
               class="section-header"
               .icon=${section.icon}
             ></ha-icon>`
@@ -159,15 +158,6 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
     border: boolean
   ) {
     const selector = value?.selector ?? { text: undefined };
-    const type = Object.keys(selector)[0];
-    const enhancedSelector = ["action", "condition", "trigger"].includes(type)
-      ? {
-          [type]: {
-            ...selector[type],
-            path: [key],
-          },
-        }
-      : selector;
     return html`<ha-settings-row
       .narrow=${this.narrow}
       class=${border ? "border" : ""}
@@ -181,7 +171,7 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
       ></ha-markdown>
       ${html`<ha-selector
         .hass=${this.hass}
-        .selector=${enhancedSelector}
+        .selector=${selector}
         .key=${key}
         .disabled=${this.disabled}
         .required=${value?.default === undefined}
@@ -191,7 +181,6 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
           ? this._config.use_blueprint.input[key]
           : value?.default}
         @value-changed=${this._inputChanged}
-        @item-moved=${this._itemMoved}
       ></ha-selector>`}
     </ha-settings-row>`;
   }
@@ -236,33 +225,6 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
         },
       },
     });
-  }
-
-  private _itemMoved(ev) {
-    ev.stopPropagation();
-    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
-
-    const input = nestedArrayMove(
-      this._config.use_blueprint.input,
-      oldIndex,
-      newIndex,
-      oldPath,
-      newPath
-    );
-
-    fireEvent(this, "value-changed", {
-      value: {
-        ...this._config,
-        use_blueprint: {
-          ...this._config.use_blueprint,
-          input,
-        },
-      },
-    });
-  }
-
-  protected _duplicate() {
-    fireEvent(this, "duplicate");
   }
 
   static get styles(): CSSResultGroup {
@@ -318,20 +280,16 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
           margin-left: 8px;
           margin-right: 8px;
         }
-        ha-alert {
-          margin-bottom: 16px;
-          display: block;
-        }
-        ha-alert.re-order {
-          border-radius: var(--ha-card-border-radius, 12px);
-          overflow: hidden;
-        }
         div.section-header {
           display: flex;
           vertical-align: middle;
         }
         ha-icon.section-header {
           padding-right: 10px;
+        }
+        ha-alert {
+          display: block;
+          margin-bottom: 16px;
         }
       `,
     ];

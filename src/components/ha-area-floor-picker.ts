@@ -1,32 +1,27 @@
 import { mdiTextureBox } from "@mdi/js";
-import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
-import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import { LitElement, PropertyValues, TemplateResult, html, nothing } from "lit";
+import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues, TemplateResult } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { stringCompare } from "../common/string/compare";
-import {
-  ScorableTextItem,
-  fuzzyFilterSort,
-} from "../common/string/filter/sequence-matching";
+import type { ScorableTextItem } from "../common/string/filter/sequence-matching";
+import { fuzzyFilterSort } from "../common/string/filter/sequence-matching";
 import { computeRTL } from "../common/util/compute_rtl";
-import { AreaRegistryEntry } from "../data/area_registry";
-import {
+import type { AreaRegistryEntry } from "../data/area_registry";
+import type {
   DeviceEntityDisplayLookup,
   DeviceRegistryEntry,
-  getDeviceEntityDisplayLookup,
 } from "../data/device_registry";
-import { EntityRegistryDisplayEntry } from "../data/entity_registry";
-import {
-  FloorRegistryEntry,
-  getFloorAreaLookup,
-  subscribeFloorRegistry,
-} from "../data/floor_registry";
-import { SubscribeMixin } from "../mixins/subscribe-mixin";
-import { HomeAssistant, ValueChangedEvent } from "../types";
+import { getDeviceEntityDisplayLookup } from "../data/device_registry";
+import type { EntityRegistryDisplayEntry } from "../data/entity_registry";
+import type { FloorRegistryEntry } from "../data/floor_registry";
+import { getFloorAreaLookup } from "../data/floor_registry";
+import type { HomeAssistant, ValueChangedEvent } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
@@ -50,7 +45,7 @@ interface FloorAreaEntry {
 }
 
 @customElement("ha-area-floor-picker")
-export class HaAreaFloorPicker extends SubscribeMixin(LitElement) {
+export class HaAreaFloorPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public label?: string;
@@ -111,21 +106,11 @@ export class HaAreaFloorPicker extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public required = false;
 
-  @state() private _floors?: FloorRegistryEntry[];
-
   @state() private _opened?: boolean;
 
   @query("ha-combo-box", true) public comboBox!: HaComboBox;
 
   private _init = false;
-
-  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
-    return [
-      subscribeFloorRegistry(this.hass.connection, (floors) => {
-        this._floors = floors;
-      }),
-    ];
-  }
 
   public async open() {
     await this.updateComplete;
@@ -431,12 +416,12 @@ export class HaAreaFloorPicker extends SubscribeMixin(LitElement) {
 
   protected updated(changedProps: PropertyValues) {
     if (
-      (!this._init && this.hass && this._floors) ||
+      (!this._init && this.hass) ||
       (this._init && changedProps.has("_opened") && this._opened)
     ) {
       this._init = true;
       const areas = this._getAreas(
-        this._floors!,
+        Object.values(this.hass.floors),
         Object.values(this.hass.areas),
         Object.values(this.hass.devices),
         Object.values(this.hass.entities),

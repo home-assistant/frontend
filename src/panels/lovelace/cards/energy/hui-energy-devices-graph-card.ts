@@ -1,4 +1,4 @@
-import {
+import type {
   ChartData,
   ChartDataset,
   ChartOptions,
@@ -6,15 +6,9 @@ import {
   ScatterDataPoint,
 } from "chart.js";
 import { getRelativePosition } from "chart.js/helpers";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -27,17 +21,20 @@ import {
 import "../../../../components/chart/ha-chart-base";
 import type { HaChartBase } from "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
-import { EnergyData, getEnergyDataCollection } from "../../../../data/energy";
+import type { EnergyData } from "../../../../data/energy";
+import { getEnergyDataCollection } from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
   getStatisticLabel,
+  isExternalStatistic,
 } from "../../../../data/recorder";
-import { FrontendLocaleData } from "../../../../data/translation";
+import type { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCard } from "../../types";
-import { EnergyDevicesGraphCardConfig } from "../types";
+import type { HomeAssistant } from "../../../../types";
+import type { LovelaceCard } from "../../types";
+import type { EnergyDevicesGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
+import { clickIsTouch } from "../../../../components/chart/click_is_touch";
 
 @customElement("hui-energy-devices-graph-card")
 export class HuiEnergyDevicesGraphCard
@@ -158,15 +155,18 @@ export class HuiEnergyDevicesGraphCard
       // @ts-expect-error
       locale: numberFormatToLocale(this.hass.locale),
       onClick: (e: any) => {
+        if (clickIsTouch(e)) return;
         const chart = e.chart;
         const canvasPosition = getRelativePosition(e, chart);
 
         const index = Math.abs(
           chart.scales.y.getValueForPixel(canvasPosition.y)
         );
+        // @ts-ignore
+        const statisticId = this._chartData?.datasets[0]?.data[index]?.y;
+        if (!statisticId || isExternalStatistic(statisticId)) return;
         fireEvent(this, "hass-more-info", {
-          // @ts-ignore
-          entityId: this._chartData?.datasets[0]?.data[index]?.y,
+          entityId: statisticId,
         });
         chart.canvas.dispatchEvent(new Event("mouseout")); // to hide tooltip
       },

@@ -1,24 +1,23 @@
 import { mdiHomeImportOutline, mdiPause, mdiPlay } from "@mdi/js";
-import { HassEntity } from "home-assistant-js-websocket";
-import { LitElement, css, html, nothing } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-button";
+import "../../../components/ha-svg-icon";
 import "../../../components/ha-control-button-group";
 import { UNAVAILABLE } from "../../../data/entity";
-import {
-  LawnMowerEntity,
-  LawnMowerEntityFeature,
-  canDock,
-} from "../../../data/lawn_mower";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
-import {
-  LAWN_MOWER_COMMANDS,
+import type { LawnMowerEntity } from "../../../data/lawn_mower";
+import { LawnMowerEntityFeature, canDock } from "../../../data/lawn_mower";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
+import { cardFeatureStyles } from "./common/card-feature-styles";
+import type {
   LawnMowerCommand,
   LawnMowerCommandsCardFeatureConfig,
 } from "./types";
+import { LAWN_MOWER_COMMANDS } from "./types";
 
 interface LawnMowerButton {
   translationKey: string;
@@ -171,12 +170,7 @@ class HuiLawnMowerCommandCardFeature
   }
 
   static get styles() {
-    return css`
-      ha-control-button-group {
-        margin: 0 12px 12px 12px;
-        --control-button-group-spacing: 12px;
-      }
-    `;
+    return cardFeatureStyles;
   }
 }
 

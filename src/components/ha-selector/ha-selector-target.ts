@@ -1,27 +1,20 @@
-import { HassEntity, HassServiceTarget } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  nothing,
-} from "lit";
+import type {
+  HassEntity,
+  HassServiceTarget,
+} from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
-import {
-  DeviceRegistryEntry,
-  getDeviceIntegrationLookup,
-} from "../../data/device_registry";
-import {
-  EntitySources,
-  fetchEntitySourcesWithCache,
-} from "../../data/entity_sources";
+import type { DeviceRegistryEntry } from "../../data/device_registry";
+import { getDeviceIntegrationLookup } from "../../data/device_registry";
+import type { EntitySources } from "../../data/entity_sources";
+import { fetchEntitySourcesWithCache } from "../../data/entity_sources";
+import type { TargetSelector } from "../../data/selector";
 import {
   filterSelectorDevices,
   filterSelectorEntities,
-  TargetSelector,
   computeCreateDomains,
 } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
@@ -81,15 +74,16 @@ export class HaTargetSelector extends LitElement {
       return nothing;
     }
 
-    return html`<ha-target-picker
-      .hass=${this.hass}
-      .value=${this.value}
-      .helper=${this.helper}
-      .deviceFilter=${this._filterDevices}
-      .entityFilter=${this._filterEntities}
-      .disabled=${this.disabled}
-      .createDomains=${this._createDomains}
-    ></ha-target-picker>`;
+    return html` ${this.label ? html`<label>${this.label}</label>` : nothing}
+      <ha-target-picker
+        .hass=${this.hass}
+        .value=${this.value}
+        .helper=${this.helper}
+        .deviceFilter=${this._filterDevices}
+        .entityFilter=${this._filterEntities}
+        .disabled=${this.disabled}
+        .createDomains=${this._createDomains}
+      ></ha-target-picker>`;
   }
 
   private _filterEntities = (entity: HassEntity): boolean => {

@@ -24,9 +24,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@v4.2.2
       - name: Setup Node
-        uses: actions/setup-node@v4.0.2
+        uses: actions/setup-node@v4.1.0
         with:
           node-version-file: ".nvmrc"
           cache: yarn
@@ -37,7 +37,7 @@ jobs:
       - name: Build resources
         run: ./node_modules/.bin/gulp gen-icons-json build-translations build-locale-data gather-gallery-pages
       - name: Setup lint cache
-        uses: actions/cache@v4.0.2
+        uses: actions/cache@v4.1.2
         with:
           path: |
             node_modules/.cache/prettier
@@ -58,9 +58,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@v4.2.2
       - name: Setup Node
-        uses: actions/setup-node@v4.0.2
+        uses: actions/setup-node@v4.1.0
         with:
           node-version-file: ".nvmrc"
           cache: yarn
@@ -76,9 +76,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@v4.2.2
       - name: Setup Node
-        uses: actions/setup-node@v4.0.2
+        uses: actions/setup-node@v4.1.0
         with:
           node-version-file: ".nvmrc"
           cache: yarn
@@ -89,7 +89,7 @@ jobs:
         env:
           IS_TEST: "true"
       - name: Upload bundle stats
-        uses: actions/upload-artifact@v4.3.3
+        uses: actions/upload-artifact@v4.4.3
         with:
           name: frontend-bundle-stats
           path: build/stats/*.json
@@ -100,9 +100,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@v4.2.2
       - name: Setup Node
-        uses: actions/setup-node@v4.0.2
+        uses: actions/setup-node@v4.1.0
         with:
           node-version-file: ".nvmrc"
           cache: yarn
@@ -113,7 +113,7 @@ jobs:
         env:
           IS_TEST: "true"
       - name: Upload bundle stats
-        uses: actions/upload-artifact@v4.3.3
+        uses: actions/upload-artifact@v4.4.3
         with:
           name: supervisor-bundle-stats
           path: build/stats/*.json

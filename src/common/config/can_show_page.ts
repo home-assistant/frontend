@@ -1,5 +1,5 @@
-import { PageNavigation } from "../../layouts/hass-tabs-subpage";
-import { HomeAssistant } from "../../types";
+import type { PageNavigation } from "../../layouts/hass-tabs-subpage";
+import type { HomeAssistant } from "../../types";
 import { ensureArray } from "../array/ensure-array";
 import { isComponentLoaded } from "./is_component_loaded";
 

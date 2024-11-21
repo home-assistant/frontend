@@ -6,19 +6,11 @@ import {
   mdiPlus,
   mdiPencil,
 } from "@mdi/js";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import {
-  ConfigEntry,
-  getConfigEntries,
-} from "../../../../../data/config_entries";
+import type { ConfigEntry } from "../../../../../data/config_entries";
+import { getConfigEntries } from "../../../../../data/config_entries";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-button";
@@ -34,14 +26,16 @@ import "../../../../../components/ha-form/ha-form";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-settings-row";
 import { showZHAChangeChannelDialog } from "./show-dialog-zha-change-channel";
+import type {
+  ZHAConfiguration,
+  ZHANetworkSettings,
+  ZHANetworkBackupAndMetadata,
+} from "../../../../../data/zha";
 import {
   fetchZHAConfiguration,
   updateZHAConfiguration,
-  ZHAConfiguration,
   fetchZHANetworkSettings,
   createZHANetworkBackup,
-  ZHANetworkSettings,
-  ZHANetworkBackupAndMetadata,
 } from "../../../../../data/zha";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 

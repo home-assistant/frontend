@@ -1,25 +1,21 @@
-import { ActionDetail } from "@material/mwc-list";
+import type { ActionDetail } from "@material/mwc-list";
 import { mdiFilterVariant, mdiPlus } from "@mdi/js";
-import Fuse from "fuse.js";
 import type { IFuseOptions } from "fuse.js";
+import Fuse from "fuse.js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import {
-  protocolIntegrationPicked,
   PROTOCOL_INTEGRATIONS,
+  protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
+import { caseInsensitiveStringCompare } from "../../../common/string/compare";
+import { stripDiacritics } from "../../../common/string/strip-diacritics";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
@@ -29,19 +25,21 @@ import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/search-input";
-import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
+import "../../../components/search-input-outlined";
+import type { ConfigEntry } from "../../../data/config_entries";
+import { getConfigEntries } from "../../../data/config_entries";
 import { getConfigFlowInProgressCollection } from "../../../data/config_flow";
 import { fetchDiagnosticHandlers } from "../../../data/diagnostics";
-import {
-  EntityRegistryEntry,
-  subscribeEntityRegistry,
-} from "../../../data/entity_registry";
+import type { EntityRegistryEntry } from "../../../data/entity_registry";
+import { subscribeEntityRegistry } from "../../../data/entity_registry";
+import type {
+  IntegrationLogInfo,
+  IntegrationManifest,
+} from "../../../data/integration";
 import {
   domainToName,
   fetchIntegrationManifest,
   fetchIntegrationManifests,
-  IntegrationLogInfo,
-  IntegrationManifest,
   subscribeLogInfo,
 } from "../../../data/integration";
 import {
@@ -59,20 +57,22 @@ import "../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
+import { getStripDiacriticsFn } from "../../../util/fuse";
 import { configSections } from "../ha-panel-config";
 import { isHelperDomain } from "../helpers/const";
 import "./ha-config-flow-card";
-import { DataEntryFlowProgressExtended } from "./ha-config-integrations";
+import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
+import "./ha-disabled-config-entry-card";
 import "./ha-ignored-config-entry-card";
 import "./ha-integration-card";
 import type { HaIntegrationCard } from "./ha-integration-card";
 import "./ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
-import "./ha-disabled-config-entry-card";
-import { caseInsensitiveStringCompare } from "../../../common/string/compare";
-import "../../../components/search-input-outlined";
+import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
+import type { ImprovDiscoveredDevice } from "../../../external_app/external_messaging";
 
-export interface ConfigEntryExtended extends ConfigEntry {
+export interface ConfigEntryExtended extends Omit<ConfigEntry, "entry_id"> {
+  entry_id?: string;
   localized_domain_name?: string;
 }
 
@@ -106,11 +106,16 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: false })
   public configEntriesInProgress?: DataEntryFlowProgressExtended[];
 
+  @state() private _improvDiscovered: Map<string, ImprovDiscoveredDevice> =
+    new Map();
+
   @state()
   private _entityRegistryEntries: EntityRegistryEntry[] = [];
 
   @state()
   private _manifests: Record<string, IntegrationManifest> = {};
+
+  @state() private _domainEntities: Record<string, string[]> = {};
 
   private _extraFetchedManifests?: Set<string>;
 
@@ -130,6 +135,18 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     [integration: string]: IntegrationLogInfo;
   };
 
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.removeEventListener(
+      "improv-discovered-device",
+      this._handleImprovDiscovered
+    );
+    window.removeEventListener(
+      "improv-device-setup-done",
+      this._reScanImprovDevices
+    );
+  }
+
   public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
     return [
       subscribeEntityRegistry(this.hass.connection, (entries) => {
@@ -147,13 +164,57 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
 
   private _filterConfigEntries = memoizeOne(
     (
+      components: string[],
+      manifests: Record<string, IntegrationManifest>,
       configEntries: ConfigEntryExtended[],
+      localize: HomeAssistant["localize"],
       filter?: string
     ): [
       [string, ConfigEntryExtended[]][],
       ConfigEntryExtended[],
       ConfigEntryExtended[],
     ] => {
+      const entryDomains = new Set(configEntries.map((entry) => entry.domain));
+
+      const domains = new Set<string>();
+
+      for (const component of components) {
+        const componentDomain = component.split(".")[0];
+        if (
+          !entryDomains.has(componentDomain) &&
+          manifests[componentDomain] &&
+          !manifests[componentDomain].config_flow &&
+          (!manifests[componentDomain].integration_type ||
+            ["device", "hub", "service", "integration"].includes(
+              manifests[componentDomain].integration_type!
+            ))
+        ) {
+          domains.add(componentDomain);
+        }
+      }
+
+      const nonConfigEntry: ConfigEntryExtended[] = [...domains].map(
+        (domain) => ({
+          domain,
+          localized_domain_name: domainToName(localize, domain),
+          title: domain,
+          source: "yaml",
+          state: "loaded",
+          supports_options: false,
+          supports_remove_device: false,
+          supports_unload: false,
+          supports_reconfigure: false,
+          pref_disable_new_entities: false,
+          pref_disable_polling: false,
+          disabled_by: null,
+          reason: null,
+          error_reason_translation_key: null,
+          error_reason_translation_placeholders: null,
+        })
+      );
+
+      const allEntries = [...configEntries, ...nonConfigEntry];
+
       let filteredConfigEntries: ConfigEntryExtended[];
       const ignored: ConfigEntryExtended[] = [];
       const disabled: ConfigEntryExtended[] = [];
@@ -165,12 +226,12 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
           minMatchCharLength: Math.min(filter.length, 2),
           threshold: 0.2,
         };
-        const fuse = new Fuse(configEntries, options);
+        const fuse = new Fuse(allEntries, options);
         filteredConfigEntries = fuse
           .search(filter)
           .map((result) => result.item);
       } else {
-        filteredConfigEntries = configEntries;
+        filteredConfigEntries = allEntries;
       }
 
       for (const entry of filteredConfigEntries) {
@@ -199,8 +260,38 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
   private _filterConfigEntriesInProgress = memoizeOne(
     (
       configEntriesInProgress: DataEntryFlowProgressExtended[],
+      improvDiscovered: Map<string, ImprovDiscoveredDevice>,
       filter?: string
     ): DataEntryFlowProgressExtended[] => {
+      let inProgress = [...configEntriesInProgress];
+
+      const improvDiscoveredArray = Array.from(improvDiscovered.values());
+
+      if (improvDiscoveredArray.length) {
+        // filter out native flows that have been discovered by both mobile and local bluetooth
+        inProgress = inProgress.filter(
+          (flow) =>
+            !improvDiscoveredArray.some(
+              (discovered) => discovered.name === flow.localized_title
+            )
+        );
+
+        // add mobile flows to the list
+        improvDiscovered.forEach((discovered) => {
+          inProgress.push({
+            flow_id: "external",
+            handler: "improv_ble",
+            context: {
+              title_placeholders: {
+                name: discovered.name,
+              },
+            },
+            step_id: "bluetooth_confirm",
+            localized_title: discovered.name,
+          });
+        });
+      }
+
       let filteredEntries: DataEntryFlowProgressExtended[];
       if (filter) {
         const options: IFuseOptions<DataEntryFlowProgressExtended> = {
@@ -208,11 +299,14 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
           isCaseSensitive: false,
           minMatchCharLength: Math.min(filter.length, 2),
           threshold: 0.2,
+          getFn: getStripDiacriticsFn,
         };
-        const fuse = new Fuse(configEntriesInProgress, options);
-        filteredEntries = fuse.search(filter).map((result) => result.item);
+        const fuse = new Fuse(inProgress, options);
+        filteredEntries = fuse
+          .search(stripDiacritics(filter))
+          .map((result) => result.item);
       } else {
-        filteredEntries = configEntriesInProgress;
+        filteredEntries = inProgress;
       }
       return filteredEntries.sort((a, b) =>
         caseInsensitiveStringCompare(
@@ -227,10 +321,13 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
   protected firstUpdated(changed: PropertyValues) {
     super.firstUpdated(changed);
     this._fetchManifests();
+    this._fetchEntitySources();
     if (this.route.path === "/add") {
       this._handleAdd();
     }
     this._scanUSBDevices();
+    this._scanImprovDevices();
+
     if (isComponentLoaded(this.hass, "diagnostics")) {
       fetchDiagnosticHandlers(this.hass).then((infos) => {
         const handlers = {};
@@ -261,6 +358,11 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
         this.configEntriesInProgress.map((flow) => flow.handler)
       );
     }
+    if (changed.has("configEntries") && this.configEntries) {
+      this._fetchIntegrationManifests(
+        this.configEntries.map((entry) => entry.domain)
+      );
+    }
   }
 
   protected render() {
@@ -271,9 +373,16 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
       ></hass-loading-screen>`;
     }
     const [integrations, ignoredConfigEntries, disabledConfigEntries] =
-      this._filterConfigEntries(this.configEntries, this._filter);
+      this._filterConfigEntries(
+        this.hass.config.components,
+        this._manifests,
+        this.configEntries,
+        this.hass.localize,
+        this._filter
+      );
     const configEntriesInProgress = this._filterConfigEntriesInProgress(
       this.configEntriesInProgress,
+      this._improvDiscovered,
       this._filter
     );
 
@@ -458,6 +567,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
                     .items=${items}
                     .manifest=${this._manifests[domain]}
                     .entityRegistryEntries=${this._entityRegistryEntries}
+                    .domainEntities=${this._domainEntities[domain] || []}
                     .supportsDiagnostics=${this._diagnosticHandlers
                       ? this._diagnosticHandlers[domain]
                       : false}
@@ -547,6 +657,58 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     await scanUSBDevices(this.hass);
   }
 
+  private _scanImprovDevices() {
+    if (!this.hass.auth.external?.config.canSetupImprov) {
+      return;
+    }
+
+    window.addEventListener(
+      "improv-discovered-device",
+      this._handleImprovDiscovered
+    );
+
+    window.addEventListener(
+      "improv-device-setup-done",
+      this._reScanImprovDevices
+    );
+
+    this.hass.auth.external!.fireMessage({
+      type: "improv/scan",
+    });
+  }
+
+  private _reScanImprovDevices = () => {
+    if (!this.hass.auth.external?.config.canSetupImprov) {
+      return;
+    }
+    this._improvDiscovered = new Map();
+    this.hass.auth.external!.fireMessage({
+      type: "improv/scan",
+    });
+  };
+
+  private _handleImprovDiscovered = (ev) => {
+    this._fetchManifests(["improv_ble"]);
+    this._improvDiscovered.set(ev.detail.name, ev.detail);
+    // copy for memoize and reactive updates
+    this._improvDiscovered = new Map(Array.from(this._improvDiscovered));
+  };
+
+  private async _fetchEntitySources() {
+    const entitySources = await fetchEntitySourcesWithCache(this.hass);
+
+    const entitiesByDomain = {};
+
+    for (const [entity, source] of Object.entries(entitySources)) {
+      if (!(source.domain in entitiesByDomain)) {
+        entitiesByDomain[source.domain] = [];
+      }
+      entitiesByDomain[source.domain].push(entity);
+    }
+
+    this._domainEntities = entitiesByDomain;
+  }
+
   private async _fetchManifests(integrations?: string[]) {
     const fetched = await fetchIntegrationManifests(this.hass, integrations);
     // Make a copy so we can keep track of previously loaded manifests
@@ -581,6 +743,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
 
   private _handleFlowUpdated() {
     getConfigFlowInProgressCollection(this.hass.connection).refresh();
+    this._reScanImprovDevices();
     this._fetchManifests();
   }
 
@@ -663,6 +826,10 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
       if (integration.single_config_entry) {
         const configEntries = await getConfigEntries(this.hass, { domain });
         if (configEntries.length > 0) {
+          const localize = await this.hass.loadBackendTranslation(
+            "title",
+            integration.name
+          );
           showAlertDialog(this, {
             title: this.hass.localize(
               "ui.panel.config.integrations.config_flow.single_config_entry_title"
@@ -670,7 +837,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
             text: this.hass.localize(
               "ui.panel.config.integrations.config_flow.single_config_entry",
               {
-                integration_name: integration.name,
+                integration_name: domainToName(localize, integration.name!),
               }
             ),
           });

@@ -1,9 +1,10 @@
 import "@material/mwc-button";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "../components/ha-alert";
 
 @customElement("hass-error-screen")

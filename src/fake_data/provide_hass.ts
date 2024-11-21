@@ -1,4 +1,4 @@
-import { HassEntities, HassEntity } from "home-assistant-js-websocket";
+import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import {
   applyThemesOnElement,
   invalidateThemeCache,
@@ -15,12 +15,13 @@ import {
   TimeZone,
 } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import { getLocalLanguage, getTranslation } from "../util/common-translation";
 import { demoConfig } from "./demo_config";
 import { demoPanels } from "./demo_panels";
 import { demoServices } from "./demo_services";
-import { Entity, getEntity } from "./entity";
+import type { Entity } from "./entity";
+import { getEntity } from "./entity";
 
 const ensureArray = <T>(val: T | T[]): T[] =>
   Array.isArray(val) ? val : [val];
@@ -226,6 +227,7 @@ export const provideHass = (
       },
       suspendReconnectUntil: noop,
       suspend: noop,
+      ping: noop,
       socket: {
         readyState: WebSocket.OPEN,
       },
@@ -278,6 +280,8 @@ export const provideHass = (
     // @ts-ignore
     async callService(domain, service, data) {
       if (data && "entity_id" in data) {
+        // eslint-disable-next-line
+        console.log("Entity service call", domain, service, data);
         await Promise.all(
           ensureArray(data.entity_id).map((ent) =>
             entities[ent].handleService(domain, service, data)
@@ -352,7 +356,7 @@ export const provideHass = (
       (state !== null ? state : stateObj.state) ?? "",
     formatEntityAttributeName: (_stateObj, attribute) => attribute,
     formatEntityAttributeValue: (stateObj, attribute, value) =>
-      value !== null ? value : stateObj.attributes[attribute] ?? "",
+      value !== null ? value : (stateObj.attributes[attribute] ?? ""),
     ...overrideData,
   };
 

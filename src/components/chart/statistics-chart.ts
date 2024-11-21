@@ -4,14 +4,8 @@ import type {
   ChartOptions,
   ChartType,
 } from "chart.js";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { getGraphColorByIndex } from "../../common/color/colors";
@@ -22,15 +16,17 @@ import {
   numberFormatToLocale,
   getNumberFormatOptions,
 } from "../../common/number/format_number";
+import type {
+  Statistics,
+  StatisticsMetaData,
+  StatisticType,
+} from "../../data/recorder";
 import {
   getDisplayUnit,
   getStatisticLabel,
   getStatisticMetadata,
   isExternalStatistic,
-  Statistics,
   statisticsHaveType,
-  StatisticsMetaData,
-  StatisticType,
 } from "../../data/recorder";
 import type { HomeAssistant } from "../../types";
 import "./ha-chart-base";
@@ -39,6 +35,7 @@ import type {
   ChartDatasetExtra,
   HaChartBase,
 } from "./ha-chart-base";
+import { clickIsTouch } from "./click_is_touch";
 
 export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
   mean: "mean",
@@ -74,6 +71,12 @@ export class StatisticsChart extends LitElement {
   ];
 
   @property() public chartType: ChartType = "line";
+
+  @property({ type: Number }) public minYAxis?: number;
+
+  @property({ type: Number }) public maxYAxis?: number;
+
+  @property({ type: Boolean }) public fitYData = false;
 
   @property({ type: Boolean }) public hideLegend = false;
 
@@ -116,6 +119,9 @@ export class StatisticsChart extends LitElement {
       changedProps.has("unit") ||
       changedProps.has("period") ||
       changedProps.has("chartType") ||
+      changedProps.has("minYAxis") ||
+      changedProps.has("maxYAxis") ||
+      changedProps.has("fitYData") ||
       changedProps.has("logarithmicScale") ||
       changedProps.has("hideLegend")
     ) {
@@ -235,6 +241,8 @@ export class StatisticsChart extends LitElement {
             text: unit || this.unit,
           },
           type: this.logarithmicScale ? "logarithmic" : "linear",
+          min: this.fitYData ? null : this.minYAxis,
+          max: this.fitYData ? null : this.maxYAxis,
         },
       },
       plugins: {
@@ -278,11 +286,7 @@ export class StatisticsChart extends LitElement {
       // @ts-expect-error
       locale: numberFormatToLocale(this.hass.locale),
       onClick: (e: any) => {
-        if (
-          !this.clickForMoreInfo ||
-          !(e.native instanceof MouseEvent) ||
-          (e.native instanceof PointerEvent && e.native.pointerType !== "mouse")
-        ) {
+        if (!this.clickForMoreInfo || clickIsTouch(e)) {
           return;
         }
 

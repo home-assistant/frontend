@@ -1,12 +1,13 @@
 import { TextFieldBase } from "@material/mwc-textfield/mwc-textfield-base";
 import { styles } from "@material/mwc-textfield/mwc-textfield.css";
-import { TemplateResult, html, PropertyValues, css } from "lit";
+import type { TemplateResult, PropertyValues } from "lit";
+import { html, css } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { mainWindow } from "../common/dom/get_main_window";
 
 @customElement("ha-textfield")
 export class HaTextField extends TextFieldBase {
-  @property({ type: Boolean }) public invalid = false;
+  @property({ type: Boolean }) public invalid?: boolean;
 
   @property({ attribute: "error-message" }) public errorMessage?: string;
 
@@ -28,14 +29,24 @@ export class HaTextField extends TextFieldBase {
   override updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
     if (
-      (changedProperties.has("invalid") &&
-        (this.invalid || changedProperties.get("invalid") !== undefined)) ||
+      changedProperties.has("invalid") ||
       changedProperties.has("errorMessage")
     ) {
       this.setCustomValidity(
-        this.invalid ? this.errorMessage || "Invalid" : ""
+        this.invalid
+          ? this.errorMessage || this.validationMessage || "Invalid"
+          : ""
       );
-      this.reportValidity();
+      if (
+        this.invalid ||
+        this.validateOnInitialRender ||
+        (changedProperties.has("invalid") &&
+          changedProperties.get("invalid") !== undefined)
+      ) {
+        // Only report validity if the field is invalid or the invalid state has changed from
+        // true to false to prevent setting empty required fields to invalid on first render
+        this.reportValidity();
+      }
     }
     if (changedProperties.has("autocomplete")) {
       if (this.autocomplete) {
@@ -109,7 +120,7 @@ export class HaTextField extends TextFieldBase {
         color: var(--secondary-text-color);
       }
 
-      .mdc-text-field__icon {
+      .mdc-text-field:not(.mdc-text-field--disabled) .mdc-text-field__icon {
         color: var(--secondary-text-color);
       }
 

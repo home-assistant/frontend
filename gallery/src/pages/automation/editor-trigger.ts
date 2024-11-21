@@ -1,5 +1,5 @@
-/* eslint-disable lit/no-template-arrow */
-import { LitElement, TemplateResult, html, css } from "lit";
+import type { TemplateResult } from "lit";
+import { LitElement, html, css } from "lit";
 import { customElement, state } from "lit/decorators";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import type { HomeAssistant } from "../../../../src/types";
@@ -8,6 +8,9 @@ import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
 import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
 import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
 import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
+import { mockConfig } from "../../../../demo/src/stubs/config";
+import { mockTags } from "../../../../demo/src/stubs/tags";
+import { mockAuth } from "../../../../demo/src/stubs/auth";
 import type { Trigger } from "../../../../src/data/automation";
 import { HaGeolocationTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-geo_location";
 import { HaEventTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-event";
@@ -26,59 +29,53 @@ import { HaStateTrigger } from "../../../../src/panels/config/automation/trigger
 import { HaMQTTTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-mqtt";
 import "../../../../src/panels/config/automation/trigger/ha-automation-trigger";
 import { HaConversationTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-conversation";
+import { HaTriggerList } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-list";
 
 const SCHEMAS: { name: string; triggers: Trigger[] }[] = [
   {
     name: "State",
-    triggers: [{ platform: "state", ...HaStateTrigger.defaultConfig }],
+    triggers: [{ ...HaStateTrigger.defaultConfig }],
   },
 
   {
     name: "MQTT",
-    triggers: [{ platform: "mqtt", ...HaMQTTTrigger.defaultConfig }],
+    triggers: [{ ...HaMQTTTrigger.defaultConfig }],
   },
 
   {
     name: "GeoLocation",
-    triggers: [
-      { platform: "geo_location", ...HaGeolocationTrigger.defaultConfig },
-    ],
+    triggers: [{ ...HaGeolocationTrigger.defaultConfig }],
   },
 
   {
     name: "Home Assistant",
-    triggers: [{ platform: "homeassistant", ...HaHassTrigger.defaultConfig }],
+    triggers: [{ ...HaHassTrigger.defaultConfig }],
   },
 
   {
     name: "Numeric State",
-    triggers: [
-      { platform: "numeric_state", ...HaNumericStateTrigger.defaultConfig },
-    ],
+    triggers: [{ ...HaNumericStateTrigger.defaultConfig }],
   },
 
   {
     name: "Sun",
-    triggers: [{ platform: "sun", ...HaSunTrigger.defaultConfig }],
+    triggers: [{ ...HaSunTrigger.defaultConfig }],
   },
 
   {
     name: "Time Pattern",
-    triggers: [
-      { platform: "time_pattern", ...HaTimePatternTrigger.defaultConfig },
-    ],
+    triggers: [{ ...HaTimePatternTrigger.defaultConfig }],
   },
 
   {
     name: "Webhook",
-    triggers: [{ platform: "webhook", ...HaWebhookTrigger.defaultConfig }],
+    triggers: [{ ...HaWebhookTrigger.defaultConfig }],
   },
 
   {
     name: "Persistent Notification",
     triggers: [
       {
-        platform: "persistent_notification",
         ...HaPersistentNotificationTrigger.defaultConfig,
       },
     ],
@@ -86,42 +83,46 @@ const SCHEMAS: { name: string; triggers: Trigger[] }[] = [
 
   {
     name: "Zone",
-    triggers: [{ platform: "zone", ...HaZoneTrigger.defaultConfig }],
+    triggers: [{ ...HaZoneTrigger.defaultConfig }],
   },
 
   {
     name: "Tag",
-    triggers: [{ platform: "tag", ...HaTagTrigger.defaultConfig }],
+    triggers: [{ ...HaTagTrigger.defaultConfig }],
   },
 
   {
     name: "Time",
-    triggers: [{ platform: "time", ...HaTimeTrigger.defaultConfig }],
+    triggers: [{ ...HaTimeTrigger.defaultConfig }],
   },
 
   {
     name: "Template",
-    triggers: [{ platform: "template", ...HaTemplateTrigger.defaultConfig }],
+    triggers: [{ ...HaTemplateTrigger.defaultConfig }],
   },
 
   {
     name: "Event",
-    triggers: [{ platform: "event", ...HaEventTrigger.defaultConfig }],
+    triggers: [{ ...HaEventTrigger.defaultConfig }],
   },
 
   {
     name: "Device Trigger",
-    triggers: [{ platform: "device", ...HaDeviceTrigger.defaultConfig }],
+    triggers: [{ ...HaDeviceTrigger.defaultConfig }],
   },
   {
     name: "Sentence",
     triggers: [
-      { platform: "conversation", ...HaConversationTrigger.defaultConfig },
+      { ...HaConversationTrigger.defaultConfig },
       {
-        platform: "conversation",
+        trigger: "conversation",
         command: ["Turn on the lights", "Turn the lights on"],
       },
     ],
+  },
+  {
+    name: "Trigger list",
+    triggers: [{ ...HaTriggerList.defaultConfig }],
   },
 ];
 
@@ -142,6 +143,9 @@ export class DemoAutomationEditorTrigger extends LitElement {
     mockDeviceRegistry(hass);
     mockAreaRegistry(hass);
     mockHassioSupervisor(hass);
+    mockConfig(hass);
+    mockTags(hass);
+    mockAuth(hass);
   }
 
   protected render(): TemplateResult {

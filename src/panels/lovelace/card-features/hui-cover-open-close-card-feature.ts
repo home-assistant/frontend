@@ -1,6 +1,6 @@
 import { mdiStop } from "@mdi/js";
-import { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import {
@@ -9,6 +9,7 @@ import {
 } from "../../../common/entity/cover_icon";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-button";
+import "../../../components/ha-svg-icon";
 import "../../../components/ha-control-button-group";
 import {
   canClose,
@@ -16,9 +17,10 @@ import {
   canStop,
   CoverEntityFeature,
 } from "../../../data/cover";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCardFeature } from "../types";
-import { CoverOpenCloseCardFeatureConfig } from "./types";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardFeature } from "../types";
+import { cardFeatureStyles } from "./common/card-feature-styles";
+import type { CoverOpenCloseCardFeatureConfig } from "./types";
 
 export const supportsCoverOpenCloseCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -128,12 +130,7 @@ class HuiCoverOpenCloseCardFeature
   }
 
   static get styles() {
-    return css`
-      ha-control-button-group {
-        margin: 0 12px 12px 12px;
-        --control-button-group-spacing: 12px;
-      }
-    `;
+    return cardFeatureStyles;
   }
 }
 

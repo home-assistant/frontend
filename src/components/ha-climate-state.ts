@@ -1,13 +1,8 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import { CLIMATE_PRESET_NONE, ClimateEntity } from "../data/climate";
+import type { ClimateEntity } from "../data/climate";
+import { CLIMATE_PRESET_NONE } from "../data/climate";
 import { isUnavailableState, OFF } from "../data/entity";
 import type { HomeAssistant } from "../types";
 

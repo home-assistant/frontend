@@ -1,4 +1,5 @@
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 
@@ -25,9 +26,9 @@ export class HaTileImage extends LitElement {
     return css`
       .image {
         position: relative;
-        width: 40px;
-        height: 40px;
-        border-radius: 20px;
+        width: 36px;
+        height: 36px;
+        border-radius: 18px;
         display: flex;
         flex: none;
         align-items: center;

@@ -1,4 +1,5 @@
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
   any,
@@ -16,7 +17,8 @@ import {
   type,
   union,
 } from "superstruct";
-import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { customType } from "../../../../common/structs/is-custom-type";
 import "../../../../components/ha-card";
 import "../../../../components/ha-formfield";
@@ -39,9 +41,9 @@ import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { buttonEntityConfigStruct } from "../structs/button-entity-struct";
 import { entitiesConfigStruct } from "../structs/entities-struct";
-import {
+import type {
   EditorTarget,
-  EditSubElementEvent,
+  EditDetailElementEvent,
   SubElementEditorConfig,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
@@ -67,9 +69,10 @@ const castEntitiesRowConfigStruct = object({
 });
 
 const callServiceEntitiesRowConfigStruct = object({
-  type: literal("call-service"),
+  type: enums(["call-service", "perform-action"]),
   name: string(),
-  service: string(),
+  service: optional(string()),
+  action: optional(string()),
   icon: optional(string()),
   action_name: optional(string()),
   // "service_data" is kept for backwards compatibility. Replaced by "data".
@@ -80,13 +83,7 @@ const callServiceEntitiesRowConfigStruct = object({
 const conditionalEntitiesRowConfigStruct = object({
   type: literal("conditional"),
   row: any(),
-  conditions: array(
-    object({
-      entity: string(),
-      state: optional(string()),
-      state_not: optional(string()),
-    })
-  ),
+  conditions: array(any()),
 });
 
 const dividerEntitiesRowConfigStruct = object({
@@ -149,6 +146,7 @@ const entitiesRowConfigStruct = dynamic<any>((value) => {
       case "buttons": {
         return buttonsEntitiesRowConfigStruct;
       }
+      case "perform-action":
       case "call-service": {
         return callServiceEntitiesRowConfigStruct;
       }
@@ -399,7 +397,7 @@ export class HuiEntitiesCardEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _editDetailElement(ev: HASSDomEvent<EditSubElementEvent>): void {
+  private _editDetailElement(ev: HASSDomEvent<EditDetailElementEvent>): void {
     this._subElementEditorConfig = ev.detail.subElementConfig;
   }
 

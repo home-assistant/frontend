@@ -1,33 +1,28 @@
-import {
-  mdiBug,
-  mdiClose,
-  mdiDotsVertical,
-  mdiStar,
-  mdiStarOutline,
-} from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import { mdiClose, mdiDotsVertical } from "@mdi/js";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
-import { navigate } from "../../../common/navigate";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog-header";
 import "../../../components/ha-form/ha-form";
-import {
+import type {
   AssistPipeline,
   AssistPipelineMutableParams,
-  fetchAssistPipelineLanguages,
 } from "../../../data/assist_pipeline";
+import { fetchAssistPipelineLanguages } from "../../../data/assist_pipeline";
 import { haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import "./assist-pipeline-detail/assist-pipeline-detail-config";
 import "./assist-pipeline-detail/assist-pipeline-detail-conversation";
 import "./assist-pipeline-detail/assist-pipeline-detail-stt";
 import "./assist-pipeline-detail/assist-pipeline-detail-tts";
 import "./assist-pipeline-detail/assist-pipeline-detail-wakeword";
 import "./debug/assist-render-pipeline-events";
-import { VoiceAssistantPipelineDetailsDialogParams } from "./show-dialog-voice-assistant-pipeline-detail";
+import type { VoiceAssistantPipelineDetailsDialogParams } from "./show-dialog-voice-assistant-pipeline-detail";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 
 @customElement("dialog-voice-assistant-pipeline-detail")
 export class DialogVoiceAssistantPipelineDetail extends LitElement {
@@ -37,7 +32,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
 
   @state() private _data?: Partial<AssistPipeline>;
 
-  @state() private _preferred?: boolean;
+  @state() private _hideWakeWord = false;
 
   @state() private _cloudActive?: boolean;
 
@@ -51,23 +46,50 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
     this._params = params;
     this._error = undefined;
     this._cloudActive = this._params.cloudActiveSubscription;
+
     if (this._params.pipeline) {
-      this._data = this._params.pipeline;
-      this._preferred = this._params.preferred;
-    } else {
-      this._data = {
-        language: (
-          this.hass.config.language || this.hass.locale.language
-        ).substring(0, 2),
-        stt_engine: this._cloudActive ? "cloud" : undefined,
-        tts_engine: this._cloudActive ? "cloud" : undefined,
-      };
+      this._data = { prefer_local_intents: false, ...this._params.pipeline };
+
+      this._hideWakeWord =
+        this._params.hideWakeWord || !this._data.wake_word_entity;
+      return;
     }
+
+    this._hideWakeWord = true;
+
+    let sstDefault: string | undefined;
+    let ttsDefault: string | undefined;
+    if (this._cloudActive) {
+      for (const entity of Object.values(this.hass.entities)) {
+        if (entity.platform !== "cloud") {
+          continue;
+        }
+        if (computeDomain(entity.entity_id) === "stt") {
+          sstDefault = entity.entity_id;
+          if (ttsDefault) {
+            break;
+          }
+        } else if (computeDomain(entity.entity_id) === "tts") {
+          ttsDefault = entity.entity_id;
+          if (sstDefault) {
+            break;
+          }
+        }
+      }
+    }
+    this._data = {
+      language: (
+        this.hass.config.language || this.hass.locale.language
+      ).substring(0, 2),
+      stt_engine: sstDefault,
+      tts_engine: ttsDefault,
+    };
   }
 
   public closeDialog(): void {
     this._params = undefined;
     this._data = undefined;
+    this._hideWakeWord = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -79,6 +101,10 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
     const { languages } = await fetchAssistPipelineLanguages(this.hass);
     this._supportedLanguages = languages;
   }
+
+  private _hasWakeWorkEntities = memoizeOne((states: HomeAssistant["states"]) =>
+    Object.keys(states).some((entityId) => entityId.startsWith("wake_word."))
+  );
 
   protected render() {
     if (!this._params || !this._data) {
@@ -107,39 +133,27 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
             .path=${mdiClose}
           ></ha-icon-button>
           <span slot="title" .title=${title}>${title}</span>
-          ${this._params.pipeline?.id
-            ? html`
+          ${!this._hideWakeWord ||
+          this._params.hideWakeWord ||
+          !this._hasWakeWorkEntities(this.hass.states)
+            ? nothing
+            : html`<ha-button-menu
+                slot="actionItems"
+                @action=${this._handleShowWakeWord}
+                @closed=${stopPropagation}
+                menuCorner="END"
+                corner="BOTTOM_END"
+              >
                 <ha-icon-button
-                  slot="actionItems"
-                  .label=${this.hass.localize(
-                    "ui.panel.config.voice_assistants.assistants.pipeline.detail.set_as_preferred"
-                  )}
-                  .path=${this._preferred ? mdiStar : mdiStarOutline}
-                  @click=${this._setPreferred}
-                  .disabled=${Boolean(this._preferred)}
+                  .path=${mdiDotsVertical}
+                  slot="trigger"
                 ></ha-icon-button>
-
-                <ha-button-menu
-                  corner="BOTTOM_END"
-                  menuCorner="END"
-                  slot="actionItems"
-                  @closed=${stopPropagation}
-                  fixed
-                >
-                  <ha-icon-button
-                    slot="trigger"
-                    .label=${this.hass.localize("ui.common.menu")}
-                    .path=${mdiDotsVertical}
-                  ></ha-icon-button>
-                  <ha-list-item graphic="icon" @request-selected=${this._debug}>
-                    ${this.hass.localize(
-                      "ui.panel.config.voice_assistants.assistants.pipeline.detail.debug"
-                    )}
-                    <ha-svg-icon slot="graphic" .path=${mdiBug}></ha-svg-icon>
-                  </ha-list-item>
-                </ha-button-menu>
-              `
-            : nothing}
+                <mwc-list-item>
+                  ${this.hass.localize(
+                    "ui.panel.config.voice_assistants.assistants.pipeline.detail.add_streaming_wake_word"
+                  )}
+                </mwc-list-item></ha-button-menu
+              >`}
         </ha-dialog-header>
         <div class="content">
           ${this._error
@@ -151,12 +165,12 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
             .supportedLanguages=${this._supportedLanguages}
             keys="name,language"
             @value-changed=${this._valueChanged}
-            dialogInitialFocus
+            ?dialogInitialFocus=${!this._params.pipeline?.id}
           ></assist-pipeline-detail-config>
           <assist-pipeline-detail-conversation
             .hass=${this.hass}
             .data=${this._data}
-            keys="conversation_engine,conversation_language"
+            keys="conversation_engine,conversation_language,prefer_local_intents"
             @value-changed=${this._valueChanged}
           ></assist-pipeline-detail-conversation>
           ${!this._cloudActive &&
@@ -193,25 +207,15 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
             keys="tts_engine,tts_language,tts_voice"
             @value-changed=${this._valueChanged}
           ></assist-pipeline-detail-tts>
-          <assist-pipeline-detail-wakeword
-            .hass=${this.hass}
-            .data=${this._data}
-            keys="wake_word_entity,wake_word_id"
-            @value-changed=${this._valueChanged}
-          ></assist-pipeline-detail-wakeword>
+          ${this._hideWakeWord
+            ? nothing
+            : html`<assist-pipeline-detail-wakeword
+                .hass=${this.hass}
+                .data=${this._data}
+                keys="wake_word_entity,wake_word_id"
+                @value-changed=${this._valueChanged}
+              ></assist-pipeline-detail-wakeword>`}
         </div>
-        ${this._params.pipeline?.id
-          ? html`
-              <ha-button
-                slot="secondaryAction"
-                class="warning"
-                .disabled=${this._preferred || this._submitting}
-                @click=${this._deletePipeline}
-              >
-                ${this.hass.localize("ui.common.delete")}
-              </ha-button>
-            `
-          : nothing}
         <ha-button
           slot="primaryAction"
           @click=${this._updatePipeline}
@@ -228,6 +232,10 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         </ha-button>
       </ha-dialog>
     `;
+  }
+
+  private _handleShowWakeWord() {
+    this._hideWakeWord = false;
   }
 
   private _valueChanged(ev: CustomEvent) {
@@ -251,6 +259,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         language: data.language!,
         conversation_engine: data.conversation_engine!,
         conversation_language: data.conversation_language ?? null,
+        prefer_local_intents: data.prefer_local_intents ?? true,
         stt_engine: data.stt_engine ?? null,
         stt_language: data.stt_language ?? null,
         tts_engine: data.tts_engine ?? null,
@@ -261,41 +270,13 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
       };
       if (this._params!.pipeline?.id) {
         await this._params!.updatePipeline(values);
-      } else {
+      } else if (this._params!.createPipeline) {
         await this._params!.createPipeline(values);
+      } else {
+        // eslint-disable-next-line no-console
+        console.error("No createPipeline function provided");
       }
       this.closeDialog();
-    } catch (err: any) {
-      this._error = err?.message || "Unknown error";
-    } finally {
-      this._submitting = false;
-    }
-  }
-
-  private async _setPreferred() {
-    this._submitting = true;
-    try {
-      await this._params!.setPipelinePreferred();
-      this._preferred = true;
-    } catch (err: any) {
-      this._error = err?.message || "Unknown error";
-    } finally {
-      this._submitting = false;
-    }
-  }
-
-  private _debug(ev) {
-    if (!shouldHandleRequestSelectedEvent(ev)) return;
-    navigate(`/config/voice-assistants/debug/${this._params!.pipeline!.id}`);
-    this.closeDialog();
-  }
-
-  private async _deletePipeline() {
-    this._submitting = true;
-    try {
-      if (await this._params!.deletePipeline()) {
-        this.closeDialog();
-      }
     } catch (err: any) {
       this._error = err?.message || "Unknown error";
     } finally {

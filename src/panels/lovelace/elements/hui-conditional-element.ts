@@ -1,16 +1,24 @@
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { createStyledHuiElement } from "../cards/picture-elements/create-styled-hui-element";
 import {
   checkConditionsMet,
   validateConditionalConfig,
 } from "../common/validate-condition";
-import {
+import type { LovelacePictureElementEditor } from "../types";
+import type {
   ConditionalElementConfig,
   LovelaceElement,
   LovelaceElementConfig,
 } from "./types";
 
 class HuiConditionalElement extends HTMLElement implements LovelaceElement {
+  public static async getConfigElement(): Promise<LovelacePictureElementEditor> {
+    await import(
+      "../editor/config-elements/elements/hui-conditional-element-editor"
+    );
+    return document.createElement("hui-conditional-element-editor");
+  }
+
   public _hass?: HomeAssistant;
 
   private _config?: ConditionalElementConfig;

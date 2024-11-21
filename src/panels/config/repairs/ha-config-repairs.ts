@@ -1,22 +1,25 @@
-import "@material/mwc-list/mwc-list";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { capitalizeFirstLetter } from "../../../common/string/capitalize-first-letter";
-import "../../../components/ha-alert";
-import "../../../components/ha-card";
-import "../../../components/ha-list-item";
-import "../../../components/ha-svg-icon";
+import "../../../components/ha-md-list";
+import "../../../components/ha-md-list-item";
 import { domainToName } from "../../../data/integration";
 import {
   fetchRepairsIssueData,
   type RepairsIssue,
 } from "../../../data/repairs";
+import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
+import { fixStatisticsIssue } from "../../developer-tools/statistics/fix-statistics";
 import { showRepairsFlowDialog } from "./show-dialog-repair-flow";
 import { showRepairsIssueDialog } from "./show-repair-issue-dialog";
-import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
+import type { StatisticsValidationResult } from "../../../data/recorder";
+import {
+  STATISTIC_TYPES,
+  updateStatisticsIssues,
+} from "../../../data/recorder";
 
 @customElement("ha-config-repairs")
 class HaConfigRepairs extends LitElement {
@@ -43,19 +46,31 @@ class HaConfigRepairs extends LitElement {
           count: this.total || this.repairsIssues.length,
         })}
       </div>
-      <mwc-list>
-        ${issues.map(
-          (issue) => html`
-            <ha-list-item
-              twoline
-              graphic="medium"
+      <ha-md-list>
+        ${issues.map((issue) => {
+          const domainName = domainToName(this.hass.localize, issue.domain);
+
+          const createdBy =
+            issue.created && domainName
+              ? this.hass.localize("ui.panel.config.repairs.created_at_by", {
+                  date: capitalizeFirstLetter(
+                    relativeTime(new Date(issue.created), this.hass.locale)
+                  ),
+                  integration: domainName,
+                })
+              : "";
+
+          return html`
+            <ha-md-list-item
               .hasMeta=${!this.narrow}
               .issue=${issue}
               class=${issue.ignored ? "ignored" : ""}
               @click=${this._openShowMoreDialog}
+              type="button"
             >
               <img
-                alt=${domainToName(this.hass.localize, issue.domain)}
+                slot="start"
+                alt=${domainName}
                 loading="lazy"
                 src=${brandsUrl({
                   domain: issue.issue_domain || issue.domain,
@@ -63,20 +78,18 @@ class HaConfigRepairs extends LitElement {
                   useFallback: true,
                   darkOptimized: this.hass.themes?.darkMode,
                 })}
-                .title=${domainToName(this.hass.localize, issue.domain)}
+                .title=${domainName}
                 crossorigin="anonymous"
                 referrerpolicy="no-referrer"
-                slot="graphic"
               />
-              <span
-                >${this.hass.localize(
-                  `component.${issue.domain}.issues.${
-                    issue.translation_key || issue.issue_id
-                  }.title`,
+              <span slot="headline">
+                ${this.hass.localize(
+                  `component.${issue.domain}.issues.${issue.translation_key || issue.issue_id}.title`,
                   issue.translation_placeholders || {}
-                )}</span
-              >
-              <span slot="secondary" class="secondary">
+                ) ||
+                `${issue.domain}: ${issue.translation_key || issue.issue_id}`}
+              </span>
+              <span slot="supporting-text">
                 ${issue.severity === "critical" || issue.severity === "error"
                   ? html`<span class="error"
                       >${this.hass.localize(
@@ -87,27 +100,25 @@ class HaConfigRepairs extends LitElement {
                 ${(issue.severity === "critical" ||
                   issue.severity === "error") &&
                 issue.created
-                  ? " - "
+                  ? " ⸱ "
                   : ""}
-                ${issue.created
-                  ? capitalizeFirstLetter(
-                      relativeTime(new Date(issue.created), this.hass.locale)
-                    )
-                  : ""}
+                ${createdBy
+                  ? html`<span .title=${createdBy}>${createdBy}</span>`
+                  : nothing}
                 ${issue.ignored
-                  ? ` - ${this.hass.localize(
+                  ? ` ⸱ ${this.hass.localize(
                       "ui.panel.config.repairs.dialog.ignored_in_version_short",
                       { version: issue.dismissed_version }
                     )}`
                   : ""}
               </span>
               ${!this.narrow
-                ? html`<ha-icon-next slot="meta"></ha-icon-next>`
+                ? html`<ha-icon-next slot="end"></ha-icon-next>`
                 : ""}
-            </ha-list-item>
-          `
-        )}
-      </mwc-list>
+            </ha-md-list-item>
+          `;
+        })}
+      </ha-md-list>
     `;
   }
 
@@ -129,6 +140,25 @@ class HaConfigRepairs extends LitElement {
           continueFlowId: data.issue_data.flow_id as string,
         });
       }
+    } else if (
+      issue.domain === "sensor" &&
+      issue.translation_key &&
+      STATISTIC_TYPES.includes(issue.translation_key as any)
+    ) {
+      this.hass.loadFragmentTranslation("developer-tools");
+      const data = await fetchRepairsIssueData(
+        this.hass.connection,
+        issue.domain,
+        issue.issue_id
+      );
+      if ("issue_type" in data.issue_data) {
+        await fixStatisticsIssue(this, {
+          type: data.issue_data
+            .issue_type as StatisticsValidationResult["type"],
+          data: data.issue_data as any,
+        });
+        updateStatisticsIssues(this.hass);
+      }
     } else {
       showRepairsIssueDialog(this, {
         issue,
@@ -148,9 +178,6 @@ class HaConfigRepairs extends LitElement {
     .ignored {
       opacity: var(--light-secondary-opacity);
     }
-    ha-list-item {
-      --mdc-list-item-graphic-size: 40px;
-    }
     button.show-more {
       color: var(--primary-color);
       text-align: left;
@@ -167,9 +194,12 @@ class HaConfigRepairs extends LitElement {
       outline: none;
       text-decoration: underline;
     }
-    ha-list-item {
-      cursor: pointer;
-      font-size: 16px;
+    ha-md-list-item img[slot="start"] {
+      width: 40px;
+      height: 40px;
+    }
+    ha-md-list-item span[slot="supporting-text"] {
+      white-space: nowrap;
     }
     .error {
       color: var(--error-color);

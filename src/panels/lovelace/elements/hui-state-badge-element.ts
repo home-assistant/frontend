@@ -1,23 +1,56 @@
-import { LitElement, PropertyValues, html, nothing } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { findEntities } from "../common/find-entities";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/entity/ha-state-label-badge";
-import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import { HomeAssistant } from "../../../types";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
+import { isUnavailableState } from "../../../data/entity";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import "../components/hui-warning-element";
-import { LovelaceElement, StateBadgeElementConfig } from "./types";
+import type { LovelaceElement, StateBadgeElementConfig } from "./types";
+import type { LovelacePictureElementEditor } from "../types";
 
 @customElement("hui-state-badge-element")
 export class HuiStateBadgeElement
   extends LitElement
   implements LovelaceElement
 {
+  public static async getConfigElement(): Promise<LovelacePictureElementEditor> {
+    await import(
+      "../editor/config-elements/elements/hui-state-badge-element-editor"
+    );
+    return document.createElement("hui-state-badge-element-editor");
+  }
+
+  public static getStubConfig(
+    hass: HomeAssistant,
+    entities: string[],
+    entitiesFallback: string[]
+  ): StateBadgeElementConfig {
+    const includeDomains = ["light", "switch", "sensor"];
+    const maxEntities = 1;
+    const entityFilter = (stateObj: HassEntity): boolean =>
+      !isUnavailableState(stateObj.state);
+    const foundEntities = findEntities(
+      hass,
+      maxEntities,
+      entities,
+      entitiesFallback,
+      includeDomains,
+      entityFilter
+    );
+
+    return { type: "state-badge", entity: foundEntities[0] || "" };
+  }
+
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: StateBadgeElementConfig;
@@ -44,7 +77,7 @@ export class HuiStateBadgeElement
     if (!stateObj) {
       return html`
         <hui-warning-element
-          .label=${createEntityNotFoundWarning(this.hass, this._config.entity)}
+          .label=${createEntityNotFoundWarning(this.hass, this._config.entity!)}
         ></hui-warning-element>
       `;
     }

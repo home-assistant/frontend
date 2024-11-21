@@ -1,11 +1,11 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import "@material/mwc-button/mwc-button";
-import "@material/web/divider/divider";
 import {
   mdiArrowDown,
   mdiArrowUp,
   mdiClose,
+  mdiCog,
   mdiFilterVariant,
   mdiFilterVariantRemove,
   mdiFormatListChecks,
@@ -13,18 +13,12 @@ import {
   mdiUnfoldLessHorizontal,
   mdiUnfoldMoreHorizontal,
 } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
-import { LocalizeFunc } from "../common/translations/localize";
+import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/chips/ha-assist-chip";
 import "../components/chips/ha-filter-chip";
 import "../components/data-table/ha-data-table";
@@ -34,14 +28,17 @@ import type {
   HaDataTable,
   SortingDirection,
 } from "../components/data-table/ha-data-table";
-import "../components/ha-button-menu-new";
+import "../components/ha-md-button-menu";
 import "../components/ha-dialog";
-import { HaMenu } from "../components/ha-menu";
-import "../components/ha-menu-item";
+import "../components/ha-dialog-header";
+import "../components/ha-md-divider";
+import type { HaMenu } from "../components/ha-menu";
+import "../components/ha-md-menu-item";
 import "../components/search-input-outlined";
 import type { HomeAssistant, Route } from "../types";
 import "./hass-tabs-subpage";
 import type { PageNavigation } from "./hass-tabs-subpage";
+import { showDataTableSettingsDialog } from "../components/data-table/show-dialog-data-table-settings";
 
 @customElement("hass-tabs-subpage-data-table")
 export class HaTabsSubpageDataTable extends LitElement {
@@ -171,6 +168,10 @@ export class HaTabsSubpageDataTable extends LitElement {
 
   @property({ attribute: false }) public groupOrder?: string[];
 
+  @property({ attribute: false }) public columnOrder?: string[];
+
+  @property({ attribute: false }) public hiddenColumns?: string[];
+
   @state() private _sortColumn?: string;
 
   @state() private _sortDirection: SortingDirection = null;
@@ -260,7 +261,8 @@ export class HaTabsSubpageDataTable extends LitElement {
           <ha-assist-chip
             .label=${localize("ui.components.subpage-data-table.sort_by", {
               sortColumn: this._sortColumn
-                ? ` ${this.columns[this._sortColumn].title || this.columns[this._sortColumn].label}`
+                ? ` ${this.columns[this._sortColumn]?.title || this.columns[this._sortColumn]?.label}` ||
+                  ""
                 : "",
             })}
             id="sort-by-anchor"
@@ -290,6 +292,14 @@ export class HaTabsSubpageDataTable extends LitElement {
         `
       : nothing;
 
+    const settingsButton = html`<ha-assist-chip
+      class="has-dropdown select-mode-chip"
+      @click=${this._openSettings}
+      .title=${localize("ui.components.subpage-data-table.settings")}
+    >
+      <ha-svg-icon slot="icon" .path=${mdiCog}></ha-svg-icon>
+    </ha-assist-chip>`;
+
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
@@ -315,7 +325,7 @@ export class HaTabsSubpageDataTable extends LitElement {
                     "ui.components.subpage-data-table.exit_selection_mode"
                   )}
                 ></ha-icon-button>
-                <ha-button-menu-new positioning="absolute">
+                <ha-md-button-menu positioning="absolute">
                   <ha-assist-chip
                     .label=${localize(
                       "ui.components.subpage-data-table.select"
@@ -331,35 +341,43 @@ export class HaTabsSubpageDataTable extends LitElement {
                       .path=${mdiMenuDown}
                     ></ha-svg-icon
                   ></ha-assist-chip>
-                  <ha-menu-item .value=${undefined} @click=${this._selectAll}>
+                  <ha-md-menu-item
+                    .value=${undefined}
+                    @click=${this._selectAll}
+                  >
                     <div slot="headline">
                       ${localize("ui.components.subpage-data-table.select_all")}
                     </div>
-                  </ha-menu-item>
-                  <ha-menu-item .value=${undefined} @click=${this._selectNone}>
+                  </ha-md-menu-item>
+                  <ha-md-menu-item
+                    .value=${undefined}
+                    @click=${this._selectNone}
+                  >
                     <div slot="headline">
                       ${localize(
                         "ui.components.subpage-data-table.select_none"
                       )}
                     </div>
-                  </ha-menu-item>
-                  <md-divider role="separator" tabindex="-1"></md-divider>
-                  <ha-menu-item
+                  </ha-md-menu-item>
+                  <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
+                  <ha-md-menu-item
                     .value=${undefined}
                     @click=${this._disableSelectMode}
                   >
                     <div slot="headline">
                       ${localize(
-                        "ui.components.subpage-data-table.close_select_mode"
+                        "ui.components.subpage-data-table.exit_selection_mode"
                       )}
                     </div>
-                  </ha-menu-item>
-                </ha-button-menu-new>
-                <p>
-                  ${localize("ui.components.subpage-data-table.selected", {
-                    selected: this.selected || "0",
-                  })}
-                </p>
+                  </ha-md-menu-item>
+                </ha-md-button-menu>
+                ${this.selected !== undefined
+                  ? html`<p>
+                      ${localize("ui.components.subpage-data-table.selected", {
+                        selected: this.selected || "0",
+                      })}
+                    </p>`
+                  : nothing}
               </div>
               <div class="center-vertical">
                 <slot name="selection-bar"></slot>
@@ -416,6 +434,8 @@ export class HaTabsSubpageDataTable extends LitElement {
                 : ""}
               <ha-data-table
                 .hass=${this.hass}
+                .localize=${localize}
+                .narrow=${this.narrow}
                 .columns=${this.columns}
                 .data=${this.data}
                 .noDataText=${this.noDataText}
@@ -430,6 +450,8 @@ export class HaTabsSubpageDataTable extends LitElement {
                 .groupColumn=${this._groupColumn}
                 .groupOrder=${this.groupOrder}
                 .initialCollapsedGroups=${this.initialCollapsedGroups}
+                .columnOrder=${this.columnOrder}
+                .hiddenColumns=${this.hiddenColumns}
               >
                 ${!this.narrow
                   ? html`
@@ -438,7 +460,7 @@ export class HaTabsSubpageDataTable extends LitElement {
                           <div class="table-header">
                             ${this.hasFilters && !this.showFilters
                               ? html`${filterButton}`
-                              : nothing}${selectModeBtn}${searchBar}${groupByMenu}${sortByMenu}
+                              : nothing}${selectModeBtn}${searchBar}${groupByMenu}${sortByMenu}${settingsButton}
                           </div>
                         </slot>
                       </div>
@@ -448,7 +470,7 @@ export class HaTabsSubpageDataTable extends LitElement {
                         ${this.hasFilters && !this.showFilters
                           ? html`${filterButton}`
                           : nothing}
-                        ${selectModeBtn}${groupByMenu}${sortByMenu}
+                        ${selectModeBtn}${groupByMenu}${sortByMenu}${settingsButton}
                       </div>`}
               </ha-data-table>`}
         <div slot="fab"><slot name="fab"></slot></div>
@@ -457,27 +479,27 @@ export class HaTabsSubpageDataTable extends LitElement {
         ${Object.entries(this.columns).map(([id, column]) =>
           column.groupable
             ? html`
-                <ha-menu-item
+                <ha-md-menu-item
                   .value=${id}
                   @click=${this._handleGroupBy}
                   .selected=${id === this._groupColumn}
                   class=${classMap({ selected: id === this._groupColumn })}
                 >
                   ${column.title || column.label}
-                </ha-menu-item>
+                </ha-md-menu-item>
               `
             : nothing
         )}
-        <ha-menu-item
+        <ha-md-menu-item
           .value=${undefined}
           @click=${this._handleGroupBy}
           .selected=${this._groupColumn === undefined}
           class=${classMap({ selected: this._groupColumn === undefined })}
         >
           ${localize("ui.components.subpage-data-table.dont_group_by")}
-        </ha-menu-item>
-        <md-divider role="separator" tabindex="-1"></md-divider>
-        <ha-menu-item
+        </ha-md-menu-item>
+        <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
+        <ha-md-menu-item
           @click=${this._collapseAllGroups}
           .disabled=${this._groupColumn === undefined}
         >
@@ -486,8 +508,8 @@ export class HaTabsSubpageDataTable extends LitElement {
             .path=${mdiUnfoldLessHorizontal}
           ></ha-svg-icon>
           ${localize("ui.components.subpage-data-table.collapse_all_groups")}
-        </ha-menu-item>
-        <ha-menu-item
+        </ha-md-menu-item>
+        <ha-md-menu-item
           @click=${this._expandAllGroups}
           .disabled=${this._groupColumn === undefined}
         >
@@ -496,13 +518,13 @@ export class HaTabsSubpageDataTable extends LitElement {
             .path=${mdiUnfoldMoreHorizontal}
           ></ha-svg-icon>
           ${localize("ui.components.subpage-data-table.expand_all_groups")}
-        </ha-menu-item>
+        </ha-md-menu-item>
       </ha-menu>
       <ha-menu anchor="sort-by-anchor" id="sort-by-menu" positioning="fixed">
         ${Object.entries(this.columns).map(([id, column]) =>
           column.sortable
             ? html`
-                <ha-menu-item
+                <ha-md-menu-item
                   .value=${id}
                   @click=${this._handleSortBy}
                   keep-open
@@ -520,7 +542,7 @@ export class HaTabsSubpageDataTable extends LitElement {
                       `
                     : nothing}
                   ${column.title || column.label}
-                </ha-menu-item>
+                </ha-md-menu-item>
               `
             : nothing
         )}
@@ -558,10 +580,9 @@ export class HaTabsSubpageDataTable extends LitElement {
             </div>
             <div slot="primaryAction">
               <ha-button @click=${this._toggleFilters}>
-                ${this.hass.localize(
-                  "ui.components.subpage-data-table.show_results",
-                  { number: this.data.length }
-                )}
+                ${localize("ui.components.subpage-data-table.show_results", {
+                  number: this.data.length,
+                })}
               </ha-button>
             </div>
           </ha-dialog>`
@@ -606,6 +627,23 @@ export class HaTabsSubpageDataTable extends LitElement {
   private _setGroupColumn(columnId: string) {
     this._groupColumn = columnId;
     fireEvent(this, "grouping-changed", { value: columnId });
+  }
+
+  private _openSettings() {
+    showDataTableSettingsDialog(this, {
+      columns: this.columns,
+      hiddenColumns: this.hiddenColumns,
+      columnOrder: this.columnOrder,
+      onUpdate: (
+        columnOrder: string[] | undefined,
+        hiddenColumns: string[] | undefined
+      ) => {
+        this.columnOrder = columnOrder;
+        this.hiddenColumns = hiddenColumns;
+        fireEvent(this, "columns-changed", { columnOrder, hiddenColumns });
+      },
+      localizeFunc: this.localizeFunc,
+    });
   }
 
   private _collapseAllGroups() {
@@ -858,7 +896,7 @@ export class HaTabsSubpageDataTable extends LitElement {
 
       #sort-by-anchor,
       #group-by-anchor,
-      ha-button-menu-new ha-assist-chip {
+      ha-md-button-menu ha-assist-chip {
         --md-assist-chip-trailing-space: 8px;
       }
     `;
@@ -874,6 +912,10 @@ declare global {
   interface HASSDomEvents {
     "search-changed": { value: string };
     "grouping-changed": { value: string };
+    "columns-changed": {
+      columnOrder: string[] | undefined;
+      hiddenColumns: string[] | undefined;
+    };
     "clear-filter": undefined;
   }
 }

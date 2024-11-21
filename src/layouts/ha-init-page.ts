@@ -1,4 +1,5 @@
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement } from "lit";
 import { property, state } from "lit/decorators";
 
 class HaInitPage extends LitElement {
@@ -39,7 +40,13 @@ class HaInitPage extends LitElement {
           </div>
           <div id="loading-text">
             ${this.migration
-              ? "Database migration in progress, please wait this might take some time"
+              ? html`
+                  Database upgrade is in progress, Home Assistant will not start
+                  until the upgrade is completed.
+                  <br /><br />
+                  The upgrade may need a long time to complete, please be
+                  patient.
+                `
               : "Loading data"}
           </div>
         `;

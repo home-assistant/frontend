@@ -1,7 +1,8 @@
 import "@material/mwc-button/mwc-button";
 import { mdiDelete, mdiDeleteOff } from "@mdi/js";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
@@ -10,7 +11,7 @@ import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-circular-progress";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-icon-button";
-import {
+import type {
   HassioAddonInfo,
   HassioAddonRepository,
 } from "../../../../src/data/hassio/addon";
@@ -22,11 +23,11 @@ import {
 } from "../../../../src/data/supervisor/store";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
-import { HassioRepositoryDialogParams } from "./show-dialog-repositories";
+import type { HassioRepositoryDialogParams } from "./show-dialog-repositories";
 import type { HaTextField } from "../../../../src/components/ha-textfield";
 import "../../../../src/components/ha-textfield";
-import "../../../../src/components/ha-list-new";
-import "../../../../src/components/ha-list-item-new";
+import "../../../../src/components/ha-md-list";
+import "../../../../src/components/ha-md-list-item";
 
 @customElement("dialog-hassio-repositories")
 class HassioRepositoriesDialog extends LitElement {
@@ -66,7 +67,8 @@ class HassioRepositoriesDialog extends LitElement {
           repo.slug !== "core" && // The core add-ons repository
           repo.slug !== "local" && // Locally managed add-ons
           repo.slug !== "a0d7b954" && // Home Assistant Community Add-ons
-          repo.slug !== "5c53de3b" // The ESPHome repository
+          repo.slug !== "5c53de3b" && // The ESPHome repository
+          repo.slug !== "d5369777" // Music Assistant repository
       )
       .sort((a, b) =>
         caseInsensitiveStringCompare(a.name, b.name, this.hass.locale.language)
@@ -106,11 +108,11 @@ class HassioRepositoriesDialog extends LitElement {
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
           : ""}
         <div class="form">
-          <ha-list-new>
+          <ha-md-list>
             ${repositories.length
               ? repositories.map(
                   (repo) => html`
-                    <ha-list-item-new class="option">
+                    <ha-md-list-item class="option">
                       ${repo.name}
                       <div slot="supporting-text">
                         <div>${repo.maintainer}</div>
@@ -118,9 +120,6 @@ class HassioRepositoriesDialog extends LitElement {
                       </div>
                       <div class="delete" slot="end">
                         <ha-icon-button
-                          .label=${this._dialogParams!.supervisor.localize(
-                            "dialog.repositories.remove"
-                          )}
                           .disabled=${usedRepositories.includes(repo.slug)}
                           .slug=${repo.slug}
                           .path=${usedRepositories.includes(repo.slug)
@@ -141,11 +140,15 @@ class HassioRepositoriesDialog extends LitElement {
                           )}
                         </simple-tooltip>
                       </div>
-                    </ha-list-item-new>
+                    </ha-md-list-item>
                   `
                 )
-              : html`<ha-list-item-new> No repositories </ha-list-item-new>`}
-          </ha-list-new>
+              : html`<ha-md-list-item
+                  >${this._dialogParams!.supervisor.localize(
+                    "dialog.repositories.no_repositories"
+                  )}</ha-md-list-item
+                >`}
+          </ha-md-list>
           <div class="layout horizontal bottom">
             <ha-textfield
               class="flex-auto"
@@ -208,8 +211,9 @@ class HassioRepositoriesDialog extends LitElement {
         div.delete ha-icon-button {
           color: var(--error-color);
         }
-        ha-list-item-new {
+        ha-md-list-item {
           position: relative;
+          --md-item-overflow: visible;
         }
       `,
     ];

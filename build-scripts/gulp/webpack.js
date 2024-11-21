@@ -14,6 +14,7 @@ import {
   createDemoConfig,
   createGalleryConfig,
   createHassioConfig,
+  createLandingPageConfig,
 } from "../webpack.cjs";
 
 const bothBuilds = (createConfigFunc, params) => [
@@ -40,8 +41,13 @@ const runDevServer = async ({
   compiler,
   contentBase,
   port,
-  listenHost = "localhost",
+  listenHost = undefined,
+  proxy = undefined,
 }) => {
+  if (listenHost === undefined) {
+    // For dev container, we need to listen on all hosts
+    listenHost = env.isDevContainer() ? "0.0.0.0" : "localhost";
+  }
   const server = new WebpackDevServer(
     {
       hot: false,
@@ -52,6 +58,7 @@ const runDevServer = async ({
         directory: contentBase,
         watch: true,
       },
+      proxy,
     },
     compiler
   );
@@ -192,6 +199,33 @@ gulp.task("webpack-prod-gallery", () =>
     createGalleryConfig({
       isProdBuild: true,
       latestBuild: true,
+    })
+  )
+);
+
+gulp.task("webpack-watch-landing-page", () => {
+  // This command will run forever because we don't close compiler
+  webpack(
+    process.env.ES5
+      ? bothBuilds(createLandingPageConfig, { isProdBuild: false })
+      : createLandingPageConfig({ isProdBuild: false, latestBuild: true })
+  ).watch({ poll: isWsl }, doneHandler());
+
+  gulp.watch(
+    path.join(paths.translations_src, "en.json"),
+    gulp.series(
+      "build-landing-page-translations",
+      "copy-translations-landing-page"
+    )
+  );
+});
+
+gulp.task("webpack-prod-landing-page", () =>
+  prodBuild(
+    bothBuilds(createLandingPageConfig, {
+      isProdBuild: true,
+      isStatsBuild: env.isStatsBuild(),
+      isTestBuild: env.isTestBuild(),
     })
   )
 );

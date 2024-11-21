@@ -1,13 +1,15 @@
-import "@material/mwc-button";
-import { HassEvent } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { HassEvent } from "home-assistant-js-websocket";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { formatTime } from "../../../common/datetime/format_time";
 import "../../../components/ha-card";
 import "../../../components/ha-textfield";
 import "../../../components/ha-yaml-editor";
-import { HomeAssistant } from "../../../types";
+import "../../../components/ha-button";
+import "../../../components/ha-alert";
+import type { HomeAssistant } from "../../../types";
 
 @customElement("event-subscribe-card")
 class EventSubscribeCard extends LitElement {
@@ -21,6 +23,8 @@ class EventSubscribeCard extends LitElement {
     id: number;
     event: HassEvent;
   }> = [];
+
+  @state() private _error?: string;
 
   private _eventCount = 0;
 
@@ -40,33 +44,49 @@ class EventSubscribeCard extends LitElement {
         )}
       >
         <div class="card-content">
-          <form>
-            <ha-textfield
-              .label=${this._subscribed
-                ? this.hass!.localize(
-                    "ui.panel.developer-tools.tabs.events.listening_to"
-                  )
-                : this.hass!.localize(
-                    "ui.panel.developer-tools.tabs.events.subscribe_to"
-                  )}
-              .disabled=${this._subscribed !== undefined}
-              .value=${this._eventType}
-              @input=${this._valueChanged}
-            ></ha-textfield>
-            <mwc-button
-              .disabled=${this._eventType === ""}
-              @click=${this._handleSubmit}
-              type="submit"
-            >
-              ${this._subscribed
-                ? this.hass!.localize(
-                    "ui.panel.developer-tools.tabs.events.stop_listening"
-                  )
-                : this.hass!.localize(
-                    "ui.panel.developer-tools.tabs.events.start_listening"
-                  )}
-            </mwc-button>
-          </form>
+          <ha-textfield
+            .label=${this._subscribed
+              ? this.hass!.localize(
+                  "ui.panel.developer-tools.tabs.events.listening_to"
+                )
+              : this.hass!.localize(
+                  "ui.panel.developer-tools.tabs.events.subscribe_to"
+                )}
+            .disabled=${this._subscribed !== undefined}
+            .value=${this._eventType}
+            @input=${this._valueChanged}
+          ></ha-textfield>
+          ${this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : ""}
+        </div>
+        <div class="card-actions">
+          <ha-button
+            raised
+            .disabled=${this._eventType === ""}
+            @click=${this._startOrStopListening}
+          >
+            ${this._subscribed
+              ? this.hass!.localize(
+                  "ui.panel.developer-tools.tabs.events.stop_listening"
+                )
+              : this.hass!.localize(
+                  "ui.panel.developer-tools.tabs.events.start_listening"
+                )}
+          </ha-button>
+          <ha-button
+            raised
+            .disabled=${this._eventType === ""}
+            @click=${this._clearEvents}
+          >
+            ${this.hass!.localize(
+              "ui.panel.developer-tools.tabs.events.clear_events"
+            )}
+          </ha-button>
+        </div>
+      </ha-card>
+      <ha-card>
+        <div class="card-content">
           <div class="events">
             ${repeat(
               this._events,
@@ -97,28 +117,43 @@ class EventSubscribeCard extends LitElement {
 
   private _valueChanged(ev): void {
     this._eventType = ev.target.value;
+    this._error = undefined;
   }
 
-  private async _handleSubmit(): Promise<void> {
+  private async _startOrStopListening(): Promise<void> {
     if (this._subscribed) {
       this._subscribed();
       this._subscribed = undefined;
+      this._error = undefined;
     } else {
-      this._subscribed = await this.hass!.connection.subscribeEvents<HassEvent>(
-        (event) => {
-          const tail =
-            this._events.length > 30 ? this._events.slice(0, 29) : this._events;
-          this._events = [
-            {
-              event,
-              id: this._eventCount++,
-            },
-            ...tail,
-          ];
-        },
-        this._eventType
-      );
+      try {
+        this._subscribed =
+          await this.hass!.connection.subscribeEvents<HassEvent>((event) => {
+            const tail =
+              this._events.length > 30
+                ? this._events.slice(0, 29)
+                : this._events;
+            this._events = [
+              {
+                event,
+                id: this._eventCount++,
+              },
+              ...tail,
+            ];
+          }, this._eventType);
+      } catch (error: any) {
+        this._error = this.hass!.localize(
+          "ui.panel.developer-tools.tabs.events.subscribe_failed",
+          { error: error.message || "Unknown error" }
+        );
+      }
     }
+  }
+
+  private _clearEvents(): void {
+    this._events = [];
+    this._eventCount = 0;
+    this._error = undefined;
   }
 
   static get styles(): CSSResultGroup {
@@ -126,6 +161,9 @@ class EventSubscribeCard extends LitElement {
       ha-textfield {
         display: block;
         margin-bottom: 16px;
+      }
+      .error-message {
+        margin-top: 8px;
       }
       .event {
         border-top: 1px solid var(--divider-color);
@@ -139,6 +177,9 @@ class EventSubscribeCard extends LitElement {
       }
       pre {
         font-family: var(--code-font-family, monospace);
+      }
+      ha-card {
+        margin-bottom: 5px;
       }
     `;
   }

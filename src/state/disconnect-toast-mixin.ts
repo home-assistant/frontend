@@ -1,17 +1,15 @@
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   STATE_NOT_RUNNING,
   STATE_RUNNING,
   STATE_STARTING,
-  UnsubscribeFunc,
 } from "home-assistant-js-websocket";
-import {
-  BootstrapIntegrationsTimings,
-  subscribeBootstrapIntegrations,
-} from "../data/bootstrap_integrations";
+import type { BootstrapIntegrationsTimings } from "../data/bootstrap_integrations";
+import { subscribeBootstrapIntegrations } from "../data/bootstrap_integrations";
 import { domainToName } from "../data/integration";
-import { Constructor } from "../types";
+import type { Constructor } from "../types";
 import { showToast } from "../util/toast";
-import { HassBaseEl } from "./hass-base-mixin";
+import type { HassBaseEl } from "./hass-base-mixin";
 import { navigate } from "../common/navigate";
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
@@ -143,6 +141,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       )[0][0];
 
       showToast(this, {
+        id: "integration_starting",
         message:
           this.hass!.localize("ui.notification_toast.integration_starting", {
             integration: domainToName(this.hass!.localize, integration),

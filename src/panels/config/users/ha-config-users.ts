@@ -1,10 +1,11 @@
 import { mdiCheck, mdiPlus } from "@mdi/js";
-import { LitElement, PropertyValues, html } from "lit";
+import type { PropertyValues } from "lit";
+import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
-import { LocalizeFunc } from "../../../common/translations/localize";
-import {
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import type {
   DataTableColumnContainer,
   RowClickedEvent,
   SortingChangedEvent,
@@ -13,8 +14,8 @@ import "../../../components/data-table/ha-data-table-icon";
 import "../../../components/ha-fab";
 import "../../../components/ha-help-tooltip";
 import "../../../components/ha-svg-icon";
+import type { User } from "../../../data/user";
 import {
-  User,
   computeUserBadges,
   deleteUser,
   fetchUsers,
@@ -22,7 +23,7 @@ import {
 } from "../../../data/user";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
-import { HomeAssistant, Route } from "../../../types";
+import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { showAddUserDialog } from "./show-dialog-add-user";
 import { showUserDetailDialog } from "./show-dialog-user-detail";
@@ -47,6 +48,20 @@ export class HaConfigUsers extends LitElement {
   private _activeGrouping?: string;
 
   @storage({
+    key: "users-table-column-order",
+    state: false,
+    subscribe: false,
+  })
+  private _activeColumnOrder?: string[];
+
+  @storage({
+    key: "users-table-hidden-columns",
+    state: false,
+    subscribe: false,
+  })
+  private _activeHiddenColumns?: string[];
+
+  @storage({
     storage: "sessionStorage",
     key: "users-table-search",
     state: true,
@@ -69,28 +84,14 @@ export class HaConfigUsers extends LitElement {
           main: true,
           sortable: true,
           filterable: true,
-          width: "25%",
           direction: "asc",
-          grows: true,
-          template: (user) =>
-            narrow
-              ? html` ${user.name}<br />
-                  <div class="secondary">
-                    ${user.username ? `${user.username} |` : ""}
-                    ${localize(`groups.${user.group_ids[0]}`)}
-                  </div>`
-              : html` ${user.name ||
-                this.hass!.localize(
-                  "ui.panel.config.users.editor.unnamed_user"
-                )}`,
+          flex: 2,
         },
         username: {
           title: localize("ui.panel.config.users.picker.headers.username"),
           sortable: true,
           filterable: true,
-          width: "20%",
           direction: "asc",
-          hidden: narrow,
           template: (user) => html`${user.username || "—"}`,
         },
         group: {
@@ -98,9 +99,7 @@ export class HaConfigUsers extends LitElement {
           sortable: true,
           filterable: true,
           groupable: true,
-          width: "20%",
           direction: "asc",
-          hidden: narrow,
         },
         is_active: {
           title: this.hass.localize(
@@ -109,7 +108,6 @@ export class HaConfigUsers extends LitElement {
           type: "icon",
           sortable: true,
           filterable: true,
-          width: "80px",
           hidden: narrow,
           template: (user) =>
             user.is_active
@@ -123,7 +121,6 @@ export class HaConfigUsers extends LitElement {
           type: "icon",
           sortable: true,
           filterable: true,
-          width: "80px",
           hidden: narrow,
           template: (user) =>
             user.system_generated
@@ -137,7 +134,6 @@ export class HaConfigUsers extends LitElement {
           type: "icon",
           sortable: true,
           filterable: true,
-          width: "80px",
           hidden: narrow,
           template: (user) =>
             user.local_only
@@ -152,8 +148,9 @@ export class HaConfigUsers extends LitElement {
           type: "icon",
           sortable: false,
           filterable: false,
-          width: "104px",
+          minWidth: "104px",
           hidden: !narrow,
+          showNarrow: true,
           template: (user) => {
             const badges = computeUserBadges(this.hass, user, false);
             return html`${badges.map(
@@ -182,10 +179,13 @@ export class HaConfigUsers extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        backPath="/config"
+        back-path="/config"
         .tabs=${configSections.persons}
         .columns=${this._columns(this.narrow, this.hass.localize)}
         .data=${this._userData(this._users, this.hass.localize)}
+        .columnOrder=${this._activeColumnOrder}
+        .hiddenColumns=${this._activeHiddenColumns}
+        @columns-changed=${this._handleColumnsChanged}
         .initialGroupColumn=${this._activeGrouping}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._activeSorting}
@@ -213,6 +213,7 @@ export class HaConfigUsers extends LitElement {
   private _userData = memoizeOne((users: User[], localize: LocalizeFunc) =>
     users.map((user) => ({
       ...user,
+      name: user.name || localize("ui.panel.config.users.editor.unnamed_user"),
       group: localize(`groups.${user.group_ids[0]}`),
     }))
   );
@@ -237,6 +238,11 @@ export class HaConfigUsers extends LitElement {
 
     showUserDetailDialog(this, {
       entry,
+      replaceEntry: (newEntry: User) => {
+        this._users = this._users!.map((ent) =>
+          ent.id === newEntry.id ? newEntry : ent
+        );
+      },
       updateEntry: async (values) => {
         const updated = await updateUser(this.hass!, entry!.id, values);
         this._users = this._users!.map((ent) =>
@@ -296,6 +302,11 @@ export class HaConfigUsers extends LitElement {
 
   private _handleSearchChange(ev: CustomEvent) {
     this._filter = ev.detail.value;
+  }
+
+  private _handleColumnsChanged(ev: CustomEvent) {
+    this._activeColumnOrder = ev.detail.columnOrder;
+    this._activeHiddenColumns = ev.detail.hiddenColumns;
   }
 }
 

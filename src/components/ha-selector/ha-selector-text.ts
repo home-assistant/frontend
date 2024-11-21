@@ -1,10 +1,11 @@
 import { mdiEye, mdiEyeOff } from "@mdi/js";
-import { CSSResultGroup, LitElement, css, html } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
-import { StringSelector } from "../../data/selector";
-import { HomeAssistant } from "../../types";
+import type { StringSelector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
 import "../ha-icon-button";
 import "../ha-multi-textfield";
 import "../ha-textarea";
@@ -82,6 +83,7 @@ export class HaTextSelector extends LitElement {
         .disabled=${this.disabled}
         .type=${this._unmaskedPassword ? "text" : this.selector.text?.type}
         @input=${this._handleChange}
+        @change=${this._handleChange}
         .label=${this.label || ""}
         .prefix=${this.selector.text?.prefix}
         .suffix=${this.selector.text?.type === "password"

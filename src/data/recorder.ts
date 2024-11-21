@@ -1,7 +1,7 @@
-import { Connection } from "home-assistant-js-websocket";
+import type { Connection } from "home-assistant-js-websocket";
 import { computeStateName } from "../common/entity/compute_state_name";
-import { HaDurationData } from "../components/ha-duration-input";
-import { HomeAssistant } from "../types";
+import type { HaDurationData } from "../components/ha-duration-input";
+import type { HomeAssistant } from "../types";
 
 export interface RecorderInfo {
   backlog: number | null;
@@ -47,11 +47,19 @@ export interface StatisticsMetaData {
   unit_class: string | null;
 }
 
+export const STATISTIC_TYPES: StatisticsValidationResult["type"][] = [
+  "entity_not_recorded",
+  "entity_no_longer_recorded",
+  "state_class_removed",
+  "units_changed",
+  "no_state",
+];
+
 export type StatisticsValidationResult =
   | StatisticsValidationResultNoState
   | StatisticsValidationResultEntityNotRecorded
   | StatisticsValidationResultEntityNoLongerRecorded
-  | StatisticsValidationResultUnsupportedStateClass
+  | StatisticsValidationResultStateClassRemoved
   | StatisticsValidationResultUnitsChanged;
 
 export interface StatisticsValidationResultNoState {
@@ -69,9 +77,9 @@ export interface StatisticsValidationResultEntityNotRecorded {
   data: { statistic_id: string };
 }
 
-export interface StatisticsValidationResultUnsupportedStateClass {
-  type: "unsupported_state_class";
-  data: { statistic_id: string; state_class: string };
+export interface StatisticsValidationResultStateClassRemoved {
+  type: "state_class_removed";
+  data: { statistic_id: string };
 }
 
 export interface StatisticsValidationResultUnitsChanged {
@@ -324,3 +332,6 @@ export const getDisplayUnit = (
 
 export const isExternalStatistic = (statisticsId: string): boolean =>
   statisticsId.includes(":");
+
+export const updateStatisticsIssues = (hass: HomeAssistant) =>
+  hass.callWS({ type: "recorder/update_statistics_issues" });

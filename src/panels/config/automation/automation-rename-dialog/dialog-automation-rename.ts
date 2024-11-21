@@ -1,5 +1,6 @@
 import "@material/mwc-button";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
@@ -9,7 +10,7 @@ import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-textarea";
 import "../../../../components/ha-textfield";
 
-import { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type {
@@ -41,7 +42,9 @@ class DialogAutomationRename extends LitElement implements HassDialog {
     this._newIcon = "icon" in params.config ? params.config.icon : undefined;
     this._newName =
       params.config.alias ||
-      this.hass.localize("ui.panel.config.automation.editor.default_name");
+      this.hass.localize(
+        `ui.panel.config.${this._params.domain}.editor.default_name`
+      );
     this._newDescription = params.config.description || "";
   }
 
@@ -83,7 +86,7 @@ class DialogAutomationRename extends LitElement implements HassDialog {
           dialogInitialFocus
           .value=${this._newName}
           .placeholder=${this.hass.localize(
-            "ui.panel.config.automation.editor.default_name"
+            `ui.panel.config.${this._params.domain}.editor.default_name`
           )}
           .label=${this.hass.localize(
             "ui.panel.config.automation.editor.alias"

@@ -1,0 +1,17 @@
+<script <% if (!useWDS) { %>crossorigin="use-credentials"<% } %>>
+  if (isModern) {
+    <% for (const entry of latestEntryJS) { %>
+      import("<%= entry %>");
+    <% } %>
+    window.latestJS = true;
+  }
+</script>
+<script>
+  (function() {
+    if (!window.latestJS) {
+      <% for (const entry of es5EntryJS) { %>
+        _ls("<%= entry %>", true);
+      <% } %>
+    }
+  })();
+</script>
