@@ -13,7 +13,7 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import { getSignedPath } from "../../../data/auth";
-import type { BackupContent } from "../../../data/backup";
+import type { BackupContentExtended } from "../../../data/backup";
 import {
   deleteBackup,
   fetchBackupDetails,
@@ -36,7 +36,7 @@ class HaConfigBackupDetails extends LitElement {
 
   @property({ attribute: "backup-id" }) public backupId!: string;
 
-  @state() private _backup?: BackupContent | null;
+  @state() private _backup?: BackupContentExtended | null;
 
   @state() private _error?: string;
 

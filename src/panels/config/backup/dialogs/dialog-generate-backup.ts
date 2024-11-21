@@ -35,24 +35,26 @@ import type { GenerateBackupDialogParams } from "./show-dialog-generate-backup";
 
 type FormData = {
   name: string;
-  history: boolean;
+  homeassistant: boolean;
+  database: boolean;
   media: boolean;
   share: boolean;
   addons_mode: "all" | "custom";
   addons: string[];
   agents_mode: "all" | "custom";
-  agents: string[];
+  agent_ids: string[];
 };
 
 const INITIAL_FORM_DATA: FormData = {
   name: "",
-  history: true,
+  homeassistant: true,
+  database: true,
   media: false,
   share: false,
   addons_mode: "all",
   addons: [],
   agents_mode: "all",
-  agents: [],
+  agent_ids: [],
 };
 
 const STEPS = ["data", "sync"] as const;
@@ -181,7 +183,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
           id="history"
           name="history"
           @change=${this._switchChanged}
-          .checked=${this._formData.history}
+          .checked=${this._formData.database}
         ></ha-switch>
       </ha-settings-row>
       <ha-settings-row>
@@ -247,7 +249,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
             <ha-expansion-panel .header=${"Location"} outlined expanded>
               <ha-backup-agents-select
                 .hass=${this.hass}
-                .value=${this._formData.agents}
+                .value=${this._formData.agent_ids}
                 @value-changed=${this._agentsChanged}
                 .agents=${this._agents}
               ></ha-backup-agents-select>
@@ -268,7 +270,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
   private _agentsChanged(ev) {
     this._formData = {
       ...this._formData!,
-      agents: ev.detail.value,
+      agent_ids: ev.detail.value,
     };
   }
 
@@ -293,11 +295,12 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     }
 
     const {
+      homeassistant,
       addons,
       addons_mode,
-      agents,
+      agent_ids,
       agents_mode,
-      history,
+      database,
       media,
       name,
       share,
@@ -311,18 +314,16 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
       folders.push("share");
     }
 
-    // TODO: Fetch all addons
-    const ALL_ADDONS = [];
+    const ALL_AGENT_IDS = this._agents.map((agent) => agent.agent_id);
 
     const params: GenerateBackupParams = {
       name,
-      agent_ids:
-        agents_mode === "all"
-          ? this._agents.map((agent) => agent.agent_id)
-          : agents,
-      database_included: history,
-      folders_included: folders,
-      addons_included: addons_mode === "all" ? ALL_ADDONS : addons,
+      agent_ids: agents_mode === "all" ? ALL_AGENT_IDS : agent_ids,
+      include_homeassistant: homeassistant,
+      include_database: database,
+      include_folders: folders,
+      include_all_addons: addons_mode === "all",
+      include_addons: addons_mode === "all" ? undefined : addons,
     };
 
     this._params!.submit?.(params);
