@@ -1,8 +1,7 @@
 const { existsSync } = require("fs");
 const path = require("path");
 const rspack = require("@rspack/core");
-const { StatsWriterPlugin } = require("webpack-stats-plugin");
-const filterStats = require("@bundle-stats/plugin-webpack-filter").default;
+const { RsdoctorRspackPlugin } = require("@rsdoctor/rspack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const { WebpackManifestPlugin } = require("rspack-manifest-plugin");
 const log = require("fancy-log");
@@ -156,13 +155,13 @@ const createRspackConfig = ({
       ),
       !isProdBuild && new LogStartCompilePlugin(),
       isProdBuild &&
-        new StatsWriterPlugin({
-          filename: path.relative(
-            outputPath,
-            path.join(paths.build_dir, "stats", `${name}.json`)
-          ),
-          stats: { assets: true, chunks: true, modules: true },
-          transform: (stats) => JSON.stringify(filterStats(stats)),
+        isStatsBuild &&
+        new RsdoctorRspackPlugin({
+          reportDir: path.join(paths.build_dir, "rsdoctor"),
+          features: ["plugins", "bundle"],
+          supports: {
+            generateTileGraph: true,
+          },
         }),
     ].filter(Boolean),
     resolve: {

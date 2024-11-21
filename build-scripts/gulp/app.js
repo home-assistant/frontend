@@ -42,6 +42,18 @@ gulp.task(
     "rspack-prod-app",
     gulp.parallel("gen-pages-app-prod", "gen-service-worker-app-prod"),
     // Don't compress running tests
-    ...(env.isTestBuild() ? [] : ["compress-app"])
+    ...(env.isTestBuild() || env.isStatsBuild() ? [] : ["compress-app"])
+  )
+);
+
+gulp.task(
+  "analyze-app",
+  gulp.series(
+    async function setEnv() {
+      process.env.NODE_ENV = "production";
+      process.env.STATS = "1";
+    },
+    "clean",
+    "rspack-prod-app"
   )
 );
