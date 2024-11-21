@@ -16,11 +16,6 @@ export class HaProgressButton extends LitElement {
 
   @state() private _result?: "success" | "error";
 
-  constructor() {
-    super();
-    this.addEventListener("click", this._handleClick);
-  }
-
   public render(): TemplateResult {
     const overlay = this._result || this.progress;
     return html`
@@ -60,12 +55,6 @@ export class HaProgressButton extends LitElement {
     this._setResult("error");
   }
 
-  private _handleClick(ev: Event): void {
-    if (this.progress || this.disabled) {
-      ev.stopImmediatePropagation();
-    }
-  }
-
   private _setResult(result: "success" | "error"): void {
     this._result = result;
     setTimeout(() => {
@@ -79,10 +68,12 @@ export class HaProgressButton extends LitElement {
         outline: none;
         display: inline-block;
         position: relative;
+        pointer-events: none;
       }
 
       mwc-button {
         transition: all 1s;
+        pointer-events: initial;
       }
 
       mwc-button.success {
