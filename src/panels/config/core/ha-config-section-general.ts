@@ -142,7 +142,7 @@ class HaConfigSectionGeneral extends LitElement {
                     value="metric"
                     .checked=${this._unitSystem === "metric"}
                     @change=${this._unitSystemChanged}
-                    .disabled=${this._submitting}
+                    .disabled=${disabled}
                   ></ha-radio>
                 </ha-formfield>
                 <ha-formfield
@@ -164,7 +164,7 @@ class HaConfigSectionGeneral extends LitElement {
                     value="us_customary"
                     .checked=${this._unitSystem === "us_customary"}
                     @change=${this._unitSystemChanged}
-                    .disabled=${this._submitting}
+                    .disabled=${disabled}
                   ></ha-radio>
                 </ha-formfield>
                 ${this._unitSystem !== this._configuredUnitSystem()
@@ -253,12 +253,15 @@ class HaConfigSectionGeneral extends LitElement {
                   "ui.panel.config.core.section.core.core_config.edit_location_description"
                 )}
               </div>
-              <mwc-button @click=${this._editLocation}
+              <mwc-button @click=${this._editLocation} .disabled=${disabled}
                 >${this.hass.localize("ui.common.edit")}</mwc-button
               >
             </ha-settings-row>
             <div class="card-actions">
-              <ha-progress-button @click=${this._updateEntry}>
+              <ha-progress-button
+                @click=${this._updateEntry}
+                .disabled=${disabled}
+              >
                 ${this.hass!.localize("ui.panel.config.zone.detail.update")}
               </ha-progress-button>
             </div>
