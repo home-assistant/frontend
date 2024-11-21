@@ -22,7 +22,6 @@ export class HaProgressButton extends LitElement {
       <mwc-button
         ?raised=${this.raised}
         .disabled=${this.disabled || this.progress}
-        @click=${this._buttonTapped}
         class=${this._result || ""}
       >
         <slot></slot>
@@ -63,22 +62,18 @@ export class HaProgressButton extends LitElement {
     }, 2000);
   }
 
-  private _buttonTapped(ev: Event): void {
-    if (this.progress) {
-      ev.stopPropagation();
-    }
-  }
-
   static get styles(): CSSResultGroup {
     return css`
       :host {
         outline: none;
         display: inline-block;
         position: relative;
+        pointer-events: none;
       }
 
       mwc-button {
         transition: all 1s;
+        pointer-events: initial;
       }
 
       mwc-button.success {
