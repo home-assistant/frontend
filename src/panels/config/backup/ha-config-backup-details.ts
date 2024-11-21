@@ -236,11 +236,17 @@ class HaConfigBackupDetails extends LitElement {
       this._backup!.agent_ids!
     );
 
-    // Selected backup object should be passed for partial restore but the backend does not support it yet
+    const { addons, database_included, homeassistant_included, folders } =
+      this._selectedBackup!;
+
     await restoreBackup(this.hass, {
       backup_id: this._backup!.backup_id,
       agent_id: preferedAgent,
       password: password,
+      restore_addons: addons.map((addon) => addon.slug),
+      restore_database: database_included,
+      restore_folders: folders,
+      restore_homeassistant: homeassistant_included,
     });
   }
 
