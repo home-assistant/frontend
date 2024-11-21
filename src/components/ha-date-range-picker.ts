@@ -255,6 +255,7 @@ export class HaDateRangePicker extends LitElement {
           ${!this.minimal
             ? html`<div class="label">
                   <div
+                    @click=${this._handleInputClick}
                     title=${this.hass.localize(
                       "ui.components.date-range-picker.start_date"
                     )}
@@ -272,6 +273,7 @@ export class HaDateRangePicker extends LitElement {
                         )}
                   </div>
                   <div
+                    @click=${this._handleInputClick}
                     title=${this.hass.localize(
                       "ui.components.date-range-picker.end_date"
                     )}
