@@ -8,6 +8,7 @@ import {
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-header";
@@ -32,10 +33,9 @@ import { fetchHassioAddonsInfo } from "../../../../data/hassio/addon";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import "../components/ha-backup-addons-picker";
+import { SELF_CREATED_ADDONS_FOLDER } from "../components/ha-backup-addons-picker";
 import "../components/ha-backup-agents-select";
 import type { GenerateBackupDialogParams } from "./show-dialog-generate-backup";
-import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 
 type FormData = {
   name: string;
@@ -357,7 +357,6 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
 
     const {
       homeassistant,
-      addons,
       addons_mode,
       agent_ids,
       agents_mode,
@@ -366,7 +365,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
       name,
       share,
     } = this._formData;
-
+    let { addons } = this._formData;
     const folders: string[] = [];
     if (media) {
       folders.push("media");
@@ -374,7 +373,10 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     if (share) {
       folders.push("share");
     }
-
+    if (addons.includes(SELF_CREATED_ADDONS_FOLDER)) {
+      folders.push(SELF_CREATED_ADDONS_FOLDER);
+      addons = addons.filter((addon) => addon !== SELF_CREATED_ADDONS_FOLDER);
+    }
     const ALL_AGENT_IDS = this._agents.map((agent) => agent.agent_id);
 
     const params: GenerateBackupParams = {

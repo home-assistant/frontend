@@ -14,7 +14,7 @@ type BackupAddon = {
   slug: string;
   name: string;
   version?: string;
-  icon?: string;
+  icon?: boolean;
 };
 
 export const SELF_CREATED_ADDONS_FOLDER = "addons/local";
