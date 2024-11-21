@@ -204,14 +204,6 @@ class HaConfigBackupDetails extends LitElement {
   }
 
   private async _restore() {
-    if (this._isRestoreDisabled()) {
-      await showAlertDialog(this, {
-        title: "Restore",
-        text: "Select at least one item to restore.",
-        warning: true,
-      });
-      return;
-    }
     let password: string | undefined;
     if (this._backup?.protected) {
       const response = await showPromptDialog(this, {
@@ -239,6 +231,8 @@ class HaConfigBackupDetails extends LitElement {
     const preferedAgent = getPreferredAgentForDownload(
       this._backup!.agent_ids!
     );
+
+    // Selected backup object should be passed for partial restore but the backend does not support it yet
     await restoreBackup(this.hass, {
       backup_id: this._backup!.backup_id,
       agent_id: preferedAgent,
