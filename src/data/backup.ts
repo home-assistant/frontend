@@ -57,6 +57,10 @@ export type RestoreBackupParams = {
   backup_id: string;
   agent_id: string;
   password?: string;
+  restore_addons?: string[];
+  restore_database?: boolean;
+  restore_folders?: string[];
+  restore_homeassistant?: boolean;
 };
 
 export const getBackupDownloadUrl = (id: string, agentId: string) =>
