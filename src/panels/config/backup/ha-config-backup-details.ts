@@ -29,7 +29,6 @@ import { brandsUrl } from "../../../util/brands-url";
 import { bytesToString } from "../../../util/bytes-to-string";
 import { fileDownload } from "../../../util/file_download";
 import {
-  showAlertDialog,
   showConfirmationDialog,
   showPromptDialog,
 } from "../../lovelace/custom-card-helpers";
@@ -107,7 +106,12 @@ class HaConfigBackupDetails extends LitElement {
                       </ha-backup-data-picker>
                     </div>
                     <div class="card-actions">
-                      <ha-button @click=${this._restore}> Restore </ha-button>
+                      <ha-button
+                        @click=${this._restore}
+                        .disabled=${this._isRestoreDisabled()}
+                      >
+                        Restore
+                      </ha-button>
                     </div>
                   </ha-card>
                   <ha-card header="Backup">
