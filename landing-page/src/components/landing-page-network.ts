@@ -108,6 +108,8 @@ class LandingPageNetwork extends LitElement {
       // eslint-disable-next-line no-console
       console.error(err);
       this._getNetworkInfoError = true;
+      this._dnsPrimaryInterfaceNameservers = undefined;
+      this._dnsPrimaryInterface = undefined;
       return;
     }
 
@@ -123,6 +125,9 @@ class LandingPageNetwork extends LitElement {
       ].join(", ");
 
       this._dnsPrimaryInterface = primaryInterface.interface;
+    } else {
+      this._dnsPrimaryInterfaceNameservers = undefined;
+      this._dnsPrimaryInterface = undefined;
     }
 
     if (!data.host_internet) {
