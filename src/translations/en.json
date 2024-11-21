@@ -2435,7 +2435,7 @@
               "header": "General configuration",
               "introduction": "Manage your location, network, and analytics.",
               "core_config": {
-                "edit_requires_storage": "Editor disabled because config stored in configuration.yaml.",
+                "edit_requires_storage": "You can not change these settings in the UI, as you have config stored in 'configuration.yaml' under the 'homeassistant' key.",
                 "location_name": "Name",
                 "latitude": "Latitude",
                 "longitude": "Longitude",
