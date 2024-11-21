@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const paths = require("./paths.cjs");
 
-const isTrue = (value) => value === "true" || value?.toLowerCase() === "1";
+const isTrue = (value) => value === "1" || value?.toLowerCase() === "true";
 
 module.exports = {
   useWDS() {
