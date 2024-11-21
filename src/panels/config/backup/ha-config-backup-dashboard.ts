@@ -286,7 +286,9 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
 
       this._generateBackup({
         agent_ids: agents.map((agent) => agent.agent_id),
-        database_included: true,
+        include_homeassistant: true,
+        include_database: true,
+        include_all_addons: false,
       });
     }
   }

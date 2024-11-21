@@ -13,13 +13,27 @@ export interface BackupContent {
   agent_ids?: string[];
 }
 
+export interface BackupAddon {
+  name: string;
+  slug: string;
+  version: string;
+}
+
+export interface BackupContentExtended extends BackupContent {
+  addons: BackupAddon[];
+  database_included: boolean;
+  folders: string[];
+  homeassistant_version: string;
+  homeassistant_included: boolean;
+}
+
 export interface BackupInfo {
   backups: BackupContent[];
   backing_up: boolean;
 }
 
 export interface BackupDetails {
-  backup: BackupContent;
+  backup: BackupContentExtended;
 }
 
 export interface BackupAgentsInfo {
@@ -28,9 +42,11 @@ export interface BackupAgentsInfo {
 
 export type GenerateBackupParams = {
   agent_ids: string[];
-  database_included?: boolean;
-  folders_included?: string[];
-  addons_included?: string[];
+  include_addons?: string[];
+  include_all_addons: boolean;
+  include_database: boolean;
+  include_folders?: string[];
+  include_homeassistant: boolean;
   name?: string;
   password?: string;
 };
