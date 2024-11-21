@@ -146,7 +146,7 @@ export class HaLanguagePicker extends LitElement {
         @closed=${stopPropagation}
         fixedMenuPosition
         naturalMenuWidth
-        ?inlineArrow=${this.inlineArrow}
+        .inlineArrow=${this.inlineArrow}
       >
         ${languageOptions.length === 0
           ? html`<ha-list-item value=""
