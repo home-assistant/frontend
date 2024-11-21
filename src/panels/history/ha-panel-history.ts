@@ -140,18 +140,22 @@ class HaPanelHistory extends LitElement {
                 .narrow=${this.narrow}
               ></ha-menu-button>
             `}
+
         <div slot="title">${this.hass.localize("panel.history")}</div>
-        ${entitiesSelected
-          ? html`
-              <ha-icon-button
-                slot="actionItems"
-                @click=${this._removeAll}
-                .disabled=${this._isLoading}
-                .path=${mdiFilterRemove}
-                .label=${this.hass.localize("ui.panel.history.remove_all")}
-              ></ha-icon-button>
-            `
-          : ""}
+
+        <div slot="actionItems">
+          <div class="time-handle">
+            <ha-date-range-picker
+              .hass=${this.hass}
+              ?disabled=${this._isLoading}
+              .startDate=${this._startDate}
+              .endDate=${this._endDate}
+              extendedPresets
+              @change=${this._dateRangeChanged}
+            ></ha-date-range-picker>
+          </div>
+        </div>
+
         <ha-button-menu slot="actionItems" @action=${this._handleMenuAction}>
           <ha-icon-button
             slot="trigger"
@@ -169,17 +173,8 @@ class HaPanelHistory extends LitElement {
             <ha-svg-icon slot="graphic" .path=${mdiImagePlus}></ha-svg-icon>
           </ha-list-item>
         </ha-button-menu>
-
         <div class="flex content">
           <div class="filters">
-            <ha-date-range-picker
-              .hass=${this.hass}
-              ?disabled=${this._isLoading}
-              .startDate=${this._startDate}
-              .endDate=${this._endDate}
-              extendedPresets
-              @change=${this._dateRangeChanged}
-            ></ha-date-range-picker>
             <ha-target-picker
               .hass=${this.hass}
               .value=${this._targetPickerValue}
@@ -187,6 +182,16 @@ class HaPanelHistory extends LitElement {
               addOnTop
               @value-changed=${this._targetsChanged}
             ></ha-target-picker>
+            ${entitiesSelected
+              ? html`
+                  <ha-icon-button
+                    @click=${this._removeAll}
+                    .disabled=${this._isLoading}
+                    .path=${mdiFilterRemove}
+                    .label=${this.hass.localize("ui.panel.history.remove_all")}
+                  ></ha-icon-button>
+                `
+              : ""}
           </div>
           ${this._isLoading
             ? html`<div class="progress-wrapper">
@@ -758,6 +763,10 @@ class HaPanelHistory extends LitElement {
           align-items: flex-start;
           margin-top: 16px;
         }
+        .time-handle {
+          float: right;
+          margin-top: 22px;
+        }
 
         ha-date-range-picker {
           margin-right: 16px;
@@ -777,12 +786,21 @@ class HaPanelHistory extends LitElement {
             margin-inline-start: initial;
             width: 100%;
           }
+          .time-handle {
+            margin-top: 0px;
+          }
         }
 
         .start-search {
           padding-top: 16px;
           text-align: center;
           color: var(--secondary-text-color);
+        }
+
+        @media only screen and (max-width: 740px) {
+          div[slot="title"] {
+            display: none;
+          }
         }
       `,
     ];
