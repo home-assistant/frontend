@@ -2109,7 +2109,7 @@
             "icon": "Icon",
             "color": "Color"
           },
-          "add_label": "Add label",
+          "add_label": "Create label",
           "manage_labels": "Manage labels",
           "no_labels": "You don't have any labels",
           "introduction": "Labels can help you organize your areas, devices and entities. They can be used to filter in the UI, or use them as a target in automations.",
@@ -4347,8 +4347,8 @@
           "caption": "Zones",
           "description": "Manage the zones you want to track people in",
           "introduction": "Zones allow you to specify certain regions on Earth. When a person is within a zone, the state will take the name from the zone. Zones can also be used as a trigger or condition inside automation setups.",
-          "no_zones_created_yet": "Looks like you have not added any zones yet.",
-          "create_zone": "Add zone",
+          "no_zones_created_yet": "Looks like you have not created any zones yet.",
+          "create_zone": "Create zone",
           "add_zone": "Add zone",
           "edit_zone": "Edit zone",
           "edit_home": "Edit home",
@@ -4368,7 +4368,7 @@
             "passive_note": "Passive zones are hidden in the frontend and are not used as location for device trackers. This is useful if you just want to use it for automations.",
             "required_error_msg": "This field is required",
             "delete": "Delete",
-            "create": "Add",
+            "create": "Create",
             "update": "Update"
           },
           "core_location_dialog": "Home Assistant location"
