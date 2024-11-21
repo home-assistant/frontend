@@ -37,8 +37,11 @@ export async function getSupervisorNetworkInfo() {
   return fetch("/supervisor/network/info");
 }
 
-export const setSupervisorNetworkDns = async (dnsServerIndex: number) =>
-  fetch("/supervisor/network/dns", {
+export const setSupervisorNetworkDns = async (
+  dnsServerIndex: number,
+  primaryInterface: string
+) =>
+  fetch(`/supervisor/network/interface/${primaryInterface}/update`, {
     method: "POST",
     body: JSON.stringify({
       ipv4: {
