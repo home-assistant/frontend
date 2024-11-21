@@ -5781,7 +5781,7 @@
             "confirm_delete_config_title": "Delete dashboard configuration?",
             "confirm_delete_config_text": "This dashboard will be permanently deleted. The dashboard will be automatically regenerated to display your areas, devices and entities.",
             "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
-            "confirm_unsaved_comments": "Your configuration might contains comment(s), these will not be saved. Do you want to continue?",
+            "confirm_unsaved_comments": "Your configuration might contain comments, these will not be saved. Do you want to continue?",
             "error_parse_yaml": "Unable to parse YAML: {error}",
             "error_invalid_config": "Your configuration is not valid: {error}",
             "error_save_yaml": "Unable to save YAML: {error}",
