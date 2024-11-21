@@ -106,7 +106,8 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: false })
   public configEntriesInProgress?: DataEntryFlowProgressExtended[];
 
-  @state() private _improvDiscovered: ImprovDiscoveredDevice[] = [];
+  @state() private _improvDiscovered: Map<string, ImprovDiscoveredDevice> =
+    new Map();
 
   @state()
   private _entityRegistryEntries: EntityRegistryEntry[] = [];
@@ -259,16 +260,18 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
   private _filterConfigEntriesInProgress = memoizeOne(
     (
       configEntriesInProgress: DataEntryFlowProgressExtended[],
-      improvDiscovered: ImprovDiscoveredDevice[],
+      improvDiscovered: Map<string, ImprovDiscoveredDevice>,
       filter?: string
     ): DataEntryFlowProgressExtended[] => {
       let inProgress = [...configEntriesInProgress];
 
-      if (improvDiscovered.length) {
+      const improvDiscoveredArray = Array.from(improvDiscovered.values());
+
+      if (improvDiscoveredArray.length) {
         // filter out native flows that have been discovered by both mobile and local bluetooth
         inProgress = inProgress.filter(
           (flow) =>
-            !improvDiscovered.some(
+            !improvDiscoveredArray.some(
               (discovered) => discovered.name === flow.localized_title
             )
         );
@@ -678,7 +681,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     if (!this.hass.auth.external?.config.canSetupImprov) {
       return;
     }
-    this._improvDiscovered = [];
+    this._improvDiscovered = new Map();
     this.hass.auth.external!.fireMessage({
       type: "improv/scan",
     });
@@ -686,7 +689,9 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
 
   private _handleImprovDiscovered = (ev) => {
     this._fetchManifests(["improv_ble"]);
-    this._improvDiscovered = [...this._improvDiscovered, ev.detail];
+    this._improvDiscovered.set(ev.detail.name, ev.detail);
+    // copy for memoize and reactive updates
+    this._improvDiscovered = new Map(Array.from(this._improvDiscovered));
   };
 
   private async _fetchEntitySources() {
