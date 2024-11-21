@@ -1,6 +1,6 @@
 import "@material/mwc-list/mwc-list-item";
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { UNIT_C } from "../../../common/const";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
@@ -77,13 +77,13 @@ class HaConfigSectionGeneral extends LitElement {
             <div class="card-content">
               ${!canEdit
                 ? html`
-                    <p>
+                    <ha-alert>
                       ${this.hass.localize(
                         "ui.panel.config.core.section.core.core_config.edit_requires_storage"
                       )}
-                    </p>
+                    </ha-alert>
                   `
-                : ""}
+                : nothing}
               <ha-textfield
                 name="name"
                 .label=${this.hass.localize(
