@@ -142,6 +142,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
           .label=${""}
           nativeName
           @value-changed=${this._languageChanged}
+          inlineArrow
         ></ha-language-picker>
         <a
           href="https://www.home-assistant.io/getting-started/onboarding/"

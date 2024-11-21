@@ -31,6 +31,8 @@ export class HaLanguagePicker extends LitElement {
 
   @property({ type: Boolean }) public noSort = false;
 
+  @property({ type: Boolean }) public inlineArrow = false;
+
   @state() _defaultLanguages: string[] = [];
 
   @query("ha-select") private _select!: HaSelect;
@@ -144,6 +146,7 @@ export class HaLanguagePicker extends LitElement {
         @closed=${stopPropagation}
         fixedMenuPosition
         naturalMenuWidth
+        .inlineArrow=${this.inlineArrow}
       >
         ${languageOptions.length === 0
           ? html`<ha-list-item value=""
