@@ -29,6 +29,8 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
 
   @property() public assistEntityId?: string;
 
+  @state() private _cloudChecked = false;
+
   @state() private _showFirst = false;
 
   @state() private _showSecond = false;
@@ -62,6 +64,10 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
   }
 
   protected override render() {
+    if (!this._cloudChecked) {
+      return nothing;
+    }
+
     return html`<div class="content">
       <h1>What hardware do you want to use?</h1>
       <p class="secondary">
@@ -130,10 +136,12 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
 
   private async _checkCloud() {
     if (!isComponentLoaded(this.hass, "cloud")) {
+      this._cloudChecked = true;
       return;
     }
     const cloudStatus = await fetchCloudStatus(this.hass);
     if (!cloudStatus.logged_in || !cloudStatus.active_subscription) {
+      this._cloudChecked = true;
       return;
     }
     let cloudTtsEntityId;

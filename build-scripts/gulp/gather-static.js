@@ -125,6 +125,11 @@ gulp.task("copy-translations-supervisor", async () => {
   copyTranslations(staticDir);
 });
 
+gulp.task("copy-translations-landing-page", async () => {
+  const staticDir = paths.landingPage_output_static;
+  copyTranslations(staticDir);
+});
+
 gulp.task("copy-static-supervisor", async () => {
   const staticDir = paths.hassio_output_static;
   copyLocaleData(staticDir);
@@ -198,4 +203,15 @@ gulp.task("copy-static-gallery", async () => {
   copyTranslations(paths.gallery_output_static);
   copyLocaleData(paths.gallery_output_static);
   copyMdiIcons(paths.gallery_output_static);
+});
+
+gulp.task("copy-static-landing-page", async () => {
+  // Copy landing-page static files
+  fs.copySync(
+    path.resolve(paths.landingPage_dir, "public"),
+    paths.landingPage_output_root
+  );
+
+  copyFonts(paths.landingPage_output_static);
+  copyTranslations(paths.landingPage_output_static);
 });

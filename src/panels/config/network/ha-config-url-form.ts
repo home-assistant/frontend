@@ -96,14 +96,16 @@ class ConfigUrlForm extends LitElement {
         <div class="card-content">
           ${!canEdit
             ? html`
-                <p>
+                <ha-alert>
                   ${this.hass.localize(
                     "ui.panel.config.core.section.core.core_config.edit_requires_storage"
                   )}
-                </p>
+                </ha-alert>
               `
             : ""}
-          ${this._error ? html`<div class="error">${this._error}</div>` : ""}
+          ${this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : ""}
 
           <div class="description">
             ${this.hass.localize("ui.panel.config.url.description")}
@@ -406,8 +408,10 @@ class ConfigUrlForm extends LitElement {
       .row > * {
         margin: 0 8px;
       }
-      .error {
-        color: var(--error-color);
+
+      ha-alert {
+        display: block;
+        margin: 16px 0;
       }
 
       .card-actions {

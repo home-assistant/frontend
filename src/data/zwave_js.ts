@@ -424,7 +424,7 @@ export interface RequestedGrant {
   clientSideAuth: boolean;
 }
 
-export const invokeZWaveCCApi = (
+export const invokeZWaveCCApi = <T = unknown>(
   hass: HomeAssistant,
   device_id: string,
   command_class: number,
@@ -432,7 +432,7 @@ export const invokeZWaveCCApi = (
   method_name: string,
   parameters: any[],
   wait_for_result?: boolean
-): Promise<unknown> =>
+): Promise<T> =>
   hass.callWS({
     type: "zwave_js/invoke_cc_api",
     device_id,
@@ -950,4 +950,15 @@ export const setZWaveJSLogLevel = (
     type: "zwave_js/update_log_config",
     entry_id,
     config: { level },
+  });
+
+export interface ZWaveJSIntegrationSettings {
+  installer_mode: boolean;
+}
+
+export const fetchZwaveIntegrationSettings = (
+  hass: HomeAssistant
+): Promise<ZWaveJSIntegrationSettings> =>
+  hass.callWS({
+    type: "zwave_js/get_integration_settings",
   });

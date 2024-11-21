@@ -33,6 +33,10 @@ export type LocalizeKeys =
   | `ui.panel.page-authorize.form.${string}`
   | `component.${string}`;
 
+export type LandingPageKeys = FlattenObjectKeys<
+  TranslationDict["landing-page"]
+>;
+
 // Tweaked from https://www.raygesualdo.com/posts/flattening-object-keys-with-typescript-types
 export type FlattenObjectKeys<
   T extends Record<string, any>,

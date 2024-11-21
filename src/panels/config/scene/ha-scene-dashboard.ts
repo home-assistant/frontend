@@ -339,6 +339,13 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
               narrow
               .items=${[
                 {
+                  path: mdiPlay,
+                  label: this.hass.localize(
+                    "ui.panel.config.scene.picker.apply"
+                  ),
+                  action: () => this._activateScene(scene),
+                },
+                {
                   path: mdiInformationOutline,
                   label: this.hass.localize(
                     "ui.panel.config.scene.picker.show_info"
@@ -351,13 +358,6 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                     "ui.panel.config.automation.picker.show_settings"
                   ),
                   action: () => this._openSettings(scene),
-                },
-                {
-                  path: mdiPlay,
-                  label: this.hass.localize(
-                    "ui.panel.config.scene.picker.activate"
-                  ),
-                  action: () => this._activateScene(scene),
                 },
                 {
                   path: mdiTag,
