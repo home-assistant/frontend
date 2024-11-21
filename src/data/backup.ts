@@ -53,6 +53,12 @@ export type GenerateBackupParams = {
   password?: string;
 };
 
+export type RestoreBackupParams = {
+  backup_id: string;
+  agent_id: string;
+  password?: string;
+};
+
 export const getBackupDownloadUrl = (id: string, agentId: string) =>
   `/api/backup/download/${id}?agent_id=${agentId}`;
 
@@ -89,6 +95,15 @@ export const generateBackup = (
 ): Promise<{ backup_id: string }> =>
   hass.callWS({
     type: "backup/generate",
+    ...params,
+  });
+
+export const restoreBackup = (
+  hass: HomeAssistant,
+  params: RestoreBackupParams
+): Promise<{ backup_id: string }> =>
+  hass.callWS({
+    type: "backup/restore",
     ...params,
   });
 
