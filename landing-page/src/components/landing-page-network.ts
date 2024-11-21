@@ -33,6 +33,8 @@ class LandingPageNetwork extends LitElement {
 
   @state() private _getNetworkInfoError = false;
 
+  @state() private _dnsPrimaryInterfaceNameservers?: string;
+
   @state() private _dnsPrimaryInterface?: string;
 
   protected render() {
@@ -55,11 +57,11 @@ class LandingPageNetwork extends LitElement {
       >
         <p>
           ${this.localize("network_issue.description", {
-            dns: this._dnsPrimaryInterface || "?",
+            dns: this._dnsPrimaryInterfaceNameservers || "?",
           })}
         </p>
         <p>${this.localize("network_issue.resolve_different")}</p>
-        ${!this._dnsPrimaryInterface
+        ${!this._dnsPrimaryInterfaceNameservers
           ? html`
               <p>
                 <b>${this.localize("network_issue.no_primary_interface")} </b>
@@ -71,7 +73,7 @@ class LandingPageNetwork extends LitElement {
             ({ translationKey }, key) =>
               html`<ha-button
                 .index=${key}
-                .disabled=${!this._dnsPrimaryInterface}
+                .disabled=${!this._dnsPrimaryInterfaceNameservers}
                 @click=${this._setDns}
                 >${this.localize(translationKey)}</ha-button
               >`
@@ -111,17 +113,20 @@ class LandingPageNetwork extends LitElement {
 
     this._getNetworkInfoError = false;
 
+    const primaryInterface = data.interfaces.find(
+      (intf) => intf.primary && intf.enabled
+    );
+    if (primaryInterface) {
+      this._dnsPrimaryInterfaceNameservers = [
+        ...(primaryInterface.ipv4?.nameservers || []),
+        ...(primaryInterface.ipv6?.nameservers || []),
+      ].join(", ");
+
+      this._dnsPrimaryInterface = primaryInterface.interface;
+    }
+
     if (!data.host_internet) {
       this._networkIssue = true;
-      const primaryInterface = data.interfaces.find(
-        (intf) => intf.primary && intf.enabled
-      );
-      if (primaryInterface) {
-        this._dnsPrimaryInterface = [
-          ...(primaryInterface.ipv4?.nameservers || []),
-          ...(primaryInterface.ipv6?.nameservers || []),
-        ].join(", ");
-      }
     } else {
       this._networkIssue = false;
     }
@@ -135,7 +140,10 @@ class LandingPageNetwork extends LitElement {
   private async _setDns(ev) {
     const index = ev.target?.index;
     try {
-      const response = await setSupervisorNetworkDns(index);
+      const response = await setSupervisorNetworkDns(
+        index,
+        this._dnsPrimaryInterface!
+      );
       if (!response.ok) {
         throw new Error("Failed to set DNS");
       }
