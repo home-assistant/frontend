@@ -203,7 +203,7 @@ gulp.task("rspack-prod-gallery", () =>
   )
 );
 
-gulp.task("webpack-watch-landing-page", () => {
+gulp.task("rspack-watch-landing-page", () => {
   // This command will run forever because we don't close compiler
   rspack(
     process.env.ES5
@@ -220,7 +220,7 @@ gulp.task("webpack-watch-landing-page", () => {
   );
 });
 
-gulp.task("webpack-prod-landing-page", () =>
+gulp.task("rspack-prod-landing-page", () =>
   prodBuild(
     bothBuilds(createLandingPageConfig, {
       isProdBuild: true,
