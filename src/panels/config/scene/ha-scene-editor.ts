@@ -488,7 +488,10 @@ export class HaSceneEditor extends SubscribeMixin(
                               ? "icon"
                               : undefined}
                             .entityId=${entityId}
-                            @click=${this._showMoreInfo}
+                            @click=${this._mode === "live"
+                              ? this._showMoreInfo
+                              : undefined}
+                            .noninteractive=${this._mode === "review"}
                           >
                             ${this._mode === "live"
                               ? html`
@@ -559,7 +562,10 @@ export class HaSceneEditor extends SubscribeMixin(
                                     ? "icon"
                                     : undefined}
                                   .entityId=${entityId}
-                                  @click=${this._showMoreInfo}
+                                  @click=${this._mode === "live"
+                                    ? this._showMoreInfo
+                                    : undefined}
+                                  .noninteractive=${this._mode === "review"}
                                 >
                                   ${this._mode === "live"
                                     ? html` <state-badge
