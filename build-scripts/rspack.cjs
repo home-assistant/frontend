@@ -274,6 +274,9 @@ const createHassioConfig = ({
 const createGalleryConfig = ({ isProdBuild, latestBuild }) =>
   createRspackConfig(bundle.config.gallery({ isProdBuild, latestBuild }));
 
+const createLandingPageConfig = ({ isProdBuild, latestBuild }) =>
+  createRspackConfig(bundle.config.landingPage({ isProdBuild, latestBuild }));
+
 module.exports = {
   createAppConfig,
   createDemoConfig,
@@ -281,4 +284,5 @@ module.exports = {
   createHassioConfig,
   createGalleryConfig,
   createRspackConfig,
+  createLandingPageConfig,
 };

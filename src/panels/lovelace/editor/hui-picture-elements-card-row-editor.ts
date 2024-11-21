@@ -166,7 +166,7 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
           `${((element as ConditionalElementConfig).elements || []).length.toString()} ${this.hass?.localize("ui.panel.lovelace.editor.card.picture-elements.elements")}`
         );
     }
-    return "Unknown type";
+    return element.title ?? "Unknown type";
   }
 
   private async _addElement(ev): Promise<void> {

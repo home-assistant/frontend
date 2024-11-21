@@ -140,24 +140,13 @@ export class HaCardConditionState extends LitElement {
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ): string => {
-    const entity = this.condition.entity
-      ? this.hass.states[this.condition.entity]
-      : undefined;
     switch (schema.name) {
       case "entity":
         return this.hass.localize("ui.components.entity.entity-picker.entity");
       case "state":
-        if (entity) {
-          return `${this.hass.localize(
-            "ui.components.entity.entity-state-picker.state"
-          )} (${this.hass.localize(
-            "ui.panel.lovelace.editor.condition-editor.condition.state.current_state"
-          )}: ${this.hass.formatEntityState(entity)})`;
-        }
-        return `${this.hass.localize(
+        return this.hass.localize(
           "ui.components.entity.entity-state-picker.state"
-        )}`;
-
+        );
       default:
         return "";
     }

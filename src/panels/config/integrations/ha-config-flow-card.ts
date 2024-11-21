@@ -124,6 +124,17 @@ export class HaConfigFlowCard extends LitElement {
   }
 
   private _continueFlow() {
+    if (this.flow.flow_id === "external") {
+      this.hass.auth.external!.fireMessage({
+        type: "improv/configure_device",
+        payload: {
+          name:
+            this.flow.localized_title ||
+            this.flow.context.title_placeholders.name,
+        },
+      });
+      return;
+    }
     showConfigFlowDialog(this, {
       continueFlowId: this.flow.flow_id,
       dialogClosedCallback: () => {
