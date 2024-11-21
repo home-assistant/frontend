@@ -27,6 +27,7 @@ import { brandsUrl } from "../../../util/brands-url";
 import { bytesToString } from "../../../util/bytes-to-string";
 import { fileDownload } from "../../../util/file_download";
 import { showConfirmationDialog } from "../../lovelace/custom-card-helpers";
+import "./components/ha-backup-data-picker";
 
 @customElement("ha-config-backup-details")
 class HaConfigBackupDetails extends LitElement {
@@ -39,6 +40,8 @@ class HaConfigBackupDetails extends LitElement {
   @state() private _backup?: BackupContentExtended | null;
 
   @state() private _error?: string;
+
+  @state() private _selectedBackup?: BackupContentExtended;
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
@@ -87,6 +90,15 @@ class HaConfigBackupDetails extends LitElement {
             : !this._backup
               ? html`<ha-circular-progress active></ha-circular-progress>`
               : html`
+                  <ha-card header="Data">
+                    <ha-backup-data-picker
+                      .hass=${this.hass}
+                      .data=${this._backup}
+                      .value=${this._selectedBackup}
+                      @value-changed=${this._selectedBackupChanged}
+                    >
+                    </ha-backup-data-picker>
+                  </ha-card>
                   <ha-card header="Backup">
                     <div class="card-content">
                       <ha-md-list>
@@ -161,6 +173,11 @@ class HaConfigBackupDetails extends LitElement {
         </div>
       </hass-subpage>
     `;
+  }
+
+  private _selectedBackupChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    this._selectedBackup = ev.detail.value;
   }
 
   private async _fetchBackup() {
@@ -242,6 +259,10 @@ class HaConfigBackupDetails extends LitElement {
     }
     .warning ha-svg-icon {
       color: var(--error-color);
+    }
+    ha-backup-data-picker {
+      display: block;
+      padding: 0 24px 16px 24px;
     }
   `;
 }

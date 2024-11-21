@@ -13,19 +13,21 @@ export interface BackupContent {
   agent_ids?: string[];
 }
 
-export interface BackupAddon {
-  name: string;
-  slug: string;
-  version: string;
-}
-
-export interface BackupContentExtended extends BackupContent {
+export interface BackupData {
   addons: BackupAddon[];
   database_included: boolean;
   folders: string[];
   homeassistant_version: string;
   homeassistant_included: boolean;
 }
+
+export interface BackupAddon {
+  name: string;
+  slug: string;
+  version: string;
+}
+
+export interface BackupContentExtended extends BackupContent, BackupData {}
 
 export interface BackupInfo {
   backups: BackupContent[];
