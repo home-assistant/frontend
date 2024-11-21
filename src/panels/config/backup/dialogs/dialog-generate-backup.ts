@@ -84,7 +84,9 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     this._formData = INITIAL_FORM_DATA;
     this._params = _params;
     this._fetchAgents();
-    this._fetchAddons();
+    if (isComponentLoaded(this.hass, "hassio")) {
+      this._fetchAddons();
+    }
   }
 
   private _dialogClosed() {
@@ -104,9 +106,6 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
   }
 
   private async _fetchAddons() {
-    if (!isComponentLoaded(this.hass, "hassio")) {
-      return;
-    }
     const { addons } = await fetchHassioAddonsInfo(this.hass);
     this._addons = addons;
   }
