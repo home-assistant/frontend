@@ -211,7 +211,7 @@
     "gulp-rename": "2.0.0",
     "gulp-zopfli-green": "6.0.2",
     "html-minifier-terser": "7.2.0",
-    "husky": "9.1.6",
+    "husky": "9.1.7",
     "instant-mocha": "1.5.3",
     "jszip": "3.10.1",
     "lint-staged": "15.2.10",
