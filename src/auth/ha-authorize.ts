@@ -204,6 +204,7 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
           .label=${""}
           nativeName
           @value-changed=${this._languageChanged}
+          inlineArrow
         ></ha-language-picker>
         <a
           href="https://www.home-assistant.io/docs/authentication/"
