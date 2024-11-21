@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { navigate } from "../../../common/navigate";
 import "../../../components/ha-alert";
+import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
@@ -19,6 +20,7 @@ import {
   fetchBackupDetails,
   getBackupDownloadUrl,
   getPreferredAgentForDownload,
+  restoreBackup,
 } from "../../../data/backup";
 import { domainToName } from "../../../data/integration";
 import "../../../layouts/hass-subpage";
@@ -26,7 +28,11 @@ import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { bytesToString } from "../../../util/bytes-to-string";
 import { fileDownload } from "../../../util/file_download";
-import { showConfirmationDialog } from "../../lovelace/custom-card-helpers";
+import {
+  showConfirmationDialog,
+  showPromptDialog,
+} from "../../lovelace/custom-card-helpers";
+import "./components/ha-backup-data-picker";
 
 @customElement("ha-config-backup-details")
 class HaConfigBackupDetails extends LitElement {
@@ -39,6 +45,8 @@ class HaConfigBackupDetails extends LitElement {
   @state() private _backup?: BackupContentExtended | null;
 
   @state() private _error?: string;
+
+  @state() private _selectedBackup?: BackupContentExtended;
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
@@ -87,6 +95,25 @@ class HaConfigBackupDetails extends LitElement {
             : !this._backup
               ? html`<ha-circular-progress active></ha-circular-progress>`
               : html`
+                  <ha-card header="Select what to restore">
+                    <div class="card-content">
+                      <ha-backup-data-picker
+                        .hass=${this.hass}
+                        .data=${this._backup}
+                        .value=${this._selectedBackup}
+                        @value-changed=${this._selectedBackupChanged}
+                      >
+                      </ha-backup-data-picker>
+                    </div>
+                    <div class="card-actions">
+                      <ha-button
+                        @click=${this._restore}
+                        .disabled=${this._isRestoreDisabled()}
+                      >
+                        Restore
+                      </ha-button>
+                    </div>
+                  </ha-card>
                   <ha-card header="Backup">
                     <div class="card-content">
                       <ha-md-list>
@@ -163,6 +190,60 @@ class HaConfigBackupDetails extends LitElement {
     `;
   }
 
+  private _selectedBackupChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    this._selectedBackup = ev.detail.value;
+  }
+
+  private _isRestoreDisabled() {
+    return (
+      !this._selectedBackup ||
+      !(
+        this._selectedBackup?.database_included ||
+        this._selectedBackup?.homeassistant_included ||
+        this._selectedBackup.addons.length ||
+        this._selectedBackup.folders.length
+      )
+    );
+  }
+
+  private async _restore() {
+    let password: string | undefined;
+    if (this._backup?.protected) {
+      const response = await showPromptDialog(this, {
+        inputType: "password",
+        inputLabel: "Password",
+        title: "Enter password",
+      });
+      if (!response) {
+        return;
+      }
+      password = response;
+    } else {
+      const response = await showConfirmationDialog(this, {
+        title: "Restore backup",
+        text: "The backup will be restored to your instance.",
+        confirmText: "Restore",
+        dismissText: "Cancel",
+        destructive: true,
+      });
+      if (!response) {
+        return;
+      }
+    }
+
+    const preferedAgent = getPreferredAgentForDownload(
+      this._backup!.agent_ids!
+    );
+
+    // Selected backup object should be passed for partial restore but the backend does not support it yet
+    await restoreBackup(this.hass, {
+      backup_id: this._backup!.backup_id,
+      agent_id: preferedAgent,
+      password: password,
+    });
+  }
+
   private async _fetchBackup() {
     try {
       const response = await fetchBackupDetails(this.hass, this.backupId);
@@ -226,6 +307,10 @@ class HaConfigBackupDetails extends LitElement {
     .card-content {
       padding: 0 20px 8px 20px;
     }
+    .card-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
     ha-md-list {
       background: none;
       padding: 0;
@@ -242,6 +327,9 @@ class HaConfigBackupDetails extends LitElement {
     }
     .warning ha-svg-icon {
       color: var(--error-color);
+    }
+    ha-backup-data-picker {
+      display: block;
     }
   `;
 }

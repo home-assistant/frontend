@@ -173,15 +173,20 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
         <span slot="description">
           With these settings you are able to restore your system.
         </span>
-        <ha-switch disabled checked></ha-switch>
+        <ha-switch
+          id="homeassistant"
+          name="homeassistant"
+          @change=${this._switchChanged}
+          .checked=${this._formData.homeassistant}
+        ></ha-switch>
       </ha-settings-row>
       <ha-settings-row>
         <ha-svg-icon slot="prefix" .path=${mdiChartBox}></ha-svg-icon>
         <span slot="heading">History</span>
         <span slot="description">For example of your energy dashboard.</span>
         <ha-switch
-          id="history"
-          name="history"
+          id="database"
+          name="database"
           @change=${this._switchChanged}
           .checked=${this._formData.database}
         ></ha-switch>

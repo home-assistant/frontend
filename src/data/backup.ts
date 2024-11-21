@@ -13,19 +13,21 @@ export interface BackupContent {
   agent_ids?: string[];
 }
 
-export interface BackupAddon {
-  name: string;
-  slug: string;
-  version: string;
-}
-
-export interface BackupContentExtended extends BackupContent {
+export interface BackupData {
   addons: BackupAddon[];
   database_included: boolean;
   folders: string[];
   homeassistant_version: string;
   homeassistant_included: boolean;
 }
+
+export interface BackupAddon {
+  name: string;
+  slug: string;
+  version: string;
+}
+
+export interface BackupContentExtended extends BackupContent, BackupData {}
 
 export interface BackupInfo {
   backups: BackupContent[];
@@ -48,6 +50,12 @@ export type GenerateBackupParams = {
   include_folders?: string[];
   include_homeassistant: boolean;
   name?: string;
+  password?: string;
+};
+
+export type RestoreBackupParams = {
+  backup_id: string;
+  agent_id: string;
   password?: string;
 };
 
@@ -87,6 +95,15 @@ export const generateBackup = (
 ): Promise<{ backup_id: string }> =>
   hass.callWS({
     type: "backup/generate",
+    ...params,
+  });
+
+export const restoreBackup = (
+  hass: HomeAssistant,
+  params: RestoreBackupParams
+): Promise<{ backup_id: string }> =>
+  hass.callWS({
+    type: "backup/restore",
     ...params,
   });
 
