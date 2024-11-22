@@ -46,6 +46,7 @@ import { fileDownload } from "../../../util/file_download";
 import "./components/ha-backup-summary-card";
 import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
 @customElement("ha-config-backup-dashboard")
 class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
@@ -284,12 +285,15 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
       // Todo : Use default config instead of hardcoded one
       const { agents } = await fetchBackupAgentsInfo(this.hass);
 
-      this._generateBackup({
+      const params: GenerateBackupParams = {
         agent_ids: agents.map((agent) => agent.agent_id),
         include_homeassistant: true,
         include_database: true,
-        include_all_addons: false,
-      });
+      };
+      if (isComponentLoaded(this.hass, "hassio")) {
+        params.include_all_addons = true;
+      }
+      this._generateBackup(params);
     }
   }
 

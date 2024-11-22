@@ -45,10 +45,10 @@ export interface BackupAgentsInfo {
 export type GenerateBackupParams = {
   agent_ids: string[];
   include_addons?: string[];
-  include_all_addons: boolean;
-  include_database: boolean;
+  include_all_addons?: boolean;
+  include_database?: boolean;
   include_folders?: string[];
-  include_homeassistant: boolean;
+  include_homeassistant?: boolean;
   name?: string;
   password?: string;
 };
