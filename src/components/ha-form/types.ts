@@ -43,6 +43,7 @@ export interface HaFormExpandableSchema extends HaFormBaseSchema {
   icon?: string;
   iconPath?: string;
   expanded?: boolean;
+  multiple?: boolean;
   headingLevel?: 1 | 2 | 3 | 4 | 5 | 6;
   schema: readonly HaFormSchema[];
 }
@@ -127,6 +128,6 @@ export type HaFormTimeData = HaDurationData;
 
 export interface HaFormElement extends LitElement {
   schema: HaFormSchema | readonly HaFormSchema[];
-  data?: HaFormDataContainer | HaFormData;
+  data?: HaFormDataContainer | HaFormDataContainer[] | HaFormData;
   label?: string;
 }

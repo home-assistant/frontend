@@ -1,8 +1,13 @@
+import { mdiPlus } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { fireEvent } from "../../common/dom/fire_event";
 import type { HomeAssistant } from "../../types";
+import { computeInitialHaFormData } from "./compute-initial-ha-form-data";
+import { haStyle } from "../../resources/styles";
 import "./ha-form";
+import "../ha-button";
 import type {
   HaFormDataContainer,
   HaFormElement,
@@ -14,7 +19,9 @@ import type {
 export class HaFormExpendable extends LitElement implements HaFormElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public data!: HaFormDataContainer;
+  @property({ attribute: false }) public data!:
+    | HaFormDataContainer
+    | HaFormDataContainer[];
 
   @property({ attribute: false }) public schema!: HaFormExpandableSchema;
 
@@ -65,7 +72,43 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
     });
   };
 
+  private _valueChanged(ev) {
+    if (this.schema.multiple) {
+      ev.stopPropagation();
+      const data = [...(this.data as HaFormDataContainer[])];
+      data[ev.target.index] = ev.detail.value;
+      fireEvent(this, "value-changed", { value: data });
+    }
+  }
+
+  private _addItem() {
+    const data = [
+      ...(this.data as HaFormDataContainer[]),
+      computeInitialHaFormData(this.schema.schema),
+    ];
+    fireEvent(this, "value-changed", { value: data });
+  }
+
   protected render() {
+    return html` ${this.schema.multiple ? this._renderDescription() : nothing}
+    ${this.schema.multiple
+      ? (this.data as HaFormDataContainer[]).map((d, idx) =>
+          this.renderPanel(d, idx)
+        )
+      : this.renderPanel(this.data as HaFormDataContainer, 0)}
+    ${this.schema.multiple
+      ? html`
+          <div class="layout horizontal center-center">
+            <ha-button @click=${this._addItem} .disabled=${this.disabled}>
+              ${this.hass?.localize("ui.common.add") ?? "Add"}
+              <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+            </ha-button>
+          </div>
+        `
+      : nothing}`;
+  }
+
+  private renderPanel(data: HaFormDataContainer, index) {
     return html`
       <ha-expansion-panel outlined .expanded=${Boolean(this.schema.expanded)}>
         <div
@@ -83,15 +126,17 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
           ${this.schema.title || this.computeLabel?.(this.schema)}
         </div>
         <div class="content">
-          ${this._renderDescription()}
+          ${this.schema.multiple ? nothing : this._renderDescription()}
           <ha-form
             .hass=${this.hass}
-            .data=${this.data}
+            .data=${data}
+            .index=${index}
             .schema=${this.schema.schema}
             .disabled=${this.disabled}
             .computeLabel=${this._computeLabel}
             .computeHelper=${this._computeHelper}
             .localizeValue=${this.localizeValue}
+            @value-changed=${this._valueChanged}
           ></ha-form>
         </div>
       </ha-expansion-panel>
@@ -99,31 +144,34 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: flex !important;
-        flex-direction: column;
-      }
-      :host ha-form {
-        display: block;
-      }
-      .content {
-        padding: 12px;
-      }
-      .content p {
-        margin: 0 0 24px;
-      }
-      ha-expansion-panel {
-        display: block;
-        --expansion-panel-content-padding: 0;
-        border-radius: 6px;
-        --ha-card-border-radius: 6px;
-      }
-      ha-svg-icon,
-      ha-icon {
-        color: var(--secondary-text-color);
-      }
-    `;
+    return [
+      haStyle,
+      css`
+        :host {
+          display: flex !important;
+          flex-direction: column;
+        }
+        :host ha-form {
+          display: block;
+        }
+        .content {
+          padding: 12px;
+        }
+        .content p {
+          margin: 0 0 24px;
+        }
+        ha-expansion-panel {
+          display: block;
+          --expansion-panel-content-padding: 0;
+          border-radius: 6px;
+          --ha-card-border-radius: 6px;
+        }
+        ha-svg-icon,
+        ha-icon {
+          color: var(--secondary-text-color);
+        }
+      `,
+    ];
   }
 }
 
