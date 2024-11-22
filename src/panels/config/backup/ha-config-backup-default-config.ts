@@ -1,4 +1,10 @@
-import { mdiChartBox, mdiCog, mdiFolder, mdiPlayBoxMultiple } from "@mdi/js";
+import {
+  mdiChartBox,
+  mdiCog,
+  mdiFolder,
+  mdiPlayBoxMultiple,
+  mdiPuzzle,
+} from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -254,6 +260,10 @@ class HaConfigBackupDefaultConfig extends LitElement {
               ${this._addons.length > 0
                 ? html`
                     <ha-settings-row>
+                      <ha-svg-icon
+                        slot="prefix"
+                        .path=${mdiPuzzle}
+                      ></ha-svg-icon>
                       <span slot="heading">Add-ons</span>
                       <span slot="description">
                         Select what add-ons you want to backup.
