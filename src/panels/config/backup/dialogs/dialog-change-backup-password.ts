@@ -1,4 +1,4 @@
-import { mdiClose } from "@mdi/js";
+import { mdiClose, mdiContentCopy, mdiKey } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -14,6 +14,9 @@ import type { ChangeBackupPasswordDialogParams } from "./show-dialog-change-back
 import "../../../../components/ha-icon-button-prev";
 import "../../../../components/ha-password-field";
 import "../../../../components/ha-md-dialog";
+import "../../../../components/ha-list-item";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
+import { showToast } from "../../../../util/toast";
 
 const STEPS = ["current", "new", "save"] as const;
 
@@ -29,12 +32,25 @@ class DialogChangeBackupPassword extends LitElement implements HassDialog {
 
   @query("ha-md-dialog") private _dialog!: HaMdDialog;
 
-  private _newPassword?: string;
+  @state() private _newPassword?: string;
+
+  private _suggestedPassword?: string;
 
   public showDialog(params: ChangeBackupPasswordDialogParams): void {
     this._params = params;
     this._step = this._params?.currentPassword ? STEPS[0] : STEPS[1];
     this._opened = true;
+    this._suggestedPassword = window.crypto
+      .getRandomValues(new Uint32Array(10))
+      .reduce(
+        (prev, curr, index) =>
+          prev +
+          (index % 2 ? curr.toString(36).toUpperCase() : curr.toString(36)),
+        ""
+      )
+      .split("")
+      .sort(() => 128 - window.crypto.getRandomValues(new Uint8Array(1))[0])
+      .join("");
   }
 
   public closeDialog(): void {
@@ -48,6 +64,7 @@ class DialogChangeBackupPassword extends LitElement implements HassDialog {
     this._step = undefined;
     this._params = undefined;
     this._newPassword = undefined;
+    this._suggestedPassword = undefined;
   }
 
   private _closeDialog() {
@@ -126,31 +143,71 @@ class DialogChangeBackupPassword extends LitElement implements HassDialog {
           sure you have access to all your current backups. All next backups
           will use the new encryption key.
 
-          <ha-password-field
-            readOnly
-            .value=${this._params?.currentPassword}
-          ></ha-password-field>`;
+          <div class="row">
+            <ha-password-field
+              readOnly
+              .value=${this._params?.currentPassword}
+            ></ha-password-field>
+            <ha-button @click=${this._copyOldPassword}>
+              <ha-svg-icon .path=${mdiContentCopy} slot="icon"></ha-svg-icon>
+              Copy
+            </ha-button>
+          </div>`;
       case "new":
         return html`All next backups will use the new encryption key.
 
           <ha-password-field
             @input=${this._passwordChanged}
-          ></ha-password-field>`;
+            .value=${this._newPassword || ""}
+          ></ha-password-field>
+          <ha-list-item
+            twoline
+            graphic="icon"
+            @click=${this._useSuggestedPassword}
+          >
+            <ha-svg-icon slot="graphic" .path=${mdiKey}></ha-svg-icon>
+            Use suggested encryption key
+            <span slot="secondary">${this._suggestedPassword}</span>
+          </ha-list-item>`;
       case "save":
         return html`It’s important that you don’t lose this encryption key. We
           recommend to save this key somewhere secure. As you can only restore
           your data with the backup encryption key.
 
-          <ha-password-field
-            readOnly
-            .value=${this._newPassword!}
-          ></ha-password-field>`;
+          <div class="row">
+            <ha-password-field
+              readOnly
+              .value=${this._newPassword!}
+            ></ha-password-field>
+            <ha-button @click=${this._copyNewPassword}>
+              <ha-svg-icon .path=${mdiContentCopy} slot="icon"></ha-svg-icon>
+              Copy
+            </ha-button>
+          </div>`;
     }
     return nothing;
   }
 
   private _passwordChanged(ev) {
     this._newPassword = ev.target.value;
+  }
+
+  private _useSuggestedPassword() {
+    this._newPassword = this._suggestedPassword;
+  }
+
+  private async _copyOldPassword() {
+    await copyToClipboard(this._params!.currentPassword);
+    showToast(this, {
+      message: this.hass.localize("ui.common.copied_clipboard"),
+    });
+  }
+
+  private async _copyNewPassword() {
+    await copyToClipboard(this._newPassword);
+    showToast(this, {
+      message: this.hass.localize("ui.common.copied_clipboard"),
+    });
   }
 
   private async _submit() {
@@ -177,6 +234,14 @@ class DialogChangeBackupPassword extends LitElement implements HassDialog {
           div[slot="content"] {
             margin-top: 0;
           }
+        }
+        .row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .row ha-password-field {
+          flex: 1;
         }
       `,
     ];
