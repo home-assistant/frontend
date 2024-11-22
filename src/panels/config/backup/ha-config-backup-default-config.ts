@@ -41,13 +41,28 @@ import { showChangeBackupPasswordDialog } from "./dialogs/show-dialog-change-bac
 
 const SELF_CREATED_ADDONS_FOLDER = "addons/local";
 
+const INITIAL_BACKUP_CONFIG: BackupConfig = {
+  create_backup: {
+    agent_ids: [],
+    include_folders: [],
+    include_database: true,
+    include_addons: [],
+    include_all_addons: true,
+    password: null,
+    name: null,
+  },
+  max_copies: 3,
+  schedule: { state: BackupScheduleState.NEVER },
+  last_automatic_backup: null,
+};
+
 @customElement("ha-config-backup-default-config")
 class HaConfigBackupDefaultConfig extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
 
-  @state() private _backupConfig?: BackupConfig;
+  @state() private _backupConfig: BackupConfig = INITIAL_BACKUP_CONFIG;
 
   @state() private _agents: BackupAgent[] = [];
 
@@ -68,7 +83,7 @@ class HaConfigBackupDefaultConfig extends LitElement {
       fetchBackupConfig(this.hass),
       fetchBackupAgentsInfo(this.hass),
     ]);
-    this._backupConfig = backupConfig.config;
+    this._backupConfig = backupConfig.config || INITIAL_BACKUP_CONFIG;
     this._agents = agentInfo.agents;
   }
 
@@ -374,9 +389,6 @@ class HaConfigBackupDefaultConfig extends LitElement {
   }
 
   private _toggleSchedule(ev) {
-    if (!this._backupConfig) {
-      return;
-    }
     if (ev.target.checked) {
       this._backupConfig = {
         ...this._backupConfig,
@@ -399,7 +411,10 @@ class HaConfigBackupDefaultConfig extends LitElement {
   }
 
   private _scheduleChanged(ev) {
-    if (!this._backupConfig || !ev.target.value) {
+    if (
+      !ev.target.value ||
+      ev.target.value === this._backupConfig.schedule.state
+    ) {
       return;
     }
     this._backupConfig = {
@@ -413,7 +428,7 @@ class HaConfigBackupDefaultConfig extends LitElement {
   }
 
   private _maxCopiesChanged(ev) {
-    if (!this._backupConfig) {
+    if (!ev.target.value || ev.target.value === this._backupConfig.max_copies) {
       return;
     }
     this._backupConfig = {
@@ -424,9 +439,6 @@ class HaConfigBackupDefaultConfig extends LitElement {
   }
 
   private _folderSwitchChanged(ev) {
-    if (!this._backupConfig) {
-      return;
-    }
     const id = ev.target.id;
     const checked = ev.target.checked;
     if (!this._backupConfig.create_backup.include_folders) {
@@ -465,7 +477,11 @@ class HaConfigBackupDefaultConfig extends LitElement {
   }
 
   private _addonModeChanged(ev) {
-    if (!this._backupConfig) {
+    if (
+      !ev.target.value ||
+      (ev.target.value === "all" &&
+        this._backupConfig.create_backup.include_all_addons)
+    ) {
       return;
     }
     this._backupConfig = {
@@ -479,9 +495,6 @@ class HaConfigBackupDefaultConfig extends LitElement {
   }
 
   private _addonsChanged(ev) {
-    if (!this._backupConfig) {
-      return;
-    }
     this._backupConfig = {
       ...this._backupConfig,
       create_backup: {
@@ -493,9 +506,6 @@ class HaConfigBackupDefaultConfig extends LitElement {
   }
 
   private _databaseSwitchChanged(ev) {
-    if (!this._backupConfig) {
-      return;
-    }
     this._backupConfig = {
       ...this._backupConfig,
       create_backup: {
@@ -507,9 +517,6 @@ class HaConfigBackupDefaultConfig extends LitElement {
   }
 
   private _handleAgentToggle(ev) {
-    if (!this._backupConfig) {
-      return;
-    }
     const agentId = ev.target.id;
     if (ev.target.checked) {
       this._backupConfig = {
@@ -554,9 +561,6 @@ class HaConfigBackupDefaultConfig extends LitElement {
   }
 
   private async _changePassword() {
-    if (!this._backupConfig) {
-      return;
-    }
     const result = await showChangeBackupPasswordDialog(this, {
       currentPassword: this._backupConfig.create_backup.password ?? undefined,
     });
@@ -576,9 +580,6 @@ class HaConfigBackupDefaultConfig extends LitElement {
   private _debounceSave = debounce(() => this._save(), 500);
 
   private async _save() {
-    if (!this._backupConfig) {
-      return;
-    }
     await updateBackupConfig(this.hass, {
       create_backup: {
         agent_ids: this._backupConfig.create_backup.agent_ids,
