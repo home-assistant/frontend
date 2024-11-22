@@ -82,3 +82,83 @@ jobs:
           arch: amd64
           wheels-key: ${{ secrets.WHEELS_KEY }}
           requirements: "requirements.txt"
+
+  release-landing-page:
+    name: Release landing-page frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4.2.2
+      - name: Setup Node
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version-file: ".nvmrc"
+          cache: yarn
+      - name: Install dependencies
+        run: yarn install
+      - name: Download Translations
+        run: ./script/translations_download
+        env:
+          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+      - name: Build landing-page
+        run: landing-page/script/build_landing_page
+      - name: Checkout landingpage repo
+        uses: actions/checkout@v4.2.2
+        with:
+          repository: home-assistant/landingpage
+          path: landingpage-repo
+      - name: Delete old build results
+        run: rm -rf landingpage-repo/rootfs/usr/share/www/*
+      - name: Copy build results
+        run: cp -rf landing-page/dist/* landingpage-repo/rootfs/usr/share/www/
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7.0.5
+        with:
+          token: ${{ secrets.LANDINGPAGE_REPO_TOKEN }}
+          path: landingpage-repo
+          commit-message: Bump frontend to ${{ github.event.release.tag_name }}
+          branch: bump-frontend
+          title: Bump frontend to ${{ github.event.release.tag_name }}
+          body: Automated frontend bump to ${{ github.event.release.tag_name }}. Done by the home-assistant/frontend release workflow.
+          sign-commits: true
+          labels: frontend
+
+  release-supervisor:
+    name: Release supervisor frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4.2.2
+      - name: Setup Node
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version-file: ".nvmrc"
+          cache: yarn
+      - name: Install dependencies
+        run: yarn install
+      - name: Download Translations
+        run: ./script/translations_download
+        env:
+          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+      - name: Build supervisor
+        run: hassio/script/build_hassio
+      - name: Checkout supervisor repo
+        uses: actions/checkout@v4.2.2
+        with:
+          repository: home-assistant/supervisor
+          path: supervisor-repo
+      - name: Delete old build results
+        run: rm -rf supervisor-repo/supervisor/api/panel/*
+      - name: Copy build results
+        run: cp -rf hassio/build/* supervisor-repo/supervisor-repo/supervisor/api/panel/
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7.0.5
+        with:
+          token: ${{ secrets.SUPERVISOR_REPO_TOKEN }}
+          path: supervisor-repo
+          commit-message: Bump frontend to ${{ github.event.release.tag_name }}
+          branch: bump-frontend
+          title: Bump frontend to ${{ github.event.release.tag_name }}
+          body: Automated frontend bump to ${{ github.event.release.tag_name }}. Done by the home-assistant/frontend release workflow.
+          sign-commits: true
+          labels: frontend
