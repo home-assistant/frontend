@@ -318,10 +318,10 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
         agent_ids: config.create_backup.agent_ids,
         include_homeassistant: true,
         include_database: config.create_backup.include_database,
-        include_folders: config.create_backup.include_folders || [],
-        include_addons: config.create_backup.include_addons || [],
       };
       if (isComponentLoaded(this.hass, "hassio")) {
+        params.include_folders = config.create_backup.include_folders || [];
+        params.include_addons = config.create_backup.include_addons || [];
         params.include_all_addons = config.create_backup.include_all_addons;
       }
       this._generateBackup(params);
