@@ -5542,6 +5542,10 @@
             "never_triggered": "Never triggered"
           },
           "todo-list": {
+            "sort_items": "Sort items",
+            "sort_by_summary": "Name",
+            "sort_by_due_date": "Due Date",
+            "sort_by_none": "Custom",
             "unchecked_items": "Active",
             "no_unchecked_items": "You have no to-do items!",
             "checked_items": "Completed",

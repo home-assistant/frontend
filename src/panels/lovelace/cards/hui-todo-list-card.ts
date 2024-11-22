@@ -8,6 +8,10 @@ import {
   mdiDrag,
   mdiPlus,
   mdiSort,
+  mdiSortAlphabeticalAscending,
+  mdiSortAlphabeticalDescending,
+  mdiSortCalendarAscending,
+  mdiSortCalendarDescending,
 } from "@mdi/js";
 import { endOfDay, isSameDay } from "date-fns";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -51,6 +55,9 @@ import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { TodoListCardConfig } from "./types";
 
+type sortDirection = "asc" | "desc";
+type SortKey = Extract<keyof TodoItem, "summary" | "due">;
+
 @customElement("hui-todo-list-card")
 export class HuiTodoListCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -77,6 +84,10 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   }
 
   @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @state() private _sortDirection: sortDirection = "asc";
+
+  @state() private _sortKey?: SortKey;
 
   @state() private _config?: TodoListCardConfig;
 
@@ -185,8 +196,38 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
     const unavailable = isUnavailableState(stateObj.state);
 
-    const checkedItems = this._getCheckedItems(this._items);
-    const uncheckedItems = this._getUncheckedItems(this._items);
+    // sort alphabetically by summary
+    const sortedItems = [...this._items!];
+
+    if (this._sortKey != null) {
+      const sortDueDate = (a: TodoItem | undefined, b: TodoItem | undefined) =>
+        !a.due - !b.due || b.due - a.due;
+      const sortSummary = (a: TodoItem | undefined, b: TodoItem | undefined) =>
+        a?.summary.localeCompare(b.summary);
+      const sortingFn = this._sortKey === "summary" ? sortSummary : sortDueDate;
+      sortedItems.sort((a, b) =>
+        this._sortDirection === "asc" ? sortingFn(a, b) : sortingFn(b, a)
+      );
+    }
+
+    const checkedItems = this._getCheckedItems(sortedItems);
+    const uncheckedItems = this._getUncheckedItems(sortedItems);
+
+    let sortMenuIcon = mdiSort;
+
+    if (this._sortKey === "summary") {
+      sortMenuIcon =
+        this._sortDirection === "asc"
+          ? mdiSortAlphabeticalAscending
+          : mdiSortAlphabeticalDescending;
+    }
+
+    if (this._sortKey === "due") {
+      sortMenuIcon =
+        this._sortDirection === "asc"
+          ? mdiSortCalendarAscending
+          : mdiSortCalendarDescending;
+    }
 
     return html`
       <ha-card
@@ -195,29 +236,84 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
           "has-header": "title" in this._config,
         })}
       >
-        <div class="addRow">
-          ${this.todoListSupportsFeature(TodoListEntityFeature.CREATE_TODO_ITEM)
-            ? html`
-                <ha-textfield
-                  class="addBox"
-                  .placeholder=${this.hass!.localize(
-                    "ui.panel.lovelace.cards.todo-list.add_item"
-                  )}
-                  @keydown=${this._addKeyPress}
-                  .disabled=${unavailable}
-                ></ha-textfield>
-                <ha-icon-button
-                  class="addButton"
-                  .path=${mdiPlus}
-                  .title=${this.hass!.localize(
-                    "ui.panel.lovelace.cards.todo-list.add_item"
-                  )}
-                  .disabled=${unavailable}
-                  @click=${this._addItem}
-                >
-                </ha-icon-button>
-              `
-            : nothing}
+        <div class="menuRow">
+          <div class="addRow">
+            ${this.todoListSupportsFeature(
+              TodoListEntityFeature.CREATE_TODO_ITEM
+            )
+              ? html`
+                  <ha-textfield
+                    class="addBox"
+                    .placeholder=${this.hass!.localize(
+                      "ui.panel.lovelace.cards.todo-list.add_item"
+                    )}
+                    @keydown=${this._addKeyPress}
+                    .disabled=${unavailable}
+                  ></ha-textfield>
+                  <ha-icon-button
+                    class="addButton"
+                    .path=${mdiPlus}
+                    .title=${this.hass!.localize(
+                      "ui.panel.lovelace.cards.todo-list.add_item"
+                    )}
+                    .disabled=${unavailable}
+                    @click=${this._addItem}
+                  >
+                  </ha-icon-button>
+                `
+              : nothing}
+          </div>
+          <ha-button-menu @closed=${stopPropagation}>
+            <ha-icon-button
+              slot="trigger"
+              .path=${sortMenuIcon}
+            ></ha-icon-button>
+            <ha-list-item
+              @click=${this._sortByKey}
+              graphic="icon"
+              .activated=${this._sortKey == null}
+            >
+              ${this.hass!.localize(
+                "ui.panel.lovelace.cards.todo-list.sort_by_none"
+              )}
+            </ha-list-item>
+            <ha-list-item
+              @click=${this._sortByKey}
+              graphic="icon"
+              .sortKey=${"summary"}
+              .activated=${this._sortKey === "summary"}
+            >
+              ${this.hass!.localize(
+                "ui.panel.lovelace.cards.todo-list.sort_by_summary"
+              )}
+              <ha-svg-icon
+                slot="graphic"
+                .path=${this._sortDirection === "asc"
+                  ? mdiSortAlphabeticalAscending
+                  : mdiSortAlphabeticalDescending}
+                .disabled=${unavailable}
+              >
+              </ha-svg-icon>
+            </ha-list-item>
+            <ha-list-item
+              @click=${this._sortByKey}
+              graphic="icon"
+              .activated=${this._sortKey === "due"}
+              .sortKey=${"due"}
+            >
+              ${this.hass!.localize(
+                "ui.panel.lovelace.cards.todo-list.sort_by_due_date"
+              )}
+              <ha-svg-icon
+                slot="graphic"
+                .path=${this._sortDirection === "asc"
+                  ? mdiSortCalendarAscending
+                  : mdiSortCalendarDescending}
+                .disabled=${unavailable}
+              >
+              </ha-svg-icon>
+            </ha-list-item>
+          </ha-button-menu>
         </div>
         <ha-sortable
           handle-selector="ha-svg-icon"
@@ -451,6 +547,17 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     }
   }
 
+  private _sortByKey(ev): void {
+    const sortKey = ev.currentTarget.sortKey as SortKey;
+
+    if (this._sortKey !== sortKey) {
+      this._sortDirection = "asc";
+      this._sortKey = sortKey;
+    } else {
+      this._sortDirection = this._sortDirection === "asc" ? "desc" : "asc";
+    }
+  }
+
   private _openItem(ev): void {
     ev.stopPropagation();
 
@@ -552,6 +659,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
   private async _toggleReorder() {
     this._reordering = !this._reordering;
+    this._sortKey = undefined;
   }
 
   private async _itemMoved(ev: CustomEvent) {
@@ -602,10 +710,20 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
         padding-top: 0;
       }
 
-      .addRow {
+      .menuRow {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        column-gap: 16px;
+
         padding: 16px;
         padding-bottom: 0;
+      }
+
+      .addRow {
         position: relative;
+        flex-grow: 1;
       }
 
       .addRow ha-icon-button {
