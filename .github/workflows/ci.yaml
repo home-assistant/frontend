@@ -19,43 +19,27 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  setup:
-    name: Setup node and install dependencies
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out files from GitHub
-        uses: actions/checkout@v4.2.2
-      - name: Setup Node
-        uses: actions/setup-node@v4.1.0
-        with:
-          node-version-file: ".nvmrc"
-          cache: yarn
-      - name: Install dependencies
-        run: yarn install --immutable
-      - name: Check for duplicate dependencies
-        run: yarn dedupe --check
-      - name: Upload node_modules as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: node_modules
-          path: node_modules
   lint:
     name: Lint and check format
-    needs: [setup]
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
         uses: actions/checkout@v4.2.2
       - name: Setup Node
+        id: setup-node
         uses: actions/setup-node@v4.1.0
         with:
           node-version-file: ".nvmrc"
           cache: yarn
-      - name: Download node_modules artifact
-        uses: actions/download-artifact@v4
+      - uses: actions/cache@v4
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
-          name: node_modules
-          path: node_modules
+          path: "node_modules"
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}-${{ steps.setup-node.outputs.node-version }}
+          restore-keys: ${{ runner.os }}-yarn-${{ steps.setup-node.outputs.node-version }}
+      - name: Install dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: yarn install --immutable
       - name: Build resources
         run: ./node_modules/.bin/gulp gen-icons-json build-translations build-locale-data gather-gallery-pages
       - name: Setup lint cache
@@ -77,21 +61,25 @@ jobs:
         run: yarn run lint:prettier
   test:
     name: Run tests
-    needs: [setup]
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
         uses: actions/checkout@v4.2.2
       - name: Setup Node
+        id: setup-node
         uses: actions/setup-node@v4.1.0
         with:
           node-version-file: ".nvmrc"
           cache: yarn
-      - name: Download node_modules artifact
-        uses: actions/download-artifact@v4
+      - uses: actions/cache@v4
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
-          name: node_modules
-          path: node_modules
+          path: "node_modules"
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}-${{ steps.setup-node.outputs.node-version }}
+          restore-keys: ${{ runner.os }}-yarn-${{ steps.setup-node.outputs.node-version }}
+      - name: Install dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: yarn install --immutable
       - name: Build resources
         run: ./node_modules/.bin/gulp gen-icons-json build-translations build-locale-data
       - name: Run Tests
@@ -104,15 +92,20 @@ jobs:
       - name: Check out files from GitHub
         uses: actions/checkout@v4.2.2
       - name: Setup Node
+        id: setup-node
         uses: actions/setup-node@v4.1.0
         with:
           node-version-file: ".nvmrc"
           cache: yarn
-      - name: Download node_modules artifact
-        uses: actions/download-artifact@v4
+      - uses: actions/cache@v4
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
-          name: node_modules
-          path: node_modules
+          path: "node_modules"
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}-${{ steps.setup-node.outputs.node-version }}
+          restore-keys: ${{ runner.os }}-yarn-${{ steps.setup-node.outputs.node-version }}
+      - name: Install dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: yarn install --immutable
       - name: Build Application
         run: ./node_modules/.bin/gulp build-app
         env:
@@ -131,15 +124,20 @@ jobs:
       - name: Check out files from GitHub
         uses: actions/checkout@v4.2.2
       - name: Setup Node
+        id: setup-node
         uses: actions/setup-node@v4.1.0
         with:
           node-version-file: ".nvmrc"
           cache: yarn
-      - name: Download node_modules artifact
-        uses: actions/download-artifact@v4
+      - uses: actions/cache@v4
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
-          name: node_modules
-          path: node_modules
+          path: "node_modules"
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}-${{ steps.setup-node.outputs.node-version }}
+          restore-keys: ${{ runner.os }}-yarn-${{ steps.setup-node.outputs.node-version }}
+      - name: Install dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: yarn install --immutable
       - name: Build Application
         run: ./node_modules/.bin/gulp build-hassio
         env:
