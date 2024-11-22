@@ -13,6 +13,7 @@ import type { HomeAssistant } from "../../../../types";
 import type { ChangeBackupPasswordDialogParams } from "./show-dialog-change-backup-password";
 import "../../../../components/ha-icon-button-prev";
 import "../../../../components/ha-password-field";
+import "../../../../components/ha-md-dialog";
 
 const STEPS = ["current", "new", "save"] as const;
 
