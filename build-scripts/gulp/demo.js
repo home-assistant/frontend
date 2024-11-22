@@ -41,3 +41,14 @@ gulp.task(
     "gen-pages-demo-prod"
   )
 );
+
+gulp.task(
+  "analyze-demo",
+  gulp.series(
+    async function setEnv() {
+      process.env.STATS = "1";
+    },
+    "clean",
+    "rspack-prod-demo"
+  )
+);

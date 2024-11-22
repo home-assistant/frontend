@@ -50,7 +50,6 @@ gulp.task(
   "analyze-app",
   gulp.series(
     async function setEnv() {
-      process.env.NODE_ENV = "production";
       process.env.STATS = "1";
     },
     "clean",

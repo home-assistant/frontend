@@ -134,6 +134,7 @@ gulp.task("rspack-prod-demo", () =>
   prodBuild(
     bothBuilds(createDemoConfig, {
       isProdBuild: true,
+      isStatsBuild: env.isStatsBuild(),
     })
   )
 );
