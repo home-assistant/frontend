@@ -50,3 +50,7 @@ src/cast/dev_const.ts
 
 # Jetbrains
 /.idea/
+
+# Container Workspaces
+.devcontainer/devcontainer.json
+config/configuration.yaml

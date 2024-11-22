@@ -123,6 +123,11 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     return undefined;
   }
 
+  protected getEntityIds(): string | undefined {
+    // not implemented, todo list should always have an entity id set;
+    return undefined;
+  }
+
   private _getCheckedItems = memoizeOne((items?: TodoItem[]): TodoItem[] =>
     items
       ? items.filter((item) => item.status === TodoItemStatus.Completed)
@@ -141,6 +146,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     if (!this.hasUpdated) {
       if (!this._entityId) {
         this._entityId = this.getEntityId();
+        this._entityId = this.getEntityIds();
       }
       this._subscribeItems();
     } else if (changedProperties.has("_entityId") || !this._items) {
