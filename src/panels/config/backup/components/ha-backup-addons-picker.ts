@@ -15,6 +15,7 @@ export type BackupAddon = {
   name: string;
   version?: string;
   icon?: boolean;
+  iconPath?: string;
 };
 
 @customElement("ha-backup-addons-picker")
@@ -35,7 +36,7 @@ export class HaBackupAddonsPicker extends LitElement {
                 slot="label"
                 .label=${item.name}
                 .version=${item.version}
-                .iconPath=${mdiPuzzle}
+                .iconPath=${item.iconPath || mdiPuzzle}
                 .imageUrl=${this.addons?.find((a) => a.slug === item.slug)?.icon
                   ? `/api/hassio/addons/${item.slug}/icon`
                   : undefined}
