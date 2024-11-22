@@ -2,7 +2,6 @@ import type { ActionDetail } from "@material/mwc-list";
 import { mdiDelete, mdiDotsVertical, mdiDownload } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { navigate } from "../../../common/navigate";
 import "../../../components/ha-alert";
@@ -24,7 +23,6 @@ import {
   restoreBackup,
 } from "../../../data/backup";
 import type { HassioAddonInfo } from "../../../data/hassio/addon";
-import { fetchHassioAddonsInfo } from "../../../data/hassio/addon";
 import { domainToName } from "../../../data/integration";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
@@ -56,20 +54,11 @@ class HaConfigBackupDetails extends LitElement {
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
 
-    if (isComponentLoaded(this.hass, "hassio")) {
-      this._fetchAddonInfo();
-    }
-
     if (this.backupId) {
       this._fetchBackup();
     } else {
       this._error = "Backup id not defined";
     }
-  }
-
-  private async _fetchAddonInfo() {
-    const { addons } = await fetchHassioAddonsInfo(this.hass);
-    this._addonsInfo = addons;
   }
 
   protected render() {

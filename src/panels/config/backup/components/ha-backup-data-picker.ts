@@ -5,10 +5,11 @@ import {
   mdiPlayBoxMultiple,
   mdiPuzzle,
 } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
@@ -17,7 +18,7 @@ import type { HaCheckbox } from "../../../../components/ha-checkbox";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-svg-icon";
 import type { BackupData } from "../../../../data/backup";
-import type { HassioAddonInfo } from "../../../../data/hassio/addon";
+import { fetchHassioAddonsInfo } from "../../../../data/hassio/addon";
 import { mdiHomeAssistant } from "../../../../resources/home-assistant-logo-svg";
 import type { HomeAssistant } from "../../../../types";
 import "./ha-backup-addons-picker";
@@ -52,7 +53,25 @@ export class HaBackupDataPicker extends LitElement {
 
   @property({ attribute: false }) public value?: BackupData;
 
-  @property({ attribute: false }) public addonsInfo?: HassioAddonInfo[];
+  @state() public _addonIcons: Record<string, boolean> = {};
+
+  protected firstUpdated(changedProps: PropertyValues): void {
+    super.firstUpdated(changedProps);
+    if (isComponentLoaded(this.hass, "hassio")) {
+      this._fetchAddonInfo();
+    }
+  }
+
+  private async _fetchAddonInfo() {
+    const { addons } = await fetchHassioAddonsInfo(this.hass);
+    this._addonIcons = addons.reduce<Record<string, boolean>>(
+      (acc, addon) => ({
+        ...acc,
+        [addon.slug]: addon.icon,
+      }),
+      {}
+    );
+  }
 
   private _homeAssistantItems = memoizeOne(
     (data: BackupData, _localize: LocalizeFunc) => {
@@ -89,16 +108,8 @@ export class HaBackupDataPicker extends LitElement {
     (
       data: BackupData,
       _localize: LocalizeFunc,
-      addonsInfo?: HassioAddonInfo[]
+      addonIcons: Record<string, boolean>
     ) => {
-      const addonIcons = (addonsInfo || []).reduce<Record<string, boolean>>(
-        (acc, addon) => ({
-          ...acc,
-          [addon.slug]: addon.icon,
-        }),
-        {}
-      );
-
       const items = data.addons.map<BackupAddon>((addon) => ({
         name: addon.name,
         slug: addon.slug,
@@ -107,7 +118,7 @@ export class HaBackupDataPicker extends LitElement {
       }));
 
       // Add local add-ons folder in addons items
-      if (data.folders.includes("addons/local")) {
+      if (data.folders.includes(SELF_CREATED_ADDONS_FOLDER)) {
         items.push({
           name: "Self created add-ons",
           slug: SELF_CREATED_ADDONS_FOLDER,
@@ -221,7 +232,7 @@ export class HaBackupDataPicker extends LitElement {
     const addonsItems = this._addonsItems(
       this.data,
       this.hass.localize,
-      this.addonsInfo
+      this._addonIcons
     );
 
     const selectedItems = this._parseValue(this.value);
