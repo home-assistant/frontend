@@ -383,37 +383,22 @@ export class HaSceneEditor extends SubscribeMixin(
                 narrow: !this.isWide,
               })}
             >
-              ${this._mode === "live"
-                ? html` <ha-alert
-                    alert-type="info"
-                    .title=${this.hass.localize(
-                      "ui.panel.config.scene.editor.live_preview"
-                    )}
-                  >
-                    ${this.hass.localize(
-                      "ui.panel.config.scene.editor.live_preview_detail"
-                    )}
-                    <ha-button slot="action" @click=${this._exitLiveMode}
-                      >${this.hass.localize(
-                        "ui.panel.config.scene.editor.back_to_review_mode"
-                      )}</ha-button
-                    >
-                  </ha-alert>`
-                : html` <ha-alert
-                    alert-type="info"
-                    .title=${this.hass.localize(
-                      "ui.panel.config.scene.editor.review_mode"
-                    )}
-                  >
-                    ${this.hass.localize(
-                      "ui.panel.config.scene.editor.review_mode_detail"
-                    )}
-                    <ha-button slot="action" @click=${this._enterLiveMode}
-                      >${this.hass.localize(
-                        "ui.panel.config.scene.editor.live_preview"
-                      )}</ha-button
-                    >
-                  </ha-alert>`}
+              <ha-alert
+                alert-type="info"
+                .narrow=${this.narrow}
+                .title=${this.hass.localize(
+                  `ui.panel.config.scene.editor.${this._mode === "live" ? "live_preview" : "review_mode"}`
+                )}
+              >
+                ${this.hass.localize(
+                  `ui.panel.config.scene.editor.${this._mode === "live" ? "live_preview_detail" : "review_mode_detail"}`
+                )}
+                <ha-button slot="action" @click=${this._toggleLiveMode}>
+                  ${this.hass.localize(
+                    `ui.panel.config.scene.editor.${this._mode === "live" ? "back_to_review_mode" : "live_preview"}`
+                  )}
+                </ha-button>
+              </ha-alert>
               <ha-card outlined>
                 <div class="card-content">
                   <ha-textfield
@@ -758,6 +743,14 @@ export class HaSceneEditor extends SubscribeMixin(
       applyScene(this.hass, this._storedStates);
     }
     this._mode = "yaml";
+  }
+
+  private async _toggleLiveMode() {
+    if (this._mode === "live") {
+      this._exitLiveMode();
+    } else {
+      await this._enterLiveMode();
+    }
   }
 
   private async _enterLiveMode() {
