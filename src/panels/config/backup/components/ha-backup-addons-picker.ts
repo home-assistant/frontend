@@ -1,4 +1,4 @@
-import { mdiFolder, mdiPuzzle } from "@mdi/js";
+import { mdiPuzzle } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -10,14 +10,12 @@ import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
 import "./ha-backup-formfield-label";
 
-type BackupAddon = {
+export type BackupAddon = {
   slug: string;
   name: string;
   version?: string;
   icon?: boolean;
 };
-
-export const SELF_CREATED_ADDONS_FOLDER = "addons/local";
 
 @customElement("ha-backup-addons-picker")
 export class HaBackupAddonsPicker extends LitElement {
@@ -51,20 +49,6 @@ export class HaBackupAddonsPicker extends LitElement {
             </ha-formfield>
           `
         )}
-        <ha-formfield>
-          <ha-backup-formfield-label
-            slot="label"
-            .label=${"Self created add-ons"}
-            .iconPath=${mdiFolder}
-          >
-          </ha-backup-formfield-label>
-          <ha-checkbox
-            .id=${SELF_CREATED_ADDONS_FOLDER}
-            .checked=${this.value?.includes(SELF_CREATED_ADDONS_FOLDER) ||
-            false}
-            @change=${this._checkboxChanged}
-          ></ha-checkbox>
-        </ha-formfield>
       </div>
     `;
   }

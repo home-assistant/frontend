@@ -28,12 +28,12 @@ import type {
   GenerateBackupParams,
 } from "../../../../data/backup";
 import { fetchBackupAgentsInfo } from "../../../../data/backup";
-import type { HassioAddonInfo } from "../../../../data/hassio/addon";
 import { fetchHassioAddonsInfo } from "../../../../data/hassio/addon";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import { SELF_CREATED_ADDONS_FOLDER } from "../components/ha-backup-addons-picker";
+import "../components/ha-backup-addons-picker";
+import type { BackupAddon } from "../components/ha-backup-addons-picker";
 import "../components/ha-backup-agents-select";
 import type { GenerateBackupDialogParams } from "./show-dialog-generate-backup";
 
@@ -61,6 +61,8 @@ const INITIAL_FORM_DATA: FormData = {
   agent_ids: [],
 };
 
+const SELF_CREATED_ADDONS_FOLDER = "addons/local";
+
 const STEPS = ["data", "sync"] as const;
 
 @customElement("ha-dialog-generate-backup")
@@ -75,7 +77,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
 
   @state() private _params?: GenerateBackupDialogParams;
 
-  @state() private _addons: HassioAddonInfo[] = [];
+  @state() private _addons: BackupAddon[] = [];
 
   @query("ha-md-dialog") private _dialog?: HaMdDialog;
 
@@ -108,7 +110,13 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
 
   private async _fetchAddons() {
     const { addons } = await fetchHassioAddonsInfo(this.hass);
-    this._addons = addons;
+    this._addons = [
+      ...addons,
+      {
+        name: "Self created add-ons",
+        slug: SELF_CREATED_ADDONS_FOLDER,
+      },
+    ];
   }
 
   public closeDialog() {
@@ -374,7 +382,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     if (share) {
       folders.push("share");
     }
-    if (addons.includes(SELF_CREATED_ADDONS_FOLDER) || addons_mode === "all") {
+    if (addons.includes(SELF_CREATED_ADDONS_FOLDER) || addons_mode) {
       folders.push(SELF_CREATED_ADDONS_FOLDER);
       addons = addons.filter((addon) => addon !== SELF_CREATED_ADDONS_FOLDER);
     }
