@@ -63,7 +63,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
 
   @state() private _selected: string[] = [];
 
-  @state() private _subscribed?: Promise<() => void>;
+  private _subscribed?: Promise<() => void>;
 
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
