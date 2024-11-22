@@ -83,7 +83,7 @@ class HaConfigBackupDefaultConfig extends LitElement {
       fetchBackupConfig(this.hass),
       fetchBackupAgentsInfo(this.hass),
     ]);
-    this._backupConfig = backupConfig.config || INITIAL_BACKUP_CONFIG;
+    this._backupConfig = backupConfig.config;
     this._agents = agentInfo.agents;
   }
 
