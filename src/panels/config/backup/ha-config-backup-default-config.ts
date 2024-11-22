@@ -1,28 +1,37 @@
+import { mdiChartBox, mdiCog, mdiFolder, mdiPlayBoxMultiple } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
+import "../../../components/ha-expansion-panel";
+import "../../../components/ha-icon-next";
 import "../../../components/ha-list-item";
+import "../../../components/ha-md-list";
+import "../../../components/ha-md-list-item";
+import "../../../components/ha-md-select";
+import "../../../components/ha-md-select-option";
+import "../../../components/ha-password-field";
 import "../../../components/ha-select";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-switch";
-import { mdiCog, mdiChartBox, mdiPlayBoxMultiple, mdiFolder } from "@mdi/js";
 import type { BackupAgent, BackupConfig } from "../../../data/backup";
+import type { BackupAddon } from "./components/ha-backup-addons-picker";
 import {
   BackupScheduleState,
   fetchBackupAgentsInfo,
   fetchBackupConfig,
   updateBackupConfig,
 } from "../../../data/backup";
+import { fetchHassioAddonsInfo } from "../../../data/hassio/addon";
+import { domainToName } from "../../../data/integration";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
-import "../../../components/ha-md-list-item";
-import "../../../components/ha-md-list";
-import { domainToName } from "../../../data/integration";
 import { brandsUrl } from "../../../util/brands-url";
-import "../../../components/ha-icon-next";
-import "../../../components/ha-password-field";
-import { debounce } from "../../../common/util/debounce";
+import "./components/ha-backup-addons-picker";
+
+const SELF_CREATED_ADDONS_FOLDER = "addons/local";
 
 @customElement("ha-config-backup-default-config")
 class HaConfigBackupDefaultConfig extends LitElement {
@@ -34,6 +43,8 @@ class HaConfigBackupDefaultConfig extends LitElement {
 
   @state() private _agents: BackupAgent[] = [];
 
+  @state() private _addons: BackupAddon[] = [];
+
   protected willUpdate(changedProps) {
     super.willUpdate(changedProps);
     if (!this.hasUpdated) {
@@ -42,12 +53,26 @@ class HaConfigBackupDefaultConfig extends LitElement {
   }
 
   private async _fetchData() {
+    if (isComponentLoaded(this.hass, "hassio")) {
+      this._fetchAddons();
+    }
     const [backupConfig, agentInfo] = await Promise.all([
       fetchBackupConfig(this.hass),
       fetchBackupAgentsInfo(this.hass),
     ]);
     this._backupConfig = backupConfig.config;
     this._agents = agentInfo.agents;
+  }
+
+  private async _fetchAddons() {
+    const { addons } = await fetchHassioAddonsInfo(this.hass);
+    this._addons = [
+      ...addons,
+      {
+        name: "Self created add-ons",
+        slug: SELF_CREATED_ADDONS_FOLDER,
+      },
+    ];
   }
 
   protected render() {
@@ -226,6 +251,50 @@ class HaConfigBackupDefaultConfig extends LitElement {
                   )}
                 ></ha-switch>
               </ha-settings-row>
+              ${this._addons.length > 0
+                ? html`
+                    <ha-settings-row>
+                      <span slot="heading">Add-ons</span>
+                      <span slot="description">
+                        Select what add-ons you want to backup.
+                      </span>
+                      <ha-md-select
+                        id="addons_mode"
+                        @change=${this._addonModeChanged}
+                        .value=${this._backupConfig.create_backup
+                          .include_all_addons
+                          ? "all"
+                          : "custom"}
+                      >
+                        <ha-md-select-option value="all">
+                          <div slot="headline">
+                            All (${this._addons.length})
+                          </div>
+                        </ha-md-select-option>
+                        <ha-md-select-option value="custom">
+                          <div slot="headline">Custom</div>
+                        </ha-md-select-option>
+                      </ha-md-select>
+                    </ha-settings-row>
+                    ${!this._backupConfig.create_backup.include_all_addons
+                      ? html`
+                          <ha-expansion-panel
+                            .header=${"Add-ons"}
+                            outlined
+                            expanded
+                          >
+                            <ha-backup-addons-picker
+                              .hass=${this.hass}
+                              .value=${this._backupConfig.create_backup
+                                .include_addons}
+                              @value-changed=${this._addonsChanged}
+                              .addons=${this._addons}
+                            ></ha-backup-addons-picker>
+                          </ha-expansion-panel>
+                        `
+                      : nothing}
+                  `
+                : nothing}
             </div>
           </ha-card>
           <ha-card class="agents">
@@ -368,6 +437,34 @@ class HaConfigBackupDefaultConfig extends LitElement {
         },
       };
     }
+    this._debounceSave();
+  }
+
+  private _addonModeChanged(ev) {
+    if (!this._backupConfig) {
+      return;
+    }
+    this._backupConfig = {
+      ...this._backupConfig,
+      create_backup: {
+        ...this._backupConfig.create_backup,
+        include_all_addons: ev.target.value === "all",
+      },
+    };
+    this._debounceSave();
+  }
+
+  private _addonsChanged(ev) {
+    if (!this._backupConfig) {
+      return;
+    }
+    this._backupConfig = {
+      ...this._backupConfig,
+      create_backup: {
+        ...this._backupConfig.create_backup,
+        include_addons: ev.detail.value,
+      },
+    };
     this._debounceSave();
   }
 
