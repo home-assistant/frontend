@@ -29,6 +29,7 @@ import {
   generateBackup,
   getBackupDownloadUrl,
   getPreferredAgentForDownload,
+  subscribeBackupEvents,
 } from "../../../data/backup";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
@@ -56,11 +57,13 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public route!: Route;
 
-  @state() private _backingUp = false;
+  @state() private _backupInProgress = false;
 
   @state() private _backups: BackupContent[] = [];
 
   @state() private _selected: string[] = [];
+
+  private _subscribed?: Promise<() => void>;
 
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
@@ -181,7 +184,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
             title="Automatically backed up"
             description="Your configuration has been backed up."
             has-action
-            .status=${this._backingUp ? "loading" : "success"}
+            .status=${this._backupInProgress ? "loading" : "success"}
           >
             <ha-button slot="action" @click=${this._configureDefaultBackup}>
               Configure
@@ -235,7 +238,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
 
         <ha-fab
           slot="fab"
-          ?disabled=${this._backingUp}
+          ?disabled=${this._backupInProgress}
           .label=${this.hass.localize("ui.panel.config.backup.create_backup")}
           extended
           @click=${this._newBackup}
@@ -246,22 +249,49 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
     `;
   }
 
+  private _unsubscribeEvents() {
+    if (this._subscribed) {
+      this._subscribed.then((unsub) => unsub());
+      this._subscribed = undefined;
+    }
+  }
+
+  private async _subscribeEvents() {
+    this._unsubscribeEvents();
+    if (!this.isConnected) {
+      return;
+    }
+
+    this._subscribed = subscribeBackupEvents(this.hass!, (event) => {
+      if (event.event_type === "backup_progress" && event.done) {
+        this._fetchBackupInfo();
+      }
+    });
+  }
+
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this._fetchBackupInfo();
+    this._subscribeEvents();
   }
 
   public connectedCallback() {
     super.connectedCallback();
     if (this.hasUpdated) {
       this._fetchBackupInfo();
+      this._subscribeEvents();
     }
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._unsubscribeEvents();
   }
 
   private async _fetchBackupInfo() {
     const info = await fetchBackupInfo(this.hass);
     this._backups = info.backups;
-    this._backingUp = info.backing_up;
+    this._backupInProgress = info.backing_up;
   }
 
   private async _newBackup(): Promise<void> {
@@ -301,14 +331,6 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
     await generateBackup(this.hass, params);
 
     await this._fetchBackupInfo();
-
-    // Todo subscribe for status updates instead of polling
-    const interval = setInterval(async () => {
-      await this._fetchBackupInfo();
-      if (!this._backingUp) {
-        clearInterval(interval);
-      }
-    }, 2000);
   }
 
   private _showBackupDetails(ev: CustomEvent): void {
