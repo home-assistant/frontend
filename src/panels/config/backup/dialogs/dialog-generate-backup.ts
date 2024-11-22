@@ -408,7 +408,10 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
       if (share) {
         folders.push("share");
       }
-      if (addons.includes(SELF_CREATED_ADDONS_FOLDER) || addons_mode) {
+      if (
+        addons.includes(SELF_CREATED_ADDONS_FOLDER) ||
+        addons_mode === "all"
+      ) {
         folders.push(SELF_CREATED_ADDONS_FOLDER);
         addons = addons.filter((addon) => addon !== SELF_CREATED_ADDONS_FOLDER);
       }
