@@ -204,7 +204,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
           name="homeassistant"
           @change=${this._switchChanged}
           .checked=${this._formData.homeassistant}
-          .disabled=${!isHassio}
+          .disabled=${!isHassio || this._formData.database}
         ></ha-switch>
       </ha-settings-row>
       <ha-settings-row>
@@ -365,6 +365,13 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
       ...this._formData!,
       [_switch.id]: _switch.checked,
     };
+    // If we enable database, we also enable homeassistant
+    if (_switch.id === "database" && _switch.checked) {
+      this._formData = {
+        ...this._formData,
+        homeassistant: true,
+      };
+    }
   }
 
   private _nameChanged(ev) {
@@ -396,7 +403,8 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     const params: GenerateBackupParams = {
       name,
       agent_ids: agents_mode === "all" ? ALL_AGENT_IDS : agent_ids,
-      include_homeassistant: homeassistant,
+      // We always include homeassistant if we include database
+      include_homeassistant: homeassistant || database,
       include_database: database,
     };
 
