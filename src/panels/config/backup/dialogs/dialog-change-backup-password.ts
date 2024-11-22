@@ -167,10 +167,8 @@ class DialogChangeBackupPassword extends LitElement implements HassDialog {
       haStyleDialog,
       css`
         ha-md-dialog {
+          width: 90vw;
           max-width: 500px;
-        }
-        div[slot="content"] {
-          margin-top: -16px;
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           ha-md-dialog {

@@ -24,7 +24,7 @@ import { getSignedPath } from "../../../data/auth";
 import type { BackupContent, GenerateBackupParams } from "../../../data/backup";
 import {
   deleteBackup,
-  fetchBackupAgentsInfo,
+  fetchBackupConfig,
   fetchBackupInfo,
   generateBackup,
   getBackupDownloadUrl,
@@ -312,16 +312,17 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
       return;
     }
     if (type === "default") {
-      // Todo : Use default config instead of hardcoded one
-      const { agents } = await fetchBackupAgentsInfo(this.hass);
+      const { config } = await fetchBackupConfig(this.hass);
 
       const params: GenerateBackupParams = {
-        agent_ids: agents.map((agent) => agent.agent_id),
+        agent_ids: config.create_backup.agent_ids,
         include_homeassistant: true,
-        include_database: true,
+        include_database: config.create_backup.include_database,
+        include_folders: config.create_backup.include_folders || [],
+        include_addons: config.create_backup.include_addons || [],
       };
       if (isComponentLoaded(this.hass, "hassio")) {
-        params.include_all_addons = true;
+        params.include_all_addons = config.create_backup.include_all_addons;
       }
       this._generateBackup(params);
     }
