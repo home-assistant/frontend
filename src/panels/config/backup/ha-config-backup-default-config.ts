@@ -1,6 +1,7 @@
 import {
   mdiChartBox,
   mdiCog,
+  mdiDownload,
   mdiFolder,
   mdiPlayBoxMultiple,
   mdiPuzzle,
@@ -171,34 +172,6 @@ class HaConfigBackupDefaultConfig extends LitElement {
             </div>
           </ha-card>
           <ha-card>
-            <div class="card-header">Encryption key</div>
-            <div class="card-content">
-              <p>
-                All your backups are encrypted to keep your data private and
-                secure. You need this key to restore a backup. It's important
-                that you don't lose this key, as no one else can restore your
-                data.
-              </p>
-              ${this._backupConfig.create_backup.password
-                ? html`<ha-password-field
-                      readOnly
-                      .value=${this._backupConfig.create_backup.password}
-                    ></ha-password-field>
-                    <ha-settings-row>
-                      <span slot="heading">Change encryption key</span>
-                      <span slot="description">
-                        All next backups will be encrypted with this new key.
-                      </span>
-                      <ha-button class="alert" @click=${this._changePassword}
-                        >Change key</ha-button
-                      >
-                    </ha-settings-row>`
-                : html`<ha-button unelevated @click=${this._changePassword}
-                    >Set encryption key</ha-button
-                  >`}
-            </div>
-          </ha-card>
-          <ha-card>
             <div class="card-header">Backup data</div>
             <div class="card-content">
               <ha-settings-row>
@@ -355,6 +328,44 @@ class HaConfigBackupDefaultConfig extends LitElement {
                     </ha-md-list>
                   `
                 : html`<p>No sync agents configured</p>`}
+            </div>
+          </ha-card>
+          <ha-card>
+            <div class="card-header">Encryption key</div>
+            <div class="card-content">
+              <p>
+                All your backups are encrypted to keep your data private and
+                secure. You need this key to restore a backup. It's important
+                that you don't lose this key, as no one else can restore your
+                data.
+              </p>
+              ${this._backupConfig.create_backup.password
+                ? html` <ha-settings-row>
+                      <span slot="heading">Download emergency kit</span>
+                      <span slot="description">
+                        We recommend to save this encryption key somewhere
+                        secure.
+                      </span>
+                      <ha-button @click=${this._downloadPassword}
+                        ><ha-svg-icon
+                          .path=${mdiDownload}
+                          slot="icon"
+                        ></ha-svg-icon
+                        >Download</ha-button
+                      >
+                    </ha-settings-row>
+                    <ha-settings-row>
+                      <span slot="heading">Change encryption key</span>
+                      <span slot="description">
+                        All next backups will be encrypted with this new key.
+                      </span>
+                      <ha-button class="alert" @click=${this._changePassword}
+                        >Change key</ha-button
+                      >
+                    </ha-settings-row>`
+                : html`<ha-button unelevated @click=${this._changePassword}
+                    >Set encryption key</ha-button
+                  >`}
             </div>
           </ha-card>
         </div>
@@ -522,6 +533,26 @@ class HaConfigBackupDefaultConfig extends LitElement {
     this._debounceSave();
   }
 
+  private _downloadPassword() {
+    if (!this._backupConfig?.create_backup.password) {
+      return;
+    }
+    const element = document.createElement("a");
+    element.setAttribute(
+      "href",
+      "data:text/plain;charset=utf-8," +
+        encodeURIComponent(this._backupConfig.create_backup.password)
+    );
+    element.setAttribute("download", "emergency_kit.txt");
+
+    element.style.display = "none";
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+  }
+
   private async _changePassword() {
     if (!this._backupConfig) {
       return;
@@ -591,6 +622,9 @@ class HaConfigBackupDefaultConfig extends LitElement {
     }
     ha-md-list-item img {
       width: 48px;
+    }
+    .alert {
+      --mdc-theme-primary: var(--error-color);
     }
   `;
 }

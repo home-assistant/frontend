@@ -139,9 +139,11 @@ class DialogChangeBackupPassword extends LitElement implements HassDialog {
   private _renderStepContent() {
     switch (this._step) {
       case "current":
-        return html`Make sure you have saved the current encryption key to make
-          sure you have access to all your current backups. All next backups
-          will use the new encryption key.
+        return html`<p>
+            Make sure you have saved the current encryption key to make sure you
+            have access to all your current backups. All next backups will use
+            the new encryption key.
+          </p>
 
           <div class="row">
             <ha-password-field
@@ -154,7 +156,7 @@ class DialogChangeBackupPassword extends LitElement implements HassDialog {
             </ha-button>
           </div>`;
       case "new":
-        return html`All next backups will use the new encryption key.
+        return html`<p>All next backups will use the new encryption key.</p>
 
           <ha-password-field
             @input=${this._passwordChanged}
@@ -170,9 +172,11 @@ class DialogChangeBackupPassword extends LitElement implements HassDialog {
             <span slot="secondary">${this._suggestedPassword}</span>
           </ha-list-item>`;
       case "save":
-        return html`It’s important that you don’t lose this encryption key. We
-          recommend to save this key somewhere secure. As you can only restore
-          your data with the backup encryption key.
+        return html`<p>
+            It’s important that you don’t lose this encryption key. We recommend
+            to save this key somewhere secure. As you can only restore your data
+            with the backup encryption key.
+          </p>
 
           <div class="row">
             <ha-password-field
@@ -227,6 +231,9 @@ class DialogChangeBackupPassword extends LitElement implements HassDialog {
           width: 90vw;
           max-width: 500px;
         }
+        div[slot="content"] {
+          margin-top: -16px;
+        }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           ha-md-dialog {
             max-width: none;
@@ -242,6 +249,10 @@ class DialogChangeBackupPassword extends LitElement implements HassDialog {
         }
         .row ha-password-field {
           flex: 1;
+          margin-right: 8px;
+        }
+        p {
+          margin-top: 0;
         }
       `,
     ];
