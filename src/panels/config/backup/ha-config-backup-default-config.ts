@@ -286,7 +286,8 @@ class HaConfigBackupDefaultConfig extends LitElement {
                             <ha-backup-addons-picker
                               .hass=${this.hass}
                               .value=${this._backupConfig.create_backup
-                                .include_addons}
+                                .include_addons ||
+                              this._addons.map((a) => a.slug)}
                               @value-changed=${this._addonsChanged}
                               .addons=${this._addons}
                             ></ha-backup-addons-picker>
@@ -534,6 +535,8 @@ class HaConfigBackupDefaultConfig extends LitElement {
         agent_ids: this._backupConfig.create_backup.agent_ids,
         include_folders: this._backupConfig.create_backup.include_folders,
         include_database: this._backupConfig.create_backup.include_database,
+        include_addons: this._backupConfig.create_backup.include_addons || [],
+        include_all_addons: this._backupConfig.create_backup.include_all_addons,
         password: this._backupConfig.create_backup.password,
       },
       max_copies: this._backupConfig.max_copies ?? 0,
