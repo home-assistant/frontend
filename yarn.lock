@@ -1278,6 +1278,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@bundle-stats/plugin-webpack-filter@npm:4.17.0":
+  version: 4.17.0
+  resolution: "@bundle-stats/plugin-webpack-filter@npm:4.17.0"
+  peerDependencies:
+    core-js: ^3.0.0
+  checksum: 10/06d9bd79e8ef52f45be90bf171bac6f3fedf060b5a46fa95136900c31a6e7b8d12714f715f4138c980e4e1ef31179120a19a8dd864ad1a0f9df19a9565583bb8
+  languageName: node
+  linkType: hard
+
 "@codemirror/autocomplete@npm:6.18.3":
   version: 6.18.3
   resolution: "@codemirror/autocomplete@npm:6.18.3"
@@ -9427,6 +9436,7 @@ __metadata:
     "@babel/preset-typescript": "npm:7.26.0"
     "@babel/runtime": "npm:7.26.0"
     "@braintree/sanitize-url": "npm:7.1.0"
+    "@bundle-stats/plugin-webpack-filter": "npm:4.17.0"
     "@codemirror/autocomplete": "npm:6.18.3"
     "@codemirror/commands": "npm:6.7.1"
     "@codemirror/language": "npm:6.10.3"
@@ -9618,6 +9628,7 @@ __metadata:
     vitest: "npm:2.1.5"
     vue: "npm:2.7.16"
     vue2-daterange-picker: "npm:0.6.8"
+    webpack-stats-plugin: "npm:1.1.3"
     webpackbar: "npm:7.0.0"
     weekstart: "npm:2.0.0"
     workbox-build: "patch:workbox-build@npm%3A7.1.1#~/.yarn/patches/workbox-build-npm-7.1.1-a854f3faae.patch"
@@ -15509,6 +15520,13 @@ __metadata:
   bin:
     webpack-dev-server: bin/webpack-dev-server.js
   checksum: 10/3896866abf15a1d5cc31ab4fc9c36aacf3431356837ad6debe25cde29289a70c58dcbe40914bbb275ff455463d37437532093d0e8d7744e7643ce1364491fdb4
+  languageName: node
+  linkType: hard
+
+"webpack-stats-plugin@npm:1.1.3":
+  version: 1.1.3
+  resolution: "webpack-stats-plugin@npm:1.1.3"
+  checksum: 10/31cf10e0ee4ffe72a876785248805b5bd4ae68eb1fa546a0b3cd3c9f651054eb119903cc021829bef6e50f9108639bd2b985cbbfe3b72ca916650733c1840e5a
   languageName: node
   linkType: hard
 

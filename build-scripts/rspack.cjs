@@ -2,6 +2,8 @@ const { existsSync } = require("fs");
 const path = require("path");
 const rspack = require("@rspack/core");
 const { RsdoctorRspackPlugin } = require("@rsdoctor/rspack-plugin");
+const { StatsWriterPlugin } = require("webpack-stats-plugin");
+const filterStats = require("@bundle-stats/plugin-webpack-filter").default;
 const TerserPlugin = require("terser-webpack-plugin");
 const { WebpackManifestPlugin } = require("rspack-manifest-plugin");
 const log = require("fancy-log");
@@ -97,13 +99,18 @@ const createRspackConfig = ({
       splitChunks: {
         // Disable splitting for web workers and worklets because imports of
         // external chunks are broken for:
-        // - ESM output: https://github.com/webpack/webpack/issues/17014
-        // - Worklets use `importScripts`: https://github.com/webpack/webpack/issues/11543
-        // entry contains the names of the initial chunks
-        // we exclude them and anything that ends with "-worklet" or "-worker"
-        chunks: new RegExp(
-          `^(?!.*(${Object.keys(entry).join("|")}|work(?:er|let))$)`
-        ),
+        chunks: !isProdBuild
+          ? // improve incremental build speed, but blows up bundle size
+            new RegExp(
+              `^(?!.*(${Object.keys(entry).join("|")}|work(?:er|let))$)`
+            )
+          : // - ESM output: https://github.com/webpack/webpack/issues/17014
+            // - Worklets use `importScripts`: https://github.com/webpack/webpack/issues/11543
+            (chunk) =>
+              !chunk.canBeInitial() &&
+              !new RegExp(
+                `^.+-work${latestBuild ? "(?:let|er)" : "let"}$`
+              ).test(chunk.name),
       },
     },
     plugins: [
@@ -154,6 +161,15 @@ const createRspackConfig = ({
         path.resolve(paths.polymer_dir, "src/util/empty.js")
       ),
       !isProdBuild && new LogStartCompilePlugin(),
+      isProdBuild &&
+        new StatsWriterPlugin({
+          filename: path.relative(
+            outputPath,
+            path.join(paths.build_dir, "stats", `${name}.json`)
+          ),
+          stats: { assets: true, chunks: true, modules: true },
+          transform: (stats) => JSON.stringify(filterStats(stats)),
+        }),
       isProdBuild &&
         isStatsBuild &&
         new RsdoctorRspackPlugin({
