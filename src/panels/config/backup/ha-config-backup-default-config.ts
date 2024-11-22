@@ -36,6 +36,7 @@ import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import "./components/ha-backup-addons-picker";
+import { showChangeBackupPasswordDialog } from "./dialogs/show-dialog-change-backup-password";
 
 const SELF_CREATED_ADDONS_FOLDER = "addons/local";
 
@@ -120,28 +121,28 @@ class HaConfigBackupDefaultConfig extends LitElement {
                   BackupScheduleState.NEVER}
                 >
                   <ha-list-item .value=${BackupScheduleState.DAILY}
-                    >Daily at 02:00</ha-list-item
+                    >Daily at 04:45</ha-list-item
                   >
                   <ha-list-item .value=${BackupScheduleState.MONDAY}
-                    >Monday at 02:00</ha-list-item
+                    >Monday at 04:45</ha-list-item
                   >
                   <ha-list-item .value=${BackupScheduleState.TUESDAY}
-                    >Tuesday at 02:00</ha-list-item
+                    >Tuesday at 04:45</ha-list-item
                   >
                   <ha-list-item .value=${BackupScheduleState.WEDNESDAY}
-                    >Wednesday at 02:00</ha-list-item
+                    >Wednesday at 04:45</ha-list-item
                   >
                   <ha-list-item .value=${BackupScheduleState.THURSDAY}
-                    >Thursday at 02:00</ha-list-item
+                    >Thursday at 04:45</ha-list-item
                   >
                   <ha-list-item .value=${BackupScheduleState.FRIDAY}
-                    >Friday at 02:00</ha-list-item
+                    >Friday at 04:45</ha-list-item
                   >
                   <ha-list-item .value=${BackupScheduleState.SATURDAY}
-                    >Saturday at 02:00</ha-list-item
+                    >Saturday at 04:45</ha-list-item
                   >
                   <ha-list-item .value=${BackupScheduleState.SUNDAY}
-                    >Sunday at 02:00</ha-list-item
+                    >Sunday at 04:45</ha-list-item
                   >
                 </ha-select>
               </ha-settings-row>
@@ -179,7 +180,8 @@ class HaConfigBackupDefaultConfig extends LitElement {
                 data.
               </p>
               ${this._backupConfig.create_backup.password
-                ? html` <ha-password-field
+                ? html`<ha-password-field
+                      readOnly
                       .value=${this._backupConfig.create_backup.password}
                     ></ha-password-field>
                     <ha-settings-row>
@@ -520,15 +522,21 @@ class HaConfigBackupDefaultConfig extends LitElement {
     this._debounceSave();
   }
 
-  private _changePassword() {
+  private async _changePassword() {
     if (!this._backupConfig) {
+      return;
+    }
+    const result = await showChangeBackupPasswordDialog(this, {
+      currentPassword: this._backupConfig.create_backup.password ?? undefined,
+    });
+    if (result === null) {
       return;
     }
     this._backupConfig = {
       ...this._backupConfig,
       create_backup: {
         ...this._backupConfig.create_backup,
-        password: "new-password",
+        password: result,
       },
     };
     this._debounceSave();
