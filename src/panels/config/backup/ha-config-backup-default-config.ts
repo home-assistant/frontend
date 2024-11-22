@@ -580,6 +580,11 @@ class HaConfigBackupDefaultConfig extends LitElement {
   private _debounceSave = debounce(() => this._save(), 500);
 
   private async _save() {
+    if (this._backupConfig.create_backup.agent_ids.length === 0) {
+      // TODO: Talk to backend about this requirement, and show error when no agents are selected
+      return;
+    }
+
     await updateBackupConfig(this.hass, {
       create_backup: {
         agent_ids: this._backupConfig.create_backup.agent_ids.filter((id) =>
