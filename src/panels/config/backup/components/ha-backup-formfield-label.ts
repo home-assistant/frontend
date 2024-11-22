@@ -53,6 +53,8 @@ class SupervisorFormfieldLabel extends LitElement {
       }
       .icon {
         --mdi-icon-size: 24px;
+        width: 24px;
+        height: 24px;
       }
     `;
   }

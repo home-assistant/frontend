@@ -5,10 +5,11 @@ import {
   mdiPlayBoxMultiple,
   mdiPuzzle,
 } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
@@ -17,8 +18,11 @@ import type { HaCheckbox } from "../../../../components/ha-checkbox";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-svg-icon";
 import type { BackupData } from "../../../../data/backup";
+import { fetchHassioAddonsInfo } from "../../../../data/hassio/addon";
 import { mdiHomeAssistant } from "../../../../resources/home-assistant-logo-svg";
 import type { HomeAssistant } from "../../../../types";
+import "./ha-backup-addons-picker";
+import type { BackupAddon } from "./ha-backup-addons-picker";
 import "./ha-backup-formfield-label";
 
 type CheckBoxItem = {
@@ -48,6 +52,26 @@ export class HaBackupDataPicker extends LitElement {
   @property({ attribute: false }) public data!: BackupData;
 
   @property({ attribute: false }) public value?: BackupData;
+
+  @state() public _addonIcons: Record<string, boolean> = {};
+
+  protected firstUpdated(changedProps: PropertyValues): void {
+    super.firstUpdated(changedProps);
+    if (isComponentLoaded(this.hass, "hassio")) {
+      this._fetchAddonInfo();
+    }
+  }
+
+  private async _fetchAddonInfo() {
+    const { addons } = await fetchHassioAddonsInfo(this.hass);
+    this._addonIcons = addons.reduce<Record<string, boolean>>(
+      (acc, addon) => ({
+        ...acc,
+        [addon.slug]: addon.icon,
+      }),
+      {}
+    );
+  }
 
   private _homeAssistantItems = memoizeOne(
     (data: BackupData, _localize: LocalizeFunc) => {
@@ -81,19 +105,24 @@ export class HaBackupDataPicker extends LitElement {
   );
 
   private _addonsItems = memoizeOne(
-    (data: BackupData, _localize: LocalizeFunc) => {
-      const items = data.addons.map<CheckBoxItem>((addon) => ({
-        label: addon.name,
-        id: addon.slug,
+    (
+      data: BackupData,
+      _localize: LocalizeFunc,
+      addonIcons: Record<string, boolean>
+    ) => {
+      const items = data.addons.map<BackupAddon>((addon) => ({
+        name: addon.name,
+        slug: addon.slug,
         version: addon.version,
+        icon: addonIcons[addon.slug],
       }));
 
       // Add local add-ons folder in addons items
-      if (data.folders.includes("addons/local")) {
+      if (data.folders.includes(SELF_CREATED_ADDONS_FOLDER)) {
         items.push({
-          label: "Self created add-ons",
-          id: SELF_CREATED_ADDONS_FOLDER,
-          version: "",
+          name: "Self created add-ons",
+          slug: SELF_CREATED_ADDONS_FOLDER,
+          iconPath: mdiFolder,
         });
       }
 
@@ -167,6 +196,17 @@ export class HaBackupDataPicker extends LitElement {
     fireEvent(this, "value-changed", { value: newValue });
   }
 
+  private _addonsChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    const itemValues = this._parseValue(this.value);
+
+    const addons = ev.detail.value;
+    itemValues.addons = addons;
+
+    const newValue = this._formatValue(itemValues, this.data);
+    fireEvent(this, "value-changed", { value: newValue });
+  }
+
   private _sectionChanged(ev: Event) {
     const itemValues = this._parseValue(this.value);
     const allValues = this._parseValue(this.data);
@@ -189,7 +229,11 @@ export class HaBackupDataPicker extends LitElement {
       this.hass.localize
     );
 
-    const addonsItems = this._addonsItems(this.data, this.hass.localize);
+    const addonsItems = this._addonsItems(
+      this.data,
+      this.hass.localize,
+      this._addonIcons
+    );
 
     const selectedItems = this._parseValue(this.value);
 
@@ -197,15 +241,13 @@ export class HaBackupDataPicker extends LitElement {
       ${homeAssistantItems.length
         ? html`
             <div class="section">
-              <ha-formfield
-                .label=${html`
-                  <ha-backup-formfield-label
-                    .label=${"Home Assistant"}
-                    .iconPath=${mdiHomeAssistant}
-                  >
-                  </ha-backup-formfield-label>
-                `}
-              >
+              <ha-formfield>
+                <ha-backup-formfield-label
+                  slot="label"
+                  .label=${"Home Assistant"}
+                  .iconPath=${mdiHomeAssistant}
+                >
+                </ha-backup-formfield-label>
                 <ha-checkbox
                   .id=${"homeassistant"}
                   .checked=${selectedItems.homeassistant.length ===
@@ -219,16 +261,14 @@ export class HaBackupDataPicker extends LitElement {
               <div class="items">
                 ${homeAssistantItems.map(
                   (item) => html`
-                    <ha-formfield
-                      .label=${html`
-                        <ha-backup-formfield-label
-                          .label=${item.label}
-                          .version=${item.version}
-                          .iconPath=${ITEM_ICONS[item.id] || mdiFolder}
-                        >
-                        </ha-backup-formfield-label>
-                      `}
-                    >
+                    <ha-formfield>
+                      <ha-backup-formfield-label
+                        slot="label"
+                        .label=${item.label}
+                        .version=${item.version}
+                        .iconPath=${ITEM_ICONS[item.id] || mdiFolder}
+                      >
+                      </ha-backup-formfield-label>
                       <ha-checkbox
                         .id=${item.id}
                         .checked=${selectedItems.homeassistant.includes(
@@ -247,15 +287,13 @@ export class HaBackupDataPicker extends LitElement {
       ${addonsItems.length
         ? html`
             <div class="section">
-              <ha-formfield
-                .label=${html`
-                  <ha-backup-formfield-label
-                    .label=${"Add-ons"}
-                    .iconPath=${mdiPuzzle}
-                  >
-                  </ha-backup-formfield-label>
-                `}
-              >
+              <ha-formfield>
+                <ha-backup-formfield-label
+                  slot="label"
+                  .label=${"Add-ons"}
+                  .iconPath=${mdiPuzzle}
+                >
+                </ha-backup-formfield-label>
                 <ha-checkbox
                   .id=${"addons"}
                   .checked=${selectedItems.addons.length === addonsItems.length}
@@ -264,29 +302,13 @@ export class HaBackupDataPicker extends LitElement {
                   @change=${this._sectionChanged}
                 ></ha-checkbox>
               </ha-formfield>
-              <div class="items">
-                ${addonsItems.map(
-                  (item) => html`
-                    <ha-formfield
-                      .label=${html`
-                        <ha-backup-formfield-label
-                          .label=${item.label}
-                          .version=${item.version}
-                          .iconPath=${ITEM_ICONS[item.id] || mdiPuzzle}
-                        >
-                        </ha-backup-formfield-label>
-                      `}
-                    >
-                      <ha-checkbox
-                        .id=${item.id}
-                        .checked=${selectedItems.addons.includes(item.id)}
-                        .section=${"addons"}
-                        @change=${this._itemChanged}
-                      ></ha-checkbox>
-                    </ha-formfield>
-                  `
-                )}
-              </div>
+              <ha-backup-addons-picker
+                .hass=${this.hass}
+                .value=${selectedItems.addons}
+                @value-changed=${this._addonsChanged}
+                .addons=${addonsItems}
+              >
+              </ha-backup-addons-picker>
             </div>
           `
         : nothing}
@@ -306,6 +328,12 @@ export class HaBackupDataPicker extends LitElement {
         padding-left: 40px;
         display: flex;
         flex-direction: column;
+      }
+      ha-backup-addons-picker {
+        display: block;
+        padding-inline-start: 40px;
+        padding-inline-end: 0;
+        padding-left: 40px;
       }
     `;
   }

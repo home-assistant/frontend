@@ -6,8 +6,9 @@ import {
   mdiPlayBoxMultiple,
 } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-header";
@@ -27,10 +28,13 @@ import type {
   GenerateBackupParams,
 } from "../../../../data/backup";
 import { fetchBackupAgentsInfo } from "../../../../data/backup";
+import { fetchHassioAddonsInfo } from "../../../../data/hassio/addon";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import "../components/ha-backup-agents-select";
+import "../components/ha-backup-addons-picker";
+import type { BackupAddon } from "../components/ha-backup-addons-picker";
+import "../components/ha-backup-agents-picker";
 import type { GenerateBackupDialogParams } from "./show-dialog-generate-backup";
 
 type FormData = {
@@ -57,6 +61,8 @@ const INITIAL_FORM_DATA: FormData = {
   agent_ids: [],
 };
 
+const SELF_CREATED_ADDONS_FOLDER = "addons/local";
+
 const STEPS = ["data", "sync"] as const;
 
 @customElement("ha-dialog-generate-backup")
@@ -71,6 +77,8 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
 
   @state() private _params?: GenerateBackupDialogParams;
 
+  @state() private _addons: BackupAddon[] = [];
+
   @query("ha-md-dialog") private _dialog?: HaMdDialog;
 
   public showDialog(_params: GenerateBackupDialogParams): void {
@@ -78,6 +86,9 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     this._formData = INITIAL_FORM_DATA;
     this._params = _params;
     this._fetchAgents();
+    if (isComponentLoaded(this.hass, "hassio")) {
+      this._fetchAddons();
+    }
   }
 
   private _dialogClosed() {
@@ -87,6 +98,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     this._step = undefined;
     this._formData = undefined;
     this._agents = [];
+    this._addons = [];
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -94,6 +106,17 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
   private async _fetchAgents() {
     const { agents } = await fetchBackupAgentsInfo(this.hass);
     this._agents = agents;
+  }
+
+  private async _fetchAddons() {
+    const { addons } = await fetchHassioAddonsInfo(this.hass);
+    this._addons = [
+      ...addons,
+      {
+        name: "Self created add-ons",
+        slug: SELF_CREATED_ADDONS_FOLDER,
+      },
+    ];
   }
 
   public closeDialog() {
@@ -217,6 +240,40 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
           .checked=${this._formData.share}
         ></ha-switch>
       </ha-settings-row>
+      ${this._addons.length > 0
+        ? html`
+            <ha-settings-row>
+              <span slot="heading">Add-ons</span>
+              <span slot="description">
+                Select what add-ons you want to backup.
+              </span>
+              <ha-md-select
+                id="addons_mode"
+                @change=${this._selectChanged}
+                .value=${this._formData.addons_mode}
+              >
+                <ha-md-select-option value="all">
+                  <div slot="headline">All (${this._addons.length})</div>
+                </ha-md-select-option>
+                <ha-md-select-option value="custom">
+                  <div slot="headline">Custom</div>
+                </ha-md-select-option>
+              </ha-md-select>
+            </ha-settings-row>
+            ${this._formData.addons_mode === "custom"
+              ? html`
+                  <ha-expansion-panel .header=${"Add-ons"} outlined expanded>
+                    <ha-backup-addons-picker
+                      .hass=${this.hass}
+                      .value=${this._formData.addons}
+                      @value-changed=${this._addonsChanged}
+                      .addons=${this._addons}
+                    ></ha-backup-addons-picker>
+                  </ha-expansion-panel>
+                `
+              : nothing}
+          `
+        : nothing}
     `;
   }
 
@@ -238,7 +295,8 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
           What locations you want to automatically backup to.
         </span>
         <ha-md-select
-          @change=${this._agentModeChanged}
+          id="agents_mode"
+          @change=${this._selectChanged}
           .value=${this._formData.agents_mode}
         >
           <ha-md-select-option value="all">
@@ -251,24 +309,31 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
       </ha-settings-row>
       ${this._formData.agents_mode === "custom"
         ? html`
-            <ha-expansion-panel .header=${"Location"} outlined expanded>
-              <ha-backup-agents-select
+            <ha-expansion-panel .header=${"Locations"} outlined expanded>
+              <ha-backup-agents-picker
                 .hass=${this.hass}
                 .value=${this._formData.agent_ids}
                 @value-changed=${this._agentsChanged}
                 .agents=${this._agents}
-              ></ha-backup-agents-select>
+              ></ha-backup-agents-picker>
             </ha-expansion-panel>
           `
         : nothing}
     `;
   }
 
-  private _agentModeChanged(ev) {
+  private _selectChanged(ev) {
     const select = ev.currentTarget;
     this._formData = {
       ...this._formData!,
-      agents_mode: select.value,
+      [select.id]: select.value,
+    };
+  }
+
+  private _addonsChanged(ev) {
+    this._formData = {
+      ...this._formData!,
+      addons: ev.detail.value,
     };
   }
 
@@ -301,7 +366,6 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
 
     const {
       homeassistant,
-      addons,
       addons_mode,
       agent_ids,
       agents_mode,
@@ -310,7 +374,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
       name,
       share,
     } = this._formData;
-
+    let { addons } = this._formData;
     const folders: string[] = [];
     if (media) {
       folders.push("media");
@@ -318,7 +382,10 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     if (share) {
       folders.push("share");
     }
-
+    if (addons.includes(SELF_CREATED_ADDONS_FOLDER) || addons_mode) {
+      folders.push(SELF_CREATED_ADDONS_FOLDER);
+      addons = addons.filter((addon) => addon !== SELF_CREATED_ADDONS_FOLDER);
+    }
     const ALL_AGENT_IDS = this._agents.map((agent) => agent.agent_id);
 
     const params: GenerateBackupParams = {
@@ -340,11 +407,9 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
       haStyle,
       haStyleDialog,
       css`
-        :host {
-          --dialog-content-overflow: visible;
-        }
         ha-md-dialog {
           --dialog-content-padding: 24px;
+          max-height: calc(100vh - 48px);
         }
         ha-settings-row {
           --settings-row-prefix-display: flex;

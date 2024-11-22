@@ -22,6 +22,7 @@ import {
   getPreferredAgentForDownload,
   restoreBackup,
 } from "../../../data/backup";
+import type { HassioAddonInfo } from "../../../data/hassio/addon";
 import { domainToName } from "../../../data/integration";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
@@ -47,6 +48,8 @@ class HaConfigBackupDetails extends LitElement {
   @state() private _error?: string;
 
   @state() private _selectedBackup?: BackupContentExtended;
+
+  @state() private _addonsInfo?: HassioAddonInfo[];
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
@@ -102,6 +105,7 @@ class HaConfigBackupDetails extends LitElement {
                         .data=${this._backup}
                         .value=${this._selectedBackup}
                         @value-changed=${this._selectedBackupChanged}
+                        .addonsInfo=${this._addonsInfo}
                       >
                       </ha-backup-data-picker>
                     </div>
