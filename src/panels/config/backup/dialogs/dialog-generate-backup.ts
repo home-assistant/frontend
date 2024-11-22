@@ -34,7 +34,7 @@ import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "../components/ha-backup-addons-picker";
 import type { BackupAddon } from "../components/ha-backup-addons-picker";
-import "../components/ha-backup-agents-select";
+import "../components/ha-backup-agents-picker";
 import type { GenerateBackupDialogParams } from "./show-dialog-generate-backup";
 
 type FormData = {
@@ -309,13 +309,13 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
       </ha-settings-row>
       ${this._formData.agents_mode === "custom"
         ? html`
-            <ha-expansion-panel .header=${"Location"} outlined expanded>
-              <ha-backup-agents-select
+            <ha-expansion-panel .header=${"Locations"} outlined expanded>
+              <ha-backup-agents-picker
                 .hass=${this.hass}
                 .value=${this._formData.agent_ids}
                 @value-changed=${this._agentsChanged}
                 .agents=${this._agents}
-              ></ha-backup-agents-select>
+              ></ha-backup-agents-picker>
             </ha-expansion-panel>
           `
         : nothing}

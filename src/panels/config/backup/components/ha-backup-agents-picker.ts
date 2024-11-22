@@ -8,8 +8,8 @@ import type { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
 import { domainToName } from "../../../../data/integration";
 
-@customElement("ha-backup-agents-select")
-class HaBackupAgentsSelect extends LitElement {
+@customElement("ha-backup-agents-picker")
+class HaBackupAgentsPicker extends LitElement {
   @property({ attribute: false })
   public hass!: HomeAssistant;
 
@@ -36,6 +36,10 @@ class HaBackupAgentsSelect extends LitElement {
   private _renderAgent(agent: BackupAgent) {
     const [domain, name] = agent.agent_id.split(".");
     const domainName = domainToName(this.hass.localize, domain);
+
+    const disabled =
+      this.disabled || this.disabledAgents?.includes(agent.agent_id);
+
     return html`
       <ha-formfield>
         <span class="label" slot="label">
@@ -51,13 +55,12 @@ class HaBackupAgentsSelect extends LitElement {
             alt=""
             slot="start"
           />
-          ${domainName}: ${name}</span
-        >
+          ${domainName}: ${name}
+        </span>
         <ha-checkbox
           .checked=${this.value.includes(agent.agent_id)}
           .value=${agent.agent_id}
-          .disabled=${this.disabled ||
-          this.disabledAgents?.includes(agent.agent_id)}
+          .disabled=${disabled}
           @change=${this._checkboxChanged}
         ></ha-checkbox>
       </ha-formfield>
@@ -93,12 +96,16 @@ class HaBackupAgentsSelect extends LitElement {
       flex-direction: row;
       align-items: center;
       gap: 16px;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 24px;
+      letter-spacing: 0.5px;
     }
   `;
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-backup-agents-select": HaBackupAgentsSelect;
+    "ha-backup-agents-picker": HaBackupAgentsPicker;
   }
 }
