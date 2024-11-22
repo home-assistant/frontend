@@ -63,6 +63,8 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
 
   @state() private _selected: string[] = [];
 
+  @state() private _hasStrategy = false;
+
   private _subscribed?: Promise<() => void>;
 
   @query("hass-tabs-subpage-data-table", true)
@@ -180,26 +182,27 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
         )}
       >
         <div slot="top_header" class="header">
-          <ha-backup-summary-card
-            title="Automatically backed up"
-            description="Your configuration has been backed up."
-            has-action
-            .status=${this._backupInProgress ? "loading" : "success"}
-          >
-            <ha-button slot="action" @click=${this._configureDefaultBackup}>
-              Configure
-            </ha-button>
-          </ha-backup-summary-card>
-          <ha-backup-summary-card
-            title="3 automatic backup locations"
-            description="One is off-site"
-            has-action
-            .status=${"success"}
-          >
-            <ha-button slot="action" @click=${this._configureBackupLocations}>
-              Configure
-            </ha-button>
-          </ha-backup-summary-card>
+          ${this._hasStrategy
+            ? html`<ha-backup-summary-card
+                title="Automatically backed up"
+                description="Your configuration has been backed up."
+                has-action
+                .status=${this._backupInProgress ? "loading" : "success"}
+              >
+                <ha-button slot="action" @click=${this._configureDefaultBackup}>
+                  Configure
+                </ha-button>
+              </ha-backup-summary-card>`
+            : html`<ha-backup-summary-card
+                title="Set up default backup"
+                description="Have a one-click backup automation with selected data and locations."
+                has-action
+                status="info"
+              >
+                <ha-button slot="action" @click=${this._onboardDefaultBackup}>
+                  Setup backup strategy
+                </ha-button>
+              </ha-backup-summary-card>`}
         </div>
 
         ${this._selected.length
@@ -273,6 +276,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
     super.firstUpdated(changedProps);
     this._fetchBackupInfo();
     this._subscribeEvents();
+    this._fetchBackupConfig();
   }
 
   public connectedCallback() {
@@ -292,6 +296,11 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
     const info = await fetchBackupInfo(this.hass);
     this._backups = info.backups;
     this._backupInProgress = info.backing_up;
+  }
+
+  private async _fetchBackupConfig() {
+    const { config } = await fetchBackupConfig(this.hass);
+    this._hasStrategy = !!config.create_backup.password;
   }
 
   private async _newBackup(): Promise<void> {
@@ -396,8 +405,8 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
     navigate("/config/backup/default-config");
   }
 
-  private _configureBackupLocations() {
-    navigate("/config/backup/locations");
+  private _onboardDefaultBackup() {
+    navigate("/config/backup/default-config");
   }
 
   static get styles(): CSSResultGroup {
