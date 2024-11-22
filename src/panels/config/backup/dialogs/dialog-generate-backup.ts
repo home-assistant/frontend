@@ -189,6 +189,9 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     if (!this._formData) {
       return nothing;
     }
+
+    const isHassio = isComponentLoaded(this.hass, "hassio");
+
     return html`
       <ha-settings-row>
         <ha-svg-icon slot="prefix" .path=${mdiCog}></ha-svg-icon>
@@ -201,6 +204,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
           name="homeassistant"
           @change=${this._switchChanged}
           .checked=${this._formData.homeassistant}
+          .disabled=${!isHassio}
         ></ha-switch>
       </ha-settings-row>
       <ha-settings-row>
@@ -214,62 +218,73 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
           .checked=${this._formData.database}
         ></ha-switch>
       </ha-settings-row>
-      <ha-settings-row>
-        <ha-svg-icon slot="prefix" .path=${mdiPlayBoxMultiple}></ha-svg-icon>
-        <span slot="heading">Media</span>
-        <span slot="description">
-          Folder that is often used for advanced or older configurations.
-        </span>
-        <ha-switch
-          id="media"
-          name="media"
-          @change=${this._switchChanged}
-          .checked=${this._formData.media}
-        ></ha-switch>
-      </ha-settings-row>
-      <ha-settings-row>
-        <ha-svg-icon slot="prefix" .path=${mdiFolder}></ha-svg-icon>
-        <span slot="heading">Share folder</span>
-        <span slot="description">
-          Folder that is often used for advanced or older configurations.
-        </span>
-        <ha-switch
-          id="share"
-          name="share"
-          @change=${this._switchChanged}
-          .checked=${this._formData.share}
-        ></ha-switch>
-      </ha-settings-row>
-      ${this._addons.length > 0
+      ${isHassio
         ? html`
             <ha-settings-row>
-              <span slot="heading">Add-ons</span>
+              <ha-svg-icon
+                slot="prefix"
+                .path=${mdiPlayBoxMultiple}
+              ></ha-svg-icon>
+              <span slot="heading">Media</span>
               <span slot="description">
-                Select what add-ons you want to backup.
+                Folder that is often used for advanced or older configurations.
               </span>
-              <ha-md-select
-                id="addons_mode"
-                @change=${this._selectChanged}
-                .value=${this._formData.addons_mode}
-              >
-                <ha-md-select-option value="all">
-                  <div slot="headline">All (${this._addons.length})</div>
-                </ha-md-select-option>
-                <ha-md-select-option value="custom">
-                  <div slot="headline">Custom</div>
-                </ha-md-select-option>
-              </ha-md-select>
+              <ha-switch
+                id="media"
+                name="media"
+                @change=${this._switchChanged}
+                .checked=${this._formData.media}
+              ></ha-switch>
             </ha-settings-row>
-            ${this._formData.addons_mode === "custom"
+            <ha-settings-row>
+              <ha-svg-icon slot="prefix" .path=${mdiFolder}></ha-svg-icon>
+              <span slot="heading">Share folder</span>
+              <span slot="description">
+                Folder that is often used for advanced or older configurations.
+              </span>
+              <ha-switch
+                id="share"
+                name="share"
+                @change=${this._switchChanged}
+                .checked=${this._formData.share}
+              ></ha-switch>
+            </ha-settings-row>
+            ${this._addons.length > 0
               ? html`
-                  <ha-expansion-panel .header=${"Add-ons"} outlined expanded>
-                    <ha-backup-addons-picker
-                      .hass=${this.hass}
-                      .value=${this._formData.addons}
-                      @value-changed=${this._addonsChanged}
-                      .addons=${this._addons}
-                    ></ha-backup-addons-picker>
-                  </ha-expansion-panel>
+                  <ha-settings-row>
+                    <span slot="heading">Add-ons</span>
+                    <span slot="description">
+                      Select what add-ons you want to backup.
+                    </span>
+                    <ha-md-select
+                      id="addons_mode"
+                      @change=${this._selectChanged}
+                      .value=${this._formData.addons_mode}
+                    >
+                      <ha-md-select-option value="all">
+                        <div slot="headline">All (${this._addons.length})</div>
+                      </ha-md-select-option>
+                      <ha-md-select-option value="custom">
+                        <div slot="headline">Custom</div>
+                      </ha-md-select-option>
+                    </ha-md-select>
+                  </ha-settings-row>
+                  ${this._formData.addons_mode === "custom"
+                    ? html`
+                        <ha-expansion-panel
+                          .header=${"Add-ons"}
+                          outlined
+                          expanded
+                        >
+                          <ha-backup-addons-picker
+                            .hass=${this.hass}
+                            .value=${this._formData.addons}
+                            @value-changed=${this._addonsChanged}
+                            .addons=${this._addons}
+                          ></ha-backup-addons-picker>
+                        </ha-expansion-panel>
+                      `
+                    : nothing}
                 `
               : nothing}
           `
@@ -375,17 +390,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
       share,
     } = this._formData;
     let { addons } = this._formData;
-    const folders: string[] = [];
-    if (media) {
-      folders.push("media");
-    }
-    if (share) {
-      folders.push("share");
-    }
-    if (addons.includes(SELF_CREATED_ADDONS_FOLDER) || addons_mode) {
-      folders.push(SELF_CREATED_ADDONS_FOLDER);
-      addons = addons.filter((addon) => addon !== SELF_CREATED_ADDONS_FOLDER);
-    }
+
     const ALL_AGENT_IDS = this._agents.map((agent) => agent.agent_id);
 
     const params: GenerateBackupParams = {
@@ -393,10 +398,27 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
       agent_ids: agents_mode === "all" ? ALL_AGENT_IDS : agent_ids,
       include_homeassistant: homeassistant,
       include_database: database,
-      include_folders: folders,
-      include_all_addons: addons_mode === "all",
-      include_addons: addons_mode === "all" ? undefined : addons,
     };
+
+    if (isComponentLoaded(this.hass, "hassio")) {
+      const folders: string[] = [];
+      if (media) {
+        folders.push("media");
+      }
+      if (share) {
+        folders.push("share");
+      }
+      if (addons.includes(SELF_CREATED_ADDONS_FOLDER) || addons_mode) {
+        folders.push(SELF_CREATED_ADDONS_FOLDER);
+        addons = addons.filter((addon) => addon !== SELF_CREATED_ADDONS_FOLDER);
+      }
+
+      params.include_all_addons = addons_mode === "all";
+      params.include_folders = folders;
+      if (addons_mode === "custom") {
+        params.include_addons = addons;
+      }
+    }
 
     this._params!.submit?.(params);
     this.closeDialog();
