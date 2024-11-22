@@ -63,7 +63,11 @@ class DialogNewBackup extends LitElement implements HassDialog {
             rootTabbable
             dialogInitialFocus
           >
-            <ha-md-list-item @click=${this._default} type="button">
+            <ha-md-list-item
+              @click=${this._default}
+              type="button"
+              .disabled=${!this._params.config.create_backup.password}
+            >
               <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
               <span slot="headline">My default backup</span>
               <span slot="supporting-text">

@@ -295,7 +295,9 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   }
 
   private async _newBackup(): Promise<void> {
-    const type = await showNewBackupDialog(this, {});
+    const { config } = await fetchBackupConfig(this.hass);
+
+    const type = await showNewBackupDialog(this, { config });
 
     if (!type) {
       return;
@@ -312,12 +314,11 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
       return;
     }
     if (type === "default") {
-      const { config } = await fetchBackupConfig(this.hass);
-
       const params: GenerateBackupParams = {
         agent_ids: config.create_backup.agent_ids,
         include_homeassistant: true,
         include_database: config.create_backup.include_database,
+        password: config.create_backup.password!,
       };
       if (isComponentLoaded(this.hass, "hassio")) {
         params.include_folders = config.create_backup.include_folders || [];

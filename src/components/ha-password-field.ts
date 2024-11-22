@@ -132,6 +132,10 @@ export class HaPasswordField extends LitElement {
       ></ha-icon-button>`;
   }
 
+  public focus(): void {
+    this._textField.focus();
+  }
+
   public checkValidity(): boolean {
     return this._textField.checkValidity();
   }
