@@ -96,6 +96,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     this._step = undefined;
     this._formData = undefined;
     this._agents = [];
+    this._addons = [];
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -239,7 +240,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
                 Select what add-ons you want to backup.
               </span>
               <ha-md-select
-                .id=${"addons_mode"}
+                id="addons_mode"
                 @change=${this._selectChanged}
                 .value=${this._formData.addons_mode}
               >
@@ -286,7 +287,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
           What locations you want to automatically backup to.
         </span>
         <ha-md-select
-          .id=${"agents_mode"}
+          id="agents_mode"
           @change=${this._selectChanged}
           .value=${this._formData.agents_mode}
         >
