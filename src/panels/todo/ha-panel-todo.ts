@@ -358,14 +358,18 @@ class PanelTodo extends LitElement {
           : nothing}
         ${this._showAllLists
           ? html`
-              ${getTodoLists(this.hass).map(
-                (list) => html`
-                  <hui-card
-                    .hass=${this.hass}
-                    .config=${this._cardConfig(list.entity_id)}
-                  ></hui-card>
-                `
-              )}
+              <div id="columns">
+                <div class="column all-cards-display">
+                  ${getTodoLists(this.hass).map(
+                    (list) => html`
+                        <hui-card
+                          .hass=${this.hass}
+                          .config=${this._cardConfig(list.entity_id)}
+                        ></hui-card>
+                      `
+                    )}
+                </div>
+              </div>
             `
           : nothing}
       </ha-two-pane-top-app-bar-fixed>
@@ -537,6 +541,10 @@ class PanelTodo extends LitElement {
         .task {
           padding: 8px;
           border-bottom: 1px solid var(--divider-color);
+        }
+        .all-cards-display {
+          display: grid;
+          gap: 8px;
         }
       `,
     ];
