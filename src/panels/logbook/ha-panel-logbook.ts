@@ -350,7 +350,7 @@ export class HaPanelLogbook extends LitElement {
           width: 100%;
         }
 
-        @media only screen and (max-width: 500px) {
+        @media only screen and (max-width: 430px) {
           div[slot="title"] {
             display: none;
           }

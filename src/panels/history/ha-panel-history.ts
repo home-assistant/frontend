@@ -797,7 +797,7 @@ class HaPanelHistory extends LitElement {
           color: var(--secondary-text-color);
         }
 
-        @media only screen and (max-width: 740px) {
+        @media only screen and (max-width: 490px) {
           div[slot="title"] {
             display: none;
           }
