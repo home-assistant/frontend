@@ -1197,7 +1197,7 @@
         },
         "filter_placeholder": "Search entities",
         "title": "Quick search",
-        "key_c_hint": "Press 'c' on any page to open the search bar",
+        "key_c_hint": "Press 'c' on any page to open the command dialog",
         "nothing_found": "Nothing found!"
       },
       "voice_command": {
