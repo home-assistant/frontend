@@ -27,7 +27,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { calcDate } from "../common/datetime/calc_date";
 import { firstWeekdayIndex } from "../common/datetime/first_weekday";
 import { formatDate } from "../common/datetime/format_date";
-import { formatDateTime } from "../common/datetime/format_date_time";
+import { formatShortDateTimeWithYear } from "../common/datetime/format_date_time";
 import { useAmPm } from "../common/datetime/use_am_pm";
 import type { HomeAssistant } from "../types";
 import "./date-range-picker";
@@ -261,7 +261,7 @@ export class HaDateRangePicker extends LitElement {
                     )}
                   >
                     ${this.timePicker
-                      ? formatDateTime(
+                      ? formatShortDateTimeWithYear(
                           this.startDate,
                           this.hass.locale,
                           this.hass.config
@@ -279,7 +279,7 @@ export class HaDateRangePicker extends LitElement {
                     )}
                   >
                     ${this.timePicker
-                      ? formatDateTime(
+                      ? formatShortDateTimeWithYear(
                           this.endDate,
                           this.hass.locale,
                           this.hass.config
@@ -472,15 +472,10 @@ export class HaDateRangePicker extends LitElement {
         ha-textfield {
           min-width: inherit;
         }
-
-        ha-svg-icon {
-          display: none;
-        }
       }
 
-      @media only screen and (max-width: 400px) {
-        .prev,
-        .next {
+      @media only screen and (max-width: 380px) {
+        .label {
           display: none;
         }
       }
