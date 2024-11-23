@@ -359,9 +359,10 @@ class PanelTodo extends LitElement {
         ${this._showAllLists
           ? html`
               <div id="columns">
-                <div class="column all-cards-display">
+                <div class="column all-lists-display">
                   ${getTodoLists(this.hass).map(
                     (list) => html`
+                        <div class="list-name">${list.name}</div>
                         <hui-card
                           .hass=${this.hass}
                           .config=${this._cardConfig(list.entity_id)}
@@ -542,9 +543,16 @@ class PanelTodo extends LitElement {
           padding: 8px;
           border-bottom: 1px solid var(--divider-color);
         }
-        .all-cards-display {
+        .all-lists-display {
           display: grid;
           gap: 8px;
+        }
+        .list-name {
+          color: var(--primary-text-color);
+          font-size: 20px;
+          font-weight: 400;
+          padding-bottom: 4px;
+          padding-top: 4px;
         }
       `,
     ];
