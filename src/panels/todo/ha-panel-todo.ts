@@ -69,7 +69,7 @@ class PanelTodo extends LitElement {
 
   @state() private _expandedLists: Set<string> = new Set();
 
-  @state() private _showAllTasks: boolean = false;
+  @state() private _showAllLists: boolean = false;
 
   @state() private _allTasks: Record<string, TodoItem[]> = {};
 
@@ -168,9 +168,9 @@ class PanelTodo extends LitElement {
     );
   }
 
-  private _toggleShowAllTasks() {
-    this._showAllTasks = !this._showAllTasks;
-    if (this._showAllTasks) {
+  private _toggleShowAllLists() {
+    this._showAllLists = !this._showAllLists;
+    if (this._showAllLists) {
       this._fetchAllTasks();
     }
   }
@@ -217,8 +217,8 @@ class PanelTodo extends LitElement {
     );
     return html`
       <ha-two-pane-top-app-bar-fixed .pane=${showPane} footer>
-        <ha-button @click=${this._toggleShowAllTasks}>
-          ${this._showAllTasks ? "Hide All Tasks" : "Show All Tasks"}
+        <ha-button slot="actionItems" @click=${this._toggleShowAllLists}>
+          ${this._showAllLists ? "Hide All Lists" : "Show All Lists"}
         </ha-button>
         <ha-menu-button
           slot="navigationIcon"
@@ -328,7 +328,7 @@ class PanelTodo extends LitElement {
               `
             : nothing}
         </ha-button-menu>
-        ${!this._showAllTasks
+        ${!this._showAllLists
           ? html`
               <div id="columns">
                 <div class="column">
@@ -356,7 +356,7 @@ class PanelTodo extends LitElement {
               </ha-fab>
             `
           : nothing}
-        ${this._showAllTasks
+        ${this._showAllLists
           ? html`
               ${getTodoLists(this.hass).map(
                 (list) => html`
