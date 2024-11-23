@@ -1,7 +1,8 @@
-import { mdiPlus } from "@mdi/js";
+import { mdiTrashCanOutline, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HomeAssistant } from "../../types";
 import { computeInitialHaFormData } from "./compute-initial-ha-form-data";
@@ -42,9 +43,18 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
     key: string
   ) => string;
 
+  private _keys: string[] = [];
+
   private _renderDescription() {
     const description = this.computeHelper?.(this.schema);
     return description ? html`<p>${description}</p>` : nothing;
+  }
+
+  private _getKey(idx: number) {
+    if (!this._keys[idx]) {
+      this._keys[idx] = Math.random().toString();
+    }
+    return this._keys[idx]!;
   }
 
   private _computeLabel = (
@@ -89,11 +99,20 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
     fireEvent(this, "value-changed", { value: data });
   }
 
+  private _deleteItem(ev) {
+    const data = [...(this.data as HaFormDataContainer[])];
+    data.splice(ev.currentTarget.index, 1);
+    this._keys.splice(ev.currentTarget.index, 1);
+    fireEvent(this, "value-changed", { value: data });
+  }
+
   protected render() {
     return html` ${this.schema.multiple ? this._renderDescription() : nothing}
     ${this.schema.multiple
-      ? (this.data as HaFormDataContainer[]).map((d, idx) =>
-          this.renderPanel(d, idx)
+      ? repeat(
+          this.data as HaFormDataContainer[],
+          (_d, idx) => this._getKey(idx),
+          (d, idx) => this.renderPanel(d, idx)
         )
       : this.renderPanel(this.data as HaFormDataContainer, 0)}
     ${this.schema.multiple
@@ -125,6 +144,15 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
               : nothing}
           ${this.schema.title || this.computeLabel?.(this.schema)}
         </div>
+        <ha-icon-button
+          slot="icons"
+          .disabled=${this.disabled}
+          .label=${this.hass.localize("ui.common.delete")}
+          .index=${index}
+          @click=${this._deleteItem}
+        >
+          <ha-svg-icon .path=${mdiTrashCanOutline}></ha-svg-icon>
+        </ha-icon-button>
         <div class="content">
           ${this.schema.multiple ? nothing : this._renderDescription()}
           <ha-form
