@@ -1,11 +1,13 @@
 import "../components/ha-textfield";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import "../components/entity/state-badge";
 import { isUnavailableState, UNAVAILABLE } from "../data/entity";
-import { TextEntity, setValue } from "../data/text";
+import type { TextEntity } from "../data/text";
+import { setValue } from "../data/text";
 import type { HomeAssistant } from "../types";
 
 @customElement("state-card-text")

@@ -2,9 +2,9 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-label-badge";
 import "../../../components/ha-svg-icon";
-import { LovelaceSectionElement } from "../../../data/lovelace";
-import { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
-import { HomeAssistant } from "../../../types";
+import type { LovelaceSectionElement } from "../../../data/lovelace";
+import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
+import type { HomeAssistant } from "../../../types";
 
 export interface ErrorSectionConfig extends LovelaceSectionConfig {
   error: string;

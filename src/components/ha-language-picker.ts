@@ -1,13 +1,14 @@
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { formatLanguageCode } from "../common/language/format_language";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
-import { FrontendLocaleData } from "../data/translation";
+import type { FrontendLocaleData } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "./ha-list-item";
 import "./ha-select";
 import type { HaSelect } from "./ha-select";
@@ -29,6 +30,8 @@ export class HaLanguagePicker extends LitElement {
   @property({ type: Boolean }) public nativeName = false;
 
   @property({ type: Boolean }) public noSort = false;
+
+  @property({ type: Boolean }) public inlineArrow = false;
 
   @state() _defaultLanguages: string[] = [];
 
@@ -143,6 +146,7 @@ export class HaLanguagePicker extends LitElement {
         @closed=${stopPropagation}
         fixedMenuPosition
         naturalMenuWidth
+        .inlineArrow=${this.inlineArrow}
       >
         ${languageOptions.length === 0
           ? html`<ha-list-item value=""

@@ -2,9 +2,10 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { updateDeviceRegistryEntry } from "../../data/device_registry";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import { showAlertDialog } from "../generic/show-dialog-box";
 import { AssistantSetupStyles } from "./styles";
+import "../../components/ha-area-picker";
 
 @customElement("ha-voice-assistant-setup-step-area")
 export class HaVoiceAssistantSetupStepArea extends LitElement {
@@ -16,7 +17,7 @@ export class HaVoiceAssistantSetupStepArea extends LitElement {
     const device = this.hass.devices[this.deviceId];
 
     return html`<div class="content">
-        <img src="/static/images/voice-assistant/area.gif" />
+        <img src="/static/images/voice-assistant/area.png" />
         <h1>Select area</h1>
         <p class="secondary">
           When you voice assistant knows where it is, it can better control the

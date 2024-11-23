@@ -1,15 +1,13 @@
 /* eslint-disable lit/prefer-static-styles */
-import { html, LitElement, nothing, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import punycode from "punycode";
 import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 import { extractSearchParamsObject } from "../common/url/search-params";
 import "../components/ha-alert";
-import {
-  AuthProvider,
-  AuthUrlSearchParams,
-  fetchAuthProviders,
-} from "../data/auth";
+import type { AuthProvider, AuthUrlSearchParams } from "../data/auth";
+import { fetchAuthProviders } from "../data/auth";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import { registerServiceWorker } from "../util/register-service-worker";
 import "./ha-auth-flow";
@@ -206,6 +204,7 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
           .label=${""}
           nativeName
           @value-changed=${this._languageChanged}
+          inlineArrow
         ></ha-language-picker>
         <a
           href="https://www.home-assistant.io/docs/authentication/"

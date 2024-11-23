@@ -3,8 +3,8 @@ import { customElement, property } from "lit/decorators";
 import { until } from "lit/directives/until";
 import { fireEvent } from "../../common/dom/fire_event";
 import { entityIcon } from "../../data/icons";
-import { IconSelector } from "../../data/selector";
-import { HomeAssistant } from "../../types";
+import type { IconSelector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
 import "../ha-icon-picker";
 import "../ha-state-icon";
 

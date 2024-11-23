@@ -3,32 +3,29 @@ import { ResizeController } from "@lit-labs/observers/resize-controller";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
   mdiAlertCircle,
+  mdiCancel,
   mdiChevronRight,
   mdiCog,
   mdiDotsVertical,
   mdiMenuDown,
   mdiPencilOff,
+  mdiProgressHelper,
   mdiPlus,
   mdiTag,
+  mdiTrashCan,
 } from "@mdi/js";
-import { HassEntity } from "home-assistant-js-websocket";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { debounce } from "../../../common/util/debounce";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { storage } from "../../../common/decorators/storage";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { navigate } from "../../../common/navigate";
-import {
+import type {
   LocalizeFunc,
   LocalizeKeys,
 } from "../../../common/translations/localize";
@@ -37,7 +34,7 @@ import {
   hasRejectedItems,
   rejectedItems,
 } from "../../../common/util/promise-all-settled-results";
-import {
+import type {
   DataTableColumnContainer,
   RowClickedEvent,
   SelectionChangedEvent,
@@ -55,36 +52,40 @@ import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-md-divider";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
+import type { CategoryRegistryEntry } from "../../../data/category_registry";
 import {
-  CategoryRegistryEntry,
   createCategoryRegistryEntry,
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
+import type { ConfigEntry } from "../../../data/config_entries";
 import {
-  ConfigEntry,
+  ERROR_STATES,
+  deleteConfigEntry,
   subscribeConfigEntries,
 } from "../../../data/config_entries";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
 import { fullEntitiesContext } from "../../../data/context";
-import {
+import type {
   DataTableFiltersItems,
   DataTableFiltersValues,
 } from "../../../data/data_table_filters";
-import {
+import type {
   EntityRegistryEntry,
   UpdateEntityRegistryEntryResult,
+} from "../../../data/entity_registry";
+import {
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
+import type { IntegrationManifest } from "../../../data/integration";
 import {
-  IntegrationManifest,
   domainToName,
   fetchIntegrationManifest,
   fetchIntegrationManifests,
 } from "../../../data/integration";
+import type { LabelRegistryEntry } from "../../../data/label_registry";
 import {
-  LabelRegistryEntry,
   createLabelRegistryEntry,
   subscribeLabelRegistry,
 } from "../../../data/label_registry";
@@ -99,11 +100,12 @@ import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant, Route } from "../../../types";
+import type { HomeAssistant, Route } from "../../../types";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
+import { renderConfigEntryError } from "../integrations/ha-config-integration-page";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { isHelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
@@ -227,6 +229,12 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     callback: (entries) => entries[0]?.contentRect.width,
   });
 
+  private _debouncedFetchEntitySources = debounce(
+    () => this._fetchEntitySources(),
+    500,
+    false
+  );
+
   public hassSubscribe() {
     return [
       subscribeConfigEntries(
@@ -242,6 +250,14 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
               delete newEntries[message.entry.entry_id];
             } else if (message.type === "updated") {
               newEntries[message.entry.entry_id] = message.entry;
+            }
+            if (
+              this._entitySource &&
+              this._configEntries &&
+              message.entry.state === "loaded" &&
+              this._configEntries[message.entry.entry_id]?.state !== "loaded"
+            ) {
+              this._debouncedFetchEntitySources();
             }
           });
           this._configEntries = newEntries;
@@ -359,6 +375,19 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             .hass=${this.hass}
             narrow
             .items=${[
+              ...(helper.configEntry &&
+              ERROR_STATES.includes(helper.configEntry.state)
+                ? [
+                    {
+                      path: mdiAlertCircle,
+                      label: this.hass.localize(
+                        "ui.panel.config.helpers.picker.error_information"
+                      ),
+                      warning: true,
+                      action: () => this._showError(helper),
+                    },
+                  ]
+                : []),
               {
                 path: mdiCog,
                 label: this.hass.localize(
@@ -373,6 +402,19 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                 ),
                 action: () => this._editCategory(helper),
               },
+              ...(helper.configEntry &&
+              helper.editable &&
+              ERROR_STATES.includes(helper.configEntry.state) &&
+              helper.entity === undefined
+                ? [
+                    {
+                      path: mdiTrashCan,
+                      label: this.hass.localize("ui.common.delete"),
+                      warning: true,
+                      action: () => this._deleteEntry(helper),
+                    },
+                  ]
+                : []),
             ]}
           >
           </ha-icon-overflow-menu>
@@ -424,17 +466,27 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         };
       });
 
-      const entries = Object.values(configEntriesCopy).map((configEntry) => ({
-        id: configEntry.entry_id,
-        entity_id: "",
-        icon: mdiAlertCircle,
-        name: configEntry.title || "",
-        editable: true,
-        type: configEntry.domain,
-        configEntry,
-        entity: undefined,
-        selectable: false,
-      }));
+      const entries = Object.values(configEntriesCopy).map((configEntry) => {
+        const entityEntry = Object.values(entityEntries).find(
+          (entry) => entry.config_entry_id === configEntry.entry_id
+        );
+        const entityIsDisabled = !!entityEntry?.disabled_by;
+        return {
+          id: entityIsDisabled ? entityEntry.entity_id : configEntry.entry_id,
+          entity_id: entityIsDisabled ? entityEntry.entity_id : "",
+          icon: entityIsDisabled
+            ? mdiCancel
+            : configEntry.state === "setup_in_progress"
+              ? mdiProgressHelper
+              : mdiAlertCircle,
+          name: configEntry.title || "",
+          editable: true,
+          type: configEntry.domain,
+          configEntry,
+          entity: undefined,
+          selectable: entityIsDisabled,
+        };
+      });
 
       return [...states, ...entries]
         .filter((item) =>
@@ -1086,6 +1138,34 @@ ${rejected
     } else {
       showOptionsFlowDialog(this, this._configEntries![id]);
     }
+  }
+
+  private _showError(helper: HelperItem) {
+    showAlertDialog(this, {
+      title: this.hass.localize("ui.errors.config.configuration_error"),
+      text: renderConfigEntryError(this.hass, helper.configEntry!),
+      warning: true,
+    });
+  }
+
+  private async _deleteEntry(helper: HelperItem) {
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.integrations.config_entry.delete_confirm_title",
+        { title: helper.configEntry!.title }
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.integrations.config_entry.delete_confirm_text"
+      ),
+      confirmText: this.hass!.localize("ui.common.delete"),
+      dismissText: this.hass!.localize("ui.common.cancel"),
+      destructive: true,
+    });
+
+    if (!confirmed) {
+      return;
+    }
+    deleteConfigEntry(this.hass, helper.id);
   }
 
   private _openSettings(helper: HelperItem) {

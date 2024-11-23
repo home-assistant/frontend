@@ -1,5 +1,5 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import {
+import type {
   AssistPipeline,
   AssistPipelineMutableParams,
 } from "../../../data/assist_pipeline";

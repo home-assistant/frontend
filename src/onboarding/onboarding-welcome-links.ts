@@ -1,12 +1,6 @@
 import { mdiAccountGroup, mdiFileDocument, mdiTabletCellphone } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-card";
@@ -19,7 +13,7 @@ import "./onboarding-welcome-link";
 class OnboardingWelcomeLinks extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public localize!: LocalizeFunc;
+  @property({ attribute: false }) public localize!: LocalizeFunc<any>;
 
   @property({ type: Boolean }) public mobileApp = false;
 

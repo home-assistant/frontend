@@ -1,5 +1,5 @@
 import { formatDuration } from "../common/datetime/duration";
-import { FrontendLocaleData } from "./translation";
+import type { FrontendLocaleData } from "./translation";
 
 export const STATE_ATTRIBUTES = [
   "entity_id",
@@ -23,6 +23,7 @@ export const STATE_ATTRIBUTES = [
   "state_class",
   "supported_features",
   "unit_of_measurement",
+  "available_tones",
 ];
 
 export const TEMPERATURE_ATTRIBUTES = new Set([

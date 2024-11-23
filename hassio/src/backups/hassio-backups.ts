@@ -1,22 +1,16 @@
 import "@material/mwc-button";
-import { ActionDetail } from "@material/mwc-list";
+import type { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiBackupRestore, mdiDelete, mdiDotsVertical, mdiPlus } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { relativeTime } from "../../../src/common/datetime/relative_time";
-import { HASSDomEvent } from "../../../src/common/dom/fire_event";
-import {
+import type { HASSDomEvent } from "../../../src/common/dom/fire_event";
+import type {
   DataTableColumnContainer,
   RowClickedEvent,
   SelectionChangedEvent,
@@ -25,15 +19,15 @@ import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-fab";
 import "../../../src/components/ha-icon-button";
 import "../../../src/components/ha-svg-icon";
+import type { HassioBackup } from "../../../src/data/hassio/backup";
 import {
-  HassioBackup,
   fetchHassioBackups,
   friendlyFolderName,
   reloadHassioBackups,
   removeBackup,
 } from "../../../src/data/hassio/backup";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
-import { Supervisor } from "../../../src/data/supervisor/supervisor";
+import type { Supervisor } from "../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -41,7 +35,7 @@ import {
 import "../../../src/layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../src/layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../src/resources/styles";
-import { HomeAssistant, Route } from "../../../src/types";
+import type { HomeAssistant, Route } from "../../../src/types";
 import { showBackupUploadDialog } from "../dialogs/backup/show-dialog-backup-upload";
 import { showHassioBackupLocationDialog } from "../dialogs/backup/show-dialog-hassio-backu-location";
 import { showHassioBackupDialog } from "../dialogs/backup/show-dialog-hassio-backup";
@@ -380,6 +374,9 @@ export class HassioBackups extends LitElement {
       haStyle,
       hassioStyle,
       css`
+        :host {
+          color: var(--primary-text-color);
+        }
         .table-header {
           display: flex;
           justify-content: space-between;

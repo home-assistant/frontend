@@ -1,8 +1,9 @@
-import { HassConfig, HassEntity } from "home-assistant-js-websocket";
+import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
-import { EntityRegistryDisplayEntry } from "../../data/entity_registry";
-import { FrontendLocaleData, TimeZone } from "../../data/translation";
-import { HomeAssistant } from "../../types";
+import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
+import type { FrontendLocaleData } from "../../data/translation";
+import { TimeZone } from "../../data/translation";
+import type { HomeAssistant } from "../../types";
 import {
   UNIT_TO_MILLISECOND_CONVERT,
   formatDuration,
@@ -16,7 +17,7 @@ import {
   isNumericFromAttributes,
 } from "../number/format_number";
 import { blankBeforeUnit } from "../translations/blank_before_unit";
-import { LocalizeFunc } from "../translations/localize";
+import type { LocalizeFunc } from "../translations/localize";
 import { computeDomain } from "./compute_domain";
 
 export const computeStateDisplay = (
@@ -102,7 +103,12 @@ export const computeStateDisplayFromEntityAttributes = (
       getNumberFormatOptions({ state, attributes } as HassEntity, entity)
     );
 
-    const unit = attributes.unit_of_measurement;
+    const unit =
+      (entity?.translation_key &&
+        localize(
+          `component.${entity.platform}.entity.${domain}.${entity.translation_key}.unit_of_measurement`
+        )) ||
+      attributes.unit_of_measurement;
 
     if (unit) {
       return `${value}${blankBeforeUnit(unit, locale)}${unit}`;

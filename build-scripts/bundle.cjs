@@ -226,13 +226,12 @@ module.exports.config = {
     return {
       name: "frontend" + nameSuffix(latestBuild),
       entry: {
-        "service-worker":
-          !env.useRollup() && !latestBuild
-            ? {
-                import: "./src/entrypoints/service-worker.ts",
-                layer: "sw",
-              }
-            : "./src/entrypoints/service-worker.ts",
+        "service-worker": !latestBuild
+          ? {
+              import: "./src/entrypoints/service-worker.ts",
+              layer: "sw",
+            }
+          : "./src/entrypoints/service-worker.ts",
         app: "./src/entrypoints/app.ts",
         authorize: "./src/entrypoints/authorize.ts",
         onboarding: "./src/entrypoints/onboarding.ts",
@@ -326,6 +325,19 @@ module.exports.config = {
       defineOverlay: {
         __DEMO__: true,
       },
+    };
+  },
+
+  landingPage({ isProdBuild, latestBuild }) {
+    return {
+      name: "landing-page" + nameSuffix(latestBuild),
+      entry: {
+        entrypoint: path.resolve(paths.landingPage_dir, "src/entrypoint.js"),
+      },
+      outputPath: outputPath(paths.landingPage_output_root, latestBuild),
+      publicPath: publicPath(latestBuild),
+      isProdBuild,
+      latestBuild,
     };
   },
 };

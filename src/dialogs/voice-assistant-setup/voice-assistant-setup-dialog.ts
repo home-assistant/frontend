@@ -1,19 +1,19 @@
 import "@material/mwc-button/mwc-button";
 import { mdiChevronLeft, mdiClose } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import "../../components/ha-dialog";
-import {
-  AssistSatelliteConfiguration,
-  fetchAssistSatelliteConfiguration,
-} from "../../data/assist_satellite";
-import { EntityRegistryDisplayEntry } from "../../data/entity_registry";
+import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
+import { fetchAssistSatelliteConfiguration } from "../../data/assist_satellite";
+import { UNAVAILABLE } from "../../data/entity";
+import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import { VoiceAssistantSetupDialogParams } from "./show-voice-assistant-setup-dialog";
+import type { VoiceAssistantSetupDialogParams } from "./show-voice-assistant-setup-dialog";
 import "./voice-assistant-setup-step-area";
 import "./voice-assistant-setup-step-change-wake-word";
 import "./voice-assistant-setup-step-check";
@@ -22,7 +22,6 @@ import "./voice-assistant-setup-step-pipeline";
 import "./voice-assistant-setup-step-success";
 import "./voice-assistant-setup-step-update";
 import "./voice-assistant-setup-step-wake-word";
-import { UNAVAILABLE } from "../../data/entity";
 
 export const enum STEP {
   INIT,
@@ -67,6 +66,8 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
   private _dialogClosed() {
     this._params = undefined;
     this._assistConfiguration = undefined;
+    this._previousSteps = [];
+    this._nextStep = undefined;
     this._step = STEP.INIT;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -159,20 +160,16 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
               : this._step === STEP.CHECK
                 ? html`<ha-voice-assistant-setup-step-check
                     .hass=${this.hass}
-                    .assistEntityId=${this._findDomainEntityId(
-                      this._params.deviceId,
-                      this.hass.entities,
-                      "assist_satellite"
-                    )}
+                    .assistEntityId=${assistSatelliteEntityId}
                   ></ha-voice-assistant-setup-step-check>`
                 : this._step === STEP.WAKEWORD
                   ? html`<ha-voice-assistant-setup-step-wake-word
                       .hass=${this.hass}
                       .assistConfiguration=${this._assistConfiguration}
-                      .assistEntityId=${this._findDomainEntityId(
+                      .assistEntityId=${assistSatelliteEntityId}
+                      .deviceEntities=${this._deviceEntities(
                         this._params.deviceId,
-                        this.hass.entities,
-                        "assist_satellite"
+                        this.hass.entities
                       )}
                     ></ha-voice-assistant-setup-step-wake-word>`
                   : this._step === STEP.CHANGE_WAKEWORD
@@ -180,11 +177,7 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
                         <ha-voice-assistant-setup-step-change-wake-word
                           .hass=${this.hass}
                           .assistConfiguration=${this._assistConfiguration}
-                          .assistEntityId=${this._findDomainEntityId(
-                            this._params.deviceId,
-                            this.hass.entities,
-                            "assist_satellite"
-                          )}
+                          .assistEntityId=${assistSatelliteEntityId}
                         ></ha-voice-assistant-setup-step-change-wake-word>
                       `
                     : this._step === STEP.AREA
@@ -198,11 +191,7 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
                         ? html`<ha-voice-assistant-setup-step-pipeline
                             .hass=${this.hass}
                             .assistConfiguration=${this._assistConfiguration}
-                            .assistEntityId=${this._findDomainEntityId(
-                              this._params.deviceId,
-                              this.hass.entities,
-                              "assist_satellite"
-                            )}
+                            .assistEntityId=${assistSatelliteEntityId}
                           ></ha-voice-assistant-setup-step-pipeline>`
                         : this._step === STEP.CLOUD
                           ? html`<ha-voice-assistant-setup-step-cloud
@@ -213,11 +202,7 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
                                 .hass=${this.hass}
                                 .assistConfiguration=${this
                                   ._assistConfiguration}
-                                .assistEntityId=${this._findDomainEntityId(
-                                  this._params.deviceId,
-                                  this.hass.entities,
-                                  "assist_satellite"
-                                )}
+                                .assistEntityId=${assistSatelliteEntityId}
                               ></ha-voice-assistant-setup-step-success>`
                             : nothing}
         </div>

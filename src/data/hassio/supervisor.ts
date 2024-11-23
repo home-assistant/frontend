@@ -1,7 +1,8 @@
 import { atLeastVersion } from "../../common/config/version";
-import { HomeAssistant, PanelInfo } from "../../types";
-import { SupervisorArch } from "../supervisor/supervisor";
-import { hassioApiResultExtractor, HassioResponse } from "./common";
+import type { HomeAssistant, PanelInfo } from "../../types";
+import type { SupervisorArch } from "../supervisor/supervisor";
+import type { HassioResponse } from "./common";
+import { hassioApiResultExtractor } from "./common";
 
 export type HassioHomeAssistantInfo = {
   arch: SupervisorArch;
@@ -184,6 +185,15 @@ export const fetchHassioInfo = async (
 export const fetchHassioBoots = async (hass: HomeAssistant) =>
   hass.callApi<HassioResponse<HassioBoots>>("GET", `hassio/host/logs/boots`);
 
+export const fetchHassioLogsLegacy = async (
+  hass: HomeAssistant,
+  provider: string
+) =>
+  hass.callApi<string>(
+    "GET",
+    `hassio/${provider.includes("_") ? `addons/${provider}` : provider}/logs`
+  );
+
 export const fetchHassioLogs = async (
   hass: HomeAssistant,
   provider: string,
@@ -192,7 +202,7 @@ export const fetchHassioLogs = async (
 ) =>
   hass.callApiRaw(
     "GET",
-    `hassio/${provider.includes("_") ? `addons/${provider}` : provider}/logs/boots/${boot}`,
+    `hassio/${provider.includes("_") ? `addons/${provider}` : provider}/logs${boot !== 0 ? `/boots/${boot}` : ""}`,
     undefined,
     range
       ? {
@@ -210,7 +220,7 @@ export const fetchHassioLogsFollow = async (
 ) =>
   hass.callApiRaw(
     "GET",
-    `hassio/${provider.includes("_") ? `addons/${provider}` : provider}/logs/boots/${boot}/follow?lines=${lines}`,
+    `hassio/${provider.includes("_") ? `addons/${provider}` : provider}/logs${boot !== 0 ? `/boots/${boot}` : ""}/follow?lines=${lines}`,
     undefined,
     undefined,
     signal
@@ -228,7 +238,7 @@ export const getHassioLogDownloadLinesUrl = (
 ) =>
   `/api/hassio/${
     provider.includes("_") ? `addons/${provider}` : provider
-  }/logs/boots/${boot}?lines=${lines}`;
+  }/logs${boot !== 0 ? `/boots/${boot}` : ""}?lines=${lines}`;
 
 export const setSupervisorOption = async (
   hass: HomeAssistant,

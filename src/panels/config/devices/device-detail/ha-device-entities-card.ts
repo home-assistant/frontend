@@ -1,32 +1,27 @@
 import "@material/mwc-list/mwc-list";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { until } from "lit/directives/until";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { stripPrefixFromEntityName } from "../../../../common/entity/strip_prefix_from_entity_name";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-list-item";
-import {
-  ExtEntityRegistryEntry,
-  getExtendedEntityRegistryEntry,
-} from "../../../../data/entity_registry";
+import type { ExtEntityRegistryEntry } from "../../../../data/entity_registry";
+import { getExtendedEntityRegistryEntry } from "../../../../data/entity_registry";
 import { entryIcon } from "../../../../data/icons";
 import { showMoreInfoDialog } from "../../../../dialogs/more-info/show-ha-more-info-dialog";
 import type { HomeAssistant } from "../../../../types";
 import type { HuiErrorCard } from "../../../lovelace/cards/hui-error-card";
 import { createRowElement } from "../../../lovelace/create-element/create-row-element";
 import { addEntitiesToLovelaceView } from "../../../lovelace/editor/add-entities-to-view";
-import type { LovelaceRowConfig } from "../../../lovelace/entity-rows/types";
-import { LovelaceRow } from "../../../lovelace/entity-rows/types";
-import { EntityRegistryStateEntry } from "../ha-config-device-page";
+import type {
+  LovelaceRowConfig,
+  LovelaceRow,
+} from "../../../lovelace/entity-rows/types";
+import type { EntityRegistryStateEntry } from "../ha-config-device-page";
 import {
   computeCards,
   computeSection,
@@ -92,36 +87,42 @@ export class HaDeviceEntitiesCard extends LitElement {
 
     return html`
       <ha-card outlined .header=${this.header}>
-        <div id="entities">
-          <mwc-list>
-            ${shownEntities.map((entry) =>
-              this.hass.states[entry.entity_id]
-                ? this._renderEntity(entry)
-                : this._renderEntry(entry)
-            )}
-          </mwc-list>
-        </div>
-        ${hiddenEntities.length
-          ? !this.showHidden
-            ? html`
-                <button class="show-more" @click=${this._toggleShowHidden}>
-                  ${this.hass.localize(
-                    "ui.panel.config.devices.entities.hidden_entities",
-                    { count: hiddenEntities.length }
-                  )}
-                </button>
-              `
-            : html`
+        ${shownEntities.length
+          ? html`
+              <div id="entities" class="move-up">
                 <mwc-list>
-                  ${hiddenEntities.map((entry) => this._renderEntry(entry))}
-                </mwc-list>
-                <button class="show-more" @click=${this._toggleShowHidden}>
-                  ${this.hass.localize(
-                    "ui.panel.config.devices.entities.show_less"
+                  ${shownEntities.map((entry) =>
+                    this.hass.states[entry.entity_id]
+                      ? this._renderEntity(entry)
+                      : this._renderEntry(entry)
                   )}
-                </button>
-              `
-          : ""}
+                </mwc-list>
+              </div>
+            `
+          : nothing}
+        ${hiddenEntities.length
+          ? html`<div class=${classMap({ "move-up": !shownEntities.length })}>
+              ${!this.showHidden
+                ? html`
+                    <button class="show-more" @click=${this._toggleShowHidden}>
+                      ${this.hass.localize(
+                        "ui.panel.config.devices.entities.hidden_entities",
+                        { count: hiddenEntities.length }
+                      )}
+                    </button>
+                  `
+                : html`
+                    <mwc-list>
+                      ${hiddenEntities.map((entry) => this._renderEntry(entry))}
+                    </mwc-list>
+                    <button class="show-more" @click=${this._toggleShowHidden}>
+                      ${this.hass.localize(
+                        "ui.panel.config.devices.entities.show_less"
+                      )}
+                    </button>
+                  `}
+            </div>`
+          : nothing}
         <div class="card-actions">
           <mwc-button @click=${this._addToLovelaceView}>
             ${this.hass.localize(
@@ -263,8 +264,8 @@ export class HaDeviceEntitiesCard extends LitElement {
       .disabled-entry {
         color: var(--secondary-text-color);
       }
-      #entities {
-        margin-top: -24px; /* match the spacing between card title and content of the device info card above it */
+      .move-up {
+        margin-top: -24px;
       }
       #entities > * {
         margin: 8px 16px 8px 8px;
@@ -305,6 +306,7 @@ export class HaDeviceEntitiesCard extends LitElement {
       }
       ha-list-item {
         height: 40px;
+        --mdc-ripple-color: transparent;
       }
     `;
   }

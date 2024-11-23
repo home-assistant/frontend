@@ -1,17 +1,16 @@
-import { css, html, LitElement, PropertyValues, nothing } from "lit";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { throttle } from "../../common/util/throttle";
 import "../../components/ha-circular-progress";
-import {
-  LogbookEntry,
-  LogbookStreamMessage,
-  subscribeLogbook,
-} from "../../data/logbook";
-import { loadTraceContexts, TraceContexts } from "../../data/trace";
+import type { LogbookEntry, LogbookStreamMessage } from "../../data/logbook";
+import { subscribeLogbook } from "../../data/logbook";
+import type { TraceContexts } from "../../data/trace";
+import { loadTraceContexts } from "../../data/trace";
 import { fetchUsers } from "../../data/user";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import "./ha-logbook-renderer";
 
 interface LogbookTimePeriod {
@@ -139,7 +138,9 @@ export class HaLogbook extends LitElement {
     this._throttleGetLogbookEntries.cancel();
     this._updateTraceContexts.cancel();
     this._updateUsers.cancel();
-    this._unsubscribeSetLoading();
+    await this._unsubscribeSetLoading();
+
+    this._liveUpdatesEnabled = true;
 
     if (force) {
       this._getLogBookData();
@@ -206,16 +207,26 @@ export class HaLogbook extends LitElement {
     );
   }
 
-  private _unsubscribe() {
+  private async _unsubscribe(): Promise<void> {
     if (this._subscribed) {
-      this._subscribed.then((unsub) => unsub?.());
-      this._subscribed = undefined;
+      try {
+        const unsub = await this._subscribed;
+        if (unsub) {
+          await unsub();
+          this._subscribed = undefined;
+          this._pendingStreamMessages = [];
+        }
+      } catch (err: any) {
+        // eslint-disable-next-line
+        console.error("Error unsubscribing:", err);
+      }
     }
   }
 
   public connectedCallback() {
     super.connectedCallback();
     if (this.hasUpdated) {
+      // Ensure clean state before subscribing
       this._subscribeLogbookPeriod(this._calculateLogbookPeriod());
     }
   }
@@ -230,8 +241,8 @@ export class HaLogbook extends LitElement {
    * Setting this._logbookEntries to undefined
    * will put the page in a loading state.
    */
-  private _unsubscribeSetLoading() {
-    this._unsubscribe();
+  private async _unsubscribeSetLoading() {
+    await this._unsubscribe();
     this._logbookEntries = undefined;
     this._pendingStreamMessages = [];
   }
@@ -240,8 +251,8 @@ export class HaLogbook extends LitElement {
    * Setting this._logbookEntries to an empty
    * list will show a no results message.
    */
-  private _unsubscribeNoResults() {
-    this._unsubscribe();
+  private async _unsubscribeNoResults() {
+    await this._unsubscribe();
     this._logbookEntries = [];
     this._pendingStreamMessages = [];
   }
@@ -272,10 +283,12 @@ export class HaLogbook extends LitElement {
     throw new Error("Unexpected time specified");
   }
 
-  private _subscribeLogbookPeriod(logbookPeriod: LogbookTimePeriod) {
+  private async _subscribeLogbookPeriod(logbookPeriod: LogbookTimePeriod) {
     if (this._subscribed) {
       return true;
     }
+    // Ensure any previous subscription is cleaned up
+    await this._unsubscribe();
     this._subscribed = subscribeLogbook(
       this.hass,
       (streamMessage) => {
@@ -303,7 +316,7 @@ export class HaLogbook extends LitElement {
     this._error = undefined;
 
     if (this._filterAlwaysEmptyResults) {
-      this._unsubscribeNoResults();
+      await this._unsubscribeNoResults();
       return;
     }
 
@@ -311,7 +324,7 @@ export class HaLogbook extends LitElement {
 
     if (logbookPeriod.startTime > logbookPeriod.now) {
       // Time Travel not yet invented
-      this._unsubscribeNoResults();
+      await this._unsubscribeNoResults();
       return;
     }
 

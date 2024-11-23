@@ -1,22 +1,26 @@
-import { HaDurationData } from "../../../components/ha-duration-input";
-import { ActionConfig } from "../../../data/lovelace/config/action";
-import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import { Statistic, StatisticType } from "../../../data/recorder";
-import { ForecastType } from "../../../data/weather";
-import { FullCalendarView, ThemeMode, TranslationDict } from "../../../types";
-import { LovelaceCardFeatureConfig } from "../card-features/types";
-import { LegacyStateFilter } from "../common/evaluate-filter";
-import { Condition, LegacyCondition } from "../common/validate-condition";
-import { HuiImage } from "../components/hui-image";
-import { TimestampRenderingFormat } from "../components/types";
-import { LovelaceElementConfig } from "../elements/types";
-import {
+import type { HaDurationData } from "../../../components/ha-duration-input";
+import type { ActionConfig } from "../../../data/lovelace/config/action";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { Statistic, StatisticType } from "../../../data/recorder";
+import type { ForecastType } from "../../../data/weather";
+import type {
+  FullCalendarView,
+  ThemeMode,
+  TranslationDict,
+} from "../../../types";
+import type { LovelaceCardFeatureConfig } from "../card-features/types";
+import type { LegacyStateFilter } from "../common/evaluate-filter";
+import type { Condition, LegacyCondition } from "../common/validate-condition";
+import type { HuiImage } from "../components/hui-image";
+import type { TimestampRenderingFormat } from "../components/types";
+import type { LovelaceElementConfig } from "../elements/types";
+import type {
   EntityConfig,
   EntityFilterEntityConfig,
   LovelaceRowConfig,
 } from "../entity-rows/types";
-import { LovelaceHeaderFooterConfig } from "../header-footer/types";
-import { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
+import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
+import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
 
 export type AlarmPanelCardConfigState =
   | "arm_away"
@@ -298,6 +302,11 @@ export interface LogbookCardConfig extends LovelaceCardConfig {
   theme?: string;
 }
 
+interface GeoLocationSourceConfig {
+  source: string;
+  focus?: boolean;
+}
+
 export interface MapCardConfig extends LovelaceCardConfig {
   type: "map";
   title?: string;
@@ -307,7 +316,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   default_zoom?: number;
   entities?: Array<EntityConfig | string>;
   hours_to_show?: number;
-  geo_location_sources?: string[];
+  geo_location_sources?: Array<GeoLocationSourceConfig | string>;
   dark_mode?: boolean;
   theme_mode?: ThemeMode;
 }
@@ -347,6 +356,9 @@ export interface StatisticsGraphCardConfig extends LovelaceCardConfig {
   period?: "5minute" | "hour" | "day" | "month";
   stat_types?: StatisticType | StatisticType[];
   chart_type?: "line" | "bar";
+  min_y_axis?: number;
+  max_y_axis?: number;
+  fit_y_data?: boolean;
   hide_legend?: boolean;
   logarithmic_scale?: boolean;
 }

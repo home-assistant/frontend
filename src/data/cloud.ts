@@ -1,5 +1,5 @@
-import { EntityFilter } from "../common/entity/entity_filter";
-import { HomeAssistant } from "../types";
+import type { EntityFilter } from "../common/entity/entity_filter";
+import type { HomeAssistant } from "../types";
 
 type StrictConnectionMode = "disabled" | "guard_page" | "drop_connection";
 
@@ -27,6 +27,7 @@ export interface CloudPreferences {
   alexa_report_state: boolean;
   google_report_state: boolean;
   tts_default_voice: [string, string];
+  cloud_ice_servers_enabled: boolean;
 }
 
 export interface CloudStatusLoggedIn {
@@ -145,6 +146,7 @@ export const updateCloudPref = (
     tts_default_voice?: CloudPreferences["tts_default_voice"];
     remote_allow_remote_enable?: CloudPreferences["remote_allow_remote_enable"];
     strict_connection?: CloudPreferences["strict_connection"];
+    cloud_ice_servers_enabled?: CloudPreferences["cloud_ice_servers_enabled"];
   }
 ) =>
   hass.callWS({

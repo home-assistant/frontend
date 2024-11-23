@@ -1,10 +1,8 @@
+import type { Auth, Connection, HassConfig } from "home-assistant-js-websocket";
 import {
-  Auth,
   callService,
-  Connection,
   ERR_CONNECTION_LOST,
   ERR_INVALID_AUTH,
-  HassConfig,
   subscribeConfig,
   subscribeEntities,
   subscribeServices,
@@ -13,7 +11,6 @@ import { fireEvent } from "../common/dom/fire_event";
 import { subscribeAreaRegistry } from "../data/area_registry";
 import { broadcastConnectionStatus } from "../data/connection-status";
 import { subscribeDeviceRegistry } from "../data/device_registry";
-import { subscribeEntityRegistryDisplay } from "../data/entity_registry";
 import { subscribeFrontendUserData } from "../data/frontend";
 import { forwardHaptic } from "../data/haptics";
 import { DEFAULT_PANEL } from "../data/panel";
@@ -32,9 +29,10 @@ import { getLocalLanguage } from "../util/common-translation";
 import { fetchWithAuth } from "../util/fetch-with-auth";
 import { getState } from "../util/ha-pref-storage";
 import hassCallApi, { hassCallApiRaw } from "../util/hass-call-api";
-import { HassBaseEl } from "./hass-base-mixin";
+import type { HassBaseEl } from "./hass-base-mixin";
 import { promiseTimeout } from "../common/util/promise-timeout";
 import { subscribeFloorRegistry } from "../data/ws-floor_registry";
+import { subscribeEntityRegistryDisplay } from "../data/ws-entity_registry_display";
 
 export const connectionMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
@@ -160,6 +158,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         },
         callApi: async (method, path, parameters, headers) =>
           hassCallApi(auth, method, path, parameters, headers),
+        // callApiRaw introduced in 2024.11
         callApiRaw: async (method, path, parameters, headers, signal) =>
           hassCallApiRaw(auth, method, path, parameters, headers, signal),
         fetchWithAuth: (
