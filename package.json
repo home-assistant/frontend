@@ -177,7 +177,7 @@
     "@types/leaflet-draw": "1.0.11",
     "@types/lodash.merge": "4.6.9",
     "@types/luxon": "3.4.2",
-    "@types/mocha": "10.0.9",
+    "@types/mocha": "10.0.10",
     "@types/qrcode": "1.5.5",
     "@types/serve-handler": "6.1.4",
     "@types/sortablejs": "1.15.8",
