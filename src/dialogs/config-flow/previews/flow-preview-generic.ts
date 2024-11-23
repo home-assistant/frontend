@@ -84,8 +84,6 @@ export class FlowPreviewGeneric extends LitElement {
         this.hass,
         this.domain,
         this.flowId,
-        this.flowType,
-        this.stepData,
         this._setPreview
       );
       fireEvent(this, "set-flow-errors", { errors: {} });
