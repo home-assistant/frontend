@@ -10,8 +10,8 @@ class FlowPreviewGenericCamera extends FlowPreviewGeneric {
       return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
     }
 
-    const stillUrl = this._preview.attributes.stillUrl;
-    const streamUrl = this._preview.attributes.streamUrl;
+    const stillUrl = this._preview.attributes.still_url;
+    const streamUrl = this._preview.attributes.stream_url;
 
     return html` ${stillUrl
       ? html`<p>Still image:</p>
