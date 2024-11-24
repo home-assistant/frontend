@@ -144,15 +144,19 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
               : nothing}
           ${this.schema.title || this.computeLabel?.(this.schema)}
         </div>
-        <ha-icon-button
-          slot="icons"
-          .disabled=${this.disabled}
-          .label=${this.hass.localize("ui.common.delete")}
-          .index=${index}
-          @click=${this._deleteItem}
-        >
-          <ha-svg-icon .path=${mdiTrashCanOutline}></ha-svg-icon>
-        </ha-icon-button>
+        ${this.schema.multiple
+          ? html`
+              <ha-icon-button
+                slot="icons"
+                .disabled=${this.disabled}
+                .label=${this.hass.localize("ui.common.delete")}
+                .index=${index}
+                @click=${this._deleteItem}
+              >
+                <ha-svg-icon .path=${mdiTrashCanOutline}></ha-svg-icon>
+              </ha-icon-button>
+            `
+          : nothing}
         <div class="content">
           ${this.schema.multiple ? nothing : this._renderDescription()}
           <ha-form
