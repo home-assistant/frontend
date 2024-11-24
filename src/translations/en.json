@@ -5335,10 +5335,10 @@
           "device_info": {
             "device_info": "Device info",
             "node_id": "Node ID",
-            "network_type": "Network Type",
+            "network_type": "Network type",
             "node_type": "Device type",
             "network_name": "Network name",
-            "ip_adresses": "IP Address(es)",
+            "ip_adresses": "IP address(es)",
             "mac_address": "MAC address",
             "available": "Available?"
           },
