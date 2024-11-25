@@ -102,7 +102,7 @@ const createRspackConfig = ({
         chunks: !isProdBuild
           ? // improve incremental build speed, but blows up bundle size
             new RegExp(
-              `^(?!.*(${Object.keys(entry).join("|")}|work(?:er|let))$)`
+              `^(?!(${Object.keys(entry).join("|")}|.*work(?:er|let))$)`
             )
           : // - ESM output: https://github.com/webpack/webpack/issues/17014
             // - Worklets use `importScripts`: https://github.com/webpack/webpack/issues/11543
