@@ -5,6 +5,7 @@ import type { GroupEntity } from "../../data/group";
 import { computeGroupDomain } from "../../data/group";
 import { CONTINUOUS_DOMAINS } from "../../data/logbook";
 import type { HomeAssistant } from "../../types";
+import { isNumericEntity } from "../../data/history";
 
 export const DOMAINS_NO_INFO = ["camera", "configurator"];
 /**
@@ -111,7 +112,8 @@ export const computeShowLogBookComponent = (
 
   const domain = computeDomain(entityId);
   if (
-    (CONTINUOUS_DOMAINS.includes(domain) && !isNaN(Number(stateObj.state))) ||
+    (CONTINUOUS_DOMAINS.includes(domain) &&
+      isNumericEntity(domain, stateObj, undefined, [], false)) ||
     DOMAINS_MORE_INFO_NO_HISTORY.includes(domain)
   ) {
     return false;
