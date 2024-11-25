@@ -3792,7 +3792,7 @@
             "duplicate": "[%key:ui::common::duplicate%]",
             "field": {
               "name": "[%key:ui::common::name%]",
-              "key": "Field variable key name",
+              "key": "Field key",
               "description": "Description",
               "required": "Required",
               "default": "Default",
