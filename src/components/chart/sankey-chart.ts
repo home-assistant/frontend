@@ -1,16 +1,16 @@
 import { customElement, property, state } from "lit/decorators";
 import { LitElement, html, css, svg } from "lit";
 
-type Node = {
+export type Node = {
   id: string;
   label: string;
   color?: string;
   value: number;
   index: number;
 };
-type Link = { source: string; target: string; value?: number };
+export type Link = { source: string; target: string; value?: number };
 
-type SankeyChartData = {
+export type SankeyChartData = {
   nodes: Node[];
   links: Link[];
 };
@@ -233,15 +233,17 @@ export class SankeyChart extends LitElement {
       }
 
       const sourceY =
-        sourceNode.y + (sourceAccounted / sourceNode.value) * sourceNode.size;
+        sourceNode.y +
+        (sourceAccounted / (sourceNode.value || 1)) * sourceNode.size;
       const targetY =
-        targetNode.y + (targetAccounted / targetNode.value) * targetNode.size;
+        targetNode.y +
+        (targetAccounted / (targetNode.value || 1)) * targetNode.size;
       const sourceSize = Math.max(
-        (value / sourceNode.value) * sourceNode.size,
+        (value / (sourceNode.value || 1)) * sourceNode.size,
         0
       );
       const targetSize = Math.max(
-        (value / targetNode.value) * targetNode.size,
+        (value / (targetNode.value || 1)) * targetNode.size,
         0
       );
       const sourceX = sourceNode.x + NODE_WIDTH;
@@ -347,7 +349,6 @@ export class SankeyChart extends LitElement {
   static styles = css`
     :host {
       display: block;
-      width: 100%;
       height: 200px;
       background: var(--ha-card-background, var(--card-background-color, #000));
       padding: ${PADDING}px;

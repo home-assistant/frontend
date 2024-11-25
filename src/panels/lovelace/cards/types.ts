@@ -195,6 +195,11 @@ export interface EnergyCarbonGaugeCardConfig extends EnergyCardBaseConfig {
   title?: string;
 }
 
+export interface EnergySankeyCardConfig extends EnergyCardBaseConfig {
+  type: "energy-sankey";
+  title?: string;
+}
+
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
   type: "entity-filter";
   entities: Array<EntityFilterEntityConfig | string>;
