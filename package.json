@@ -31,7 +31,7 @@
     "@codemirror/commands": "6.7.1",
     "@codemirror/language": "6.10.3",
     "@codemirror/legacy-modes": "6.4.2",
-    "@codemirror/search": "6.5.7",
+    "@codemirror/search": "6.5.8",
     "@codemirror/state": "6.4.1",
     "@codemirror/view": "6.35.0",
     "@egjs/hammerjs": "2.0.17",
@@ -252,5 +252,5 @@
     "@fullcalendar/daygrid": "6.1.15",
     "globals": "15.12.0"
   },
-  "packageManager": "yarn@4.5.1"
+  "packageManager": "yarn@4.5.2"
 }
