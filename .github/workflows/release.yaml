@@ -14,7 +14,8 @@ env:
 # All scopes not mentioned here are set to no access
 # https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
 permissions:
-  actions: none
+  contents: write
+  pull-requests: write
 
 jobs:
   # release:
