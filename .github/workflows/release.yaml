@@ -85,6 +85,7 @@ jobs:
 
   release-landing-page:
     name: Release landing-page frontend
+    if: github.event.release.prerelease == false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
@@ -114,7 +115,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7.0.5
         with:
-          token: ${{ secrets.LANDINGPAGE_REPO_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           path: landingpage-repo
           commit-message: Bump frontend to ${{ github.event.release.tag_name }}
           branch: bump-frontend
@@ -125,6 +126,7 @@ jobs:
 
   release-supervisor:
     name: Release supervisor frontend
+    if: github.event.release.prerelease == false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
@@ -154,7 +156,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7.0.5
         with:
-          token: ${{ secrets.SUPERVISOR_REPO_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           path: supervisor-repo
           commit-message: Bump frontend to ${{ github.event.release.tag_name }}
           branch: bump-frontend
