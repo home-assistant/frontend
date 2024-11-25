@@ -22,8 +22,11 @@ export interface BackupConfig {
     name: string | null;
     password: string | null;
   };
+  retention_config: {
+    copies?: number | null;
+    days?: number | null;
+  };
   last_automatic_backup: string | null;
-  max_copies: number | null;
   schedule: {
     state: BackupScheduleState;
   };
@@ -39,7 +42,10 @@ export interface BackupMutableConfig {
     name?: string | null;
     password?: string | null;
   };
-  max_copies?: number;
+  retention_config?: {
+    copies?: number | null;
+    days?: number | null;
+  };
   schedule?: BackupScheduleState;
 }
 
