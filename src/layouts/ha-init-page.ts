@@ -82,10 +82,10 @@ class HaInitPage extends LitElement {
   }
 
   private _retry() {
-    location.reload();
-    if(this._retryInterval) {
+    if (this._retryInterval) {
       clearInterval(this._retryInterval);
     }
+    location.reload();
   }
 
   static get styles(): CSSResultGroup {
