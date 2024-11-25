@@ -115,6 +115,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
     }
     columns.automation = {
       title: "",
+      label: localize("ui.panel.config.tag.headers.automation"),
       type: "icon-button",
       showNarrow: true,
       template: (tag) =>
@@ -127,6 +128,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
     };
     columns.edit = {
       title: "",
+      label: localize("ui.panel.config.tag.headers.edit"),
       type: "icon-button",
       showNarrow: true,
       hideable: false,
