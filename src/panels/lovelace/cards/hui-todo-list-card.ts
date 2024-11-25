@@ -82,6 +82,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
   @state() private _entityId?: string;
 
+  @state() private todoInput?: string;
+
   @state() private _items?: TodoItem[];
 
   @state() private _reordering = false;
@@ -183,10 +185,12 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       `;
     }
 
+    const filteredItems = this._getFilteredItems(this.todoInput);
+
     const unavailable = isUnavailableState(stateObj.state);
 
-    const checkedItems = this._getCheckedItems(this._items);
-    const uncheckedItems = this._getUncheckedItems(this._items);
+    const checkedItems = this._getCheckedItems(filteredItems);
+    const uncheckedItems = this._getUncheckedItems(filteredItems);
 
     return html`
       <ha-card
@@ -204,6 +208,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                     "ui.panel.lovelace.cards.todo-list.add_item"
                   )}
                   @keydown=${this._addKeyPress}
+                  @input=${this._todoInputChanged}
                   .disabled=${unavailable}
                 ></ha-textfield>
                 <ha-icon-button
@@ -536,6 +541,15 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     }
   }
 
+  private _getFilteredItems(filter?: string): TodoItem[] | undefined {
+    if (filter == null || filter.length < 1) {
+      return this._items;
+    }
+    return this._items!.filter((item) =>
+      item.summary.toLowerCase().includes(filter.toLowerCase())
+    );
+  }
+
   private _deleteItem(ev): void {
     const item = this._getItem(ev.target.itemId);
     if (!item) {
@@ -548,6 +562,10 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     if (ev.key === "Enter") {
       this._addItem(null);
     }
+  }
+
+  private _todoInputChanged(ev): void {
+    this.todoInput = ev.target.value;
   }
 
   private async _toggleReorder() {
