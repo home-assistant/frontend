@@ -15,6 +15,10 @@ import {
   startOfMonth,
   startOfWeek,
   startOfYear,
+  differenceInMilliseconds,
+  addMilliseconds,
+  subMilliseconds,
+  roundToNearestHours,
 } from "date-fns";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -30,6 +34,8 @@ import "./date-range-picker";
 import "./ha-icon-button";
 import "./ha-svg-icon";
 import "./ha-textfield";
+import "./ha-icon-button-next";
+import "./ha-icon-button-prev";
 
 export interface DateRangePickerRanges {
   [key: string]: [Date, Date];
@@ -249,6 +255,12 @@ export class HaDateRangePicker extends LitElement {
         <div slot="input" class="date-range-inputs" @click=${this._handleClick}>
           ${!this.minimal
             ? html`<ha-svg-icon .path=${mdiCalendar}></ha-svg-icon>
+                <ha-icon-button-prev
+                  .label=${this.hass.localize("ui.common.previous")}
+                  class="prev"
+                  @click=${this._handlePrev}
+                >
+                </ha-icon-button-prev>
                 <ha-textfield
                   .value=${this.timePicker
                     ? formatDateTime(
@@ -286,7 +298,13 @@ export class HaDateRangePicker extends LitElement {
                   .disabled=${this.disabled}
                   @click=${this._handleInputClick}
                   readonly
-                ></ha-textfield>`
+                ></ha-textfield>
+                <ha-icon-button-next
+                  .label=${this.hass.localize("ui.common.next")}
+                  class="next"
+                  @click=${this._handleNext}
+                >
+                </ha-icon-button-next>`
             : html`<ha-icon-button
                 .label=${this.hass.localize(
                   "ui.components.date-range-picker.select_date_range"
@@ -315,6 +333,45 @@ export class HaDateRangePicker extends LitElement {
         </div>
       </date-range-picker>
     `;
+  }
+
+  private _handleNext(): void {
+    const dateRange = [
+      roundToNearestHours(this.endDate),
+      subMilliseconds(
+        roundToNearestHours(
+          addMilliseconds(
+            this.endDate,
+            Math.max(
+              3600000,
+              differenceInMilliseconds(this.endDate, this.startDate)
+            )
+          )
+        ),
+        1
+      ),
+    ];
+    const dateRangePicker = this._dateRangePicker;
+    dateRangePicker.clickRange(dateRange);
+    dateRangePicker.clickedApply();
+  }
+
+  private _handlePrev(): void {
+    const dateRange = [
+      roundToNearestHours(
+        subMilliseconds(
+          this.startDate,
+          Math.max(
+            3600000,
+            differenceInMilliseconds(this.endDate, this.startDate)
+          )
+        )
+      ),
+      subMilliseconds(roundToNearestHours(this.startDate), 1),
+    ];
+    const dateRangePicker = this._dateRangePicker;
+    dateRangePicker.clickRange(dateRange);
+    dateRangePicker.clickedApply();
   }
 
   private _setDateRange(ev: CustomEvent<ActionDetail>) {
@@ -418,7 +475,9 @@ export class HaDateRangePicker extends LitElement {
           min-width: inherit;
         }
 
-        ha-svg-icon {
+        ha-svg-icon,
+        .prev,
+        .next {
           display: none;
         }
       }

@@ -22,12 +22,14 @@ import "../../../../../components/buttons/ha-progress-button";
 import type { HaProgressButton } from "../../../../../components/buttons/ha-progress-button";
 import { computeDeviceName } from "../../../../../data/device_registry";
 import type {
+  ZWaveJSNodeCapabilities,
   ZWaveJSNodeConfigParam,
   ZWaveJSNodeConfigParams,
   ZWaveJSSetConfigParamResult,
   ZwaveJSNodeMetadata,
 } from "../../../../../data/zwave_js";
 import {
+  fetchZwaveNodeCapabilities,
   fetchZwaveNodeConfigParameters,
   fetchZwaveNodeMetadata,
   invokeZWaveCCApi,
@@ -40,6 +42,7 @@ import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
 import { configTabs } from "./zwave_js-config-router";
+import "./zwave_js-custom-param";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 
@@ -66,6 +69,8 @@ class ZWaveJSNodeConfig extends LitElement {
   @state() private _nodeMetadata?: ZwaveJSNodeMetadata;
 
   @state() private _config?: ZWaveJSNodeConfigParams;
+
+  @state() private _canResetAll = false;
 
   @state() private _results: Record<string, ZWaveJSSetConfigParamResult> = {};
 
@@ -182,17 +187,35 @@ class ZWaveJSNodeConfig extends LitElement {
                 </ha-card>
               </div>`
           )}
-          <div class="reset">
-            <ha-progress-button
-              .disabled=${this._resetDialogProgress}
-              .progress=${this._resetDialogProgress}
-              @click=${this._openResetDialog}
-            >
-              ${this.hass.localize(
-                "ui.panel.config.zwave_js.node_config.reset_to_default.button_label"
-              )}
-            </ha-progress-button>
-          </div>
+          ${this._canResetAll
+            ? html`<div class="reset">
+                <ha-progress-button
+                  .disabled=${this._resetDialogProgress}
+                  .progress=${this._resetDialogProgress}
+                  @click=${this._openResetDialog}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.zwave_js.node_config.reset_to_default.button_label"
+                  )}
+                </ha-progress-button>
+              </div>`
+            : nothing}
+          <h3>
+            ${this.hass.localize(
+              "ui.panel.config.zwave_js.node_config.custom_config"
+            )}
+          </h3>
+          <span class="secondary">
+            ${this.hass.localize(
+              "ui.panel.config.zwave_js.node_config.custom_config_description"
+            )}
+          </span>
+          <ha-card class="custom-config">
+            <zwave_js-custom-param
+              .hass=${this.hass}
+              .deviceId=${this.deviceId}
+            ></zwave_js-custom-param>
+          </ha-card>
         </ha-config-section>
       </hass-tabs-subpage>
     `;
@@ -451,10 +474,19 @@ class ZWaveJSNodeConfig extends LitElement {
       return;
     }
 
-    [this._nodeMetadata, this._config] = await Promise.all([
+    let capabilities: ZWaveJSNodeCapabilities | undefined;
+    [this._nodeMetadata, this._config, capabilities] = await Promise.all([
       fetchZwaveNodeMetadata(this.hass, device.id),
       fetchZwaveNodeConfigParameters(this.hass, device.id),
+      fetchZwaveNodeCapabilities(this.hass, device.id),
     ]);
+    this._canResetAll =
+      capabilities &&
+      Object.values(capabilities).some((endpoint) =>
+        endpoint.some(
+          (capability) => capability.id === 0x70 && capability.version >= 4
+        )
+      );
   }
 
   private async _openResetDialog(event: Event) {
@@ -598,6 +630,10 @@ class ZWaveJSNodeConfig extends LitElement {
 
         .switch {
           text-align: right;
+        }
+
+        .custom-config {
+          padding: 16px;
         }
 
         .reset {

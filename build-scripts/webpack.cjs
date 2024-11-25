@@ -188,6 +188,7 @@ const createWebpackConfig = ({
         "lit/directives/cache$": "lit/directives/cache.js",
         "lit/directives/repeat$": "lit/directives/repeat.js",
         "lit/directives/live$": "lit/directives/live.js",
+        "lit/directives/keyed$": "lit/directives/keyed.js",
         "lit/polyfill-support$": "lit/polyfill-support.js",
         "@lit-labs/virtualizer/layouts/grid":
           "@lit-labs/virtualizer/layouts/grid.js",
@@ -282,11 +283,15 @@ const createHassioConfig = ({
 const createGalleryConfig = ({ isProdBuild, latestBuild }) =>
   createWebpackConfig(bundle.config.gallery({ isProdBuild, latestBuild }));
 
+const createLandingPageConfig = ({ isProdBuild, latestBuild }) =>
+  createWebpackConfig(bundle.config.landingPage({ isProdBuild, latestBuild }));
+
 module.exports = {
   createAppConfig,
   createDemoConfig,
   createCastConfig,
   createHassioConfig,
   createGalleryConfig,
+  createLandingPageConfig,
   createWebpackConfig,
 };

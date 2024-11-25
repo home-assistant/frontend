@@ -3,6 +3,7 @@ import "@material/mwc-button";
 import { genClientId } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
+import { keyed } from "lit/directives/keyed";
 import { customElement, property, state } from "lit/decorators";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
@@ -224,16 +225,19 @@ export class HaAuthFlow extends LitElement {
               : this.localize("ui.panel.page-authorize.just_checking")}
           </h1>
           ${this._computeStepDescription(step)}
-          <ha-auth-form
-            .localize=${this.localize}
-            .data=${this._stepData!}
-            .schema=${autocompleteLoginFields(step.data_schema)}
-            .error=${step.errors}
-            .disabled=${this._submitting}
-            .computeLabel=${this._computeLabelCallback(step)}
-            .computeError=${this._computeErrorCallback(step)}
-            @value-changed=${this._stepDataChanged}
-          ></ha-auth-form>
+          ${keyed(
+            step.step_id,
+            html`<ha-auth-form
+              .localize=${this.localize}
+              .data=${this._stepData!}
+              .schema=${autocompleteLoginFields(step.data_schema)}
+              .error=${step.errors}
+              .disabled=${this._submitting}
+              .computeLabel=${this._computeLabelCallback(step)}
+              .computeError=${this._computeErrorCallback(step)}
+              @value-changed=${this._stepDataChanged}
+            ></ha-auth-form>`
+          )}
           ${this.clientId === genClientId() &&
           !["select_mfa_module", "mfa"].includes(step.step_id)
             ? html`

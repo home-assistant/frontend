@@ -275,6 +275,15 @@ export interface ZWaveJSSetConfigParamData {
   value: string | number;
 }
 
+export interface ZWaveJSSetRawConfigParamData {
+  type: string;
+  device_id: string;
+  property: number;
+  value: number;
+  value_size: number;
+  value_format: number;
+}
+
 export interface ZWaveJSSetConfigParamResult {
   value_id?: string;
   status?: string;
@@ -415,7 +424,7 @@ export interface RequestedGrant {
   clientSideAuth: boolean;
 }
 
-export const invokeZWaveCCApi = (
+export const invokeZWaveCCApi = <T = unknown>(
   hass: HomeAssistant,
   device_id: string,
   command_class: number,
@@ -423,7 +432,7 @@ export const invokeZWaveCCApi = (
   method_name: string,
   parameters: any[],
   wait_for_result?: boolean
-): Promise<unknown> =>
+): Promise<T> =>
   hass.callWS({
     type: "zwave_js/invoke_cc_api",
     device_id,
@@ -677,6 +686,36 @@ export const setZwaveNodeConfigParameter = (
   return hass.callWS(data);
 };
 
+export const setZwaveNodeRawConfigParameter = (
+  hass: HomeAssistant,
+  device_id: string,
+  property: number,
+  value: number,
+  value_size: number,
+  value_format: number
+): Promise<ZWaveJSSetConfigParamResult> => {
+  const data: ZWaveJSSetRawConfigParamData = {
+    type: "zwave_js/set_raw_config_parameter",
+    device_id,
+    property,
+    value,
+    value_size,
+    value_format,
+  };
+  return hass.callWS(data);
+};
+
+export const getZwaveNodeRawConfigParameter = (
+  hass: HomeAssistant,
+  device_id: string,
+  property: number
+): Promise<number> =>
+  hass.callWS({
+    type: "zwave_js/get_raw_config_parameter",
+    device_id,
+    property,
+  });
+
 export const reinterviewZwaveNode = (
   hass: HomeAssistant,
   device_id: string,
@@ -911,4 +950,15 @@ export const setZWaveJSLogLevel = (
     type: "zwave_js/update_log_config",
     entry_id,
     config: { level },
+  });
+
+export interface ZWaveJSIntegrationSettings {
+  installer_mode: boolean;
+}
+
+export const fetchZwaveIntegrationSettings = (
+  hass: HomeAssistant
+): Promise<ZWaveJSIntegrationSettings> =>
+  hass.callWS({
+    type: "zwave_js/get_integration_settings",
   });
