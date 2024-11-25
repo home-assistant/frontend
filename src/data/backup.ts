@@ -1,5 +1,48 @@
 import type { HomeAssistant } from "../types";
 
+export const enum BackupScheduleState {
+  NEVER = "never",
+  DAILY = "daily",
+  MONDAY = "mon",
+  TUESDAY = "tue",
+  WEDNESDAY = "wed",
+  THURSDAY = "thu",
+  FRIDAY = "fri",
+  SATURDAY = "sat",
+  SUNDAY = "sun",
+}
+
+export interface BackupConfig {
+  create_backup: {
+    agent_ids: string[];
+    include_addons: string[] | null;
+    include_all_addons: boolean;
+    include_database: boolean;
+    include_folders: string[] | null;
+    name: string | null;
+    password: string | null;
+  };
+  last_automatic_backup: string | null;
+  max_copies: number | null;
+  schedule: {
+    state: BackupScheduleState;
+  };
+}
+
+export interface BackupMutableConfig {
+  create_backup?: {
+    agent_ids?: string[];
+    include_addons?: string[] | null;
+    include_all_addons?: boolean;
+    include_database?: boolean;
+    include_folders?: string[] | null;
+    name?: string | null;
+    password?: string | null;
+  };
+  max_copies?: number;
+  schedule?: BackupScheduleState;
+}
+
 export interface BackupAgent {
   agent_id: string;
 }
@@ -62,6 +105,14 @@ export type RestoreBackupParams = {
   restore_folders?: string[];
   restore_homeassistant?: boolean;
 };
+
+export const fetchBackupConfig = (hass: HomeAssistant) =>
+  hass.callWS<{ config: BackupConfig }>({ type: "backup/config/info" });
+
+export const updateBackupConfig = (
+  hass: HomeAssistant,
+  config: BackupMutableConfig
+) => hass.callWS({ type: "backup/config/update", ...config });
 
 export const getBackupDownloadUrl = (id: string, agentId: string) =>
   `/api/backup/download/${id}?agent_id=${agentId}`;

@@ -19,6 +19,8 @@ import "../../../../components/ha-md-dialog";
 import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 import "../../../../components/ha-md-select";
 import "../../../../components/ha-md-select-option";
+import "../../../../components/ha-password-field";
+import type { HaPasswordField } from "../../../../components/ha-password-field";
 import "../../../../components/ha-settings-row";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-switch";
@@ -47,6 +49,7 @@ type FormData = {
   addons: string[];
   agents_mode: "all" | "custom";
   agent_ids: string[];
+  password: string;
 };
 
 const INITIAL_FORM_DATA: FormData = {
@@ -59,6 +62,7 @@ const INITIAL_FORM_DATA: FormData = {
   addons: [],
   agents_mode: "all",
   agent_ids: [],
+  password: "",
 };
 
 const SELF_CREATED_ADDONS_FOLDER = "addons/local";
@@ -304,6 +308,14 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
         @change=${this._nameChanged}
       >
       </ha-textfield>
+      <ha-password-field
+        name="password"
+        .label=${"Encryption key"}
+        .value=${this._formData.password}
+        @change=${this._passwordChanged}
+        required
+      >
+      </ha-password-field>
       <ha-settings-row>
         <span slot="heading">Locations</span>
         <span slot="description">
@@ -381,6 +393,13 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     };
   }
 
+  private _passwordChanged(ev) {
+    this._formData = {
+      ...this._formData!,
+      password: ev.target.value,
+    };
+  }
+
   private async _submit() {
     if (!this._formData) {
       return;
@@ -395,7 +414,18 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
       media,
       name,
       share,
+      password,
     } = this._formData;
+
+    if (!password) {
+      const passwordField = this.shadowRoot!.querySelector(
+        "ha-password-field"
+      ) as HaPasswordField;
+      passwordField.reportValidity();
+      passwordField.focus();
+      return;
+    }
+
     let { addons } = this._formData;
 
     const ALL_AGENT_IDS = this._agents.map((agent) => agent.agent_id);
@@ -406,6 +436,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
       // We always include homeassistant if we include database
       include_homeassistant: homeassistant || database,
       include_database: database,
+      password,
     };
 
     if (isComponentLoaded(this.hass, "hassio")) {
@@ -465,8 +496,12 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
           text-overflow: ellipsis;
           overflow: hidden;
         }
-        ha-textfield {
+        ha-textfield,
+        ha-password-field {
           width: 100%;
+        }
+        ha-password-field {
+          margin-top: 16px;
         }
         .content {
           padding-top: 0;

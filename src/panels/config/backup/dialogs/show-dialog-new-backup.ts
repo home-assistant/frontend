@@ -1,8 +1,10 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { BackupConfig } from "../../../../data/backup";
 
 export type NewBackupType = "default" | "custom";
 
 export interface NewBackupDialogParams {
+  config: BackupConfig;
   submit?: (type: NewBackupType) => void;
   cancel?: () => void;
 }
