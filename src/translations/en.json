@@ -1197,7 +1197,7 @@
         },
         "filter_placeholder": "Search entities",
         "title": "Quick search",
-        "key_c_hint": "Press 'c' on any page to open the search bar",
+        "key_c_hint": "Press 'c' on any page to open the command dialog",
         "nothing_found": "Nothing found!"
       },
       "voice_command": {
@@ -2213,11 +2213,10 @@
           "no_tags": "No tags",
           "add_tag": "Add tag",
           "write": "Write",
-          "edit": "Edit",
           "never_scanned": "Never scanned",
-          "create_automation": "Create automation with this tag",
+          "create_automation": "Create automation",
           "confirm_delete_title": "Delete tag?",
-          "confirm_delete": "Are you sure you want to delete tag {tag}?",
+          "confirm_delete": "The tag ''{tag}'' will be permanently deleted.",
           "automation_title": "Tag {name} is scanned",
           "qr_code_image": "QR code for tag {name}",
           "headers": {
@@ -3792,7 +3791,7 @@
             "duplicate": "[%key:ui::common::duplicate%]",
             "field": {
               "name": "[%key:ui::common::name%]",
-              "key": "Field variable key name",
+              "key": "Field key",
               "description": "Description",
               "required": "Required",
               "default": "Default",
@@ -5335,10 +5334,10 @@
           "device_info": {
             "device_info": "Device info",
             "node_id": "Node ID",
-            "network_type": "Network Type",
+            "network_type": "Network type",
             "node_type": "Device type",
             "network_name": "Network name",
-            "ip_adresses": "IP Address(es)",
+            "ip_adresses": "IP address(es)",
             "mac_address": "MAC address",
             "available": "Available?"
           },
