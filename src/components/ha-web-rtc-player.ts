@@ -1,9 +1,10 @@
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, nothing, LitElement } from "lit";
 import "./ha-circular-progress";
 import "@material/mwc-button";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { css, html, nothing, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import {
   mdiMicrophone,
   mdiMicrophoneOff,
@@ -130,7 +131,7 @@ class HaWebRtcPlayer extends LitElement {
       .muted=${this.muted}
       ?playsinline=${this.playsInline}
       ?controls=${standardControls && this._remoteStream !== undefined}
-      .poster=${this.posterUrl}
+      poster=${ifDefined(this.posterUrl)}
       @loadeddata=${this._loadedData}
     ></video>`;
     const progressHtml =
