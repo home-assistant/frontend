@@ -7,6 +7,7 @@ import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_elemen
 import "../../../components/ha-card";
 import type { HomeAssistant } from "../../../types";
 import "../../logbook/ha-logbook";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { HaLogbook } from "../../logbook/ha-logbook";
 import { findEntities } from "../common/find-entities";
 import { processConfigEntities } from "../common/process-config-entities";
@@ -14,6 +15,8 @@ import "../components/hui-warning";
 import type { EntityConfig } from "../entity-rows/types";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { LogbookCardConfig } from "./types";
+import { resolveEntityIDs } from "../../../data/selector";
+import memoizeOne from "memoize-one";
 
 export const DEFAULT_HOURS_TO_SHOW = 24;
 
@@ -50,16 +53,16 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
 
   @state() private _time?: HaLogbook["time"];
 
-  @state() private _entityId?: string[];
+  @state() private _targetPickerValue: HassServiceTarget = {};
 
   public getCardSize(): number {
     return 9 + (this._config?.title ? 1 : 0);
   }
 
   public setConfig(config: LogbookCardConfig): void {
-    if (!config.entities.length) {
+    /*if (!config.entities.length) {
       throw new Error("Entities must be specified");
-    }
+    }*/
 
     this._config = {
       hours_to_show: DEFAULT_HOURS_TO_SHOW,
@@ -68,10 +71,33 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     this._time = {
       recent: this._config!.hours_to_show! * 60 * 60,
     };
-    this._entityId = processConfigEntities<EntityConfig>(config.entities).map(
-      (entity) => entity.entity
-    );
+
+    this._targetPickerValue = this._config?.target;
   }
+
+  private _getEntityIds(): string[] | undefined {
+    console.log("test");
+    const entities = this.__getEntityIds(
+      this._targetPickerValue,
+      this.hass.entities,
+      this.hass.devices,
+      this.hass.areas
+    );
+    if (entities.length === 0) {
+      return undefined;
+    }
+    return entities;
+  }
+
+  private __getEntityIds = memoizeOne(
+    (
+      targetPickerValue: HassServiceTarget,
+      entities: HomeAssistant["entities"],
+      devices: HomeAssistant["devices"],
+      areas: HomeAssistant["areas"]
+    ): string[] =>
+      resolveEntityIDs(this.hass, targetPickerValue, entities, devices, areas)
+  );
 
   protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
@@ -116,7 +142,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
           <ha-logbook
             .hass=${this.hass}
             .time=${this._time}
-            .entityIds=${this._entityId}
+            .entityIds=${this._getEntityIds()}
             narrow
             relative-time
             virtualize

@@ -9,8 +9,10 @@ import {
   optional,
   string,
 } from "superstruct";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entities-picker";
+import "../../../../components/ha-target-picker";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import { filterLogbookCompatibleEntities } from "../../../../data/logbook";
@@ -19,6 +21,7 @@ import type { LogbookCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { DEFAULT_HOURS_TO_SHOW } from "../../cards/hui-logbook-card";
+import { targetStruct } from "../../../../data/script";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -27,6 +30,7 @@ const cardConfigStruct = assign(
     title: optional(string()),
     hours_to_show: optional(number()),
     theme: optional(string()),
+    target: optional(targetStruct),
   })
 );
 
@@ -64,6 +68,10 @@ export class HuiLogbookCardEditor
     return this._config!.entities || [];
   }
 
+  get _targetPicker(): HassServiceTarget {
+    return this._config!.target || {};
+  }
+
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
@@ -77,25 +85,18 @@ export class HuiLogbookCardEditor
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
-      <h3>
-        ${`${this.hass!.localize(
-          "ui.panel.lovelace.editor.card.generic.entities"
-        )} (${this.hass!.localize(
-          "ui.panel.lovelace.editor.card.config.required"
-        )})`}
-      </h3>
-      <ha-entities-picker
+
+      <ha-target-picker
         .hass=${this.hass}
-        .value=${this._entities}
+        .value=${this._targetPicker}
         .entityFilter=${filterLogbookCompatibleEntities}
         @value-changed=${this._entitiesChanged}
-      >
-      </ha-entities-picker>
+      ></ha-target-picker>
     `;
   }
 
   private _entitiesChanged(ev: CustomEvent): void {
-    this._config = { ...this._config!, entities: ev.detail.value };
+    this._config = { ...this._config!, target: ev.detail.value };
     fireEvent(this, "config-changed", { config: this._config });
   }
 
