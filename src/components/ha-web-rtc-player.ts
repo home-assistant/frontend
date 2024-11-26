@@ -585,6 +585,10 @@ class HaWebRtcPlayer extends LitElement {
         max-height: var(--video-max-height, calc(100vh - 97px));
       }
 
+      .video-container {
+        position: relative;
+      }
+
       .video-controls {
         width: 100%;
         background: rgba(0, 0, 0, 0.35);
