@@ -19,6 +19,7 @@ import type { LovelaceCard } from "../../types";
 import type { EnergySankeyCardConfig } from "../types";
 import "../../../../components/chart/sankey-chart";
 import type { Link, Node } from "../../../../components/chart/sankey-chart";
+import { getGraphColorByIndex } from "../../../../common/color/colors";
 
 @customElement("hui-energy-sankey-card")
 class HuiEnergySankeyCard
@@ -99,7 +100,6 @@ class HuiEnergySankeyCard
       links.push({
         source: "grid",
         target: "home",
-        value: totalFromGrid,
       });
     }
 
@@ -124,12 +124,36 @@ class HuiEnergySankeyCard
       links.push({
         source: "solar",
         target: "home",
-        value: totalSolarProduction,
       });
     }
 
     // Add battery if available
     if (types.battery) {
+      const totalBatteryIn =
+        calculateStatisticsSumGrowth(
+          this._data.stats,
+          types.battery.map((source) => source.stat_energy_to)
+        ) || 0;
+
+      nodes.push({
+        id: "battery_in",
+        label: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.energy_distribution.battery"
+        ),
+        value: totalBatteryIn,
+        color: "var(--energy-battery-in-color)",
+        index: 1,
+      });
+      nodes.forEach((node) => {
+        // Link all sources to battery_in
+        if (node.index === 0) {
+          links.push({
+            source: node.id,
+            target: "battery_in",
+          });
+        }
+      });
+
       const totalBatteryOut =
         calculateStatisticsSumGrowth(
           this._data.stats,
@@ -145,11 +169,37 @@ class HuiEnergySankeyCard
         color: "var(--energy-battery-out-color)",
         index: 0,
       });
-
       links.push({
         source: "battery",
         target: "home",
-        value: totalBatteryOut,
+      });
+    }
+
+    // grid return
+    if (types.grid && types.grid[0].flow_to) {
+      const totalToGrid =
+        calculateStatisticsSumGrowth(
+          this._data.stats,
+          types.grid[0].flow_to.map((flow) => flow.stat_energy_to)
+        ) ?? 0;
+
+      nodes.push({
+        id: "grid_return",
+        label: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.energy_distribution.grid"
+        ),
+        value: totalToGrid,
+        color: "var(--energy-grid-return-color)",
+        index: 1,
+      });
+      nodes.forEach((node) => {
+        // Link all sources to grid_return
+        if (node.index === 0) {
+          links.push({
+            source: node.id,
+            target: "grid_return",
+          });
+        }
       });
     }
 
@@ -159,12 +209,30 @@ class HuiEnergySankeyCard
       .reduce((sum, node) => sum + (node.value || 0), 0);
 
     // Group devices by areas and floors
-    const areaNodes: Record<string, Node> = {};
-    const floorNodes: Record<string, Node> = {};
-
-    // Individual devices
-    prefs.device_consumption.forEach((device) => {
+    const areas: Record<string, { value: number; devices: Node[] }> = {
+      no_area: {
+        value: 0,
+        devices: [],
+      },
+    };
+    const floors: Record<string, { value: number; areas: string[] }> = {
+      no_floor: {
+        value: 0,
+        areas: ["no_area"],
+      },
+    };
+    const computedStyle = getComputedStyle(this);
+    prefs.device_consumption.forEach((device, idx) => {
       const entity = this.hass.entities[device.stat_consumption];
+      const value =
+        device.stat_consumption in this._data!.stats
+          ? calculateStatisticSumGrowth(
+              this._data!.stats[device.stat_consumption]
+            ) || 0
+          : 0;
+      if (value <= 0) {
+        return;
+      }
       const deviceNode: Node = {
         id: device.stat_consumption,
         label:
@@ -174,79 +242,100 @@ class HuiEnergySankeyCard
             device.stat_consumption,
             this._data!.statsMetadata[device.stat_consumption]
           ),
-        value:
-          device.stat_consumption in this._data!.stats
-            ? calculateStatisticSumGrowth(
-                this._data!.stats[device.stat_consumption]
-              ) || 0
-            : 0,
+        value,
+        color: getGraphColorByIndex(idx, computedStyle),
         index: 4,
       };
-      nodes.push(deviceNode);
 
       const deviceArea = entity?.area_id;
       if (deviceArea && this.hass.areas[deviceArea]) {
         const area = this.hass.areas[deviceArea];
 
-        // Create area node if it doesn't exist
-        if (!areaNodes[area.area_id]) {
-          areaNodes[area.area_id] = {
-            id: `area_${area.area_id}`,
-            label: area.name,
+        if (area.area_id in areas) {
+          areas[area.area_id].value += deviceNode.value;
+          areas[area.area_id].devices.push(deviceNode);
+        } else {
+          areas[area.area_id] = {
             value: deviceNode.value,
-            index: 3,
+            devices: [deviceNode],
           };
-          nodes.push(areaNodes[area.area_id]);
-        } else {
-          areaNodes[area.area_id].value += deviceNode.value;
         }
-
-        // Link device to its area
-        links.push({
-          source: areaNodes[area.area_id].id,
-          target: device.stat_consumption,
-          value: deviceNode.value,
-        });
-
-        // Create floor node if area has floor
+        // see if the area has a floor
         if (area.floor_id && this.hass.floors[area.floor_id]) {
-          const floor = this.hass.floors[area.floor_id];
-          if (!floorNodes[floor.floor_id]) {
-            floorNodes[floor.floor_id] = {
-              id: `floor_${floor.floor_id}`,
-              label: floor.name,
-              value: deviceNode.value,
-              index: 2,
-            };
-            nodes.push(floorNodes[floor.floor_id]);
+          if (area.floor_id in floors) {
+            floors[area.floor_id].value += deviceNode.value;
+            if (!floors[area.floor_id].areas.includes(area.area_id)) {
+              floors[area.floor_id].areas.push(area.area_id);
+            }
           } else {
-            floorNodes[floor.floor_id].value += deviceNode.value;
+            floors[area.floor_id] = {
+              value: deviceNode.value,
+              areas: [area.area_id],
+            };
           }
-
-          // Link area to floor
-          links.push({
-            source: floorNodes[floor.floor_id].id,
-            target: areaNodes[area.area_id].id,
-          });
-          // Link floor to home
-          links.push({
-            source: "home",
-            target: floorNodes[floor.floor_id].id,
-          });
         } else {
-          links.push({
-            source: "home",
-            target: areaNodes[area.area_id].id,
-          });
+          floors.no_floor.value += deviceNode.value;
+          if (!floors.no_floor.areas.includes(area.area_id)) {
+            floors.no_floor.areas.unshift(area.area_id);
+          }
         }
       } else {
-        links.push({
-          source: "home",
-          target: deviceNode.id,
-          value: deviceNode.value,
-        });
+        areas.no_area.value += deviceNode.value;
+        areas.no_area.devices.push(deviceNode);
       }
     });
+
+    Object.keys(floors)
+      .sort(
+        (a, b) =>
+          (this.hass.floors[b]?.level ?? -Infinity) -
+          (this.hass.floors[a]?.level ?? -Infinity)
+      )
+      .forEach((floorId) => {
+        let floorNodeId = `floor_${floorId}`;
+        if (this.hass.floors[floorId]) {
+          nodes.push({
+            id: floorNodeId,
+            label: this.hass.floors[floorId].name,
+            value: floors[floorId].value,
+            index: 2,
+          });
+          links.push({
+            source: "home",
+            target: floorNodeId,
+          });
+        } else {
+          // link "no_floor" areas to home
+          floorNodeId = "home";
+        }
+        floors[floorId].areas.forEach((areaId) => {
+          let areaNodeId = `area_${areaId}`;
+          if (this.hass.areas[areaId]) {
+            nodes.push({
+              id: areaNodeId,
+              label: this.hass.areas[areaId]!.name,
+              value: areas[areaId].value,
+              index: 3,
+            });
+            links.push({
+              source: floorNodeId,
+              target: areaNodeId,
+              value: areas[areaId].value,
+            });
+          } else {
+            // link "no_area" devices to home
+            areaNodeId = "home";
+          }
+          areas[areaId].devices.forEach((device) => {
+            nodes.push(device);
+            links.push({
+              source: areaNodeId,
+              target: device.id,
+              value: device.value,
+            });
+          });
+        });
+      });
 
     const hasData = nodes.some((node) => node.value > 0);
 
