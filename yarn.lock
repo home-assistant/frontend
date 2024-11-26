@@ -3839,10 +3839,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chromecast-caf-receiver@npm:6.0.18":
-  version: 6.0.18
-  resolution: "@types/chromecast-caf-receiver@npm:6.0.18"
-  checksum: 10/abf21a7d1959a3b78be55ed927fe0764ce70a5c574f3fcb364008eb248f0c19f6c5df714c47640075d51dfe2467f0e281bedf562721e4838a20c50ca638fd306
+"@types/chromecast-caf-receiver@npm:6.0.19":
+  version: 6.0.19
+  resolution: "@types/chromecast-caf-receiver@npm:6.0.19"
+  checksum: 10/0c8a65f641bc003384af0c9041a9fec453c5883c88bb37daddfa0a458a2c32527ad51697b712f35f1bef158f45ec9cc4bf6b30eeeb7bc1b1c75daf9e8c9aa075
   languageName: node
   linkType: hard
 
@@ -8740,7 +8740,7 @@ __metadata:
     "@replit/codemirror-indentation-markers": "npm:6.5.3"
     "@thomasloven/round-slider": "npm:0.6.0"
     "@types/babel__plugin-transform-runtime": "npm:7.9.5"
-    "@types/chromecast-caf-receiver": "npm:6.0.18"
+    "@types/chromecast-caf-receiver": "npm:6.0.19"
     "@types/chromecast-caf-sender": "npm:1.0.11"
     "@types/color-name": "npm:2.0.0"
     "@types/glob": "npm:8.1.0"
