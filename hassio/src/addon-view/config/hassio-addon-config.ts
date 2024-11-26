@@ -315,6 +315,7 @@ class HassioAddonConfig extends LitElement {
       text: this.supervisor.localize("confirm.reset_options.text"),
       confirmText: this.supervisor.localize("common.reset_options"),
       dismissText: this.supervisor.localize("common.cancel"),
+      destructive: true,
     });
 
     if (!confirmed) {
