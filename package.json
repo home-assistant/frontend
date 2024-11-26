@@ -168,7 +168,7 @@
     "@open-wc/dev-server-hmr": "0.1.4",
     "@types/babel__plugin-transform-runtime": "7.9.5",
     "@types/chromecast-caf-receiver": "6.0.18",
-    "@types/chromecast-caf-sender": "1.0.10",
+    "@types/chromecast-caf-sender": "1.0.11",
     "@types/color-name": "2.0.0",
     "@types/glob": "8.1.0",
     "@types/html-minifier-terser": "7.0.2",
