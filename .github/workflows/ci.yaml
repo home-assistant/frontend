@@ -31,12 +31,12 @@ jobs:
         with:
           node-version-file: ".nvmrc"
           cache: yarn
-      - uses: actions/cache@v4
+      - uses: actions/cache@v4.1.2
         id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
           path: "node_modules"
-          key: ${{ runner.os }}-yarn-${{ steps.setup-node.outputs.node-version }}-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: ${{ runner.os }}-yarn-${{ steps.setup-node.outputs.node-version }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('.yarnrc.yml') }}-${{ steps.setup-node.outputs.node-version }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: ${{ runner.os }}-yarn-${{ hashFiles('.yarnrc.yml') }}-${{ steps.setup-node.outputs.node-version }}
       - name: Install dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install --immutable
@@ -71,12 +71,12 @@ jobs:
         with:
           node-version-file: ".nvmrc"
           cache: yarn
-      - uses: actions/cache@v4
+      - uses: actions/cache@v4.1.2
         id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
           path: "node_modules"
-          key: ${{ runner.os }}-yarn-${{ steps.setup-node.outputs.node-version }}-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: ${{ runner.os }}-yarn-${{ steps.setup-node.outputs.node-version }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('.yarnrc.yml') }}-${{ steps.setup-node.outputs.node-version }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: ${{ runner.os }}-yarn-${{ hashFiles('.yarnrc.yml') }}-${{ steps.setup-node.outputs.node-version }}
       - name: Install dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install --immutable
@@ -97,12 +97,12 @@ jobs:
         with:
           node-version-file: ".nvmrc"
           cache: yarn
-      - uses: actions/cache@v4
+      - uses: actions/cache@v4.1.2
         id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
           path: "node_modules"
-          key: ${{ runner.os }}-yarn-${{ steps.setup-node.outputs.node-version }}-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: ${{ runner.os }}-yarn-${{ steps.setup-node.outputs.node-version }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('.yarnrc.yml') }}-${{ steps.setup-node.outputs.node-version }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: ${{ runner.os }}-yarn-${{ hashFiles('.yarnrc.yml') }}-${{ steps.setup-node.outputs.node-version }}
       - name: Install dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install --immutable
@@ -129,12 +129,12 @@ jobs:
         with:
           node-version-file: ".nvmrc"
           cache: yarn
-      - uses: actions/cache@v4
+      - uses: actions/cache@v4.1.2
         id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
           path: "node_modules"
-          key: ${{ runner.os }}-yarn-${{ steps.setup-node.outputs.node-version }}-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: ${{ runner.os }}-yarn-${{ steps.setup-node.outputs.node-version }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('.yarnrc.yml') }}-${{ steps.setup-node.outputs.node-version }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: ${{ runner.os }}-yarn-${{ hashFiles('.yarnrc.yml') }}-${{ steps.setup-node.outputs.node-version }}
       - name: Install dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install --immutable
