@@ -1,12 +1,14 @@
 import { customElement, property, state } from "lit/decorators";
-import { LitElement, html, css, svg } from "lit";
+import { LitElement, html, css, svg, nothing } from "lit";
+import type { HomeAssistant } from "../../types";
 
 export type Node = {
   id: string;
-  label: string;
-  color?: string;
   value: number;
-  index: number;
+  index: number; // like z-index but for x/y
+  label?: string;
+  color?: string;
+  passThrough?: boolean;
 };
 export type Link = { source: string; target: string; value?: number };
 
@@ -19,6 +21,15 @@ type ProcessedNode = Node & {
   x: number;
   y: number;
   size: number;
+};
+
+type ProcessedLink = Link & {
+  value: number;
+  offset: {
+    source: number;
+    target: number;
+  };
+  passThroughNodeIds: string[];
 };
 
 type Section = {
@@ -39,6 +50,8 @@ const FONT_SIZE = 12;
 
 @customElement("sankey-chart")
 export class SankeyChart extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
   @property({ attribute: false }) public data: SankeyChartData = {
     nodes: [],
     links: [],
@@ -46,40 +59,49 @@ export class SankeyChart extends LitElement {
 
   @property({ type: Boolean }) public vertical = false;
 
-  @state() private statePerPixel = 0;
-
   @state() private width = 0;
 
   @state() private height = 0;
 
-  private resizeObserver?: ResizeObserver;
+  private _statePerPixel = 0;
+
+  private _resizeObserver?: ResizeObserver;
 
   private _textMeasureCanvas?: HTMLCanvasElement;
 
   connectedCallback() {
     super.connectedCallback();
-    this.resizeObserver = new ResizeObserver(() => {
+    this._resizeObserver = new ResizeObserver(() => {
       this.width = this.clientWidth - PADDING * 2;
       this.height = this.clientHeight - PADDING * 2;
       this.requestUpdate();
     });
-    this.resizeObserver.observe(this);
+    this._resizeObserver?.observe(this);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    this.resizeObserver?.unobserve(this);
-    this.resizeObserver?.disconnect();
+    this._resizeObserver?.unobserve(this);
+    this._resizeObserver?.disconnect();
     this._textMeasureCanvas = undefined;
+  }
+
+  willUpdate() {
+    this._statePerPixel = 0;
   }
 
   render() {
     if (!this.width || !this.height) {
-      return html`<div>Loading...</div>`;
+      return html`${this.hass.localize(
+        "ui.panel.lovelace.cards.energy.loading"
+      )}`;
     }
 
-    const nodes = this._processNodes();
-    const links = this._processLinks(nodes);
+    const filteredNodes = this.data.nodes.filter((n) => n.value > 0);
+    const indexes = [...new Set(filteredNodes.map((n) => n.index))].sort();
+    const { links, passThroughNodes } = this._processLinks(indexes);
+    const nodes = this._processNodes([...filteredNodes, ...passThroughNodes]);
+    const paths = this._processPaths(nodes, links);
 
     return html`
       <svg
@@ -88,28 +110,30 @@ export class SankeyChart extends LitElement {
         viewBox="0 0 ${this.width} ${this.height}"
       >
         <defs>
-          ${links.map(
-            (link, i) => svg`
-            <linearGradient id="gradient${link.sourceNode.id}.${link.targetNode.id}.${i}" gradientTransform="${
+          ${paths.map(
+            (path, i) => svg`
+            <linearGradient id="gradient${path.sourceNode.id}.${path.targetNode.id}.${i}" gradientTransform="${
               this.vertical ? "rotate(90)" : ""
             }">
-              <stop offset="0%" stop-color="${link.sourceNode.color}"></stop>
-              <stop offset="100%" stop-color="${link.targetNode.color}"></stop>
+              <stop offset="0%" stop-color="${path.sourceNode.color}"></stop>
+              <stop offset="100%" stop-color="${path.targetNode.color}"></stop>
             </linearGradient>
           `
           )}
         </defs>
-        ${links.map(
-          (link, i) =>
+        ${paths.map(
+          (path, i) =>
             svg`
-            <path d="${link.path.map(([cmd, x, y]) => `${cmd}${x},${y}`).join(" ")} Z"
-                fill="url(#gradient${link.sourceNode.id}.${link.targetNode.id}.${i})" fill-opacity="0.4" />
+            <path d="${path.path.map(([cmd, x, y]) => `${cmd}${x},${y}`).join(" ")} Z"
+                fill="url(#gradient${path.sourceNode.id}.${path.targetNode.id}.${i})" fill-opacity="0.4" />
           `
         )}
-        ${nodes.map(
-          (node) => svg`
-            <g transform="translate(${node.x},${node.y})">
-              <rect
+        ${nodes.map((node) =>
+          node.passThrough
+            ? nothing
+            : svg`
+                  <g transform="translate(${node.x},${node.y})">
+                    <rect
                 class="node"
                 width=${NODE_WIDTH} 
                 height=${node.size} 
@@ -129,13 +153,71 @@ export class SankeyChart extends LitElement {
     `;
   }
 
-  private _processNodes() {
+  private _processLinks(indexes: number[]) {
+    const accountedIn = new Map<string, number>();
+    const accountedOut = new Map<string, number>();
+    const links: ProcessedLink[] = [];
+    const passThroughNodes: Node[] = [];
+    this.data.links.forEach((link) => {
+      const sourceNode = this.data.nodes.find((n) => n.id === link.source);
+      const targetNode = this.data.nodes.find((n) => n.id === link.target);
+      if (!sourceNode || !targetNode) {
+        return;
+      }
+      const sourceAccounted = accountedOut.get(sourceNode.id) || 0;
+      const targetAccounted = accountedIn.get(targetNode.id) || 0;
+
+      // if no value is provided, we infer it from the remaining capacity of the source and target nodes
+      const sourceRemaining = sourceNode.value - sourceAccounted;
+      const targetRemaining = targetNode.value - targetAccounted;
+      // ensure the value is not greater than the remaining capacity of the nodes
+      const value = Math.min(
+        link.value ?? sourceRemaining,
+        sourceRemaining,
+        targetRemaining
+      );
+
+      accountedIn.set(targetNode.id, targetAccounted + value);
+      accountedOut.set(sourceNode.id, sourceAccounted + value);
+
+      // handle links across sections
+      const sourceIndex = indexes.findIndex((i) => i === sourceNode.index);
+      const targetIndex = indexes.findIndex((i) => i === targetNode.index);
+      const passThroughSections = indexes.slice(sourceIndex + 1, targetIndex);
+      // create pass-through nodes to reserve space
+      const passThroughNodeIds = passThroughSections.map((index) => {
+        const node = {
+          passThrough: true,
+          id: `${sourceNode.id}-${targetNode.id}-${index}`,
+          value,
+          index,
+        };
+        passThroughNodes.push(node);
+        return node.id;
+      });
+
+      if (value > 0) {
+        links.push({
+          ...link,
+          value,
+          offset: {
+            source: sourceAccounted / (sourceNode.value || 1),
+            target: targetAccounted / (targetNode.value || 1),
+          },
+          passThroughNodeIds,
+        });
+      }
+    });
+    return { links, passThroughNodes };
+  }
+
+  private _processNodes(filteredNodes: Node[]) {
     const width = this.width;
     const height = this.height;
     const sectionSize = this.vertical ? width : height;
 
     const nodesPerSection: Record<number, Node[]> = {};
-    this.data.nodes.forEach((node) => {
+    filteredNodes.forEach((node) => {
       if (!nodesPerSection[node.index]) {
         nodesPerSection[node.index] = [node];
       } else {
@@ -185,11 +267,11 @@ export class SankeyChart extends LitElement {
     sections.forEach((section) => {
       // calc sizes again with the best statePerPixel
       let totalSize = 0;
-      if (section.statePerPixel !== this.statePerPixel) {
+      if (section.statePerPixel !== this._statePerPixel) {
         section.nodes.forEach((node) => {
           const size = Math.max(
             MIN_SIZE,
-            Math.floor(node.value / this.statePerPixel)
+            Math.floor(node.value / this._statePerPixel)
           );
           totalSize += size;
           node.size = size;
@@ -216,54 +298,62 @@ export class SankeyChart extends LitElement {
     return sections.flatMap((section) => section.nodes);
   }
 
-  private _processLinks(nodes: ProcessedNode[]) {
-    const accountedIn = new Map<string, number>();
-    const accountedOut = new Map<string, number>();
-    return this.data.links.map((link) => {
-      const sourceNode = nodes.find((n) => n.id === link.source)!;
-      const targetNode = nodes.find((n) => n.id === link.target)!;
-      const sourceAccounted = accountedOut.get(sourceNode.id) || 0;
-      const targetAccounted = accountedIn.get(targetNode.id) || 0;
-      let value = link.value;
-      if (!value) {
-        // if no value is provided, we infer it from the remaining capacity of the source and target nodes
-        const sourceRemaining = sourceNode.value - sourceAccounted;
-        const targetRemaining = targetNode.value - targetAccounted;
-        value = Math.min(sourceRemaining, targetRemaining);
+  private _processPaths(nodes: ProcessedNode[], links: ProcessedLink[]) {
+    const nodesById = new Map(nodes.map((n) => [n.id, n]));
+    return links.map((link) => {
+      const { source, target, value, offset, passThroughNodeIds } = link;
+      const pathNodes = [source, ...passThroughNodeIds, target].map(
+        (id) => nodesById.get(id)!
+      );
+      const offsets = [
+        offset.source,
+        ...link.passThroughNodeIds.map(() => 0),
+        offset.target,
+      ];
+
+      const sourceNode = pathNodes[0];
+      const targetNode = pathNodes[pathNodes.length - 1];
+
+      const sourceY = sourceNode.y + offset.source * sourceNode.size;
+      const sourceX = sourceNode.x + NODE_WIDTH;
+      let path = [["M", sourceX, sourceY]]; // starting point
+
+      // traverse the path forwards. stop before the last node
+      for (let i = 0; i < pathNodes.length - 1; i++) {
+        const node = pathNodes[i];
+        const nextNode = pathNodes[i + 1];
+        const middleX = (nextNode.x - node.x) / 2 + node.x;
+        path.push(
+          ["L", node.x + NODE_WIDTH, node.y + offsets[i] * node.size],
+          ["C", middleX, node.y + offsets[i] * node.size],
+          ["", middleX, nextNode.y + offsets[i + 1] * nextNode.size],
+          ["", nextNode.x, nextNode.y + offsets[i + 1] * nextNode.size]
+        );
+      }
+      // traverse the path backwards. stop before the first node
+      for (let i = pathNodes.length - 1; i > 0; i--) {
+        const node = pathNodes[i];
+        const prevNode = pathNodes[i - 1];
+        const middleX = (node.x - prevNode.x) / 2 + prevNode.x;
+        const y =
+          node.y +
+          offsets[i] * node.size +
+          Math.max((value / (node.value || 1)) * node.size, 0);
+        const prevY =
+          prevNode.y +
+          offsets[i - 1] * prevNode.size +
+          Math.max((value / (prevNode.value || 1)) * prevNode.size, 0);
+        path.push(
+          ["L", node.x, y],
+          ["C", middleX, y],
+          ["", middleX, prevY],
+          ["", prevNode.x + NODE_WIDTH, prevY]
+        );
       }
 
-      const sourceY =
-        sourceNode.y +
-        (sourceAccounted / (sourceNode.value || 1)) * sourceNode.size;
-      const targetY =
-        targetNode.y +
-        (targetAccounted / (targetNode.value || 1)) * targetNode.size;
-      const sourceSize = Math.max(
-        (value / (sourceNode.value || 1)) * sourceNode.size,
-        0
-      );
-      const targetSize = Math.max(
-        (value / (targetNode.value || 1)) * targetNode.size,
-        0
-      );
-      const sourceX = sourceNode.x + NODE_WIDTH;
-      const targetX = targetNode.x;
-      const middleX = (targetX - sourceX) / 2 + sourceX;
-      let path = [
-        ["M", sourceX, sourceY],
-        ["C", middleX, sourceY],
-        ["", middleX, targetY],
-        ["", targetX, targetY],
-        ["L", targetX, targetY + targetSize],
-        ["C", middleX, targetY + targetSize],
-        ["", middleX, sourceY + sourceSize],
-        ["", sourceX, sourceY + sourceSize],
-      ];
       if (this.vertical) {
         path = path.map((c) => [c[0], this.height - (c[2] as number), c[1]]);
       }
-      accountedIn.set(targetNode.id, targetAccounted + value);
-      accountedOut.set(sourceNode.id, sourceAccounted + value);
       return {
         sourceNode,
         targetNode,
@@ -279,15 +369,15 @@ export class SankeyChart extends LitElement {
     totalValue: number
   ): { nodes: ProcessedNode[]; statePerPixel: number } {
     const statePerPixel = totalValue / availableSpace;
-    if (statePerPixel > this.statePerPixel) {
-      this.statePerPixel = statePerPixel;
+    if (statePerPixel > this._statePerPixel) {
+      this._statePerPixel = statePerPixel;
     }
     let deficitHeight = 0;
     const result = nodes.map((node) => {
       if (node.size === MIN_SIZE) {
         return node;
       }
-      let size = Math.floor(node.value / this.statePerPixel);
+      let size = Math.floor(node.value / this._statePerPixel);
       if (size < MIN_SIZE) {
         deficitHeight += MIN_SIZE - size;
         size = MIN_SIZE;
@@ -304,7 +394,7 @@ export class SankeyChart extends LitElement {
         totalValue
       );
     }
-    return { nodes: result, statePerPixel: this.statePerPixel };
+    return { nodes: result, statePerPixel: this._statePerPixel };
   }
 
   private _getSectionFlexSize(nodesPerSection: Node[][]): number {
@@ -325,13 +415,20 @@ export class SankeyChart extends LitElement {
         ? Math.max(
             ...lastSectionNodes.map(
               (node) =>
-                NODE_WIDTH + TEXT_PADDING + this._getTextWidth(node.label)
+                NODE_WIDTH +
+                TEXT_PADDING +
+                (node.label ? this._getTextWidth(node.label) : 0)
             )
           )
         : 0;
     // Calculate the flex size for other sections
     const remainingSize = this.width - lastSectionFlexSize;
-    return remainingSize / (nodesPerSection.length - 1);
+    const flexSize = remainingSize / (nodesPerSection.length - 1);
+    // if the last section is wider than the others, we make them all the same width
+    // this is to prevent the last section from squishing the others
+    return lastSectionFlexSize < flexSize
+      ? flexSize
+      : this.width / nodesPerSection.length;
   }
 
   private _getTextWidth(text: string): number {

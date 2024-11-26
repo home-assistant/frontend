@@ -10,6 +10,7 @@ import {
 } from "../../../../data/energy";
 import {
   calculateStatisticsSumGrowth,
+  calculateStatisticSumGrowth,
   getStatisticLabel,
 } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
@@ -98,6 +99,7 @@ class HuiEnergySankeyCard
       links.push({
         source: "grid",
         target: "home",
+        value: totalFromGrid,
       });
     }
 
@@ -122,6 +124,7 @@ class HuiEnergySankeyCard
       links.push({
         source: "solar",
         target: "home",
+        value: totalSolarProduction,
       });
     }
 
@@ -146,6 +149,7 @@ class HuiEnergySankeyCard
       links.push({
         source: "battery",
         target: "home",
+        value: totalBatteryOut,
       });
     }
 
@@ -154,9 +158,14 @@ class HuiEnergySankeyCard
       .filter((node) => node.index === 0)
       .reduce((sum, node) => sum + (node.value || 0), 0);
 
+    // Group devices by areas and floors
+    const areaNodes: Record<string, Node> = {};
+    const floorNodes: Record<string, Node> = {};
+
     // Individual devices
     prefs.device_consumption.forEach((device) => {
-      nodes.push({
+      const entity = this.hass.entities[device.stat_consumption];
+      const deviceNode: Node = {
         id: device.stat_consumption,
         label:
           device.name ||
@@ -165,25 +174,94 @@ class HuiEnergySankeyCard
             device.stat_consumption,
             this._data!.statsMetadata[device.stat_consumption]
           ),
-        value: 0,
+        value:
+          device.stat_consumption in this._data!.stats
+            ? calculateStatisticSumGrowth(
+                this._data!.stats[device.stat_consumption]
+              ) || 0
+            : 0,
         index: 4,
-      });
+      };
+      nodes.push(deviceNode);
 
-      links.push({
-        source: "home",
-        target: device.stat_consumption,
-      });
+      const deviceArea = entity?.area_id;
+      if (deviceArea && this.hass.areas[deviceArea]) {
+        const area = this.hass.areas[deviceArea];
+
+        // Create area node if it doesn't exist
+        if (!areaNodes[area.area_id]) {
+          areaNodes[area.area_id] = {
+            id: `area_${area.area_id}`,
+            label: area.name,
+            value: deviceNode.value,
+            index: 3,
+          };
+          nodes.push(areaNodes[area.area_id]);
+        } else {
+          areaNodes[area.area_id].value += deviceNode.value;
+        }
+
+        // Link device to its area
+        links.push({
+          source: areaNodes[area.area_id].id,
+          target: device.stat_consumption,
+          value: deviceNode.value,
+        });
+
+        // Create floor node if area has floor
+        if (area.floor_id && this.hass.floors[area.floor_id]) {
+          const floor = this.hass.floors[area.floor_id];
+          if (!floorNodes[floor.floor_id]) {
+            floorNodes[floor.floor_id] = {
+              id: `floor_${floor.floor_id}`,
+              label: floor.name,
+              value: deviceNode.value,
+              index: 2,
+            };
+            nodes.push(floorNodes[floor.floor_id]);
+          } else {
+            floorNodes[floor.floor_id].value += deviceNode.value;
+          }
+
+          // Link area to floor
+          links.push({
+            source: floorNodes[floor.floor_id].id,
+            target: areaNodes[area.area_id].id,
+          });
+          // Link floor to home
+          links.push({
+            source: "home",
+            target: floorNodes[floor.floor_id].id,
+          });
+        } else {
+          links.push({
+            source: "home",
+            target: areaNodes[area.area_id].id,
+          });
+        }
+      } else {
+        links.push({
+          source: "home",
+          target: deviceNode.id,
+          value: deviceNode.value,
+        });
+      }
     });
 
-    // @TODO floors and areas
+    const hasData = nodes.some((node) => node.value > 0);
 
     return html`
       <ha-card .header=${this._config.title}>
         <div class="card-content">
-          <sankey-chart
-            .data=${{ nodes, links }}
-            .vertical=${this._config.vertical || false}
-          ></sankey-chart>
+          ${hasData
+            ? html`<sankey-chart
+                .hass=${this.hass}
+                .data=${{ nodes, links }}
+                .vertical=${this._config.vertical || false}
+              ></sankey-chart>`
+            : html`${this.hass.localize(
+                "ui.panel.lovelace.cards.energy.no_data_period"
+              )}`}
         </div>
       </ha-card>
     `;
