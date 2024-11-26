@@ -2,9 +2,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../panels/lovelace/editor/card-editor/ha-grid-layout-slider";
 import "./ha-icon-button";
-
 import { mdiRestore } from "@mdi/js";
-import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 import { conditionalClamp } from "../common/number/clamp";
@@ -20,7 +18,7 @@ export class HaGridSizeEditor extends LitElement {
 
   @property({ attribute: false }) public rows = 8;
 
-  @property({ attribute: false }) public columns = 4;
+  @property({ attribute: false }) public columns = 12;
 
   @property({ attribute: false }) public rowMin?: number;
 
@@ -31,6 +29,8 @@ export class HaGridSizeEditor extends LitElement {
   @property({ attribute: false }) public columnMax?: number;
 
   @property({ attribute: false }) public isDefault?: boolean;
+
+  @property({ attribute: false }) public step: number = 1;
 
   @state() public _localValue?: CardGridSize = { rows: 1, columns: 1 };
 
@@ -51,8 +51,9 @@ export class HaGridSizeEditor extends LitElement {
 
     const rowMin = this.rowMin ?? 1;
     const rowMax = this.rowMax ?? this.rows;
-    const columnMin = this.columnMin ?? 1;
-    const columnMax = this.columnMax ?? this.columns;
+    const columnMin = Math.ceil((this.columnMin ?? 1) / this.step) * this.step;
+    const columnMax =
+      Math.ceil((this.columnMax ?? this.columns) / this.step) * this.step;
     const rowValue = autoHeight ? rowMin : this._localValue?.rows;
     const columnValue = this._localValue?.columns;
 
@@ -67,9 +68,11 @@ export class HaGridSizeEditor extends LitElement {
           .max=${columnMax}
           .range=${this.columns}
           .value=${fullWidth ? this.columns : this.value?.columns}
+          .step=${this.step}
           @value-changed=${this._valueChanged}
           @slider-moved=${this._sliderMoved}
           .disabled=${disabledColumns}
+          tooltip-mode="always"
         ></ha-grid-layout-slider>
 
         <ha-grid-layout-slider
@@ -85,6 +88,7 @@ export class HaGridSizeEditor extends LitElement {
           @value-changed=${this._valueChanged}
           @slider-moved=${this._sliderMoved}
           .disabled=${disabledRows}
+          tooltip-mode="always"
         ></ha-grid-layout-slider>
         ${!this.isDefault
           ? html`
@@ -102,34 +106,44 @@ export class HaGridSizeEditor extends LitElement {
               </ha-icon-button>
             `
           : nothing}
-        <div
-          class="preview ${classMap({ "full-width": fullWidth })}"
-          style=${styleMap({
-            "--total-rows": this.rows,
-            "--total-columns": this.columns,
-            "--rows": rowValue,
-            "--columns": fullWidth ? this.columns : columnValue,
-          })}
-        >
-          <div>
-            ${Array(this.rows * this.columns)
+        <div class="preview">
+          <table>
+            ${Array(this.rows)
               .fill(0)
               .map((_, index) => {
-                const row = Math.floor(index / this.columns) + 1;
-                const column = (index % this.columns) + 1;
+                const row = index + 1;
                 return html`
-                  <div
-                    class="cell"
-                    data-row=${row}
-                    data-column=${column}
-                    @click=${this._cellClick}
-                  ></div>
+                  <tr>
+                    ${Array(this.columns)
+                      .fill(0)
+                      .map((__, columnIndex) => {
+                        const column = columnIndex + 1;
+                        if (
+                          column % this.step !== 0 ||
+                          (this.columns > 24 && column % 3 !== 0)
+                        ) {
+                          return nothing;
+                        }
+                        return html`
+                          <td
+                            data-row=${row}
+                            data-column=${column}
+                            @click=${this._cellClick}
+                          ></td>
+                        `;
+                      })}
+                  </tr>
                 `;
               })}
-          </div>
-          <div class="selected">
-            <div class="cell"></div>
-          </div>
+          </table>
+          <div
+            class="preview-card"
+            style=${styleMap({
+              "--rows": rowValue,
+              "--columns": fullWidth ? this.columns : columnValue,
+              "--total-columns": this.columns,
+            })}
+          ></div>
         </div>
       </div>
     `;
@@ -223,42 +237,40 @@ export class HaGridSizeEditor extends LitElement {
       }
       .reset {
         grid-area: reset;
+        --mdc-icon-button-size: 36px;
       }
       .preview {
         position: relative;
         grid-area: preview;
       }
-      .preview > div {
-        position: relative;
-        display: grid;
-        grid-template-columns: repeat(var(--total-columns), 1fr);
-        grid-template-rows: repeat(var(--total-rows), 25px);
-        gap: 4px;
+      .preview table,
+      .preview tr,
+      .preview td {
+        border: 2px dotted var(--divider-color);
+        border-collapse: collapse;
       }
-      .preview .cell {
-        background-color: var(--disabled-color);
-        grid-column: span 1;
-        grid-row: span 1;
-        border-radius: 4px;
-        opacity: 0.2;
-        cursor: pointer;
-      }
-      .preview .selected {
-        position: absolute;
-        pointer-events: none;
-        top: 0;
-        left: 0;
-        height: 100%;
+      .preview table {
         width: 100%;
       }
-      .selected .cell {
-        background-color: var(--primary-color);
-        grid-column: 1 / span min(var(--columns, 0), var(--total-columns));
-        grid-row: 1 / span min(var(--rows, 0), var(--total-rows));
-        opacity: 0.5;
+      .preview tr {
+        height: 30px;
       }
-      .preview.full-width .selected .cell {
-        grid-column: 1 / -1;
+      .preview td {
+        cursor: pointer;
+      }
+      .preview-card {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: var(--primary-color);
+        opacity: 0.3;
+        border-radius: 8px;
+        height: calc(var(--rows, 1) * 30px);
+        width: calc(var(--columns, 1) * 100% / var(--total-columns, 12));
+        pointer-events: none;
+        transition:
+          width ease-in-out 180ms,
+          height ease-in-out 180ms;
       }
     `,
   ];

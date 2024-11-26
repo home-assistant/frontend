@@ -367,7 +367,8 @@
       "copied": "Copied",
       "copied_clipboard": "Copied to clipboard",
       "name": "Name",
-      "optional": "optional"
+      "optional": "optional",
+      "default": "Default"
     },
     "components": {
       "selectors": {
@@ -486,7 +487,67 @@
           "cleared_tampering": "cleared tampering",
           "detected_event": "{event_type} event detected",
           "detected_event_no_type": "detected an event",
-          "detected_unknown_event": "detected an unknown event"
+          "detected_unknown_event": "detected an unknown event",
+          "detected_device_classes": {
+            "battery": "[%key:ui::components::logbook::messages::was_low%]",
+            "battery_charging": "started charging",
+            "carbon_monoxide": "[%key:ui::components::logbook::messages::detected_device_class%]",
+            "cold": "[%key:ui::components::logbook::messages::detected_device_class%]",
+            "connectivity": "[%key:ui::components::logbook::messages::was_connected%]",
+            "door": "[%key:ui::components::logbook::messages::was_opened%]",
+            "garage_door": "[%key:ui::components::logbook::messages::was_opened%]",
+            "gas": "[%key:ui::components::logbook::messages::detected_device_class%]",
+            "heat": "[%key:ui::components::logbook::messages::detected_device_class%]",
+            "light": "[%key:ui::components::logbook::messages::detected_device_class%]",
+            "lock": "[%key:ui::components::logbook::messages::was_unlocked%]",
+            "moisture": "[%key:ui::components::logbook::messages::detected_device_class%]",
+            "motion": "[%key:ui::components::logbook::messages::detected_device_class%]",
+            "moving": "[%key:ui::components::logbook::messages::detected_device_class%]",
+            "occupancy": "[%key:ui::components::logbook::messages::detected_device_class%]",
+            "opening": "[%key:ui::components::logbook::messages::was_opened%]",
+            "plug": "[%key:ui::components::logbook::messages::was_plugged_in%]",
+            "power": "[%key:ui::components::logbook::messages::detected_device_class%]",
+            "presence": "[%key:ui::components::logbook::messages::was_at_home%]",
+            "problem": "[%key:ui::components::logbook::messages::detected_device_class%]",
+            "running": "[%key:ui::components::logbook::messages::detected_device_class%]",
+            "safety": "[%key:ui::components::logbook::messages::was_unsafe%]",
+            "smoke": "[%key:ui::components::logbook::messages::detected_device_class%]",
+            "sound": "[%key:ui::components::logbook::messages::detected_device_class%]",
+            "tamper": "[%key:ui::components::logbook::messages::detected_tampering%]",
+            "update": "[%key:ui::components::logbook::messages::detected_device_class%]",
+            "vibration": "[%key:ui::components::logbook::messages::detected_device_class%]",
+            "window": "[%key:ui::components::logbook::messages::was_opened%]"
+          },
+          "cleared_device_classes": {
+            "battery": "[%key:ui::components::logbook::messages::was_normal%]",
+            "battery_charging": "stopped charging",
+            "carbon_monoxide": "[%key:ui::components::logbook::messages::cleared_device_class%]",
+            "cold": "[%key:ui::components::logbook::messages::cleared_device_class%]",
+            "connectivity": "[%key:ui::components::logbook::messages::was_disconnected%]",
+            "door": "[%key:ui::components::logbook::messages::was_closed%]",
+            "garage_door": "[%key:ui::components::logbook::messages::was_closed%]",
+            "gas": "[%key:ui::components::logbook::messages::cleared_device_class%]",
+            "heat": "[%key:ui::components::logbook::messages::cleared_device_class%]",
+            "light": "[%key:ui::components::logbook::messages::cleared_device_class%]",
+            "lock": "[%key:ui::components::logbook::messages::was_locked%]",
+            "moisture": "[%key:ui::components::logbook::messages::cleared_device_class%]",
+            "motion": "[%key:ui::components::logbook::messages::cleared_device_class%]",
+            "moving": "[%key:ui::components::logbook::messages::cleared_device_class%]",
+            "occupancy": "[%key:ui::components::logbook::messages::cleared_device_class%]",
+            "opening": "[%key:ui::components::logbook::messages::was_closed%]",
+            "plug": "[%key:ui::components::logbook::messages::was_unplugged%]",
+            "power": "[%key:ui::components::logbook::messages::cleared_device_class%]",
+            "presence": "[%key:ui::components::logbook::messages::was_away%]",
+            "problem": "[%key:ui::components::logbook::messages::cleared_device_class%]",
+            "running": "[%key:ui::components::logbook::messages::cleared_device_class%]",
+            "safety": "[%key:ui::components::logbook::messages::was_safe%]",
+            "smoke": "[%key:ui::components::logbook::messages::cleared_device_class%]",
+            "sound": "[%key:ui::components::logbook::messages::cleared_device_class%]",
+            "tamper": "[%key:ui::components::logbook::messages::cleared_tampering%]",
+            "update": "[%key:ui::components::logbook::messages::cleared_device_class%]",
+            "vibration": "[%key:ui::components::logbook::messages::cleared_device_class%]",
+            "window": "[%key:ui::components::logbook::messages::was_closed%]"
+          }
         }
       },
       "entity": {
@@ -821,6 +882,12 @@
           "restore": "Restore defaults"
         }
       },
+      "siren": {
+        "advanced_controls": "Advanced controls",
+        "tone": "Tone",
+        "duration": "Duration",
+        "volume": "Volume"
+      },
       "media-browser": {
         "tts": {
           "message": "Message",
@@ -1029,7 +1096,9 @@
         "temperature_down": "Decrease temperature"
       },
       "yaml-editor": {
-        "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
+        "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]",
+        "error": "Error in parsing YAML: {reason}",
+        "error_location": "line: {line}, column: {column}"
       },
       "state-content-picker": {
         "state": "State",
@@ -1126,9 +1195,9 @@
             "addon_info": "{addon} Info"
           }
         },
-        "filter_placeholder": "Entity filter",
+        "filter_placeholder": "Search entities",
         "title": "Quick search",
-        "key_c_hint": "Press 'c' on any page to open the search bar",
+        "key_c_hint": "Press 'c' on any page to open the command dialog",
         "nothing_found": "Nothing found!"
       },
       "voice_command": {
@@ -1277,6 +1346,10 @@
             "button": "[%key:ui::dialogs::more_info_control::cover::switch_mode::button%]",
             "position": "[%key:ui::dialogs::more_info_control::cover::switch_mode::position%]"
           }
+        },
+        "camera": {
+          "download_snapshot": "Download snapshot",
+          "failed_to_download": "Failed to download snapshot. Please check the logs for more information."
         }
       },
       "entity_registry": {
@@ -1385,7 +1458,7 @@
           "change_device_settings": "You can {link} in the device settings",
           "change_device_area_link": "change the device area",
           "configure_state": "{integration} options",
-          "configure_state_secondary": "Specific options for {integration}",
+          "configure_state_secondary": "Specific settings for {integration}",
           "stream": {
             "preload_stream": "Preload camera stream",
             "preload_stream_description": "This keeps the camera stream open in the background so it shows quicker. Warning! This is device intensive.",
@@ -1546,7 +1619,9 @@
           "confirm_delete": "Do you want to delete this item?",
           "edit_schedule_block": "Edit schedule block",
           "start": "Start",
-          "end": "End"
+          "end": "End",
+          "data": "Additional data",
+          "advanced_settings": "Advanced settings"
         },
         "template": {
           "time": "[%key:ui::panel::developer-tools::tabs::templates::time%]",
@@ -1654,8 +1729,8 @@
         "no_entities": "No entities",
         "no_triggers": "No triggers",
         "payload_display": "Payload display",
-        "recent_messages": "{n} most recently received message(s)",
-        "recent_tx_messages": "{n} most recently transmitted message(s)",
+        "recent_messages": "{n} most recently received {n, plural,\n  one {message}\n  other {messages}\n}",
+        "recent_tx_messages": "{n} most recently transmitted {n, plural,\n  one {message}\n  other {messages}\n}",
         "show_as_yaml": "Show as YAML",
         "triggers": "Triggers"
       },
@@ -1839,7 +1914,7 @@
       "no_matching_link_found": "No matching My link found for {path}"
     },
     "sidebar": {
-      "external_app_configuration": "App configuration",
+      "external_app_configuration": "App settings",
       "sidebar_toggle": "Sidebar toggle",
       "done": "Done",
       "hide_panel": "Hide panel",
@@ -1945,7 +2020,7 @@
           },
           "check_updates": "Check for updates",
           "no_new_updates": "No new updates found",
-          "updates_refreshed": "{count} {count, plural,\n  one {update}\n  other {updates}\n} refreshed",
+          "updates_refreshed": "State of {count} {count, plural,\n  one {update}\n  other {updates}\n} refreshed",
           "checking_updates": "Checking for updates...",
           "title": "{count} {count, plural,\n  one {update}\n  other {updates}\n}",
           "unable_to_fetch": "Unable to load updates",
@@ -2034,7 +2109,7 @@
             "icon": "Icon",
             "color": "Color"
           },
-          "add_label": "Add label",
+          "add_label": "Create label",
           "manage_labels": "Manage labels",
           "no_labels": "You don't have any labels",
           "introduction": "Labels can help you organize your areas, devices and entities. They can be used to filter in the UI, or use them as a target in automations.",
@@ -2111,7 +2186,7 @@
           "create_backup": "[%key:supervisor::backup::create_backup%]",
           "creating_backup": "Backup is currently being created",
           "download_backup": "[%key:supervisor::backup::download_backup%]",
-          "remove_backup": "[%key:supervisor::backup::delete_backup_title%]",
+          "remove_backup": "Delete backup",
           "name": "[%key:supervisor::backup::name%]",
           "path": "Path",
           "size": "[%key:supervisor::backup::size%]",
@@ -2138,11 +2213,10 @@
           "no_tags": "No tags",
           "add_tag": "Add tag",
           "write": "Write",
-          "edit": "Edit",
           "never_scanned": "Never scanned",
-          "create_automation": "Create automation with tag",
+          "create_automation": "Create automation",
           "confirm_delete_title": "Delete tag?",
-          "confirm_delete": "Are you sure you want to delete tag {tag}?",
+          "confirm_delete": "The tag ''{tag}'' will be permanently deleted.",
           "automation_title": "Tag {name} is scanned",
           "qr_code_image": "QR code for tag {name}",
           "headers": {
@@ -2156,13 +2230,13 @@
             "name": "Name",
             "description": "Description",
             "tag_id": "Tag ID",
-            "tag_id_placeholder": "Autogenerated when left empty",
+            "tag_id_placeholder": "Autogenerated if left empty",
             "delete": "Delete",
             "update": "Update",
             "create": "Create",
             "create_and_write": "Create and write",
             "required_error_msg": "[%key:ui::panel::config::zone::detail::required_error_msg%]",
-            "usage": "A tag can trigger an automation when scanned, you can use NFC tags, QR codes or any other kind of tag. Use our {companion_link} to write this tag to a programmable NFC tag or create a QR code below.",
+            "usage": "A tag can trigger an automation when scanned, you can use NFC tags, QR codes or any other kind of tag. Use our {companion_link} to write this tag to a programmable NFC tag or copy and print the QR code below.",
             "companion_apps": "companion apps"
           }
         },
@@ -2343,7 +2417,8 @@
             },
             "create_helper": "Create helper",
             "no_helpers": "Looks like you don't have any helpers yet!",
-            "search": "Search {number} helpers"
+            "search": "Search {number} helpers",
+            "error_information": "Error information"
           },
           "dialog": {
             "create": "Create",
@@ -2359,11 +2434,11 @@
               "header": "General configuration",
               "introduction": "Manage your location, network, and analytics.",
               "core_config": {
-                "edit_requires_storage": "Editor disabled because config stored in configuration.yaml.",
+                "edit_requires_storage": "You can not change these settings in the UI, as you have config stored in 'configuration.yaml' under the 'homeassistant' key.",
                 "location_name": "Name",
                 "latitude": "Latitude",
                 "longitude": "Longitude",
-                "elevation": "Elevation",
+                "elevation": "Elevation above sea level",
                 "elevation_meters": "meters",
                 "time_zone": "Time zone",
                 "language": "Language",
@@ -2373,7 +2448,7 @@
                 "unit_system_metric": "Metric",
                 "us_customary_example": "Fahrenheit, pounds",
                 "metric_example": "Celsius, kilograms",
-                "find_currency_value": "Find my value",
+                "find_currency_value": "Find my ISO code",
                 "save_button": "Save",
                 "currency": "Currency",
                 "edit_location": "Edit location",
@@ -2470,9 +2545,9 @@
           "search": "Search logs",
           "failed_get_logs": "Failed to get {provider} logs, {error}",
           "no_issues_search": "No issues found for search term ''{term}''",
-          "load_logs": "Load full logs",
+          "load_logs": "Load logs",
           "nr_of_lines": "Number of lines",
-          "loading_log": "Loading full log…",
+          "loading_log": "Loading log…",
           "no_errors": "No errors have been reported",
           "no_issues": "There are no new issues!",
           "clear": "Clear",
@@ -2489,13 +2564,19 @@
           },
           "custom_integration": "custom integration",
           "error_from_custom_integration": "This error originated from a custom integration.",
-          "show_full_logs": "Show full logs",
+          "show_full_logs": "Show raw logs",
+          "show_condensed_logs": "Show condensed logs",
           "select_number_of_lines": "Select number of lines to download",
           "lines": "Lines",
-          "download_full_log": "Download full log",
+          "download_logs": "Download logs",
           "scroll_down_button": "New logs - Click to scroll",
           "provider_not_found": "Log provider not found",
           "provider_not_available": "Logs for ''{provider}'' are not available on your system.",
+          "haos_boots_title": "Logs of HAOS startup",
+          "show_haos_boots": "Show HAOS startups",
+          "hide_haos_boots": "Hide HAOS startups",
+          "full_width": "Full width",
+          "wrap_lines": "Wrap lines",
           "current": "Current",
           "previous": "Previous",
           "startups_ago": "{boot} startups ago",
@@ -2637,10 +2718,13 @@
                 "try_tts": "Try voice",
                 "debug": "Debug",
                 "set_as_preferred": "Set as preferred",
+                "add_streaming_wake_word": "Add streaming wake word",
                 "form": {
                   "name": "[%key:ui::common::name%]",
                   "conversation_engine": "Conversation agent",
                   "conversation_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
+                  "prefer_local_intents": "Prefer handling commands locally",
+                  "prefer_local_intents_description": "A command will first be sent to the local conversation agent. If the local agent does not handle the command, it will be sent to selected agent.",
                   "language": "Language",
                   "stt_engine": "Speech-to-text",
                   "stt_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
@@ -2668,10 +2752,9 @@
                     "description": "When you are controlling your assistant with voice, the text-to-speech engine turns the conversation text responses into audio."
                   },
                   "wakeword": {
-                    "title": "Wake word",
-                    "description": "If a device supports wake words, you can activate Assist by saying this word.",
-                    "no_wake_words": "It looks like you don't have a wake word engine setup yet.",
-                    "no_wake_words_link": "Find out more about wake words."
+                    "title": "Streaming wake word engine",
+                    "description": " If a device supports streaming wake word engines, you can activate Assist by saying this word.",
+                    "note": "Most recent devices support on-device wake word engines and are configured on their device page."
                   }
                 },
                 "no_cloud_message": "You should have an active cloud subscription to use cloud speech services.",
@@ -2820,7 +2903,7 @@
             "duplicate": "[%key:ui::common::duplicate%]",
             "take_control": "Take control",
             "confirm_take_control": "You are viewing a preview of the automation config, do you want to take control?",
-            "run": "[%key:ui::panel::config::automation::editor::actions::run%]",
+            "run": "Run actions",
             "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
             "show_trace": "Traces",
             "show_info": "Information",
@@ -2873,6 +2956,7 @@
             "search_in": "Search · {group}",
             "unknown_entity": "unknown entity",
             "edit_unknown_device": "Editor not available for unknown device",
+            "switch_ui_yaml_error": "There are currently YAML errors in the automation, and it cannot be parsed. Switching to UI mode may cause pending changes to be lost. Press cancel to correct any errors before proceeding to prevent loss of pending changes, or continue if you are sure.",
             "triggers": {
               "name": "Triggers",
               "header": "When",
@@ -2921,7 +3005,8 @@
                   "before": "Before",
                   "after": "After",
                   "description": {
-                    "picker": "When a calendar event starts or ends."
+                    "picker": "When a calendar event starts or ends.",
+                    "full": "When{offsetChoice, select, \n before { it's {offset} before}\n after { it's {offset} after}\n other {}\n} a calendar event{eventChoice, select, \n start { starts}\n end { ends}\n other { starts or ends}\n}{hasCalendar, select, \n true { in {calendar}}\n other {}\n}"
                   }
                 },
                 "device": {
@@ -3060,7 +3145,7 @@
                 },
                 "time": {
                   "type_value": "Fixed time",
-                  "type_input": "Value of a date/time helper or timestamp-class sensor",
+                  "type_input": "Value of a date/time helper, time entity or timestamp-class sensor",
                   "label": "Time",
                   "at": "At time",
                   "offset": "[%key:ui::panel::config::automation::editor::triggers::type::sun::offset%]",
@@ -3168,7 +3253,7 @@
                   "description": {
                     "picker": "Test if multiple conditions are true.",
                     "no_conditions": "If multiple conditions match",
-                    "full": "If {count} {count, plural,\n one {condition match}\n other {conditions matches}\n}"
+                    "full": "If {count} {count, plural,\n one {condition matches}\n other {conditions match}\n}"
                   }
                 },
                 "device": {
@@ -3198,9 +3283,9 @@
                   "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::value_template%]",
                   "description": {
                     "picker": "If the numeric value of an entity''s state (or attribute''s value) is above or below a given threshold.",
-                    "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above}",
-                    "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} below {below}",
-                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above} and below {below}"
+                    "above": "If {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above}",
+                    "below": "If {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} below {below}",
+                    "above-below": "If {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above} and below {below}"
                   }
                 },
                 "or": {
@@ -3216,7 +3301,7 @@
                   "state": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]",
                   "description": {
                     "picker": "If an entity (or attribute) is in a specific state.",
-                    "no_entity": "Confirm state",
+                    "no_entity": "If state confirmed",
                     "full": "If{hasAttribute, select, \n true { {attribute} of}\n other {}\n} {numberOfEntities, plural,\n =0 {an entity is}\n one {{entities} is}\n other {{entities} are}\n} {numberOfStates, plural,\n =0 {a state}\n other {{states}}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n }"
                   }
                 },
@@ -3266,11 +3351,11 @@
                 },
                 "trigger": {
                   "label": "Triggered by",
-                  "no_triggers": "No triggers have an ID set. You can set an ID using the trigger menu button.",
+                  "no_triggers": "No triggers have an ID set. Use the three-dot menu on a trigger and select Edit ID to assign one.",
                   "id": "Trigger",
                   "description": {
                     "picker": "If the automation has been triggered by a specific trigger.",
-                    "full": "When triggered by {id}"
+                    "full": "If triggered by {id}"
                   }
                 },
                 "zone": {
@@ -3279,7 +3364,7 @@
                   "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]",
                   "description": {
                     "picker": "If someone (or something) is in a zone.",
-                    "full": "Confirm {entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} in {zone} {numberOfZones, plural,\n one {zone} \n other {zones}\n} "
+                    "full": "If {entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} in {zone} {numberOfZones, plural,\n one {zone} \n other {zones}\n}"
                   }
                 }
               }
@@ -3293,7 +3378,7 @@
               "search": "Search action",
               "add_building_block": "Add building block",
               "invalid_action": "Invalid action",
-              "run": "Run",
+              "run": "Run action",
               "run_action_error": "Error running action",
               "run_action_success": "Action ran successfully",
               "duplicate": "[%key:ui::common::duplicate%]",
@@ -3360,7 +3445,7 @@
                   "label": "Wait for time to pass (delay)",
                   "delay": "Duration",
                   "description": {
-                    "picker": "Wait some time to perform a sequence of actions.",
+                    "picker": "Wait some time before continuing the sequence of actions.",
                     "full": "Delay {duration}",
                     "duration_string": "for {string}",
                     "duration_template": "based on a template",
@@ -3411,14 +3496,6 @@
                     "no_device": "Device action"
                   }
                 },
-                "activate_scene": {
-                  "label": "Scene",
-                  "scene": "Scene",
-                  "description": {
-                    "activate_scene": "Activate a scene",
-                    "activate_scene_with_name": "Activate scene {name}"
-                  }
-                },
                 "repeat": {
                   "label": "Repeat",
                   "type_select": "Repeat type",
@@ -3465,7 +3542,7 @@
                   "sequence": "Actions",
                   "description": {
                     "picker": "Choose what to do based on conditions (Similar to If-Then, but more powerful).",
-                    "full": "Choose between {number} {number, plural,\n one {action}\n other{actions}\n}",
+                    "full": "Choose {number, plural,\n one {an action}\n other{between {number} actions}\n}",
                     "no_action": "Choose an action"
                   }
                 },
@@ -3520,7 +3597,7 @@
                 "set_conversation_response": {
                   "label": "Set conversation response",
                   "description": {
-                    "picker": "Set response of conversation when automation was triggered by conversation trigger.",
+                    "picker": "Set response of conversation if automation was triggered by conversation trigger.",
                     "full": "Set response of conversation to {response}"
                   }
                 },
@@ -3581,7 +3658,9 @@
               "stopped_unknown_reason": "Stopped because of unknown reason {reason} at {time} (runtime: {executiontime} seconds)",
               "disabled": "(disabled)",
               "triggered_by": "{triggeredBy, select, \n alias {{alias} triggered}\n other {Triggered} \n} {triggeredPath, select, \n trigger {by the {trigger}}\n other {manually} \n} at {time}",
-              "path_error": "Unable to extract path {path}. Download trace and report as bug."
+              "path_error": "Unable to extract path {path}. Download trace and report as bug.",
+              "not_all_entries_are_related_automation_note": "Not all shown logbook entries might be related to this automation.",
+              "not_all_entries_are_related_script_note": "Not all shown logbook entries might be related to this script."
             }
           }
         },
@@ -3657,9 +3736,9 @@
             "introduction": "The script editor allows you to create and edit scripts. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
             "learn_more": "Learn more about scripts",
             "no_scripts": "We couldn't find any scripts",
-            "add_script": "Add script",
+            "add_script": "Create script",
             "run_script": "Run script",
-            "run": "[%key:ui::panel::config::automation::editor::actions::run%]",
+            "run": "Run",
             "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
             "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
             "filtered_by_blueprint": "[%key:ui::panel::config::automation::picker::filtered_by_blueprint%]",
@@ -3712,7 +3791,7 @@
             "duplicate": "[%key:ui::common::duplicate%]",
             "field": {
               "name": "[%key:ui::common::name%]",
-              "key": "Field variable key name",
+              "key": "Field key",
               "description": "Description",
               "required": "Required",
               "default": "Default",
@@ -3766,11 +3845,11 @@
             "learn_more": "Learn more about scenes",
             "pick_scene": "Pick scene to edit",
             "no_scenes": "We couldn't find any scenes",
-            "add_scene": "Add scene",
+            "add_scene": "Create scene",
             "only_editable": "Only scenes defined in scenes.yaml are editable.",
             "edit_scene": "Edit scene",
             "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
-            "activate": "Activate",
+            "apply": "Apply",
             "delete_scene": "Delete scene",
             "delete": "[%key:ui::common::delete%]",
             "delete_confirm_title": "Delete scene?",
@@ -3795,6 +3874,12 @@
             "search": "Search {number} scenes"
           },
           "editor": {
+            "review_mode": "Review Mode",
+            "review_mode_detail": "You can adjust the scene's details and remove devices or entities. To fully edit, switch to Live Preview, which will apply the scene.",
+            "live_preview": "Live Preview",
+            "live_preview_detail": "In Live Preview, all changes to this scene are applied in real-time to your devices and entities.",
+            "enter_live_mode_unsaved": "You have unsaved changes to this scene. Continuing to live preview will apply the saved scene, which may overwrite your unsaved changes. Consider if you would like to save the scene first before activating it.",
+            "back_to_review_mode": "Back to review mode",
             "default_name": "New scene",
             "load_error_not_editable": "Only scenes in scenes.yaml are editable.",
             "load_error_unknown": "Error loading scene ({err_no}).",
@@ -3807,12 +3892,14 @@
             "devices": {
               "header": "Devices",
               "introduction": "Add the devices that you want to be included in your scene. Set all entities in each device to the state you want for this scene.",
+              "introduction_review": "To add the devices that you want to be included in your scene turn on the Live Preview mode.",
               "add": "Add a device",
               "delete": "Delete device"
             },
             "entities": {
               "header": "Entities",
               "introduction": "Individual entities can be added here.",
+              "introduction_review": "To add individual entities to your scene turn on the Live Preview mode.",
               "without_device": "Entities",
               "add": "Add an entity",
               "delete": "Delete entity"
@@ -3975,7 +4062,7 @@
               "manual_config": "Editing which entities are exposed via the UI is disabled because you have configured entity filters in configuration.yaml.",
               "enter_pin_error": "Unable to store PIN:",
               "not_configured_title": "Continue setting up Google Assistant",
-              "not_configured_text": "Before you can use Google Assistant, you need to activate the Home Assistant Cloud skill for Google Assistant in the Google Home app.",
+              "not_configured_text": "To start using Google Assistant, add the 'Home Assistant Cloud by Nabu Casa' service in the Google Home app on your smartphone.",
               "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]",
               "expose_new_entities": "Expose new entities",
               "expose_new_entities_info": "Should new entities be exposed to Google Assistant automatically? Exposes supported devices that are not classified as security devices."
@@ -4259,8 +4346,8 @@
           "caption": "Zones",
           "description": "Manage the zones you want to track people in",
           "introduction": "Zones allow you to specify certain regions on Earth. When a person is within a zone, the state will take the name from the zone. Zones can also be used as a trigger or condition inside automation setups.",
-          "no_zones_created_yet": "Looks like you have not added any zones yet.",
-          "create_zone": "Add zone",
+          "no_zones_created_yet": "Looks like you have not created any zones yet.",
+          "create_zone": "Create zone",
           "add_zone": "Add zone",
           "edit_zone": "Edit zone",
           "edit_home": "Edit home",
@@ -4280,7 +4367,7 @@
             "passive_note": "Passive zones are hidden in the frontend and are not used as location for device trackers. This is useful if you just want to use it for automations.",
             "required_error_msg": "This field is required",
             "delete": "Delete",
-            "create": "Add",
+            "create": "Create",
             "update": "Update"
           },
           "core_location_dialog": "Home Assistant location"
@@ -4834,6 +4921,7 @@
             "node_id": "ID",
             "node_ready": "Ready",
             "device_config": "Configure",
+            "installer_settings": "Installer settings",
             "reinterview_device": "Re-interview",
             "rebuild_routes": "Rebuild routes",
             "remove_failed": "Remove failed",
@@ -4950,12 +5038,36 @@
             "parameter_is_read_only": "This parameter is read-only.",
             "between_min_max": "Between {min} and {max}",
             "error_not_in_range": "Value must be between {min} and {max}",
+            "error_required": "{entity} is required",
             "error_device_not_found": "Device not found",
             "set_param_accepted": "The parameter has been updated.",
             "set_param_queued": "The parameter change has been queued, and will be updated when the device wakes up.",
             "set_param_error": "An error occurred.",
             "parameter": "Parameter",
             "bitmask": "Bitmask",
+            "size": "Size",
+            "value": "Value",
+            "format": "Format",
+            "custom_config": "Custom configuration",
+            "custom_config_description": "You can use this section to get/set custom configuration parameters for your device. This is useful when working with devices that are not fully supported.",
+            "get_value": "Get value",
+            "set_value": "Set value",
+            "signed": "Signed",
+            "unsigned": "Unsigned",
+            "enumerated": "Enumerated",
+            "bitfield": "Bitfield",
+            "reset_to_default": {
+              "button_label": "Reset to default configuration",
+              "dialog": {
+                "title": "Reset to default",
+                "text": "All device parameters will be reset to their default values.",
+                "text_loading": "Resetting in progress…",
+                "text_success": "The device configuration has been reset to its default values.",
+                "text_error": "Something went wrong while resetting the device to its default values. Please check your logs!",
+                "reset": "Reset",
+                "cancel": "Cancel"
+              }
+            },
             "default": "Default"
           },
           "network_status": {
@@ -5125,6 +5237,84 @@
             "subscribed_to_logs": "Subscribed to Z-Wave JS log messages…",
             "log_level_changed": "Log Level changed to: {level}",
             "download_logs": "Download logs"
+          },
+          "node_installer": {
+            "header": "Installer Settings",
+            "introduction": "Configure your device installer settings.",
+            "endpoint": "Endpoint",
+            "no_settings": "This device does not have any installer settings.",
+            "command_class": "Command Class",
+            "capability_controls": {
+              "thermostat_setback": {
+                "title": "Thermostat Setback",
+                "setback_state_label": "Setback in 1/10 degrees (Kelvin)",
+                "setback_state_helper": "Min: -12.8, max: 12.0",
+                "setback_special_state": {
+                  "label": "Setback special state",
+                  "frost_protection": "Frost protection",
+                  "energy_saving": "Energy saving",
+                  "unused": "Unused"
+                },
+                "setback_type": {
+                  "label": "Setback Type",
+                  "none": "None",
+                  "temporary": "Temporary",
+                  "permanent": "Permanent"
+                },
+                "get_setback_failed": "Failed to get setback state. {error}",
+                "save_setback_failed": "Failed to save setback state. {error}"
+              },
+              "multilevel_switch": {
+                "title": "Transition",
+                "direction": "Direction",
+                "up": "Up",
+                "down": "Down",
+                "ignore_start_level": "Ignore start level",
+                "start_level": "Start level",
+                "start_transition": "Start transition",
+                "stop_transition": "Stop transition",
+                "control_failed": "Failed to control transition. {error}"
+              },
+              "door_lock": {
+                "title": "Door Lock",
+                "twist_assist": "Twist assist",
+                "block_to_block": "Block to block",
+                "auto_relock_time": "Auto relock time",
+                "hold_release_time": "Hold and release time",
+                "operation_type": "Operation type",
+                "operation_types": {
+                  "1": "Constant",
+                  "2": "Timed"
+                },
+                "mode": "Mode",
+                "modes": {
+                  "0": "Unsecured",
+                  "1": "Unsecured with timeout",
+                  "16": "Inside unsecured",
+                  "17": "Inside unsecured with timeout",
+                  "32": "Outside unsecured",
+                  "33": "Outside unsecured with timeout",
+                  "254": "Unknown",
+                  "255": "Secured"
+                },
+                "lock_timeout": "Lock timeout",
+                "lock_timeout_helper": "Number of seconds before the lock automatically locks after being unlocked"
+              },
+              "color_switch": {
+                "color_component": "Color component",
+                "colors": {
+                  "0": "Warm White",
+                  "1": "Cold White",
+                  "2": "Red",
+                  "3": "Green",
+                  "4": "Blue",
+                  "5": "Amber",
+                  "6": "Cyan",
+                  "7": "Purple",
+                  "8": "Index"
+                }
+              }
+            }
           }
         },
         "matter": {
@@ -5144,10 +5334,10 @@
           "device_info": {
             "device_info": "Device info",
             "node_id": "Node ID",
-            "network_type": "Network Type",
+            "network_type": "Network type",
             "node_type": "Device type",
             "network_name": "Network name",
-            "ip_adresses": "IP Address(es)",
+            "ip_adresses": "IP address(es)",
             "mac_address": "MAC address",
             "available": "Available?"
           },
@@ -5161,8 +5351,8 @@
           "manage_fabrics": {
             "title": "Connected fabrics",
             "fabrics": "Manage the fabrics that have access to this device.",
-            "remove_fabric_confirm_header": "Remove {fabric} fabric from device",
-            "remove_fabric_confirm_text": "Are you sure you want to remove the {fabric} from the device? You will not be able to control/access the device from that ecosystem/fabric after this action!",
+            "remove_fabric_confirm_header": "Remove {fabric} fabric from device?",
+            "remove_fabric_confirm_text": "Are you sure you want to remove {fabric} from the device? You will not be able to control/access the device from that ecosystem/fabric after this action!",
             "remove_fabric_failed_header": "Remove {fabric} fabric failed",
             "remove_fabric_failed_text": "The action did not succeed, check the logs for more information."
           },
@@ -5179,7 +5369,7 @@
           "ping_node": {
             "title": "Ping a Matter device",
             "introduction": "Perform a (server-side) ping on your Matter device on all its (known) IP-addresses.",
-            "battery_device_warning": "Note that especially for battery powered devices this can take a a while. You may need to up powered devices before starting the pinging to speed up the process. Refer to your device's manual for instructions on how to wake the device.",
+            "battery_device_warning": "Note that especially for battery powered devices this can take a a while. You may need to wake up battery powered devices before starting the pinging to speed up the process. Refer to your device's manual for instructions on how to wake the device.",
             "start_ping": "Start ping",
             "in_progress": "The device is being pinged. This may take some time.",
             "ping_failed": "The device ping failed. Additional information may be available in the logs.",
@@ -5487,7 +5677,7 @@
               "self_consumed_solar_could_not_calc": "Self-consumed solar energy couldn't be calculated"
             },
             "self_sufficiency_gauge": {
-              "card_indicates_self_sufficiency_quota": "This card indicates how much of the energy consumed by your home came from on-site sources (such as solar panels or batteries).",
+              "card_indicates_self_sufficiency_quota": "This card indicates how much of the electricity consumed by your home came from on-site sources (such as solar panels or batteries).",
               "self_sufficiency_quota": "Self-sufficiency",
               "self_sufficiency_could_not_calc": "Self-sufficiency couldn't be calculated"
             },
@@ -5517,7 +5707,7 @@
               "untracked_consumption": "Untracked consumption"
             },
             "carbon_consumed_gauge": {
-              "card_indicates_energy_used": "This card indicates how much of the energy consumed by your home was generated using non-fossil fuels like solar, wind, and nuclear. The higher, the better!",
+              "card_indicates_energy_used": "This card indicates how much of the electricity consumed by your home was generated using non-fossil fuels like solar, wind, and nuclear. The higher, the better!",
               "low_carbon_energy_consumed": "Low-carbon energy consumed",
               "low_carbon_energy_not_calculated": "Consumed low-carbon energy couldn't be calculated"
             }
@@ -5555,7 +5745,7 @@
         "menu": {
           "configure_ui": "Edit dashboard",
           "help": "Help",
-          "search": "Search",
+          "search": "Entity search",
           "assist": "Assist",
           "reload_resources": "Reload resources",
           "exit_edit_mode": "Done",
@@ -5590,7 +5780,7 @@
             "confirm_delete_config_title": "Delete dashboard configuration?",
             "confirm_delete_config_text": "This dashboard will be permanently deleted. The dashboard will be automatically regenerated to display your areas, devices and entities.",
             "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
-            "confirm_unsaved_comments": "Your configuration might contains comment(s), these will not be saved. Do you want to continue?",
+            "confirm_unsaved_comments": "Your configuration might contain comments, these will not be saved. Do you want to continue?",
             "error_parse_yaml": "Unable to parse YAML: {error}",
             "error_invalid_config": "Your configuration is not valid: {error}",
             "error_save_yaml": "Unable to save YAML: {error}",
@@ -5738,6 +5928,7 @@
           "section": {
             "add_badge": "Add badge",
             "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
+            "drop_card_create_section": "Drop card here to create a new section",
             "create_section": "Create section",
             "default_section_title": "New section",
             "imported_cards_title": "Imported cards",
@@ -5829,8 +6020,7 @@
               "state": {
                 "label": "Entity state",
                 "state_equal": "State is equal to",
-                "state_not_equal": "State is not equal to",
-                "current_state": "current"
+                "state_not_equal": "State is not equal to"
               },
               "user": {
                 "label": "User"
@@ -5983,6 +6173,10 @@
                 "change": "Change"
               },
               "chart_type": "Chart type",
+              "chart_type_labels": {
+                "line": "Line",
+                "bar": "Bar"
+              },
               "periods": {
                 "hour": "Hour",
                 "day": "Day",
@@ -5993,7 +6187,10 @@
               "pick_statistic": "Add a statistic",
               "picked_statistic": "Statistic",
               "hide_legend": "Hide legend",
-              "logarithmic_scale": "Logarithmic scale"
+              "logarithmic_scale": "Logarithmic scale",
+              "min_y_axis": "Y axis minimum",
+              "max_y_axis": "Y axis maximum",
+              "fit_y_data": "Extend Y axis limits to fit data"
             },
             "statistic": {
               "name": "Statistic",
@@ -6185,7 +6382,7 @@
             },
             "tile": {
               "name": "Tile",
-              "description": "The tile card gives you a quick overview of your entity. The card allow you to toggle the entity, show the more info dialog or custom actions.",
+              "description": "The tile card gives you a quick overview of your entity. The card allows you to toggle the entity, show the More info dialog or trigger custom actions.",
               "color": "Color",
               "color_helper": "Inactive state (e.g. off, closed) will not be colored.",
               "icon_tap_action": "Icon tap behavior",
@@ -6551,8 +6748,8 @@
           "description": "Should we close the connection to the server after being hidden for 5 minutes?"
         },
         "push_notifications": {
-          "header": "Push notifications",
-          "description": "Send notifications to this device.",
+          "header": "Receive notifications",
+          "description": "Enable HTML5 browser notifications on this device.",
           "error_load_platform": "Configure notify.html5.",
           "error_use_https": "Requires SSL enabled for frontend.",
           "push_notifications": "Push notifications",
@@ -6934,7 +7131,7 @@
             "fire_event": "Fire event",
             "event_fired": "Event {name} fired",
             "active_listeners": "Active listeners",
-            "count_listeners": " ({count}  listeners)",
+            "count_listeners": "({count} {count, plural,\n  one {listener}\n  other {listeners}\n})",
             "listen_to_events": "Listen to events",
             "listening_to": "Listening to",
             "subscribe_to": "Event to subscribe to",
@@ -6986,7 +7183,7 @@
             "attributes": "Attributes",
             "state_attributes": "State attributes (YAML, optional)",
             "set_state": "Set state",
-            "current_entities": "Current entities",
+            "current_entities": "Current entity states",
             "filter_entities": "Filter entities",
             "filter_states": "Filter states",
             "filter_attributes": "Filter attributes",
@@ -7186,6 +7383,7 @@
           "open_home_newsletter": "Building the Open Home newsletter",
           "discord": "Discord chat",
           "x": "[%key:ui::panel::config::tips::join_x%]",
+          "mastodon": "Mastodon",
           "playstore": "Get it on Google Play",
           "appstore": "Download on the App Store"
         },
@@ -7332,6 +7530,51 @@
       "key_c_hint": "Press 'c' on any page to open the command dialog",
       "key_e_hint": "Press 'e' on any page to open the entity search dialog",
       "key_m_hint": "Press 'm' on any page to get the My Home Assistant link"
+    }
+  },
+  "landing-page": {
+    "header": "Preparing Home Assistant",
+    "subheader": "This may take 20 minutes or more",
+    "show_details": "Show details",
+    "hide_details": "Hide details",
+    "network_issue": {
+      "title": "Networking issue detected",
+      "error_get_network_info": "Cannot get network information",
+      "description": "Home Assistant OS detected a networking issue in your setup. As part of the initial setup, Home Assistant OS downloads the latest version of Home Assistant Core. This networking issue prevents this download. The network issue might be DNS related. The currently used DNS service is: {dns}.",
+      "resolve_different": "To resolve this, you can try a different DNS server. Select one of the options below. Alternatively, change your router configuration to use your own custom DNS server.",
+      "use_cloudflare": "Use Cloudflare DNS",
+      "use_google": "Use Google DNS",
+      "no_primary_interface": "Home Assistant OS wasn't able to detect a primary network interface, so you cannot define a DNS server!",
+      "failed": "Failed",
+      "set_dns_failed": "An error occurred while setting the DNS server. Please check the logs for more information and try again.",
+      "error": "Error",
+      "close": "[%key:ui::common::close%]"
+    },
+    "logs": {
+      "scroll_down_button": "New logs - Click to scroll",
+      "fetch_error": "Failed to fetch logs",
+      "retry": "Retry",
+      "download_logs": "[%key:ui::panel::config::logs::download_logs%]"
+    },
+    "error_title": "Error installing Home Assistant",
+    "error_description": "An error occurred while installing Home Assistant. Please check the logs for more information.",
+    "ui": {
+      "panel": {
+        "page-onboarding": {
+          "welcome": {
+            "vision": "[%key:ui::panel::page-onboarding::welcome::vision%]",
+            "community": "[%key:ui::panel::page-onboarding::welcome::community%]",
+            "download_app": "[%key:ui::panel::page-onboarding::welcome::download_app%]",
+            "forums": "[%key:ui::panel::page-onboarding::welcome::forums%]",
+            "open_home_newsletter": "[%key:ui::panel::page-onboarding::welcome::open_home_newsletter%]",
+            "discord": "[%key:ui::panel::page-onboarding::welcome::discord%]",
+            "mastodon": "[%key:ui::panel::page-onboarding::welcome::mastodon%]",
+            "playstore": "[%key:ui::panel::page-onboarding::welcome::playstore%]",
+            "appstore": "[%key:ui::panel::page-onboarding::welcome::appstore%]"
+          },
+          "help": "[%key:ui::panel::page-onboarding::help%]"
+        }
+      }
     }
   },
   "supervisor": {
@@ -7695,7 +7938,7 @@
       "create_blocked_not_running": "Creating a backup is not possible right now because the system is in \"{state}\" state.",
       "restore_blocked_not_running": "Restoring a backup is not possible right now because the system is in \"{state}\" state.",
       "delete_selected": "Delete selected backups",
-      "delete_backup_title": "Delete backup",
+      "delete_backup_title": "Delete backups?",
       "delete_backup_text": "Do you want to delete {number} {number, plural,\n  one {backup}\n  other {backups}\n}?",
       "delete_backup_confirm": "delete",
       "selected": "{number} selected",
@@ -7846,6 +8089,62 @@
             "show": "[%key:ui::components::data-table::settings::show%]",
             "done": "[%key:ui::components::data-table::settings::done%]",
             "restore": "[%key:ui::components::data-table::settings::restore%]"
+          }
+        }
+      },
+      "panel": {
+        "config": {
+          "logs": {
+            "caption": "[%key:ui::panel::config::logs::caption%]",
+            "description": "[%key:ui::panel::config::logs::description%]",
+            "details": "[%key:ui::panel::config::logs::details%]",
+            "search": "[%key:ui::panel::config::logs::search%]",
+            "failed_get_logs": "[%key:ui::panel::config::logs::failed_get_logs%]",
+            "no_issues_search": "[%key:ui::panel::config::logs::no_issues_search%]",
+            "load_logs": "[%key:ui::panel::config::logs::load_logs%]",
+            "nr_of_lines": "[%key:ui::panel::config::logs::nr_of_lines%]",
+            "loading_log": "[%key:ui::panel::config::logs::loading_log%]",
+            "no_errors": "[%key:ui::panel::config::logs::no_errors%]",
+            "no_issues": "[%key:ui::panel::config::logs::no_issues%]",
+            "clear": "[%key:ui::panel::config::logs::clear%]",
+            "refresh": "[%key:ui::panel::config::logs::refresh%]",
+            "copy": "[%key:ui::panel::config::logs::copy%]",
+            "log_provider": "[%key:ui::panel::config::logs::log_provider%]",
+            "multiple_messages": "[%key:ui::panel::config::logs::multiple_messages%]",
+            "level": {
+              "critical": "[%key:ui::panel::config::logs::level::critical%]",
+              "error": "[%key:ui::panel::config::logs::level::error%]",
+              "warning": "[%key:ui::panel::config::logs::level::warning%]",
+              "info": "[%key:ui::panel::config::logs::level::info%]",
+              "debug": "[%key:ui::panel::config::logs::level::debug%]"
+            },
+            "custom_integration": "[%key:ui::panel::config::logs::custom_integration%]",
+            "error_from_custom_integration": "[%key:ui::panel::config::logs::error_from_custom_integration%]",
+            "show_full_logs": "[%key:ui::panel::config::logs::show_full_logs%]",
+            "select_number_of_lines": "[%key:ui::panel::config::logs::select_number_of_lines%]",
+            "lines": "[%key:ui::panel::config::logs::lines%]",
+            "download_logs": "[%key:ui::panel::config::logs::download_logs%]",
+            "scroll_down_button": "[%key:ui::panel::config::logs::scroll_down_button%]",
+            "provider_not_found": "[%key:ui::panel::config::logs::provider_not_found%]",
+            "provider_not_available": "[%key:ui::panel::config::logs::provider_not_available%]",
+            "haos_boots_title": "[%key:ui::panel::config::logs::haos_boots_title%]",
+            "show_haos_boots": "[%key:ui::panel::config::logs::show_haos_boots%]",
+            "hide_haos_boots": "[%key:ui::panel::config::logs::hide_haos_boots%]",
+            "full_width": "[%key:ui::panel::config::logs::full_width%]",
+            "wrap_lines": "[%key:ui::panel::config::logs::wrap_lines%]",
+            "current": "[%key:ui::panel::config::logs::current%]",
+            "previous": "[%key:ui::panel::config::logs::previous%]",
+            "startups_ago": "[%key:ui::panel::config::logs::startups_ago%]",
+            "detail": {
+              "logger": "[%key:ui::panel::config::logs::detail::logger%]",
+              "source": "[%key:ui::panel::config::logs::detail::source%]",
+              "integration": "[%key:ui::panel::config::integrations::integration%]",
+              "documentation": "[%key:ui::panel::config::logs::detail::documentation%]",
+              "issues": "[%key:ui::panel::config::logs::detail::issues%]",
+              "first_occurred": "[%key:ui::panel::config::logs::detail::first_occurred%]",
+              "occurrences": "[%key:ui::panel::config::logs::detail::occurrences%]",
+              "last_logged": "[%key:ui::panel::config::logs::detail::last_logged%]"
+            }
           }
         }
       }

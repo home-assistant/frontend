@@ -1,6 +1,9 @@
 import type { HassConfig } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
-import { formatDuration } from "../common/datetime/format_duration";
+import {
+  formatDuration,
+  formatDurationLong,
+} from "../common/datetime/format_duration";
 import {
   formatTime,
   formatTimeWithSeconds,
@@ -718,6 +721,38 @@ const tryDescribeTrigger = (
     return `${stateObj ? computeStateName(stateObj) : config.entity_id} ${
       config.type
     }`;
+  }
+
+  // Calendar Trigger
+  if (trigger.trigger === "calendar") {
+    const calendarEntity = hass.states[trigger.entity_id]
+      ? computeStateName(hass.states[trigger.entity_id])
+      : trigger.entity_id;
+
+    let offsetChoice = trigger.offset.startsWith("-") ? "before" : "after";
+    let offset: string | string[] = trigger.offset.startsWith("-")
+      ? trigger.offset.substring(1).split(":")
+      : trigger.offset.split(":");
+    const duration = {
+      hours: offset.length > 0 ? +offset[0] : 0,
+      minutes: offset.length > 1 ? +offset[1] : 0,
+      seconds: offset.length > 2 ? +offset[2] : 0,
+    };
+    offset = formatDurationLong(hass.locale, duration);
+    if (offset === "") {
+      offsetChoice = "other";
+    }
+
+    return hass.localize(
+      `${triggerTranslationBaseKey}.calendar.description.full`,
+      {
+        eventChoice: trigger.event,
+        offsetChoice: offsetChoice,
+        offset: offset,
+        hasCalendar: trigger.entity_id ? "true" : "false",
+        calendar: calendarEntity,
+      }
+    );
   }
 
   return (

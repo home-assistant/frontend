@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, nothing, LitElement } from "lit";
 import "./ha-circular-progress";
@@ -114,7 +113,7 @@ class HaWebRtcPlayer extends LitElement {
 
   private _sessionId?: string;
 
-  private _candidatesList: string[] = [];
+  private _candidatesList: RTCIceCandidate[] = [];
 
   protected override render(): TemplateResult {
     if (this._error) {
@@ -222,18 +221,18 @@ class HaWebRtcPlayer extends LitElement {
       return;
     }
 
-    console.time("WebRTC");
-
     this._error = undefined;
 
-    console.timeLog("WebRTC", "start clientConfig");
+    this._startTimer();
+
+    this._logEvent("start clientConfig");
 
     this._clientConfig = await fetchWebRtcClientConfiguration(
       this.hass,
       this.entityid
     );
 
-    console.timeLog("WebRTC", "end clientConfig", this._clientConfig);
+    this._logEvent("end clientConfig", this._clientConfig);
 
     // On most platforms mediaDevices will be undefined if not running in a secure context
     this._twoWayAudio =
@@ -260,11 +259,10 @@ class HaWebRtcPlayer extends LitElement {
     this._peerConnection.onsignalingstatechange = (ev) => {
       switch ((ev.target as RTCPeerConnection).signalingState) {
         case "stable":
-          console.timeLog("WebRTC", "ICE negotiation complete");
+          this._logEvent("ICE negotiation complete");
           break;
         default:
-          console.timeLog(
-            "WebRTC",
+          this._logEvent(
             "Signaling state changed",
             (ev.target as RTCPeerConnection).signalingState
           );
@@ -304,7 +302,7 @@ class HaWebRtcPlayer extends LitElement {
       offerToReceiveVideo: true,
     };
 
-    console.timeLog("WebRTC", "start createOffer", offerOptions);
+    this._logEvent("start createOffer", offerOptions);
 
     const offer: RTCSessionDescriptionInit =
       await this._peerConnection.createOffer(offerOptions);
@@ -313,9 +311,9 @@ class HaWebRtcPlayer extends LitElement {
       return;
     }
 
-    console.timeLog("WebRTC", "end createOffer", offer);
+    this._logEvent("end createOffer", offer);
 
-    console.timeLog("WebRTC", "start setLocalDescription");
+    this._logEvent("start setLocalDescription");
 
     await this._peerConnection.setLocalDescription(offer);
 
@@ -323,7 +321,7 @@ class HaWebRtcPlayer extends LitElement {
       return;
     }
 
-    console.timeLog("WebRTC", "end setLocalDescription");
+    this._logEvent("end setLocalDescription");
 
     let candidates = "";
 
@@ -337,11 +335,7 @@ class HaWebRtcPlayer extends LitElement {
             resolve();
           }
 
-          console.timeLog(
-            "WebRTC",
-            "Ice gathering state changed",
-            iceGatheringState
-          );
+          this._logEvent("Ice gathering state changed", iceGatheringState);
         };
       });
 
@@ -359,7 +353,7 @@ class HaWebRtcPlayer extends LitElement {
 
     const offer_sdp = offer.sdp! + candidates;
 
-    console.timeLog("WebRTC", "start webRtcOffer", offer_sdp);
+    this._logEvent("start webRtcOffer", offer_sdp);
 
     try {
       this._unsub = webRtcOffer(this.hass, this.entityid, offer_sdp, (event) =>
@@ -372,8 +366,7 @@ class HaWebRtcPlayer extends LitElement {
   };
 
   private _iceConnectionStateChanged = () => {
-    console.timeLog(
-      "WebRTC",
+    this._logEvent(
       "ice connection state change",
       this._peerConnection?.iceConnectionState
     );
@@ -393,24 +386,34 @@ class HaWebRtcPlayer extends LitElement {
           this.hass,
           this.entityid!,
           event.session_id,
-          candidate
+          // toJSON returns RTCIceCandidateInit
+          candidate.toJSON()
         )
       );
       this._candidatesList = [];
     }
     if (event.type === "answer") {
-      console.timeLog("WebRTC", "answer", event.answer);
+      this._logEvent("answer", event.answer);
 
       this._handleAnswer(event);
     }
     if (event.type === "candidate") {
-      console.timeLog("WebRTC", "remote ice candidate", event.candidate);
+      this._logEvent("remote ice candidate", event.candidate);
 
       try {
-        await this._peerConnection?.addIceCandidate(
-          new RTCIceCandidate({ candidate: event.candidate, sdpMid: "0" })
-        );
+        // The spdMid or sdpMLineIndex is required so set sdpMid="0" if not
+        // sent from the backend.
+        const candidate =
+          event.candidate.sdpMid || event.candidate.sdpMLineIndex != null
+            ? new RTCIceCandidate(event.candidate)
+            : new RTCIceCandidate({
+                candidate: event.candidate.candidate,
+                sdpMid: "0",
+              });
+
+        await this._peerConnection?.addIceCandidate(candidate);
       } catch (err: any) {
+        // eslint-disable-next-line no-console
         console.error(err);
       }
     }
@@ -425,10 +428,10 @@ class HaWebRtcPlayer extends LitElement {
       return;
     }
 
-    console.timeLog(
-      "WebRTC",
+    this._logEvent(
       "local ice candidate",
-      event.candidate?.candidate
+      event.candidate?.candidate,
+      event.candidate?.sdpMLineIndex
     );
 
     if (this._sessionId) {
@@ -436,10 +439,11 @@ class HaWebRtcPlayer extends LitElement {
         this.hass,
         this.entityid,
         this._sessionId,
-        event.candidate?.candidate
+        // toJSON returns RTCIceCandidateInit
+        event.candidate.toJSON()
       );
     } else {
-      this._candidatesList.push(event.candidate?.candidate);
+      this._candidatesList.push(event.candidate);
     }
   };
 
@@ -468,13 +472,13 @@ class HaWebRtcPlayer extends LitElement {
       sdp: event.answer,
     });
     try {
-      console.timeLog("WebRTC", "start setRemoteDescription", remoteDesc);
+      this._logEvent("start setRemoteDescription", remoteDesc);
       await this._peerConnection.setRemoteDescription(remoteDesc);
     } catch (err: any) {
       this._error = "Failed to connect WebRTC stream: " + err.message;
       this._cleanUp();
     }
-    console.timeLog("WebRTC", "end setRemoteDescription");
+    this._logEvent("end setRemoteDescription");
   }
 
   private async getMediaTracks(media, constraints) {
@@ -491,9 +495,6 @@ class HaWebRtcPlayer extends LitElement {
   }
 
   private _cleanUp() {
-    console.timeLog("WebRTC", "stopped");
-    console.timeEnd("WebRTC");
-
     if (this._remoteStream) {
       this._remoteStream.getTracks().forEach((track) => {
         track.stop();
@@ -522,6 +523,9 @@ class HaWebRtcPlayer extends LitElement {
       this._peerConnection.onsignalingstatechange = null;
 
       this._peerConnection = undefined;
+
+      this._logEvent("stopped");
+      this._stopTimer();
     }
     this._unsub?.then((unsub) => unsub());
     this._unsub = undefined;
@@ -530,18 +534,43 @@ class HaWebRtcPlayer extends LitElement {
   }
 
   private _loadedData() {
-    console.timeLog("WebRTC", "loadedData");
-    console.timeEnd("WebRTC");
-
     const video = this._videoEl;
     const stream = video.srcObject as MediaStream;
 
-    fireEvent(this, "load");
-
-    fireEvent(this, "streams", {
+    const data = {
       hasAudio: Boolean(stream?.getAudioTracks().length),
       hasVideo: Boolean(stream?.getVideoTracks().length),
-    });
+    };
+
+    fireEvent(this, "load");
+    fireEvent(this, "streams", data);
+
+    this._logEvent("loadedData", data);
+    this._stopTimer();
+  }
+
+  private _startTimer() {
+    if (!__DEV__) {
+      return;
+    }
+    // eslint-disable-next-line no-console
+    console.time("WebRTC");
+  }
+
+  private _stopTimer() {
+    if (!__DEV__) {
+      return;
+    }
+    // eslint-disable-next-line no-console
+    console.timeEnd("WebRTC");
+  }
+
+  private _logEvent(msg: string, ...args: unknown[]) {
+    if (!__DEV__) {
+      return;
+    }
+    // eslint-disable-next-line no-console
+    console.timeLog("WebRTC", msg, ...args);
   }
 
   static get styles(): CSSResultGroup {

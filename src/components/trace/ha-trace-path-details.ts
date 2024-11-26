@@ -18,6 +18,7 @@ import "../../panels/logbook/ha-logbook-renderer";
 import { traceTabStyles } from "./trace-tab-styles";
 import type { HomeAssistant } from "../../types";
 import type { NodeInfo } from "./hat-script-graph";
+import { describeCondition } from "../../data/automation_i18n";
 
 const TRACE_PATH_TABS = [
   "step_config",
@@ -121,6 +122,19 @@ export class HaTracePathDetails extends LitElement {
 
       const data: ActionTraceStep[] = paths[curPath];
 
+      // Extract details from this.selected.config child properties used to add 'alias' (to headline), describeCondition and 'entity_id' (to result)
+      const nestPath = curPath
+        .substring(this.selected.path.length + 1)
+        .split("/");
+      let currentDetail = this.selected.config;
+      for (let i = 0; i < nestPath.length; i++) {
+        if (
+          !["undefined", "string"].includes(typeof currentDetail[nestPath[i]])
+        ) {
+          currentDetail = currentDetail[nestPath[i]];
+        }
+      }
+
       parts.push(
         data.map((trace, idx) => {
           const { path, timestamp, result, error, changed_variables, ...rest } =
@@ -134,7 +148,9 @@ export class HaTracePathDetails extends LitElement {
 
           return html`
             ${curPath === this.selected.path
-              ? ""
+              ? currentDetail.alias
+                ? html`<h2>${currentDetail.alias}</h2>`
+                : nothing
               : html`<h2>
                   ${curPath.substring(this.selected.path.length + 1)}
                 </h2>`}
@@ -146,6 +162,15 @@ export class HaTracePathDetails extends LitElement {
                     { number: idx + 1 }
                   )}
                 </h3>`}
+            ${curPath
+              .substring(this.selected.path.length + 1)
+              .includes("condition")
+              ? html`[${describeCondition(
+                    currentDetail,
+                    this.hass,
+                    currentDetail.alias
+                  )}]<br />`
+              : nothing}
             ${this.hass!.localize(
               "ui.panel.config.automation.trace.path.executed",
               {
@@ -176,6 +201,12 @@ export class HaTracePathDetails extends LitElement {
             ${Object.keys(rest).length === 0
               ? nothing
               : html`<pre>${dump(rest)}</pre>`}
+            ${currentDetail.entity_id &&
+            curPath
+              .substring(this.selected.path.length + 1)
+              .includes("entity_id")
+              ? html`<pre>entity: ${currentDetail.entity_id}</pre>`
+              : nothing}
           `;
         })
       );
@@ -291,7 +322,10 @@ export class HaTracePathDetails extends LitElement {
             .entries=${entries}
             .narrow=${this.narrow}
           ></ha-logbook-renderer>
-          <hat-logbook-note .domain=${this.trace.domain}></hat-logbook-note>
+          <hat-logbook-note
+            .hass=${this.hass}
+            .domain=${this.trace.domain}
+          ></hat-logbook-note>
         `
       : html`<div class="padded-box">
           ${this.hass!.localize(

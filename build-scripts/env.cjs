@@ -2,12 +2,11 @@ const fs = require("fs");
 const path = require("path");
 const paths = require("./paths.cjs");
 
+const isTrue = (value) => value === "1" || value?.toLowerCase() === "true";
+
 module.exports = {
-  useRollup() {
-    return process.env.ROLLUP === "1";
-  },
   useWDS() {
-    return process.env.WDS === "1";
+    return isTrue(process.env.WDS);
   },
   isProdBuild() {
     return (
@@ -15,13 +14,13 @@ module.exports = {
     );
   },
   isStatsBuild() {
-    return process.env.STATS === "1";
+    return isTrue(process.env.STATS);
   },
   isTestBuild() {
-    return process.env.IS_TEST === "true";
+    return isTrue(process.env.IS_TEST);
   },
   isNetlify() {
-    return process.env.NETLIFY === "true";
+    return isTrue(process.env.NETLIFY);
   },
   version() {
     const version = fs
@@ -33,6 +32,6 @@ module.exports = {
     return version[1];
   },
   isDevContainer() {
-    return process.env.DEV_CONTAINER === "1";
+    return isTrue(process.env.DEV_CONTAINER);
   },
 };
