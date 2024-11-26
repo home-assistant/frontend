@@ -58,7 +58,7 @@ export default [
     settings: {
       "import/resolver": {
         webpack: {
-          config: "./webpack.config.cjs",
+          config: "./rspack.config.cjs",
         },
       },
     },
