@@ -5928,6 +5928,29 @@
             "background": {
               "settings": "Background settings",
               "image": "Background image",
+              "size": {
+                "name": "Background size",
+                "options": {
+                  "top_left": "Top left",
+                  "top_center": "Top center",
+                  "top_right": "Top right",
+                  "center_left": "Center left",
+                  "center": "Center",
+                  "center_right": "Center right",
+                  "bottom_left": "Bottom left",
+                  "bottom_center": "Bottom center",
+                  "bottom_right": "Bottom right"
+                }
+              },
+              "alignment": {
+                "name": "Background alignment",
+                "options": {
+                  "original": "Original",
+                  "fill_view": "Fill view",
+                  "fit_view": "Fit view"
+                }
+              },
+              "transparency": "Background transparency",
               "tile": "Tile background"
             },
             "edit": "Edit view",

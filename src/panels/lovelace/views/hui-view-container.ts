@@ -57,10 +57,40 @@ class HuiViewContainer extends LitElement {
       if (background.tile) {
         return `top / auto repeat url('${background.image}')`;
       }
-      return `center / cover no-repeat url('${background.image}')`;
+      let size = "auto";
+      if (background.size in ["original", "fill_view", "fit_view"]) {
+        size = background.size;
+      }
+      let alignment = "center";
+      if (
+        background.size in
+        [
+          "top_left",
+          "top_center",
+          "top_right",
+          "center_left",
+          "center",
+          "center_right",
+          "bottom_left",
+          "bottom_center",
+          "bottom_right",
+        ]
+      ) {
+        alignment = background.alignment;
+      }
+      return `${alignment} / ${size} no-repeat url('${background.image}')`;
     }
     if (typeof background === "string") {
       return background;
+    }
+    return null;
+  }
+
+  private _computeBackgroundOpacityProperty(background?: BackgroundConfig) {
+    if (typeof background === "object" && background.image) {
+      if (background.transparency) {
+        return `${background.transparency}%`;
+      }
     }
     return null;
   }
@@ -104,6 +134,11 @@ class HuiViewContainer extends LitElement {
     const viewBackground = this._computeBackgroundProperty(this.background);
     this.toggleAttribute("fixed-background", fixedBackground);
     this.style.setProperty("--view-background", viewBackground);
+
+    const viewBackgroundOpacity = this._computeBackgroundOpacityProperty(
+      this.background
+    );
+    this.style.setProperty("--view-background-opacity", viewBackgroundOpacity);
   }
 
   static get styles(): CSSResultGroup {
@@ -127,6 +162,7 @@ class HuiViewContainer extends LitElement {
           --view-background,
           var(--lovelace-background, var(--primary-background-color))
         );
+        opacity: var(--view-background-opacity)
         background-attachment: scroll !important;
       }
       :host(:not([fixed-background])) {
