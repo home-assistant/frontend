@@ -60,7 +60,7 @@ declare global {
     };
   }
 
-  // For loading workers in webpack
+  // For loading workers in rspack
   interface ImportMeta {
     url: string;
   }

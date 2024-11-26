@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import unusedImports from "eslint-plugin-unused-imports";
 import globals from "globals";
 import tsParser from "@typescript-eslint/parser";
@@ -57,7 +58,7 @@ export default [
     settings: {
       "import/resolver": {
         webpack: {
-          config: "./webpack.config.cjs",
+          config: "./rspack.config.cjs",
         },
       },
     },
