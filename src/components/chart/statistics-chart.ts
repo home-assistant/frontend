@@ -72,6 +72,12 @@ export class StatisticsChart extends LitElement {
 
   @property() public chartType: ChartType = "line";
 
+  @property({ type: Number }) public minYAxis?: number;
+
+  @property({ type: Number }) public maxYAxis?: number;
+
+  @property({ type: Boolean }) public fitYData = false;
+
   @property({ type: Boolean }) public hideLegend = false;
 
   @property({ type: Boolean }) public logarithmicScale = false;
@@ -113,6 +119,9 @@ export class StatisticsChart extends LitElement {
       changedProps.has("unit") ||
       changedProps.has("period") ||
       changedProps.has("chartType") ||
+      changedProps.has("minYAxis") ||
+      changedProps.has("maxYAxis") ||
+      changedProps.has("fitYData") ||
       changedProps.has("logarithmicScale") ||
       changedProps.has("hideLegend")
     ) {
@@ -232,6 +241,8 @@ export class StatisticsChart extends LitElement {
             text: unit || this.unit,
           },
           type: this.logarithmicScale ? "logarithmic" : "linear",
+          min: this.fitYData ? null : this.minYAxis,
+          max: this.fitYData ? null : this.maxYAxis,
         },
       },
       plugins: {

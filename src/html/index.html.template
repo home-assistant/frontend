@@ -97,16 +97,8 @@
     <script>
         if (!window.latestJS) {
           window.customPanelJS = "<%= es5CustomPanelJS %>";
-          <% if (useRollup) { %>
-            _ls("/static/js/s.min.js").onload = function() {
-              <% for (const entry of es5EntryJS) { %>
-                System.import("<%= entry %>");
-              <% } %>
-            }
-          <% } else { %>
-            <% for (const entry of es5EntryJS) { %>
-              _ls("<%= entry %>", true);
-            <% } %>
+          <% for (const entry of es5EntryJS) { %>
+            _ls("<%= entry %>", true);
           <% } %>
         }
     </script>

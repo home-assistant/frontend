@@ -11,7 +11,6 @@ import { fireEvent } from "../common/dom/fire_event";
 import { subscribeAreaRegistry } from "../data/area_registry";
 import { broadcastConnectionStatus } from "../data/connection-status";
 import { subscribeDeviceRegistry } from "../data/device_registry";
-import { subscribeEntityRegistryDisplay } from "../data/entity_registry";
 import { subscribeFrontendUserData } from "../data/frontend";
 import { forwardHaptic } from "../data/haptics";
 import { DEFAULT_PANEL } from "../data/panel";
@@ -33,6 +32,7 @@ import hassCallApi, { hassCallApiRaw } from "../util/hass-call-api";
 import type { HassBaseEl } from "./hass-base-mixin";
 import { promiseTimeout } from "../common/util/promise-timeout";
 import { subscribeFloorRegistry } from "../data/ws-floor_registry";
+import { subscribeEntityRegistryDisplay } from "../data/ws-entity_registry_display";
 
 export const connectionMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T

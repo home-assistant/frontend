@@ -172,12 +172,14 @@ const createMasterTranslation = () =>
 
 const FRAGMENTS = ["base"];
 
-const toggleSupervisorFragment = async () => {
-  FRAGMENTS[0] = "supervisor";
+const setFragment = (fragment) => async () => {
+  FRAGMENTS[0] = fragment;
 };
 
 const panelFragment = (fragment) =>
-  fragment !== "base" && fragment !== "supervisor";
+  fragment !== "base" &&
+  fragment !== "supervisor" &&
+  fragment !== "landing-page";
 
 const HASHES = new Map();
 
@@ -224,6 +226,9 @@ const createTranslations = async () => {
             case "supervisor":
               // Supervisor key is at the top level
               return [flatten(data.supervisor), ""];
+            case "landing-page":
+              // landing-page key is at the top level
+              return [flatten(data["landing-page"]), ""];
             default:
               // Create a fragment with only the given panel
               return [
@@ -322,5 +327,10 @@ gulp.task(
 
 gulp.task(
   "build-supervisor-translations",
-  gulp.series(toggleSupervisorFragment, "build-translations")
+  gulp.series(setFragment("supervisor"), "build-translations")
+);
+
+gulp.task(
+  "build-landing-page-translations",
+  gulp.series(setFragment("landing-page"), "build-translations")
 );
