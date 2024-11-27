@@ -344,9 +344,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 ${this._manifest?.quality_scale &&
                 this._manifest?.quality_scale !== "internal"
                   ? html`<ha-alert
-                      class=${classMap({
-                        [`${this._manifest.quality_scale}-medal`]: true,
-                      })}
+                      class=${`${this._manifest.quality_scale}-medal`}
                       alert-type="info"
                       ><ha-svg-icon
                         class="medal"
@@ -360,7 +358,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                       )}
                       <a
                         slot="action"
-                        href=${`https://developers.home-assistant.io/docs/core/integration-quality-scale/#-${this._manifest.quality_scale}`}
+                        href=${documentationUrl(
+                          this.hass,
+                          `/docs/quality_scale/#${this._manifest.quality_scale}-`
+                        )}
                         rel="noopener noreferrer"
                         target="_blank"
                       >
