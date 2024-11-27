@@ -209,7 +209,11 @@ export class HaScriptTrace extends LitElement {
         ${this._traces === undefined
           ? html`<div class="container">Loading…</div>`
           : this._traces.length === 0
-            ? html`<div class="container">No traces found</div>`
+            ? html`<div class="container">
+                ${this.hass!.localize(
+                  "ui.panel.config.automation.trace.no_traces_found"
+                )}
+              </div>`
             : this._trace === undefined
               ? ""
               : html`
