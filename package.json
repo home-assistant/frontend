@@ -19,7 +19,8 @@
     "postinstall": "husky",
     "prepack": "pinst --disable",
     "postpack": "pinst --enable",
-    "test": "vitest run --config test/vitest.config.ts"
+    "test": "vitest run --config test/vitest.config.ts",
+    "test:coverage": "vitest run --config test/vitest.config.ts --coverage"
   },
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "Apache-2.0",
@@ -189,6 +190,7 @@
     "@types/webspeechapi": "0.0.29",
     "@typescript-eslint/eslint-plugin": "7.18.0",
     "@typescript-eslint/parser": "7.18.0",
+    "@vitest/coverage-v8": "2.1.5",
     "@web/dev-server": "0.1.38",
     "babel-loader": "9.2.1",
     "babel-plugin-template-html-minifier": "4.1.0",
