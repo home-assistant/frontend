@@ -4,7 +4,7 @@ import { ReactiveElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import {
   relativeTime,
-  RelativeTimeFormat,
+  type RelativeTimeFormat,
 } from "../common/datetime/relative_time";
 import { capitalizeFirstLetter } from "../common/string/capitalize-first-letter";
 import type { HomeAssistant } from "../types";

@@ -26,10 +26,10 @@ export const relativeTime = (
   locale: FrontendLocaleData,
   to?: Date,
   includeTense = true,
-  format = RelativeTimeFormat.relative
+  format?: RelativeTimeFormat
 ): string => {
   const diff = selectUnit(from, to, locale);
-  const style = RelativeTimeFormat[format];
+  const style: RelativeTimeStyle = format ? RelativeTimeFormat[format] : "long";
   if (includeTense) {
     return formatRelTimeMem(locale, style).format(diff.value, diff.unit);
   }
