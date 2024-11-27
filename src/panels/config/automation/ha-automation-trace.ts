@@ -424,7 +424,9 @@ export class HaAutomationTrace extends LitElement {
       }
 
       await showAlertDialog(this, {
-        text: "Chosen trace is no longer available",
+        text: this.hass!.localize(
+          "ui.panel.config.automation.trace.trace_no_longer_available"
+        ),
       });
     }
 
@@ -471,7 +473,11 @@ export class HaAutomationTrace extends LitElement {
   }
 
   private _importTrace() {
-    const traceText = prompt("Enter downloaded trace");
+    const traceText = prompt(
+      this.hass.localize(
+        "ui.panel.config.automation.trace.enter_downloaded_trace"
+      )
+    );
     if (!traceText) {
       return;
     }
