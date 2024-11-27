@@ -1691,6 +1691,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@formatjs/intl-durationformat@npm:0.6.4":
+  version: 0.6.4
+  resolution: "@formatjs/intl-durationformat@npm:0.6.4"
+  dependencies:
+    "@formatjs/ecma402-abstract": "npm:2.2.4"
+    "@formatjs/intl-localematcher": "npm:0.5.8"
+    tslib: "npm:2"
+  checksum: 10/aa7c045e94322f0a5723584e79dd1395b3c08e5d1d79432748ae98c0b0c1727059bd1aa5c04090df916ff1aea768336184a2d09ecfd2ece2fb090c472bbd8250
+  languageName: node
+  linkType: hard
+
 "@formatjs/intl-enumerator@npm:1.8.4":
   version: 1.8.4
   resolution: "@formatjs/intl-enumerator@npm:1.8.4"
@@ -9487,6 +9498,7 @@ __metadata:
     "@egjs/hammerjs": "npm:2.0.17"
     "@formatjs/intl-datetimeformat": "npm:6.16.5"
     "@formatjs/intl-displaynames": "npm:6.8.5"
+    "@formatjs/intl-durationformat": "npm:0.6.4"
     "@formatjs/intl-getcanonicallocales": "npm:2.5.3"
     "@formatjs/intl-listformat": "npm:7.7.5"
     "@formatjs/intl-locale": "npm:4.2.5"

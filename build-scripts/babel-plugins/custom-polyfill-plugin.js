@@ -147,6 +147,7 @@ const polyfillMap = {
       ...Object.fromEntries(
         [
           "DateTimeFormat",
+          "DurationFormat",
           "DisplayNames",
           "ListFormat",
           "NumberFormat",
