@@ -165,7 +165,7 @@ export const formatDuration = (
       return formatDurationSecondMem(locale).format(input);
     }
     case "ms": {
-      const milliseconds = Math.floor(value);
+      const milliseconds = value;
       const input: DurationInput = {
         milliseconds,
       };
