@@ -348,7 +348,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         "ui.panel.config.integrations.config_entry.custom_integration"
                       )}</ha-alert
                     >`
-                  : ""}
+                  : nothing}
                 ${this._manifest?.iot_class?.startsWith("cloud_")
                   ? html`<ha-alert
                       ><ha-svg-icon slot="icon" path=${mdiCloud}></ha-svg-icon
@@ -356,7 +356,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         "ui.panel.config.integrations.config_entry.depends_on_cloud"
                       )}</ha-alert
                     >`
-                  : ""}
+                  : nothing}
                 ${normalEntries.length === 0 &&
                 this._manifest &&
                 !this._manifest.config_flow &&
@@ -372,7 +372,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         "ui.panel.config.integrations.config_entry.no_config_flow"
                       )}</ha-alert
                     >`
-                  : ""}
+                  : nothing}
               </div>
 
               <div class="card-actions">
@@ -398,7 +398,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         <ha-icon-next slot="meta"></ha-icon-next>
                       </ha-list-item>
                     </a>`
-                  : ""}
+                  : nothing}
                 ${numberOfEntities > 0
                   ? html`<a
                       href=${`/config/entities?historyBack=1&domain=${this.domain}`}
@@ -415,7 +415,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         <ha-icon-next slot="meta"></ha-icon-next>
                       </ha-list-item>
                     </a>`
-                  : ""}
+                  : nothing}
                 ${this._manifest
                   ? html`<a
                       href=${this._manifest.is_built_in
@@ -441,7 +441,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         ></ha-svg-icon>
                       </ha-list-item>
                     </a>`
-                  : ""}
+                  : nothing}
                 ${this._manifest &&
                 (this._manifest.is_built_in || this._manifest.issue_tracker)
                   ? html`<a
@@ -463,7 +463,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         ></ha-svg-icon>
                       </ha-list-item>
                     </a>`
-                  : ""}
+                  : nothing}
                 ${this._logInfo
                   ? html`<ha-list-item
                       @request-selected=${this._logInfo.level ===
@@ -489,7 +489,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                           : mdiBugPlay}
                       ></ha-svg-icon>
                     </ha-list-item>`
-                  : ""}
+                  : nothing}
               </div>
             </ha-card>
           </div>
@@ -517,7 +517,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     )}
                   </ha-md-list>
                 </ha-card>`
-              : ""}
+              : nothing}
             ${attentionFlows.length || attentionEntries.length
               ? html`<ha-card>
                   <h1 class="card-header">
@@ -562,11 +562,11 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                               role="separator"
                               tabindex="-1"
                             ></ha-md-divider>`
-                          : ""} `
+                          : nothing} `
                     )}
                   </ha-md-list>
                 </ha-card>`
-              : ""}
+              : nothing}
 
             <ha-card>
               <h1 class="card-header">
@@ -602,7 +602,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                           role="separator"
                           tabindex="-1"
                         ></ha-md-divider>`
-                      : ""} `
+                      : nothing}`
                 )}
               </ha-md-list>
               <div class="card-actions">
@@ -762,11 +762,11 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 <div>
                   ${this.hass.localize(...stateText)}${stateTextExtra
                     ? html`: ${stateTextExtra}`
-                    : ""}
+                    : nothing}
                 </div>
               </div>
             `
-          : ""}
+          : nothing}
       </div>
       ${item.disabled_by === "user"
         ? html`<ha-button unelevated slot="end" @click=${this._handleEnable}>
@@ -793,7 +793,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   )}
                 </ha-button>
               `
-            : ""}
+            : nothing}
       <ha-md-button-menu positioning="popover" slot="end">
         <ha-icon-button
           slot="trigger"
@@ -815,7 +815,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 <ha-icon-next slot="end"></ha-icon-next>
               </ha-md-menu-item>
             `
-          : ""}
+          : nothing}
         ${item.disabled_by && services.length
           ? html`<ha-md-menu-item
               href=${services.length === 1
@@ -832,7 +832,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               )}
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-menu-item> `
-          : ""}
+          : nothing}
         ${item.disabled_by && entities.length
           ? html`
               <ha-md-menu-item
@@ -849,7 +849,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 <ha-icon-next slot="end"></ha-icon-next>
               </ha-md-menu-item>
             `
-          : ""}
+          : nothing}
         ${!item.disabled_by &&
         RECOVERABLE_STATES.includes(item.state) &&
         item.supports_unload &&
@@ -886,7 +886,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 )}
               </ha-md-menu-item>
             `
-          : ""}
+          : nothing}
         ${!item.disabled_by &&
         item.supports_reconfigure &&
         item.source !== "system"
