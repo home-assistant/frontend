@@ -34,6 +34,7 @@ const TYPES: Set<LovelaceCardFeatureConfig["type"]> = new Set([
   "alarm-modes",
   "climate-fan-modes",
   "climate-swing-modes",
+  "climate-swing-horizontal-modes",
   "climate-hvac-modes",
   "climate-preset-modes",
   "cover-open-close",
