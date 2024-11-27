@@ -454,9 +454,6 @@ export class SankeyChart extends LitElement {
     svg {
       overflow: visible;
     }
-    .node {
-      /* cursor: pointer; */
-    }
     .node-label {
       font-size: ${FONT_SIZE}px;
       fill: var(--primary-text-color, white);

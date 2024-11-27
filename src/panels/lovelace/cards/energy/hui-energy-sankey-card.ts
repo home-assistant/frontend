@@ -103,6 +103,29 @@ class HuiEnergySankeyCard
       });
     }
 
+    // Add battery source if available
+    if (types.battery) {
+      const totalBatteryOut =
+        calculateStatisticsSumGrowth(
+          this._data.stats,
+          types.battery.map((source) => source.stat_energy_from)
+        ) || 0;
+
+      nodes.push({
+        id: "battery",
+        label: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.energy_distribution.battery"
+        ),
+        value: totalBatteryOut,
+        color: "var(--energy-battery-out-color)",
+        index: 0,
+      });
+      links.push({
+        source: "battery",
+        target: "home",
+      });
+    }
+
     // Add solar if available
     if (types.solar) {
       const totalSolarProduction =
@@ -127,7 +150,7 @@ class HuiEnergySankeyCard
       });
     }
 
-    // Add battery if available
+    // Add battery sink if available
     if (types.battery) {
       const totalBatteryIn =
         calculateStatisticsSumGrowth(
@@ -153,29 +176,9 @@ class HuiEnergySankeyCard
           });
         }
       });
-
-      const totalBatteryOut =
-        calculateStatisticsSumGrowth(
-          this._data.stats,
-          types.battery.map((source) => source.stat_energy_from)
-        ) || 0;
-
-      nodes.push({
-        id: "battery",
-        label: this.hass.localize(
-          "ui.panel.lovelace.cards.energy.energy_distribution.battery"
-        ),
-        value: totalBatteryOut,
-        color: "var(--energy-battery-out-color)",
-        index: 0,
-      });
-      links.push({
-        source: "battery",
-        target: "home",
-      });
     }
 
-    // grid return
+    // Add grid return if available
     if (types.grid && types.grid[0].flow_to) {
       const totalToGrid =
         calculateStatisticsSumGrowth(
