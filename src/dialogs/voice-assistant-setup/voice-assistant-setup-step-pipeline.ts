@@ -124,9 +124,9 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
               "/voice_control/voice_remote_local_assistant/"
             )}
             target="_blank"
-            rel="noreferrer noopenner"
+            rel="noreferrer noopener"
           >
-            <ha-button @click=${this._skip}>
+            <ha-button>
               <ha-svg-icon .path=${mdiOpenInNew} slot="icon"></ha-svg-icon>
               Learn more</ha-button
             >
@@ -257,10 +257,6 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
 
   private async _setupLocal() {
     this._nextStep(STEP.LOCAL);
-  }
-
-  private _skip() {
-    this._nextStep(STEP.SUCCESS);
   }
 
   private _nextStep(step?: STEP) {

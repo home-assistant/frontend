@@ -67,7 +67,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
                   "/voice_control/voice_remote_local_assistant/"
                 )}
                 target="_blank"
-                rel="noreferrer noopenner"
+                rel="noreferrer noopener"
               >
                 <ha-button>
                   <ha-svg-icon .path=${mdiOpenInNew} slot="icon"></ha-svg-icon>
@@ -89,7 +89,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
                     "/voice_control/voice_remote_local_assistant/"
                   )}
                   target="_blank"
-                  rel="noreferrer noopenner"
+                  rel="noreferrer noopener"
                 >
                   <ha-button>
                     <ha-svg-icon
