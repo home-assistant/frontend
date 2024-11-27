@@ -107,8 +107,8 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { fileDownload } from "../../../util/file_download";
 import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
-import type { LocalizeKeys } from "../../../common/translations/localize";
 
+type MedalColor = "gold" | "silver" | "bronze" | "platinum";
 const MEDAL_COLORS = ["bronze", "silver", "gold", "platinum"];
 
 export const renderConfigEntryError = (
@@ -355,7 +355,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         ></ha-svg-icon>
                         <span>
                           ${this.hass.localize(
-                            `ui.panel.config.integrations.config_entry.${this._manifest.quality_scale}_quality` as LocalizeKeys,
+                            `ui.panel.config.integrations.config_entry.${this._manifest.quality_scale as MedalColor}_quality`,
                             {
                               quality_scale: html`
                                 <a
