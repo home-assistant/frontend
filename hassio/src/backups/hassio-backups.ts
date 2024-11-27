@@ -323,6 +323,7 @@ export class HassioBackups extends LitElement {
         number: this._selectedBackups.length,
       }),
       confirmText: this.supervisor.localize("backup.delete_backup_confirm"),
+      destructive: true,
     });
 
     if (!confirm) {
