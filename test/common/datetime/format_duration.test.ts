@@ -1,5 +1,5 @@
+import "@formatjs/intl-durationformat/polyfill-force";
 import { assert, describe, it } from "vitest";
-
 import { formatDuration } from "../../../src/common/datetime/format_duration";
 import type { FrontendLocaleData } from "../../../src/data/translation";
 import {
