@@ -9,6 +9,7 @@ const outDir = join(paths.build_dir, "locale-data");
 
 const INTL_POLYFILLS = {
   "intl-datetimeformat": "DateTimeFormat",
+  "intl-durationFormat": "DurationFormat",
   "intl-displaynames": "DisplayNames",
   "intl-listformat": "ListFormat",
   "intl-numberformat": "NumberFormat",
