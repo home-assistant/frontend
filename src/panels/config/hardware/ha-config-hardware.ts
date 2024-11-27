@@ -37,6 +37,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { hardwareBrandsUrl } from "../../../util/brands-url";
 import { showhardwareAvailableDialog } from "./show-dialog-hardware-available";
+import { extractApiErrorMessage } from "../../../data/hassio/common";
 
 const DATASAMPLES = 60;
 
@@ -268,7 +269,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
             `
           : ""}
         ${this._error
-          ? html` <ha-alert alert-type="error">${this._error}</ha-alert> `
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
           : ""}
         <div class="content">
           ${boardName || isComponentLoaded(this.hass, "hassio")
@@ -462,10 +463,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
         this._OSData = await fetchHassioHassOsInfo(this.hass);
       }
     } catch (err: any) {
-      this._error =
-        typeof err === "object"
-          ? err.message || err.code || "Unknown error"
-          : err || "Unknown error";
+      this._error = extractApiErrorMessage(err);
     }
   }
 
