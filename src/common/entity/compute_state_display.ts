@@ -4,7 +4,7 @@ import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
 import type { FrontendLocaleData } from "../../data/translation";
 import { TimeZone } from "../../data/translation";
 import type { HomeAssistant } from "../../types";
-import { DURATION_UNITS, formatDuration } from "../datetime/duration";
+import { DURATION_UNITS, formatDuration } from "../datetime/format_duration";
 import { formatDate } from "../datetime/format_date";
 import { formatDateTime } from "../datetime/format_date_time";
 import { formatTime } from "../datetime/format_time";
@@ -72,10 +72,10 @@ export const computeStateDisplayFromEntityAttributes = (
     ) {
       try {
         return formatDuration(
+          locale,
           state,
           attributes.unit_of_measurement,
-          entity?.display_precision,
-          locale
+          entity?.display_precision
         );
       } catch (_err) {
         // fallback to default
