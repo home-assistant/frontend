@@ -3614,6 +3614,8 @@
             "older_trace": "Older trace",
             "newer_trace": "Newer trace",
             "no_traces_found": "No traces found",
+            "trace_no_longer_available": "Chosen trace is no longer available",
+            "enter_downloaded_trace": "Enter downloaded trace",
             "tabs": {
               "details": "Step Details",
               "timeline": "Trace Timeline",
@@ -3621,7 +3623,8 @@
               "automation_config": "Automation Config",
               "step_config": "Step Config",
               "changed_variables": "Changed Variables",
-              "blueprint_config": "Blueprint Config"
+              "blueprint_config": "Blueprint Config",
+              "script_config": "Script Config"
             },
             "path": {
               "choose": "Select a step on the left for more information.",
