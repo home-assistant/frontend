@@ -6,7 +6,6 @@ import {
   mdiBug,
   mdiBugPlay,
   mdiBugStop,
-  mdiCloud,
   mdiCog,
   mdiDelete,
   mdiDevices,
@@ -14,7 +13,6 @@ import {
   mdiDownload,
   mdiFileCodeOutline,
   mdiHandExtendedOutline,
-  mdiInformation,
   mdiMedal,
   mdiOpenInNew,
   mdiPackageVariant,
@@ -26,6 +24,7 @@ import {
   mdiShapeOutline,
   mdiStopCircleOutline,
   mdiTrophy,
+  mdiWeb,
   mdiWrench,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -343,53 +342,56 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   : nothing}
                 ${this._manifest?.quality_scale &&
                 this._manifest?.quality_scale !== "internal"
-                  ? html`<ha-alert
-                      class=${`${this._manifest.quality_scale}-medal`}
-                      alert-type="info"
-                      ><ha-svg-icon
-                        class="medal"
-                        slot="icon"
-                        path=${this._manifest.quality_scale === "platinum"
-                          ? mdiTrophy
-                          : mdiMedal}
-                      ></ha-svg-icon>
-                      ${this.hass.localize(
-                        `ui.panel.config.integrations.config_entry.${this._manifest.quality_scale}_quality`
-                      )}
-                      <a
-                        slot="action"
-                        href=${documentationUrl(
-                          this.hass,
-                          `/docs/quality_scale/#${this._manifest.quality_scale}-`
-                        )}
-                        rel="noopener noreferrer"
-                        target="_blank"
-                      >
+                  ? html`
+                      <div class="quality-scale integration-info">
                         <ha-svg-icon
-                          class="info"
-                          path=${mdiInformation}
+                          class=${`${this._manifest.quality_scale}-medal`}
+                          .path=${this._manifest.quality_scale === "platinum"
+                            ? mdiTrophy
+                            : mdiMedal}
                         ></ha-svg-icon>
-                      </a>
-                    </ha-alert>`
+                        <span>
+                          ${this.hass.localize(
+                            `ui.panel.config.integrations.config_entry.${this._manifest.quality_scale}_quality`,
+                            {
+                              quality_scale: html`
+                                <a
+                                  href=${documentationUrl(
+                                    this.hass,
+                                    `/docs/quality_scale/#${this._manifest.quality_scale}-`
+                                  )}
+                                  rel="noopener noreferrer"
+                                  target="_blank"
+                                >
+                                  ${this.hass.localize(
+                                    "ui.panel.config.integrations.config_entry.quality_scale"
+                                  )}
+                                </a>
+                              `,
+                            }
+                          )}
+                        </span>
+                      </div>
+                    `
                   : nothing}
                 ${this._manifest?.is_built_in === false
-                  ? html`<ha-alert alert-type="warning"
-                      ><ha-svg-icon
-                        slot="icon"
+                  ? html`<div class="integration-info warn">
+                      <ha-svg-icon
+                        class="warning"
                         path=${mdiPackageVariant}
                       ></ha-svg-icon>
                       ${this.hass.localize(
                         "ui.panel.config.integrations.config_entry.custom_integration"
-                      )}</ha-alert
-                    >`
+                      )}
+                    </div>`
                   : nothing}
                 ${this._manifest?.iot_class?.startsWith("cloud_")
-                  ? html`<ha-alert
-                      ><ha-svg-icon slot="icon" path=${mdiCloud}></ha-svg-icon
-                      >${this.hass.localize(
+                  ? html`<div class="integration-info">
+                      <ha-svg-icon .path=${mdiWeb}></ha-svg-icon>
+                      ${this.hass.localize(
                         "ui.panel.config.integrations.config_entry.depends_on_cloud"
-                      )}</ha-alert
-                    >`
+                      )}
+                    </div>`
                   : nothing}
                 ${normalEntries.length === 0 &&
                 this._manifest &&
@@ -397,15 +399,12 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 this.hass.config.components.find(
                   (comp) => comp.split(".")[0] === this.domain
                 )
-                  ? html`<ha-alert alert-type="info"
-                      ><ha-svg-icon
-                        slot="icon"
-                        path=${mdiFileCodeOutline}
-                      ></ha-svg-icon
+                  ? html`<div class="integration-info info">
+                      <ha-svg-icon path=${mdiFileCodeOutline}></ha-svg-icon
                       >${this.hass.localize(
                         "ui.panel.config.integrations.config_entry.no_config_flow"
-                      )}</ha-alert
-                    >`
+                      )}
+                    </div>`
                   : nothing}
               </div>
 
@@ -1458,6 +1457,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           margin-top: 32px;
           margin-bottom: 32px;
         }
+        .card-content {
+          padding: 16px 0 8px;
+        }
         .column {
           width: 33%;
           flex-grow: 1;
@@ -1505,38 +1507,45 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           max-width: 200px;
           max-height: 100px;
         }
-        ha-alert {
-          display: block;
-          margin-top: 4px;
-        }
-        ha-alert:first-of-type {
-          margin-top: 16px;
-        }
 
         @keyframes shimmer {
           100% {
             mask-position: left;
           }
         }
-        ha-svg-icon.medal {
+        .integration-info {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+          padding: 0 20px;
+          min-height: 48px;
+        }
+        .integration-info ha-svg-icon {
+          min-width: 24px;
+          color: var(--mdc-theme-text-icon-on-background);
+        }
+        .integration-info.warn ha-svg-icon {
+          color: var(--warning-color);
+        }
+        .integration-info.info ha-svg-icon {
+          color: var(--info-color);
+        }
+        .quality-scale ha-svg-icon {
           mask: linear-gradient(-60deg, #000 30%, #0005, #000 70%) right/350%
             100%;
           animation: shimmer 2.5s infinite;
         }
-        ha-alert.bronze-medal {
-          --info-color: #cd7f32;
+        ha-svg-icon.bronze-medal {
+          color: #cd7f32;
         }
-        ha-alert.silver-medal {
-          --info-color: silver;
+        ha-svg-icon.silver-medal {
+          color: silver;
         }
-        ha-alert.gold-medal {
-          --info-color: gold;
+        ha-svg-icon.gold-medal {
+          color: gold;
         }
-        ha-alert.platinum-medal {
-          --info-color: #d9d9d9;
-        }
-        ha-alert ha-svg-icon.info {
-          color: var(--secondary-text-color);
+        ha-svg-icon.platinum-medal {
+          color: #d9d9d9;
         }
         ha-md-list-item {
           position: relative;
