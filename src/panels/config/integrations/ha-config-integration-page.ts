@@ -108,6 +108,9 @@ import { fileDownload } from "../../../util/file_download";
 import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
 
+type MedalColor = "gold" | "silver" | "bronze" | "platinum";
+const MEDAL_COLORS = ["bronze", "silver", "gold", "platinum"];
+
 export const renderConfigEntryError = (
   hass: HomeAssistant,
   entry: ConfigEntry
@@ -341,7 +344,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   ? html`<div class="version">${this._manifest.version}</div>`
                   : nothing}
                 ${this._manifest?.quality_scale &&
-                this._manifest?.quality_scale !== "internal"
+                MEDAL_COLORS.includes(this._manifest.quality_scale)
                   ? html`
                       <div class="quality-scale integration-info">
                         <ha-svg-icon
@@ -352,7 +355,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         ></ha-svg-icon>
                         <span>
                           ${this.hass.localize(
-                            `ui.panel.config.integrations.config_entry.${this._manifest.quality_scale}_quality`,
+                            `ui.panel.config.integrations.config_entry.${this._manifest.quality_scale as MedalColor}_quality`,
                             {
                               quality_scale: html`
                                 <a
