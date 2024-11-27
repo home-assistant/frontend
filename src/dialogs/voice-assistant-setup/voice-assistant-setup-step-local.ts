@@ -69,7 +69,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
                 target="_blank"
                 rel="noreferrer noopenner"
               >
-                <ha-button @click=${this._skip}>
+                <ha-button @click=${this._nextStep}>
                   <ha-svg-icon .path=${mdiOpenInNew} slot="icon"></ha-svg-icon>
                   Learn more</ha-button
                 >
@@ -90,7 +90,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
                   target="_blank"
                   rel="noreferrer noopenner"
                 >
-                  <ha-button @click=${this._skip}>
+                  <ha-button @click=${this._nextStep}>
                     <ha-svg-icon
                       .path=${mdiOpenInNew}
                       slot="icon"
@@ -110,8 +110,8 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     }
   }
 
-  private _skip() {
-    fireEvent(this, "next-step", { step: STEP.SUCCESS });
+  private _nextStep() {
+    fireEvent(this, "next-step", { step: STEP.SUCCESS, noPrevious: true });
   }
 
   private async _checkLocal() {
@@ -221,7 +221,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
           { option: "preferred" },
           { entity_id: this.assistConfiguration?.pipeline_entity_id }
         );
-        fireEvent(this, "next-step", { step: STEP.SUCCESS, noPrevious: true });
+        this._nextStep();
         return;
       }
     }
@@ -247,7 +247,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
       { option: localPipeline.name },
       { entity_id: this.assistConfiguration?.pipeline_entity_id }
     );
-    fireEvent(this, "next-step", { step: STEP.SUCCESS, noPrevious: true });
+    this._nextStep();
   }
 
   private async _createPipeline(ttsEntityId: string, sttEntityId: string) {
@@ -324,7 +324,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
       { option: localPipeline.name },
       { entity_id: this.assistConfiguration?.pipeline_entity_id }
     );
-    fireEvent(this, "next-step", { step: STEP.SUCCESS, noPrevious: true });
+    this._nextStep();
   }
 
   static styles = [

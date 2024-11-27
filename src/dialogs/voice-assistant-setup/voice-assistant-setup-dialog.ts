@@ -120,22 +120,24 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
         scrimClickAction
       >
         <ha-dialog-header slot="heading">
-          ${this._previousSteps.length
-            ? html`<ha-icon-button
-                slot="navigationIcon"
-                .label=${this.hass.localize("ui.common.back") ?? "Back"}
-                .path=${mdiChevronLeft}
-                @click=${this._goToPreviousStep}
-              ></ha-icon-button>`
-            : this._step !== STEP.UPDATE
+          ${this._step === STEP.LOCAL
+            ? nothing
+            : this._previousSteps.length
               ? html`<ha-icon-button
                   slot="navigationIcon"
-                  .label=${this.hass.localize("ui.dialogs.generic.close") ??
-                  "Close"}
-                  .path=${mdiClose}
-                  @click=${this.closeDialog}
+                  .label=${this.hass.localize("ui.common.back") ?? "Back"}
+                  .path=${mdiChevronLeft}
+                  @click=${this._goToPreviousStep}
                 ></ha-icon-button>`
-              : nothing}
+              : this._step !== STEP.UPDATE
+                ? html`<ha-icon-button
+                    slot="navigationIcon"
+                    .label=${this.hass.localize("ui.dialogs.generic.close") ??
+                    "Close"}
+                    .path=${mdiClose}
+                    @click=${this.closeDialog}
+                  ></ha-icon-button>`
+                : nothing}
           ${this._step === STEP.WAKEWORD ||
           this._step === STEP.AREA ||
           this._step === STEP.PIPELINE
