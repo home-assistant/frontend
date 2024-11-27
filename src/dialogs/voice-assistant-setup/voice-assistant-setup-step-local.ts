@@ -60,7 +60,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
                 We could not automatically install a local TTS and STT provider
                 for you. Read the documentation to learn how to install them.
               </p>
-
+              <ha-button @click=${this._prevStep}>Go back</ha-button>
               <a
                 href=${documentationUrl(
                   this.hass,
@@ -69,7 +69,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
                 target="_blank"
                 rel="noreferrer noopenner"
               >
-                <ha-button @click=${this._nextStep}>
+                <ha-button>
                   <ha-svg-icon .path=${mdiOpenInNew} slot="icon"></ha-svg-icon>
                   Learn more</ha-button
                 >
@@ -82,6 +82,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
                   TTS and STT provider. Learn how to set up local TTS and STT
                   providers in the documentation.
                 </p>
+                <ha-button @click=${this._prevStep}>Go back</ha-button>
                 <a
                   href=${documentationUrl(
                     this.hass,
@@ -90,7 +91,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
                   target="_blank"
                   rel="noreferrer noopenner"
                 >
-                  <ha-button @click=${this._nextStep}>
+                  <ha-button>
                     <ha-svg-icon
                       .path=${mdiOpenInNew}
                       slot="icon"
@@ -108,6 +109,10 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     if (!this.hasUpdated) {
       this._checkLocal();
     }
+  }
+
+  private _prevStep() {
+    fireEvent(this, "prev-step");
   }
 
   private _nextStep() {

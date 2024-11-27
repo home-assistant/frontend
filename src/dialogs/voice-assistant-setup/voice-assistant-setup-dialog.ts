@@ -149,7 +149,11 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
               >`
             : nothing}
         </ha-dialog-header>
-        <div class="content" @next-step=${this._goToNextStep}>
+        <div
+          class="content"
+          @next-step=${this._goToNextStep}
+          @prev-step=${this._goToPreviousStep}
+        >
           ${this._step === STEP.UPDATE
             ? html`<ha-voice-assistant-setup-step-update
                 .hass=${this.hass}
@@ -239,17 +243,17 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
     this._step = this._previousSteps.pop()!;
   }
 
-  private _goToNextStep(ev) {
-    if (ev.detail?.updateConfig) {
+  private _goToNextStep(ev?: CustomEvent) {
+    if (ev?.detail?.updateConfig) {
       this._fetchAssistConfiguration();
     }
-    if (ev.detail?.nextStep) {
+    if (ev?.detail?.nextStep) {
       this._nextStep = ev.detail.nextStep;
     }
-    if (!ev.detail?.noPrevious) {
+    if (!ev?.detail?.noPrevious) {
       this._previousSteps.push(this._step);
     }
-    if (ev.detail?.step) {
+    if (ev?.detail?.step) {
       this._step = ev.detail.step;
     } else if (this._nextStep) {
       this._step = this._nextStep;
@@ -304,5 +308,6 @@ declare global {
           nextStep?: STEP;
         }
       | undefined;
+    "prev-step": undefined;
   }
 }
