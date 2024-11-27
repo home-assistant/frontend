@@ -55,7 +55,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @state() private _error?: { code: string; message: string };
+  @state() private _error?: string;
 
   @state() private _OSData?: HassioHassOSInfo;
 
@@ -268,11 +268,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
             `
           : ""}
         ${this._error
-          ? html`
-              <ha-alert alert-type="error"
-                >${this._error.message || this._error.code}</ha-alert
-              >
-            `
+          ? html` <ha-alert alert-type="error">${this._error}</ha-alert> `
           : ""}
         <div class="content">
           ${boardName || isComponentLoaded(this.hass, "hassio")
@@ -466,7 +462,10 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
         this._OSData = await fetchHassioHassOsInfo(this.hass);
       }
     } catch (err: any) {
-      this._error = err.message || err;
+      this._error =
+        typeof err === "object"
+          ? err.message || err.code || "Unknown error"
+          : err || "Unknown error";
     }
   }
 
