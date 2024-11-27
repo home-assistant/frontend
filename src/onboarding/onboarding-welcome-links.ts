@@ -13,7 +13,7 @@ import "./onboarding-welcome-link";
 class OnboardingWelcomeLinks extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public localize!: LocalizeFunc;
+  @property({ attribute: false }) public localize!: LocalizeFunc<any>;
 
   @property({ type: Boolean }) public mobileApp = false;
 

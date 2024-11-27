@@ -14,9 +14,9 @@ import { fetchCloudStatus } from "../../data/cloud";
 import { listSTTEngines } from "../../data/stt";
 import { listTTSEngines, listTTSVoices } from "../../data/tts";
 import type { HomeAssistant } from "../../types";
-import { documentationUrl } from "../../util/documentation-url";
 import { AssistantSetupStyles } from "./styles";
 import { STEP } from "./voice-assistant-setup-dialog";
+import { documentationUrl } from "../../util/documentation-url";
 
 @customElement("ha-voice-assistant-setup-step-pipeline")
 export class HaVoiceAssistantSetupStepPipeline extends LitElement {
@@ -28,6 +28,8 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
   @property() public deviceId!: string;
 
   @property() public assistEntityId?: string;
+
+  @state() private _cloudChecked = false;
 
   @state() private _showFirst = false;
 
@@ -62,6 +64,10 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
   }
 
   protected override render() {
+    if (!this._cloudChecked) {
+      return nothing;
+    }
+
     return html`<div class="content">
       <h1>What hardware do you want to use?</h1>
       <p class="secondary">
@@ -87,7 +93,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
         </div>
         <h2>Home Assistant Cloud</h2>
         <p>Ideal if you don't have a powerful system at home.</p>
-        <ha-button @click=${this._setupCloud}>Learn more</ha-button>
+        <ha-button @click=${this._setupCloud} unelevated>Learn more</ha-button>
       </div>
       <div class="container">
         <div class="messages-container rpi">
@@ -111,29 +117,36 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
           Install add-ons or containers to run it on your own system. Powerful
           hardware is needed for fast responses.
         </p>
-        <a
-          href=${documentationUrl(
-            this.hass,
-            "/voice_control/voice_remote_local_assistant/"
-          )}
-          target="_blank"
-          rel="noreferrer noopenner"
-        >
-          <ha-button @click=${this._skip}>
-            <ha-svg-icon .path=${mdiOpenInNew} slot="icon"></ha-svg-icon>
-            Learn more</ha-button
+        <div class="row">
+          <a
+            href=${documentationUrl(
+              this.hass,
+              "/voice_control/voice_remote_local_assistant/"
+            )}
+            target="_blank"
+            rel="noreferrer noopener"
           >
-        </a>
+            <ha-button>
+              <ha-svg-icon .path=${mdiOpenInNew} slot="icon"></ha-svg-icon>
+              Learn more</ha-button
+            >
+          </a>
+          <ha-button @click=${this._setupLocal} unelevated
+            >Setup with add-ons</ha-button
+          >
+        </div>
       </div>
     </div>`;
   }
 
   private async _checkCloud() {
     if (!isComponentLoaded(this.hass, "cloud")) {
+      this._cloudChecked = true;
       return;
     }
     const cloudStatus = await fetchCloudStatus(this.hass);
     if (!cloudStatus.logged_in || !cloudStatus.active_subscription) {
+      this._cloudChecked = true;
       return;
     }
     let cloudTtsEntityId;
@@ -210,15 +223,15 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
           (pipeline) => pipeline.name === pipelineName
         )
       ) {
-        pipelineName = `${pipelineName} ${i}`;
+        pipelineName = `Home Assistant Cloud ${i}`;
         i++;
       }
 
       cloudPipeline = await createAssistPipeline(this.hass, {
         name: pipelineName,
-        language: this.hass.config.language,
+        language: this.hass.config.language.split("-")[0],
         conversation_engine: "conversation.home_assistant",
-        conversation_language: this.hass.config.language,
+        conversation_language: this.hass.config.language.split("-")[0],
         stt_engine: cloudSttEntityId,
         stt_language: sttEngine!.supported_languages![0],
         tts_engine: cloudTtsEntityId,
@@ -242,8 +255,8 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
     this._nextStep(STEP.CLOUD);
   }
 
-  private _skip() {
-    this._nextStep(STEP.SUCCESS);
+  private async _setupLocal() {
+    this._nextStep(STEP.LOCAL);
   }
 
   private _nextStep(step?: STEP) {
@@ -325,6 +338,11 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
 
       .message.hass.show {
         width: 184px;
+      }
+      .row {
+        display: flex;
+        justify-content: space-between;
+        margin: 0 16px;
       }
     `,
   ];

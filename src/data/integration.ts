@@ -38,7 +38,14 @@ export interface IntegrationManifest {
   homekit?: { models: string[] };
   integration_type?: IntegrationType;
   loggers?: string[];
-  quality_scale?: "gold" | "internal" | "platinum" | "silver";
+  quality_scale?:
+    | "bronze"
+    | "gold"
+    | "internal"
+    | "platinum"
+    | "silver"
+    | "custom"
+    | "no_score";
   iot_class:
     | "assumed_state"
     | "cloud_polling"

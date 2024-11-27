@@ -33,6 +33,22 @@ module.exports = {
   ),
   gallery_output_static: path.resolve(__dirname, "../gallery/dist/static"),
 
+  landingPage_dir: path.resolve(__dirname, "../landing-page"),
+  landingPage_build: path.resolve(__dirname, "../landing-page/build"),
+  landingPage_output_root: path.resolve(__dirname, "../landing-page/dist"),
+  landingPage_output_latest: path.resolve(
+    __dirname,
+    "../landing-page/dist/frontend_latest"
+  ),
+  landingPage_output_es5: path.resolve(
+    __dirname,
+    "../landing-page/dist/frontend_es5"
+  ),
+  landingPage_output_static: path.resolve(
+    __dirname,
+    "../landing-page/dist/static"
+  ),
+
   hassio_dir: path.resolve(__dirname, "../hassio"),
   hassio_output_root: path.resolve(__dirname, "../hassio/build"),
   hassio_output_static: path.resolve(__dirname, "../hassio/build/static"),
