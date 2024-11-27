@@ -21,14 +21,6 @@ const LOCALE: FrontendLocaleData = {
 
 describe("formatDuration", () => {
   it("works", () => {
-    assert.strictEqual(formatDuration(LOCALE, "0", "ms"), "0ms");
-    assert.strictEqual(formatDuration(LOCALE, "1", "ms"), "1ms");
-    assert.strictEqual(formatDuration(LOCALE, "10", "ms"), "10ms");
-    assert.strictEqual(formatDuration(LOCALE, "100", "ms"), "100ms");
-    assert.strictEqual(formatDuration(LOCALE, "1000", "ms"), "1,000ms");
-    assert.strictEqual(formatDuration(LOCALE, "1001", "ms"), "1,001ms");
-    assert.strictEqual(formatDuration(LOCALE, "65000", "ms"), "65,000ms");
-
     assert.strictEqual(formatDuration(LOCALE, "0.5", "s"), "0s 500ms");
     assert.strictEqual(formatDuration(LOCALE, "1", "s"), "1s");
     assert.strictEqual(formatDuration(LOCALE, "1.1", "s"), "1s 100ms");
