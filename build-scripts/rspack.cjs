@@ -65,19 +65,37 @@ const createRspackConfig = ({
       rules: [
         {
           test: /\.m?js$|\.ts$/,
-          use: (info) => ({
-            loader: "babel-loader",
-            options: {
-              ...bundle.babelOptions({
-                latestBuild,
-                isProdBuild,
-                isTestBuild,
-                sw: info.issuerLayer === "sw",
-              }),
-              cacheDirectory: !isProdBuild,
-              cacheCompression: false,
+          use: (info) => [
+            {
+              loader: "babel-loader",
+              options: {
+                ...bundle.babelOptions({
+                  latestBuild,
+                  isProdBuild,
+                  isTestBuild,
+                  sw: info.issuerLayer === "sw",
+                }),
+                cacheDirectory: !isProdBuild,
+                cacheCompression: false,
+              },
             },
-          }),
+            {
+              loader: "builtin:swc-loader",
+              /** @type {import('@rspack/core').SwcLoaderOptions} */
+              options: {
+                jsc: {
+                  parser: {
+                    syntax: "typescript",
+                    decorators: true,
+                  },
+                  transform: {
+                    legacyDecorator: true,
+                  },
+                },
+              },
+              type: "javascript/auto",
+            },
+          ],
           resolve: {
             fullySpecified: false,
           },
