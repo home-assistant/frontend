@@ -169,7 +169,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
         await this._setupConfigEntry("whisper");
       }
       this._detailState = "Creating assistant";
-      this._findEntitiesAndCreatePipeline();
+      await this._findEntitiesAndCreatePipeline();
     } catch (e) {
       this._state = "ERROR";
     }
@@ -314,8 +314,10 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
       if (tryNo > 3) {
         throw new Error("Timeout searching for local TTS and STT entities");
       }
-      setTimeout(() => this._findEntitiesAndCreatePipeline(tryNo + 1), 2000);
-      return;
+      await new Promise<void>((resolve) => {
+        setTimeout(resolve, 2000);
+      });
+      return this._findEntitiesAndCreatePipeline(tryNo + 1);
     }
 
     const localPipeline = await this._createPipeline(
@@ -330,6 +332,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
       { entity_id: this.assistConfiguration?.pipeline_entity_id }
     );
     this._nextStep();
+    return undefined;
   }
 
   static styles = [
