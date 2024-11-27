@@ -4,7 +4,7 @@ import { formatListWithAnds } from "../string/format-list";
 
 const leftPad = (num: number) => (num < 10 ? `0${num}` : num);
 
-export const formatDuration = (
+export const formatNumericDuration = (
   locale: FrontendLocaleData,
   duration: HaDurationData
 ) => {

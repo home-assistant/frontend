@@ -1,7 +1,7 @@
 import type { HassConfig } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
 import {
-  formatDuration,
+  formatNumericDuration,
   formatDurationLong,
 } from "../common/datetime/format_duration";
 import {
@@ -42,7 +42,7 @@ const describeDuration = (
   } else if (typeof forTime === "string") {
     duration = forTime;
   } else {
-    duration = formatDuration(locale, forTime);
+    duration = formatNumericDuration(locale, forTime);
   }
   return duration;
 };
