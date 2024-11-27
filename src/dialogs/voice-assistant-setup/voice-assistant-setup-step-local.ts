@@ -44,7 +44,10 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
   protected override render() {
     return html`<div class="content">
       ${this._state === "INSTALLING"
-        ? html`<img src="/static/images/voice-assistant/update.png" />
+        ? html`<img
+              src="/static/images/voice-assistant/update.png"
+              alt="Casita Home Assistant loading logo"
+            />
             <h1>Installing add-ons</h1>
             <p>
               The Whisper and Piper add-ons are being installed and configured.
@@ -54,7 +57,10 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
               ${this._detailState || "Installation can take several minutes"}
             </p>`
         : this._state === "ERROR"
-          ? html` <img src="/static/images/voice-assistant/error.png" />
+          ? html` <img
+                src="/static/images/voice-assistant/error.png"
+                alt="Casita Home Assistant error logo"
+              />
               <h1>Failed to install add-ons</h1>
               <p>
                 We could not automatically install a local TTS and STT provider
@@ -75,7 +81,10 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
                 >
               </a>`
           : this._state === "NOT_SUPPORTED"
-            ? html`<img src="/static/images/voice-assistant/error.png" />
+            ? html`<img
+                  src="/static/images/voice-assistant/error.png"
+                  alt="Casita Home Assistant error logo"
+                />
                 <h1>Installation of add-ons is not supported on your system</h1>
                 <p>
                   Your system is not supported to automatically install a local
