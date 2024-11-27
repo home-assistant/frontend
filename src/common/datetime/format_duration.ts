@@ -1,4 +1,3 @@
-import { DurationFormat } from "@formatjs/intl-durationformat";
 import type { DurationInput } from "@formatjs/intl-durationformat/src/types";
 import memoizeOne from "memoize-one";
 import type { HaDurationData } from "../../components/ha-duration-input";
@@ -49,7 +48,7 @@ export const formatNumericDuration = (
 
 const formatDurationLongMem = memoizeOne(
   (locale: FrontendLocaleData) =>
-    new DurationFormat(locale.language, {
+    new Intl.DurationFormat(locale.language, {
       style: "long",
     })
 );
@@ -61,7 +60,7 @@ export const formatDurationLong = (
 
 const formatDigitalDurationMem = memoizeOne(
   (locale: FrontendLocaleData) =>
-    new DurationFormat(locale.language, {
+    new Intl.DurationFormat(locale.language, {
       style: "digital",
       hoursDisplay: "auto",
     })
@@ -78,7 +77,7 @@ type DurationUnit = (typeof DURATION_UNITS)[number];
 
 const formatDurationDayMem = memoizeOne(
   (locale: FrontendLocaleData) =>
-    new DurationFormat(locale.language, {
+    new Intl.DurationFormat(locale.language, {
       style: "narrow",
       daysDisplay: "always",
     })
@@ -86,7 +85,7 @@ const formatDurationDayMem = memoizeOne(
 
 const formatDurationHourMem = memoizeOne(
   (locale: FrontendLocaleData) =>
-    new DurationFormat(locale.language, {
+    new Intl.DurationFormat(locale.language, {
       style: "narrow",
       hoursDisplay: "always",
     })
@@ -94,7 +93,7 @@ const formatDurationHourMem = memoizeOne(
 
 const formatDurationMinuteMem = memoizeOne(
   (locale: FrontendLocaleData) =>
-    new DurationFormat(locale.language, {
+    new Intl.DurationFormat(locale.language, {
       style: "narrow",
       minutesDisplay: "always",
     })
@@ -102,7 +101,7 @@ const formatDurationMinuteMem = memoizeOne(
 
 const formatDurationSecondMem = memoizeOne(
   (locale: FrontendLocaleData) =>
-    new DurationFormat(locale.language, {
+    new Intl.DurationFormat(locale.language, {
       style: "narrow",
       secondsDisplay: "always",
     })
@@ -110,7 +109,7 @@ const formatDurationSecondMem = memoizeOne(
 
 const formatDurationMillisecondMem = memoizeOne(
   (locale: FrontendLocaleData) =>
-    new DurationFormat(locale.language, {
+    new Intl.DurationFormat(locale.language, {
       style: "narrow",
       millisecondsDisplay: "always",
     })
