@@ -4520,7 +4520,11 @@
               "failed_unload": "Failed to unload",
               "setup_in_progress": "Initializing"
             },
-            "open_configuration_url": "Visit device"
+            "open_configuration_url": "Visit device",
+            "bronze_quality": "Bronze quality",
+            "silver_quality": "Silver quality",
+            "gold_quality": "Gold quality",
+            "platinum_quality": "Platinum quality"
           },
           "config_flow": {
             "success": "Success",

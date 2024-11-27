@@ -14,6 +14,8 @@ import {
   mdiDownload,
   mdiFileCodeOutline,
   mdiHandExtendedOutline,
+  mdiInformation,
+  mdiMedal,
   mdiOpenInNew,
   mdiPackageVariant,
   mdiPlayCircleOutline,
@@ -23,6 +25,7 @@ import {
   mdiRenameBox,
   mdiShapeOutline,
   mdiStopCircleOutline,
+  mdiTrophy,
   mdiWrench,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -337,6 +340,36 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 </div>
                 ${this._manifest?.version != null
                   ? html`<div class="version">${this._manifest.version}</div>`
+                  : nothing}
+                ${this._manifest?.quality_scale &&
+                this._manifest?.quality_scale !== "internal"
+                  ? html`<ha-alert
+                      class=${classMap({
+                        [`${this._manifest.quality_scale}-medal`]: true,
+                      })}
+                      alert-type="info"
+                      ><ha-svg-icon
+                        class="medal"
+                        slot="icon"
+                        path=${this._manifest.quality_scale === "platinum"
+                          ? mdiTrophy
+                          : mdiMedal}
+                      ></ha-svg-icon>
+                      ${this.hass.localize(
+                        `ui.panel.config.integrations.config_entry.${this._manifest.quality_scale}_quality`
+                      )}
+                      <a
+                        slot="action"
+                        href=${`https://developers.home-assistant.io/docs/core/integration-quality-scale/#-${this._manifest.quality_scale}`}
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        <ha-svg-icon
+                          class="info"
+                          path=${mdiInformation}
+                        ></ha-svg-icon>
+                      </a>
+                    </ha-alert>`
                   : nothing}
                 ${this._manifest?.is_built_in === false
                   ? html`<ha-alert alert-type="warning"
@@ -1477,6 +1510,32 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
         ha-alert:first-of-type {
           margin-top: 16px;
+        }
+
+        @keyframes shimmer {
+          100% {
+            mask-position: left;
+          }
+        }
+        ha-svg-icon.medal {
+          mask: linear-gradient(-60deg, #000 30%, #0005, #000 70%) right/350%
+            100%;
+          animation: shimmer 2.5s infinite;
+        }
+        ha-alert.bronze-medal {
+          --info-color: #cd7f32;
+        }
+        ha-alert.silver-medal {
+          --info-color: silver;
+        }
+        ha-alert.gold-medal {
+          --info-color: gold;
+        }
+        ha-alert.platinum-medal {
+          --info-color: #d9d9d9;
+        }
+        ha-alert ha-svg-icon.info {
+          color: var(--secondary-text-color);
         }
         ha-md-list-item {
           position: relative;
