@@ -22,6 +22,7 @@ import "./voice-assistant-setup-step-pipeline";
 import "./voice-assistant-setup-step-success";
 import "./voice-assistant-setup-step-update";
 import "./voice-assistant-setup-step-wake-word";
+import "./voice-assistant-setup-step-local";
 
 export const enum STEP {
   INIT,
@@ -32,6 +33,7 @@ export const enum STEP {
   PIPELINE,
   SUCCESS,
   CLOUD,
+  LOCAL,
   CHANGE_WAKEWORD,
 }
 
@@ -197,14 +199,20 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
                           ? html`<ha-voice-assistant-setup-step-cloud
                               .hass=${this.hass}
                             ></ha-voice-assistant-setup-step-cloud>`
-                          : this._step === STEP.SUCCESS
-                            ? html`<ha-voice-assistant-setup-step-success
+                          : this._step === STEP.LOCAL
+                            ? html`<ha-voice-assistant-setup-step-local
                                 .hass=${this.hass}
                                 .assistConfiguration=${this
                                   ._assistConfiguration}
-                                .assistEntityId=${assistSatelliteEntityId}
-                              ></ha-voice-assistant-setup-step-success>`
-                            : nothing}
+                              ></ha-voice-assistant-setup-step-local>`
+                            : this._step === STEP.SUCCESS
+                              ? html`<ha-voice-assistant-setup-step-success
+                                  .hass=${this.hass}
+                                  .assistConfiguration=${this
+                                    ._assistConfiguration}
+                                  .assistEntityId=${assistSatelliteEntityId}
+                                ></ha-voice-assistant-setup-step-success>`
+                              : nothing}
         </div>
       </ha-dialog>
     `;
