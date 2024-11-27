@@ -1496,6 +1496,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         .logo-container {
           display: flex;
           justify-content: center;
+          margin-bottom: 8px;
         }
         .version {
           padding-top: 8px;
@@ -1548,7 +1549,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           color: gold;
         }
         ha-svg-icon.platinum-medal {
-          color: #d9d9d9;
+          color: #727272;
         }
         ha-md-list-item {
           position: relative;
