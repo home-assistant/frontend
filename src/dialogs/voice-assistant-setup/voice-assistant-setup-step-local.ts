@@ -97,8 +97,8 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
                       slot="icon"
                     ></ha-svg-icon>
                     Learn more</ha-button
-                  > </a
-                >.`
+                  >
+                </a>`
             : nothing}
     </div>`;
   }
