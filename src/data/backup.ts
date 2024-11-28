@@ -22,7 +22,7 @@ export interface BackupConfig {
     name: string | null;
     password: string | null;
   };
-  retention_config: {
+  retention: {
     copies?: number | null;
     days?: number | null;
   };
@@ -42,7 +42,7 @@ export interface BackupMutableConfig {
     name?: string | null;
     password?: string | null;
   };
-  retention_config?: {
+  retention?: {
     copies?: number | null;
     days?: number | null;
   };

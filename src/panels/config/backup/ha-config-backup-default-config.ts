@@ -7,7 +7,7 @@ import {
   mdiPuzzle,
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-button";
@@ -21,7 +21,6 @@ import "../../../components/ha-md-select";
 import "../../../components/ha-md-select-option";
 import "../../../components/ha-password-field";
 import "../../../components/ha-select";
-import type { HaSelect } from "../../../components/ha-select";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-switch";
 import type { BackupAgent, BackupConfig } from "../../../data/backup";
@@ -38,6 +37,10 @@ import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import "./components/ha-backup-addons-picker";
 import type { BackupAddon } from "./components/ha-backup-addons-picker";
+import "./components/ha-backup-config-data";
+import type { BackupConfigData } from "./components/ha-backup-config-data";
+import "./components/ha-backup-config-schedule";
+import type { BackupConfigSchedule } from "./components/ha-backup-config-schedule";
 import { showChangeBackupPasswordDialog } from "./dialogs/show-dialog-change-backup-password";
 
 const SELF_CREATED_ADDONS_FOLDER = "addons/local";
@@ -54,7 +57,7 @@ const INITIAL_BACKUP_CONFIG: BackupConfig = {
     password: null,
     name: null,
   },
-  retention_config: {
+  retention: {
     days: null,
     copies: DEFAULT_COPIES,
   },
@@ -73,8 +76,6 @@ class HaConfigBackupDefaultConfig extends LitElement {
   @state() private _agents: BackupAgent[] = [];
 
   @state() private _addons: BackupAddon[] = [];
-
-  @query("#schedule-select") private _scheduleSelect?: HaSelect;
 
   protected willUpdate(changedProps) {
     super.willUpdate(changedProps);
@@ -120,96 +121,31 @@ class HaConfigBackupDefaultConfig extends LitElement {
       >
         <div class="content">
           <ha-card>
-            <div class="card-header space-apart">
-              Automatic backups
-              <ha-switch
-                @change=${this._toggleSchedule}
-                .checked=${this._backupConfig.schedule.state !==
-                BackupScheduleState.NEVER}
-              ></ha-switch>
-            </div>
+            <div class="card-header">Automatic backups</div>
             <div class="card-content">
               <p>
                 Let Home Assistant take care of your backup strategy by creating
                 a scheduled backup that also removes older copies.
               </p>
-              <ha-settings-row>
-                <span slot="heading">Schedule</span>
-                <span slot="description">
-                  How often you want to create a backup.
-                </span>
-
-                ${this._backupConfig.schedule.state ===
-                BackupScheduleState.NEVER
-                  ? html`
-                      <ha-select
-                        naturalMenuWidth
-                        .value=${this._backupConfig.schedule.state}
-                        disabled
-                      >
-                        <ha-list-item .value=${BackupScheduleState.NEVER}>
-                          Never
-                        </ha-list-item>
-                      </ha-select>
-                    `
-                  : html`
-                      <ha-select
-                        naturalMenuWidth
-                        .value=${this._backupConfig.schedule.state}
-                        @selected=${this._scheduleChanged}
-                      >
-                        <ha-list-item .value=${BackupScheduleState.DAILY}>
-                          Daily at 04:45
-                        </ha-list-item>
-                        <ha-list-item .value=${BackupScheduleState.MONDAY}>
-                          Monday at 04:45
-                        </ha-list-item>
-                        <ha-list-item .value=${BackupScheduleState.TUESDAY}>
-                          Tuesday at 04:45
-                        </ha-list-item>
-                        <ha-list-item .value=${BackupScheduleState.WEDNESDAY}>
-                          Wednesday at 04:45
-                        </ha-list-item>
-                        <ha-list-item .value=${BackupScheduleState.THURSDAY}>
-                          Thursday at 04:45
-                        </ha-list-item>
-                        <ha-list-item .value=${BackupScheduleState.FRIDAY}>
-                          Friday at 04:45
-                        </ha-list-item>
-                        <ha-list-item .value=${BackupScheduleState.SATURDAY}>
-                          Saturday at 04:45
-                        </ha-list-item>
-                        <ha-list-item .value=${BackupScheduleState.SUNDAY}>
-                          Sunday at 04:45
-                        </ha-list-item>
-                      </ha-select>
-                    `}
-              </ha-settings-row>
-              <ha-settings-row>
-                <span slot="heading">Maximum copies</span>
-                <span slot="description">
-                  The number of backups that are saved
-                </span>
-                <ha-select
-                  naturalMenuWidth
-                  .value=${this._backupConfig.retention_config.copies ??
-                  DEFAULT_COPIES}
-                  @selected=${this._maxCopiesChanged}
-                  .disabled=${this._backupConfig.schedule.state ===
-                  BackupScheduleState.NEVER}
-                >
-                  <ha-list-item .value=${1}>Latest 1 copies</ha-list-item>
-                  <ha-list-item .value=${2}>Latest 2 copies</ha-list-item>
-                  <ha-list-item .value=${3}>Latest 3 copies</ha-list-item>
-                  <ha-list-item .value=${4}>Latest 4 copies</ha-list-item>
-                  <ha-list-item .value=${5}>Latest 5 copies</ha-list-item>
-                  <ha-list-item .value=${6}>Latest 6 copies</ha-list-item>
-                  <ha-list-item .value=${7}>Latest 7 copies</ha-list-item>
-                  <ha-list-item .value=${0}>Forever</ha-list-item>
-                </ha-select>
-              </ha-settings-row>
+              <ha-backup-config-schedule
+                .hass=${this.hass}
+                .value=${this._backupConfig}
+                @value-changed=${this._scheduleConfigChanged}
+              ></ha-backup-config-schedule>
             </div>
           </ha-card>
+          <ha-card>
+            <div class="card-header">Backup data</div>
+            <div class="card-content">
+              <ha-backup-config-data
+                .hass=${this.hass}
+                .value=${this._dataConfig}
+                @value-changed=${this._dataConfigChanged}
+                force-home-assistant
+              ></ha-backup-config-data>
+            </div>
+          </ha-card>
+
           <ha-card>
             <div class="card-header">Backup data</div>
             <div class="card-content">
@@ -412,60 +348,43 @@ class HaConfigBackupDefaultConfig extends LitElement {
     `;
   }
 
-  private _toggleSchedule(ev) {
-    if (ev.target.checked) {
-      this._backupConfig = {
-        ...this._backupConfig,
-        retention_config: {
-          ...this._backupConfig.retention_config,
-          copies: this._backupConfig.retention_config.copies ?? DEFAULT_COPIES,
-        },
-        schedule: {
-          ...this._backupConfig.schedule,
-          state: BackupScheduleState.DAILY,
-        },
-      };
-    } else {
-      this._backupConfig = {
-        ...this._backupConfig,
-        schedule: {
-          ...this._backupConfig.schedule,
-          state: BackupScheduleState.NEVER,
-        },
-      };
-    }
-    this._debounceSave();
-  }
-
-  private _scheduleChanged(ev) {
-    if (
-      !ev.target.value ||
-      ev.target.value === this._backupConfig.schedule.state
-    ) {
-      return;
-    }
+  private _scheduleConfigChanged(ev) {
+    const value = ev.detail.value as BackupConfigSchedule;
     this._backupConfig = {
       ...this._backupConfig,
-      schedule: {
-        ...this._backupConfig.schedule,
-        state: ev.target.value as BackupScheduleState,
-      },
+      schedule: value.schedule,
+      retention: value.retention,
     };
     this._debounceSave();
   }
 
-  private _maxCopiesChanged(ev) {
-    if (
-      !ev.target.value ||
-      ev.target.value === this._backupConfig.retention_config.copies
-    ) {
-      return;
-    }
+  private get _dataConfig(): BackupConfigData {
+    const {
+      include_addons,
+      include_all_addons,
+      include_database,
+      include_folders,
+    } = this._backupConfig.create_backup;
+
+    return {
+      include_homeassistant: true,
+      include_database,
+      include_folders: include_folders || undefined,
+      include_all_addons,
+      include_addons: include_addons || undefined,
+    };
+  }
+
+  private _dataConfigChanged(ev) {
+    const data = ev.detail.value as BackupConfigData;
     this._backupConfig = {
       ...this._backupConfig,
-      retention_config: {
-        ...this._backupConfig.retention_config,
-        copies: ev.target.value,
+      create_backup: {
+        ...this._backupConfig.create_backup,
+        include_database: data.include_database,
+        include_folders: data.include_folders || null,
+        include_all_addons: data.include_all_addons,
+        include_addons: data.include_addons || null,
       },
     };
     this._debounceSave();
@@ -629,9 +548,8 @@ class HaConfigBackupDefaultConfig extends LitElement {
         include_all_addons: this._backupConfig.create_backup.include_all_addons,
         password: this._backupConfig.create_backup.password,
       },
-      retention_config: {
-        days: this._backupConfig.retention_config.days,
-        copies: this._backupConfig.retention_config.copies,
+      retention: {
+        copies: this._backupConfig.retention.copies,
       },
       schedule: this._backupConfig.schedule.state,
     });
@@ -646,11 +564,6 @@ class HaConfigBackupDefaultConfig extends LitElement {
       display: flex;
       flex-direction: column;
       margin-bottom: 24px;
-    }
-    .card-header.space-apart {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
     }
     ha-settings-row {
       --settings-row-prefix-display: flex;
