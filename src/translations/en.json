@@ -4506,7 +4506,7 @@
             },
             "custom_integration": "Custom integration",
             "custom_overwrites_core": "Custom integration that replaces a core component",
-            "depends_on_cloud": "Depends on Internet connection",
+            "depends_on_cloud": "Requires Internet",
             "yaml_only": "This integration cannot be setup from the UI",
             "no_config_flow": "This integration was not set up from the UI",
             "disabled_polling": "Automatic polling for updated data disabled",
