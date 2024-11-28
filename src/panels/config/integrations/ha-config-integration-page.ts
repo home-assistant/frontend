@@ -13,7 +13,6 @@ import {
   mdiDownload,
   mdiFileCodeOutline,
   mdiHandExtendedOutline,
-  mdiMedal,
   mdiOpenInNew,
   mdiPackageVariant,
   mdiPlayCircleOutline,
@@ -23,7 +22,6 @@ import {
   mdiRenameBox,
   mdiShapeOutline,
   mdiStopCircleOutline,
-  mdiTrophy,
   mdiWeb,
   mdiWrench,
 } from "@mdi/js";
@@ -107,9 +105,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { fileDownload } from "../../../util/file_download";
 import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
-
-type MedalColor = "gold" | "silver" | "bronze" | "platinum";
-const MEDAL_COLORS = ["bronze", "silver", "gold", "platinum"];
+import { QUALITY_SCALE_MAP } from "../../../data/integration_quality_scale";
 
 export const renderConfigEntryError = (
   hass: HomeAssistant,
@@ -344,29 +340,30 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   ? html`<div class="version">${this._manifest.version}</div>`
                   : nothing}
                 ${this._manifest?.quality_scale &&
-                MEDAL_COLORS.includes(this._manifest.quality_scale)
+                Object.keys(QUALITY_SCALE_MAP).includes(
+                  this._manifest.quality_scale
+                )
                   ? html`
                       <div class="quality-scale integration-info">
                         <ha-svg-icon
-                          class=${`${this._manifest.quality_scale}-medal`}
-                          .path=${this._manifest.quality_scale === "platinum"
-                            ? mdiTrophy
-                            : mdiMedal}
+                          class=${`${this._manifest.quality_scale}-quality`}
+                          .path=${QUALITY_SCALE_MAP[
+                            this._manifest.quality_scale
+                          ].icon}
                         ></ha-svg-icon>
-                        <span>
-                          <a
-                            href=${documentationUrl(
-                              this.hass,
-                              `/docs/quality_scale/#-${this._manifest.quality_scale}`
-                            )}
-                            rel="noopener noreferrer"
-                            target="_blank"
-                          >
-                            ${this.hass.localize(
-                              `ui.panel.config.integrations.config_entry.${this._manifest.quality_scale as MedalColor}_quality`
-                            )}
-                          </a>
-                        </span>
+                        <a
+                          href=${documentationUrl(
+                            this.hass,
+                            `/docs/quality_scale/#-${this._manifest.quality_scale}`
+                          )}
+                          rel="noopener noreferrer"
+                          target="_blank"
+                        >
+                          ${this.hass.localize(
+                            QUALITY_SCALE_MAP[this._manifest.quality_scale]
+                              .translationKey
+                          )}
+                        </a>
                       </div>
                     `
                   : nothing}
@@ -376,9 +373,18 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         class="warning"
                         path=${mdiPackageVariant}
                       ></ha-svg-icon>
-                      ${this.hass.localize(
-                        "ui.panel.config.integrations.config_entry.custom_integration"
-                      )}
+                      <a
+                        href=${documentationUrl(
+                          this.hass,
+                          `/docs/quality_scale/#-custom`
+                        )}
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.integrations.config_entry.custom_integration"
+                        )}
+                      </a>
                     </div>`
                   : nothing}
                 ${this._manifest?.iot_class?.startsWith("cloud_")
@@ -1532,17 +1538,24 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
             100%;
           animation: shimmer 2.5s infinite;
         }
-        ha-svg-icon.bronze-medal {
+        ha-svg-icon.bronze-quality {
           color: #cd7f32;
         }
-        ha-svg-icon.silver-medal {
+        ha-svg-icon.silver-quality {
           color: silver;
         }
-        ha-svg-icon.gold-medal {
+        ha-svg-icon.gold-quality {
           color: gold;
         }
-        ha-svg-icon.platinum-medal {
+        ha-svg-icon.platinum-quality {
           color: #727272;
+        }
+        ha-svg-icon.internal-quality {
+          color: var(--primary-color);
+        }
+        ha-svg-icon.legacy-quality {
+          color: var(--mdc-theme-text-icon-on-background, rgba(0, 0, 0, 0.38));
+          animation: unset;
         }
         ha-md-list-item {
           position: relative;
