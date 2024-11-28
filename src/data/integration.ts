@@ -40,12 +40,13 @@ export interface IntegrationManifest {
   loggers?: string[];
   quality_scale?:
     | "bronze"
-    | "gold"
-    | "internal"
-    | "platinum"
     | "silver"
-    | "custom"
-    | "no_score";
+    | "gold"
+    | "platinum"
+    | "no_score"
+    | "internal"
+    | "legacy"
+    | "custom";
   iot_class:
     | "assumed_state"
     | "cloud_polling"
