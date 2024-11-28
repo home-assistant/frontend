@@ -172,7 +172,7 @@
     "@rspack/cli": "1.1.4",
     "@rspack/core": "1.1.4",
     "@types/babel__plugin-transform-runtime": "7.9.5",
-    "@types/chromecast-caf-receiver": "6.0.19",
+    "@types/chromecast-caf-receiver": "6.0.20",
     "@types/chromecast-caf-sender": "1.0.11",
     "@types/color-name": "2.0.0",
     "@types/glob": "8.1.0",
