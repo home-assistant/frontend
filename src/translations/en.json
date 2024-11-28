@@ -4505,8 +4505,10 @@
               }
             },
             "custom_integration": "Custom integration",
+            "internal_integration": "Internal integration",
+            "legacy_integration": "Legacy integration",
             "custom_overwrites_core": "Custom integration that replaces a core component",
-            "depends_on_cloud": "Depends on Internet connection",
+            "depends_on_cloud": "Requires Internet",
             "yaml_only": "This integration cannot be setup from the UI",
             "no_config_flow": "This integration was not set up from the UI",
             "disabled_polling": "Automatic polling for updated data disabled",
@@ -4521,11 +4523,10 @@
               "setup_in_progress": "Initializing"
             },
             "open_configuration_url": "Visit device",
-            "bronze_quality": "Bronze on our {quality_scale}",
-            "silver_quality": "Silver on our {quality_scale}",
-            "gold_quality": "Gold on our {quality_scale}",
-            "platinum_quality": "Platinum on our {quality_scale}",
-            "quality_scale": "quality scale"
+            "bronze_quality": "Bronze quality",
+            "silver_quality": "Silver quality",
+            "gold_quality": "Gold quality",
+            "platinum_quality": "Platinum quality"
           },
           "config_flow": {
             "success": "Success",
