@@ -354,25 +354,18 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                             : mdiMedal}
                         ></ha-svg-icon>
                         <span>
-                          ${this.hass.localize(
-                            `ui.panel.config.integrations.config_entry.${this._manifest.quality_scale as MedalColor}_quality`,
-                            {
-                              quality_scale: html`
-                                <a
-                                  href=${documentationUrl(
-                                    this.hass,
-                                    `/docs/quality_scale/#${this._manifest.quality_scale}-`
-                                  )}
-                                  rel="noopener noreferrer"
-                                  target="_blank"
-                                >
-                                  ${this.hass.localize(
-                                    "ui.panel.config.integrations.config_entry.quality_scale"
-                                  )}
-                                </a>
-                              `,
-                            }
-                          )}
+                          <a
+                            href=${documentationUrl(
+                              this.hass,
+                              `/docs/quality_scale/#-${this._manifest.quality_scale}`
+                            )}
+                            rel="noopener noreferrer"
+                            target="_blank"
+                          >
+                            ${this.hass.localize(
+                              `ui.panel.config.integrations.config_entry.${this._manifest.quality_scale as MedalColor}_quality`
+                            )}
+                          </a>
                         </span>
                       </div>
                     `
