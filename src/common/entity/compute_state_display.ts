@@ -4,10 +4,7 @@ import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
 import type { FrontendLocaleData } from "../../data/translation";
 import { TimeZone } from "../../data/translation";
 import type { HomeAssistant } from "../../types";
-import {
-  UNIT_TO_MILLISECOND_CONVERT,
-  formatDuration,
-} from "../datetime/duration";
+import { DURATION_UNITS, formatDuration } from "../datetime/format_duration";
 import { formatDate } from "../datetime/format_date";
 import { formatDateTime } from "../datetime/format_date_time";
 import { formatTime } from "../datetime/format_time";
@@ -32,7 +29,6 @@ export const computeStateDisplay = (
   const entity = entities?.[stateObj.entity_id] as
     | EntityRegistryDisplayEntry
     | undefined;
-
   return computeStateDisplayFromEntityAttributes(
     localize,
     locale,
@@ -72,10 +68,15 @@ export const computeStateDisplayFromEntityAttributes = (
     if (
       attributes.device_class === "duration" &&
       attributes.unit_of_measurement &&
-      UNIT_TO_MILLISECOND_CONVERT[attributes.unit_of_measurement]
+      DURATION_UNITS.includes(attributes.unit_of_measurement)
     ) {
       try {
-        return formatDuration(state, attributes.unit_of_measurement);
+        return formatDuration(
+          locale,
+          state,
+          attributes.unit_of_measurement,
+          entity?.display_precision
+        );
       } catch (_err) {
         // fallback to default
       }

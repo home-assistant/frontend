@@ -65,6 +65,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
                   entity: {
                     filter: [
                       { domain: "input_datetime" },
+                      { domain: "time" },
                       { domain: "sensor", device_class: "timestamp" },
                     ],
                   },
@@ -106,7 +107,9 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
       const entity =
         typeof at === "object"
           ? at.entity_id
-          : at?.startsWith("input_datetime.") || at?.startsWith("sensor.")
+          : at?.startsWith("input_datetime.") ||
+              at?.startsWith("time.") ||
+              at?.startsWith("sensor.")
             ? at
             : undefined;
       const time = entity ? undefined : (at as string | undefined);
@@ -127,6 +130,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
     if (Array.isArray(at)) {
       return nothing;
     }
+
     const data = this._data(this._inputMode, at);
     const showOffset =
       data.mode === MODE_ENTITY && data.entity?.startsWith("sensor.");

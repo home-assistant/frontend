@@ -1197,7 +1197,7 @@
         },
         "filter_placeholder": "Search entities",
         "title": "Quick search",
-        "key_c_hint": "Press 'c' on any page to open the search bar",
+        "key_c_hint": "Press 'c' on any page to open the command dialog",
         "nothing_found": "Nothing found!"
       },
       "voice_command": {
@@ -2213,11 +2213,10 @@
           "no_tags": "No tags",
           "add_tag": "Add tag",
           "write": "Write",
-          "edit": "Edit",
           "never_scanned": "Never scanned",
-          "create_automation": "Create automation with this tag",
+          "create_automation": "Create automation",
           "confirm_delete_title": "Delete tag?",
-          "confirm_delete": "Are you sure you want to delete tag {tag}?",
+          "confirm_delete": "The tag ''{tag}'' will be permanently deleted.",
           "automation_title": "Tag {name} is scanned",
           "qr_code_image": "QR code for tag {name}",
           "headers": {
@@ -3146,7 +3145,7 @@
                 },
                 "time": {
                   "type_value": "Fixed time",
-                  "type_input": "Value of a date/time helper or timestamp-class sensor",
+                  "type_input": "Value of a date/time helper, time entity or timestamp-class sensor",
                   "label": "Time",
                   "at": "At time",
                   "offset": "[%key:ui::panel::config::automation::editor::triggers::type::sun::offset%]",
@@ -3615,6 +3614,8 @@
             "older_trace": "Older trace",
             "newer_trace": "Newer trace",
             "no_traces_found": "No traces found",
+            "trace_no_longer_available": "Chosen trace is no longer available",
+            "enter_downloaded_trace": "Enter downloaded trace",
             "tabs": {
               "details": "Step Details",
               "timeline": "Trace Timeline",
@@ -3622,7 +3623,8 @@
               "automation_config": "Automation Config",
               "step_config": "Step Config",
               "changed_variables": "Changed Variables",
-              "blueprint_config": "Blueprint Config"
+              "blueprint_config": "Blueprint Config",
+              "script_config": "Script Config"
             },
             "path": {
               "choose": "Select a step on the left for more information.",
@@ -3792,7 +3794,7 @@
             "duplicate": "[%key:ui::common::duplicate%]",
             "field": {
               "name": "[%key:ui::common::name%]",
-              "key": "Field variable key name",
+              "key": "Field key",
               "description": "Description",
               "required": "Required",
               "default": "Default",
@@ -4349,7 +4351,6 @@
           "introduction": "Zones allow you to specify certain regions on Earth. When a person is within a zone, the state will take the name from the zone. Zones can also be used as a trigger or condition inside automation setups.",
           "no_zones_created_yet": "Looks like you have not created any zones yet.",
           "create_zone": "Create zone",
-          "add_zone": "Add zone",
           "edit_zone": "Edit zone",
           "edit_home": "Edit home",
           "confirm_delete": "Are you sure you want to delete this zone?",
@@ -4503,8 +4504,10 @@
               }
             },
             "custom_integration": "Custom integration",
+            "internal_integration": "Internal integration",
+            "legacy_integration": "Legacy integration",
             "custom_overwrites_core": "Custom integration that replaces a core component",
-            "depends_on_cloud": "Depends on Internet connection",
+            "depends_on_cloud": "Requires Internet",
             "yaml_only": "This integration cannot be setup from the UI",
             "no_config_flow": "This integration was not set up from the UI",
             "disabled_polling": "Automatic polling for updated data disabled",
@@ -4518,7 +4521,11 @@
               "failed_unload": "Failed to unload",
               "setup_in_progress": "Initializing"
             },
-            "open_configuration_url": "Visit device"
+            "open_configuration_url": "Visit device",
+            "bronze_quality": "Bronze quality",
+            "silver_quality": "Silver quality",
+            "gold_quality": "Gold quality",
+            "platinum_quality": "Platinum quality"
           },
           "config_flow": {
             "success": "Success",
@@ -5335,10 +5342,10 @@
           "device_info": {
             "device_info": "Device info",
             "node_id": "Node ID",
-            "network_type": "Network Type",
+            "network_type": "Network type",
             "node_type": "Device type",
             "network_name": "Network name",
-            "ip_adresses": "IP Address(es)",
+            "ip_adresses": "IP address(es)",
             "mac_address": "MAC address",
             "available": "Available?"
           },
@@ -6533,6 +6540,16 @@
                   "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
                 },
                 "customize_modes": "Customize swing modes"
+              },
+              "climate-swing-horizontal-modes": {
+                "label": "Climate horizontal swing modes",
+                "swing_horizontal_modes": "Horizontal swing modes",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
+                "style_list": {
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
+                  "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
+                },
+                "customize_modes": "Customize horizontal swing modes"
               },
               "climate-hvac-modes": {
                 "label": "Climate HVAC modes",
