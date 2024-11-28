@@ -4521,11 +4521,10 @@
               "setup_in_progress": "Initializing"
             },
             "open_configuration_url": "Visit device",
-            "bronze_quality": "Bronze on our {quality_scale}",
-            "silver_quality": "Silver on our {quality_scale}",
-            "gold_quality": "Gold on our {quality_scale}",
-            "platinum_quality": "Platinum on our {quality_scale}",
-            "quality_scale": "quality scale"
+            "bronze_quality": "Bronze quality",
+            "silver_quality": "Silver quality",
+            "gold_quality": "Gold quality",
+            "platinum_quality": "Platinum quality"
           },
           "config_flow": {
             "success": "Success",
