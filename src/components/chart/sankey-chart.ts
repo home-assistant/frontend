@@ -7,6 +7,7 @@ export type Node = {
   value: number;
   index: number; // like z-index but for x/y
   label?: string;
+  tooltip?: string;
   color?: string;
   passThrough?: boolean;
 };
@@ -38,14 +39,12 @@ type Section = {
   index: number;
   totalValue: number;
   statePerPixel: number;
-  spacerSize: number;
 };
 
 const MIN_SIZE = 3;
-const MIN_DISTANCE = 5;
+const MIN_DISTANCE = 6;
 const DEFAULT_COLOR = "var(--primary-color)";
 const NODE_WIDTH = 15;
-const PADDING = 8;
 const FONT_SIZE = 12;
 
 @customElement("sankey-chart")
@@ -72,9 +71,13 @@ export class SankeyChart extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     this._resizeObserver = new ResizeObserver(() => {
-      this.width = this.clientWidth - PADDING * 2;
-      this.height = this.clientHeight - PADDING * 2;
-      this.requestUpdate();
+      const newWidth = this.clientWidth;
+      const newHeight = this.clientHeight;
+      if (newWidth !== this.width || newHeight !== this.height) {
+        this.width = newWidth;
+        this.height = newHeight;
+        this.requestUpdate();
+      }
     });
     this._resizeObserver?.observe(this);
   }
@@ -105,9 +108,10 @@ export class SankeyChart extends LitElement {
 
     return html`
       <svg
-        width="100%"
-        height="100%"
+        width=${this.width}
+        height=${this.height}
         viewBox="0 0 ${this.width} ${this.height}"
+        preserveAspectRatio="none"
       >
         <defs>
           ${paths.map(
@@ -132,22 +136,24 @@ export class SankeyChart extends LitElement {
           node.passThrough
             ? nothing
             : svg`
-                  <g transform="translate(${node.x},${node.y})">
-                    <rect
-                class="node"
-                width=${NODE_WIDTH} 
-                height=${node.size} 
-                style="fill: ${node.color}"
-              ></rect>
-              <text 
-                class="node-label" 
-                x=${NODE_WIDTH + 5}
-                y=${node.size / 2}
-                text-anchor="start" 
-                dominant-baseline="middle"
-              >${node.label}</text>
-            </g>
-          `
+              <g transform="translate(${node.x},${node.y})">
+                <rect
+                  class="node"
+                  width=${NODE_WIDTH} 
+                  height=${node.size} 
+                  style="fill: ${node.color}"
+                >
+                  <title>${node.tooltip}</title>
+                </rect>
+                <text 
+                  class="node-label" 
+                  x=${NODE_WIDTH + 5}
+                  y=${node.size / 2}
+                  text-anchor="start" 
+                  dominant-baseline="middle"
+                >${node.label}</text>
+              </g>
+            `
         )}
       </svg>
     `;
@@ -212,9 +218,10 @@ export class SankeyChart extends LitElement {
   }
 
   private _processNodes(filteredNodes: Node[]) {
-    const width = this.width;
-    const height = this.height;
-    const sectionSize = this.vertical ? width : height;
+    // add MIN_DISTANCE as padding
+    const sectionSize = this.vertical
+      ? this.width - MIN_DISTANCE * 2
+      : this.height - MIN_DISTANCE * 2;
 
     const nodesPerSection: Record<number, Node[]> = {};
     filteredNodes.forEach((node) => {
@@ -260,7 +267,6 @@ export class SankeyChart extends LitElement {
         index: parseInt(index),
         totalValue,
         statePerPixel,
-        spacerSize: 0,
       };
     });
 
@@ -281,18 +287,16 @@ export class SankeyChart extends LitElement {
       }
       // calc margin betwee boxes
       const emptySpace = sectionSize - totalSize;
-      // center single node sections
-      const spacerSize =
-        section.nodes.length > 1
-          ? emptySpace / (section.nodes.length - 1)
-          : emptySpace / 2;
-      let offset = section.nodes.length > 1 ? 0 : emptySpace / 2;
+      const spacerSize = emptySpace / (section.nodes.length - 1);
+
+      // account for MIN_DISTANCE padding and center single node sections
+      let offset =
+        section.nodes.length > 1 ? MIN_DISTANCE : emptySpace / 2 + MIN_DISTANCE;
       // calc y positions
       section.nodes.forEach((node) => {
         node.y = offset;
         offset += node.size + spacerSize;
       });
-      section.spacerSize = spacerSize;
     });
 
     return sections.flatMap((section) => section.nodes);
@@ -446,13 +450,14 @@ export class SankeyChart extends LitElement {
   static styles = css`
     :host {
       display: block;
-      height: 200px;
+      flex: 1;
       background: var(--ha-card-background, var(--card-background-color, #000));
-      padding: ${PADDING}px;
       overflow: hidden;
+      position: relative;
     }
     svg {
       overflow: visible;
+      position: absolute;
     }
     .node-label {
       font-size: ${FONT_SIZE}px;

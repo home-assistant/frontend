@@ -1,5 +1,5 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
@@ -15,11 +15,12 @@ import {
 } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
-import type { LovelaceCard } from "../../types";
+import type { LovelaceCard, LovelaceGridOptions } from "../../types";
 import type { EnergySankeyCardConfig } from "../types";
 import "../../../../components/chart/sankey-chart";
 import type { Link, Node } from "../../../../components/chart/sankey-chart";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
+import { formatNumber } from "../../../../common/number/format_number";
 
 @customElement("hui-energy-sankey-card")
 class HuiEnergySankeyCard
@@ -49,7 +50,16 @@ class HuiEnergySankeyCard
   }
 
   public getCardSize(): Promise<number> | number {
-    return 3;
+    return 5;
+  }
+
+  getGridOptions(): LovelaceGridOptions {
+    return {
+      columns: 12,
+      min_columns: 3,
+      rows: 4,
+      min_rows: 2,
+    };
   }
 
   protected render() {
@@ -69,7 +79,7 @@ class HuiEnergySankeyCard
     const nodes: Node[] = [];
     const links: Link[] = [];
 
-    const homeNode = {
+    const homeNode: Node = {
       id: "home",
       label: this.hass.localize(
         "ui.panel.lovelace.cards.energy.energy_distribution.home"
@@ -93,6 +103,7 @@ class HuiEnergySankeyCard
           "ui.panel.lovelace.cards.energy.energy_distribution.grid"
         ),
         value: totalFromGrid,
+        tooltip: `${formatNumber(totalFromGrid, this.hass.locale)} kWh`,
         color: "var(--energy-grid-consumption-color)",
         index: 0,
       });
@@ -117,6 +128,7 @@ class HuiEnergySankeyCard
           "ui.panel.lovelace.cards.energy.energy_distribution.battery"
         ),
         value: totalBatteryOut,
+        tooltip: `${formatNumber(totalBatteryOut, this.hass.locale)} kWh`,
         color: "var(--energy-battery-out-color)",
         index: 0,
       });
@@ -140,6 +152,7 @@ class HuiEnergySankeyCard
           "ui.panel.lovelace.cards.energy.energy_distribution.solar"
         ),
         value: totalSolarProduction,
+        tooltip: `${formatNumber(totalSolarProduction, this.hass.locale)} kWh`,
         color: "var(--energy-solar-color)",
         index: 0,
       });
@@ -164,6 +177,7 @@ class HuiEnergySankeyCard
           "ui.panel.lovelace.cards.energy.energy_distribution.battery"
         ),
         value: totalBatteryIn,
+        tooltip: `${formatNumber(totalBatteryIn, this.hass.locale)} kWh`,
         color: "var(--energy-battery-in-color)",
         index: 1,
       });
@@ -192,6 +206,7 @@ class HuiEnergySankeyCard
           "ui.panel.lovelace.cards.energy.energy_distribution.grid"
         ),
         value: totalToGrid,
+        tooltip: `${formatNumber(totalToGrid, this.hass.locale)} kWh`,
         color: "var(--energy-grid-return-color)",
         index: 1,
       });
@@ -224,6 +239,7 @@ class HuiEnergySankeyCard
         areas: ["no_area"],
       },
     };
+    let untrackedConsumption = homeNode.value;
     const computedStyle = getComputedStyle(this);
     prefs.device_consumption.forEach((device, idx) => {
       const entity = this.hass.entities[device.stat_consumption];
@@ -236,6 +252,7 @@ class HuiEnergySankeyCard
       if (value <= 0) {
         return;
       }
+      untrackedConsumption -= value;
       const deviceNode: Node = {
         id: device.stat_consumption,
         label:
@@ -246,6 +263,7 @@ class HuiEnergySankeyCard
             this._data!.statsMetadata[device.stat_consumption]
           ),
         value,
+        tooltip: `${formatNumber(value, this.hass.locale)} kWh`,
         color: getGraphColorByIndex(idx, computedStyle),
         index: 4,
       };
@@ -301,6 +319,7 @@ class HuiEnergySankeyCard
             id: floorNodeId,
             label: this.hass.floors[floorId].name,
             value: floors[floorId].value,
+            tooltip: `${formatNumber(floors[floorId].value, this.hass.locale)} kWh`,
             index: 2,
           });
           links.push({
@@ -318,6 +337,7 @@ class HuiEnergySankeyCard
               id: areaNodeId,
               label: this.hass.areas[areaId]!.name,
               value: areas[areaId].value,
+              tooltip: `${formatNumber(areas[areaId].value, this.hass.locale)} kWh`,
               index: 3,
             });
             links.push({
@@ -339,6 +359,28 @@ class HuiEnergySankeyCard
           });
         });
       });
+    // untracked consumption
+    if (untrackedConsumption > 0) {
+      nodes.push({
+        id: "untracked",
+        label: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.energy_devices_detail_graph.untracked_consumption"
+        ),
+        value: untrackedConsumption,
+        tooltip: `${formatNumber(untrackedConsumption, this.hass.locale)} kWh`,
+        color: "var(--state-unavailable-color)",
+        index: 4,
+      });
+      links.push({
+        source: "home",
+        target: "untracked",
+        value: untrackedConsumption,
+      });
+    } else if (untrackedConsumption < 0) {
+      // if untracked consumption is negative, then the sources are not enough
+      homeNode.value -= untrackedConsumption;
+    }
+    homeNode.tooltip = `${formatNumber(homeNode.value, this.hass.locale)} kWh`;
 
     const hasData = nodes.some((node) => node.value > 0);
 
@@ -349,7 +391,7 @@ class HuiEnergySankeyCard
             ? html`<sankey-chart
                 .hass=${this.hass}
                 .data=${{ nodes, links }}
-                .vertical=${this._config.vertical || false}
+                .vertical=${this._config.layout === "vertical"}
               ></sankey-chart>`
             : html`${this.hass.localize(
                 "ui.panel.lovelace.cards.energy.no_data_period"
@@ -358,6 +400,22 @@ class HuiEnergySankeyCard
       </ha-card>
     `;
   }
+
+  static styles = css`
+    :host {
+      display: block;
+      height: 100%;
+    }
+    ha-card {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .card-content {
+      flex: 1;
+      display: flex;
+    }
+  `;
 }
 
 declare global {
