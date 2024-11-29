@@ -204,6 +204,14 @@ export class HaSceneEditor extends SubscribeMixin(
     }
   );
 
+  public connectedCallback() {
+    super.connectedCallback();
+    if (!this.sceneId) {
+      this._mode = "live";
+      this._subscribeEvents();
+    }
+  }
+
   public disconnectedCallback() {
     super.disconnectedCallback();
     if (this._unsubscribeEvents) {
@@ -387,15 +395,15 @@ export class HaSceneEditor extends SubscribeMixin(
                 alert-type="info"
                 .narrow=${this.narrow}
                 .title=${this.hass.localize(
-                  `ui.panel.config.scene.editor.${this._mode === "live" ? "live_preview" : "review_mode"}`
+                  `ui.panel.config.scene.editor.${this._mode === "live" ? "live_edit" : "review_mode"}`
                 )}
               >
                 ${this.hass.localize(
-                  `ui.panel.config.scene.editor.${this._mode === "live" ? "live_preview_detail" : "review_mode_detail"}`
+                  `ui.panel.config.scene.editor.${this._mode === "live" ? "live_edit_detail" : "review_mode_detail"}`
                 )}
                 <ha-button slot="action" @click=${this._toggleLiveMode}>
                   ${this.hass.localize(
-                    `ui.panel.config.scene.editor.${this._mode === "live" ? "back_to_review_mode" : "live_preview"}`
+                    `ui.panel.config.scene.editor.${this._mode === "live" ? "switch_to_review_mode" : "live_edit"}`
                   )}
                 </ha-button>
               </ha-alert>
