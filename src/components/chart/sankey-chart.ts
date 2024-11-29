@@ -35,17 +35,17 @@ type ProcessedLink = Link & {
 
 type Section = {
   nodes: ProcessedNode[];
-  x: number;
+  offset: number;
   index: number;
   totalValue: number;
   statePerPixel: number;
 };
 
 const MIN_SIZE = 3;
-const MIN_DISTANCE = 6;
 const DEFAULT_COLOR = "var(--primary-color)";
 const NODE_WIDTH = 15;
 const FONT_SIZE = 12;
+const MIN_DISTANCE = FONT_SIZE / 2;
 
 @customElement("sankey-chart")
 export class SankeyChart extends LitElement {
@@ -139,19 +139,33 @@ export class SankeyChart extends LitElement {
               <g transform="translate(${node.x},${node.y})">
                 <rect
                   class="node"
-                  width=${NODE_WIDTH} 
-                  height=${node.size} 
+                  width=${this.vertical ? node.size : NODE_WIDTH}
+                  height=${this.vertical ? NODE_WIDTH : node.size}
                   style="fill: ${node.color}"
                 >
                   <title>${node.tooltip}</title>
                 </rect>
-                <text 
-                  class="node-label" 
-                  x=${NODE_WIDTH + 5}
-                  y=${node.size / 2}
-                  text-anchor="start" 
-                  dominant-baseline="middle"
-                >${node.label}</text>
+                ${
+                  this.vertical
+                    ? svg`
+                      <text 
+                        class="node-label" 
+                        x=${node.size / 2}
+                        y=${NODE_WIDTH + FONT_SIZE}
+                        text-anchor="middle" 
+                        dominant-baseline="middle"
+                      >${node.label}</text>
+                    `
+                    : svg`
+                      <text 
+                        class="node-label" 
+                        x=${NODE_WIDTH + 5}
+                        y=${node.size / 2}
+                        text-anchor="start" 
+                        dominant-baseline="middle"
+                      >${node.label}</text>
+                    `
+                }
               </g>
             `
         )}
@@ -245,7 +259,7 @@ export class SankeyChart extends LitElement {
         (node: Node) => ({
           ...node,
           color: node.color || DEFAULT_COLOR,
-          x: sectionFlexSize * i,
+          x: 0,
           y: 0,
           size: 0,
         })
@@ -263,7 +277,7 @@ export class SankeyChart extends LitElement {
       );
       return {
         nodes: sizedNodes,
-        x: sectionFlexSize * i,
+        offset: sectionFlexSize * i,
         index: parseInt(index),
         totalValue,
         statePerPixel,
@@ -292,9 +306,15 @@ export class SankeyChart extends LitElement {
       // account for MIN_DISTANCE padding and center single node sections
       let offset =
         section.nodes.length > 1 ? MIN_DISTANCE : emptySpace / 2 + MIN_DISTANCE;
-      // calc y positions
+      // calc positions - swap x/y for vertical layout
       section.nodes.forEach((node) => {
-        node.y = offset;
+        if (this.vertical) {
+          node.x = offset;
+          node.y = section.offset;
+        } else {
+          node.x = section.offset;
+          node.y = offset;
+        }
         offset += node.size + spacerSize;
       });
     });
@@ -303,6 +323,8 @@ export class SankeyChart extends LitElement {
   }
 
   private _processPaths(nodes: ProcessedNode[], links: ProcessedLink[]) {
+    const flowDirection = this.vertical ? "y" : "x";
+    const orthDirection = this.vertical ? "x" : "y"; // orthogonal to the flow
     const nodesById = new Map(nodes.map((n) => [n.id, n]));
     return links.map((link) => {
       const { source, target, value, offset, passThroughNodeIds } = link;
@@ -318,45 +340,57 @@ export class SankeyChart extends LitElement {
       const sourceNode = pathNodes[0];
       const targetNode = pathNodes[pathNodes.length - 1];
 
-      const sourceY = sourceNode.y + offset.source * sourceNode.size;
-      const sourceX = sourceNode.x + NODE_WIDTH;
-      let path = [["M", sourceX, sourceY]]; // starting point
+      let path: [string, number, number][] = [
+        [
+          "M",
+          sourceNode[flowDirection] + NODE_WIDTH,
+          sourceNode[orthDirection] + offset.source * sourceNode.size,
+        ],
+      ]; // starting point
 
       // traverse the path forwards. stop before the last node
       for (let i = 0; i < pathNodes.length - 1; i++) {
         const node = pathNodes[i];
         const nextNode = pathNodes[i + 1];
-        const middleX = (nextNode.x - node.x) / 2 + node.x;
+        const flowMiddle =
+          (nextNode[flowDirection] - node[flowDirection]) / 2 +
+          node[flowDirection];
+        const orthStart = node[orthDirection] + offsets[i] * node.size;
+        const orthEnd =
+          nextNode[orthDirection] + offsets[i + 1] * nextNode.size;
         path.push(
-          ["L", node.x + NODE_WIDTH, node.y + offsets[i] * node.size],
-          ["C", middleX, node.y + offsets[i] * node.size],
-          ["", middleX, nextNode.y + offsets[i + 1] * nextNode.size],
-          ["", nextNode.x, nextNode.y + offsets[i + 1] * nextNode.size]
+          ["L", node[flowDirection] + NODE_WIDTH, orthStart],
+          ["C", flowMiddle, orthStart],
+          ["", flowMiddle, orthEnd],
+          ["", nextNode[flowDirection], orthEnd]
         );
       }
       // traverse the path backwards. stop before the first node
       for (let i = pathNodes.length - 1; i > 0; i--) {
         const node = pathNodes[i];
         const prevNode = pathNodes[i - 1];
-        const middleX = (node.x - prevNode.x) / 2 + prevNode.x;
-        const y =
-          node.y +
+        const flowMiddle =
+          (node[flowDirection] - prevNode[flowDirection]) / 2 +
+          prevNode[flowDirection];
+        const orthStart =
+          node[orthDirection] +
           offsets[i] * node.size +
           Math.max((value / (node.value || 1)) * node.size, 0);
-        const prevY =
-          prevNode.y +
+        const orthEnd =
+          prevNode[orthDirection] +
           offsets[i - 1] * prevNode.size +
           Math.max((value / (prevNode.value || 1)) * prevNode.size, 0);
         path.push(
-          ["L", node.x, y],
-          ["C", middleX, y],
-          ["", middleX, prevY],
-          ["", prevNode.x + NODE_WIDTH, prevY]
+          ["L", node[flowDirection], orthStart],
+          ["C", flowMiddle, orthStart],
+          ["", flowMiddle, orthEnd],
+          ["", prevNode[flowDirection] + NODE_WIDTH, orthEnd]
         );
       }
 
       if (this.vertical) {
-        path = path.map((c) => [c[0], this.height - (c[2] as number), c[1]]);
+        // Just swap x and y coordinates for vertical layout
+        path = path.map((c) => [c[0], c[2], c[1]]);
       }
       return {
         sourceNode,
@@ -402,37 +436,38 @@ export class SankeyChart extends LitElement {
   }
 
   private _getSectionFlexSize(nodesPerSection: Node[][]): number {
+    const fullSize = this.vertical ? this.height : this.width;
     if (nodesPerSection.length < 2) {
-      return this.width;
+      return fullSize;
     }
+    let lastSectionFlexSize: number;
     if (this.vertical) {
-      const LAST_SECTION_HEIGHT = FONT_SIZE * 2; // estimated based on the font size + some margin
-      const remainingSize = this.height - LAST_SECTION_HEIGHT;
-      return remainingSize / (nodesPerSection.length - 1);
-    }
-    // Estimate the width needed for the last section based on label length
-    const lastIndex = nodesPerSection.length - 1;
-    const lastSectionNodes = nodesPerSection[lastIndex];
-    const TEXT_PADDING = 5; // Padding between node and text
-    const lastSectionFlexSize =
-      lastSectionNodes.length > 0
-        ? Math.max(
-            ...lastSectionNodes.map(
-              (node) =>
-                NODE_WIDTH +
-                TEXT_PADDING +
-                (node.label ? this._getTextWidth(node.label) : 0)
+      lastSectionFlexSize = FONT_SIZE * 2 + NODE_WIDTH; // estimated based on the font size + some margin
+    } else {
+      // Estimate the width needed for the last section based on label length
+      const lastIndex = nodesPerSection.length - 1;
+      const lastSectionNodes = nodesPerSection[lastIndex];
+      const TEXT_PADDING = 5; // Padding between node and text
+      lastSectionFlexSize =
+        lastSectionNodes.length > 0
+          ? Math.max(
+              ...lastSectionNodes.map(
+                (node) =>
+                  NODE_WIDTH +
+                  TEXT_PADDING +
+                  (node.label ? this._getTextWidth(node.label) : 0)
+              )
             )
-          )
-        : 0;
+          : 0;
+    }
     // Calculate the flex size for other sections
-    const remainingSize = this.width - lastSectionFlexSize;
+    const remainingSize = fullSize - lastSectionFlexSize;
     const flexSize = remainingSize / (nodesPerSection.length - 1);
-    // if the last section is wider than the others, we make them all the same width
+    // if the last section is bigger than the others, we make them all the same size
     // this is to prevent the last section from squishing the others
     return lastSectionFlexSize < flexSize
       ? flexSize
-      : this.width / nodesPerSection.length;
+      : fullSize / nodesPerSection.length;
   }
 
   private _getTextWidth(text: string): number {

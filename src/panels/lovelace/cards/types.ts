@@ -198,6 +198,7 @@ export interface EnergyCarbonGaugeCardConfig extends EnergyCardBaseConfig {
 export interface EnergySankeyCardConfig extends EnergyCardBaseConfig {
   type: "energy-sankey";
   title?: string;
+  layout?: "vertical" | "horizontal";
 }
 
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
