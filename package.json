@@ -191,7 +191,7 @@
     "@types/webspeechapi": "0.0.29",
     "@typescript-eslint/eslint-plugin": "7.18.0",
     "@typescript-eslint/parser": "7.18.0",
-    "@vitest/coverage-v8": "2.1.5",
+    "@vitest/coverage-v8": "2.1.6",
     "@web/dev-server": "0.1.38",
     "babel-loader": "9.2.1",
     "babel-plugin-template-html-minifier": "4.1.0",
@@ -237,7 +237,7 @@
     "transform-async-modules-webpack-plugin": "1.1.1",
     "ts-lit-plugin": "2.0.2",
     "typescript": "5.7.2",
-    "vitest": "2.1.5",
+    "vitest": "2.1.6",
     "webpack-stats-plugin": "1.1.3",
     "webpackbar": "7.0.0",
     "workbox-build": "patch:workbox-build@npm%3A7.1.1#~/.yarn/patches/workbox-build-npm-7.1.1-a854f3faae.patch"
