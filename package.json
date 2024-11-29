@@ -222,7 +222,7 @@
     "lit-analyzer": "2.0.3",
     "lodash.merge": "4.6.2",
     "lodash.template": "4.5.0",
-    "magic-string": "0.30.13",
+    "magic-string": "0.30.14",
     "map-stream": "0.0.7",
     "object-hash": "3.0.0",
     "open": "10.1.0",
