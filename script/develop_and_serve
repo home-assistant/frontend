@@ -24,10 +24,10 @@ fi
 yarn exec 'serve -v 2>&1' > /dev/null || (echo 'Installing serve' && npm install -g serve > /dev/null)
 
 # build the frontend so it connects to the passed core
-HASS_URL_OVERRIDE="$1" script/develop &
+HASS_URL_OVERRIDE="$1" "$(dirname "$0")/develop" &
 
 # serve the frontend
-yarn exec serve -l 8123 hass_frontend -s &
+yarn exec serve -l 8123 "$(dirname "$0")/../hass_frontend" -s &
 
 # keep the script running while serving
 wait
