@@ -413,9 +413,30 @@ export class ZHANetworkVisualizationPage extends LitElement {
     this._autoZoom = (ev.target as HaCheckbox).checked;
   }
 
+  private _saveNodePositions() {
+    const nodeIds = Array.from(this._devices.keys());
+    const positions = this._network!.getPositions(nodeIds);
+    localStorage.setItem(
+      "zha-network-node-positions",
+      JSON.stringify(positions)
+    );
+  }
+
+  private _loadNodePositions() {
+    const positions = JSON.parse(
+      localStorage.getItem("zha-network-node-positions") ?? "{}"
+    );
+    Object.keys(positions).forEach((nodeId) => {
+      const position = positions[nodeId];
+      this._network!.moveNode(nodeId, position.x, position.y);
+    });
+  }
+
   private _handlePhysicsCheckboxChange(ev: Event) {
     this._enablePhysics = (ev.target as HaCheckbox).checked;
-
+    if (this._enablePhysics) {
+      this._saveNodePositions();
+    }
     this._network!.setOptions(
       this._enablePhysics
         ? {
@@ -429,6 +450,9 @@ export class ZHANetworkVisualizationPage extends LitElement {
           }
         : { physics: false }
     );
+    if (!this._enablePhysics) {
+      this._loadNodePositions();
+    }
   }
 
   static get styles(): CSSResultGroup {
