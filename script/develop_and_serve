@@ -16,12 +16,12 @@ set -e
 
 if [ -z "$1" ]
   then
-    echo 'Missing core endpoint, see comments in the script for more help.'
+    echo "Missing core endpoint, see comments in the script for more help."
     exit 1
 fi
 
 # ensure that serve is available
-yarn exec 'serve -v 2>&1' > /dev/null || (echo 'Installing serve' && npm install -g serve > /dev/null)
+yarn exec "serve -v 2>&1" > /dev/null || (echo "Installing serve" && npm install -g serve > /dev/null)
 
 # build the frontend so it connects to the passed core
 HASS_URL_OVERRIDE="$1" "$(dirname "$0")/develop" &
