@@ -53,6 +53,7 @@ module.exports.definedVars = ({ isProdBuild, latestBuild, defineOverlay }) => ({
   __SUPERVISOR__: false,
   __BACKWARDS_COMPAT__: false,
   __STATIC_PATH__: "/static/",
+  __HASS_URL__: env.hassUrl(),
   "process.env.NODE_ENV": JSON.stringify(
     isProdBuild ? "production" : "development"
   ),
