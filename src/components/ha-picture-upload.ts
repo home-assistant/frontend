@@ -2,6 +2,7 @@ import { mdiImagePlus } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { MediaPickedEvent } from "../data/media-player";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyle } from "../resources/styles";
 import { createImage, generateImageThumbnailUrl } from "../data/image_upload";
@@ -12,6 +13,7 @@ import type { HomeAssistant } from "../types";
 import "./ha-button";
 import "./ha-circular-progress";
 import "./ha-file-upload";
+import { showMediaBrowserDialog } from "./media-player/show-media-browser-dialog";
 
 @customElement("ha-picture-upload")
 export class HaPictureUpload extends LitElement {
@@ -53,6 +55,11 @@ export class HaPictureUpload extends LitElement {
           @change=${this._handleFileCleared}
           accept="image/png, image/jpeg, image/gif"
         ></ha-file-upload>
+        <ha-button class="center" @click=${this._chooseMedia}
+          >${this.hass.localize(
+            "ui.components.picture-upload.select_previous_upload"
+          )}</ha-button
+        >
       `;
     }
     return html`<div class="center-vertical">
@@ -141,16 +148,46 @@ export class HaPictureUpload extends LitElement {
     }
   }
 
+  private _chooseMedia(): void {
+    showMediaBrowserDialog(this, {
+      action: "pick",
+      entityId: "browser",
+      navigateIds: [
+        { media_content_id: undefined, media_content_type: undefined },
+        {
+          media_content_id: "media-source://image_upload",
+          media_content_type: "app",
+        },
+      ],
+      minimumNavigateLevel: 2,
+      mediaPickedCallback: (pickedMedia: MediaPickedEvent) => {
+        const id = pickedMedia.item.media_content_id;
+        const stringToRemove = "media-source://image_upload/";
+        if (id.startsWith(stringToRemove)) {
+          this.value = generateImageThumbnailUrl(
+            id.substr(stringToRemove.length),
+            this.size,
+            this.original
+          );
+          fireEvent(this, "change");
+        }
+      },
+    });
+  }
+
   static get styles() {
     return [
       haStyle,
       css`
         :host {
           display: block;
-          height: 240px;
         }
         ha-file-upload {
-          height: 100%;
+          height: 240px;
+        }
+        ha-button.center {
+          display: flex;
+          align-items: center;
         }
         .center-vertical {
           display: flex;
