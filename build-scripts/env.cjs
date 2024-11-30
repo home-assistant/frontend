@@ -33,8 +33,8 @@ module.exports = {
   },
   hassUrl() {
     return "HASS_URL_OVERRIDE" in process.env
-      ? `\"${process.env["HASS_URL_OVERRIDE"]}\"`
-      : "`${location.protocol}//${location.host}`";
+      ? process.env["HASS_URL_OVERRIDE"]
+      : "${location.protocol}//${location.host}";
   },
   isDevContainer() {
     return isTrue(process.env.DEV_CONTAINER);
