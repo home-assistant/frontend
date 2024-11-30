@@ -3,6 +3,12 @@
 # This script can be used to develop and test the frontend without having to
 # link the build in a running core instance through the frontend/development_repo setting.
 #
+# WARNING:
+# If you have an active login session in the frontend. The core that was used
+# as a backend during the time of the login remains used until you logout again.
+# So if you reuse the url hosting the frontend, you will need to logout before
+# it will actually start using the core backend configured by this script.
+#
 # If you run this script without parameters, the frontend will be accessible under http://localhost:8124.
 # And it will use the core instance running under http://localhost:8123 as a backend.
 # Note that from a devcontainer, it will be accessible under port 8124 on the host container.
