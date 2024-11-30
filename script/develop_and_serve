@@ -1,33 +1,67 @@
 #!/bin/sh
 #
-# Run the develop script to build the frontend and serve it under http://localhost:8123.
-# Note that if you are running in the default devcontainer this port is forwarded to 8124.
-# So in that case it will be accessible on the container host as http:/localhost:8124.
+# This script can be used to develop and test the frontend without having to
+# link the build in a running core instance through the frontend/development_repo setting.
 #
-# The frontend will connect to the core running under the endpoint passed as parameter to this script.
-# This endpoint must be accessible from the browser you are using to access the frontend.
-# But it does not have to be accessible from the devcontainer if you are using that flow.
-# No configuration settings are required on the core you are connecting to.
+# If you run this script without parameters, the frontend will be accessible under http://localhost:8124.
+# And it will use the core instance running under http://localhost:8123 as a backend.
+# Note that from a devcontainer, it will be accessible under port 8124 on the host container.
+# Inside the devcontainer it will be accessible under port 8123 instead.
+# The core instance endpoint remains the same in both cases, as this is resolved from the browser.
 #
-# Example usage: script/develop_and_serve https://myhost.duckdns.org:8123
+# You can change the core instance the frontend connects to by passing the -c option.
+# For example: script/develop_and_serve -c https://myhost.duckdns.org:8123
+# This will also work for existing production core instances.
+# It does not need to be a development version hosted locally.
+#
+# You can change the port the frontend is served on by passing the -p option.
+# For example: script/develop_and_serve -p 8654
+# Note that if you are running from a devcontainer, you will need to setup
+# port forwarding as well if you want to access it from the container host.
 
 # Stop on errors
 set -e
 
-if [ -z "$1" ]
-  then
-    echo "Missing core endpoint, see comments in the script for more help."
-    exit 1
+cd "$(dirname "$0")/.."
+
+# parse input paramters
+if [ -n "$DEVCONTAINER" ]; then
+    frontendPort=8123
+else
+    frontendPort=8124
 fi
+
+coreUrl=http://localhost:8123
+
+while getopts p:c:h flag
+do
+    case "${flag}" in
+        p) frontendPort=${OPTARG};;
+        c) coreUrl="${OPTARG}";;
+        h) echo Documentation can be found inside "$0" && exit 0;;
+        *) echo Documentation can be found inside "$0" && exit 1;;
+    esac
+done
+
+# display used settings
+if [ -n "$DEVCONTAINER" ]; then
+    echo Frontend is available inside container as http://localhost:${frontendPort}
+    if [ 8123 -eq $frontendPort ]; then
+      echo Frontend is available on container host as http://localhost:8124
+    fi
+else
+    echo Frontend is hosted on http://localhost:${frontendPort}
+fi
+echo Core is used from ${coreUrl}
 
 # ensure that serve is available
 yarn exec "serve -v 2>&1" > /dev/null || (echo "Installing serve" && npm install -g serve > /dev/null)
 
 # build the frontend so it connects to the passed core
-HASS_URL_OVERRIDE="$1" "$(dirname "$0")/develop" &
+HASS_URL_OVERRIDE="$coreUrl" ./script/develop &
 
 # serve the frontend
-yarn exec serve -l 8123 "$(dirname "$0")/../hass_frontend" -s &
+yarn exec serve -l $frontendPort ./hass_frontend -s &
 
 # keep the script running while serving
 wait
