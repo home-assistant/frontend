@@ -2244,19 +2244,19 @@
           "caption": "Energy",
           "description": "Monitor your energy production and consumption",
           "new_device_info": "After setting up a new device, it can take up to 2 hours for new data to arrive in your energy dashboard.",
-          "delete_source": "Are you sure you want to delete this source?",
-          "delete_integration": "Are you sure you want to delete this integration? It will remove the entities it provides",
+          "delete_source": "Are you sure you want to remove this source?",
+          "delete_integration": "Are you sure you want to remove this integration? It will remove the entities it provides",
           "grid": {
             "title": "Electricity grid",
             "sub": "Configure the amount of energy that you consume from the grid and, if you produce energy, give back to the grid. This allows Home Assistant to track your whole home energy usage.",
             "learn_more": "More information on how to get started.",
             "grid_consumption": "Grid consumption",
             "edit_consumption": "Edit consumption",
-            "delete_consumption": "Delete consumption",
+            "delete_consumption": "Remove consumption",
             "add_consumption": "Add consumption",
             "return_to_grid": "Return to grid",
             "edit_return": "Edit return",
-            "delete_return": "Delete return",
+            "delete_return": "Remove return",
             "add_return": "Add return",
             "grid_carbon_footprint": "Grid carbon footprint",
             "remove_co2_signal": "Remove Electricity Maps integration",
@@ -2298,7 +2298,7 @@
             "learn_more": "More information on how to get started.",
             "solar_production": "Solar production",
             "edit_solar_production": "Edit solar production",
-            "delete_solar_production": "Delete solar production",
+            "delete_solar_production": "Remove solar production",
             "add_solar_production": "Add solar production",
             "stat_production": "Your solar energy production",
             "stat_return_to_grid": "Solar energy returned to the grid",
@@ -2320,7 +2320,7 @@
             "learn_more": "More information on how to get started.",
             "battery_systems": "Battery systems",
             "edit_battery_system": "Edit battery system",
-            "delete_battery_system": "Delete battery system",
+            "delete_battery_system": "Remove battery system",
             "add_battery_system": "Add battery system",
             "dialog": {
               "header": "Configure battery system",
@@ -2335,7 +2335,7 @@
             "learn_more": "More information on how to get started.",
             "gas_consumption": "Gas consumption",
             "edit_gas_source": "Edit gas source",
-            "delete_gas_source": "Delete gas source",
+            "delete_gas_source": "Remove gas source",
             "add_gas_source": "Add gas source",
             "dialog": {
               "header": "Configure gas consumption",
@@ -2359,7 +2359,7 @@
             "learn_more": "More information on how to get started.",
             "water_consumption": "Water consumption",
             "edit_water_source": "Edit water source",
-            "delete_water_source": "Delete water source",
+            "delete_water_source": "Remove water source",
             "add_water_source": "Add water source",
             "dialog": {
               "header": "Configure water consumption",
@@ -2387,7 +2387,7 @@
             "dialog": {
               "header": "Add a device",
               "display_name": "Display name",
-              "device_consumption_energy": "Device consumption energy",
+              "device_consumption_energy": "Device energy consumption",
               "selected_stat_intro": "Select the energy sensor that measures the device's energy usage in either of {unit}."
             }
           }
