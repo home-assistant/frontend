@@ -3,7 +3,10 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import type { Edge, EdgeOptions, Node } from "vis-network/peer/esm/vis-network";
-import { Network } from "vis-network/peer/esm/vis-network";
+import {
+  Network,
+  Position as NodePosition,
+} from "vis-network/peer/esm/vis-network";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/search-input";
 import "../../../../../components/device/ha-device-picker";
@@ -22,6 +25,8 @@ import type {
 } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
 import { zhaTabs } from "./zha-config-dashboard";
+
+const nodePositionsStorageKey = "zha-network-node-positions";
 
 @customElement("zha-network-visualization-page")
 export class ZHANetworkVisualizationPage extends LitElement {
@@ -59,7 +64,8 @@ export class ZHANetworkVisualizationPage extends LitElement {
 
   private _autoZoom = true;
 
-  private _enablePhysics = true;
+  private _enablePhysics =
+    localStorage.getItem(nodePositionsStorageKey) == null;
 
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
@@ -81,13 +87,15 @@ export class ZHANetworkVisualizationPage extends LitElement {
         layout: {
           improvedLayout: true,
         },
-        physics: {
-          barnesHut: {
-            springConstant: 0,
-            avoidOverlap: 10,
-            damping: 0.09,
-          },
-        },
+        physics: this._enablePhysics
+          ? {
+              barnesHut: {
+                springConstant: 0,
+                avoidOverlap: 10,
+                damping: 0.09,
+              },
+            }
+          : false,
         nodes: {
           font: {
             multi: "html",
@@ -128,6 +136,12 @@ export class ZHANetworkVisualizationPage extends LitElement {
     this._network.on("stabilized", () => {
       if (this.zoomedDeviceId) {
         this._zoomToDevice();
+      }
+    });
+
+    this._network.on("dragEnd", () => {
+      if (!this._enablePhysics) {
+        this._storeNodePositions();
       }
     });
   }
@@ -229,7 +243,15 @@ export class ZHANetworkVisualizationPage extends LitElement {
     this._nodes = [];
     const edges: Edge[] = [];
 
+    const nodePositions = this._enablePhysics
+      ? undefined
+      : this._getStoredNodePositions();
+
     devices.forEach((device) => {
+      const nodePosition =
+        nodePositions && device.ieee in nodePositions
+          ? nodePositions[device.ieee]
+          : {};
       this._nodes.push({
         id: device.ieee,
         label: this._buildLabel(device),
@@ -238,6 +260,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
         color: {
           background: device.available ? "#66FF99" : "#FF9999",
         },
+        ...nodePosition,
       });
       if (device.neighbors && device.neighbors.length > 0) {
         device.neighbors.forEach((neighbor) => {
@@ -413,29 +436,12 @@ export class ZHANetworkVisualizationPage extends LitElement {
     this._autoZoom = (ev.target as HaCheckbox).checked;
   }
 
-  private _saveNodePositions() {
-    const nodeIds = Array.from(this._devices.keys());
-    const positions = this._network!.getPositions(nodeIds);
-    localStorage.setItem(
-      "zha-network-node-positions",
-      JSON.stringify(positions)
-    );
-  }
-
-  private _loadNodePositions() {
-    const positions = JSON.parse(
-      localStorage.getItem("zha-network-node-positions") ?? "{}"
-    );
-    Object.keys(positions).forEach((nodeId) => {
-      const position = positions[nodeId];
-      this._network!.moveNode(nodeId, position.x, position.y);
-    });
-  }
-
   private _handlePhysicsCheckboxChange(ev: Event) {
     this._enablePhysics = (ev.target as HaCheckbox).checked;
-    if (this._enablePhysics) {
-      this._saveNodePositions();
+    if (!this._enablePhysics) {
+      // when disabling physics, start with the positions
+      // from when physics was still enabled
+      this._storeNodePositions();
     }
     this._network!.setOptions(
       this._enablePhysics
@@ -450,8 +456,54 @@ export class ZHANetworkVisualizationPage extends LitElement {
           }
         : { physics: false }
     );
-    if (!this._enablePhysics) {
-      this._loadNodePositions();
+    if (this._enablePhysics) {
+      this._clearStoredNodePositions();
+    }
+  }
+
+  private _getStoredNodePositions():
+    | {
+        [nodeId: string]: NodePosition;
+      }
+    | undefined {
+    try {
+      const storedPositions = localStorage.getItem(nodePositionsStorageKey);
+      if ((storedPositions?.length ?? 0) > 0) {
+        return JSON.parse(storedPositions!);
+      }
+    } catch (ex) {
+      console.error(
+        "Failure while retrieving stored node positions, physics will be enabled as fallback",
+        ex
+      );
+    }
+    return undefined;
+  }
+
+  private _clearStoredNodePositions() {
+    try {
+      localStorage.removeItem(nodePositionsStorageKey);
+    } catch (ex) {
+      console.error(
+        "Failure while clearing stored node positions, physics might be reenabled on next page load",
+        ex
+      );
+    }
+  }
+
+  private _storeNodePositions() {
+    try {
+      const nodeIds = Array.from(this._devices.keys());
+      const nodePositions = this._network!.getPositions(nodeIds);
+      localStorage.setItem(
+        nodePositionsStorageKey,
+        JSON.stringify(nodePositions)
+      );
+    } catch (ex) {
+      console.error(
+        "Failed to update stored node positions, locations might be wrong on next page load",
+        ex
+      );
     }
   }
 
