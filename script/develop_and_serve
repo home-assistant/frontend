@@ -54,14 +54,11 @@ else
 fi
 echo Core is used from ${coreUrl}
 
-# ensure that serve is available
-yarn exec "serve -v 2>&1" > /dev/null || (echo "Installing serve" && npm install -g serve > /dev/null)
-
 # build the frontend so it connects to the passed core
 HASS_URL="$coreUrl" ./script/develop &
 
 # serve the frontend
-yarn exec serve -l $frontendPort ./hass_frontend -s &
+yarn dlx serve -l $frontendPort ./hass_frontend -s &
 
 # keep the script running while serving
 wait
