@@ -31,11 +31,6 @@ module.exports = {
     }
     return version[1];
   },
-  hassUrl() {
-    return "HASS_URL" in process.env
-      ? process.env["HASS_URL"]
-      : "${location.protocol}//${location.host}";
-  },
   isDevContainer() {
     return isTrue(process.env.DEV_CONTAINER);
   },
