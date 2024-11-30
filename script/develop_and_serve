@@ -11,7 +11,7 @@
 #
 # If you run this script without parameters, the frontend will be accessible under http://localhost:8124.
 # And it will use the core instance running under http://localhost:8123 as a backend.
-# Note that from a devcontainer, it will be accessible under port 8124 on the host container.
+# Note that from a devcontainer, the frontend will be accessible under port 8124 on the host container.
 # Inside the devcontainer it will be accessible under port 8123 instead.
 # The core instance endpoint remains the same in both cases, as this is resolved from the browser.
 #
