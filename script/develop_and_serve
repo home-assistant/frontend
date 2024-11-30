@@ -58,7 +58,7 @@ echo Core is used from ${coreUrl}
 yarn exec "serve -v 2>&1" > /dev/null || (echo "Installing serve" && npm install -g serve > /dev/null)
 
 # build the frontend so it connects to the passed core
-HASS_URL_OVERRIDE="$coreUrl" ./script/develop &
+HASS_URL="$coreUrl" ./script/develop &
 
 # serve the frontend
 yarn exec serve -l $frontendPort ./hass_frontend -s &

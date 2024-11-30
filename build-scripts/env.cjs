@@ -32,8 +32,8 @@ module.exports = {
     return version[1];
   },
   hassUrl() {
-    return "HASS_URL_OVERRIDE" in process.env
-      ? process.env["HASS_URL_OVERRIDE"]
+    return "HASS_URL" in process.env
+      ? process.env["HASS_URL"]
       : "${location.protocol}//${location.host}";
   },
   isDevContainer() {
