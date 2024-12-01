@@ -7,7 +7,9 @@ import {
   mdiContentSave,
   mdiDelete,
   mdiDotsVertical,
+  mdiEye,
   mdiInformationOutline,
+  mdiMotionPlayOutline,
   mdiPlay,
   mdiTag,
 } from "@mdi/js";
