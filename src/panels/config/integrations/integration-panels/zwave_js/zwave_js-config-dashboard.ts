@@ -564,7 +564,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
   private async _addNodeClicked() {
     showZWaveJSAddNodeDialog(this, {
       entry_id: this.configEntryId!,
-      addedCallback: () => this._fetchData(),
+      // refresh the data after the dialog is closed. add a small delay for the inclusion state to update
+      onStop: () => setTimeout(() => this._fetchData(), 100),
     });
   }
 

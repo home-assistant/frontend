@@ -69,6 +69,7 @@ export class HaAuthTextField extends HaTextField {
       name=${ifDefined(this.name === "" ? undefined : this.name)}
       inputmode=${ifDefined(this.inputMode)}
       autocapitalize=${ifDefined(autocapitalizeOrUndef)}
+      ?autofocus=${this.autofocus}
       @input=${this.handleInputChange}
       @focus=${this.onInputFocus}
       @blur=${this.onInputBlur}
@@ -245,6 +246,14 @@ export class HaAuthTextField extends HaTextField {
     style.textContent = HaTextField.elementStyles as unknown as string;
     this.append(style);
     return this;
+  }
+
+  public firstUpdated() {
+    super.firstUpdated();
+
+    if (this.autofocus) {
+      this.focus();
+    }
   }
 }
 

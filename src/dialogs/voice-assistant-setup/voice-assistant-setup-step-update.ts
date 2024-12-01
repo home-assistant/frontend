@@ -65,7 +65,7 @@ export class HaVoiceAssistantSetupStepUpdate extends LitElement {
     const progressIsNumeric = stateObj && updateUsesProgress(stateObj);
 
     return html`<div class="content">
-      <img src="/static/images/voice-assistant/update.gif" />
+      <img src="/static/images/voice-assistant/update.png" />
       <h1>
         ${stateObj &&
         (stateObj.state === "unavailable" || updateIsInstalling(stateObj))

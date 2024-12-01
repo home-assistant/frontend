@@ -12,6 +12,7 @@ import {
   query,
   state as litState,
 } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 
 interface State {
   bold: boolean;
@@ -26,12 +27,15 @@ interface State {
 export class HaAnsiToHtml extends LitElement {
   @property() public content!: string;
 
+  @property({ type: Boolean, attribute: "wrap-disabled" }) public wrapDisabled =
+    false;
+
   @query("pre") private _pre?: HTMLPreElement;
 
   @litState() private _filter = "";
 
   protected render(): TemplateResult | void {
-    return html`<pre></pre>`;
+    return html`<pre class=${classMap({ wrap: !this.wrapDisabled })}></pre>`;
   }
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
@@ -47,9 +51,11 @@ export class HaAnsiToHtml extends LitElement {
     return css`
       pre {
         overflow-x: auto;
+        margin: 0;
+      }
+      pre.wrap {
         white-space: pre-wrap;
         overflow-wrap: break-word;
-        margin: 0;
       }
       .bold {
         font-weight: bold;

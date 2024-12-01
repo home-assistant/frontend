@@ -106,6 +106,38 @@ import { fileDownload } from "../../../util/file_download";
 import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
 
+export const renderConfigEntryError = (
+  hass: HomeAssistant,
+  entry: ConfigEntry
+): TemplateResult => {
+  if (entry.reason) {
+    if (entry.error_reason_translation_key) {
+      const lokalisePromExc = hass
+        .loadBackendTranslation("exceptions", entry.domain)
+        .then(
+          (localize) =>
+            localize(
+              `component.${entry.domain}.exceptions.${entry.error_reason_translation_key}.message`,
+              entry.error_reason_translation_placeholders ?? undefined
+            ) || entry.reason
+        );
+      return html`${until(lokalisePromExc)}`;
+    }
+    const lokalisePromError = hass
+      .loadBackendTranslation("config", entry.domain)
+      .then(
+        (localize) =>
+          localize(`component.${entry.domain}.config.error.${entry.reason}`) ||
+          entry.reason
+      );
+    return html`${until(lokalisePromError, entry.reason)}`;
+  }
+  return html`
+    <br />
+    ${hass.localize("ui.panel.config.integrations.config_entry.check_the_logs")}
+  `;
+};
+
 @customElement("ha-config-integration-page")
 class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -618,37 +650,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       stateText = [
         `ui.panel.config.integrations.config_entry.state.${item.state}`,
       ];
-      if (item.reason) {
-        if (item.error_reason_translation_key) {
-          const lokalisePromExc = this.hass
-            .loadBackendTranslation("exceptions", item.domain)
-            .then(
-              (localize) =>
-                localize(
-                  `component.${item.domain}.exceptions.${item.error_reason_translation_key}.message`,
-                  item.error_reason_translation_placeholders ?? undefined
-                ) || item.reason
-            );
-          stateTextExtra = html`${until(lokalisePromExc)}`;
-        } else {
-          const lokalisePromError = this.hass
-            .loadBackendTranslation("config", item.domain)
-            .then(
-              (localize) =>
-                localize(
-                  `component.${item.domain}.config.error.${item.reason}`
-                ) || item.reason
-            );
-          stateTextExtra = html`${until(lokalisePromError, item.reason)}`;
-        }
-      } else {
-        stateTextExtra = html`
-          <br />
-          ${this.hass.localize(
-            "ui.panel.config.integrations.config_entry.check_the_logs"
-          )}
-        `;
-      }
+      stateTextExtra = renderConfigEntryError(this.hass, item);
     }
 
     const devices = this._getConfigEntryDevices(item);
@@ -1387,6 +1389,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         this._extraConfigEntries || this.configEntries
       );
       if (entries.length > 0) {
+        const localize = await this.hass.loadBackendTranslation(
+          "title",
+          this._manifest.name
+        );
         await showAlertDialog(this, {
           title: this.hass.localize(
             "ui.panel.config.integrations.config_flow.single_config_entry_title"
@@ -1394,7 +1400,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           text: this.hass.localize(
             "ui.panel.config.integrations.config_flow.single_config_entry",
             {
-              integration_name: this._manifest.name,
+              integration_name: domainToName(localize, this._manifest.name),
             }
           ),
         });

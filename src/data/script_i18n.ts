@@ -1,5 +1,5 @@
 import { ensureArray } from "../common/array/ensure-array";
-import { formatDuration } from "../common/datetime/format_duration";
+import { formatNumericDuration } from "../common/datetime/format_duration";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { formatListWithAnds } from "../common/string/format-list";
@@ -28,7 +28,6 @@ import type {
   ParallelAction,
   PlayMediaAction,
   RepeatAction,
-  SceneAction,
   SequenceAction,
   SetConversationResponseAction,
   StopAction,
@@ -278,7 +277,7 @@ const tryDescribeAction = <T extends ActionType>(
       duration = hass.localize(
         `${actionTranslationBaseKey}.delay.description.duration_string`,
         {
-          string: formatDuration(hass.locale, config.delay),
+          string: formatNumericDuration(hass.locale, config.delay),
         }
       );
     } else {
@@ -295,26 +294,6 @@ const tryDescribeAction = <T extends ActionType>(
     return hass.localize(`${actionTranslationBaseKey}.delay.description.full`, {
       duration: duration,
     });
-  }
-
-  if (actionType === "activate_scene") {
-    const config = action as SceneAction;
-    let entityId: string | undefined;
-    if ("scene" in config) {
-      entityId = config.scene;
-    } else {
-      entityId = config.target?.entity_id || config.entity_id;
-    }
-    if (!entityId) {
-      return hass.localize(
-        `${actionTranslationBaseKey}.activate_scene.description.activate_scene`
-      );
-    }
-    const sceneStateObj = entityId ? hass.states[entityId] : undefined;
-    return hass.localize(
-      `${actionTranslationBaseKey}.activate_scene.description.activate_scene_with_name`,
-      { name: sceneStateObj ? computeStateName(sceneStateObj) : entityId }
-    );
   }
 
   if (actionType === "play_media") {

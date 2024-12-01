@@ -56,7 +56,6 @@ const getCommonTemplateVars = () => {
     { ignorePatch: true, allowHigherVersions: true }
   );
   return {
-    useRollup: env.useRollup(),
     useWDS: env.useWDS(),
     modernRegex: compileRegex(browserRegexes.concat(haMacOSRegex)).toString(),
   };
@@ -255,6 +254,28 @@ gulp.task(
     paths.gallery_dir,
     paths.gallery_output_root,
     paths.gallery_output_latest
+  )
+);
+
+const LANDING_PAGE_PAGE_ENTRIES = { "index.html": ["entrypoint"] };
+
+gulp.task(
+  "gen-pages-landing-page-dev",
+  genPagesDevTask(
+    LANDING_PAGE_PAGE_ENTRIES,
+    paths.landingPage_dir,
+    paths.landingPage_output_root
+  )
+);
+
+gulp.task(
+  "gen-pages-landing-page-prod",
+  genPagesProdTask(
+    LANDING_PAGE_PAGE_ENTRIES,
+    paths.landingPage_dir,
+    paths.landingPage_output_root,
+    paths.landingPage_output_latest,
+    paths.landingPage_output_es5
   )
 );
 

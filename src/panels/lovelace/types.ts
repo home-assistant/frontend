@@ -17,7 +17,6 @@ import type { LovelaceHeadingBadgeConfig } from "./heading-badges/types";
 import type { ShowToastParams } from "../../managers/notification-manager";
 
 declare global {
-  // eslint-disable-next-line
   interface HASSDomEvents {
     "ll-rebuild": Record<string, unknown>;
     "ll-upgrade": Record<string, unknown>;

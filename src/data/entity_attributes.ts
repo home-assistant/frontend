@@ -1,4 +1,4 @@
-import { formatDuration } from "../common/datetime/duration";
+import { formatNumericDuration } from "../common/datetime/format_duration";
 import type { FrontendLocaleData } from "./translation";
 
 export const STATE_ATTRIBUTES = [
@@ -23,6 +23,7 @@ export const STATE_ATTRIBUTES = [
   "state_class",
   "supported_features",
   "unit_of_measurement",
+  "available_tones",
 ];
 
 export const TEMPERATURE_ATTRIBUTES = new Set([
@@ -98,6 +99,7 @@ export const DOMAIN_ATTRIBUTES_FORMATERS: Record<
   },
   media_player: {
     volume_level: (value) => Math.round(value * 100).toString(),
-    media_duration: (value) => formatDuration(value.toString(), "s"),
+    media_duration: (value, locale) =>
+      formatNumericDuration(locale, { seconds: value })!,
   },
 };

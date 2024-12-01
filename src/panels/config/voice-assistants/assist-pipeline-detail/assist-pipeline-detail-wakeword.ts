@@ -1,5 +1,5 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
@@ -8,7 +8,6 @@ import type { AssistPipeline } from "../../../../data/assist_pipeline";
 import type { HomeAssistant } from "../../../../types";
 import type { WakeWord } from "../../../../data/wake_word";
 import { fetchWakeWordInfo } from "../../../../data/wake_word";
-import { documentationUrl } from "../../../../util/documentation-url";
 import { fireEvent } from "../../../../common/dom/fire_event";
 
 @customElement("assist-pipeline-detail-wakeword")
@@ -79,12 +78,7 @@ export class AssistPipelineDetailWakeWord extends LitElement {
     }
   }
 
-  private _hasWakeWorkEntities = memoizeOne((states: HomeAssistant["states"]) =>
-    Object.keys(states).some((entityId) => entityId.startsWith("wake_word."))
-  );
-
   protected render() {
-    const hasWakeWorkEntities = this._hasWakeWorkEntities(this.hass.states);
     return html`
       <div class="section">
         <div class="content">
@@ -99,29 +93,17 @@ export class AssistPipelineDetailWakeWord extends LitElement {
                 `ui.panel.config.voice_assistants.assistants.pipeline.detail.steps.wakeword.description`
               )}
             </p>
+            <ha-alert alert-type="info">
+              ${this.hass.localize(
+                `ui.panel.config.voice_assistants.assistants.pipeline.detail.steps.wakeword.note`
+              )}
+            </ha-alert>
           </div>
-          ${!hasWakeWorkEntities
-            ? html`${this.hass.localize(
-                  `ui.panel.config.voice_assistants.assistants.pipeline.detail.steps.wakeword.no_wake_words`
-                )}
-                <a
-                  href=${documentationUrl(
-                    this.hass,
-                    "/voice_control/install_wake_word_add_on/"
-                  )}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  >${this.hass.localize(
-                    `ui.panel.config.voice_assistants.assistants.pipeline.detail.steps.wakeword.no_wake_words_link`
-                  )}</a
-                >`
-            : nothing}
           <ha-form
             .schema=${this._schema(this._wakeWords)}
             .data=${this.data}
             .hass=${this.hass}
             .computeLabel=${this._computeLabel}
-            .disabled=${!hasWakeWorkEntities}
           ></ha-form>
         </div>
       </div>

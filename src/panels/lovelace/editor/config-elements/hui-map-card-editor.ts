@@ -64,6 +64,7 @@ const cardConfigStruct = assign(
     hours_to_show: optional(number()),
     geo_location_sources: optional(array(geoSourcesConfigStruct)),
     auto_fit: optional(boolean()),
+    fit_zones: optional(boolean()),
     theme_mode: optional(string()),
   })
 );

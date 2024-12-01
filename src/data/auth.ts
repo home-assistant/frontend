@@ -30,11 +30,11 @@ export const autocompleteLoginFields = (schema: HaFormSchema[]) =>
     if (field.type !== "string") return field;
     switch (field.name) {
       case "username":
-        return { ...field, autocomplete: "username" };
+        return { ...field, autocomplete: "username", autofocus: true };
       case "password":
         return { ...field, autocomplete: "current-password" };
       case "code":
-        return { ...field, autocomplete: "one-time-code" };
+        return { ...field, autocomplete: "one-time-code", autofocus: true };
       default:
         return field;
     }

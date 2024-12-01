@@ -1,14 +1,22 @@
-import { css, html, LitElement } from "lit";
+import { css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import type { HomeAssistant } from "../../types";
 
 @customElement("hat-logbook-note")
 class HatLogbookNote extends LitElement {
-  @property() public domain = "automation";
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property() public domain: "automation" | "script" = "automation";
 
   render() {
-    return html`
-      Not all shown logbook entries might be related to this ${this.domain}.
-    `;
+    if (this.domain === "script") {
+      return this.hass.localize(
+        "ui.panel.config.automation.trace.messages.not_all_entries_are_related_script_note"
+      );
+    }
+    return this.hass.localize(
+      "ui.panel.config.automation.trace.messages.not_all_entries_are_related_automation_note"
+    );
   }
 
   static styles = css`

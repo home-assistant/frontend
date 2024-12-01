@@ -59,7 +59,7 @@ export interface WebRtcAnswer {
 
 export interface WebRtcCandidate {
   type: "candidate";
-  candidate: string;
+  candidate: RTCIceCandidateInit;
 }
 
 export interface WebRtcError {
@@ -139,13 +139,13 @@ export const addWebRtcCandidate = (
   hass: HomeAssistant,
   entity_id: string,
   session_id: string,
-  candidate: string
+  candidate: RTCIceCandidateInit
 ) =>
   hass.callWS({
     type: "camera/webrtc/candidate",
     entity_id,
     session_id,
-    candidate,
+    candidate: candidate,
   });
 
 export const fetchCameraPrefs = (hass: HomeAssistant, entityId: string) =>

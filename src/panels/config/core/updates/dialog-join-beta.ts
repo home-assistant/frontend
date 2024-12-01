@@ -48,7 +48,7 @@ export class DialogJoinBeta
           ${this.hass.localize("ui.dialogs.join_beta_channel.backup")}
         </ha-alert>
         <p>
-          ${this.hass.localize("ui.dialogs.join_beta_channel.warning")}
+          ${this.hass.localize("ui.dialogs.join_beta_channel.warning")}.<br />
           ${this.hass.localize("ui.dialogs.join_beta_channel.release_items")}
         </p>
         <ul>

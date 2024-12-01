@@ -26,6 +26,7 @@ class HaLabel extends LitElement {
             0.15
           );
           --ha-label-background-opacity: 1;
+          border: 1px solid var(--outline-color);
           position: relative;
           box-sizing: border-box;
           display: inline-flex;

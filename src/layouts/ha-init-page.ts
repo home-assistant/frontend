@@ -82,6 +82,9 @@ class HaInitPage extends LitElement {
   }
 
   private _retry() {
+    if (this._retryInterval) {
+      clearInterval(this._retryInterval);
+    }
     location.reload();
   }
 

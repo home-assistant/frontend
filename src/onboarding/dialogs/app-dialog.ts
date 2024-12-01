@@ -77,18 +77,16 @@ class DialogApp extends LitElement {
       --mdc-dialog-min-width: min(500px, 90vw);
     }
     .app-qr {
-      margin: 24px auto 0 auto;
       display: flex;
       justify-content: space-between;
-      padding: 0 24px;
       box-sizing: border-box;
-      gap: 16px;
+      gap: 32px;
       width: 100%;
-      max-width: 400px;
     }
     .app-qr a,
     .app-qr img {
       flex: 1;
+      max-width: 180px;
     }
   `;
 }

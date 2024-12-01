@@ -16,6 +16,8 @@ import type { ValueChangedEvent } from "../types";
 import { onBoardingStyles } from "./styles";
 import { debounce } from "../common/util/debounce";
 
+const CHECK_USERNAME_REGEX = /\s|[A-Z]/;
+
 const CREATE_USER_SCHEMA: HaFormSchema[] = [
   {
     name: "name",
@@ -121,6 +123,7 @@ class OnboardingCreateUser extends LitElement {
     ev: ValueChangedEvent<HaFormDataContainer>
   ): void {
     const nameChanged = ev.detail.value.name !== this._newUser.name;
+    const usernameChanged = ev.detail.value.username !== this._newUser.username;
     const passwordChanged =
       ev.detail.value.password !== this._newUser.password ||
       ev.detail.value.password_confirm !== this._newUser.password_confirm;
@@ -134,6 +137,9 @@ class OnboardingCreateUser extends LitElement {
       } else {
         this._debouncedCheckPasswordMatch();
       }
+    }
+    if (usernameChanged) {
+      this._checkUsername();
     }
   }
 
@@ -164,6 +170,21 @@ class OnboardingCreateUser extends LitElement {
     const parts = String(this._newUser.name).split(" ");
     if (parts.length) {
       this._newUser.username = parts[0].toLowerCase();
+      this._checkUsername();
+    }
+  }
+
+  private _checkUsername(): void {
+    const old = this._formError.username;
+    if (CHECK_USERNAME_REGEX.test(this._newUser.username as string)) {
+      this._formError.username = this.localize(
+        "ui.panel.page-onboarding.user.error.username_not_normalized"
+      );
+    } else {
+      this._formError.username = "";
+    }
+    if (old !== this._formError.username) {
+      this.requestUpdate("_formError");
     }
   }
 

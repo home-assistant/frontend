@@ -135,6 +135,10 @@ export class HaSortable extends LitElement {
     const Sortable = (await import("../resources/sortable")).default;
 
     const options: SortableInstance.Options = {
+      scroll: true,
+      // Force the autoscroll fallback because it works better than the native one
+      forceAutoScrollFallback: true,
+      scrollSpeed: 20,
       animation: 150,
       ...this.options,
       onChoose: this._handleChoose,

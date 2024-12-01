@@ -690,9 +690,6 @@ class DialogZWaveJSAddNode extends LitElement {
           provisioningInfo
         );
         this._status = "provisioned";
-        if (this._params?.addedCallback) {
-          this._params.addedCallback();
-        }
       } catch (err: any) {
         this._error = err.message;
         this._status = "failed";
@@ -831,9 +828,6 @@ class DialogZWaveJSAddNode extends LitElement {
         if (message.event === "interview completed") {
           this._unsubscribe();
           this._status = "finished";
-          if (this._params?.addedCallback) {
-            this._params.addedCallback();
-          }
         }
 
         if (message.event === "interview stage completed") {
@@ -857,7 +851,7 @@ class DialogZWaveJSAddNode extends LitElement {
     this._addNodeTimeoutHandle = window.setTimeout(() => {
       this._unsubscribe();
       this._status = "timed_out";
-    }, 90000);
+    }, 300000);
   }
 
   private _onBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -874,6 +868,9 @@ class DialogZWaveJSAddNode extends LitElement {
     }
     if (this._entryId) {
       stopZwaveInclusion(this.hass, this._entryId);
+      if (this._params?.onStop) {
+        this._params.onStop();
+      }
     }
     this._requestedGrant = undefined;
     this._dsk = undefined;

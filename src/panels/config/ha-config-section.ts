@@ -74,7 +74,7 @@ export class HaConfigSection extends LitElement {
       }
 
       .together {
-        margin-top: 32px;
+        margin-top: var(--config-section-content-together-margin-top, 32px);
       }
 
       .intro {
@@ -110,7 +110,10 @@ export class HaConfigSection extends LitElement {
         max-width: 640px;
       }
       .narrow .together {
-        margin-top: 20px;
+        margin-top: var(
+          --config-section-narrow-content-together-margin-top,
+          var(--config-section-content-together-margin-top, 20px)
+        );
       }
       .narrow .intro {
         padding-bottom: 20px;

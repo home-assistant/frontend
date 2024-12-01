@@ -135,14 +135,15 @@ export function getLocalLanguage() {
 
 export async function getTranslation(
   fragment: string | null,
-  language: string
+  language: string,
+  fallback = true
 ) {
   const metadata = translationMetadata.translations[language];
   if (!metadata?.hash) {
-    if (language !== "en") {
+    if (fallback && language !== "en") {
       return getTranslation(fragment, "en");
     }
-    throw new Error("Language en is not found in metadata");
+    throw new Error(`Language '${language}' is not found in metadata`);
   }
 
   // nl-abcd.jon or logbook/nl-abcd.json

@@ -370,7 +370,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
             }`,
             description:
               this.hass.localize(
-                `component.${domain}.services.${service}.description`
+                `component.${dmn}.services.${service}.description`
               ) || services[dmn][service]?.description,
           });
         }

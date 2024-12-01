@@ -149,7 +149,10 @@ class ActionHandler extends HTMLElement implements ActionHandlerType {
 
     element.actionHandler.end = (ev: Event) => {
       // Don't respond when moved or scrolled while touch
-      if (["touchend", "touchcancel"].includes(ev.type) && this.cancelled) {
+      if (
+        ev.type === "touchcancel" ||
+        (ev.type === "touchend" && this.cancelled)
+      ) {
         return;
       }
       const target = ev.target as HTMLElement;

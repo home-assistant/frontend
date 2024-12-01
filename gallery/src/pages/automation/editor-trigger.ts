@@ -1,4 +1,3 @@
-/* eslint-disable lit/no-template-arrow */
 import type { TemplateResult } from "lit";
 import { LitElement, html, css } from "lit";
 import { customElement, state } from "lit/decorators";

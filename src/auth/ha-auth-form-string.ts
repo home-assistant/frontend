@@ -54,6 +54,7 @@ export class HaAuthFormString extends HaFormString {
         .autoValidate=${this.schema.required}
         .name=${this.schema.name}
         .autocomplete=${this.schema.autocomplete}
+        ?autofocus=${this.schema.autofocus}
         .suffix=${
           this.isPassword
             ? // reserve some space for the icon.

@@ -26,7 +26,10 @@ export class HaTraceLogbook extends LitElement {
             .entries=${this.logbookEntries}
             .narrow=${this.narrow}
           ></ha-logbook-renderer>
-          <hat-logbook-note .domain=${this.trace.domain}></hat-logbook-note>
+          <hat-logbook-note
+            .hass=${this.hass}
+            .domain=${this.trace.domain}
+          ></hat-logbook-note>
         `
       : html`<div class="padded-box">
           No Logbook entries found for this step.

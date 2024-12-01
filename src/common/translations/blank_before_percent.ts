@@ -5,7 +5,7 @@ export const blankBeforePercent = (
   localeOptions: FrontendLocaleData
 ): string => {
   switch (localeOptions.language) {
-    case "cz":
+    case "cs":
     case "de":
     case "fi":
     case "fr":

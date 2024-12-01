@@ -10,8 +10,6 @@ import type { LightColor } from "./light";
 import { computeDomain } from "../common/entity/compute_domain";
 import type { RegistryEntry } from "./registry";
 
-export { subscribeEntityRegistryDisplay } from "./ws-entity_registry_display";
-
 type EntityCategory = "config" | "diagnostic";
 
 export interface EntityRegistryDisplayEntry {

@@ -67,9 +67,6 @@ export class HaWaitForTriggerAction
   private _timeoutChanged(ev: CustomEvent<{ value: TimeChangedEvent }>): void {
     ev.stopPropagation();
     const value = ev.detail.value;
-    if (!value) {
-      return;
-    }
     fireEvent(this, "value-changed", {
       value: { ...this.action, timeout: value },
     });

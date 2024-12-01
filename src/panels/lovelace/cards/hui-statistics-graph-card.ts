@@ -195,6 +195,9 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
             .statTypes=${this._statTypes!}
             .names=${this._names}
             .unit=${this._unit}
+            .minYAxis=${this._config.min_y_axis}
+            .maxYAxis=${this._config.max_y_axis}
+            .fitYData=${this._config.fit_y_data || false}
             .hideLegend=${this._config.hide_legend || false}
             .logarithmicScale=${this._config.logarithmic_scale || false}
           ></statistics-chart>

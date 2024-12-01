@@ -510,6 +510,7 @@ class DemoHaForm extends LitElement {
                   .computeError=${(error) => translations[error] || error}
                   .computeLabel=${(schema) =>
                     translations[schema.name] || schema.name}
+                  .computeHelper=${() => "Helper text"}
                   @value-changed=${(e) => {
                     this.data[idx] = e.detail.value;
                     this.requestUpdate();

@@ -106,7 +106,8 @@ export class HaConfigLabels extends LitElement {
                 style="
           background-color: ${computeCssColor(label.color)};
           border-radius: 10px;
-          outline: 1px solid var(--outline-color);
+          border: 1px solid var(--outline-color);
+          box-sizing: border-box;
           width: 20px;
           height: 20px;"
               ></div>`

@@ -50,12 +50,7 @@ import {
 } from "../../data/history";
 import type { Statistics } from "../../data/recorder";
 import { fetchStatistics } from "../../data/recorder";
-import {
-  expandAreaTarget,
-  expandDeviceTarget,
-  expandFloorTarget,
-  expandLabelTarget,
-} from "../../data/selector";
+import { resolveEntityIDs } from "../../data/selector";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../resources/styles";
@@ -543,66 +538,8 @@ class HaPanelHistory extends LitElement {
       entities: HomeAssistant["entities"],
       devices: HomeAssistant["devices"],
       areas: HomeAssistant["areas"]
-    ): string[] => {
-      if (!targetPickerValue) {
-        return [];
-      }
-
-      const targetSelector = { target: {} };
-      const targetEntities = new Set(ensureArray(targetPickerValue.entity_id));
-      const targetDevices = new Set(ensureArray(targetPickerValue.device_id));
-      const targetAreas = new Set(ensureArray(targetPickerValue.area_id));
-      const targetFloors = new Set(ensureArray(targetPickerValue.floor_id));
-      const targetLabels = new Set(ensureArray(targetPickerValue.label_id));
-
-      targetLabels.forEach((labelId) => {
-        const expanded = expandLabelTarget(
-          this.hass,
-          labelId,
-          areas,
-          devices,
-          entities,
-          targetSelector
-        );
-        expanded.devices.forEach((id) => targetDevices.add(id));
-        expanded.entities.forEach((id) => targetEntities.add(id));
-        expanded.areas.forEach((id) => targetAreas.add(id));
-      });
-
-      targetFloors.forEach((floorId) => {
-        const expanded = expandFloorTarget(
-          this.hass,
-          floorId,
-          areas,
-          targetSelector
-        );
-        expanded.areas.forEach((id) => targetAreas.add(id));
-      });
-
-      targetAreas.forEach((areaId) => {
-        const expanded = expandAreaTarget(
-          this.hass,
-          areaId,
-          devices,
-          entities,
-          targetSelector
-        );
-        expanded.devices.forEach((id) => targetDevices.add(id));
-        expanded.entities.forEach((id) => targetEntities.add(id));
-      });
-
-      targetDevices.forEach((deviceId) => {
-        const expanded = expandDeviceTarget(
-          this.hass,
-          deviceId,
-          entities,
-          targetSelector
-        );
-        expanded.entities.forEach((id) => targetEntities.add(id));
-      });
-
-      return Array.from(targetEntities);
-    }
+    ): string[] =>
+      resolveEntityIDs(this.hass, targetPickerValue, entities, devices, areas)
   );
 
   private _dateRangeChanged(ev) {

@@ -27,6 +27,13 @@ import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import {
+  isDeletableEntity,
+  deleteEntity,
+} from "../../../common/entity/delete_entity";
+import type { Helper } from "../helpers/const";
+import { isHelperDomain } from "../helpers/const";
+import { HELPERS_CRUD } from "../../../data/helpers_crud";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import {
   PROTOCOL_INTEGRATIONS,
@@ -73,12 +80,15 @@ import type {
 } from "../../../data/entity_registry";
 import {
   computeEntityRegistryName,
-  removeEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
+import type { IntegrationManifest } from "../../../data/integration";
+import {
+  fetchIntegrationManifests,
+  domainToName,
+} from "../../../data/integration";
 import type { EntitySources } from "../../../data/entity_sources";
 import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
-import { domainToName } from "../../../data/integration";
 import type { LabelRegistryEntry } from "../../../data/label_registry";
 import {
   createLabelRegistryEntry,
@@ -135,6 +145,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   @state() private _stateEntities: StateEntity[] = [];
 
   @state() private _entries?: ConfigEntry[];
+
+  @state() private _manifests?: IntegrationManifest[];
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -1280,11 +1292,46 @@ ${rejected
     });
   }
 
-  private _removeSelected() {
-    const removeableEntities = this._selected.filter((entity) => {
-      const stateObj = this.hass.states[entity];
-      return stateObj?.attributes.restored;
+  private async _removeSelected() {
+    if (!this._entities || !this.hass) {
+      return;
+    }
+
+    const manifestsProm = this._manifests
+      ? undefined
+      : fetchIntegrationManifests(this.hass);
+    const helperDomains = [
+      ...new Set(this._selected.map((s) => computeDomain(s))),
+    ].filter((d) => isHelperDomain(d));
+
+    const configEntriesProm = this._entries
+      ? undefined
+      : this._loadConfigEntries();
+    const domainProms = helperDomains.map((d) =>
+      HELPERS_CRUD[d].fetch(this.hass)
+    );
+    const helpersResult = await Promise.all(domainProms);
+    let fetchedHelpers: Helper[] = [];
+    helpersResult.forEach((r) => {
+      fetchedHelpers = fetchedHelpers.concat(r);
     });
+    if (manifestsProm) {
+      this._manifests = await manifestsProm;
+    }
+    if (configEntriesProm) {
+      await configEntriesProm;
+    }
+
+    const removeableEntities = this._selected.filter((entity_id) =>
+      isDeletableEntity(
+        this.hass,
+        entity_id,
+        this._manifests!,
+        this._entities,
+        this._entries!,
+        fetchedHelpers
+      )
+    );
     showConfirmationDialog(this, {
       title: this.hass.localize(
         `ui.panel.config.entities.picker.delete_selected.confirm_title`
@@ -1305,8 +1352,15 @@ ${rejected
       dismissText: this.hass.localize("ui.common.cancel"),
       destructive: true,
       confirm: () => {
-        removeableEntities.forEach((entity) =>
-          removeEntityRegistryEntry(this.hass, entity)
+        removeableEntities.forEach((entity_id) =>
+          deleteEntity(
+            this.hass,
+            entity_id,
+            this._manifests!,
+            this._entities,
+            this._entries!,
+            fetchedHelpers
+          )
         );
         this._clearSelection();
       },

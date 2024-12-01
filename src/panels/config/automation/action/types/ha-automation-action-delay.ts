@@ -49,6 +49,7 @@ export class HaDelayAction extends LitElement implements ActionElement {
       .disabled=${this.disabled}
       .data=${this._timeData}
       enableMillisecond
+      required
       @value-changed=${this._valueChanged}
     ></ha-duration-input>`;
   }
