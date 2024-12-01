@@ -28,7 +28,7 @@ export class HuiViewBackgroundEditor extends LitElement {
 
   private _schema = memoizeOne((showSettings: boolean) => [
     {
-      name: "backgroundUrl",
+      name: "image",
       selector: { image: { original: true } },
     },
     ...(showSettings
@@ -42,7 +42,7 @@ export class HuiViewBackgroundEditor extends LitElement {
               {
                 name: "transparency",
                 selector: {
-                  number: { min: 1, max: 100, mode: "box" },
+                  number: { min: 1, max: 100, mode: "slider" },
                 },
               },
               {
@@ -51,6 +51,17 @@ export class HuiViewBackgroundEditor extends LitElement {
                   select: {
                     translation_key:
                       "ui.panel.lovelace.editor.edit_view.background.size",
+                    default: "original",
+                    options: ["original", "fill_view", "fit_view"],
+                  },
+                },
+              },
+              {
+                name: "alignment",
+                selector: {
+                  select: {
+                    translation_key:
+                      "ui.panel.lovelace.editor.edit_view.background.alignment",
                     default: "center",
                     options: [
                       "top_left",
@@ -63,17 +74,6 @@ export class HuiViewBackgroundEditor extends LitElement {
                       "bottom_center",
                       "bottom_right",
                     ],
-                  },
-                },
-              },
-              {
-                name: "alignment",
-                selector: {
-                  select: {
-                    translation_key:
-                      "ui.panel.lovelace.editor.edit_view.background.alignment",
-                    default: "original",
-                    options: ["original", "fill_view", "fit_view"],
                   },
                 },
               },
@@ -127,9 +127,8 @@ export class HuiViewBackgroundEditor extends LitElement {
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) => {
-    console.log(schema.name);
     switch (schema.name) {
-      case "backgroundUrl":
+      case "image":
         return this.hass.localize(
           "ui.panel.lovelace.editor.edit_view.background.image"
         );

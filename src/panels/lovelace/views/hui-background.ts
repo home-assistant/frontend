@@ -1,4 +1,4 @@
-import { css, html, LitElement, nothing } from "lit";
+import { css, LitElement, nothing } from "lit";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { HomeAssistant } from "../../../types";
@@ -53,12 +53,20 @@ export class HUIBackground extends LitElement {
         return `top / auto repeat url('${background.image}')`;
       }
       let size = "auto";
-      if (background.size in ["original", "fill_view", "fit_view"]) {
-        size = background.size;
+      if (
+        background.size &&
+        ["original", "fill_view", "fit_view"].includes(background.size)
+      ) {
+        size =
+          background.size === "fill_view"
+            ? "cover"
+            : background.size === "fit_view"
+              ? "contain"
+              : "auto";
       }
       let alignment = "center";
       if (
-        background.size in
+        background.alignment &&
         [
           "top_left",
           "top_center",
@@ -69,9 +77,9 @@ export class HUIBackground extends LitElement {
           "bottom_left",
           "bottom_center",
           "bottom_right",
-        ]
+        ].includes(background.alignment)
       ) {
-        alignment = background.alignment;
+        alignment = background.alignment.replace("_", " ");
       }
       return `${alignment} / ${size} no-repeat url('${background.image}')`;
     }
@@ -115,7 +123,7 @@ export class HUIBackground extends LitElement {
     return css`
       :host {
         z-index: -1;
-        position: fixed;
+        position: absolute;
         height: 100%;
         width: 100%;
         background: var(
