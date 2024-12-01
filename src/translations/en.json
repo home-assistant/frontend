@@ -7547,7 +7547,8 @@
     "tips": {
       "key_c_hint": "Press 'c' on any page to open the command dialog",
       "key_e_hint": "Press 'e' on any page to open the entity search dialog",
-      "key_m_hint": "Press 'm' on any page to get the My Home Assistant link"
+      "key_m_hint": "Press 'm' on any page to get the My Home Assistant link",
+      "key_a_hint": "Press 'a' on any page to open the voice assist dialog"
     }
   },
   "landing-page": {
