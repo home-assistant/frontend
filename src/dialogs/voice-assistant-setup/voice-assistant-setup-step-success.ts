@@ -68,7 +68,10 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
       : undefined;
 
     return html`<div class="content">
-        <img src="/static/images/voice-assistant/heart.png" />
+        <img
+          src="/static/images/voice-assistant/heart.png"
+          alt="Casita Home Assistant logo"
+        />
         <h1>Ready to Assist!</h1>
         <p class="secondary">
           Make any final customizations here. You can always change these in the

@@ -272,7 +272,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
           : ""}
         <ha-fab
           slot="fab"
-          .label=${hass.localize("ui.panel.config.zone.add_zone")}
+          .label=${hass.localize("ui.panel.config.zone.create_zone")}
           extended
           @click=${this._createZone}
         >

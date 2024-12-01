@@ -21,7 +21,10 @@ export class HaVoiceAssistantSetupStepChangeWakeWord extends LitElement {
 
   protected override render() {
     return html`<div class="padding content">
-        <img src="/static/images/voice-assistant/change-wake-word.png" />
+        <img
+          src="/static/images/voice-assistant/change-wake-word.png"
+          alt="Casita Home Assistant logo"
+        />
         <h1>Change wake word</h1>
         <p class="secondary">
           Some wake words are better for

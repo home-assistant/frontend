@@ -65,7 +65,10 @@ export class HaVoiceAssistantSetupStepUpdate extends LitElement {
     const progressIsNumeric = stateObj && updateUsesProgress(stateObj);
 
     return html`<div class="content">
-      <img src="/static/images/voice-assistant/update.png" />
+      <img
+        src="/static/images/voice-assistant/update.png"
+        alt="Casita Home Assistant loading logo"
+      />
       <h1>
         ${stateObj &&
         (stateObj.state === "unavailable" || updateIsInstalling(stateObj))

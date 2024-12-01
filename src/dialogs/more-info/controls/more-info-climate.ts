@@ -74,6 +74,10 @@ class MoreInfoClimate extends LitElement {
       stateObj,
       ClimateEntityFeature.SWING_MODE
     );
+    const supportSwingHorizontalMode = supportsFeature(
+      stateObj,
+      ClimateEntityFeature.SWING_HORIZONTAL_MODE
+    );
 
     const currentTemperature = this.stateObj.attributes.current_temperature;
     const currentHumidity = this.stateObj.attributes.current_humidity;
@@ -344,6 +348,59 @@ class MoreInfoClimate extends LitElement {
               </ha-control-select-menu>
             `
           : nothing}
+        ${supportSwingHorizontalMode &&
+        stateObj.attributes.swing_horizontal_modes
+          ? html`
+              <ha-control-select-menu
+                .label=${this.hass.formatEntityAttributeName(
+                  stateObj,
+                  "swing_horizontal_mode"
+                )}
+                .value=${stateObj.attributes.swing_horizontal_mode}
+                .disabled=${this.stateObj.state === UNAVAILABLE}
+                fixedMenuPosition
+                naturalMenuWidth
+                @selected=${this._handleSwingHorizontalmodeChanged}
+                @closed=${stopPropagation}
+              >
+                ${stateObj.attributes.swing_horizontal_mode
+                  ? html`
+                      <ha-attribute-icon
+                        slot="icon"
+                        .hass=${this.hass}
+                        .stateObj=${stateObj}
+                        attribute="swing_horizontal_mode"
+                        .attributeValue=${stateObj.attributes
+                          .swing_horizontal_mode}
+                      ></ha-attribute-icon>
+                    `
+                  : html`
+                      <ha-svg-icon
+                        slot="icon"
+                        .path=${mdiArrowOscillating}
+                      ></ha-svg-icon>
+                    `}
+                ${stateObj.attributes.swing_horizontal_modes!.map(
+                  (mode) => html`
+                    <ha-list-item .value=${mode} graphic="icon">
+                      <ha-attribute-icon
+                        slot="graphic"
+                        .hass=${this.hass}
+                        .stateObj=${stateObj}
+                        attribute="swing_horizontal_mode"
+                        .attributeValue=${mode}
+                      ></ha-attribute-icon>
+                      ${this.hass.formatEntityAttributeValue(
+                        stateObj,
+                        "swing_horizontal_mode",
+                        mode
+                      )}
+                    </ha-list-item>
+                  `
+                )}
+              </ha-control-select-menu>
+            `
+          : nothing}
       </ha-more-info-control-select-container>
     `;
   }
@@ -377,6 +434,16 @@ class MoreInfoClimate extends LitElement {
       newVal,
       "set_swing_mode",
       { swing_mode: newVal }
+    );
+  }
+
+  private _handleSwingHorizontalmodeChanged(ev) {
+    const newVal = ev.target.value;
+    this._callServiceHelper(
+      this.stateObj!.attributes.swing_horizontal_mode,
+      newVal,
+      "set_swing_horizontal_mode",
+      { swing_horizontal_mode: newVal }
     );
   }
 

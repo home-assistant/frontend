@@ -1,4 +1,4 @@
-import { formatNumericDuration } from "../common/datetime/format_duration";
+import { formatDurationDigital } from "../common/datetime/format_duration";
 import type { FrontendLocaleData } from "./translation";
 
 export const STATE_ATTRIBUTES = [
@@ -99,7 +99,11 @@ export const DOMAIN_ATTRIBUTES_FORMATERS: Record<
   },
   media_player: {
     volume_level: (value) => Math.round(value * 100).toString(),
-    media_duration: (value, locale) =>
-      formatNumericDuration(locale, { seconds: value })!,
+    media_duration: (value, locale) => {
+      const hours = Math.floor(value / 3600);
+      const minutes = Math.floor((value % 3600) / 60);
+      const seconds = value % 60;
+      return formatDurationDigital(locale, { hours, minutes, seconds })!;
+    },
   },
 };

@@ -6,7 +6,6 @@ import {
   mdiBug,
   mdiBugPlay,
   mdiBugStop,
-  mdiCloud,
   mdiCog,
   mdiDelete,
   mdiDevices,
@@ -23,6 +22,7 @@ import {
   mdiRenameBox,
   mdiShapeOutline,
   mdiStopCircleOutline,
+  mdiWeb,
   mdiWrench,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -105,6 +105,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { fileDownload } from "../../../util/file_download";
 import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
+import { QUALITY_SCALE_MAP } from "../../../data/integration_quality_scale";
 
 export const renderConfigEntryError = (
   hass: HomeAssistant,
@@ -338,41 +339,75 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 ${this._manifest?.version != null
                   ? html`<div class="version">${this._manifest.version}</div>`
                   : nothing}
+                ${this._manifest?.quality_scale &&
+                Object.keys(QUALITY_SCALE_MAP).includes(
+                  this._manifest.quality_scale
+                )
+                  ? html`
+                      <div class="quality-scale integration-info">
+                        <ha-svg-icon
+                          class=${`${this._manifest.quality_scale}-quality`}
+                          .path=${QUALITY_SCALE_MAP[
+                            this._manifest.quality_scale
+                          ].icon}
+                        ></ha-svg-icon>
+                        <a
+                          href=${documentationUrl(
+                            this.hass,
+                            `/docs/quality_scale/#-${this._manifest.quality_scale}`
+                          )}
+                          rel="noopener noreferrer"
+                          target="_blank"
+                        >
+                          ${this.hass.localize(
+                            QUALITY_SCALE_MAP[this._manifest.quality_scale]
+                              .translationKey
+                          )}
+                        </a>
+                      </div>
+                    `
+                  : nothing}
                 ${this._manifest?.is_built_in === false
-                  ? html`<ha-alert alert-type="warning"
-                      ><ha-svg-icon
-                        slot="icon"
+                  ? html`<div class="integration-info warn">
+                      <ha-svg-icon
+                        class="warning"
                         path=${mdiPackageVariant}
                       ></ha-svg-icon>
-                      ${this.hass.localize(
-                        "ui.panel.config.integrations.config_entry.custom_integration"
-                      )}</ha-alert
-                    >`
-                  : ""}
+                      <a
+                        href=${documentationUrl(
+                          this.hass,
+                          `/docs/quality_scale/#-custom`
+                        )}
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.integrations.config_entry.custom_integration"
+                        )}
+                      </a>
+                    </div>`
+                  : nothing}
                 ${this._manifest?.iot_class?.startsWith("cloud_")
-                  ? html`<ha-alert
-                      ><ha-svg-icon slot="icon" path=${mdiCloud}></ha-svg-icon
-                      >${this.hass.localize(
+                  ? html`<div class="integration-info">
+                      <ha-svg-icon .path=${mdiWeb}></ha-svg-icon>
+                      ${this.hass.localize(
                         "ui.panel.config.integrations.config_entry.depends_on_cloud"
-                      )}</ha-alert
-                    >`
-                  : ""}
+                      )}
+                    </div>`
+                  : nothing}
                 ${normalEntries.length === 0 &&
                 this._manifest &&
                 !this._manifest.config_flow &&
                 this.hass.config.components.find(
                   (comp) => comp.split(".")[0] === this.domain
                 )
-                  ? html`<ha-alert alert-type="info"
-                      ><ha-svg-icon
-                        slot="icon"
-                        path=${mdiFileCodeOutline}
-                      ></ha-svg-icon
+                  ? html`<div class="integration-info info">
+                      <ha-svg-icon path=${mdiFileCodeOutline}></ha-svg-icon
                       >${this.hass.localize(
                         "ui.panel.config.integrations.config_entry.no_config_flow"
-                      )}</ha-alert
-                    >`
-                  : ""}
+                      )}
+                    </div>`
+                  : nothing}
               </div>
 
               <div class="card-actions">
@@ -398,7 +433,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         <ha-icon-next slot="meta"></ha-icon-next>
                       </ha-list-item>
                     </a>`
-                  : ""}
+                  : nothing}
                 ${numberOfEntities > 0
                   ? html`<a
                       href=${`/config/entities?historyBack=1&domain=${this.domain}`}
@@ -415,7 +450,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         <ha-icon-next slot="meta"></ha-icon-next>
                       </ha-list-item>
                     </a>`
-                  : ""}
+                  : nothing}
                 ${this._manifest
                   ? html`<a
                       href=${this._manifest.is_built_in
@@ -441,7 +476,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         ></ha-svg-icon>
                       </ha-list-item>
                     </a>`
-                  : ""}
+                  : nothing}
                 ${this._manifest &&
                 (this._manifest.is_built_in || this._manifest.issue_tracker)
                   ? html`<a
@@ -463,7 +498,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         ></ha-svg-icon>
                       </ha-list-item>
                     </a>`
-                  : ""}
+                  : nothing}
                 ${this._logInfo
                   ? html`<ha-list-item
                       @request-selected=${this._logInfo.level ===
@@ -489,7 +524,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                           : mdiBugPlay}
                       ></ha-svg-icon>
                     </ha-list-item>`
-                  : ""}
+                  : nothing}
               </div>
             </ha-card>
           </div>
@@ -517,7 +552,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     )}
                   </ha-md-list>
                 </ha-card>`
-              : ""}
+              : nothing}
             ${attentionFlows.length || attentionEntries.length
               ? html`<ha-card>
                   <h1 class="card-header">
@@ -562,11 +597,11 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                               role="separator"
                               tabindex="-1"
                             ></ha-md-divider>`
-                          : ""} `
+                          : nothing} `
                     )}
                   </ha-md-list>
                 </ha-card>`
-              : ""}
+              : nothing}
 
             <ha-card>
               <h1 class="card-header">
@@ -602,7 +637,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                           role="separator"
                           tabindex="-1"
                         ></ha-md-divider>`
-                      : ""} `
+                      : nothing}`
                 )}
               </ha-md-list>
               <div class="card-actions">
@@ -762,11 +797,11 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 <div>
                   ${this.hass.localize(...stateText)}${stateTextExtra
                     ? html`: ${stateTextExtra}`
-                    : ""}
+                    : nothing}
                 </div>
               </div>
             `
-          : ""}
+          : nothing}
       </div>
       ${item.disabled_by === "user"
         ? html`<ha-button unelevated slot="end" @click=${this._handleEnable}>
@@ -793,7 +828,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   )}
                 </ha-button>
               `
-            : ""}
+            : nothing}
       <ha-md-button-menu positioning="popover" slot="end">
         <ha-icon-button
           slot="trigger"
@@ -815,7 +850,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 <ha-icon-next slot="end"></ha-icon-next>
               </ha-md-menu-item>
             `
-          : ""}
+          : nothing}
         ${item.disabled_by && services.length
           ? html`<ha-md-menu-item
               href=${services.length === 1
@@ -832,7 +867,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               )}
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-menu-item> `
-          : ""}
+          : nothing}
         ${item.disabled_by && entities.length
           ? html`
               <ha-md-menu-item
@@ -849,7 +884,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 <ha-icon-next slot="end"></ha-icon-next>
               </ha-md-menu-item>
             `
-          : ""}
+          : nothing}
         ${!item.disabled_by &&
         RECOVERABLE_STATES.includes(item.state) &&
         item.supports_unload &&
@@ -886,7 +921,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 )}
               </ha-md-menu-item>
             `
-          : ""}
+          : nothing}
         ${!item.disabled_by &&
         item.supports_reconfigure &&
         item.source !== "system"
@@ -1424,6 +1459,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           margin-top: 32px;
           margin-bottom: 32px;
         }
+        .card-content {
+          padding: 16px 0 8px;
+        }
         .column {
           width: 33%;
           flex-grow: 1;
@@ -1457,6 +1495,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         .logo-container {
           display: flex;
           justify-content: center;
+          margin-bottom: 8px;
         }
         .version {
           padding-top: 8px;
@@ -1471,12 +1510,52 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           max-width: 200px;
           max-height: 100px;
         }
-        ha-alert {
-          display: block;
-          margin-top: 4px;
+
+        @keyframes shimmer {
+          100% {
+            mask-position: left;
+          }
         }
-        ha-alert:first-of-type {
-          margin-top: 16px;
+        .integration-info {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+          padding: 0 20px;
+          min-height: 48px;
+        }
+        .integration-info ha-svg-icon {
+          min-width: 24px;
+          color: var(--mdc-theme-text-icon-on-background);
+        }
+        .integration-info.warn ha-svg-icon {
+          color: var(--warning-color);
+        }
+        .integration-info.info ha-svg-icon {
+          color: var(--info-color);
+        }
+        .quality-scale ha-svg-icon {
+          mask: linear-gradient(-60deg, #000 30%, #0005, #000 70%) right/350%
+            100%;
+          animation: shimmer 2.5s infinite;
+        }
+        ha-svg-icon.bronze-quality {
+          color: #cd7f32;
+        }
+        ha-svg-icon.silver-quality {
+          color: silver;
+        }
+        ha-svg-icon.gold-quality {
+          color: gold;
+        }
+        ha-svg-icon.platinum-quality {
+          color: #727272;
+        }
+        ha-svg-icon.internal-quality {
+          color: var(--primary-color);
+        }
+        ha-svg-icon.legacy-quality {
+          color: var(--mdc-theme-text-icon-on-background, rgba(0, 0, 0, 0.38));
+          animation: unset;
         }
         ha-md-list-item {
           position: relative;

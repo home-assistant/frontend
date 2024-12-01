@@ -93,7 +93,7 @@ export class CloudStepIntro extends LitElement {
         <a
           href="https://www.nabucasa.com"
           target="_blank"
-          rel="noreferrer noopenner"
+          rel="noreferrer noopener"
         >
           <ha-button>
             <ha-svg-icon .path=${mdiOpenInNew} slot="icon"></ha-svg-icon>

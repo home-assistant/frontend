@@ -22,6 +22,7 @@ import "./voice-assistant-setup-step-pipeline";
 import "./voice-assistant-setup-step-success";
 import "./voice-assistant-setup-step-update";
 import "./voice-assistant-setup-step-wake-word";
+import "./voice-assistant-setup-step-local";
 
 export const enum STEP {
   INIT,
@@ -32,6 +33,7 @@ export const enum STEP {
   PIPELINE,
   SUCCESS,
   CLOUD,
+  LOCAL,
   CHANGE_WAKEWORD,
 }
 
@@ -118,22 +120,24 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
         scrimClickAction
       >
         <ha-dialog-header slot="heading">
-          ${this._previousSteps.length
-            ? html`<ha-icon-button
-                slot="navigationIcon"
-                .label=${this.hass.localize("ui.common.back") ?? "Back"}
-                .path=${mdiChevronLeft}
-                @click=${this._goToPreviousStep}
-              ></ha-icon-button>`
-            : this._step !== STEP.UPDATE
+          ${this._step === STEP.LOCAL
+            ? nothing
+            : this._previousSteps.length
               ? html`<ha-icon-button
                   slot="navigationIcon"
-                  .label=${this.hass.localize("ui.dialogs.generic.close") ??
-                  "Close"}
-                  .path=${mdiClose}
-                  @click=${this.closeDialog}
+                  .label=${this.hass.localize("ui.common.back") ?? "Back"}
+                  .path=${mdiChevronLeft}
+                  @click=${this._goToPreviousStep}
                 ></ha-icon-button>`
-              : nothing}
+              : this._step !== STEP.UPDATE
+                ? html`<ha-icon-button
+                    slot="navigationIcon"
+                    .label=${this.hass.localize("ui.dialogs.generic.close") ??
+                    "Close"}
+                    .path=${mdiClose}
+                    @click=${this.closeDialog}
+                  ></ha-icon-button>`
+                : nothing}
           ${this._step === STEP.WAKEWORD ||
           this._step === STEP.AREA ||
           this._step === STEP.PIPELINE
@@ -145,7 +149,11 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
               >`
             : nothing}
         </ha-dialog-header>
-        <div class="content" @next-step=${this._goToNextStep}>
+        <div
+          class="content"
+          @next-step=${this._goToNextStep}
+          @prev-step=${this._goToPreviousStep}
+        >
           ${this._step === STEP.UPDATE
             ? html`<ha-voice-assistant-setup-step-update
                 .hass=${this.hass}
@@ -197,14 +205,20 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
                           ? html`<ha-voice-assistant-setup-step-cloud
                               .hass=${this.hass}
                             ></ha-voice-assistant-setup-step-cloud>`
-                          : this._step === STEP.SUCCESS
-                            ? html`<ha-voice-assistant-setup-step-success
+                          : this._step === STEP.LOCAL
+                            ? html`<ha-voice-assistant-setup-step-local
                                 .hass=${this.hass}
                                 .assistConfiguration=${this
                                   ._assistConfiguration}
-                                .assistEntityId=${assistSatelliteEntityId}
-                              ></ha-voice-assistant-setup-step-success>`
-                            : nothing}
+                              ></ha-voice-assistant-setup-step-local>`
+                            : this._step === STEP.SUCCESS
+                              ? html`<ha-voice-assistant-setup-step-success
+                                  .hass=${this.hass}
+                                  .assistConfiguration=${this
+                                    ._assistConfiguration}
+                                  .assistEntityId=${assistSatelliteEntityId}
+                                ></ha-voice-assistant-setup-step-success>`
+                              : nothing}
         </div>
       </ha-dialog>
     `;
@@ -229,17 +243,17 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
     this._step = this._previousSteps.pop()!;
   }
 
-  private _goToNextStep(ev) {
-    if (ev.detail?.updateConfig) {
+  private _goToNextStep(ev?: CustomEvent) {
+    if (ev?.detail?.updateConfig) {
       this._fetchAssistConfiguration();
     }
-    if (ev.detail?.nextStep) {
+    if (ev?.detail?.nextStep) {
       this._nextStep = ev.detail.nextStep;
     }
-    if (!ev.detail?.noPrevious) {
+    if (!ev?.detail?.noPrevious) {
       this._previousSteps.push(this._step);
     }
-    if (ev.detail?.step) {
+    if (ev?.detail?.step) {
       this._step = ev.detail.step;
     } else if (this._nextStep) {
       this._step = this._nextStep;
@@ -294,5 +308,6 @@ declare global {
           nextStep?: STEP;
         }
       | undefined;
+    "prev-step": undefined;
   }
 }

@@ -1,3 +1,4 @@
+import type { DurationFormatConstructor } from "@formatjs/intl-durationformat/src/types";
 import type {
   Auth,
   Connection,
@@ -22,7 +23,7 @@ import type { Themes } from "./data/ws-themes";
 import type { ExternalMessaging } from "./external_app/external_messaging";
 
 declare global {
-  /* eslint-disable no-var, no-redeclare */
+  /* eslint-disable no-var */
   var __DEV__: boolean;
   var __DEMO__: boolean;
   var __BUILD__: "modern" | "legacy";
@@ -30,7 +31,7 @@ declare global {
   var __STATIC_PATH__: string;
   var __BACKWARDS_COMPAT__: boolean;
   var __SUPERVISOR__: boolean;
-  /* eslint-enable no-var, no-redeclare */
+  /* eslint-enable no-var */
 
   interface Window {
     // Custom panel entry point url
@@ -63,6 +64,12 @@ declare global {
   // For loading workers in rspack
   interface ImportMeta {
     url: string;
+  }
+
+  // Intl.DurationFormat is not yet part of the TypeScript standard
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace Intl {
+    const DurationFormat: DurationFormatConstructor;
   }
 }
 
