@@ -1,6 +1,7 @@
 import "@material/mwc-list/mwc-list";
 import type { SelectedDetail } from "@material/mwc-list";
 import "@material/mwc-menu/mwc-menu-surface";
+import memoizeOne from "memoize-one";
 import { mdiCog, mdiFilterVariantRemove } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
@@ -22,7 +23,6 @@ import "./ha-label";
 import "./ha-icon-button";
 import "./ha-list-item";
 import "./search-input-outlined";
-import memoizeOne from "memoize-one";
 import { stringCompare } from "../common/string/compare";
 
 @customElement("ha-filter-labels")
