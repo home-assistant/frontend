@@ -142,7 +142,7 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
       setTimeout(() => {
         if (!this.expanded) return;
         this.renderRoot.querySelector("mwc-list")!.style.height =
-          `${this.clientHeight - (49 + 48)}px`;
+          `${this.clientHeight - (49 + 48 + 32)}px`;
       }, 300);
     }
   }
