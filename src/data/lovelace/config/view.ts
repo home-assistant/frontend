@@ -9,9 +9,9 @@ export interface ShowViewConfig {
 
 export interface LovelaceViewBackgroundConfig {
   image?: string;
-  transparency: number;
-  size: "original" | "fill_view" | "fit_view";
-  alignment:
+  transparency?: number;
+  size?: "original" | "fill_view" | "fit_view";
+  alignment?:
     | "top_left"
     | "top_center"
     | "top_right"

@@ -84,7 +84,6 @@ export class HUIBackground extends LitElement {
   private _computeBackgroundOpacityProperty(
     background?: string | LovelaceViewBackgroundConfig
   ) {
-    console.log("ongoing");
     if (typeof background === "object" && background.image) {
       if (background.transparency) {
         return `${background.transparency}%`;

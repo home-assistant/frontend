@@ -7,7 +7,10 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import "../../../../components/ha-selector/ha-selector-image";
-import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import type {
+  LovelaceViewBackgroundConfig,
+  LovelaceViewConfig,
+} from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 
 @customElement("hui-view-background-editor")
@@ -48,17 +51,6 @@ export class HuiViewBackgroundEditor extends LitElement {
                   select: {
                     translation_key:
                       "ui.panel.lovelace.editor.edit_view.background.size",
-                    default: "original",
-                    options: ["original", "fill_view", "fit_view"],
-                  },
-                },
-              },
-              {
-                name: "alignment",
-                selector: {
-                  select: {
-                    translation_key:
-                      "ui.panel.lovelace.editor.edit_view.background.alignment",
                     default: "center",
                     options: [
                       "top_left",
@@ -71,6 +63,17 @@ export class HuiViewBackgroundEditor extends LitElement {
                       "bottom_center",
                       "bottom_right",
                     ],
+                  },
+                },
+              },
+              {
+                name: "alignment",
+                selector: {
+                  select: {
+                    translation_key:
+                      "ui.panel.lovelace.editor.edit_view.background.alignment",
+                    default: "original",
+                    options: ["original", "fill_view", "fit_view"],
                   },
                 },
               },
@@ -90,20 +93,22 @@ export class HuiViewBackgroundEditor extends LitElement {
     }
 
     const background = this._config?.background;
-    const backgroundUrl =
-      typeof background === "string"
-        ? background.match(/url\(['"]?([^'"]+)['"]?\)/)?.[1]
-        : background?.image;
+    let data: LovelaceViewBackgroundConfig = {};
+    if (typeof background === "string") {
+      const backgroundUrl = background.match(/url\(['"]?([^'"]+)['"]?\)/)?.[1];
 
-    const tile = typeof background === "string" ? false : background?.tile;
-
-    const data = { backgroundUrl, tile };
+      data = {
+        image: backgroundUrl,
+      };
+    } else if (background) {
+      data = background;
+    }
 
     return html`
       <ha-form
         .hass=${this.hass}
         .data=${data}
-        .schema=${this._schema(!!backgroundUrl)}
+        .schema=${this._schema(typeof background !== "string")}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
         .localizeValue=${this._localizeValueCallback}
@@ -112,18 +117,9 @@ export class HuiViewBackgroundEditor extends LitElement {
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    const backgroundUrl = ev.detail.value.backgroundUrl;
     const config = {
       ...this._config,
-      background: {
-        ...(typeof this._config.background === "string"
-          ? {}
-          : this._config.background),
-        image: backgroundUrl || undefined,
-        ...(backgroundUrl
-          ? { tile: ev.detail.value.tile }
-          : { tile: undefined }),
-      },
+      background: ev.detail.value,
     };
     fireEvent(this, "view-config-changed", { config });
   }
