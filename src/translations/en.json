@@ -5931,6 +5931,14 @@
               "size": {
                 "name": "Background size",
                 "options": {
+                  "original": "Original",
+                  "fill_view": "Fill view",
+                  "fit_view": "Fit view"
+                }
+              },
+              "alignment": {
+                "name": "Background alignment",
+                "options": {
                   "top_left": "Top left",
                   "top_center": "Top center",
                   "top_right": "Top right",
@@ -5940,14 +5948,6 @@
                   "bottom_left": "Bottom left",
                   "bottom_center": "Bottom center",
                   "bottom_right": "Bottom right"
-                }
-              },
-              "alignment": {
-                "name": "Background alignment",
-                "options": {
-                  "original": "Original",
-                  "fill_view": "Fill view",
-                  "fit_view": "Fit view"
                 }
               },
               "transparency": "Background transparency",
