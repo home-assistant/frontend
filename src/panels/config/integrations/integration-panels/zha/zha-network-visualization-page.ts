@@ -2,6 +2,7 @@ import "@material/mwc-button";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { mdiTimerSand } from "@mdi/js";
 import type { Edge, EdgeOptions, Node } from "vis-network/peer/esm/vis-network";
 import { Network } from "vis-network/peer/esm/vis-network";
 import { navigate } from "../../../../../common/navigate";
@@ -23,7 +24,6 @@ import type {
 } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
 import { zhaTabs } from "./zha-config-dashboard";
-import { mdiTimerSand } from "@mdi/js";
 
 @customElement("zha-network-visualization-page")
 export class ZHANetworkVisualizationPage extends LitElement {
