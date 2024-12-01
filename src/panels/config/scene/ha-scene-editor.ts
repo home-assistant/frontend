@@ -401,6 +401,13 @@ export class HaSceneEditor extends SubscribeMixin(
                 ${this.hass.localize(
                   `ui.panel.config.scene.editor.${this._mode === "live" ? "live_edit_detail" : "review_mode_detail"}`
                 )}
+                <span slot="icon">
+                  <ha-svg-icon
+                    .path=${this._mode === "live"
+                      ? mdiMotionPlayOutline
+                      : mdiEye}
+                  ></ha-svg-icon>
+                </span>
                 <ha-button slot="action" @click=${this._toggleLiveMode}>
                   ${this.hass.localize(
                     `ui.panel.config.scene.editor.${this._mode === "live" ? "switch_to_review_mode" : "live_edit"}`
