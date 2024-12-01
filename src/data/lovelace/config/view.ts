@@ -7,7 +7,7 @@ export interface ShowViewConfig {
   user?: string;
 }
 
-interface LovelaceViewBackgroundConfig {
+export interface LovelaceViewBackgroundConfig {
   image?: string;
   transparency: number;
   size: "original" | "fill_view" | "fit_view";
