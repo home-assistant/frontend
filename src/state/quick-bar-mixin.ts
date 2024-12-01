@@ -1,5 +1,6 @@
 import type { PropertyValues } from "lit";
 import { tinykeys } from "tinykeys";
+import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { mainWindow } from "../common/dom/get_main_window";
 import type { QuickBarParams } from "../dialogs/quick-bar/show-dialog-quick-bar";
@@ -64,10 +65,15 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       });
     }
 
+    private _conversation = memoizeOne((_components) =>
+      isComponentLoaded(this.hass!, "conversation")
+    );
+
     private _showVoiceCommandDialog(e: KeyboardEvent) {
       if (
         !this.hass?.enableShortcuts ||
-        !this._canOverrideAlphanumericInput(e)
+        !this._canOverrideAlphanumericInput(e) ||
+        !this._conversation(this.hass.config.components)
       ) {
         return;
       }
