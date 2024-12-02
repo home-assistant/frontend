@@ -104,11 +104,21 @@ class DialogZWaveJSAddNode extends LitElement {
   }
 
   public async showDialog(params: ZWaveJSAddNodeDialogParams): Promise<void> {
+    if (this._status) {
+      // already started
+      return;
+    }
     this._params = params;
     this._entryId = params.entry_id;
     this._status = "loading";
     this._checkSmartStartSupport();
-    this._startInclusion();
+    if (params.dsk) {
+      this._status = "validate_dsk_enter_pin";
+      this._dsk = params.dsk;
+      this._startInclusion(undefined, params.dsk);
+    } else {
+      this._startInclusion();
+    }
   }
 
   @query("#pin-input") private _pinInput?: HaTextField;
