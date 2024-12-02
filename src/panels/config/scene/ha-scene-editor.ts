@@ -559,6 +559,7 @@ export class HaSceneEditor extends SubscribeMixin(
                               }
                               return html`
                                 <ha-list-item
+                                  class="entity"
                                   hasMeta
                                   .graphic=${this._mode === "live"
                                     ? "icon"
@@ -776,13 +777,15 @@ export class HaSceneEditor extends SubscribeMixin(
         text: this.hass.localize(
           "ui.panel.config.scene.editor.enter_live_mode_unsaved"
         ),
-        confirmText: this.hass!.localize("ui.common.continue"),
-        destructive: true,
+        confirmText: this.hass!.localize(
+          "ui.panel.config.scene.editor.save_before_live"
+        ),
         dismissText: this.hass!.localize("ui.common.cancel"),
       });
       if (!result) {
         return;
       }
+      await this._saveScene();
     }
 
     this._entities.forEach((entity) => this._storeState(entity));
@@ -1325,6 +1328,9 @@ export class HaSceneEditor extends SubscribeMixin(
         }
         li[role="separator"] {
           border-bottom-color: var(--divider-color);
+        }
+        ha-list-item.entity {
+          padding-right: 28px;
         }
       `,
     ];
