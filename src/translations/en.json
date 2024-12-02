@@ -5716,8 +5716,8 @@
             },
             "carbon_consumed_gauge": {
               "card_indicates_energy_used": "This card indicates how much of the electricity consumed by your home was generated using non-fossil fuels like solar, wind, and nuclear. The higher, the better!",
-              "low_carbon_energy_consumed": "Low-carbon energy consumed",
-              "low_carbon_energy_not_calculated": "Consumed low-carbon energy couldn't be calculated"
+              "low_carbon_energy_consumed": "Low-carbon electricity consumed",
+              "low_carbon_energy_not_calculated": "Consumed low-carbon electricity couldn't be calculated"
             }
           },
           "heading": {
