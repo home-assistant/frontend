@@ -56,8 +56,8 @@ class HuiEnergySankeyCard
   getGridOptions(): LovelaceGridOptions {
     return {
       columns: 12,
-      min_columns: 3,
-      rows: 4,
+      min_columns: 6,
+      rows: 6,
       min_rows: 2,
     };
   }
@@ -163,6 +163,11 @@ class HuiEnergySankeyCard
       });
     }
 
+    // Calculate total home consumption from all source nodes
+    homeNode.value = nodes
+      .filter((node) => node.index === 0)
+      .reduce((sum, node) => sum + (node.value || 0), 0);
+
     // Add battery sink if available
     if (types.battery) {
       const totalBatteryIn =
@@ -190,6 +195,8 @@ class HuiEnergySankeyCard
           });
         }
       });
+
+      homeNode.value -= totalBatteryIn;
     }
 
     // Add grid return if available
@@ -219,12 +226,9 @@ class HuiEnergySankeyCard
           });
         }
       });
-    }
 
-    // Calculate total home consumption from all source nodes
-    homeNode.value = nodes
-      .filter((node) => node.index === 0)
-      .reduce((sum, node) => sum + (node.value || 0), 0);
+      homeNode.value -= totalToGrid;
+    }
 
     // Group devices by areas and floors
     const areas: Record<string, { value: number; devices: Node[] }> = {
@@ -404,7 +408,12 @@ class HuiEnergySankeyCard
   static styles = css`
     :host {
       display: block;
-      height: 100%;
+      height: calc(
+        var(--row-size, 8) * (var(--row-height, 50px) + var(--row-gap, 0px)) - var(
+            --row-gap,
+            0px
+          )
+      );
     }
     ha-card {
       height: 100%;
