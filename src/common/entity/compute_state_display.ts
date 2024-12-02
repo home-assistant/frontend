@@ -171,12 +171,23 @@ export const computeStateDisplayFromEntityAttributes = (
     domain === "number" ||
     domain === "input_number"
   ) {
+    const unit =
+      (entity?.translation_key &&
+        localize(
+          `component.${entity.platform}.entity.${domain}.${entity.translation_key}.unit_of_measurement`
+        )) ||
+      attributes.unit_of_measurement;
+
     // Format as an integer if the value and step are integers
-    return formatNumber(
+    const value = formatNumber(
       state,
       locale,
       getNumberFormatOptions({ state, attributes } as HassEntity, entity)
     );
+    if (unit) {
+      return `${value}${blankBeforeUnit(unit, locale)}${unit}`;
+    }
+    return value;
   }
 
   // state is a timestamp
