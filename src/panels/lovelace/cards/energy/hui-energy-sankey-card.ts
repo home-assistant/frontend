@@ -409,10 +409,8 @@ class HuiEnergySankeyCard
     :host {
       display: block;
       height: calc(
-        var(--row-size, 8) * (var(--row-height, 50px) + var(--row-gap, 0px)) - var(
-            --row-gap,
-            0px
-          )
+        var(--row-size, 8) *
+          (var(--row-height, 50px) + var(--row-gap, 0px)) - var(--row-gap, 0px)
       );
     }
     ha-card {
