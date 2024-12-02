@@ -7,5 +7,11 @@ export default defineConfig({
       IS_TEST: "true",
     },
     setupFiles: ["./test/setup.ts"],
+    coverage: {
+      include: ["src/data/**/*", "src/common/**/*"],
+      reporter: ["text", "html"],
+      provider: "v8",
+      reportsDirectory: "test/coverage",
+    },
   },
 });

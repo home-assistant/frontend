@@ -1658,10 +1658,10 @@
       },
       "config_entry_system_options": {
         "title": "System options for {integration}",
-        "enable_new_entities_label": "Enable newly added entities.",
+        "enable_new_entities_label": "Enable newly added entities",
         "enable_new_entities_description": "If newly discovered devices for {integration} should be automatically added.",
-        "enable_polling_label": "Enable polling for updates.",
-        "enable_polling_description": "If Home Assistant should automatically poll {integration} entities for updates.",
+        "enable_polling_label": "Enable polling for changes",
+        "enable_polling_description": "If Home Assistant should automatically poll {integration} entities for state changes.",
         "restart_home_assistant": "You need to restart Home Assistant for your changes to take effect.",
         "update": "Update"
       },
@@ -2244,19 +2244,19 @@
           "caption": "Energy",
           "description": "Monitor your energy production and consumption",
           "new_device_info": "After setting up a new device, it can take up to 2 hours for new data to arrive in your energy dashboard.",
-          "delete_source": "Are you sure you want to delete this source?",
-          "delete_integration": "Are you sure you want to delete this integration? It will remove the entities it provides",
+          "delete_source": "Are you sure you want to remove this source?",
+          "delete_integration": "Are you sure you want to remove this integration? It will remove the entities it provides",
           "grid": {
             "title": "Electricity grid",
             "sub": "Configure the amount of energy that you consume from the grid and, if you produce energy, give back to the grid. This allows Home Assistant to track your whole home energy usage.",
             "learn_more": "More information on how to get started.",
             "grid_consumption": "Grid consumption",
             "edit_consumption": "Edit consumption",
-            "delete_consumption": "Delete consumption",
+            "delete_consumption": "Remove consumption",
             "add_consumption": "Add consumption",
             "return_to_grid": "Return to grid",
             "edit_return": "Edit return",
-            "delete_return": "Delete return",
+            "delete_return": "Remove return",
             "add_return": "Add return",
             "grid_carbon_footprint": "Grid carbon footprint",
             "remove_co2_signal": "Remove Electricity Maps integration",
@@ -2298,7 +2298,7 @@
             "learn_more": "More information on how to get started.",
             "solar_production": "Solar production",
             "edit_solar_production": "Edit solar production",
-            "delete_solar_production": "Delete solar production",
+            "delete_solar_production": "Remove solar production",
             "add_solar_production": "Add solar production",
             "stat_production": "Your solar energy production",
             "stat_return_to_grid": "Solar energy returned to the grid",
@@ -2320,7 +2320,7 @@
             "learn_more": "More information on how to get started.",
             "battery_systems": "Battery systems",
             "edit_battery_system": "Edit battery system",
-            "delete_battery_system": "Delete battery system",
+            "delete_battery_system": "Remove battery system",
             "add_battery_system": "Add battery system",
             "dialog": {
               "header": "Configure battery system",
@@ -2335,7 +2335,7 @@
             "learn_more": "More information on how to get started.",
             "gas_consumption": "Gas consumption",
             "edit_gas_source": "Edit gas source",
-            "delete_gas_source": "Delete gas source",
+            "delete_gas_source": "Remove gas source",
             "add_gas_source": "Add gas source",
             "dialog": {
               "header": "Configure gas consumption",
@@ -2359,7 +2359,7 @@
             "learn_more": "More information on how to get started.",
             "water_consumption": "Water consumption",
             "edit_water_source": "Edit water source",
-            "delete_water_source": "Delete water source",
+            "delete_water_source": "Remove water source",
             "add_water_source": "Add water source",
             "dialog": {
               "header": "Configure water consumption",
@@ -2387,7 +2387,7 @@
             "dialog": {
               "header": "Add a device",
               "display_name": "Display name",
-              "device_consumption_energy": "Device consumption energy",
+              "device_consumption_energy": "Device energy consumption",
               "selected_stat_intro": "Select the energy sensor that measures the device's energy usage in either of {unit}."
             }
           }
@@ -3614,6 +3614,8 @@
             "older_trace": "Older trace",
             "newer_trace": "Newer trace",
             "no_traces_found": "No traces found",
+            "trace_no_longer_available": "Chosen trace is no longer available",
+            "enter_downloaded_trace": "Enter downloaded trace",
             "tabs": {
               "details": "Step Details",
               "timeline": "Trace Timeline",
@@ -3621,7 +3623,8 @@
               "automation_config": "Automation Config",
               "step_config": "Step Config",
               "changed_variables": "Changed Variables",
-              "blueprint_config": "Blueprint Config"
+              "blueprint_config": "Blueprint Config",
+              "script_config": "Script Config"
             },
             "path": {
               "choose": "Select a step on the left for more information.",
@@ -4348,7 +4351,6 @@
           "introduction": "Zones allow you to specify certain regions on Earth. When a person is within a zone, the state will take the name from the zone. Zones can also be used as a trigger or condition inside automation setups.",
           "no_zones_created_yet": "Looks like you have not created any zones yet.",
           "create_zone": "Create zone",
-          "add_zone": "Add zone",
           "edit_zone": "Edit zone",
           "edit_home": "Edit home",
           "confirm_delete": "Are you sure you want to delete this zone?",
@@ -4502,8 +4504,10 @@
               }
             },
             "custom_integration": "Custom integration",
+            "internal_integration": "Internal integration",
+            "legacy_integration": "Legacy integration",
             "custom_overwrites_core": "Custom integration that replaces a core component",
-            "depends_on_cloud": "Depends on Internet connection",
+            "depends_on_cloud": "Requires Internet",
             "yaml_only": "This integration cannot be setup from the UI",
             "no_config_flow": "This integration was not set up from the UI",
             "disabled_polling": "Automatic polling for updated data disabled",
@@ -4517,7 +4521,11 @@
               "failed_unload": "Failed to unload",
               "setup_in_progress": "Initializing"
             },
-            "open_configuration_url": "Visit device"
+            "open_configuration_url": "Visit device",
+            "bronze_quality": "Bronze quality",
+            "silver_quality": "Silver quality",
+            "gold_quality": "Gold quality",
+            "platinum_quality": "Platinum quality"
           },
           "config_flow": {
             "success": "Success",
@@ -6371,7 +6379,7 @@
             },
             "todo-list": {
               "name": "To-do list",
-              "description": "The to-do list card allows you to add, edit, check-off, and clear items from your to-do list.",
+              "description": "The To-do list card allows you to add, edit, check-off, and remove items from your to-do list.",
               "integration_not_loaded": "This card requires the `todo` integration to be set up.",
               "hide_completed": "Hide completed items"
             },
@@ -6532,6 +6540,16 @@
                   "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
                 },
                 "customize_modes": "Customize swing modes"
+              },
+              "climate-swing-horizontal-modes": {
+                "label": "Climate horizontal swing modes",
+                "swing_horizontal_modes": "Horizontal swing modes",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
+                "style_list": {
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
+                  "icons": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::icons%]"
+                },
+                "customize_modes": "Customize horizontal swing modes"
               },
               "climate-hvac-modes": {
                 "label": "Climate HVAC modes",
@@ -6879,7 +6897,7 @@
         },
         "refresh_tokens": {
           "header": "Refresh tokens",
-          "description": "Each refresh token represents a login session. Refresh tokens will be automatically removed when you click log out. Unused refresh tokens will be automatically removed after 90 days. The following refresh tokens are currently active for your account.",
+          "description": "Each refresh token represents a login session. Refresh tokens will be automatically deleted when you click log out. Unused refresh tokens will be automatically deleted after 90 days. The following refresh tokens are currently active for your account.",
           "ios_app": "iOS app",
           "android_app": "Android app",
           "current_session": "Your current session",
@@ -7530,7 +7548,8 @@
     "tips": {
       "key_c_hint": "Press 'c' on any page to open the command dialog",
       "key_e_hint": "Press 'e' on any page to open the entity search dialog",
-      "key_m_hint": "Press 'm' on any page to get the My Home Assistant link"
+      "key_m_hint": "Press 'm' on any page to get the My Home Assistant link",
+      "key_a_hint": "Press 'a' on any page to open the Assist dialog"
     }
   },
   "landing-page": {

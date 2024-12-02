@@ -36,7 +36,10 @@ export class HaVoiceAssistantSetupStepCheck extends LitElement {
   protected override render() {
     return html`<div class="content">
       ${this._status === "timeout"
-        ? html`<img src="/static/images/voice-assistant/error.png" />
+        ? html`<img
+              src="/static/images/voice-assistant/error.png"
+              alt="Casita Home Assistant error logo"
+            />
             <h1>The voice assistant is unable to connect to Home Assistant</h1>
             <p class="secondary">
               To play audio, the voice assistant device has to connect to Home
@@ -53,7 +56,10 @@ export class HaVoiceAssistantSetupStepCheck extends LitElement {
               >
               <ha-button @click=${this._testConnection}>Retry</ha-button>
             </div>`
-        : html`<img src="/static/images/voice-assistant/hi.png" />
+        : html`<img
+              src="/static/images/voice-assistant/hi.png"
+              alt="Casita Home Assistant hi logo"
+            />
             <h1>Hi</h1>
             <p class="secondary">
               Over the next couple steps we're going to personalize your voice
