@@ -31,7 +31,8 @@ declare global {
   var __STATIC_PATH__: string;
   var __BACKWARDS_COMPAT__: boolean;
   var __SUPERVISOR__: boolean;
-  /* eslint-enable no-var */
+  var __HASS_URL__: string;
+  /* eslint-enable no-var, no-redeclare */
 
   interface Window {
     // Custom panel entry point url
