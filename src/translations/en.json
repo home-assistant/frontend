@@ -1195,7 +1195,10 @@
             "addon_info": "{addon} Info"
           }
         },
-        "filter_placeholder": "Search entities",
+        "filter_placeholder": {
+          "entities": "Search entities",
+          "devices": "Search devices"
+        },
         "title": "Quick search",
         "key_c_hint": "Press 'c' on any page to open the command dialog",
         "nothing_found": "Nothing found!"
