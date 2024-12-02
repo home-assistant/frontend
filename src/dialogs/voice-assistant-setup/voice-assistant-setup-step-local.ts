@@ -37,6 +37,8 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
 
   @state() private _detailState?: string;
 
+  @state() private _error?: string;
+
   @state() private _localTts?: EntityRegistryDisplayEntry[];
 
   @state() private _localStt?: EntityRegistryDisplayEntry[];
@@ -62,6 +64,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
                 alt="Casita Home Assistant error logo"
               />
               <h1>Failed to install add-ons</h1>
+              <p>${this._error}</p>
               <p>
                 We could not automatically install a local TTS and STT provider
                 for you. Read the documentation to learn how to install them.
@@ -179,8 +182,9 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
       }
       this._detailState = "Creating assistant";
       await this._findEntitiesAndCreatePipeline();
-    } catch (e) {
+    } catch (e: any) {
       this._state = "ERROR";
+      this._error = e.message;
     }
   }
 
@@ -199,11 +203,13 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
   private async _setupConfigEntry(addon: string) {
     const configFlow = await createConfigFlow(this.hass, "wyoming");
     const step = await handleConfigFlowStep(this.hass, configFlow.flow_id, {
-      host: `core_${addon}`,
+      host: `core-${addon}`,
       port: addon === "piper" ? 10200 : 10300,
     });
     if (step.type !== "create_entry") {
-      throw new Error("Failed to create entry");
+      throw new Error(
+        `Failed to create entry for ${addon}${"errors" in step ? `: ${step.errors.base}` : ""}`
+      );
     }
   }
 
@@ -321,7 +327,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     this._findLocalEntities();
     if (!this._localTts?.length || !this._localStt?.length) {
       if (tryNo > 3) {
-        throw new Error("Timeout searching for local TTS and STT entities");
+        throw new Error("Could not find local TTS and STT entities");
       }
       await new Promise<void>((resolve) => {
         setTimeout(resolve, 2000);
