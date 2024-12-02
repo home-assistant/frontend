@@ -96,7 +96,12 @@ const randomTip = (hass: HomeAssistant, narrow: boolean) => {
         weight: 1,
         narrow: false,
       },
-      { content: hass.localize("ui.tips.key_m_hint"), weight: 1, narrow: false }
+      {
+        content: hass.localize("ui.tips.key_m_hint"),
+        weight: 1,
+        narrow: false,
+      },
+      { content: hass.localize("ui.tips.key_a_hint"), weight: 1, narrow: false }
     );
   }
 
