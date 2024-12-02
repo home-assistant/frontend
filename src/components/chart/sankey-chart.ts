@@ -147,15 +147,7 @@ export class SankeyChart extends LitElement {
                 </rect>
                 ${
                   this.vertical
-                    ? svg`
-                      <text 
-                        class="node-label" 
-                        x=${node.size / 2}
-                        y=${NODE_WIDTH + FONT_SIZE}
-                        text-anchor="middle" 
-                        dominant-baseline="middle"
-                      >${node.label}</text>
-                    `
+                    ? nothing
                     : svg`
                       <text 
                         class="node-label" 
@@ -170,6 +162,32 @@ export class SankeyChart extends LitElement {
             `
         )}
       </svg>
+      ${this.vertical
+        ? nodes.map((node) => {
+            if (!node.label) {
+              return nothing;
+            }
+            const labelWidth = MIN_DISTANCE + node.size;
+            const fontSize = this._getVerticalLabelFontSize(
+              node.label,
+              labelWidth
+            );
+            return html`<div
+              class="node-label vertical"
+              style="
+                    left: ${node.x - MIN_DISTANCE / 2}px; 
+                    top: ${node.y + NODE_WIDTH}px; 
+                    width: ${labelWidth}px; 
+                    height: ${FONT_SIZE * 3}px;
+                    font-size: ${fontSize}px;
+                    line-height: ${fontSize}px;
+                  "
+              title=${node.label}
+            >
+              ${node.label}
+            </div>`;
+          })
+        : nothing}
     `;
   }
 
@@ -482,6 +500,19 @@ export class SankeyChart extends LitElement {
     return context.measureText(text).width;
   }
 
+  private _getVerticalLabelFontSize(label: string, labelWidth: number): number {
+    // reduce the label font size so the longest word fits on one line
+    const longestWord = label
+      .split(" ")
+      .reduce(
+        (longest, current) =>
+          longest.length > current.length ? longest : current,
+        ""
+      );
+    const wordWidth = this._getTextWidth(longestWord);
+    return Math.min(FONT_SIZE, (labelWidth / wordWidth) * FONT_SIZE);
+  }
+
   static styles = css`
     :host {
       display: block;
@@ -497,6 +528,11 @@ export class SankeyChart extends LitElement {
     .node-label {
       font-size: ${FONT_SIZE}px;
       fill: var(--primary-text-color, white);
+    }
+    .node-label.vertical {
+      position: absolute;
+      text-align: center;
+      overflow: hidden;
     }
   `;
 }
