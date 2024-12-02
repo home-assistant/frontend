@@ -1,5 +1,5 @@
 import { ensureArray } from "../common/array/ensure-array";
-import { formatDuration } from "../common/datetime/format_duration";
+import { formatNumericDuration } from "../common/datetime/format_duration";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { formatListWithAnds } from "../common/string/format-list";
@@ -277,7 +277,7 @@ const tryDescribeAction = <T extends ActionType>(
       duration = hass.localize(
         `${actionTranslationBaseKey}.delay.description.duration_string`,
         {
-          string: formatDuration(hass.locale, config.delay),
+          string: formatNumericDuration(hass.locale, config.delay),
         }
       );
     } else {

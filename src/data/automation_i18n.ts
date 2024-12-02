@@ -1,8 +1,8 @@
 import type { HassConfig } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
 import {
-  formatDuration,
   formatDurationLong,
+  formatNumericDuration,
 } from "../common/datetime/format_duration";
 import {
   formatTime,
@@ -12,6 +12,10 @@ import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { computeAttributeNameDisplay } from "../common/entity/compute_attribute_display";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { isValidEntityId } from "../common/entity/valid_entity_id";
+import {
+  formatListWithAnds,
+  formatListWithOrs,
+} from "../common/string/format-list";
 import type { HomeAssistant } from "../types";
 import type { Condition, ForDict, Trigger } from "./automation";
 import type { DeviceCondition, DeviceTrigger } from "./device_automation";
@@ -21,10 +25,6 @@ import {
 } from "./device_automation";
 import type { EntityRegistryEntry } from "./entity_registry";
 import type { FrontendLocaleData } from "./translation";
-import {
-  formatListWithAnds,
-  formatListWithOrs,
-} from "../common/string/format-list";
 import { isTriggerList } from "./trigger";
 
 const triggerTranslationBaseKey =
@@ -42,7 +42,7 @@ const describeDuration = (
   } else if (typeof forTime === "string") {
     duration = forTime;
   } else {
-    duration = formatDuration(locale, forTime);
+    duration = formatNumericDuration(locale, forTime);
   }
   return duration;
 };

@@ -209,7 +209,11 @@ export class HaScriptTrace extends LitElement {
         ${this._traces === undefined
           ? html`<div class="container">Loading…</div>`
           : this._traces.length === 0
-            ? html`<div class="container">No traces found</div>`
+            ? html`<div class="container">
+                ${this.hass!.localize(
+                  "ui.panel.config.automation.trace.no_traces_found"
+                )}
+              </div>`
             : this._trace === undefined
               ? ""
               : html`
@@ -226,10 +230,30 @@ export class HaScriptTrace extends LitElement {
                     <div class="info">
                       <div class="tabs top">
                         ${[
-                          ["details", "Step Details"],
-                          ["timeline", "Trace Timeline"],
-                          ["logbook", "Related logbook entries"],
-                          ["config", "Script Config"],
+                          [
+                            "details",
+                            this.hass.localize(
+                              "ui.panel.config.automation.trace.tabs.details"
+                            ),
+                          ],
+                          [
+                            "timeline",
+                            this.hass.localize(
+                              "ui.panel.config.automation.trace.tabs.timeline"
+                            ),
+                          ],
+                          [
+                            "logbook",
+                            this.hass.localize(
+                              "ui.panel.config.automation.trace.tabs.logbook"
+                            ),
+                          ],
+                          [
+                            "config",
+                            this.hass.localize(
+                              "ui.panel.config.automation.trace.tabs.script_config"
+                            ),
+                          ],
                         ].map(
                           ([view, label]) => html`
                             <button
@@ -406,7 +430,9 @@ export class HaScriptTrace extends LitElement {
       }
 
       await showAlertDialog(this, {
-        text: "Chosen trace is no longer available",
+        text: this.hass!.localize(
+          "ui.panel.config.automation.trace.trace_no_longer_available"
+        ),
       });
     }
 
@@ -453,7 +479,11 @@ export class HaScriptTrace extends LitElement {
   }
 
   private _importTrace() {
-    const traceText = prompt("Enter downloaded trace");
+    const traceText = prompt(
+      this.hass.localize(
+        "ui.panel.config.automation.trace.enter_downloaded_trace"
+      )
+    );
     if (!traceText) {
       return;
     }
