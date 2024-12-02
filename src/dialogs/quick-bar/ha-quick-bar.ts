@@ -3,6 +3,7 @@ import type { ListItem } from "@material/mwc-list/mwc-list-item";
 import {
   mdiClose,
   mdiConsoleLine,
+  mdiDevices,
   mdiEarth,
   mdiMagnify,
   mdiReload,
@@ -176,7 +177,14 @@ export class QuickBar extends LitElement {
       `ui.dialogs.quick-bar.filter_placeholder.${translationKey}`
     );
 
-    const _commandMode = this._mode === QuickBarMode.Command;
+    const commandMode = this._mode === QuickBarMode.Command;
+    const deviceMode = this._mode === QuickBarMode.Device;
+    const icon = commandMode
+      ? mdiConsoleLine
+      : deviceMode
+        ? mdiDevices
+        : mdiMagnify;
+    const searchPrefix = commandMode ? ">" : deviceMode ? "#" : "";
 
     return html`
       <ha-dialog
@@ -191,28 +199,18 @@ export class QuickBar extends LitElement {
             dialogInitialFocus
             .placeholder=${placeholder}
             aria-label=${placeholder}
-            .value=${_commandMode ? `>${this._search}` : this._search}
+            .value="${searchPrefix}${this._search}"
             icon
             .iconTrailing=${this._search !== undefined || this._narrow}
             @input=${this._handleSearchChange}
             @keydown=${this._handleInputKeyDown}
             @focus=${this._setFocusFirstListItem}
           >
-            ${_commandMode
-              ? html`
-                  <ha-svg-icon
-                    slot="leadingIcon"
-                    class="prefix"
-                    .path=${mdiConsoleLine}
-                  ></ha-svg-icon>
-                `
-              : html`
-                  <ha-svg-icon
-                    slot="leadingIcon"
-                    class="prefix"
-                    .path=${mdiMagnify}
-                  ></ha-svg-icon>
-                `}
+            <ha-svg-icon
+              slot="leadingIcon"
+              class="prefix"
+              .path=${icon}
+            ></ha-svg-icon>
             ${this._search || this._narrow
               ? html`
                   <div slot="trailingIcon">
@@ -259,7 +257,7 @@ export class QuickBar extends LitElement {
                           height: this._narrow
                             ? "calc(100vh - 56px)"
                             : `${Math.min(
-                                items.length * (_commandMode ? 56 : 72) + 26,
+                                items.length * (commandMode ? 56 : 72) + 26,
                                 500
                               )}px`,
                         })}
@@ -438,6 +436,9 @@ export class QuickBar extends LitElement {
     if (newFilter.startsWith(">")) {
       newMode = QuickBarMode.Command;
       newSearch = newFilter.substring(1);
+    } else if (newFilter.startsWith("#")) {
+      newMode = QuickBarMode.Device;
+      newSearch = newFilter.substring(1);
     } else {
       newMode = QuickBarMode.Entity;
       newSearch = newFilter;
@@ -528,7 +529,6 @@ export class QuickBar extends LitElement {
           deviceId: device.id,
           area: area?.name,
           action: () => navigate(`/config/devices/device/${device.id}`),
-          strings: [device.name],
         };
 
         return {
