@@ -1,5 +1,6 @@
 import type { PropertyValues } from "lit";
 import { tinykeys } from "tinykeys";
+import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { mainWindow } from "../common/dom/get_main_window";
 import type { QuickBarParams } from "../dialogs/quick-bar/show-dialog-quick-bar";
@@ -9,6 +10,7 @@ import { storeState } from "../util/ha-pref-storage";
 import { showToast } from "../util/toast";
 import type { HassElement } from "./hass-element";
 import { extractSearchParamsObject } from "../common/url/search-params";
+import { showVoiceCommandDialog } from "../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 
 declare global {
   interface HASSDomEvents {
@@ -39,6 +41,9 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
           case "m":
             this._createMyLink(ev.detail);
             break;
+          case "a":
+            this._showVoiceCommandDialog(ev.detail);
+            break;
         }
       });
 
@@ -51,11 +56,34 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         e: (ev) => this._showQuickBar(ev),
         c: (ev) => this._showQuickBar(ev, true),
         m: (ev) => this._createMyLink(ev),
+        a: (ev) => this._showVoiceCommandDialog(ev),
         // Those are fallbacks for non-latin keyboards that don't have e, c, m keys (qwerty-based shortcuts)
         KeyE: (ev) => this._showQuickBar(ev),
         KeyC: (ev) => this._showQuickBar(ev, true),
         KeyM: (ev) => this._createMyLink(ev),
+        KeyA: (ev) => this._showVoiceCommandDialog(ev),
       });
+    }
+
+    private _conversation = memoizeOne((_components) =>
+      isComponentLoaded(this.hass!, "conversation")
+    );
+
+    private _showVoiceCommandDialog(e: KeyboardEvent) {
+      if (
+        !this.hass?.enableShortcuts ||
+        !this._canOverrideAlphanumericInput(e) ||
+        !this._conversation(this.hass.config.components)
+      ) {
+        return;
+      }
+
+      if (e.defaultPrevented) {
+        return;
+      }
+      e.preventDefault();
+
+      showVoiceCommandDialog(this, this.hass!, { pipeline_id: "last_used" });
     }
 
     private _showQuickBar(e: KeyboardEvent, commandMode = false) {
