@@ -1,26 +1,13 @@
-import {
-  mdiChartBox,
-  mdiCog,
-  mdiDownload,
-  mdiFolder,
-  mdiPlayBoxMultiple,
-  mdiPuzzle,
-} from "@mdi/js";
+import { mdiDownload } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
-import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-list-item";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
-import "../../../components/ha-md-select";
-import "../../../components/ha-md-select-option";
 import "../../../components/ha-password-field";
-import "../../../components/ha-select";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-switch";
 import type { BackupAgent, BackupConfig } from "../../../data/backup";
@@ -30,22 +17,15 @@ import {
   fetchBackupConfig,
   updateBackupConfig,
 } from "../../../data/backup";
-import { fetchHassioAddonsInfo } from "../../../data/hassio/addon";
 import { domainToName } from "../../../data/integration";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import "./components/ha-backup-addons-picker";
-import type { BackupAddon } from "./components/ha-backup-addons-picker";
 import "./components/ha-backup-config-data";
 import type { BackupConfigData } from "./components/ha-backup-config-data";
 import "./components/ha-backup-config-schedule";
 import type { BackupConfigSchedule } from "./components/ha-backup-config-schedule";
 import { showChangeBackupPasswordDialog } from "./dialogs/show-dialog-change-backup-password";
-
-const SELF_CREATED_ADDONS_FOLDER = "addons/local";
-
-const DEFAULT_COPIES = 3;
 
 const INITIAL_BACKUP_CONFIG: BackupConfig = {
   create_backup: {
@@ -59,7 +39,7 @@ const INITIAL_BACKUP_CONFIG: BackupConfig = {
   },
   retention: {
     days: null,
-    copies: DEFAULT_COPIES,
+    copies: 3,
   },
   schedule: { state: BackupScheduleState.NEVER },
   last_automatic_backup: null,
@@ -75,8 +55,6 @@ class HaConfigBackupDefaultConfig extends LitElement {
 
   @state() private _agents: BackupAgent[] = [];
 
-  @state() private _addons: BackupAddon[] = [];
-
   protected willUpdate(changedProps) {
     super.willUpdate(changedProps);
     if (!this.hasUpdated) {
@@ -85,26 +63,12 @@ class HaConfigBackupDefaultConfig extends LitElement {
   }
 
   private async _fetchData() {
-    if (isComponentLoaded(this.hass, "hassio")) {
-      this._fetchAddons();
-    }
     const [backupConfig, agentInfo] = await Promise.all([
       fetchBackupConfig(this.hass),
       fetchBackupAgentsInfo(this.hass),
     ]);
     this._backupConfig = backupConfig.config;
     this._agents = agentInfo.agents;
-  }
-
-  private async _fetchAddons() {
-    const { addons } = await fetchHassioAddonsInfo(this.hass);
-    this._addons = [
-      ...addons,
-      {
-        name: "Self created add-ons",
-        slug: SELF_CREATED_ADDONS_FOLDER,
-      },
-    ];
   }
 
   protected render() {
@@ -146,118 +110,6 @@ class HaConfigBackupDefaultConfig extends LitElement {
             </div>
           </ha-card>
 
-          <ha-card>
-            <div class="card-header">Backup data</div>
-            <div class="card-content">
-              <ha-settings-row>
-                <ha-svg-icon slot="prefix" .path=${mdiCog}></ha-svg-icon>
-                <span slot="heading"
-                  >Home Assistant settings are always included</span
-                >
-                <span slot="description">
-                  The bare minimum needed to restore your system.
-                </span>
-                <ha-button>Learn more</ha-button>
-              </ha-settings-row>
-              <ha-settings-row>
-                <ha-svg-icon slot="prefix" .path=${mdiChartBox}></ha-svg-icon>
-                <span slot="heading">History</span>
-                <span slot="description"
-                  >For example of your energy dashboard.</span
-                >
-                <ha-switch
-                  id="database"
-                  name="database"
-                  @change=${this._databaseSwitchChanged}
-                  .checked=${this._backupConfig.create_backup.include_database}
-                ></ha-switch>
-              </ha-settings-row>
-              <ha-settings-row>
-                <ha-svg-icon
-                  slot="prefix"
-                  .path=${mdiPlayBoxMultiple}
-                ></ha-svg-icon>
-                <span slot="heading">Media</span>
-                <span slot="description">
-                  Folder that is often used for advanced or older
-                  configurations.
-                </span>
-                <ha-switch
-                  id="media"
-                  name="media"
-                  @change=${this._folderSwitchChanged}
-                  .checked=${this._backupConfig.create_backup.include_folders?.includes(
-                    "media"
-                  )}
-                ></ha-switch>
-              </ha-settings-row>
-              <ha-settings-row>
-                <ha-svg-icon slot="prefix" .path=${mdiFolder}></ha-svg-icon>
-                <span slot="heading">Share folder</span>
-                <span slot="description">
-                  Folder that is often used for advanced or older
-                  configurations.
-                </span>
-                <ha-switch
-                  id="share"
-                  name="share"
-                  @change=${this._folderSwitchChanged}
-                  .checked=${this._backupConfig.create_backup.include_folders?.includes(
-                    "share"
-                  )}
-                ></ha-switch>
-              </ha-settings-row>
-              ${this._addons.length > 0
-                ? html`
-                    <ha-settings-row>
-                      <ha-svg-icon
-                        slot="prefix"
-                        .path=${mdiPuzzle}
-                      ></ha-svg-icon>
-                      <span slot="heading">Add-ons</span>
-                      <span slot="description">
-                        Select what add-ons you want to backup.
-                      </span>
-                      <ha-md-select
-                        id="addons_mode"
-                        @change=${this._addonModeChanged}
-                        .value=${this._backupConfig.create_backup
-                          .include_all_addons
-                          ? "all"
-                          : "custom"}
-                      >
-                        <ha-md-select-option value="all">
-                          <div slot="headline">
-                            All (${this._addons.length})
-                          </div>
-                        </ha-md-select-option>
-                        <ha-md-select-option value="custom">
-                          <div slot="headline">Custom</div>
-                        </ha-md-select-option>
-                      </ha-md-select>
-                    </ha-settings-row>
-                    ${!this._backupConfig.create_backup.include_all_addons
-                      ? html`
-                          <ha-expansion-panel
-                            .header=${"Add-ons"}
-                            outlined
-                            expanded
-                          >
-                            <ha-backup-addons-picker
-                              .hass=${this.hass}
-                              .value=${this._backupConfig.create_backup
-                                .include_addons ||
-                              this._addons.map((a) => a.slug)}
-                              @value-changed=${this._addonsChanged}
-                              .addons=${this._addons}
-                            ></ha-backup-addons-picker>
-                          </ha-expansion-panel>
-                        `
-                      : nothing}
-                  `
-                : nothing}
-            </div>
-          </ha-card>
           <ha-card class="agents">
             <div class="card-header">Locations</div>
             <div class="card-content">
@@ -390,84 +242,6 @@ class HaConfigBackupDefaultConfig extends LitElement {
     this._debounceSave();
   }
 
-  private _folderSwitchChanged(ev) {
-    const id = ev.target.id;
-    const checked = ev.target.checked;
-    if (!this._backupConfig.create_backup.include_folders) {
-      this._backupConfig = {
-        ...this._backupConfig,
-        create_backup: {
-          ...this._backupConfig.create_backup,
-          include_folders: [],
-        },
-      };
-    }
-    if (checked) {
-      this._backupConfig = {
-        ...this._backupConfig,
-        create_backup: {
-          ...this._backupConfig.create_backup,
-          include_folders: [
-            ...this._backupConfig.create_backup.include_folders!,
-            id,
-          ],
-        },
-      };
-    } else {
-      this._backupConfig = {
-        ...this._backupConfig,
-        create_backup: {
-          ...this._backupConfig.create_backup,
-          include_folders:
-            this._backupConfig.create_backup.include_folders!.filter(
-              (folder) => folder !== id
-            ),
-        },
-      };
-    }
-    this._debounceSave();
-  }
-
-  private _addonModeChanged(ev) {
-    if (
-      !ev.target.value ||
-      (ev.target.value === "all" &&
-        this._backupConfig.create_backup.include_all_addons)
-    ) {
-      return;
-    }
-    this._backupConfig = {
-      ...this._backupConfig,
-      create_backup: {
-        ...this._backupConfig.create_backup,
-        include_all_addons: ev.target.value === "all",
-      },
-    };
-    this._debounceSave();
-  }
-
-  private _addonsChanged(ev) {
-    this._backupConfig = {
-      ...this._backupConfig,
-      create_backup: {
-        ...this._backupConfig.create_backup,
-        include_addons: ev.detail.value,
-      },
-    };
-    this._debounceSave();
-  }
-
-  private _databaseSwitchChanged(ev) {
-    this._backupConfig = {
-      ...this._backupConfig,
-      create_backup: {
-        ...this._backupConfig.create_backup,
-        include_database: ev.target.checked,
-      },
-    };
-    this._debounceSave();
-  }
-
   private _handleAgentToggle(ev) {
     const agentId = ev.target.id;
     if (ev.target.checked) {
@@ -532,11 +306,6 @@ class HaConfigBackupDefaultConfig extends LitElement {
   private _debounceSave = debounce(() => this._save(), 500);
 
   private async _save() {
-    if (this._backupConfig.create_backup.agent_ids.length === 0) {
-      // TODO: Talk to backend about this requirement, and show error when no agents are selected
-      return;
-    }
-
     await updateBackupConfig(this.hass, {
       create_backup: {
         agent_ids: this._backupConfig.create_backup.agent_ids.filter((id) =>

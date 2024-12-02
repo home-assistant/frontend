@@ -5,19 +5,22 @@ import {
   mdiPlayBoxMultiple,
   mdiPuzzle,
 } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
+import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-md-select";
-import "../../../../components/ha-expansion-panel";
 import type { HaMdSelect } from "../../../../components/ha-md-select";
 import "../../../../components/ha-md-select-option";
 import "../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../components/ha-switch";
+import { fetchHassioAddonsInfo } from "../../../../data/hassio/addon";
 import "../../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../../types";
 import "./ha-backup-addons-picker";
@@ -50,7 +53,7 @@ export type BackupConfigData = {
 };
 
 const SELF_CREATED_ADDONS_FOLDER = "addons/local";
-const SELF_CREATED_ADDONS_NAME = "___local_addons___";
+const SELF_CREATED_ADDONS_NAME = "___LOCAL_ADDONS___";
 
 @customElement("ha-backup-config-data")
 class HaBackupConfigData extends LitElement {
@@ -59,9 +62,27 @@ class HaBackupConfigData extends LitElement {
   @property({ type: Boolean, attribute: "force-home-assistant" })
   public forceHomeAssistant = false;
 
-  @property({ attribute: false }) public addons: BackupAddon[] = [];
-
   @state() private value?: BackupConfigData;
+
+  @state() private _addons: BackupAddon[] = [];
+
+  protected firstUpdated(_changedProperties: PropertyValues): void {
+    super.firstUpdated(_changedProperties);
+    if (isComponentLoaded(this.hass, "hassio")) {
+      this._fetchAddons();
+    }
+  }
+
+  private async _fetchAddons() {
+    const { addons } = await fetchHassioAddonsInfo(this.hass);
+    this._addons = [
+      ...addons,
+      {
+        name: "Self created add-ons",
+        slug: SELF_CREATED_ADDONS_NAME,
+      },
+    ];
+  }
 
   private getData = memoizeOne((value?: BackupConfigData): FormData => {
     if (!value) {
@@ -76,7 +97,7 @@ class HaBackupConfigData extends LitElement {
 
     const addons = config.include_addons?.slice() ?? [];
 
-    if (hasLocalAddonFolder) {
+    if (hasLocalAddonFolder && !value.include_all_addons) {
       addons.push(SELF_CREATED_ADDONS_NAME);
     }
 
@@ -86,7 +107,7 @@ class HaBackupConfigData extends LitElement {
       media: config.include_folders?.includes("media") || false,
       share: config.include_folders?.includes("share") || false,
       addons_mode: config.include_all_addons ? "all" : "custom",
-      addons: [],
+      addons: addons,
     };
   });
 
@@ -96,28 +117,26 @@ class HaBackupConfigData extends LitElement {
     const include_folders = [
       ...(data.media ? ["media"] : []),
       ...(data.share ? ["share"] : []),
-      ...(data.addons_mode === "all" || hasSelfCreatedAddons
-        ? [SELF_CREATED_ADDONS_FOLDER]
-        : []),
     ];
 
-    let include_addons =
-      data.addons_mode === "custom" ? undefined : data.addons;
+    let include_addons = data.addons_mode === "custom" ? data.addons : [];
 
     if (hasSelfCreatedAddons || data.addons_mode === "all") {
       include_folders.push(SELF_CREATED_ADDONS_FOLDER);
-      include_addons = include_addons?.filter(
-        (addon) => addon !== SELF_CREATED_ADDONS_FOLDER
+      include_addons = include_addons.filter(
+        (addon) => addon !== SELF_CREATED_ADDONS_NAME
       );
     }
 
     this.value = {
       include_homeassistant: data.homeassistant || this.forceHomeAssistant,
-      include_addons,
+      include_addons: include_addons.length ? include_addons : undefined,
       include_all_addons: data.addons_mode === "all",
       include_database: data.database,
       include_folders: include_folders.length ? include_folders : undefined,
     };
+
+    fireEvent(this, "value-changed", { value: this.value });
   }
 
   protected render() {
@@ -187,7 +206,7 @@ class HaBackupConfigData extends LitElement {
           ></ha-switch>
         </ha-md-list-item>
 
-        ${this.addons.length
+        ${this._addons.length
           ? html`
               <ha-md-list-item>
                 <ha-svg-icon slot="start" .path=${mdiPuzzle}></ha-svg-icon>
@@ -212,14 +231,14 @@ class HaBackupConfigData extends LitElement {
             `
           : nothing}
       </ha-md-list>
-      ${data.addons_mode === "custom" && this.addons.length
+      ${data.addons_mode === "custom" && this._addons.length
         ? html`
             <ha-expansion-panel .header=${"Add-ons"} outlined expanded>
               <ha-backup-addons-picker
                 .hass=${this.hass}
                 .value=${data.addons}
                 @value-changed=${this._addonsChanged}
-                .addons=${this.addons}
+                .addons=${this._addons}
               ></ha-backup-addons-picker>
             </ha-expansion-panel>
           `
@@ -248,6 +267,7 @@ class HaBackupConfigData extends LitElement {
   }
 
   private _addonsChanged(ev: CustomEvent) {
+    ev.stopPropagation();
     const addons = ev.detail.value;
     const data = this.getData(this.value);
     this.setData({

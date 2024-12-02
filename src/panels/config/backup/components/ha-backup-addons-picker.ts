@@ -55,6 +55,7 @@ export class HaBackupAddonsPicker extends LitElement {
   }
 
   private _checkboxChanged(ev: Event) {
+    ev.stopPropagation();
     let value = this.value ?? [];
 
     const checkbox = ev.currentTarget as HaCheckbox;
@@ -63,7 +64,6 @@ export class HaBackupAddonsPicker extends LitElement {
     } else {
       value = value.filter((id) => id !== checkbox.id);
     }
-
     fireEvent(this, "value-changed", { value });
   }
 
