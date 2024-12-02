@@ -120,18 +120,6 @@ export class EnergyViewStrategy extends ReactiveElement {
       });
     }
 
-    // Add Sankey card if we have any energy sources or devices
-    if (
-      prefs.device_consumption.length > 0 ||
-      prefs.energy_sources.length > 0
-    ) {
-      view.cards!.push({
-        title: hass.localize("ui.panel.energy.cards.energy_sankey_title"),
-        type: "energy-sankey",
-        collection_key: "energy_dashboard",
-      });
-    }
-
     if (hasGrid || hasSolar || hasGas || hasWater) {
       view.cards!.push({
         title: hass.localize(
