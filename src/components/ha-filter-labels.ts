@@ -50,6 +50,7 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
   }
 
   private _filteredLabels = memoizeOne(
+    // `_value` used to recalculate the memoization when the selection changes
     (labels: LabelRegistryEntry[], filter: string | undefined, _value) =>
       labels
         .filter(
