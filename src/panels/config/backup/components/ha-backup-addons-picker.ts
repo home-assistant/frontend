@@ -10,7 +10,7 @@ import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
 import "./ha-backup-formfield-label";
 
-export type BackupAddon = {
+export type BackupAddonItem = {
   slug: string;
   name: string;
   version?: string;
@@ -22,7 +22,7 @@ export type BackupAddon = {
 export class HaBackupAddonsPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public addons!: BackupAddon[];
+  @property({ attribute: false }) public addons!: BackupAddonItem[];
 
   @property({ attribute: false }) public value?: string[];
 

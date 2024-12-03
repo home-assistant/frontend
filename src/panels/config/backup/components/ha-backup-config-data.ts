@@ -24,7 +24,7 @@ import { fetchHassioAddonsInfo } from "../../../../data/hassio/addon";
 import "../../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../../types";
 import "./ha-backup-addons-picker";
-import type { BackupAddon } from "./ha-backup-addons-picker";
+import type { BackupAddonItem } from "./ha-backup-addons-picker";
 
 export type FormData = {
   homeassistant: boolean;
@@ -64,7 +64,7 @@ class HaBackupConfigData extends LitElement {
 
   @state() private value?: BackupConfigData;
 
-  @state() private _addons: BackupAddon[] = [];
+  @state() private _addons: BackupAddonItem[] = [];
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
     super.firstUpdated(_changedProperties);
@@ -80,6 +80,7 @@ class HaBackupConfigData extends LitElement {
       {
         name: "Self created add-ons",
         slug: SELF_CREATED_ADDONS_NAME,
+        iconPath: mdiFolder,
       },
     ];
   }
