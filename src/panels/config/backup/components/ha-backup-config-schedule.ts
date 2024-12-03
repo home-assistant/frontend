@@ -70,7 +70,7 @@ const INITIAL_FORM_DATA: FormData = {
 class HaBackupConfigSchedule extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) private value?: BackupConfigSchedule;
+  @property({ attribute: false }) public value?: BackupConfigSchedule;
 
   @state() private _retentionPreset?: RetentionPreset;
 
@@ -203,12 +203,12 @@ class HaBackupConfigSchedule extends LitElement {
                         .value=${data.retention.value}
                         id="value"
                       >
-                        ${Array(10)
+                        ${Array(99)
                           .fill(0)
                           .map(
                             (_, i) => html`
-                              <ha-md-select-option .value=${i}>
-                                <div slot="headline">${i}</div>
+                              <ha-md-select-option .value=${i + 1}>
+                                <div slot="headline">${i + 1}</div>
                               </ha-md-select-option>
                             `
                           )}
@@ -268,6 +268,9 @@ class HaBackupConfigSchedule extends LitElement {
     this._retentionPreset = value;
     if (value !== RetentionPreset.CUSTOM) {
       const data = this.getData(this.value);
+      const retention = RETENTION_PRESETS[value];
+      // Ensure we have at least 1 in defaut value because user can't select 0
+      retention.value = Math.max(retention.value, 1);
       this.setData({
         ...data,
         retention: RETENTION_PRESETS[value],
