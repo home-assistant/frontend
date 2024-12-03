@@ -962,3 +962,12 @@ export const fetchZwaveIntegrationSettings = (
   hass.callWS({
     type: "zwave_js/get_integration_settings",
   });
+
+export const cancelSecureBootstrapS2 = (
+  hass: HomeAssistant,
+  entry_id: string
+): Promise<void> =>
+  hass.callWS({
+    type: "zwave_js/cancel_secure_bootstrap_s2",
+    entry_id,
+  });
