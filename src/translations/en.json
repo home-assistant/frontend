@@ -1195,7 +1195,10 @@
             "addon_info": "{addon} Info"
           }
         },
-        "filter_placeholder": "Search entities",
+        "filter_placeholder": {
+          "entities": "Search entities",
+          "devices": "Search devices"
+        },
         "title": "Quick search",
         "key_c_hint": "Press 'c' on any page to open the command dialog",
         "nothing_found": "Nothing found!"
@@ -3881,7 +3884,8 @@
             "review_mode_detail": "You can adjust the scene's details and remove devices or entities. To fully edit, switch to Live Edit, which will apply the scene.",
             "live_edit": "Live Edit",
             "live_edit_detail": "In Live Edit, all changes to this scene are applied in real-time to your devices and entities.",
-            "enter_live_mode_unsaved": "You have unsaved changes to this scene. Continuing to live preview will apply the saved scene, which may overwrite your unsaved changes. Consider if you would like to save the scene first before activating it.",
+            "enter_live_mode_unsaved": "Before proceeding to Live Edit, please save your current changes.",
+            "save_before_live": "Save and Live Edit",
             "switch_to_review_mode": "Switch to review mode",
             "default_name": "New scene",
             "load_error_not_editable": "Only scenes in scenes.yaml are editable.",
@@ -3895,14 +3899,14 @@
             "devices": {
               "header": "Devices",
               "introduction": "Add the devices that you want to be included in your scene. Set all entities in each device to the state you want for this scene.",
-              "introduction_review": "To add the devices that you want to be included in your scene turn on the Live Preview mode.",
+              "introduction_review": "To add the devices that you want to be included in your scene switch to the Live Edit mode.",
               "add": "Add a device",
               "delete": "Delete device"
             },
             "entities": {
               "header": "Entities",
               "introduction": "Individual entities can be added here.",
-              "introduction_review": "To add individual entities to your scene turn on the Live Preview mode.",
+              "introduction_review": "To add individual entities to your scene switch to the Live Edit mode.",
               "without_device": "Entities",
               "add": "Add an entity",
               "delete": "Delete entity"
@@ -5716,8 +5720,8 @@
             },
             "carbon_consumed_gauge": {
               "card_indicates_energy_used": "This card indicates how much of the electricity consumed by your home was generated using non-fossil fuels like solar, wind, and nuclear. The higher, the better!",
-              "low_carbon_energy_consumed": "Low-carbon energy consumed",
-              "low_carbon_energy_not_calculated": "Consumed low-carbon energy couldn't be calculated"
+              "low_carbon_energy_consumed": "Low-carbon electricity consumed",
+              "low_carbon_energy_not_calculated": "Consumed low-carbon electricity couldn't be calculated"
             }
           },
           "heading": {

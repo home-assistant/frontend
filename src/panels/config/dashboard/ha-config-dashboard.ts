@@ -8,7 +8,7 @@ import {
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -33,7 +33,10 @@ import {
   checkForEntityUpdates,
   filterUpdateEntitiesWithInstall,
 } from "../../../data/update";
-import { showQuickBar } from "../../../dialogs/quick-bar/show-dialog-quick-bar";
+import {
+  QuickBarMode,
+  showQuickBar,
+} from "../../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
@@ -325,7 +328,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
   private _showQuickBar(): void {
     showQuickBar(this, {
-      commandMode: true,
+      mode: QuickBarMode.Command,
       hint: this.hass.enableShortcuts
         ? this.hass.localize("ui.dialogs.quick-bar.key_c_hint")
         : undefined,

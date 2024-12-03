@@ -24,6 +24,7 @@ import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { AssistantSetupStyles } from "./styles";
 import { STEP } from "./voice-assistant-setup-dialog";
+import { nextRender } from "../../common/util/render-status";
 
 @customElement("ha-voice-assistant-setup-step-local")
 export class HaVoiceAssistantSetupStepLocal extends LitElement {
@@ -36,6 +37,8 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     "INTRO";
 
   @state() private _detailState?: string;
+
+  @state() private _error?: string;
 
   @state() private _localTts?: EntityRegistryDisplayEntry[];
 
@@ -62,6 +65,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
                 alt="Casita Home Assistant error logo"
               />
               <h1>Failed to install add-ons</h1>
+              <p>${this._error}</p>
               <p>
                 We could not automatically install a local TTS and STT provider
                 for you. Read the documentation to learn how to install them.
@@ -135,6 +139,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     }
     if (this._localTts.length && this._localStt.length) {
       this._pickOrCreatePipelineExists();
+      return;
     }
     if (!isComponentLoaded(this.hass, "hassio")) {
       this._state = "NOT_SUPPORTED";
@@ -145,42 +150,35 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
       const { addons } = await fetchHassioAddonsInfo(this.hass);
       const whisper = addons.find((addon) => addon.slug === "core_whisper");
       const piper = addons.find((addon) => addon.slug === "core_piper");
-      if (piper && !this._localTts.length) {
-        if (piper.state !== "started") {
+      if (!this._localTts.length) {
+        if (!piper) {
+          this._detailState = "Installing Piper add-on";
+          await installHassioAddon(this.hass, "core_piper");
+        }
+        if (!piper || piper.state !== "started") {
           this._detailState = "Starting Piper add-on";
           await startHassioAddon(this.hass, "core_piper");
         }
         this._detailState = "Setting up Piper";
         await this._setupConfigEntry("piper");
       }
-      if (whisper && !this._localStt.length) {
-        if (whisper.state !== "started") {
+      if (!this._localStt.length) {
+        if (!whisper) {
+          this._detailState = "Installing Whisper add-on";
+          await installHassioAddon(this.hass, "core_whisper");
+        }
+        if (!whisper || whisper.state !== "started") {
           this._detailState = "Starting Whisper add-on";
           await startHassioAddon(this.hass, "core_whisper");
         }
         this._detailState = "Setting up Whisper";
         await this._setupConfigEntry("whisper");
       }
-      if (!piper) {
-        this._detailState = "Installing Piper add-on";
-        await installHassioAddon(this.hass, "core_piper");
-        this._detailState = "Starting Piper add-on";
-        await startHassioAddon(this.hass, "core_piper");
-        this._detailState = "Setting up Piper";
-        await this._setupConfigEntry("piper");
-      }
-      if (!whisper) {
-        this._detailState = "Installing Whisper add-on";
-        await installHassioAddon(this.hass, "core_whisper");
-        this._detailState = "Starting Whisper add-on";
-        await startHassioAddon(this.hass, "core_whisper");
-        this._detailState = "Setting up Whisper";
-        await this._setupConfigEntry("whisper");
-      }
       this._detailState = "Creating assistant";
       await this._findEntitiesAndCreatePipeline();
-    } catch (e) {
+    } catch (e: any) {
       this._state = "ERROR";
+      this._error = e.message;
     }
   }
 
@@ -199,11 +197,13 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
   private async _setupConfigEntry(addon: string) {
     const configFlow = await createConfigFlow(this.hass, "wyoming");
     const step = await handleConfigFlowStep(this.hass, configFlow.flow_id, {
-      host: `core_${addon}`,
+      host: `core-${addon}`,
       port: addon === "piper" ? 10200 : 10300,
     });
     if (step.type !== "create_entry") {
-      throw new Error("Failed to create entry");
+      throw new Error(
+        `Failed to create entry for ${addon}${"errors" in step ? `: ${step.errors.base}` : ""}`
+      );
     }
   }
 
@@ -253,6 +253,9 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
         this._localTts[0].entity_id,
         this._localStt[0].entity_id
       );
+
+      // wait a render so the `hui-select-entity-row` is also updated and doesn't undo the select action
+      await nextRender();
     }
 
     await this.hass.callService(
@@ -321,7 +324,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     this._findLocalEntities();
     if (!this._localTts?.length || !this._localStt?.length) {
       if (tryNo > 3) {
-        throw new Error("Timeout searching for local TTS and STT entities");
+        throw new Error("Could not find local TTS and STT entities");
       }
       await new Promise<void>((resolve) => {
         setTimeout(resolve, 2000);
@@ -333,6 +336,9 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
       this._localTts[0].entity_id,
       this._localStt[0].entity_id
     );
+
+    // wait a render so the `hui-select-entity-row` is also updated and doesn't undo the select action
+    await nextRender();
 
     await this.hass.callService(
       "select",
