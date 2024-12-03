@@ -22,6 +22,7 @@ import type {
   RequestedGrant,
 } from "../../../../../data/zwave_js";
 import {
+  cancelSecureBootstrapS2,
   InclusionStrategy,
   MINIMUM_QR_STRING_LENGTH,
   provisionZwaveSmartStartNode,
@@ -868,6 +869,16 @@ class DialogZWaveJSAddNode extends LitElement {
     }
     if (this._entryId) {
       stopZwaveInclusion(this.hass, this._entryId);
+      if (
+        this._status &&
+        [
+          "waiting_for_device",
+          "validate_dsk_enter_pin",
+          "grant_security_classes",
+        ].includes(this._status)
+      ) {
+        cancelSecureBootstrapS2(this.hass, this._entryId);
+      }
       if (this._params?.onStop) {
         this._params.onStop();
       }
