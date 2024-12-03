@@ -1,6 +1,5 @@
-import { mdiMapMarkerDown } from "@mdi/js";
 import { css, html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import type {
@@ -9,10 +8,7 @@ import type {
 } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import type { SchemaUnion } from "../ha-form/types";
-import type {
-  MarkerLocation,
-  HaLocationsEditor,
-} from "../map/ha-locations-editor";
+import type { MarkerLocation } from "../map/ha-locations-editor";
 import "../map/ha-locations-editor";
 import "../ha-form/ha-form";
 
@@ -29,8 +25,6 @@ export class HaLocationSelector extends LitElement {
   @property() public helper?: string;
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
-
-  @query("ha-locations-editor", true) private map!: HaLocationsEditor;
 
   private _schema = memoizeOne(
     (radius?: boolean, radius_readonly?: boolean) =>
@@ -78,26 +72,15 @@ export class HaLocationSelector extends LitElement {
   protected render() {
     return html`
       <p>${this.label ? this.label : ""}</p>
-      <div id="mapContainer">
-        <ha-locations-editor
-          class="flex"
-          .hass=${this.hass}
-          .helper=${this.helper}
-          .locations=${this._location(this.selector, this.value)}
-          @location-updated=${this._locationChanged}
-          @radius-updated=${this._radiusChanged}
-        ></ha-locations-editor>
-        <ha-icon-button
-          .label=${this.hass!.localize(
-            `ui.components.selectors.location.snap_to_view`
-          )}
-          .path=${mdiMapMarkerDown}
-          .disabled=${this.disabled}
-          style=${this.hass.themes.darkMode ? "color:#ffffff" : "color:#000000"}
-          @click=${this._snapToView}
-          tabindex="0"
-        ></ha-icon-button>
-      </div>
+      <ha-locations-editor
+        class="flex"
+        .hass=${this.hass}
+        .helper=${this.helper}
+        .locations=${this._location(this.selector, this.value)}
+        @location-updated=${this._locationChanged}
+        @radius-updated=${this._radiusChanged}
+        move-on-click
+      ></ha-locations-editor>
       <ha-form
         .hass=${this.hass}
         .schema=${this._schema(
@@ -147,15 +130,6 @@ export class HaLocationSelector extends LitElement {
     }
   );
 
-  private _snapToView() {
-    const center = this.map?.getCenter();
-    if (center) {
-      fireEvent(this, "value-changed", {
-        value: { ...this.value, latitude: center.lat, longitude: center.lng },
-      });
-    }
-  }
-
   private _locationChanged(ev: CustomEvent) {
     const [latitude, longitude] = ev.detail.location;
     fireEvent(this, "value-changed", {
@@ -203,15 +177,6 @@ export class HaLocationSelector extends LitElement {
       display: block;
       height: 400px;
       margin-bottom: 16px;
-    }
-    #mapContainer {
-      position: relative;
-    }
-    ha-icon-button {
-      position: absolute;
-      top: 75px;
-      left: 3px;
-      outline: none;
     }
     p {
       margin-top: 0;

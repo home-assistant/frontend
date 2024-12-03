@@ -64,6 +64,9 @@ export class HaLocationsEditor extends LitElement {
   @property({ attribute: "theme-mode", type: String })
   public themeMode: ThemeMode = "auto";
 
+  @property({ type: Boolean, attribute: "move-on-click" })
+  public moveOnClick = false;
+
   @state() private _locationMarkers?: Record<string, Marker | Circle>;
 
   @state() private _circles: Record<string, Circle> = {};
@@ -95,10 +98,6 @@ export class HaLocationsEditor extends LitElement {
     options?: { zoom?: number; pad?: number }
   ) {
     this.map.fitBounds(boundingbox, options);
-  }
-
-  public getCenter(): { lat: number; lng: number } | undefined {
-    return this.map?.leafletMap?.getCenter();
   }
 
   public async fitMarker(
@@ -139,6 +138,8 @@ export class HaLocationsEditor extends LitElement {
         .zoom=${this.zoom}
         .autoFit=${this.autoFit}
         .themeMode=${this.themeMode}
+        .clickable=${this.moveOnClick}
+        @map-clicked=${this._mapClicked}
       ></ha-map>
       ${this.helper
         ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
@@ -203,15 +204,21 @@ export class HaLocationsEditor extends LitElement {
     }
   }
 
+  private normalizeLongitude(longitude: number): number {
+    if (Math.abs(longitude) > 180.0) {
+      // Normalize longitude if map provides values beyond -180 to +180 degrees.
+      return (((longitude % 360.0) + 540.0) % 360.0) - 180.0;
+    }
+    return longitude;
+  }
+
   private _updateLocation(ev: DragEndEvent) {
     const marker = ev.target;
     const latlng: LatLng = marker.getLatLng();
-    let longitude: number = latlng.lng;
-    if (Math.abs(longitude) > 180.0) {
-      // Normalize longitude if map provides values beyond -180 to +180 degrees.
-      longitude = (((longitude % 360.0) + 540.0) % 360.0) - 180.0;
-    }
-    const location: [number, number] = [latlng.lat, longitude];
+    const location: [number, number] = [
+      latlng.lat,
+      this.normalizeLongitude(latlng.lng),
+    ];
     fireEvent(
       this,
       "location-updated",
@@ -234,6 +241,22 @@ export class HaLocationsEditor extends LitElement {
   private _markerClicked(ev: DragEndEvent) {
     const marker = ev.target;
     fireEvent(this, "marker-clicked", { id: marker.id }, { bubbles: false });
+  }
+
+  private _mapClicked(ev) {
+    if (this.moveOnClick && this._locationMarkers) {
+      const id = Object.keys(this._locationMarkers)[0];
+      const location: [number, number] = [
+        ev.detail.location[0],
+        this.normalizeLongitude(ev.detail.location[1]),
+      ];
+      fireEvent(this, "location-updated", { id, location }, { bubbles: false });
+
+      // If the normalized longitude wraps around the globe, pan to the new location.
+      if (location[1] !== ev.detail.location[1]) {
+        this.map.leafletMap?.panTo({ lat: location[0], lng: location[1] });
+      }
+    }
   }
 
   private _updateMarkers(): void {

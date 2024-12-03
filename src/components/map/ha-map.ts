@@ -11,6 +11,7 @@ import type {
 } from "leaflet";
 import { CSSResultGroup, PropertyValues, ReactiveElement, css } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../common/dom/fire_event";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import {
   formatTimeWeekday,
@@ -26,6 +27,13 @@ import { HomeAssistant, ThemeMode } from "../../types";
 import { isTouch } from "../../util/is_touch";
 import "../ha-icon-button";
 import "./ha-entity-marker";
+
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "map-clicked": { location: [number, number] };
+  }
+}
 
 const getEntityId = (entity: string | HaMapEntity): string =>
   typeof entity === "string" ? entity : entity.entity_id;
@@ -59,6 +67,8 @@ export class HaMap extends ReactiveElement {
   @property({ attribute: false }) public paths?: HaMapPaths[];
 
   @property({ attribute: false }) public layers?: Layer[];
+
+  @property({ type: Boolean }) public clickable = false;
 
   @property({ type: Boolean }) public autoFit = false;
 
@@ -172,6 +182,7 @@ export class HaMap extends ReactiveElement {
 
   private _updateMapStyle(): void {
     const map = this.renderRoot.querySelector("#map");
+    map!.classList.toggle("clickable", this.clickable);
     map!.classList.toggle("dark", this._darkMode);
     map!.classList.toggle("forced-dark", this.themeMode === "dark");
     map!.classList.toggle("forced-light", this.themeMode === "light");
@@ -191,6 +202,11 @@ export class HaMap extends ReactiveElement {
     try {
       [this.leafletMap, this.Leaflet] = await setupLeafletMap(map);
       this._updateMapStyle();
+      this.leafletMap.on("click", (ev) => {
+        fireEvent(this, "map-clicked", {
+          location: [ev.latlng.lat, ev.latlng.lng],
+        });
+      });
       this._loaded = true;
     } finally {
       this._loading = false;
@@ -551,6 +567,9 @@ export class HaMap extends ReactiveElement {
       #map {
         height: 100%;
       }
+      #map.clickable {
+        cursor: pointer;
+      }
       #map.dark {
         background: #090909;
       }
@@ -564,6 +583,7 @@ export class HaMap extends ReactiveElement {
         color: #000000;
         --map-filter: invert(0);
       }
+      #map.clickable:active,
       #map:active {
         cursor: grabbing;
         cursor: -moz-grabbing;
