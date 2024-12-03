@@ -65,11 +65,10 @@ class PanelMediaBrowser extends LitElement {
 
   @storage({
     key: "mediaBrowserPreferredLayout",
-    storage: "localStorage",
     state: true,
-    deserializer: (value) => value || "auto",
+    subscribe: false,
   })
-  private _preferredLayout!: MediaPlayerLayoutType;
+  private _preferredLayout: MediaPlayerLayoutType = "auto";
 
   private _navigateIds: MediaPlayerItemId[] = [
     {
