@@ -32,6 +32,10 @@ import {
 import type { CloudStatus } from "../../../data/cloud";
 import type { ExposeEntitySettings } from "../../../data/expose";
 import {
+  getExposeNewEntities,
+  setExposeNewEntities,
+} from "../../../data/expose";
+import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
@@ -42,6 +46,7 @@ import { showVoiceAssistantPipelineDetailDialog } from "./show-dialog-voice-assi
 import { showVoiceCommandDialog } from "../../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import type { HaSwitch } from "../../../components/ha-switch";
 import { navigate } from "../../../common/navigate";
 
 @customElement("assist-pref")
@@ -60,6 +65,16 @@ export class AssistPref extends LitElement {
   @state() private _preferred: string | null = null;
 
   @state() private _pipelineEntitiesCount = 0;
+
+  @state() private _exposeNew?: boolean;
+
+  protected willUpdate() {
+    if (!this.hasUpdated) {
+      getExposeNewEntities(this.hass, "conversation").then((value) => {
+        this._exposeNew = value.expose_new;
+      });
+    }
+  }
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
@@ -109,6 +124,23 @@ export class AssistPref extends LitElement {
             ></ha-icon-button>
           </a>
         </div>
+        <ha-settings-row>
+          <span slot="heading">
+            ${this.hass!.localize(
+              "ui.panel.config.voice_assistants.expose.expose_new_entities"
+            )}
+          </span>
+          <span slot="description">
+            ${this.hass!.localize(
+              "ui.panel.config.voice_assistants.expose.expose_new_entities_info"
+            )}
+          </span>
+          <ha-switch
+            .checked=${this._exposeNew}
+            .disabled=${this._exposeNew === undefined}
+            @change=${this._exposeNewToggleChanged}
+          ></ha-switch>
+        </ha-settings-row>
         <mwc-list>
           ${this._pipelines.map(
             (pipeline) => html`
@@ -223,6 +255,18 @@ export class AssistPref extends LitElement {
         </div>
       </ha-card>
     `;
+  }
+
+  private async _exposeNewToggleChanged(ev) {
+    const toggle = ev.target as HaSwitch;
+    if (this._exposeNew === undefined || this._exposeNew === toggle.checked) {
+      return;
+    }
+    try {
+      await setExposeNewEntities(this.hass, "conversation", toggle.checked);
+    } catch (err: any) {
+      toggle.checked = !toggle.checked;
+    }
   }
 
   private _talkWithPipeline(ev) {
