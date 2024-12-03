@@ -21,7 +21,6 @@ import "../../../../components/ha-md-select-option";
 import "../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import { fetchHassioAddonsInfo } from "../../../../data/hassio/addon";
-import "../../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../../types";
 import "./ha-backup-addons-picker";
 import type { BackupAddonItem } from "./ha-backup-addons-picker";

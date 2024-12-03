@@ -1,4 +1,3 @@
-import { mdiDownload } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { debounce } from "../../../common/util/debounce";
@@ -19,9 +18,9 @@ import type { HomeAssistant } from "../../../types";
 import "./components/ha-backup-config-agents";
 import "./components/ha-backup-config-data";
 import type { BackupConfigData } from "./components/ha-backup-config-data";
+import "./components/ha-backup-config-encryption-key";
 import "./components/ha-backup-config-schedule";
 import type { BackupConfigSchedule } from "./components/ha-backup-config-schedule";
-import { showChangeBackupPasswordDialog } from "./dialogs/show-dialog-change-backup-password";
 
 const INITIAL_BACKUP_CONFIG: BackupConfig = {
   create_backup: {
@@ -129,37 +128,11 @@ class HaConfigBackupDefaultConfig extends LitElement {
                 that you don't lose this key, as no one else can restore your
                 data.
               </p>
-              ${this._backupConfig.create_backup.password
-                ? html`
-                    <ha-settings-row>
-                      <span slot="heading">Download emergency kit</span>
-                      <span slot="description">
-                        We recommend to save this encryption key somewhere
-                        secure.
-                      </span>
-                      <ha-button @click=${this._downloadPassword}>
-                        <ha-svg-icon
-                          .path=${mdiDownload}
-                          slot="icon"
-                        ></ha-svg-icon>
-                        Download
-                      </ha-button>
-                    </ha-settings-row>
-                    <ha-settings-row>
-                      <span slot="heading">Change encryption key</span>
-                      <span slot="description">
-                        All next backups will be encrypted with this new key.
-                      </span>
-                      <ha-button class="alert" @click=${this._changePassword}>
-                        Change key
-                      </ha-button>
-                    </ha-settings-row>
-                  `
-                : html`
-                    <ha-button unelevated @click=${this._changePassword}>
-                      Set encryption key
-                    </ha-button>
-                  `}
+              <ha-backup-config-encryption-key
+                .hass=${this.hass}
+                .value=${this._backupConfig.create_backup.password}
+                @value-changed=${this._encryptionKeyChanged}
+              ></ha-backup-config-encryption-key>
             </div>
           </ha-card>
         </div>
@@ -221,62 +194,13 @@ class HaConfigBackupDefaultConfig extends LitElement {
     this._debounceSave();
   }
 
-  private _handleAgentToggle(ev) {
-    const agentId = ev.target.id;
-    if (ev.target.checked) {
-      this._backupConfig = {
-        ...this._backupConfig,
-        create_backup: {
-          ...this._backupConfig.create_backup,
-          agent_ids: [...this._backupConfig.create_backup.agent_ids, agentId],
-        },
-      };
-    } else {
-      this._backupConfig = {
-        ...this._backupConfig,
-        create_backup: {
-          ...this._backupConfig.create_backup,
-          agent_ids: this._backupConfig.create_backup.agent_ids.filter(
-            (id) => id !== agentId
-          ),
-        },
-      };
-    }
-    this._debounceSave();
-  }
-
-  private _downloadPassword() {
-    if (!this._backupConfig?.create_backup.password) {
-      return;
-    }
-    const element = document.createElement("a");
-    element.setAttribute(
-      "href",
-      "data:text/plain;charset=utf-8," +
-        encodeURIComponent(this._backupConfig.create_backup.password)
-    );
-    element.setAttribute("download", "emergency_kit.txt");
-
-    element.style.display = "none";
-    document.body.appendChild(element);
-
-    element.click();
-
-    document.body.removeChild(element);
-  }
-
-  private async _changePassword() {
-    const result = await showChangeBackupPasswordDialog(this, {
-      currentPassword: this._backupConfig.create_backup.password ?? undefined,
-    });
-    if (result === null) {
-      return;
-    }
+  private _encryptionKeyChanged(ev) {
+    const password = ev.detail.value as string;
     this._backupConfig = {
       ...this._backupConfig,
       create_backup: {
         ...this._backupConfig.create_backup,
-        password: result,
+        password: password,
       },
     };
     this._debounceSave();

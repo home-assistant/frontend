@@ -8,7 +8,6 @@ import "../../../../components/ha-md-select-option";
 import "../../../../components/ha-switch";
 import type { BackupConfig } from "../../../../data/backup";
 import { BackupScheduleState } from "../../../../data/backup";
-import "../../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../../types";
 
 export type BackupConfigSchedule = Pick<BackupConfig, "schedule" | "retention">;
