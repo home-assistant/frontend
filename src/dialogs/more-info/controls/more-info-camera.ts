@@ -72,7 +72,7 @@ class MoreInfoCamera extends LitElement {
 
       const contentType = result.headers.get("content-type");
       const ext = contentType === "image/png" ? "png" : "jpg";
-      const date = new Date().toISOString().split("T")[0];
+      const date = new Date().toLocaleString();
       const filename = `snapshot_${slugify(this.stateObj!.entity_id)}_${date}.${ext}`;
 
       const blob = await result.blob();
