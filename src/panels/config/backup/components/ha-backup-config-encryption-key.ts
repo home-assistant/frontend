@@ -5,7 +5,8 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import type { HomeAssistant } from "../../../../types";
-import { showChangeBackupPasswordDialog } from "../dialogs/show-dialog-change-backup-password";
+import { showChangeBackupEncryptionKeyDialog } from "../dialogs/show-dialog-change-backup-encryption-key";
+import { fileDownload } from "../../../../util/file_download";
 
 @customElement("ha-backup-config-encryption-key")
 class HaBackupConfigEncryptionKey extends LitElement {
@@ -64,24 +65,15 @@ class HaBackupConfigEncryptionKey extends LitElement {
     if (!this._value) {
       return;
     }
-    const element = document.createElement("a");
-    element.setAttribute(
-      "href",
-      "data:text/plain;charset=utf-8," + encodeURIComponent(this._value)
+    fileDownload(
+      "data:text/plain;charset=utf-8," + encodeURIComponent(this._value),
+      "emergency_kit.txt"
     );
-    element.setAttribute("download", "emergency_kit.txt");
-
-    element.style.display = "none";
-    document.body.appendChild(element);
-
-    element.click();
-
-    document.body.removeChild(element);
   }
 
   private async _change() {
-    const result = await showChangeBackupPasswordDialog(this, {
-      currentPassword: this._value ?? undefined,
+    const result = await showChangeBackupEncryptionKeyDialog(this, {
+      currentKey: this._value ?? undefined,
     });
     if (result === null) {
       return;
