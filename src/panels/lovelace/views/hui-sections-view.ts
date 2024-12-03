@@ -246,7 +246,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                 <ha-sortable
                   group="card"
                   @item-added=${this._handleCardAdded}
-                  filter="button"
+                  draggable-selector=".card"
                   .rollback=${false}
                 >
                   <div class="create-section-container">
