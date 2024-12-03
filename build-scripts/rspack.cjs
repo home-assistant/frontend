@@ -84,16 +84,14 @@ const createRspackConfig = ({
               /** @type {import('@rspack/core').SwcLoaderOptions} */
               options: {
                 jsc: {
+                  loose: true,
+                  target: "es2022",
                   parser: {
                     syntax: "typescript",
                     decorators: true,
                   },
-                  transform: {
-                    legacyDecorator: true,
-                  },
                 },
               },
-              type: "javascript/auto",
             },
           ],
           resolve: {
