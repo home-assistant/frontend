@@ -35,10 +35,10 @@ export interface BackupConfig {
 export interface BackupMutableConfig {
   create_backup?: {
     agent_ids?: string[];
-    include_addons?: string[] | null;
+    include_addons?: string[];
     include_all_addons?: boolean;
     include_database?: boolean;
-    include_folders?: string[] | null;
+    include_folders?: string[];
     name?: string | null;
     password?: string | null;
   };

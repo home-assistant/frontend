@@ -205,9 +205,9 @@ class HaConfigBackupDefaultConfig extends LitElement {
     await updateBackupConfig(this.hass, {
       create_backup: {
         agent_ids: this._backupConfig.create_backup.agent_ids,
-        include_folders: this._backupConfig.create_backup.include_folders,
+        include_folders: this._backupConfig.create_backup.include_folders ?? [],
         include_database: this._backupConfig.create_backup.include_database,
-        include_addons: this._backupConfig.create_backup.include_addons,
+        include_addons: this._backupConfig.create_backup.include_addons ?? [],
         include_all_addons: this._backupConfig.create_backup.include_all_addons,
         password: this._backupConfig.create_backup.password,
       },
