@@ -5,11 +5,8 @@ import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-md-list";
-import "../../../components/ha-md-list-item";
 import "../../../components/ha-password-field";
 import "../../../components/ha-settings-row";
-import "../../../components/ha-switch";
 import type { BackupAgent, BackupConfig } from "../../../data/backup";
 import {
   BackupScheduleState,
@@ -17,10 +14,9 @@ import {
   fetchBackupConfig,
   updateBackupConfig,
 } from "../../../data/backup";
-import { domainToName } from "../../../data/integration";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
-import { brandsUrl } from "../../../util/brands-url";
+import "./components/ha-backup-config-agents";
 import "./components/ha-backup-config-data";
 import type { BackupConfigData } from "./components/ha-backup-config-data";
 import "./components/ha-backup-config-schedule";
@@ -117,44 +113,11 @@ class HaConfigBackupDefaultConfig extends LitElement {
                 Your backup will be stored on these locations when this default
                 backup is created. You can use all locations for custom backups.
               </p>
-              ${this._agents.length > 0
-                ? html`
-                    <ha-md-list>
-                      ${this._agents.map((agent) => {
-                        const [domain, name] = agent.agent_id.split(".");
-                        const domainName = domainToName(
-                          this.hass.localize,
-                          domain
-                        );
-                        return html`
-                          <ha-md-list-item>
-                            <img
-                              .src=${brandsUrl({
-                                domain,
-                                type: "icon",
-                                useFallback: true,
-                                darkOptimized: this.hass.themes?.darkMode,
-                              })}
-                              crossorigin="anonymous"
-                              referrerpolicy="no-referrer"
-                              alt=""
-                              slot="start"
-                            />
-                            <div slot="headline">${domainName}: ${name}</div>
-                            <ha-switch
-                              slot="end"
-                              id=${agent.agent_id}
-                              .checked=${this._backupConfig?.create_backup.agent_ids.includes(
-                                agent.agent_id
-                              )}
-                              @change=${this._handleAgentToggle}
-                            ></ha-switch>
-                          </ha-md-list-item>
-                        `;
-                      })}
-                    </ha-md-list>
-                  `
-                : html`<p>No sync agents configured</p>`}
+              <ha-backup-config-agents
+                .hass=${this.hass}
+                .value=${this._backupConfig.create_backup.agent_ids}
+                @value-changed=${this._agentsConfigChanged}
+              ></ha-backup-config-agents>
             </div>
           </ha-card>
           <ha-card>
@@ -167,32 +130,36 @@ class HaConfigBackupDefaultConfig extends LitElement {
                 data.
               </p>
               ${this._backupConfig.create_backup.password
-                ? html` <ha-settings-row>
+                ? html`
+                    <ha-settings-row>
                       <span slot="heading">Download emergency kit</span>
                       <span slot="description">
                         We recommend to save this encryption key somewhere
                         secure.
                       </span>
-                      <ha-button @click=${this._downloadPassword}
-                        ><ha-svg-icon
+                      <ha-button @click=${this._downloadPassword}>
+                        <ha-svg-icon
                           .path=${mdiDownload}
                           slot="icon"
-                        ></ha-svg-icon
-                        >Download</ha-button
-                      >
+                        ></ha-svg-icon>
+                        Download
+                      </ha-button>
                     </ha-settings-row>
                     <ha-settings-row>
                       <span slot="heading">Change encryption key</span>
                       <span slot="description">
                         All next backups will be encrypted with this new key.
                       </span>
-                      <ha-button class="alert" @click=${this._changePassword}
-                        >Change key</ha-button
-                      >
-                    </ha-settings-row>`
-                : html`<ha-button unelevated @click=${this._changePassword}
-                    >Set encryption key</ha-button
-                  >`}
+                      <ha-button class="alert" @click=${this._changePassword}>
+                        Change key
+                      </ha-button>
+                    </ha-settings-row>
+                  `
+                : html`
+                    <ha-button unelevated @click=${this._changePassword}>
+                      Set encryption key
+                    </ha-button>
+                  `}
             </div>
           </ha-card>
         </div>
@@ -237,6 +204,18 @@ class HaConfigBackupDefaultConfig extends LitElement {
         include_folders: data.include_folders || null,
         include_all_addons: data.include_all_addons,
         include_addons: data.include_addons || null,
+      },
+    };
+    this._debounceSave();
+  }
+
+  private _agentsConfigChanged(ev) {
+    const agents = ev.detail.value as string[];
+    this._backupConfig = {
+      ...this._backupConfig,
+      create_backup: {
+        ...this._backupConfig.create_backup,
+        agent_ids: agents,
       },
     };
     this._debounceSave();
@@ -341,14 +320,6 @@ class HaConfigBackupDefaultConfig extends LitElement {
     ha-settings-row > ha-svg-icon {
       align-self: center;
       margin-inline-end: 16px;
-    }
-    ha-md-list {
-      background: none;
-      --md-list-item-leading-space: 0;
-      --md-list-item-trailing-space: 0;
-    }
-    ha-md-list-item img {
-      width: 48px;
     }
     .alert {
       --mdc-theme-primary: var(--error-color);
