@@ -82,6 +82,11 @@ class HaBackupConfigAgents extends LitElement {
     } else {
       this.value = this._value.filter((agent) => agent !== agentId);
     }
+
+    // Ensure agents exist in the list
+    this.value = this.value.filter((agent) =>
+      this._agents.some((a) => a.agent_id === agent)
+    );
     fireEvent(this, "value-changed", { value: this.value });
   }
 

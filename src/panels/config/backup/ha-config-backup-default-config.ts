@@ -6,10 +6,9 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-password-field";
 import "../../../components/ha-settings-row";
-import type { BackupAgent, BackupConfig } from "../../../data/backup";
+import type { BackupConfig } from "../../../data/backup";
 import {
   BackupScheduleState,
-  fetchBackupAgentsInfo,
   fetchBackupConfig,
   updateBackupConfig,
 } from "../../../data/backup";
@@ -48,8 +47,6 @@ class HaConfigBackupDefaultConfig extends LitElement {
 
   @state() private _backupConfig: BackupConfig = INITIAL_BACKUP_CONFIG;
 
-  @state() private _agents: BackupAgent[] = [];
-
   protected willUpdate(changedProps) {
     super.willUpdate(changedProps);
     if (!this.hasUpdated) {
@@ -58,12 +55,8 @@ class HaConfigBackupDefaultConfig extends LitElement {
   }
 
   private async _fetchData() {
-    const [backupConfig, agentInfo] = await Promise.all([
-      fetchBackupConfig(this.hass),
-      fetchBackupAgentsInfo(this.hass),
-    ]);
-    this._backupConfig = backupConfig.config;
-    this._agents = agentInfo.agents;
+    const { config } = await fetchBackupConfig(this.hass);
+    this._backupConfig = config;
   }
 
   protected render() {
@@ -211,12 +204,10 @@ class HaConfigBackupDefaultConfig extends LitElement {
   private async _save() {
     await updateBackupConfig(this.hass, {
       create_backup: {
-        agent_ids: this._backupConfig.create_backup.agent_ids.filter((id) =>
-          this._agents.some((agent) => agent.agent_id === id)
-        ),
+        agent_ids: this._backupConfig.create_backup.agent_ids,
         include_folders: this._backupConfig.create_backup.include_folders,
         include_database: this._backupConfig.create_backup.include_database,
-        include_addons: this._backupConfig.create_backup.include_addons || [],
+        include_addons: this._backupConfig.create_backup.include_addons,
         include_all_addons: this._backupConfig.create_backup.include_all_addons,
         password: this._backupConfig.create_backup.password,
       },
