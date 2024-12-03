@@ -1,5 +1,4 @@
-import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing, type TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../components/ha-card";
 import "../../../../components/ha-alert";
@@ -307,6 +306,27 @@ export class AssistPipelineDebug extends LitElement {
                                   </div>`
                                 : ""}`
                           : ""}
+                        ${"prefer_local_intents" in this.pipelineRun.intent
+                          ? html`
+                              <div class="row">
+                                <div>Prefer handling locally</div>
+                                <div>
+                                  ${this.pipelineRun.intent
+                                    .prefer_local_intents}
+                                </div>
+                              </div>
+                            `
+                          : nothing}
+                        ${"processed_locally" in this.pipelineRun.intent
+                          ? html`
+                              <div class="row">
+                                <div>Processed locally</div>
+                                <div>
+                                  ${this.pipelineRun.intent.processed_locally}
+                                </div>
+                              </div>
+                            `
+                          : nothing}
                         ${dataMinusKeysRender(
                           this.pipelineRun.intent,
                           INTENT_DATA
