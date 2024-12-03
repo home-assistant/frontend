@@ -10,7 +10,7 @@ import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
 import "./ha-backup-formfield-label";
 
-export type BackupAddon = {
+export type BackupAddonItem = {
   slug: string;
   name: string;
   version?: string;
@@ -22,7 +22,7 @@ export type BackupAddon = {
 export class HaBackupAddonsPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public addons!: BackupAddon[];
+  @property({ attribute: false }) public addons!: BackupAddonItem[];
 
   @property({ attribute: false }) public value?: string[];
 
@@ -55,6 +55,7 @@ export class HaBackupAddonsPicker extends LitElement {
   }
 
   private _checkboxChanged(ev: Event) {
+    ev.stopPropagation();
     let value = this.value ?? [];
 
     const checkbox = ev.currentTarget as HaCheckbox;
@@ -63,7 +64,6 @@ export class HaBackupAddonsPicker extends LitElement {
     } else {
       value = value.filter((id) => id !== checkbox.id);
     }
-
     fireEvent(this, "value-changed", { value });
   }
 

@@ -22,7 +22,7 @@ import { fetchHassioAddonsInfo } from "../../../../data/hassio/addon";
 import { mdiHomeAssistant } from "../../../../resources/home-assistant-logo-svg";
 import type { HomeAssistant } from "../../../../types";
 import "./ha-backup-addons-picker";
-import type { BackupAddon } from "./ha-backup-addons-picker";
+import type { BackupAddonItem } from "./ha-backup-addons-picker";
 import "./ha-backup-formfield-label";
 
 type CheckBoxItem = {
@@ -32,6 +32,7 @@ type CheckBoxItem = {
 };
 
 const SELF_CREATED_ADDONS_FOLDER = "addons/local";
+const SELF_CREATED_ADDONS_NAME = "___LOCAL_ADDONS___";
 
 const ITEM_ICONS = {
   config: mdiCog,
@@ -110,7 +111,7 @@ export class HaBackupDataPicker extends LitElement {
       _localize: LocalizeFunc,
       addonIcons: Record<string, boolean>
     ) => {
-      const items = data.addons.map<BackupAddon>((addon) => ({
+      const items = data.addons.map<BackupAddonItem>((addon) => ({
         name: addon.name,
         slug: addon.slug,
         version: addon.version,
@@ -121,7 +122,7 @@ export class HaBackupDataPicker extends LitElement {
       if (data.folders.includes(SELF_CREATED_ADDONS_FOLDER)) {
         items.push({
           name: "Self created add-ons",
-          slug: SELF_CREATED_ADDONS_FOLDER,
+          slug: SELF_CREATED_ADDONS_NAME,
           iconPath: mdiFolder,
         });
       }
@@ -151,7 +152,7 @@ export class HaBackupDataPicker extends LitElement {
     const addonsList = value.addons.map((addon) => addon.slug);
     if (folders.includes(SELF_CREATED_ADDONS_FOLDER)) {
       folders = folders.filter((f) => f !== SELF_CREATED_ADDONS_FOLDER);
-      addonsList.push(SELF_CREATED_ADDONS_FOLDER);
+      addonsList.push(SELF_CREATED_ADDONS_NAME);
     }
     homeassistant.push(...folders);
     addons.push(...addonsList);

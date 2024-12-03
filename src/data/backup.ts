@@ -22,8 +22,11 @@ export interface BackupConfig {
     name: string | null;
     password: string | null;
   };
+  retention: {
+    copies?: number | null;
+    days?: number | null;
+  };
   last_automatic_backup: string | null;
-  max_copies: number | null;
   schedule: {
     state: BackupScheduleState;
   };
@@ -32,14 +35,17 @@ export interface BackupConfig {
 export interface BackupMutableConfig {
   create_backup?: {
     agent_ids?: string[];
-    include_addons?: string[] | null;
+    include_addons?: string[];
     include_all_addons?: boolean;
     include_database?: boolean;
-    include_folders?: string[] | null;
+    include_folders?: string[];
     name?: string | null;
     password?: string | null;
   };
-  max_copies?: number;
+  retention?: {
+    copies?: number | null;
+    days?: number | null;
+  };
   schedule?: BackupScheduleState;
 }
 
