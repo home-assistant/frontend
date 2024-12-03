@@ -8,6 +8,7 @@ import "../../../components/buttons/ha-progress-button";
 import { UNAVAILABLE } from "../../../data/entity";
 import { fileDownload } from "../../../util/file_download";
 import { showToast } from "../../../util/toast";
+import { slugify } from "../../../common/string/slugify";
 
 class MoreInfoCamera extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -69,9 +70,14 @@ class MoreInfoCamera extends LitElement {
         throw new Error("No response from API");
       }
 
+      const contentType = result.headers.get("content-type");
+      const ext = contentType === "image/png" ? "png" : "jpg";
+      const date = new Date().toISOString().split("T")[0];
+      const filename = `snapshot_${slugify(this.stateObj!.entity_id)}_${date}.${ext}`;
+
       const blob = await result.blob();
       const url = window.URL.createObjectURL(blob);
-      fileDownload(url);
+      fileDownload(url, filename);
     } catch (err) {
       this._waiting = false;
       button.actionError();
