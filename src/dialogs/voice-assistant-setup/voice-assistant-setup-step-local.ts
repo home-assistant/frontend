@@ -138,6 +138,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     }
     if (this._localTts.length && this._localStt.length) {
       this._pickOrCreatePipelineExists();
+      return;
     }
     if (!isComponentLoaded(this.hass, "hassio")) {
       this._state = "NOT_SUPPORTED";
@@ -148,35 +149,27 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
       const { addons } = await fetchHassioAddonsInfo(this.hass);
       const whisper = addons.find((addon) => addon.slug === "core_whisper");
       const piper = addons.find((addon) => addon.slug === "core_piper");
-      if (piper && !this._localTts.length) {
-        if (piper.state !== "started") {
+      if (!this._localTts.length) {
+        if (!piper) {
+          this._detailState = "Installing Piper add-on";
+          await installHassioAddon(this.hass, "core_piper");
+        }
+        if (!piper || piper.state !== "started") {
           this._detailState = "Starting Piper add-on";
           await startHassioAddon(this.hass, "core_piper");
         }
         this._detailState = "Setting up Piper";
         await this._setupConfigEntry("piper");
       }
-      if (whisper && !this._localStt.length) {
-        if (whisper.state !== "started") {
+      if (!this._localStt.length) {
+        if (!whisper) {
+          this._detailState = "Installing Whisper add-on";
+          await installHassioAddon(this.hass, "core_whisper");
+        }
+        if (!whisper || whisper.state !== "started") {
           this._detailState = "Starting Whisper add-on";
           await startHassioAddon(this.hass, "core_whisper");
         }
-        this._detailState = "Setting up Whisper";
-        await this._setupConfigEntry("whisper");
-      }
-      if (!piper) {
-        this._detailState = "Installing Piper add-on";
-        await installHassioAddon(this.hass, "core_piper");
-        this._detailState = "Starting Piper add-on";
-        await startHassioAddon(this.hass, "core_piper");
-        this._detailState = "Setting up Piper";
-        await this._setupConfigEntry("piper");
-      }
-      if (!whisper) {
-        this._detailState = "Installing Whisper add-on";
-        await installHassioAddon(this.hass, "core_whisper");
-        this._detailState = "Starting Whisper add-on";
-        await startHassioAddon(this.hass, "core_whisper");
         this._detailState = "Setting up Whisper";
         await this._setupConfigEntry("whisper");
       }
