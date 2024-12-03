@@ -142,6 +142,8 @@ class HaBackupConfigData extends LitElement {
   protected render() {
     const data = this.getData(this.value);
 
+    const isHassio = isComponentLoaded(this.hass, "hassio");
+
     return html`
       <ha-md-list>
         <ha-md-list-item>
@@ -180,58 +182,71 @@ class HaBackupConfigData extends LitElement {
           ></ha-switch>
         </ha-md-list-item>
 
-        <ha-md-list-item>
-          <ha-svg-icon slot="start" .path=${mdiPlayBoxMultiple}></ha-svg-icon>
-          <span slot="headline">Media</span>
-          <span slot="supporting-text">For example, camera recordings.</span>
-          <ha-switch
-            id="media"
-            slot="end"
-            @change=${this._switchChanged}
-            .checked=${data.media}
-          ></ha-switch>
-        </ha-md-list-item>
-
-        <ha-md-list-item>
-          <ha-svg-icon slot="start" .path=${mdiFolder}></ha-svg-icon>
-          <span slot="headline">Share folder</span>
-          <span slot="supporting-text">
-            Folder that is often used for advanced or older configurations.
-          </span>
-          <ha-switch
-            id="share"
-            slot="end"
-            @change=${this._switchChanged}
-            .checked=${data.share}
-          ></ha-switch>
-        </ha-md-list-item>
-
-        ${this._addons.length
+        ${isHassio
           ? html`
               <ha-md-list-item>
-                <ha-svg-icon slot="start" .path=${mdiPuzzle}></ha-svg-icon>
-                <span slot="headline">Add-ons</span>
+                <ha-svg-icon
+                  slot="start"
+                  .path=${mdiPlayBoxMultiple}
+                ></ha-svg-icon>
+                <span slot="headline">Media</span>
                 <span slot="supporting-text">
-                  Select what add-ons you want to include.
+                  For example, camera recordings.
                 </span>
-                <ha-md-select
+                <ha-switch
+                  id="media"
                   slot="end"
-                  id="addons_mode"
-                  @change=${this._selectChanged}
-                  .value=${data.addons_mode}
-                >
-                  <ha-md-select-option value="all">
-                    <div slot="headline">All</div>
-                  </ha-md-select-option>
-                  <ha-md-select-option value="custom">
-                    <div slot="headline">Custom</div>
-                  </ha-md-select-option>
-                </ha-md-select>
+                  @change=${this._switchChanged}
+                  .checked=${data.media}
+                ></ha-switch>
               </ha-md-list-item>
+
+              <ha-md-list-item>
+                <ha-svg-icon slot="start" .path=${mdiFolder}></ha-svg-icon>
+                <span slot="headline">Share folder</span>
+                <span slot="supporting-text">
+                  Folder that is often used for advanced or older
+                  configurations.
+                </span>
+                <ha-switch
+                  id="share"
+                  slot="end"
+                  @change=${this._switchChanged}
+                  .checked=${data.share}
+                ></ha-switch>
+              </ha-md-list-item>
+
+              ${this._addons.length
+                ? html`
+                    <ha-md-list-item>
+                      <ha-svg-icon
+                        slot="start"
+                        .path=${mdiPuzzle}
+                      ></ha-svg-icon>
+                      <span slot="headline">Add-ons</span>
+                      <span slot="supporting-text">
+                        Select what add-ons you want to include.
+                      </span>
+                      <ha-md-select
+                        slot="end"
+                        id="addons_mode"
+                        @change=${this._selectChanged}
+                        .value=${data.addons_mode}
+                      >
+                        <ha-md-select-option value="all">
+                          <div slot="headline">All</div>
+                        </ha-md-select-option>
+                        <ha-md-select-option value="custom">
+                          <div slot="headline">Custom</div>
+                        </ha-md-select-option>
+                      </ha-md-select>
+                    </ha-md-list-item>
+                  `
+                : nothing}
             `
           : nothing}
       </ha-md-list>
-      ${data.addons_mode === "custom" && this._addons.length
+      ${isHassio && data.addons_mode === "custom" && this._addons.length
         ? html`
             <ha-expansion-panel .header=${"Add-ons"} outlined expanded>
               <ha-backup-addons-picker

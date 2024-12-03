@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
+import "../../../../components/ha-switch";
 import type { BackupAgent } from "../../../../data/backup";
 import { fetchBackupAgentsInfo } from "../../../../data/backup";
 import { domainToName } from "../../../../data/integration";
