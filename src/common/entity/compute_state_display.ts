@@ -56,16 +56,19 @@ export const computeStateDisplayFromEntityAttributes = (
   }
 
   const domain = computeDomain(entityId);
-
+  const is_number_domain =
+    domain === "counter" || domain === "number" || domain === "input_number";
   // Entities with a `unit_of_measurement` or `state_class` are numeric values and should use `formatNumber`
   if (
     isNumericFromAttributes(
       attributes,
       domain === "sensor" ? sensorNumericDeviceClasses : []
-    )
+    ) ||
+    is_number_domain
   ) {
     // state is duration
     if (
+      !is_number_domain &&
       attributes.device_class === "duration" &&
       attributes.unit_of_measurement &&
       DURATION_UNITS.includes(attributes.unit_of_measurement)
@@ -81,7 +84,7 @@ export const computeStateDisplayFromEntityAttributes = (
         // fallback to default
       }
     }
-    if (attributes.device_class === "monetary") {
+    if (!is_number_domain && attributes.device_class === "monetary") {
       try {
         return formatNumber(state, locale, {
           style: "currency",
@@ -163,31 +166,6 @@ export const computeStateDisplayFromEntityAttributes = (
       // just return the state string in that case.
       return state;
     }
-  }
-
-  // `counter` `number` and `input_number` domains do not have a unit of measurement but should still use `formatNumber`
-  if (
-    domain === "counter" ||
-    domain === "number" ||
-    domain === "input_number"
-  ) {
-    const unit =
-      (entity?.translation_key &&
-        localize(
-          `component.${entity.platform}.entity.${domain}.${entity.translation_key}.unit_of_measurement`
-        )) ||
-      attributes.unit_of_measurement;
-
-    // Format as an integer if the value and step are integers
-    const value = formatNumber(
-      state,
-      locale,
-      getNumberFormatOptions({ state, attributes } as HassEntity, entity)
-    );
-    if (unit) {
-      return `${value}${blankBeforeUnit(unit, locale)}${unit}`;
-    }
-    return value;
   }
 
   // state is a timestamp
