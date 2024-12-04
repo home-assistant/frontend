@@ -134,11 +134,11 @@ jobs:
       - name: Build supervisor
         run: hassio/script/build_hassio
       - name: Tar folder
-        run: tar -czf supervisor/home_assistant_frontend_supervisor-${{ github.event.release.tag_name }}.tar.gz -C supervisor/build .
+        run: tar -czf hassio/home_assistant_frontend_supervisor-${{ github.event.release.tag_name }}.tar.gz -C hassio/build .
       - name: Upload release asset
         uses: softprops/action-gh-release@v2.1.0
         with:
-          files: supervisor/home_assistant_frontend_supervisor-${{ github.event.release.tag_name }}.tar.gz
+          files: hassio/home_assistant_frontend_supervisor-${{ github.event.release.tag_name }}.tar.gz
           draft: true
           tag_name: release_test
           body: release to test supervisor and landingpage assets
