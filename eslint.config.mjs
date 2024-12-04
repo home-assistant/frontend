@@ -114,13 +114,7 @@ export default [
       "@typescript-eslint/no-shadow": ["error"],
 
       "@typescript-eslint/naming-convention": [
-        "off",
-        {
-          selector: "default",
-          format: ["camelCase", "snake_case"],
-          leadingUnderscore: "allow",
-          trailingUnderscore: "allow",
-        },
+        "warn",
         {
           selector: ["variable"],
           format: ["camelCase", "snake_case", "UPPER_CASE"],
@@ -130,6 +124,18 @@ export default [
         {
           selector: "typeLike",
           format: ["PascalCase"],
+        },
+        {
+          selector: "method",
+          modifiers: ["public"],
+          format: ["camelCase"],
+          leadingUnderscore: "forbid",
+        },
+        {
+          selector: "method",
+          modifiers: ["private"],
+          format: ["camelCase"],
+          leadingUnderscore: "require",
         },
       ],
 
