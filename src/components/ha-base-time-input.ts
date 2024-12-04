@@ -330,6 +330,8 @@ export class HaBaseTimeInput extends LitElement {
     }
     .time-input-wrap-wrap {
       display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
     }
     .time-input-wrap {
       display: flex;
@@ -363,17 +365,17 @@ export class HaBaseTimeInput extends LitElement {
       width: 85px;
     }
     :host([clearable]) .mdc-select__anchor {
-        padding-inline-end: var(--select-selected-text-padding-end, 12px);
+      padding-inline-end: var(--select-selected-text-padding-end, 12px);
     }
     ha-icon-button {
-      position: relative
+      position: relative;
       --mdc-icon-button-size: 36px;
       --mdc-icon-size: 20px;
       color: var(--secondary-text-color);
       direction: var(--direction);
       display: flex;
       align-items: center;
-      background-color:var(--mdc-text-field-fill-color, whitesmoke);
+      background-color: var(--mdc-text-field-fill-color, whitesmoke);
       border-bottom-style: solid;
       border-bottom-width: 1px;
     }
