@@ -68,7 +68,6 @@ export const computeStateDisplayFromEntityAttributes = (
   ) {
     // state is duration
     if (
-      !is_number_domain &&
       attributes.device_class === "duration" &&
       attributes.unit_of_measurement &&
       DURATION_UNITS.includes(attributes.unit_of_measurement)
