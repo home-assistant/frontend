@@ -71,4 +71,4 @@ fi
 HASS_URL="$coreUrl" ./script/develop &
 
 # serve the frontend
-yarn exec node ./script/serve.js $frontendPort
+yarn exec node ./script/serve.js "$coreUrl" $frontendPort
