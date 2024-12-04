@@ -104,12 +104,14 @@ interface PipelineIntentStartEvent extends PipelineEventBase {
   data: {
     engine: string;
     language: string;
+    prefer_local_intents: boolean;
     intent_input: string;
   };
 }
 interface PipelineIntentEndEvent extends PipelineEventBase {
   type: "intent-end";
   data: {
+    processed_locally: boolean;
     intent_output: ConversationResult;
   };
 }
