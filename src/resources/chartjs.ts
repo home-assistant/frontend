@@ -1,3 +1,4 @@
+import ZoomPlugin from "chartjs-plugin-zoom";
 import {
   LineController,
   TimeScale,
@@ -37,5 +38,6 @@ Chart.register(
   TimeLineScale,
   TimelineController,
   CategoryScale,
-  LogarithmicScale
+  LogarithmicScale,
+  ZoomPlugin
 );

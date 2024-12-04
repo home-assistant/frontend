@@ -341,7 +341,7 @@ export class HaChartBase extends LitElement {
     }
   }
 
-  private _createOptions() {
+  private _createOptions(): ChartOptions {
     return {
       maintainAspectRatio: false,
       ...this.options,
@@ -355,6 +355,22 @@ export class HaChartBase extends LitElement {
         legend: {
           ...this.options?.plugins?.legend,
           display: false,
+        },
+        zoom: {
+          ...this.options?.plugins?.zoom,
+          pan: {
+            enabled: true,
+            modifierKey: "shift",
+          },
+          zoom: {
+            pinch: {
+              enabled: true,
+            },
+            drag: {
+              enabled: true,
+            },
+            mode: "x",
+          },
         },
       },
     };
