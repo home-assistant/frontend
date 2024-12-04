@@ -134,7 +134,7 @@ export class HaBaseTimeInput extends LitElement {
     return html`
       ${this.label
         ? html`<label>${this.label}${this.required ? " *" : ""}</label>`
-        : ""}
+        : nothing}
       <div class="time-input-wrap-wrap">
         <div class="time-input-wrap">
           ${this.enableDay
@@ -158,7 +158,7 @@ export class HaBaseTimeInput extends LitElement {
                 >
                 </ha-textfield>
               `
-            : ""}
+            : nothing}
 
           <ha-textfield
             id="hour"
@@ -221,7 +221,7 @@ export class HaBaseTimeInput extends LitElement {
                 class=${this.enableMillisecond ? "has-suffix" : ""}
               >
               </ha-textfield>`
-            : ""}
+            : nothing}
           ${this.enableMillisecond
             ? html`<ha-textfield
                 id="millisec"
@@ -240,7 +240,7 @@ export class HaBaseTimeInput extends LitElement {
                 .disabled=${this.disabled}
               >
               </ha-textfield>`
-            : ""}
+            : nothing}
           ${this.clearable && !this.required && !this.disabled
             ? html`<ha-icon-button
                 label="clear"
@@ -251,7 +251,7 @@ export class HaBaseTimeInput extends LitElement {
         </div>
 
         ${this.format === 24
-          ? ""
+          ? nothing
           : html`<ha-select
               .required=${this.required}
               .value=${this.amPm}
@@ -265,10 +265,10 @@ export class HaBaseTimeInput extends LitElement {
               <mwc-list-item value="AM">AM</mwc-list-item>
               <mwc-list-item value="PM">PM</mwc-list-item>
             </ha-select>`}
-        ${this.helper
-          ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
-          : ""}
       </div>
+      ${this.helper
+        ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
+        : nothing}
     `;
   }
 
@@ -330,8 +330,6 @@ export class HaBaseTimeInput extends LitElement {
     }
     .time-input-wrap-wrap {
       display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
     }
     .time-input-wrap {
       display: flex;
@@ -401,7 +399,7 @@ export class HaBaseTimeInput extends LitElement {
       padding-inline-end: initial;
     }
     ha-input-helper-text {
-      width: 100%;
+      padding-top: 8px;
       line-height: normal;
     }
   `;
