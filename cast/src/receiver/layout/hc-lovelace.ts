@@ -14,7 +14,7 @@ import "../../../../src/panels/lovelace/views/hui-view";
 import "../../../../src/panels/lovelace/views/hui-view-container";
 import type { HomeAssistant } from "../../../../src/types";
 import "./hc-launch-screen";
-import "../../../../src/panels/lovelace/views/hui-background";
+import "../../../../src/panels/lovelace/views/hui-view-background";
 
 (window as any).loadCardHelpers = () =>
   import("../../../../src/panels/lovelace/custom-card-helpers");
@@ -59,7 +59,7 @@ class HcLovelace extends LitElement {
 
     return html`
       <hui-view-container .hass=${this.hass} .theme=${viewConfig.theme}>
-        <hui-background .background=${background}> </hui-background>
+        <hui-view-background .background=${background}> </hui-view-background>
         <hui-view
           .hass=${this.hass}
           .lovelace=${lovelace}
