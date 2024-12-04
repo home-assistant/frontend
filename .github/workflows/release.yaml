@@ -14,7 +14,7 @@ env:
 # All scopes not mentioned here are set to no access
 # https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
 permissions:
-  actions: none
+  contents: write
 
 jobs:
   # release:
@@ -108,7 +108,7 @@ jobs:
       - name: Upload release asset
         uses: softprops/action-gh-release@v2.1.0
         with:
-          files: landing-page/landing-page/home_assistant_frontend_landingpage-${{ github.event.release.tag_name }}.tar.gz
+          files: landing-page/home_assistant_frontend_landingpage-${{ github.event.release.tag_name }}.tar.gz
           draft: true
           tag_name: release_test
           body: release to test supervisor and landingpage assets
