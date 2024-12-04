@@ -1,7 +1,6 @@
 import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list";
 import {
-  mdiCheck,
   mdiCog,
   mdiContentDuplicate,
   mdiContentSave,
@@ -9,6 +8,7 @@ import {
   mdiDotsVertical,
   mdiInformationOutline,
   mdiPlay,
+  mdiPlaylistEdit,
   mdiTag,
 } from "@mdi/js";
 import type { HassEvent } from "home-assistant-js-websocket";
@@ -253,16 +253,11 @@ export class HaSceneEditor extends SubscribeMixin(
             .disabled=${!this.sceneId || this._mode === "live"}
           >
             ${this.hass.localize("ui.panel.config.scene.picker.apply")}
-            <ha-svg-icon
-              class="selected_menu_item"
-              slot="graphic"
-              .path=${mdiPlay}
-            ></ha-svg-icon>
+            <ha-svg-icon slot="graphic" .path=${mdiPlay}></ha-svg-icon>
           </ha-list-item>
           <ha-list-item graphic="icon" .disabled=${!this.sceneId}>
             ${this.hass.localize("ui.panel.config.scene.picker.show_info")}
             <ha-svg-icon
-              class="selected_menu_item"
               slot="graphic"
               .path=${mdiInformationOutline}
             ></ha-svg-icon>
@@ -271,45 +266,23 @@ export class HaSceneEditor extends SubscribeMixin(
             ${this.hass.localize(
               "ui.panel.config.automation.picker.show_settings"
             )}
-            <ha-svg-icon
-              class="selected_menu_item"
-              slot="graphic"
-              .path=${mdiCog}
-            ></ha-svg-icon>
+            <ha-svg-icon slot="graphic" .path=${mdiCog}></ha-svg-icon>
           </ha-list-item>
 
           <ha-list-item graphic="icon" .disabled=${!this.sceneId}>
             ${this.hass.localize(
               `ui.panel.config.scene.picker.${this._getCategory(this._entityRegistryEntries, this._scene?.entity_id) ? "edit_category" : "assign_category"}`
             )}
-            <ha-svg-icon
-              class="selected_menu_item"
-              slot="graphic"
-              .path=${mdiTag}
-            ></ha-svg-icon>
+            <ha-svg-icon slot="graphic" .path=${mdiTag}></ha-svg-icon>
           </ha-list-item>
 
-          <li divider role="separator"></li>
-
           <ha-list-item graphic="icon">
-            ${this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
             ${this._mode !== "yaml"
-              ? html`<ha-svg-icon
-                  class="selected_menu_item"
-                  slot="graphic"
-                  .path=${mdiCheck}
-                ></ha-svg-icon>`
-              : nothing}
-          </ha-list-item>
-          <ha-list-item graphic="icon">
-            ${this.hass.localize("ui.panel.config.automation.editor.edit_yaml")}
-            ${this._mode === "yaml"
-              ? html`<ha-svg-icon
-                  class="selected_menu_item"
-                  slot="graphic"
-                  .path=${mdiCheck}
-                ></ha-svg-icon>`
-              : nothing}
+              ? this.hass.localize(
+                  "ui.panel.config.automation.editor.edit_yaml"
+                )
+              : this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
+            <ha-svg-icon slot="graphic" .path=${mdiPlaylistEdit}></ha-svg-icon>
           </ha-list-item>
 
           <li divider role="separator"></li>
@@ -699,17 +672,14 @@ export class HaSceneEditor extends SubscribeMixin(
         if (this._mode === "yaml") {
           this._initEntities(this._config!);
           this._exitYamlMode();
-        }
-        break;
-      case 5:
-        if (this._mode !== "yaml") {
+        } else {
           this._enterYamlMode();
         }
         break;
-      case 6:
+      case 5:
         this._duplicate();
         break;
-      case 7:
+      case 6:
         this._deleteTapped();
         break;
     }
