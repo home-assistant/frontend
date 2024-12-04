@@ -99,7 +99,6 @@ export class BrowserMediaPlayer {
       supported_features:
         // eslint-disable-next-line no-bitwise
         MediaPlayerEntityFeature.PLAY |
-        // eslint-disable-next-line no-bitwise
         MediaPlayerEntityFeature.PAUSE |
         MediaPlayerEntityFeature.VOLUME_SET,
     };
