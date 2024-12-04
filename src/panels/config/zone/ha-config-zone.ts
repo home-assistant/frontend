@@ -509,6 +509,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         title: this.hass!.localize("ui.panel.config.zone.confirm_delete"),
         dismissText: this.hass!.localize("ui.common.cancel"),
         confirmText: this.hass!.localize("ui.common.delete"),
+        destructive: true,
       }))
     ) {
       return false;
