@@ -24,7 +24,6 @@ import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { AssistantSetupStyles } from "./styles";
 import { STEP } from "./voice-assistant-setup-dialog";
-import { nextRender } from "../../common/util/render-status";
 
 @customElement("ha-voice-assistant-setup-step-local")
 export class HaVoiceAssistantSetupStepLocal extends LitElement {
@@ -333,9 +332,6 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
       this._localTts[0].entity_id,
       this._localStt[0].entity_id
     );
-
-    // wait a render so the `hui-select-entity-row` is also updated and doesn't undo the select action
-    await nextRender();
 
     await this.hass.callService(
       "select",
