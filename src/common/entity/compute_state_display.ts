@@ -84,7 +84,7 @@ export const computeStateDisplayFromEntityAttributes = (
         // fallback to default
       }
     }
-    if (!is_number_domain && attributes.device_class === "monetary") {
+    if (attributes.device_class === "monetary") {
       try {
         return formatNumber(state, locale, {
           style: "currency",
