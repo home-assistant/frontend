@@ -2,7 +2,6 @@ import "@material/mwc-button";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { mdiTimerSand } from "@mdi/js";
 import type { Edge, EdgeOptions, Node } from "vis-network/peer/esm/vis-network";
 import { Network } from "vis-network/peer/esm/vis-network";
 import { navigate } from "../../../../../common/navigate";
@@ -10,8 +9,8 @@ import "../../../../../components/search-input";
 import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/ha-button-menu";
 import "../../../../../components/ha-checkbox";
-import "../../../../../components/ha-svg-icon";
 import type { HaCheckbox } from "../../../../../components/ha-checkbox";
+import "../../../../../components/ha-circular-progress";
 import "../../../../../components/ha-formfield";
 import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
 import type { ZHADevice } from "../../../../../data/zha";
@@ -212,7 +211,10 @@ export class ZHANetworkVisualizationPage extends LitElement {
               .disabled=${this._refreshingTopology}
             >
               ${this._refreshingTopology
-                ? html`<ha-svg-icon path=${mdiTimerSand}></ha-svg-icon>`
+                ? html`<ha-circular-progress
+                    indeterminate
+                    size="small"
+                  ></ha-circular-progress>`
                 : ""}
               ${this.hass!.localize(
                 "ui.panel.config.zha.visualization.refresh_topology"
