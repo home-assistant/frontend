@@ -14,8 +14,7 @@ env:
 # All scopes not mentioned here are set to no access
 # https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
 permissions:
-  contents: write
-  pull-requests: write
+  actions: none
 
 jobs:
   # release:
@@ -110,6 +109,9 @@ jobs:
         uses: softprops/action-gh-release@v2.1.0
         with:
           files: landing-page/landing-page/home_assistant_frontend_landingpage-${{ github.event.release.tag_name }}.tar.gz
+          draft: true
+          tag_name: release_test
+          body: release to test supervisor and landingpage assets
 
   release-supervisor:
     name: Release supervisor frontend
@@ -132,8 +134,11 @@ jobs:
       - name: Build supervisor
         run: hassio/script/build_hassio
       - name: Tar folder
-        run: tar -czf supervisor/home_assistant_frontend_supervisor-${{ github.event.release.tag_name }}.tar.gz -C supervisor/dist .
+        run: tar -czf supervisor/home_assistant_frontend_supervisor-${{ github.event.release.tag_name }}.tar.gz -C supervisor/build .
       - name: Upload release asset
         uses: softprops/action-gh-release@v2.1.0
         with:
           files: supervisor/home_assistant_frontend_supervisor-${{ github.event.release.tag_name }}.tar.gz
+          draft: true
+          tag_name: release_test
+          body: release to test supervisor and landingpage assets
