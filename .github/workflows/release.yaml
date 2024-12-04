@@ -104,26 +104,12 @@ jobs:
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
       - name: Build landing-page
         run: landing-page/script/build_landing_page
-      - name: Checkout landingpage repo
-        uses: actions/checkout@v4.2.2
+      - name: Tar folder
+        run: tar -czf landing-page/home_assistant_frontend_landingpage-${{ github.event.release.tag_name }}.tar.gz -C landing-page/dist .
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v2.1.0
         with:
-          repository: home-assistant/landingpage
-          path: landingpage-repo
-      - name: Delete old build results
-        run: rm -rf landingpage-repo/rootfs/usr/share/www/*
-      - name: Copy build results
-        run: cp -rf landing-page/dist/* landingpage-repo/rootfs/usr/share/www/
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7.0.5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          path: landingpage-repo
-          commit-message: Bump frontend to ${{ github.event.release.tag_name }}
-          branch: bump-frontend
-          title: Bump frontend to ${{ github.event.release.tag_name }}
-          body: Automated frontend bump to ${{ github.event.release.tag_name }}. Done by the home-assistant/frontend release workflow.
-          sign-commits: true
-          labels: frontend
+          files: landing-page/landing-page/home_assistant_frontend_landingpage-${{ github.event.release.tag_name }}.tar.gz
 
   release-supervisor:
     name: Release supervisor frontend
@@ -145,23 +131,9 @@ jobs:
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
       - name: Build supervisor
         run: hassio/script/build_hassio
-      - name: Checkout supervisor repo
-        uses: actions/checkout@v4.2.2
+      - name: Tar folder
+        run: tar -czf supervisor/home_assistant_frontend_supervisor-${{ github.event.release.tag_name }}.tar.gz -C supervisor/dist .
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v2.1.0
         with:
-          repository: home-assistant/supervisor
-          path: supervisor-repo
-      - name: Delete old build results
-        run: rm -rf supervisor-repo/supervisor/api/panel/*
-      - name: Copy build results
-        run: cp -rf hassio/build/* supervisor-repo/supervisor-repo/supervisor/api/panel/
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7.0.5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          path: supervisor-repo
-          commit-message: Bump frontend to ${{ github.event.release.tag_name }}
-          branch: bump-frontend
-          title: Bump frontend to ${{ github.event.release.tag_name }}
-          body: Automated frontend bump to ${{ github.event.release.tag_name }}. Done by the home-assistant/frontend release workflow.
-          sign-commits: true
-          labels: frontend
+          files: supervisor/home_assistant_frontend_supervisor-${{ github.event.release.tag_name }}.tar.gz
