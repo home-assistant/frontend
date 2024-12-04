@@ -71,7 +71,7 @@ export const formatDurationDigital = (
   duration: HaDurationData
 ) => formatDigitalDurationMem(locale).format(duration);
 
-export const DURATION_UNITS = ["s", "min", "h", "d"] as const;
+export const DURATION_UNITS = ["min", "h", "d"] as const;
 
 type DurationUnit = (typeof DURATION_UNITS)[number];
 
@@ -96,14 +96,6 @@ const formatDurationMinuteMem = memoizeOne(
     new Intl.DurationFormat(locale.language, {
       style: "narrow",
       minutesDisplay: "always",
-    })
-);
-
-const formatDurationSecondMem = memoizeOne(
-  (locale: FrontendLocaleData) =>
-    new Intl.DurationFormat(locale.language, {
-      style: "narrow",
-      secondsDisplay: "always",
     })
 );
 
@@ -145,15 +137,6 @@ export const formatDuration = (
         seconds,
       };
       return formatDurationMinuteMem(locale).format(input);
-    }
-    case "s": {
-      const seconds = Math.floor(value);
-      const milliseconds = Math.floor((value - seconds) * 1000);
-      const input: DurationInput = {
-        seconds,
-        milliseconds,
-      };
-      return formatDurationSecondMem(locale).format(input);
     }
     default:
       throw new Error("Invalid duration unit");
