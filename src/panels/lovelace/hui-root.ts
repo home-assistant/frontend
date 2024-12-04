@@ -78,7 +78,7 @@ import type { Lovelace } from "./types";
 import "./views/hui-view";
 import "./views/hui-view-container";
 import type { HUIView } from "./views/hui-view";
-import "./views/hui-background";
+import "./views/hui-view-background";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
@@ -474,7 +474,7 @@ class HUIRoot extends LitElement {
           id="view"
           @ll-rebuild=${this._debouncedConfigChanged}
         >
-          <hui-background .background=${background}> </hui-background>
+          <hui-view-background .background=${background}> </hui-view-background>
         </hui-view-container>
       </div>
     `;

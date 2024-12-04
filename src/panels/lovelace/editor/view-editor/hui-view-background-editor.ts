@@ -51,7 +51,6 @@ export class HuiViewBackgroundEditor extends LitElement {
                   select: {
                     translation_key:
                       "ui.panel.lovelace.editor.edit_view.background.size",
-                    default: "original",
                     options: ["original", "fill_view", "fit_view"],
                   },
                 },
@@ -62,7 +61,6 @@ export class HuiViewBackgroundEditor extends LitElement {
                   select: {
                     translation_key:
                       "ui.panel.lovelace.editor.edit_view.background.alignment",
-                    default: "center",
                     options: [
                       "top_left",
                       "top_center",
@@ -92,23 +90,27 @@ export class HuiViewBackgroundEditor extends LitElement {
       return nothing;
     }
 
-    const background = this._config?.background;
-    let data: LovelaceViewBackgroundConfig = {};
+    let background = this._config?.background;
     if (typeof background === "string") {
       const backgroundUrl = background.match(/url\(['"]?([^'"]+)['"]?\)/)?.[1];
 
-      data = {
+      background = {
         image: backgroundUrl,
       };
-    } else if (background) {
-      data = background;
     }
+
+    background = {
+      transparency: 100,
+      alignment: "center",
+      size: "original",
+      ...background,
+    };
 
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${data}
-        .schema=${this._schema(typeof background !== "string")}
+        .data=${background}
+        .schema=${this._schema(true)}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
         .localizeValue=${this._localizeValueCallback}

@@ -4,8 +4,8 @@ import { customElement, property } from "lit/decorators";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewBackgroundConfig } from "../../../data/lovelace/config/view";
 
-@customElement("hui-background")
-export class HUIBackground extends LitElement {
+@customElement("hui-view-background")
+export class HUIViewBackground extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) background?:
@@ -57,12 +57,11 @@ export class HUIBackground extends LitElement {
         background.size &&
         ["original", "fill_view", "fit_view"].includes(background.size)
       ) {
-        size =
-          background.size === "fill_view"
-            ? "cover"
-            : background.size === "fit_view"
-              ? "contain"
-              : "auto";
+        size = {
+          fill_view: "cover",
+          fit_view: "contain",
+          original: "auto",
+        }[background.size];
       }
       let alignment = "center";
       if (
@@ -139,6 +138,6 @@ export class HUIBackground extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-background": HUIBackground;
+    "hui-view-background": HUIViewBackground;
   }
 }

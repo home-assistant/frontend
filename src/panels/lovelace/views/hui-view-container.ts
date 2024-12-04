@@ -45,6 +45,25 @@ class HuiViewContainer extends LitElement {
     );
   }
 
+  protected willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has("hass") && this.hass) {
+      const oldHass = changedProperties.get("hass");
+      if (
+        !oldHass ||
+        this.hass.themes !== oldHass.themes ||
+        this.hass.selectedTheme !== oldHass.selectedTheme
+      ) {
+        this._applyTheme();
+        return;
+      }
+    }
+
+    if (changedProperties.has("theme")) {
+      this._applyTheme();
+    }
+  }
+
   render() {
     return html`<slot></slot>`;
   }
