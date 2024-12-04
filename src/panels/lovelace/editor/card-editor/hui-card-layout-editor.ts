@@ -1,7 +1,7 @@
 import type { ActionDetail } from "@material/mwc-list";
-import { mdiCheck, mdiDotsVertical } from "@mdi/js";
+import { mdiDotsVertical, mdiPlaylistEdit } from "@mdi/js";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
@@ -111,31 +111,14 @@ export class HuiCardLayoutEditor extends LitElement {
           </ha-icon-button>
 
           <ha-list-item graphic="icon" .disabled=${!this._uiAvailable}>
-            ${this.hass.localize("ui.panel.lovelace.editor.edit_card.edit_ui")}
             ${!this._yamlMode
-              ? html`
-                  <ha-svg-icon
-                    class="selected_menu_item"
-                    slot="graphic"
-                    .path=${mdiCheck}
-                  ></ha-svg-icon>
-                `
-              : nothing}
-          </ha-list-item>
-
-          <ha-list-item graphic="icon">
-            ${this.hass.localize(
-              "ui.panel.lovelace.editor.edit_card.edit_yaml"
-            )}
-            ${this._yamlMode
-              ? html`
-                  <ha-svg-icon
-                    class="selected_menu_item"
-                    slot="graphic"
-                    .path=${mdiCheck}
-                  ></ha-svg-icon>
-                `
-              : nothing}
+              ? this.hass.localize(
+                  "ui.panel.lovelace.editor.edit_view.edit_yaml"
+                )
+              : this.hass.localize(
+                  "ui.panel.lovelace.editor.edit_view.edit_ui"
+                )}
+            <ha-svg-icon slot="graphic" .path=${mdiPlaylistEdit}></ha-svg-icon>
           </ha-list-item>
         </ha-button-menu>
       </div>
@@ -266,10 +249,7 @@ export class HuiCardLayoutEditor extends LitElement {
   private async _handleAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
-        this._yamlMode = false;
-        break;
-      case 1:
-        this._yamlMode = true;
+        this._yamlMode = !this._yamlMode;
         break;
     }
   }
@@ -356,9 +336,6 @@ export class HuiCardLayoutEditor extends LitElement {
       .header ha-button-menu {
         --mdc-theme-text-primary-on-background: var(--primary-text-color);
         margin-top: -8px;
-      }
-      .selected_menu_item {
-        color: var(--primary-color);
       }
       .disabled {
         opacity: 0.5;
