@@ -253,9 +253,6 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
         this._localTts[0].entity_id,
         this._localStt[0].entity_id
       );
-
-      // wait a render so the `hui-select-entity-row` is also updated and doesn't undo the select action
-      await nextRender();
     }
 
     await this.hass.callService(
