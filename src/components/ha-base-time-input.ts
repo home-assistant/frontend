@@ -331,7 +331,7 @@ export class HaBaseTimeInput extends LitElement {
     .time-input-wrap-wrap {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 16px;
     }
     .time-input-wrap {
       display: flex;
@@ -399,6 +399,10 @@ export class HaBaseTimeInput extends LitElement {
       padding-left: 4px;
       padding-inline-start: 4px;
       padding-inline-end: initial;
+    }
+    ha-input-helper-text {
+      width: 100%;
+      line-height: normal;
     }
   `;
 }
