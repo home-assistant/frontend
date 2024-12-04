@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/triple-slash-reference */
-// eslint-disable-next-line spaced-comment
+
 /// <reference path="../types/service-worker.d.ts" />
 /* eslint-env serviceworker */
 import type { RouteHandler } from "workbox-core";

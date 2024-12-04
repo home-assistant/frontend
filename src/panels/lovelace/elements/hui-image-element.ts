@@ -32,7 +32,6 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
 
     this._config = { hold_action: { action: "more-info" }, ...config };
 
-    // eslint-disable-next-line wc/no-self-class
     this.classList.toggle(
       "clickable",
       this._config.tap_action && this._config.tap_action.action !== "none"
