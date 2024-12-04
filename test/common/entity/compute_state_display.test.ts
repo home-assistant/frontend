@@ -269,6 +269,43 @@ describe("computeStateDisplay", () => {
     );
   });
 
+  describe("Localizes a number entity value with translated unit_of_measurement", () => {
+    const testDomain = (domain: string) => {
+      const entity_id = `${domain}.test`;
+      const stateObj: any = {
+        entity_id: entity_id,
+        state: "1234",
+        attributes: {},
+      };
+      const entities: any = {
+        [entity_id]: {
+          translation_key: "custom_translation",
+          platform: "custom_integration",
+        },
+      };
+      assert.strictEqual(
+        computeStateDisplay(
+          localize,
+          stateObj,
+          localeData,
+          numericDeviceClasses,
+          demoConfig,
+          entities
+        ),
+        `1,234 component.custom_integration.entity.${domain}.custom_translation.unit_of_measurement`
+      );
+    };
+    it("Localizes counter domain", () => {
+      testDomain("counter");
+    });
+    it("Localizes number domain", () => {
+      testDomain("number");
+    });
+    it("Localizes input_number domain", () => {
+      testDomain("input_number");
+    });
+  });
+
   describe("Localizes input_datetime with full date time", () => {
     const stateObj: any = {
       entity_id: "input_datetime.test",

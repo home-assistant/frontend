@@ -172,9 +172,11 @@ export class QuickBar extends LitElement {
     );
 
     const translationKey =
-      this._mode === QuickBarMode.Device ? "devices" : "entities";
+      this._mode === QuickBarMode.Device
+        ? "filter_placeholder_devices"
+        : "filter_placeholder";
     const placeholder = this.hass.localize(
-      `ui.dialogs.quick-bar.filter_placeholder.${translationKey}`
+      `ui.dialogs.quick-bar.${translationKey}`
     );
 
     const commandMode = this._mode === QuickBarMode.Command;
