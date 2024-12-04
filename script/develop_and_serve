@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 #
 # This script can be used to develop and test the frontend without having to
 # link the build in a running core instance through the frontend/development_repo setting.
@@ -70,5 +70,9 @@ fi
 # build the frontend so it connects to the passed core
 HASS_URL="$coreUrl" ./script/develop &
 
-# serve the frontend
-yarn exec node ./script/serve.js "$coreUrl" $frontendPort
+if [ -n "$DEVCONTAINER" ]; then
+    nodeCoreUrl="${coreUrl/localhost/host.docker.internal}"
+else
+    nodeCoreUrl="$coreUrl"
+fi
+yarn exec node ./script/serve.js "$nodeCoreUrl" $frontendPort

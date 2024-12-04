@@ -2,7 +2,8 @@
   "name": "Home Assistant Frontend",
   "build": {
     "dockerfile": "Dockerfile",
-    "context": ".."
+    "context": "..",
+    "options": [ "--add-host=host.docker.internal:host-gateway" ]
   },
   "appPort": "8124:8123",
   "postCreateCommand": "sudo apt update && sudo apt upgrade -y && sudo apt install -y libpcap-dev",
