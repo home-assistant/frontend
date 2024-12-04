@@ -79,7 +79,7 @@ export class HaLocationSelector extends LitElement {
         .locations=${this._location(this.selector, this.value)}
         @location-updated=${this._locationChanged}
         @radius-updated=${this._radiusChanged}
-        move-on-click
+        pin-on-click
       ></ha-locations-editor>
       <ha-form
         .hass=${this.hass}

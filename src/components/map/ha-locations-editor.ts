@@ -64,8 +64,8 @@ export class HaLocationsEditor extends LitElement {
   @property({ attribute: "theme-mode", type: String })
   public themeMode: ThemeMode = "auto";
 
-  @property({ type: Boolean, attribute: "move-on-click" })
-  public moveOnClick = false;
+  @property({ type: Boolean, attribute: "pin-on-click" })
+  public pinOnClick = false;
 
   @state() private _locationMarkers?: Record<string, Marker | Circle>;
 
@@ -138,7 +138,7 @@ export class HaLocationsEditor extends LitElement {
         .zoom=${this.zoom}
         .autoFit=${this.autoFit}
         .themeMode=${this.themeMode}
-        .clickable=${this.moveOnClick}
+        .clickable=${this.pinOnClick}
         @map-clicked=${this._mapClicked}
       ></ha-map>
       ${this.helper
@@ -204,7 +204,7 @@ export class HaLocationsEditor extends LitElement {
     }
   }
 
-  private normalizeLongitude(longitude: number): number {
+  private _normalizeLongitude(longitude: number): number {
     if (Math.abs(longitude) > 180.0) {
       // Normalize longitude if map provides values beyond -180 to +180 degrees.
       return (((longitude % 360.0) + 540.0) % 360.0) - 180.0;
@@ -217,7 +217,7 @@ export class HaLocationsEditor extends LitElement {
     const latlng: LatLng = marker.getLatLng();
     const location: [number, number] = [
       latlng.lat,
-      this.normalizeLongitude(latlng.lng),
+      this._normalizeLongitude(latlng.lng),
     ];
     fireEvent(
       this,
@@ -244,11 +244,11 @@ export class HaLocationsEditor extends LitElement {
   }
 
   private _mapClicked(ev) {
-    if (this.moveOnClick && this._locationMarkers) {
+    if (this.pinOnClick && this._locationMarkers) {
       const id = Object.keys(this._locationMarkers)[0];
       const location: [number, number] = [
         ev.detail.location[0],
-        this.normalizeLongitude(ev.detail.location[1]),
+        this._normalizeLongitude(ev.detail.location[1]),
       ];
       fireEvent(this, "location-updated", { id, location }, { bubbles: false });
 

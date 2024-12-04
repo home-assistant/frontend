@@ -99,6 +99,8 @@ export class HaMap extends ReactiveElement {
 
   private _mapPaths: Array<Polyline | CircleMarker> = [];
 
+  private _clickCount = 0;
+
   public connectedCallback(): void {
     super.connectedCallback();
     this._loadMap();
@@ -203,9 +205,17 @@ export class HaMap extends ReactiveElement {
       [this.leafletMap, this.Leaflet] = await setupLeafletMap(map);
       this._updateMapStyle();
       this.leafletMap.on("click", (ev) => {
-        fireEvent(this, "map-clicked", {
-          location: [ev.latlng.lat, ev.latlng.lng],
-        });
+        if (this._clickCount === 0) {
+          setTimeout(() => {
+            if (this._clickCount === 1) {
+              fireEvent(this, "map-clicked", {
+                location: [ev.latlng.lat, ev.latlng.lng],
+              });
+            }
+            this._clickCount = 0;
+          }, 250);
+        }
+        this._clickCount++;
       });
       this._loaded = true;
     } finally {
