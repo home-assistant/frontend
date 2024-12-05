@@ -51,8 +51,11 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import { createAreaRegistryEntry } from "../../../data/area_registry";
-import type { ConfigEntry } from "../../../data/config_entries";
-import { sortConfigEntries } from "../../../data/config_entries";
+import type { ConfigEntry, SubConfigEntry } from "../../../data/config_entries";
+import {
+  getSubConfigEntries,
+  sortConfigEntries,
+} from "../../../data/config_entries";
 import { fullEntitiesContext } from "../../../data/context";
 import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
@@ -107,6 +110,8 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ attribute: false }) public entries!: ConfigEntry[];
+
+  @state() private _subConfigEntries?: SubConfigEntry[];
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -219,6 +224,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
   private _setFiltersFromUrl() {
     const domain = this._searchParms.get("domain");
     const configEntry = this._searchParms.get("config_entry");
+    const subConfigEntry = this._searchParms.get("sub_entry");
     const label = this._searchParms.has("label");
 
     if (!domain && !configEntry && !label) {
@@ -241,6 +247,10 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
       },
       config_entry: {
         value: configEntry ? [configEntry] : [],
+        items: undefined,
+      },
+      sub_config_entry: {
+        value: subConfigEntry ? [subConfigEntry] : [],
         items: undefined,
       },
     };
@@ -333,6 +343,30 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
           });
           if (configEntries.length === 1) {
             filteredConfigEntry = configEntries[0];
+          }
+        } else if (
+          key === "sub_config_entry" &&
+          Array.isArray(filter.value) &&
+          filter.value.length
+        ) {
+          if (
+            !(
+              Array.isArray(this._filters.config_entry?.value) &&
+              this._filters.config_entry.value.length === 1
+            )
+          ) {
+            return;
+          }
+          const configEntryId = this._filters.config_entry.value[0];
+          outputDevices = outputDevices.filter(
+            (device) =>
+              device.config_subentries[configEntryId] &&
+              (filter.value as string[]).some((subEntryId) =>
+                device.config_subentries[configEntryId].includes(subEntryId)
+              )
+          );
+          if (!this._subConfigEntries) {
+            this._loadSubConfigEntries(configEntryId);
           }
         } else if (
           key === "ha-filter-integrations" &&
@@ -755,7 +789,16 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
               ${this.entries?.find(
                 (entry) =>
                   entry.entry_id === this._filters.config_entry!.value![0]
-              )?.title || this._filters.config_entry.value[0]}
+              )?.title || this._filters.config_entry.value[0]}${this._filters
+                .config_entry.value.length === 1 &&
+              Array.isArray(this._filters.sub_config_entry?.value) &&
+              this._filters.sub_config_entry.value.length
+                ? html` (${this._subConfigEntries?.find(
+                    (entry) =>
+                      entry.subentry_id ===
+                      this._filters.sub_config_entry!.value![0]
+                  )?.title || this._filters.sub_config_entry!.value![0]})`
+                : nothing}
             </ha-alert>`
           : nothing}
         <ha-filter-floor-areas
@@ -886,6 +929,10 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
           : nothing}
       </hass-tabs-subpage-data-table>
     `;
+  }
+
+  private async _loadSubConfigEntries(entryId: string) {
+    this._subConfigEntries = await getSubConfigEntries(this.hass, entryId);
   }
 
   private _filterExpanded(ev) {

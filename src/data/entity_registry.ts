@@ -50,6 +50,7 @@ export interface EntityRegistryEntry extends RegistryEntry {
   icon: string | null;
   platform: string;
   config_entry_id: string | null;
+  config_subentry_id: string | null;
   device_id: string | null;
   area_id: string | null;
   labels: string[];

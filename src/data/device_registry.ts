@@ -17,6 +17,7 @@ export {
 export interface DeviceRegistryEntry extends RegistryEntry {
   id: string;
   config_entries: string[];
+  config_subentries: { [configEntryId: string]: (string | null)[] };
   connections: [string, string][];
   identifiers: [string, string][];
   manufacturer: string | null;

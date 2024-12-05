@@ -19,13 +19,39 @@ export interface ConfigEntry {
   supports_remove_device: boolean;
   supports_unload: boolean;
   supports_reconfigure: boolean;
+  supports_subentries: boolean;
+  num_subentries: number;
   pref_disable_new_entities: boolean;
   pref_disable_polling: boolean;
   disabled_by: "user" | null;
   reason: string | null;
   error_reason_translation_key: string | null;
   error_reason_translation_placeholders: Record<string, string> | null;
+  subentries: SubConfigEntry[];
 }
+
+export interface SubConfigEntry {
+  subentry_id: string;
+  title: string;
+  unique_id: string;
+}
+
+export const getSubConfigEntries = (hass: HomeAssistant, entry_id: string) =>
+  hass.callWS<SubConfigEntry[]>({
+    type: "config_entries/subentries/list",
+    entry_id,
+  });
+
+export const deleteSubConfigEntry = (
+  hass: HomeAssistant,
+  entry_id: string,
+  subentry_id: string
+) =>
+  hass.callWS({
+    type: "config_entries/subentries/delete",
+    entry_id,
+    subentry_id,
+  });
 
 export type ConfigEntryMutableParams = Partial<
   Pick<
