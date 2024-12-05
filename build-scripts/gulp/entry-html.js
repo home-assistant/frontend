@@ -11,7 +11,6 @@ import { minify } from "html-minifier-terser";
 import template from "lodash.template";
 import { dirname, extname, resolve } from "node:path";
 import { htmlMinifierOptions, terserOptions } from "../bundle.cjs";
-import env from "../env.cjs";
 import paths from "../paths.cjs";
 
 // macOS companion app has no way to obtain the Safari version used by WKWebView,
@@ -56,7 +55,6 @@ const getCommonTemplateVars = () => {
     { ignorePatch: true, allowHigherVersions: true }
   );
   return {
-    useWDS: env.useWDS(),
     modernRegex: compileRegex(browserRegexes.concat(haMacOSRegex)).toString(),
   };
 };
@@ -92,13 +90,11 @@ const minifyHtml = (content, ext) => {
 };
 
 // Function to generate a dev task for each project's configuration
-// Note Currently WDS paths are hard-coded to only work for app
 const genPagesDevTask =
   (
     pageEntries,
     inputRoot,
     outputRoot,
-    useWDS = false,
     inputSub = "src/html",
     publicRoot = ""
   ) =>
@@ -109,17 +105,13 @@ const genPagesDevTask =
         resolve(inputRoot, inputSub, `${page}.template`),
         {
           ...commonVars,
-          latestEntryJS: entries.map((entry) =>
-            useWDS
-              ? `http://localhost:8000/src/entrypoints/${entry}.ts`
-              : `${publicRoot}/frontend_latest/${entry}.js`
+          latestEntryJS: entries.map(
+            (entry) => `${publicRoot}/frontend_latest/${entry}.js`
           ),
           es5EntryJS: entries.map(
             (entry) => `${publicRoot}/frontend_es5/${entry}.js`
           ),
-          latestCustomPanelJS: useWDS
-            ? "http://localhost:8000/src/entrypoints/custom-panel.ts"
-            : `${publicRoot}/frontend_latest/custom-panel.js`,
+          latestCustomPanelJS: `${publicRoot}/frontend_latest/custom-panel.js`,
           es5CustomPanelJS: `${publicRoot}/frontend_es5/custom-panel.js`,
         }
       );
@@ -176,12 +168,7 @@ const APP_PAGE_ENTRIES = {
 
 gulp.task(
   "gen-pages-app-dev",
-  genPagesDevTask(
-    APP_PAGE_ENTRIES,
-    paths.polymer_dir,
-    paths.app_output_root,
-    env.useWDS()
-  )
+  genPagesDevTask(APP_PAGE_ENTRIES, paths.polymer_dir, paths.app_output_root)
 );
 
 gulp.task(
