@@ -558,7 +558,7 @@ class HaLogbookRenderer extends LitElement {
     });
   }
 
-  _handleClick(ev) {
+  private _handleClick(ev: Event) {
     if (!ev.currentTarget.traceLink) {
       return;
     }

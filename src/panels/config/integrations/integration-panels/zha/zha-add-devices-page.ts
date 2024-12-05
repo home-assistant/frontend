@@ -19,7 +19,7 @@ class ZHAAddDevicesPage extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: false, type: Boolean }) public isWide = false;
 
   @property({ attribute: false }) public route?: Route;
 

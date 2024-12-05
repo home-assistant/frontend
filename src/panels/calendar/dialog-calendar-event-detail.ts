@@ -50,7 +50,7 @@ class DialogCalendarEventDetail extends LitElement {
     }
   }
 
-  private closeDialog(): void {
+  private _closeDialog(): void {
     this._calendarId = undefined;
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -64,7 +64,7 @@ class DialogCalendarEventDetail extends LitElement {
     return html`
       <ha-dialog
         open
-        @closed=${this.closeDialog}
+        @closed=${this._closeDialog}
         scrimClickAction
         escapeKeyAction
         .heading=${createCloseHeading(this.hass, this._data!.summary)}
@@ -177,7 +177,7 @@ class DialogCalendarEventDetail extends LitElement {
 
   private async _editEvent() {
     showCalendarEventEditDialog(this, this._params!);
-    this.closeDialog();
+    this._closeDialog();
   }
 
   private async _deleteEvent() {
@@ -227,7 +227,7 @@ class DialogCalendarEventDetail extends LitElement {
       this._submitting = false;
     }
     await this._params!.updated();
-    this.closeDialog();
+    this._closeDialog();
   }
 
   static get styles(): CSSResultGroup {

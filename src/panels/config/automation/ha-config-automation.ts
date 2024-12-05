@@ -24,9 +24,9 @@ class HaConfigAutomation extends HassRouterPage {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: false, type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public showAdvanced = false;
+  @property({ attribute: false, type: Boolean }) public showAdvanced = false;
 
   @property({ attribute: false }) public automations: AutomationEntity[] = [];
 

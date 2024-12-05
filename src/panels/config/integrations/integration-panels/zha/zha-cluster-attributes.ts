@@ -30,7 +30,8 @@ export class ZHAClusterAttributes extends LitElement {
 
   @property({ attribute: false }) public device?: ZHADevice;
 
-  @property({ type: Object }) public selectedCluster?: Cluster;
+  @property({ attribute: false, type: Object })
+  public selectedCluster?: Cluster;
 
   @state() private _attributes: Attribute[] | undefined;
 

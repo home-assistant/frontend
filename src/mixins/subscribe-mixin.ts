@@ -7,6 +7,7 @@ export interface HassSubscribeElement {
   hassSubscribe(): UnsubscribeFunc[];
 }
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const SubscribeMixin = <T extends Constructor<ReactiveElement>>(
   superClass: T
 ) => {
@@ -20,7 +21,7 @@ export const SubscribeMixin = <T extends Constructor<ReactiveElement>>(
 
     public connectedCallback() {
       super.connectedCallback();
-      this.__checkSubscribed();
+      this._checkSubscribed();
     }
 
     public disconnectedCallback() {
@@ -41,7 +42,7 @@ export const SubscribeMixin = <T extends Constructor<ReactiveElement>>(
     protected updated(changedProps: PropertyValues) {
       super.updated(changedProps);
       if (changedProps.has("hass")) {
-        this.__checkSubscribed();
+        this._checkSubscribed();
         return;
       }
       if (!this.hassSubscribeRequiredHostProps) {
@@ -49,7 +50,7 @@ export const SubscribeMixin = <T extends Constructor<ReactiveElement>>(
       }
       for (const key of changedProps.keys()) {
         if (this.hassSubscribeRequiredHostProps.includes(key as string)) {
-          this.__checkSubscribed();
+          this._checkSubscribed();
           return;
         }
       }
@@ -61,7 +62,7 @@ export const SubscribeMixin = <T extends Constructor<ReactiveElement>>(
       return [];
     }
 
-    private __checkSubscribed(): void {
+    private _checkSubscribed(): void {
       if (
         this.__unsubs !== undefined ||
         !(this as unknown as Element).isConnected ||

@@ -42,7 +42,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
   @property({ type: Number }) public index?: number;
 
-  @property({ type: Boolean }) public isStrategy = false;
+  @property({ attribute: false, type: Boolean }) public isStrategy = false;
 
   @property({ attribute: false }) public cards: HuiCard[] = [];
 

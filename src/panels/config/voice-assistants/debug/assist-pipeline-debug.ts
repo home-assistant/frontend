@@ -29,7 +29,7 @@ export class AssistPipelineDebug extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property() public pipelineId!: string;
+  @property({ attribute: false }) public pipelineId!: string;
 
   @state() private _runId?: string;
 

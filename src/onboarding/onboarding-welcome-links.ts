@@ -15,7 +15,7 @@ class OnboardingWelcomeLinks extends LitElement {
 
   @property({ attribute: false }) public localize!: LocalizeFunc<any>;
 
-  @property({ type: Boolean }) public mobileApp = false;
+  @property({ attribute: false, type: Boolean }) public mobileApp = false;
 
   protected render(): TemplateResult {
     return html`<a

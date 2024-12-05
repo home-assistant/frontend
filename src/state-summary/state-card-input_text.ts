@@ -14,7 +14,7 @@ class StateCardInputText extends LitElement {
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
-  @property({ type: Boolean }) public inDialog = false;
+  @property({ attribute: false, type: Boolean }) public inDialog = false;
 
   @state() public value: string = "";
 

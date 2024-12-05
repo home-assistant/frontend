@@ -16,7 +16,7 @@ import {
 class ZWaveJSCustomParam extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public deviceId!: string;
+  @property({ attribute: false }) public deviceId!: string;
 
   @state() private _customParamNumber?: number;
 

@@ -31,13 +31,13 @@ import {
 export class HaDeviceEntitiesCard extends LitElement {
   @property() public header!: string;
 
-  @property() public deviceName!: string;
+  @property({ attribute: false }) public deviceName!: string;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public entities!: EntityRegistryStateEntry[];
 
-  @property({ type: Boolean }) public showHidden = false;
+  @property({ attribute: false, type: Boolean }) public showHidden = false;
 
   @state() private _extDisabledEntityEntries?: Record<
     string,

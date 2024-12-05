@@ -85,13 +85,13 @@ declare global {
 export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public automationId: string | null = null;
+  @property({ attribute: false }) public automationId: string | null = null;
 
-  @property() public entityId: string | null = null;
+  @property({ attribute: false }) public entityId: string | null = null;
 
   @property({ attribute: false }) public automations!: AutomationEntity[];
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: false, type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -590,7 +590,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   private async _showTrace() {
     if (this._config?.id) {
-      const result = await this.confirmUnsavedChanged();
+      const result = await this._confirmUnsavedChanged();
       if (result) {
         navigate(
           `/config/automation/trace/${encodeURIComponent(this._config.id)}`
@@ -644,7 +644,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     this._errors = undefined;
   }
 
-  private async confirmUnsavedChanged(): Promise<boolean> {
+  private async _confirmUnsavedChanged(): Promise<boolean> {
     if (this._dirty) {
       return showConfirmationDialog(this, {
         title: this.hass!.localize(
@@ -662,7 +662,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   }
 
   private _backTapped = async () => {
-    const result = await this.confirmUnsavedChanged();
+    const result = await this._confirmUnsavedChanged();
     if (result) {
       afterNextRender(() => history.back());
     }
@@ -723,7 +723,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
             "ui.panel.config.automation.picker.migrate_automation_description"
           ),
         })
-      : await this.confirmUnsavedChanged();
+      : await this._confirmUnsavedChanged();
     if (result) {
       showAutomationEditor({
         ...this._config,

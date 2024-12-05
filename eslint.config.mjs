@@ -116,6 +116,10 @@ export default [
       "@typescript-eslint/naming-convention": [
         "warn",
         {
+          selector: ["objectLiteralProperty", "objectLiteralMethod"],
+          format: null,
+        },
+        {
           selector: ["variable"],
           format: ["camelCase", "snake_case", "UPPER_CASE"],
           leadingUnderscore: "allow",
