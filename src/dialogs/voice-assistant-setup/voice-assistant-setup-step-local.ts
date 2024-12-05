@@ -11,7 +11,11 @@ import {
   listAssistPipelines,
 } from "../../data/assist_pipeline";
 import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
-import { createConfigFlow, handleConfigFlowStep } from "../../data/config_flow";
+import {
+  createConfigFlow,
+  fetchConfigFlowInProgress,
+  handleConfigFlowStep,
+} from "../../data/config_flow";
 import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
 import {
   fetchHassioAddonsInfo,
@@ -194,6 +198,35 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
   }
 
   private async _setupConfigEntry(addon: string) {
+    const configFlow = await this._findConfigFlowInProgress(addon);
+
+    if (configFlow) {
+      const step = await handleConfigFlowStep(
+        this.hass,
+        configFlow.flow_id,
+        {}
+      );
+      if (step.type === "create_entry") {
+        return undefined;
+      }
+    }
+
+    return this._createConfigEntry(addon);
+  }
+
+  private async _findConfigFlowInProgress(addon: string) {
+    const configFlows = await fetchConfigFlowInProgress(this.hass.connection);
+
+    return configFlows.find(
+      (flow) =>
+        flow.handler === "wyoming" &&
+        flow.context.source === "hassio" &&
+        (flow.context.configuration_url.includes(`core_${addon}`) ||
+          flow.context.title_placeholders.title.toLowerCase().includes(addon))
+    );
+  }
+
+  private async _createConfigEntry(addon: string) {
     const configFlow = await createConfigFlow(this.hass, "wyoming");
     const step = await handleConfigFlowStep(this.hass, configFlow.flow_id, {
       host: `core-${addon}`,
