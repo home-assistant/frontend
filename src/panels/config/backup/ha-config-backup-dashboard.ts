@@ -1,9 +1,16 @@
-import { mdiDelete, mdiDownload, mdiPlus } from "@mdi/js";
+import {
+  mdiDelete,
+  mdiDotsVertical,
+  mdiDownload,
+  mdiPlus,
+  mdiUpload,
+} from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
@@ -14,11 +21,13 @@ import type {
   SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button";
+import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-icon-overflow-menu";
+import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import { getSignedPath } from "../../../data/auth";
 import type { BackupContent, GenerateBackupParams } from "../../../data/backup";
@@ -47,7 +56,8 @@ import { fileDownload } from "../../../util/file_download";
 import "./components/ha-backup-summary-card";
 import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
+import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
 
 @customElement("ha-config-backup-dashboard")
 class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
@@ -205,6 +215,23 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
               </ha-backup-summary-card>`}
         </div>
 
+        <div slot="toolbar-icon">
+          <ha-button-menu>
+            <ha-icon-button
+              slot="trigger"
+              .label=${this.hass.localize("ui.common.menu")}
+              .path=${mdiDotsVertical}
+            ></ha-icon-button>
+            <ha-list-item
+              graphic="icon"
+              @request-selected=${this._uploadBackup}
+            >
+              <ha-svg-icon slot="graphic" .path=${mdiUpload}></ha-svg-icon>
+              Upload backup
+            </ha-list-item>
+          </ha-button-menu>
+        </div>
+
         ${this._selected.length
           ? html`<div
               class=${classMap({
@@ -301,6 +328,14 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   private async _fetchBackupConfig() {
     const { config } = await fetchBackupConfig(this.hass);
     this._hasStrategy = !!config.create_backup.password;
+  }
+
+  private async _uploadBackup(ev) {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+
+    await showUploadBackupDialog(this, {});
   }
 
   private async _newBackup(): Promise<void> {
