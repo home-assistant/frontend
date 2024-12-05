@@ -1,4 +1,3 @@
-/* eslint-disable lit/no-template-arrow */
 import "@material/mwc-button";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";

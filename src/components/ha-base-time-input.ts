@@ -134,7 +134,7 @@ export class HaBaseTimeInput extends LitElement {
     return html`
       ${this.label
         ? html`<label>${this.label}${this.required ? " *" : ""}</label>`
-        : ""}
+        : nothing}
       <div class="time-input-wrap-wrap">
         <div class="time-input-wrap">
           ${this.enableDay
@@ -158,7 +158,7 @@ export class HaBaseTimeInput extends LitElement {
                 >
                 </ha-textfield>
               `
-            : ""}
+            : nothing}
 
           <ha-textfield
             id="hour"
@@ -221,7 +221,7 @@ export class HaBaseTimeInput extends LitElement {
                 class=${this.enableMillisecond ? "has-suffix" : ""}
               >
               </ha-textfield>`
-            : ""}
+            : nothing}
           ${this.enableMillisecond
             ? html`<ha-textfield
                 id="millisec"
@@ -240,7 +240,7 @@ export class HaBaseTimeInput extends LitElement {
                 .disabled=${this.disabled}
               >
               </ha-textfield>`
-            : ""}
+            : nothing}
           ${this.clearable && !this.required && !this.disabled
             ? html`<ha-icon-button
                 label="clear"
@@ -251,7 +251,7 @@ export class HaBaseTimeInput extends LitElement {
         </div>
 
         ${this.format === 24
-          ? ""
+          ? nothing
           : html`<ha-select
               .required=${this.required}
               .value=${this.amPm}
@@ -265,10 +265,10 @@ export class HaBaseTimeInput extends LitElement {
               <mwc-list-item value="AM">AM</mwc-list-item>
               <mwc-list-item value="PM">PM</mwc-list-item>
             </ha-select>`}
-        ${this.helper
-          ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
-          : ""}
       </div>
+      ${this.helper
+        ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
+        : nothing}
     `;
   }
 
@@ -363,17 +363,17 @@ export class HaBaseTimeInput extends LitElement {
       width: 85px;
     }
     :host([clearable]) .mdc-select__anchor {
-        padding-inline-end: var(--select-selected-text-padding-end, 12px);
+      padding-inline-end: var(--select-selected-text-padding-end, 12px);
     }
     ha-icon-button {
-      position: relative
+      position: relative;
       --mdc-icon-button-size: 36px;
       --mdc-icon-size: 20px;
       color: var(--secondary-text-color);
       direction: var(--direction);
       display: flex;
       align-items: center;
-      background-color:var(--mdc-text-field-fill-color, whitesmoke);
+      background-color: var(--mdc-text-field-fill-color, whitesmoke);
       border-bottom-style: solid;
       border-bottom-width: 1px;
     }
@@ -397,6 +397,10 @@ export class HaBaseTimeInput extends LitElement {
       padding-left: 4px;
       padding-inline-start: 4px;
       padding-inline-end: initial;
+    }
+    ha-input-helper-text {
+      padding-top: 8px;
+      line-height: normal;
     }
   `;
 }

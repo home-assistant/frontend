@@ -17,7 +17,6 @@ import type { HomeAssistant } from "../../types";
 import { AssistantSetupStyles } from "./styles";
 import { STEP } from "./voice-assistant-setup-dialog";
 import { documentationUrl } from "../../util/documentation-url";
-import { nextRender } from "../../common/util/render-status";
 
 @customElement("ha-voice-assistant-setup-step-pipeline")
 export class HaVoiceAssistantSetupStepPipeline extends LitElement {
@@ -241,9 +240,6 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
         wake_word_entity: null,
         wake_word_id: null,
       });
-
-      // wait a render so the `hui-select-entity-row` is also updated and doesn't undo the select action
-      await nextRender();
     }
 
     await this.hass.callService(
