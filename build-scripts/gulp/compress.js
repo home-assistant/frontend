@@ -27,7 +27,6 @@ const compressDistBrotli = (rootDir, modernDir, compressServiceWorker = true) =>
     .pipe(brotli(brotliOptions))
     .pipe(gulp.dest(rootDir));
 
-
 const compressAppBrotli = () =>
   compressDistBrotli(paths.app_output_root, paths.app_output_latest);
 const compressHassioBrotli = () =>
