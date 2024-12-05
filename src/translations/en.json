@@ -3124,7 +3124,8 @@
                   "description": {
                     "picker": "When Assist matches a sentence from a voice assistant.",
                     "empty": "When a sentence is said",
-                    "full": "When the sentence {sentence} is said"
+                    "single": "When the sentence ''{sentence}'' is said",
+                    "multiple": "When the sentence ''{sentence}'' or {count, plural,\n one {another}\n other {{count} others}\n} are said"
                   }
                 },
                 "tag": {
@@ -3598,7 +3599,8 @@
                   "label": "Set conversation response",
                   "description": {
                     "picker": "Set response of conversation if automation was triggered by conversation trigger.",
-                    "full": "Set response of conversation to {response}"
+                    "template": "Set response of conversation to a template",
+                    "full": "Set response of conversation to ''{response}''"
                   }
                 },
                 "unknown": {
