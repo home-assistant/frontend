@@ -211,9 +211,7 @@ class HaConfigBackupDefaultConfig extends LitElement {
         include_all_addons: this._backupConfig.create_backup.include_all_addons,
         password: this._backupConfig.create_backup.password,
       },
-      retention: {
-        copies: this._backupConfig.retention.copies,
-      },
+      retention: this._backupConfig.retention,
       schedule: this._backupConfig.schedule.state,
     });
   }
