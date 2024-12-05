@@ -1,6 +1,7 @@
 import "../card-features/hui-alarm-modes-card-feature";
 import "../card-features/hui-climate-fan-modes-card-feature";
 import "../card-features/hui-climate-swing-modes-card-feature";
+import "../card-features/hui-climate-swing-horizontal-modes-card-feature";
 import "../card-features/hui-climate-hvac-modes-card-feature";
 import "../card-features/hui-climate-preset-modes-card-feature";
 import "../card-features/hui-cover-open-close-card-feature";
