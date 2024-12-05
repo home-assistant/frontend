@@ -274,7 +274,6 @@ gulp.task(
     HASSIO_PAGE_ENTRIES,
     paths.hassio_dir,
     paths.hassio_output_root,
-    undefined,
     "src",
     paths.hassio_publicPath
   )
