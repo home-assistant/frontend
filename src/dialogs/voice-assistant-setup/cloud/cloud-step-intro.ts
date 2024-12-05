@@ -18,7 +18,11 @@ export class CloudStepIntro extends LitElement {
           src=${`/static/images/logo_nabu_casa${this.hass.themes?.darkMode ? "_dark" : ""}.png`}
           alt="Nabu Casa logo"
         />
-        <h1>The power of Home Assistant Cloud</h1>
+        <h1>
+          ${this.hass.localize(
+            "ui.panel.config.voice_assistants.satellite_wizard.cloud.title"
+          )}
+        </h1>
         <div class="features">
           <div class="feature speech">
             <div class="logos">

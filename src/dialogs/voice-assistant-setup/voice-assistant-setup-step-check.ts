@@ -60,7 +60,7 @@ export class HaVoiceAssistantSetupStepCheck extends LitElement {
               src="/static/images/voice-assistant/hi.png"
               alt="Casita Home Assistant hi logo"
             />
-            <h1>Hi</h1>
+            <h1>Hello</h1>
             <p class="secondary">
               Over the next couple steps we're going to personalize your voice
               assistant.
