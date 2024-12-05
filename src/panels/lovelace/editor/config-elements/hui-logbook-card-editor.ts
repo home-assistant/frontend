@@ -64,12 +64,16 @@ export class HuiLogbookCardEditor
     this._config = config;
   }
 
-  get _entities(): string[] {
-    return this._config!.entities || [];
-  }
-
   get _targetPicker(): HassServiceTarget {
-    return this._config!.target || {};
+    const entities = this._config!.entities || [];
+    if (this._config!.entities) {
+      delete this._config!.entities;
+    }
+    return (
+      this._config!.target || {
+        entity_id: entities,
+      }
+    );
   }
 
   protected render() {

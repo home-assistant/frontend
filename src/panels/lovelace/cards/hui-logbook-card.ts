@@ -2,12 +2,13 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/ha-card";
 import type { HomeAssistant } from "../../../types";
 import "../../logbook/ha-logbook";
-import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { HaLogbook } from "../../logbook/ha-logbook";
 import { findEntities } from "../common/find-entities";
 import { processConfigEntities } from "../common/process-config-entities";
@@ -16,7 +17,7 @@ import type { EntityConfig } from "../entity-rows/types";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { LogbookCardConfig } from "./types";
 import { resolveEntityIDs } from "../../../data/selector";
-import memoizeOne from "memoize-one";
+import { ensureArray } from "../../../common/array/ensure-array";
 
 export const DEFAULT_HOURS_TO_SHOW = 24;
 
@@ -43,7 +44,9 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     );
 
     return {
-      entities: foundEntities,
+      target: {
+        entity_id: foundEntities,
+      },
     };
   }
 
@@ -59,10 +62,46 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     return 9 + (this._config?.title ? 1 : 0);
   }
 
+  public validateTarget(
+    config: LogbookCardConfig
+  ): HassServiceTarget | undefined {
+    if (
+      (config.entities && !config.entities.length) ||
+      (config.target &&
+        !config.target.area_id?.length &&
+        !config.target.device_id?.length &&
+        !config.target.entity_id?.length &&
+        !config.target.floor_id?.length &&
+        !config.target.label_id?.length)
+    ) {
+      return undefined;
+    }
+
+    if (config.entities) {
+      return {
+        entity_id: processConfigEntities<EntityConfig>(config.entities).map(
+          (entity) => entity.entity
+        ),
+      };
+    }
+
+    if (config.target?.entity_id) {
+      return {
+        ...config.target,
+        entity_id: processConfigEntities<EntityConfig>(
+          ensureArray(config.target!.entity_id)
+        ).map((entity) => entity.entity),
+      };
+    }
+
+    return config.target;
+  }
+
   public setConfig(config: LogbookCardConfig): void {
-    /*if (!config.entities.length) {
+    const target = this.validateTarget(config);
+    if (!target) {
       throw new Error("Entities must be specified");
-    }*/
+    }
 
     this._config = {
       hours_to_show: DEFAULT_HOURS_TO_SHOW,
@@ -72,11 +111,10 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
       recent: this._config!.hours_to_show! * 60 * 60,
     };
 
-    this._targetPickerValue = this._config?.target;
+    this._targetPickerValue = target;
   }
 
   private _getEntityIds(): string[] | undefined {
-    console.log("test");
     const entities = this.__getEntityIds(
       this._targetPickerValue,
       this.hass.entities,
