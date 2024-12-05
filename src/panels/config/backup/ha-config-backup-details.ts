@@ -29,11 +29,9 @@ import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { bytesToString } from "../../../util/bytes-to-string";
 import { fileDownload } from "../../../util/file_download";
-import {
-  showConfirmationDialog,
-  showPromptDialog,
-} from "../../lovelace/custom-card-helpers";
+import { showConfirmationDialog } from "../../lovelace/custom-card-helpers";
 import "./components/ha-backup-data-picker";
+import { showRestoreBackupEncryptionKeyDialog } from "./dialogs/show-dialog-restore-backup-encryption-key";
 
 @customElement("ha-config-backup-details")
 class HaConfigBackupDetails extends LitElement {
@@ -214,11 +212,7 @@ class HaConfigBackupDetails extends LitElement {
   private async _restore() {
     let password: string | undefined;
     if (this._backup?.protected) {
-      const response = await showPromptDialog(this, {
-        inputType: "password",
-        inputLabel: "Password",
-        title: "Enter password",
-      });
+      const response = await showRestoreBackupEncryptionKeyDialog(this, {});
       if (!response) {
         return;
       }
