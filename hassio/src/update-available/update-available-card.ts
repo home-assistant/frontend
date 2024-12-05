@@ -222,7 +222,7 @@ class UpdateAvailableCard extends LitElement {
     const updateType = ["core", "os", "supervisor"].includes(pathPart)
       ? pathPart
       : "addon";
-    this._updateType = updateType as updateType;
+    this._updateType = updateType as UpdateType;
 
     switch (updateType) {
       case "addon":

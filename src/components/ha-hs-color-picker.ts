@@ -292,7 +292,8 @@ class HaHsColorPicker extends LitElement {
     const _y = (2 * (y - offsetY)) / maxY - 1;
 
     const [r, phi] = xy2polar(_x, _y);
-    return polar2xy(Math.min(1, r), phi);
+    const [xx, yy] = polar2xy(Math.min(1, r), phi);
+    return [xx, yy];
   };
 
   private _destroyListeners() {
