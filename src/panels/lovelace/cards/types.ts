@@ -41,6 +41,8 @@ export interface CalendarCardConfig extends LovelaceCardConfig {
   initial_view?: FullCalendarView;
   title?: string;
   theme?: string;
+  height?: number;
+  multi_day?: boolean;
 }
 
 export interface ConditionalCardConfig extends LovelaceCardConfig {
