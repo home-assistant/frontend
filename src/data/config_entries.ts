@@ -27,7 +27,6 @@ export interface ConfigEntry {
   reason: string | null;
   error_reason_translation_key: string | null;
   error_reason_translation_placeholders: Record<string, string> | null;
-  subentries: SubConfigEntry[];
 }
 
 export interface SubConfigEntry {

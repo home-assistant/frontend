@@ -33,6 +33,7 @@ const createConfigEntry = (
   supports_unload: true,
   supports_reconfigure: true,
   supports_subentries: false,
+  num_subentries: 0,
   disabled_by: null,
   pref_disable_new_entities: false,
   pref_disable_polling: false,
@@ -189,6 +190,7 @@ const createEntityRegistryEntries = (
 ): EntityRegistryEntry[] => [
   {
     config_entry_id: item.entry_id,
+    config_subentry_id: null,
     device_id: "mock-device-id",
     area_id: null,
     disabled_by: null,
@@ -215,6 +217,7 @@ const createDeviceRegistryEntries = (
   {
     entry_type: null,
     config_entries: [item.entry_id],
+    config_subentries: {},
     connections: [],
     manufacturer: "ESPHome",
     model: "Mock Device",
