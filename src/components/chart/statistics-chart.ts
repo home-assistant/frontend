@@ -63,28 +63,25 @@ export class StatisticsChart extends LitElement {
 
   @property({ attribute: false }) public endTime?: Date;
 
-  @property({ type: Array }) public statTypes: Array<StatisticType> = [
-    "sum",
-    "min",
-    "mean",
-    "max",
-  ];
+  @property({ attribute: false, type: Array })
+  public statTypes: Array<StatisticType> = ["sum", "min", "mean", "max"];
 
-  @property() public chartType: ChartType = "line";
+  @property({ attribute: false }) public chartType: ChartType = "line";
 
-  @property({ type: Number }) public minYAxis?: number;
+  @property({ attribute: false, type: Number }) public minYAxis?: number;
 
-  @property({ type: Number }) public maxYAxis?: number;
+  @property({ attribute: false, type: Number }) public maxYAxis?: number;
 
-  @property({ type: Boolean }) public fitYData = false;
+  @property({ attribute: false, type: Boolean }) public fitYData = false;
 
-  @property({ type: Boolean }) public hideLegend = false;
+  @property({ attribute: false, type: Boolean }) public hideLegend = false;
 
-  @property({ type: Boolean }) public logarithmicScale = false;
+  @property({ attribute: false, type: Boolean }) public logarithmicScale =
+    false;
 
-  @property({ type: Boolean }) public isLoadingData = false;
+  @property({ attribute: false, type: Boolean }) public isLoadingData = false;
 
-  @property({ type: Boolean }) public clickForMoreInfo = true;
+  @property({ attribute: false, type: Boolean }) public clickForMoreInfo = true;
 
   @property() public period?: string;
 

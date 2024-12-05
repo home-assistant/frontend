@@ -53,6 +53,7 @@ export class HaDeviceEntitiesCard extends LitElement {
       });
       return false;
     }
+    this._entityRows = [];
     return true;
   }
 
@@ -69,7 +70,6 @@ export class HaDeviceEntitiesCard extends LitElement {
 
     const shownEntities: EntityRegistryStateEntry[] = [];
     const hiddenEntities: EntityRegistryStateEntry[] = [];
-    this._entityRows = [];
 
     this.entities.forEach((entry) => {
       if (entry.disabled_by) {

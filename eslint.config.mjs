@@ -7,10 +7,10 @@ import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
 import { FlatCompat } from "@eslint/eslintrc";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = path.dirname(_filename);
 const compat = new FlatCompat({
-  baseDirectory: __dirname,
+  baseDirectory: _dirname,
   recommendedConfig: js.configs.recommended,
   allConfig: js.configs.all,
 });
@@ -124,6 +124,11 @@ export default [
           format: ["camelCase", "snake_case", "UPPER_CASE"],
           leadingUnderscore: "allow",
           trailingUnderscore: "allow",
+        },
+        {
+          selector: ["variable"],
+          modifiers: ["exported"],
+          format: ["camelCase", "PascalCase", "UPPER_CASE"],
         },
         {
           selector: "typeLike",

@@ -1,5 +1,5 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement } from "lit";
 import {
   customElement,
   eventOptions,
@@ -7,6 +7,7 @@ import {
   queryAll,
   state,
 } from "lit/decorators";
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import type {
@@ -123,6 +124,7 @@ export class StateHistoryCharts extends LitElement {
         ).concat(this.historyData.line)
       : this.historyData.line;
 
+    // eslint-disable-next-line lit/no-this-assign-in-render
     this._chartCount = combinedItems.length;
 
     return this.virtualize
@@ -140,12 +142,12 @@ export class StateHistoryCharts extends LitElement {
         )}`;
   }
 
-  private _renderHistoryItem = (
-    item: TimelineEntity[] | LineChartUnit,
-    index: number
-  ) => {
+  private _renderHistoryItem: RenderItemFunction<
+    TimelineEntity[] | LineChartUnit
+  > = (item, index) => {
     if (!item || index === undefined) {
-      return nothing;
+      // eslint-disable-next-line lit/prefer-nothing
+      return html``;
     }
     if (!Array.isArray(item)) {
       return html`<div class="entry-container">

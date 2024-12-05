@@ -1,7 +1,6 @@
 import type { LitElement } from "lit";
 import type { Constructor } from "../types";
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
   superClass: T
 ) =>

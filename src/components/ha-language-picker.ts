@@ -27,11 +27,11 @@ export class HaLanguagePicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
-  @property({ type: Boolean }) public nativeName = false;
+  @property({ attribute: false, type: Boolean }) public nativeName = false;
 
-  @property({ type: Boolean }) public noSort = false;
+  @property({ attribute: false, type: Boolean }) public noSort = false;
 
-  @property({ type: Boolean }) public inlineArrow = false;
+  @property({ attribute: false, type: Boolean }) public inlineArrow = false;
 
   @state() _defaultLanguages: string[] = [];
 

@@ -21,7 +21,7 @@ export class HaVoiceAssistantSetupStepWakeWord extends LitElement {
   @property({ attribute: false })
   public assistConfiguration?: AssistSatelliteConfiguration;
 
-  @property() public assistEntityId?: string;
+  @property({ attribute: false }) public assistEntityId?: string;
 
   @property({ attribute: false })
   public deviceEntities?: EntityRegistryDisplayEntry[];

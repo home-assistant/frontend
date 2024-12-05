@@ -5,7 +5,6 @@ export interface ProvideHassElement {
   provideHass(element: HTMLElement);
 }
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export const ProvideHassLitMixin = <T extends Constructor<ReactiveElement>>(
   superClass: T
 ) =>

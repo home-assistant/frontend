@@ -7,7 +7,6 @@ export interface HassSubscribeElement {
   hassSubscribe(): UnsubscribeFunc[];
 }
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export const SubscribeMixin = <T extends Constructor<ReactiveElement>>(
   superClass: T
 ) => {

@@ -69,13 +69,14 @@ export class HaMap extends ReactiveElement {
 
   @property({ type: Boolean }) public clickable = false;
 
-  @property({ type: Boolean }) public autoFit = false;
+  @property({ attribute: false, type: Boolean }) public autoFit = false;
 
-  @property({ type: Boolean }) public renderPassive = false;
+  @property({ attribute: false, type: Boolean }) public renderPassive = false;
 
-  @property({ type: Boolean }) public interactiveZones = false;
+  @property({ attribute: false, type: Boolean }) public interactiveZones =
+    false;
 
-  @property({ type: Boolean }) public fitZones = false;
+  @property({ attribute: false, type: Boolean }) public fitZones = false;
 
   @property({ attribute: "theme-mode", type: String })
   public themeMode: ThemeMode = "auto";
@@ -318,9 +319,9 @@ export class HaMap extends ReactiveElement {
   private _drawPaths(): void {
     const hass = this.hass;
     const map = this.leafletMap;
-    const Leaflet = this.Leaflet;
+    const leaflet = this.Leaflet;
 
-    if (!hass || !map || !Leaflet) {
+    if (!hass || !map || !leaflet) {
       return;
     }
     if (this._mapPaths.length) {
@@ -354,7 +355,7 @@ export class HaMap extends ReactiveElement {
 
         // DRAW point
         this._mapPaths.push(
-          Leaflet!
+          leaflet
             .circleMarker(path.points[pointIndex].point, {
               radius: isTouch ? 8 : 3,
               color: path.color || darkPrimaryColor,
@@ -370,7 +371,7 @@ export class HaMap extends ReactiveElement {
 
         // DRAW line between this and next point
         this._mapPaths.push(
-          Leaflet!.polyline(
+          leaflet.polyline(
             [path.points[pointIndex].point, path.points[pointIndex + 1].point],
             {
               color: path.color || darkPrimaryColor,
@@ -387,7 +388,7 @@ export class HaMap extends ReactiveElement {
           : undefined;
         // DRAW end path point
         this._mapPaths.push(
-          Leaflet!
+          leaflet
             .circleMarker(path.points[pointIndex].point, {
               radius: isTouch ? 8 : 3,
               color: path.color || darkPrimaryColor,
@@ -408,9 +409,9 @@ export class HaMap extends ReactiveElement {
   private _drawEntities(): void {
     const hass = this.hass;
     const map = this.leafletMap;
-    const Leaflet = this.Leaflet;
+    const leaflet = this.Leaflet;
 
-    if (!hass || !map || !Leaflet) {
+    if (!hass || !map || !leaflet) {
       return;
     }
 

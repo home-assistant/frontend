@@ -35,7 +35,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
 
   @property({ attribute: false }) public deviceId!: string;
 
-  @property() public assistEntityId?: string;
+  @property({ attribute: false }) public assistEntityId?: string;
 
   @state() private _ttsSettings?: any;
 

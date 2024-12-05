@@ -30,17 +30,17 @@ type State = "loading" | "error" | "step";
 export class HaAuthFlow extends LitElement {
   @property({ attribute: false }) public authProvider?: AuthProvider;
 
-  @property() public clientId?: string;
+  @property({ attribute: false }) public clientId?: string;
 
-  @property() public redirectUri?: string;
+  @property({ attribute: false }) public redirectUri?: string;
 
-  @property() public oauth2State?: string;
+  @property({ attribute: false }) public oauth2State?: string;
 
   @property({ attribute: false }) public localize!: LocalizeFunc;
 
   @property({ attribute: false }) public step?: DataEntryFlowStep;
 
-  @property({ type: Boolean }) public initStoreToken = false;
+  @property({ attribute: false, type: Boolean }) public initStoreToken = false;
 
   @state() private _storeToken = false;
 

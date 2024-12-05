@@ -96,6 +96,7 @@ export class HaTabsSubpageDataTable extends LitElement {
    * Field with a unique id per entry in data.
    * @type {String}
    */
+  // eslint-disable-next-line lit/no-native-attributes
   @property({ type: String }) public id = "id";
 
   /**

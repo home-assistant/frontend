@@ -394,7 +394,7 @@ export class QuickBar extends LitElement {
     `;
   }
 
-  private async processItemAndCloseDialog(item: QuickBarItem, index: number) {
+  private async _processItemAndCloseDialog(item: QuickBarItem, index: number) {
     this._addSpinnerToCommandItem(index);
 
     await item.action();
@@ -407,7 +407,7 @@ export class QuickBar extends LitElement {
       if (!firstItem || firstItem.style.display === "none") {
         return;
       }
-      this.processItemAndCloseDialog((firstItem as any).item, 0);
+      this._processItemAndCloseDialog((firstItem as any).item, 0);
     } else if (ev.code === "ArrowDown") {
       ev.preventDefault();
       this._getItemAtIndex(0)?.focus();
@@ -502,7 +502,7 @@ export class QuickBar extends LitElement {
       }
     }
     if (ev.key === "Enter" || ev.key === " ") {
-      this.processItemAndCloseDialog(
+      this._processItemAndCloseDialog(
         (ev.target as any).item,
         Number((ev.target as HTMLElement).getAttribute("index"))
       );
@@ -515,7 +515,7 @@ export class QuickBar extends LitElement {
 
   private _handleItemClick(ev) {
     const listItem = ev.target.closest("ha-list-item");
-    this.processItemAndCloseDialog(
+    this._processItemAndCloseDialog(
       listItem.item,
       Number(listItem.getAttribute("index"))
     );
