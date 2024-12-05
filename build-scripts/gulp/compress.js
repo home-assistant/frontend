@@ -37,8 +37,5 @@ const compressHassioBrotli = () =>
     false
   );
 
-gulp.task("compress-app", gulp.parallel(compressAppBrotli));
-gulp.task(
-  "compress-hassio",
-  gulp.parallel(compressHassioBrotli)
-);
+gulp.task("compress-app", compressAppBrotli);
+gulp.task("compress-hassio", compressHassioBrotli);
