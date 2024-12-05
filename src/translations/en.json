@@ -2772,6 +2772,10 @@
                 "speech": {
                   "title": "Amazing speech options for Assist",
                   "text": "Bring personality to your home by having it speak to you using our neural-network powered speech-to-text and text-to-speech services."
+                },
+                "remote_access": {
+                  "title": "Remote access",
+                  "text": " Secure remote access to your system while supporting the development of Home Assistant."
                 }
               },
               "and_more": "And more",
@@ -2836,7 +2840,11 @@
             },
             "check": {
               "title": "Hello!",
-              "secondary": "Over the next couple steps we're going to personalize your voice assistant."
+              "secondary": "Over the next couple steps we're going to personalize your voice assistant.",
+              "failed_title": "The voice assistant is unable to connect to Home Assistant",
+              "failed_secondary": "To play audio, the voice assistant device has to connect to Home Assistant to fetch the files. Our test shows that the device is unable to reach the Home Assistant server.",
+              "help": "Help me",
+              "retry": "Retry"
             },
             "wake_word": {
               "title": "Say ''{wakeword}'' to wake the device up",
@@ -2867,7 +2875,10 @@
               "local": { "title": "", "description": "", "setup": "" }
             },
             "cloud": {
-              "title": "The power of Home Assistant Cloud"
+              "title": "The power of Home Assistant Cloud",
+              "register": {
+                "confirm_email": "Confirm email"
+              }
             },
             "local": {
               "title": "Installing add-ons",
@@ -4036,6 +4047,8 @@
             "password_error_msg": "Passwords are at least 8 characters",
             "start_trial": "Start trial",
             "resend_confirm_email": "Resend confirmation email",
+            "clicked_confirm": "I clicked the confirmation link",
+            "confirm_email": "Check the email we just sent to {email} and click the confirmation link to continue.",
             "account_created": "Account created! Check your email for instructions on how to activate your account."
           },
           "account": {
