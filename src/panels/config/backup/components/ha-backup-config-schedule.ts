@@ -7,14 +7,19 @@ import type { HaCheckbox } from "../../../../components/ha-checkbox";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-md-select";
+import "../../../../components/ha-md-textfield";
 import type { HaMdSelect } from "../../../../components/ha-md-select";
 import "../../../../components/ha-md-select-option";
 import "../../../../components/ha-switch";
 import type { BackupConfig } from "../../../../data/backup";
 import { BackupScheduleState } from "../../../../data/backup";
 import type { HomeAssistant } from "../../../../types";
+import { clamp } from "../../../../common/number/clamp";
 
 export type BackupConfigSchedule = Pick<BackupConfig, "schedule" | "retention">;
+
+const MIN_VALUE = 1;
+const MAX_VALUE = 50;
 
 enum RetentionPreset {
   COPIES_3 = "copies_3",
@@ -197,22 +202,17 @@ class HaBackupConfigSchedule extends LitElement {
               ${this._retentionPreset === RetentionPreset.CUSTOM
                 ? html`
                     <ha-md-list-item>
-                      <ha-md-select
+                      <ha-md-textfield
                         slot="end"
                         @change=${this._retentionValueChanged}
                         .value=${data.retention.value}
                         id="value"
+                        type="number"
+                        .min=${MIN_VALUE}
+                        .max=${MAX_VALUE}
+                        step="1"
                       >
-                        ${Array(99)
-                          .fill(0)
-                          .map(
-                            (_, i) => html`
-                              <ha-md-select-option .value=${i + 1}>
-                                <div slot="headline">${i + 1}</div>
-                              </ha-md-select-option>
-                            `
-                          )}
-                      </ha-md-select>
+                      </ha-md-textfield>
                       <ha-md-select
                         slot="end"
                         @change=${this._retentionTypeChanged}
@@ -284,13 +284,13 @@ class HaBackupConfigSchedule extends LitElement {
     ev.stopPropagation();
     const target = ev.currentTarget as HaMdSelect;
     const value = parseInt(target.value);
-
+    const clamped = clamp(value, MIN_VALUE, MAX_VALUE);
     const data = this.getData(this.value);
     this.setData({
       ...data,
       retention: {
         ...data.retention,
-        value: value,
+        value: clamped,
       },
     });
 
@@ -329,7 +329,7 @@ class HaBackupConfigSchedule extends LitElement {
         width: 160px;
       }
     }
-    ha-md-select#value {
+    ha-md-textfield#value {
       min-width: 70px;
       width: 70px;
     }
