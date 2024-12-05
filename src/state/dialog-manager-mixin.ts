@@ -30,12 +30,12 @@ export const dialogManagerMixin = <T extends Constructor<HassBaseEl>>(
       super.firstUpdated(changedProps);
       // deprecated
       this.addEventListener("register-dialog", (e) =>
-        this._registerDialog(e.detail)
+        this.registerDialog(e.detail)
       );
       makeDialogManager(this, this.shadowRoot!);
     }
 
-    private _registerDialog({
+    protected registerDialog({
       dialogShowEvent,
       dialogTag,
       dialogImport,

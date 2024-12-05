@@ -319,9 +319,10 @@ export class HaMap extends ReactiveElement {
   private _drawPaths(): void {
     const hass = this.hass;
     const map = this.leafletMap;
-    const leaflet = this.Leaflet;
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const Leaflet = this.Leaflet;
 
-    if (!hass || !map || !leaflet) {
+    if (!hass || !map || !Leaflet) {
       return;
     }
     if (this._mapPaths.length) {
@@ -355,23 +356,21 @@ export class HaMap extends ReactiveElement {
 
         // DRAW point
         this._mapPaths.push(
-          leaflet
-            .circleMarker(path.points[pointIndex].point, {
-              radius: isTouch ? 8 : 3,
-              color: path.color || darkPrimaryColor,
-              opacity,
-              fillOpacity: opacity,
-              interactive: true,
-            })
-            .bindTooltip(
-              this._computePathTooltip(path, path.points[pointIndex]),
-              { direction: "top" }
-            )
+          Leaflet.circleMarker(path.points[pointIndex].point, {
+            radius: isTouch ? 8 : 3,
+            color: path.color || darkPrimaryColor,
+            opacity,
+            fillOpacity: opacity,
+            interactive: true,
+          }).bindTooltip(
+            this._computePathTooltip(path, path.points[pointIndex]),
+            { direction: "top" }
+          )
         );
 
         // DRAW line between this and next point
         this._mapPaths.push(
-          leaflet.polyline(
+          Leaflet.polyline(
             [path.points[pointIndex].point, path.points[pointIndex + 1].point],
             {
               color: path.color || darkPrimaryColor,
@@ -388,18 +387,16 @@ export class HaMap extends ReactiveElement {
           : undefined;
         // DRAW end path point
         this._mapPaths.push(
-          leaflet
-            .circleMarker(path.points[pointIndex].point, {
-              radius: isTouch ? 8 : 3,
-              color: path.color || darkPrimaryColor,
-              opacity,
-              fillOpacity: opacity,
-              interactive: true,
-            })
-            .bindTooltip(
-              this._computePathTooltip(path, path.points[pointIndex]),
-              { direction: "top" }
-            )
+          Leaflet.circleMarker(path.points[pointIndex].point, {
+            radius: isTouch ? 8 : 3,
+            color: path.color || darkPrimaryColor,
+            opacity,
+            fillOpacity: opacity,
+            interactive: true,
+          }).bindTooltip(
+            this._computePathTooltip(path, path.points[pointIndex]),
+            { direction: "top" }
+          )
         );
       }
       this._mapPaths.forEach((marker) => map.addLayer(marker));
@@ -409,9 +406,10 @@ export class HaMap extends ReactiveElement {
   private _drawEntities(): void {
     const hass = this.hass;
     const map = this.leafletMap;
-    const leaflet = this.Leaflet;
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const Leaflet = this.Leaflet;
 
-    if (!hass || !map || !leaflet) {
+    if (!hass || !map || !Leaflet) {
       return;
     }
 
