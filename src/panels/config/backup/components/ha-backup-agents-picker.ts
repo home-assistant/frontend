@@ -1,12 +1,16 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeDomain } from "../../../../common/entity/compute_domain";
 import "../../../../components/ha-checkbox";
 import "../../../../components/ha-formfield";
-import type { BackupAgent } from "../../../../data/backup";
+import {
+  computeBackupAgentName,
+  type BackupAgent,
+} from "../../../../data/backup";
 import type { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
-import { domainToName } from "../../../../data/integration";
 
 @customElement("ha-backup-agents-picker")
 class HaBackupAgentsPicker extends LitElement {
@@ -25,6 +29,10 @@ class HaBackupAgentsPicker extends LitElement {
   @property({ attribute: false })
   public value!: string[];
 
+  private _agentIds = memoizeOne((agents: BackupAgent[]) =>
+    agents.map((agent) => agent.agent_id)
+  );
+
   render() {
     return html`
       <div class="agents">
@@ -34,8 +42,12 @@ class HaBackupAgentsPicker extends LitElement {
   }
 
   private _renderAgent(agent: BackupAgent) {
-    const [domain, name] = agent.agent_id.split(".");
-    const domainName = domainToName(this.hass.localize, domain);
+    const domain = computeDomain(agent.agent_id);
+    const name = computeBackupAgentName(
+      this.hass.localize,
+      agent.agent_id,
+      this._agentIds(this.agents)
+    );
 
     const disabled =
       this.disabled || this.disabledAgents?.includes(agent.agent_id);
@@ -55,7 +67,7 @@ class HaBackupAgentsPicker extends LitElement {
             alt=""
             slot="start"
           />
-          ${domainName}: ${name}
+          ${name}
         </span>
         <ha-checkbox
           .checked=${this.value.includes(agent.agent_id)}

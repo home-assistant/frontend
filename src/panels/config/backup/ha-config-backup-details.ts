@@ -3,6 +3,7 @@ import { mdiDelete, mdiDotsVertical, mdiDownload } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { navigate } from "../../../common/navigate";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
@@ -16,6 +17,7 @@ import "../../../components/ha-md-list-item";
 import { getSignedPath } from "../../../data/auth";
 import type { BackupContentExtended } from "../../../data/backup";
 import {
+  computeBackupAgentName,
   deleteBackup,
   fetchBackupDetails,
   getBackupDownloadUrl,
@@ -23,7 +25,6 @@ import {
   restoreBackup,
 } from "../../../data/backup";
 import type { HassioAddonInfo } from "../../../data/hassio/addon";
-import { domainToName } from "../../../data/integration";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
@@ -142,10 +143,11 @@ class HaConfigBackupDetails extends LitElement {
                     <div class="card-content">
                       <ha-md-list>
                         ${this._backup.agent_ids?.map((agent) => {
-                          const [domain, name] = agent.split(".");
-                          const domainName = domainToName(
+                          const domain = computeDomain(agent);
+                          const name = computeBackupAgentName(
                             this.hass.localize,
-                            domain
+                            agent,
+                            this._backup!.agent_ids!
                           );
 
                           return html`
@@ -162,7 +164,7 @@ class HaConfigBackupDetails extends LitElement {
                                 alt=""
                                 slot="start"
                               />
-                              <div slot="headline">${domainName}: ${name}</div>
+                              <div slot="headline">${name}</div>
                               <ha-button-menu
                                 slot="end"
                                 @action=${this._handleAgentAction}

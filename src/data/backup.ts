@@ -1,4 +1,6 @@
+import type { LocalizeFunc } from "../common/translations/localize";
 import type { HomeAssistant } from "../types";
+import { domainToName } from "./integration";
 
 export const enum BackupScheduleState {
   NEVER = "never",
@@ -216,4 +218,20 @@ export const getPreferredAgentForDownload = (agents: string[]) => {
     (agent) => agent.split(".")[0] === "backup"
   );
   return localAgents[0] || agents[0];
+};
+
+export const computeBackupAgentName = (
+  localize: LocalizeFunc,
+  agentId: string,
+  agentIds?: string[]
+) => {
+  const [domain, name] = agentId.split(".");
+  const domainName = domainToName(localize, domain);
+
+  // If there are multiple agents for a domain, show the name
+  const showName = agentIds
+    ? agentIds.filter((a) => a.split(".")[0] === domain).length > 1
+    : true;
+
+  return showName ? `${domainName}: ${name}` : domainName;
 };

@@ -2,12 +2,15 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeDomain } from "../../../../common/entity/compute_domain";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-switch";
 import type { BackupAgent } from "../../../../data/backup";
-import { fetchBackupAgentsInfo } from "../../../../data/backup";
-import { domainToName } from "../../../../data/integration";
+import {
+  computeBackupAgentName,
+  fetchBackupAgentsInfo,
+} from "../../../../data/backup";
 import type { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
 
@@ -36,13 +39,19 @@ class HaBackupConfigAgents extends LitElement {
   }
 
   protected render() {
+    const allAgentIds = this._agents.map((agent) => agent.agent_id);
+
     return html`
       ${this._agents.length > 0
         ? html`
             <ha-md-list>
               ${this._agents.map((agent) => {
-                const [domain, name] = agent.agent_id.split(".");
-                const domainName = domainToName(this.hass.localize, domain);
+                const domain = computeDomain(agent.agent_id);
+                const name = computeBackupAgentName(
+                  this.hass.localize,
+                  agent.agent_id,
+                  allAgentIds
+                );
                 return html`
                   <ha-md-list-item>
                     <img
@@ -57,7 +66,7 @@ class HaBackupConfigAgents extends LitElement {
                       alt=""
                       slot="start"
                     />
-                    <div slot="headline">${domainName}: ${name}</div>
+                    <div slot="headline">${name}</div>
                     <ha-switch
                       slot="end"
                       id=${agent.agent_id}
