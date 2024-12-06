@@ -541,7 +541,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         selectable
         .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}
-        hasFilters
+        has-filters
         .filters=${Object.values(this._filters).filter((filter) =>
           Array.isArray(filter.value)
             ? filter.value.length
@@ -570,7 +570,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         @clear-filter=${this._clearFilter}
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
-        hasFab
+        has-fab
         clickable
         @row-click=${this._handleRowClicked}
       >

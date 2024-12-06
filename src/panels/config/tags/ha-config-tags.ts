@@ -192,7 +192,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         .noDataText=${this.hass.localize("ui.panel.config.tag.no_tags")}
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
-        hasFab
+        has-fab
         clickable
         @row-click=${this._editTag}
         id="id"

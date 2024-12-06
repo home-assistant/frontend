@@ -366,7 +366,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
               `
             : this._mode === "yaml"
               ? html`<ha-yaml-editor
-                  copyClipboard
+                  copy-clipboard
                   .hass=${this.hass}
                   .defaultValue=${this._preprocessYaml()}
                   .readOnly=${this._readOnly}
