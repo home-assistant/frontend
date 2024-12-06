@@ -17,7 +17,7 @@ export class HaIntegrationHeader extends LitElement {
 
   @property() public warning?: string;
 
-  @property() public localizedDomainName?: string;
+  @property({ attribute: false }) public localizedDomainName?: string;
 
   @property() public domain!: string;
 

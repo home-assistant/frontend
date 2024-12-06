@@ -33,7 +33,7 @@ import { fileDownload } from "../../../util/file_download";
 class HaConfigBackup extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: false, type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 

@@ -21,7 +21,7 @@ export class HaIconButton extends LitElement {
   @property({ type: String, attribute: "aria-haspopup" })
   override ariaHasPopup!: IconButton["ariaHasPopup"];
 
-  @property({ type: Boolean }) hideTitle = false;
+  @property({ attribute: false, type: Boolean }) hideTitle = false;
 
   @query("mwc-icon-button", true) private _button?: IconButton;
 

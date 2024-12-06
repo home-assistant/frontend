@@ -51,7 +51,7 @@ export class HaLocationsEditor extends LitElement {
 
   @property() public helper?: string;
 
-  @property({ type: Boolean }) public autoFit = false;
+  @property({ attribute: false, type: Boolean }) public autoFit = false;
 
   @property({ type: Number }) public zoom = 16;
 

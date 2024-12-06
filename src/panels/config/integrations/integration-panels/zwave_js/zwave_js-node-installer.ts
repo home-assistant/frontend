@@ -40,11 +40,11 @@ class ZWaveJSNodeInstaller extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: false, type: Boolean }) public isWide = false;
 
-  @property() public configEntryId?: string;
+  @property({ attribute: false }) public configEntryId?: string;
 
-  @property() public deviceId!: string;
+  @property({ attribute: false }) public deviceId!: string;
 
   @state() private _nodeMetadata?: ZwaveJSNodeMetadata;
 

@@ -103,11 +103,6 @@ export class DemoAutomationEditorCondition extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const valueChanged = (ev) => {
-      const sampleIdx = ev.target.sampleIdx;
-      this.data[sampleIdx] = ev.detail.value;
-      this.requestUpdate();
-    };
     return html`
       <div class="options">
         <ha-formfield label="Disabled">
@@ -132,7 +127,7 @@ export class DemoAutomationEditorCondition extends LitElement {
                   .conditions=${this.data[sampleIdx]}
                   .sampleIdx=${sampleIdx}
                   .disabled=${this._disabled}
-                  @value-changed=${valueChanged}
+                  @value-changed=${this._handleValueChange}
                 ></ha-automation-condition>
               `
             )}
@@ -140,6 +135,12 @@ export class DemoAutomationEditorCondition extends LitElement {
         `
       )}
     `;
+  }
+
+  private _handleValueChange(ev) {
+    const sampleIdx = ev.target.sampleIdx;
+    this.data[sampleIdx] = ev.detail.value;
+    this.requestUpdate();
   }
 
   private _handleOptionChange(ev) {

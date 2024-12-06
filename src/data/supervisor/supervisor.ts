@@ -46,7 +46,7 @@ export type SupervisorObject =
   | "addon"
   | "store";
 
-interface supervisorApiRequest {
+interface SupervisorApiRequest {
   endpoint: string;
   method?: "get" | "post" | "delete" | "put";
   force_rest?: boolean;
@@ -78,7 +78,7 @@ export interface Supervisor {
 
 export const supervisorApiWsRequest = <T>(
   conn: Connection,
-  request: supervisorApiRequest
+  request: SupervisorApiRequest
 ): Promise<T> =>
   conn.sendMessagePromise<T>({ ...supervisorWSbaseCommand, ...request });
 

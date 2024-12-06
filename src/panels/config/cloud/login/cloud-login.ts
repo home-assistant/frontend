@@ -31,13 +31,13 @@ import "../../ha-config-section";
 export class CloudLogin extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: false, type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
   @property() public email?: string;
 
-  @property() public flashMessage?: string;
+  @property({ attribute: false }) public flashMessage?: string;
 
   @state() private _password?: string;
 

@@ -58,7 +58,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @property() public helper?: string;
 
-  @property({ type: Array }) public createDomains?: string[];
+  @property({ attribute: false, type: Array }) public createDomains?: string[];
 
   /**
    * Show only targets with entities from specific domains.
@@ -84,7 +84,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
-  @property({ type: Boolean }) public addOnTop = false;
+  @property({ attribute: false, type: Boolean }) public addOnTop = false;
 
   @state() private _addMode?:
     | "area_id"

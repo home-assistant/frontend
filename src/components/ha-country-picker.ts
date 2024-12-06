@@ -277,7 +277,7 @@ export class HaCountryPicker extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
-  @property({ type: Boolean }) public noSort = false;
+  @property({ attribute: false, type: Boolean }) public noSort = false;
 
   private _getOptions = memoizeOne(
     (language?: string, countries?: string[]) => {

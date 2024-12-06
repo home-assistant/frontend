@@ -58,7 +58,7 @@ export class HassioBackups extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: false, type: Boolean }) public isWide = false;
 
   @state() private _selectedBackups: string[] = [];
 
@@ -74,7 +74,7 @@ export class HassioBackups extends LitElement {
   public connectedCallback(): void {
     super.connectedCallback();
     if (this.hass && this._firstUpdatedCalled) {
-      this.fetchBackups();
+      this._fetchBackups();
     }
   }
 
@@ -107,7 +107,7 @@ export class HassioBackups extends LitElement {
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
     if (this.hass && this.isConnected) {
-      this.fetchBackups();
+      this._fetchBackups();
     }
     this._firstUpdatedCalled = true;
   }
@@ -280,7 +280,7 @@ export class HassioBackups extends LitElement {
   private _handleAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
-        this.fetchBackups();
+        this._fetchBackups();
         break;
       case 1:
         showHassioBackupLocationDialog(this, { supervisor: this.supervisor });
@@ -303,13 +303,13 @@ export class HassioBackups extends LitElement {
         showHassioBackupDialog(this, {
           slug,
           supervisor: this.supervisor,
-          onDelete: () => this.fetchBackups(),
+          onDelete: () => this._fetchBackups(),
         }),
-      reloadBackup: () => this.fetchBackups(),
+      reloadBackup: () => this._fetchBackups(),
     });
   }
 
-  private async fetchBackups() {
+  private async _fetchBackups() {
     this._isLoading = true;
     await reloadHassioBackups(this.hass);
     this._backups = await fetchHassioBackups(this.hass);
@@ -341,7 +341,7 @@ export class HassioBackups extends LitElement {
       });
       return;
     }
-    await this.fetchBackups();
+    await this._fetchBackups();
     this._dataTable.clearSelection();
   }
 
@@ -350,7 +350,7 @@ export class HassioBackups extends LitElement {
     showHassioBackupDialog(this, {
       slug,
       supervisor: this.supervisor,
-      onDelete: () => this.fetchBackups(),
+      onDelete: () => this._fetchBackups(),
     });
   }
 
@@ -366,7 +366,7 @@ export class HassioBackups extends LitElement {
     }
     showHassioCreateBackupDialog(this, {
       supervisor: this.supervisor!,
-      onCreate: () => this.fetchBackups(),
+      onCreate: () => this._fetchBackups(),
     });
   }
 
