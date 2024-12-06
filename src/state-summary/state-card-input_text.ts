@@ -30,7 +30,6 @@ class StateCardInputText extends LitElement {
           .minlength=${this.stateObj.attributes.min}
           .maxlength=${this.stateObj.attributes.max}
           .value=${this.value}
-          .auto-validate=${this.stateObj.attributes.pattern}
           .pattern=${this.stateObj.attributes.pattern}
           .type=${this.stateObj.attributes.mode}
           @input=${this._onInput}

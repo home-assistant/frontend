@@ -130,7 +130,7 @@ export class HuiEnergyDevicesDetailGraphCard
           })}"
         >
           <ha-chart-base
-            externalHidden
+            external-hidden
             .hass=${this.hass}
             .data=${this._chartData}
             .extraData=${this._chartDatasetExtra}

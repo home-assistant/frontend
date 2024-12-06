@@ -8,7 +8,8 @@ import { classMap } from "lit/directives/class-map";
 class MQTTDiscoveryPayload extends LitElement {
   @property({ attribute: false }) public payload!: Record<string, unknown>;
 
-  @property({ attribute: false, type: Boolean }) public showAsYaml = false;
+  @property({ attribute: "show-as-yaml", type: Boolean })
+  public showAsYaml = false;
 
   @property() public summary!: string;
 
