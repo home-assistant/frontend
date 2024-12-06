@@ -21,6 +21,7 @@ import { cloudLogin, removeCloudData } from "../../../../data/cloud";
 import {
   showAlertDialog,
   showConfirmationDialog,
+  showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
@@ -230,9 +231,14 @@ export class CloudLogin extends LitElement {
 
     this._requestInProgress = true;
 
-    const doLogin = async (username: string) => {
+    const doLogin = async (username: string, code?: string) => {
       try {
-        const result = await cloudLogin(this.hass, username, password);
+        const result = await cloudLogin(
+          this.hass,
+          username,
+          password,
+          code === "" ? undefined : code
+        );
         fireEvent(this, "ha-refresh-cloud-status");
         this.email = "";
         this._password = "";
@@ -252,6 +258,19 @@ export class CloudLogin extends LitElement {
         }
       } catch (err: any) {
         const errCode = err && err.body && err.body.code;
+        if (errCode === "mfarequired") {
+          const totpCode = await showPromptDialog(this, {
+            title: "Two-factor Authentication",
+            inputLabel: "TOTP code",
+            inputType: "text",
+            defaultValue: "",
+            confirmText: "Submit",
+          });
+          if (totpCode !== null && totpCode !== "") {
+            await doLogin(username, totpCode);
+            return;
+          }
+        }
         if (errCode === "PasswordChangeRequired") {
           showAlertDialog(this, {
             title: this.hass.localize(
@@ -269,15 +288,28 @@ export class CloudLogin extends LitElement {
         this._password = "";
         this._requestInProgress = false;
 
-        if (errCode === "UserNotConfirmed") {
-          this._error = this.hass.localize(
-            "ui.panel.config.cloud.login.alert_email_confirm_necessary"
-          );
-        } else {
-          this._error =
-            err && err.body && err.body.message
-              ? err.body.message
-              : "Unknown error";
+        switch (errCode) {
+          case "UserNotConfirmed":
+            this._error = this.hass.localize(
+              "ui.panel.config.cloud.login.alert_email_confirm_necessary"
+            );
+            break;
+          case "mfarequired":
+            this._error = this.hass.localize(
+              "ui.panel.config.cloud.login.alert_mfa_code_required"
+            );
+            break;
+          case "invalidtotpcode":
+            this._error = this.hass.localize(
+              "ui.panel.config.cloud.login.alert_totp_code_invalid"
+            );
+            break;
+          default:
+            this._error =
+              err && err.body && err.body.message
+                ? err.body.message
+                : "Unknown error";
+            break;
         }
 
         emailField.focus();

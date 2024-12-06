@@ -73,7 +73,8 @@ export interface CloudWebhook {
 export const cloudLogin = (
   hass: HomeAssistant,
   email: string,
-  password: string
+  password: string,
+  code?: string
 ) =>
   hass.callApi<{ success: boolean; cloud_pipeline?: string }>(
     "POST",
@@ -81,6 +82,7 @@ export const cloudLogin = (
     {
       email,
       password,
+      code,
     }
   );
 
