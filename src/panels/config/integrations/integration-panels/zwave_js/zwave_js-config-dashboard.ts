@@ -36,6 +36,7 @@ import {
   fetchZwaveProvisioningEntries,
   InclusionState,
   setZwaveDataCollectionPreference,
+  subscribeS2Inclusion,
   subscribeZwaveControllerStatistics,
 } from "../../../../../data/zwave_js";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
@@ -102,6 +103,13 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           this._statistics = message;
         }
       ),
+      subscribeS2Inclusion(this.hass, this.configEntryId, (message) => {
+        showZWaveJSAddNodeDialog(this, {
+          entry_id: this.configEntryId,
+          dsk: message.dsk,
+          onStop: () => setTimeout(() => this._fetchData(), 100),
+        });
+      }),
     ];
   }
 
