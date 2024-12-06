@@ -74,7 +74,8 @@ export class StatisticsChart extends LitElement {
 
   @property({ attribute: false, type: Boolean }) public fitYData = false;
 
-  @property({ attribute: false, type: Boolean }) public hideLegend = false;
+  @property({ attribute: "hide-legend", type: Boolean }) public hideLegend =
+    false;
 
   @property({ attribute: false, type: Boolean }) public logarithmicScale =
     false;
