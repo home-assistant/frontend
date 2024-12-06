@@ -145,7 +145,9 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
                 @click=${this._goToNextStep}
                 class="skip-btn"
                 slot="actionItems"
-                >Skip</ha-button
+                >${this.hass.localize(
+                  "ui.panel.config.voice_assistants.satellite_wizard.skip"
+                )}</ha-button
               >`
             : nothing}
         </ha-dialog-header>
@@ -164,7 +166,9 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
                 )}
               ></ha-voice-assistant-setup-step-update>`
             : assistEntityState?.state === UNAVAILABLE
-              ? html`Your voice assistant is not available.`
+              ? this.hass.localize(
+                  "ui.panel.config.voice_assistants.satellite_wizard.not_available"
+                )
               : this._step === STEP.CHECK
                 ? html`<ha-voice-assistant-setup-step-check
                     .hass=${this.hass}
