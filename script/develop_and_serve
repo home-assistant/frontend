@@ -2,8 +2,6 @@
 #
 # This script can be used to develop and test the frontend without having to
 # link the build in a running core instance through the frontend/development_repo setting.
-# Instead you only have to configure the cors_allowed_origins of the http element
-# to grant access to whatever url you use to access your development frontend.
 #
 # WARNING:
 # If you have an active login session in the frontend. The core that was used
@@ -62,8 +60,7 @@ if [ ! -d "./hassio/build" ]; then
   hassio/script/build_hassio
 fi
 
-# build the frontend so it connects to the passed core
-HASS_URL="$coreUrl" ./script/develop &
+./script/develop &
 
 if [ -n "$DEVCONTAINER" ]; then
     nodeCoreUrl="${coreUrl/localhost/host.docker.internal}"

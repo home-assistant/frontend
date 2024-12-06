@@ -21,9 +21,17 @@ const app = express();
 app.use("/", express.static(path.join(repoDir, "hass_frontend")));
 app.use("/api/hassio/app", express.static(path.join(repoDir, "hassio/build")));
 app.use("/api", coreProxy);
+app.get("/auth/authorize", (req, res) => {
+  res.sendFile(path.join(repoDir, "hass_frontend/authorize.html"));
+});
+app.use("/auth", coreProxy);
+app.get("/onboarding", (req, res) => {
+  res.sendFile(path.join(repoDir, "hass_frontend/onboarding.html"));
+});
 app.get("*", (req, res) => {
   res.sendFile(path.join(repoDir, "hass_frontend/index.html"));
 });
+app.use("/", coreProxy);
 
 // if the core uses https, also use https for serving to avoid problems
 // with headers like Strict-Transport-Security
