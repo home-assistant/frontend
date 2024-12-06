@@ -91,7 +91,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   @property({ attribute: false }) public automations!: AutomationEntity[];
 
-  @property({ attribute: false, type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
