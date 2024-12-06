@@ -25,7 +25,7 @@ export class HaPictureUpload extends LitElement {
 
   @property() public supports?: string;
 
-  @property() public currentImageAltText?: string;
+  @property({ attribute: false }) public currentImageAltText?: string;
 
   @property({ type: Boolean }) public crop = false;
 

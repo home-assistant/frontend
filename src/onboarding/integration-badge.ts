@@ -8,11 +8,14 @@ import { brandsUrl } from "../util/brands-url";
 class IntegrationBadge extends LitElement {
   @property() public domain!: string;
 
-  @property() public title!: string;
+  // eslint-disable-next-line lit/no-native-attributes
+  @property({ attribute: false }) public title!: string;
 
-  @property({ type: Boolean }) public darkOptimizedIcon = false;
+  @property({ attribute: false, type: Boolean }) public darkOptimizedIcon =
+    false;
 
-  @property({ type: Boolean, reflect: true }) public clickable = false;
+  @property({ attribute: false, type: Boolean, reflect: true })
+  public clickable = false;
 
   protected render(): TemplateResult {
     return html`

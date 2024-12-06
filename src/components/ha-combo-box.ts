@@ -71,7 +71,7 @@ export class HaComboBox extends LitElement {
 
   @property() public placeholder?: string;
 
-  @property() public validationMessage?: string;
+  @property({ attribute: false }) public validationMessage?: string;
 
   @property() public helper?: string;
 

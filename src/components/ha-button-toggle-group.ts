@@ -14,7 +14,7 @@ export class HaButtonToggleGroup extends LitElement {
 
   @property() public active?: string;
 
-  @property({ type: Boolean }) public fullWidth = false;
+  @property({ attribute: false, type: Boolean }) public fullWidth = false;
 
   @property({ type: Boolean }) public dense = false;
 

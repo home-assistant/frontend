@@ -398,6 +398,11 @@ export interface ZWaveJSRemovedNode {
   label: string;
 }
 
+export interface ZWaveJSS2InclusionValidateDskAndEnterPinMessage {
+  event: "validate dsk and enter pin";
+  dsk: string;
+}
+
 export const enum NodeStatus {
   Unknown,
   Asleep,
@@ -805,6 +810,21 @@ export const subscribeZwaveNodeStatistics = (
     {
       type: "zwave_js/subscribe_node_statistics",
       device_id,
+    }
+  );
+
+export const subscribeS2Inclusion = (
+  hass: HomeAssistant,
+  entry_id: string,
+  callbackFunction: (
+    message: ZWaveJSS2InclusionValidateDskAndEnterPinMessage
+  ) => void
+): Promise<UnsubscribeFunc> =>
+  hass.connection.subscribeMessage(
+    (message: any) => callbackFunction(message),
+    {
+      type: "zwave_js/subscribe_s2_inclusion",
+      entry_id,
     }
   );
 

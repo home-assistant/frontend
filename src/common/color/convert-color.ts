@@ -25,9 +25,11 @@ export const rgb2hex = (rgb: [number, number, number]): string =>
 // Copyright (c) 2011-2019, Gregor Aisch
 
 // Constants for XYZ and LAB conversion
+/* eslint-disable @typescript-eslint/naming-convention */
 const Xn = 0.95047;
 const Yn = 1;
 const Zn = 1.08883;
+/* eslint-enable @typescript-eslint/naming-convention */
 
 const t0 = 0.137931034; // 4 / 29
 const t1 = 0.206896552; // 6 / 29

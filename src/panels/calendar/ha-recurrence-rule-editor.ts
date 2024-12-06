@@ -44,7 +44,7 @@ export class RecurrenceRuleEditor extends LitElement {
 
   @property({ attribute: false }) public dtstart?: Date;
 
-  @property({ type: Boolean }) public allDay = false;
+  @property({ attribute: false, type: Boolean }) public allDay = false;
 
   @property({ attribute: false }) public locale!: HomeAssistant["locale"];
 

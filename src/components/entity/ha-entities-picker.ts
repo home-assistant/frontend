@@ -75,7 +75,7 @@ class HaEntitiesPickerLight extends LitElement {
   @property({ attribute: false })
   public entityFilter?: HaEntityPickerEntityFilterFunc;
 
-  @property({ type: Array }) public createDomains?: string[];
+  @property({ attribute: false, type: Array }) public createDomains?: string[];
 
   protected render() {
     if (!this.hass) {

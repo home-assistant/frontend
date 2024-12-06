@@ -13,7 +13,7 @@ class StateCardConfigurator extends LitElement {
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
-  @property({ type: Boolean }) public inDialog = false;
+  @property({ attribute: false, type: Boolean }) public inDialog = false;
 
   protected render(): TemplateResult {
     return html`

@@ -13,7 +13,7 @@ class StateCardLawnMower extends LitElement {
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
-  @property({ type: Boolean }) public inDialog = false;
+  @property({ attribute: false, type: Boolean }) public inDialog = false;
 
   public render() {
     const stateObj = this.stateObj;

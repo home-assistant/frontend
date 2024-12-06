@@ -53,9 +53,9 @@ export class HaChartBase extends LitElement {
 
   @property({ type: Number }) public height?: number;
 
-  @property({ type: Number }) public paddingYAxis = 0;
+  @property({ attribute: false, type: Number }) public paddingYAxis = 0;
 
-  @property({ type: Boolean }) public externalHidden = false;
+  @property({ attribute: false, type: Boolean }) public externalHidden = false;
 
   @state() private _chartHeight?: number;
 
@@ -316,6 +316,7 @@ export class HaChartBase extends LitElement {
       .getContext("2d")!;
     this._loading = true;
     try {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       const ChartConstructor = (await import("../../resources/chartjs")).Chart;
 
       const computedStyles = getComputedStyle(this);
