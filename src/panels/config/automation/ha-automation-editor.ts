@@ -855,7 +855,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
   }
 
   protected async promptDiscardChanges() {
-    return this.confirmUnsavedChanged();
+    return this._confirmUnsavedChanged();
   }
 
   static get styles(): CSSResultGroup {
