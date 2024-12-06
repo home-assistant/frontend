@@ -32,8 +32,8 @@ const useHttps = coreUrl.startsWith("https:");
 const appServer = useHttps
   ? https.createServer(
       {
-        pfx: fs.readFileSync(repoDir + "/script/serve.pfx"),
-        passphrase: "localhost",
+        key: fs.readFileSync(repoDir + "/script/serve.key"),
+        cert: fs.readFileSync(repoDir + "/script/serve.crt"),
       },
       app
     )
