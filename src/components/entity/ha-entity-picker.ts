@@ -34,6 +34,7 @@ const CREATE_ID = "___create-new-entity___";
 export class HaEntityPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  // eslint-disable-next-line lit/no-native-attributes
   @property({ type: Boolean }) public autofocus = false;
 
   @property({ type: Boolean }) public disabled = false;
@@ -49,7 +50,7 @@ export class HaEntityPicker extends LitElement {
 
   @property() public helper?: string;
 
-  @property({ type: Array }) public createDomains?: string[];
+  @property({ attribute: false, type: Array }) public createDomains?: string[];
 
   /**
    * Show entities from specific domains.
@@ -102,7 +103,7 @@ export class HaEntityPicker extends LitElement {
   @property({ attribute: false })
   public entityFilter?: HaEntityPickerEntityFilterFunc;
 
-  @property({ type: Boolean }) public hideClearIcon = false;
+  @property({ attribute: false, type: Boolean }) public hideClearIcon = false;
 
   @property({ attribute: "item-label-path" }) public itemLabelPath =
     "friendly_name";

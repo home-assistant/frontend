@@ -25,9 +25,9 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
   @property({ attribute: false })
   public assistConfiguration?: AssistSatelliteConfiguration;
 
-  @property() public deviceId!: string;
+  @property({ attribute: false }) public deviceId!: string;
 
-  @property() public assistEntityId?: string;
+  @property({ attribute: false }) public assistEntityId?: string;
 
   @state() private _cloudChecked = false;
 

@@ -17,7 +17,7 @@ import { AssistantSetupStyles } from "./styles";
 export class HaVoiceAssistantSetupStepUpdate extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public updateEntityId?: string;
+  @property({ attribute: false }) public updateEntityId?: string;
 
   private _updated = false;
 

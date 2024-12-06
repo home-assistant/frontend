@@ -24,7 +24,7 @@ import type { HomeAssistant } from "../../../types";
 export abstract class HaBlueprintGenericEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: false, type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -97,11 +97,11 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
                 ? Object.entries(blueprint.metadata.input).map(
                     ([key, value]) => {
                       if (value && "input" in value) {
-                        const section = this.renderSection(key, value);
+                        const section = this._renderSection(key, value);
                         border = false;
                         return section;
                       }
-                      const row = this.renderSettingRow(key, value, border);
+                      const row = this._renderSettingRow(key, value, border);
                       border = true;
                       return row;
                     }
@@ -116,7 +116,7 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
     `;
   }
 
-  private renderSection(sectionKey: string, section: BlueprintInputSection) {
+  private _renderSection(sectionKey: string, section: BlueprintInputSection) {
     const title = section?.name || sectionKey;
     const anyRequired =
       section.input &&
@@ -145,14 +145,14 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
           : nothing}
         ${section.input
           ? Object.entries(section.input).map(([key, value]) =>
-              this.renderSettingRow(key, value, true)
+              this._renderSettingRow(key, value, true)
             )
           : nothing}
       </div>
     </ha-expansion-panel>`;
   }
 
-  private renderSettingRow(
+  private _renderSettingRow(
     key: string,
     value: BlueprintInput | null,
     border: boolean

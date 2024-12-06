@@ -30,9 +30,9 @@ import "./ha-switch";
 export class HaRelatedItems extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public itemType!: ItemType;
+  @property({ attribute: false }) public itemType!: ItemType;
 
-  @property() public itemId!: string;
+  @property({ attribute: false }) public itemId!: string;
 
   @state() private _entries?: ConfigEntry[];
 

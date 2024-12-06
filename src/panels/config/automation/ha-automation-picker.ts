@@ -128,7 +128,7 @@ type AutomationItem = AutomationEntity & {
 class HaAutomationPicker extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: false, type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 

@@ -23,16 +23,16 @@ export class HuiGenericEntityRow extends LitElement {
 
   @property({ attribute: false }) public config?: EntitiesCardEntityConfig;
 
-  @property() public secondaryText?: string;
+  @property({ attribute: false }) public secondaryText?: string;
 
-  @property({ type: Boolean }) public hideName = false;
+  @property({ attribute: false, type: Boolean }) public hideName = false;
 
   // Allows to control if this row should capture the user interaction, e.g. with its
   // toggle switch, button or input field. Some domains dynamically decide what to show
   // => static determination will not work => the caller has to pass the desired value in.
   // Same applies for custom components that want to override the default behavior.
   // Default behavior is controlled by DOMAINS_INPUT_ROW.
-  @property({ type: Boolean }) public catchInteraction?;
+  @property({ attribute: false, type: Boolean }) public catchInteraction?;
 
   protected render() {
     if (!this.hass || !this.config) {

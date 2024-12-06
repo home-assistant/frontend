@@ -1,5 +1,5 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement } from "lit";
 import {
   customElement,
   eventOptions,
@@ -7,6 +7,7 @@ import {
   queryAll,
   state,
 } from "lit/decorators";
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import type {
@@ -58,21 +59,22 @@ export class StateHistoryCharts extends LitElement {
 
   @property({ type: Boolean, attribute: "up-to-now" }) public upToNow = false;
 
-  @property({ type: Number }) public hoursToShow?: number;
+  @property({ attribute: false, type: Number }) public hoursToShow?: number;
 
-  @property({ type: Boolean }) public showNames = true;
+  @property({ attribute: false, type: Boolean }) public showNames = true;
 
-  @property({ type: Boolean }) public clickForMoreInfo = true;
+  @property({ attribute: false, type: Boolean }) public clickForMoreInfo = true;
 
-  @property({ type: Boolean }) public isLoadingData = false;
+  @property({ attribute: false, type: Boolean }) public isLoadingData = false;
 
-  @property({ type: Boolean }) public logarithmicScale = false;
+  @property({ attribute: false, type: Boolean }) public logarithmicScale =
+    false;
 
-  @property({ type: Number }) public minYAxis?: number;
+  @property({ attribute: false, type: Number }) public minYAxis?: number;
 
-  @property({ type: Number }) public maxYAxis?: number;
+  @property({ attribute: false, type: Number }) public maxYAxis?: number;
 
-  @property({ type: Boolean }) public fitYData = false;
+  @property({ attribute: false, type: Boolean }) public fitYData = false;
 
   private _computedStartTime!: Date;
 
@@ -122,6 +124,7 @@ export class StateHistoryCharts extends LitElement {
         ).concat(this.historyData.line)
       : this.historyData.line;
 
+    // eslint-disable-next-line lit/no-this-assign-in-render
     this._chartCount = combinedItems.length;
 
     return this.virtualize
@@ -139,12 +142,12 @@ export class StateHistoryCharts extends LitElement {
         )}`;
   }
 
-  private _renderHistoryItem = (
-    item: TimelineEntity[] | LineChartUnit,
-    index: number
-  ) => {
+  private _renderHistoryItem: RenderItemFunction<
+    TimelineEntity[] | LineChartUnit
+  > = (item, index) => {
     if (!item || index === undefined) {
-      return nothing;
+      // eslint-disable-next-line lit/prefer-nothing
+      return html``;
     }
     if (!Array.isArray(item)) {
       return html`<div class="entry-container">

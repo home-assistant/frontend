@@ -39,7 +39,7 @@ export class HuiBadgeEditMode extends LitElement {
 
   @property({ type: Array }) public path!: LovelaceCardPath;
 
-  @property({ type: Boolean }) public hiddenOverlay = false;
+  @property({ attribute: false, type: Boolean }) public hiddenOverlay = false;
 
   @state()
   public _menuOpened: boolean = false;
@@ -98,7 +98,7 @@ export class HuiBadgeEditMode extends LitElement {
     document.removeEventListener("click", this._documentClicked);
   }
 
-  _documentClicked = (ev) => {
+  private _documentClicked = (ev) => {
     this._hover = ev.composedPath().includes(this);
     document.removeEventListener("click", this._documentClicked);
   };

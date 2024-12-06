@@ -113,13 +113,13 @@ export class HaConfigDevicePage extends LitElement {
 
   @property({ attribute: false }) public manifests!: IntegrationManifest[];
 
-  @property() public deviceId!: string;
+  @property({ attribute: false }) public deviceId!: string;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: false, type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public showAdvanced = false;
+  @property({ attribute: false, type: Boolean }) public showAdvanced = false;
 
   @state() private _related?: RelatedResult;
 

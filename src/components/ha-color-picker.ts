@@ -82,7 +82,7 @@ export class HaColorPicker extends LitElement {
                     `
                   : value === "state"
                     ? html`<ha-svg-icon path=${mdiPalette}></ha-svg-icon>`
-                    : this.renderColorCircle(value || "grey")}
+                    : this._renderColorCircle(value || "grey")}
               </span>
             `
           : nothing}
@@ -123,7 +123,7 @@ export class HaColorPicker extends LitElement {
               ${this.defaultColor === color
                 ? ` (${this.hass.localize("ui.components.color-picker.default")})`
                 : nothing}
-              <span slot="graphic">${this.renderColorCircle(color)}</span>
+              <span slot="graphic">${this._renderColorCircle(color)}</span>
             </ha-list-item>
           `
         )}
@@ -131,7 +131,7 @@ export class HaColorPicker extends LitElement {
           ? html`
               <ha-list-item .value=${value} graphic="icon">
                 ${value}
-                <span slot="graphic">${this.renderColorCircle(value)}</span>
+                <span slot="graphic">${this._renderColorCircle(value)}</span>
               </ha-list-item>
             `
           : nothing}
@@ -139,7 +139,7 @@ export class HaColorPicker extends LitElement {
     `;
   }
 
-  private renderColorCircle(color: string) {
+  private _renderColorCircle(color: string) {
     return html`
       <span
         class="circle-color"

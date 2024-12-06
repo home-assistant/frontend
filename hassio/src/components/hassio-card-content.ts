@@ -9,23 +9,24 @@ import type { HomeAssistant } from "../../../src/types";
 class HassioCardContent extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  // eslint-disable-next-line lit/no-native-attributes
   @property() public title!: string;
 
   @property() public description?: string;
 
   @property({ type: Boolean }) public available = true;
 
-  @property({ type: Boolean }) public showTopbar = false;
+  @property({ attribute: false, type: Boolean }) public showTopbar = false;
 
-  @property() public topbarClass?: string;
+  @property({ attribute: false }) public topbarClass?: string;
 
-  @property() public iconTitle?: string;
+  @property({ attribute: false }) public iconTitle?: string;
 
-  @property() public iconClass?: string;
+  @property({ attribute: false }) public iconClass?: string;
 
   @property() public icon = mdiHelpCircle;
 
-  @property() public iconImage?: string;
+  @property({ attribute: false }) public iconImage?: string;
 
   protected render(): TemplateResult {
     return html`
@@ -35,7 +36,11 @@ class HassioCardContent extends LitElement {
       ${this.iconImage
         ? html`
             <div class="icon_image ${this.iconClass}">
-              <img src=${this.iconImage} .title=${this.iconTitle} />
+              <img
+                src=${this.iconImage}
+                .title=${this.iconTitle}
+                alt=${this.iconTitle ?? ""}
+              />
               <div></div>
             </div>
           `

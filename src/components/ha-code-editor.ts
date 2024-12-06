@@ -44,9 +44,10 @@ export class HaCodeEditor extends ReactiveElement {
 
   public hass?: HomeAssistant;
 
+  // eslint-disable-next-line lit/no-native-attributes
   @property({ type: Boolean }) public autofocus = false;
 
-  @property({ type: Boolean }) public readOnly = false;
+  @property({ attribute: false, type: Boolean }) public readOnly = false;
 
   @property({ type: Boolean }) public linewrap = false;
 

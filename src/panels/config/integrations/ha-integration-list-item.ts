@@ -21,7 +21,7 @@ export class HaIntegrationListItem extends ListItemBase {
 
   @property({ type: String, reflect: true }) graphic: GraphicType = "medium";
 
-  @property({ type: Boolean }) hasMeta = true;
+  @property({ attribute: false, type: Boolean }) hasMeta = true;
 
   @property({ type: Boolean }) brand = false;
 

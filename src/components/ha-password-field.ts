@@ -23,7 +23,7 @@ export class HaPasswordField extends LitElement {
 
   @property({ type: Boolean }) public icon = false;
 
-  @property({ type: Boolean }) public iconTrailing = false;
+  @property({ attribute: false, type: Boolean }) public iconTrailing = false;
 
   @property() public autocomplete?: string;
 
@@ -42,30 +42,32 @@ export class HaPasswordField extends LitElement {
 
   @property({ type: Boolean }) required = false;
 
-  @property({ type: Number }) minLength = -1;
+  @property({ attribute: false, type: Number }) minLength = -1;
 
-  @property({ type: Number }) maxLength = -1;
+  @property({ attribute: false, type: Number }) maxLength = -1;
 
   @property({ type: Boolean, reflect: true }) outlined = false;
 
   @property({ type: String }) helper = "";
 
-  @property({ type: Boolean }) validateOnInitialRender = false;
+  @property({ attribute: false, type: Boolean }) validateOnInitialRender =
+    false;
 
-  @property({ type: String }) validationMessage = "";
+  @property({ attribute: false, type: String }) validationMessage = "";
 
-  @property({ type: Boolean }) autoValidate = false;
+  @property({ attribute: false, type: Boolean }) autoValidate = false;
 
   @property({ type: String }) pattern = "";
 
   @property({ type: Number }) size: number | null = null;
 
-  @property({ type: Boolean }) helperPersistent = false;
+  @property({ attribute: false, type: Boolean }) helperPersistent = false;
 
-  @property({ type: Boolean }) charCounter: boolean | TextAreaCharCounter =
-    false;
+  @property({ attribute: false, type: Boolean }) charCounter:
+    | boolean
+    | TextAreaCharCounter = false;
 
-  @property({ type: Boolean }) endAligned = false;
+  @property({ attribute: false, type: Boolean }) endAligned = false;
 
   @property({ type: String }) prefix = "";
 
@@ -76,9 +78,10 @@ export class HaPasswordField extends LitElement {
   @property({ type: String, attribute: "input-mode" })
   inputMode!: string;
 
-  @property({ type: Boolean }) readOnly = false;
+  @property({ attribute: false, type: Boolean }) readOnly = false;
 
-  @property({ type: String }) autocapitalize = "";
+  // eslint-disable-next-line lit/no-native-attributes
+  @property({ attribute: false, type: String }) autocapitalize = "";
 
   @state() private _unmaskedPassword = false;
 
