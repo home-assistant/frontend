@@ -21,10 +21,15 @@ export class HaVoiceAssistantSetupStepArea extends LitElement {
           src="/static/images/voice-assistant/area.png"
           alt="Casita Home Assistant logo"
         />
-        <h1>Select area</h1>
+        <h1>
+          ${this.hass.localize(
+            "ui.panel.config.voice_assistants.satellite_wizard.area.title"
+          )}
+        </h1>
         <p class="secondary">
-          When you voice assistant knows where it is, it can better control the
-          devices around it.
+          ${this.hass.localize(
+            "ui.panel.config.voice_assistants.satellite_wizard.area.secondary"
+          )}
         </p>
         <ha-area-picker
           .hass=${this.hass}
@@ -32,14 +37,20 @@ export class HaVoiceAssistantSetupStepArea extends LitElement {
         ></ha-area-picker>
       </div>
       <div class="footer">
-        <ha-button @click=${this._setArea} unelevated>Next</ha-button>
+        <ha-button @click=${this._setArea} unelevated
+          >${this.hass.localize("ui.common.next")}</ha-button
+        >
       </div>`;
   }
 
   private async _setArea() {
     const area = this.shadowRoot!.querySelector("ha-area-picker")!.value;
     if (!area) {
-      showAlertDialog(this, { text: "Please select an area" });
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.config.voice_assistants.satellite_wizard.area.no_selection"
+        ),
+      });
       return;
     }
     await updateDeviceRegistryEntry(this.hass, this.deviceId, {
