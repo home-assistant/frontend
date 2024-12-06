@@ -27,13 +27,12 @@ import { ifDefined } from "lit/directives/if-defined";
 import { calcDate } from "../common/datetime/calc_date";
 import { firstWeekdayIndex } from "../common/datetime/first_weekday";
 import { formatDate } from "../common/datetime/format_date";
-import { formatDateTime } from "../common/datetime/format_date_time";
+import { formatShortDateTimeWithYear } from "../common/datetime/format_date_time";
 import { useAmPm } from "../common/datetime/use_am_pm";
 import type { HomeAssistant } from "../types";
 import "./date-range-picker";
 import "./ha-icon-button";
 import "./ha-svg-icon";
-import "./ha-textfield";
 import "./ha-icon-button-next";
 import "./ha-icon-button-prev";
 
@@ -258,57 +257,57 @@ export class HaDateRangePicker extends LitElement {
       >
         <div slot="input" class="date-range-inputs" @click=${this._handleClick}>
           ${!this.minimal
-            ? html`<ha-svg-icon .path=${mdiCalendar}></ha-svg-icon>
+            ? html`<div class="label">
+                  <div
+                    @click=${this._handleInputClick}
+                    title=${this.hass.localize(
+                      "ui.components.date-range-picker.start_date"
+                    )}
+                  >
+                    ${this.timePicker
+                      ? formatShortDateTimeWithYear(
+                          this.startDate,
+                          this.hass.locale,
+                          this.hass.config
+                        )
+                      : formatDate(
+                          this.startDate,
+                          this.hass.locale,
+                          this.hass.config
+                        )}
+                  </div>
+                  <div
+                    @click=${this._handleInputClick}
+                    title=${this.hass.localize(
+                      "ui.components.date-range-picker.end_date"
+                    )}
+                  >
+                    ${this.timePicker
+                      ? formatShortDateTimeWithYear(
+                          this.endDate,
+                          this.hass.locale,
+                          this.hass.config
+                        )
+                      : formatDate(
+                          this.endDate,
+                          this.hass.locale,
+                          this.hass.config
+                        )}
+                  </div>
+                </div>
                 <ha-icon-button-prev
                   .label=${this.hass.localize("ui.common.previous")}
                   class="prev"
                   @click=${this._handlePrev}
                 >
                 </ha-icon-button-prev>
-                <ha-textfield
-                  .value=${this.timePicker
-                    ? formatDateTime(
-                        this.startDate,
-                        this.hass.locale,
-                        this.hass.config
-                      )
-                    : formatDate(
-                        this.startDate,
-                        this.hass.locale,
-                        this.hass.config
-                      )}
-                  .label=${this.hass.localize(
-                    "ui.components.date-range-picker.start_date"
-                  )}
-                  .disabled=${this.disabled}
-                  @click=${this._handleInputClick}
-                  readonly
-                ></ha-textfield>
-                <ha-textfield
-                  .value=${this.timePicker
-                    ? formatDateTime(
-                        this.endDate,
-                        this.hass.locale,
-                        this.hass.config
-                      )
-                    : formatDate(
-                        this.endDate,
-                        this.hass.locale,
-                        this.hass.config
-                      )}
-                  .label=${this.hass.localize(
-                    "ui.components.date-range-picker.end_date"
-                  )}
-                  .disabled=${this.disabled}
-                  @click=${this._handleInputClick}
-                  readonly
-                ></ha-textfield>
                 <ha-icon-button-next
                   .label=${this.hass.localize("ui.common.next")}
                   class="next"
                   @click=${this._handleNext}
                 >
-                </ha-icon-button-next>`
+                </ha-icon-button-next>
+                <ha-svg-icon .path=${mdiCalendar}></ha-svg-icon>`
             : html`<ha-icon-button
                 .label=${this.hass.localize(
                   "ui.components.date-range-picker.select_date_range"
@@ -447,24 +446,23 @@ export class HaDateRangePicker extends LitElement {
         border-right: 1px solid var(--divider-color);
       }
 
+      .label div {
+        white-space: nowrap;
+      }
+
+      .label div {
+        white-space: nowrap;
+        text-align-last: justify;
+      }
+      .label div:first-child {
+        border-bottom: 1px solid var(--divider-color);
+      }
+
       .date-range-footer {
         display: flex;
         justify-content: flex-end;
         padding: 8px;
         border-top: 1px solid var(--divider-color);
-      }
-
-      ha-textfield {
-        display: inline-block;
-        max-width: 250px;
-        min-width: 220px;
-      }
-
-      ha-textfield:last-child {
-        margin-left: 8px;
-        margin-inline-start: 8px;
-        margin-inline-end: initial;
-        direction: var(--direction);
       }
 
       @media only screen and (max-width: 800px) {
@@ -478,10 +476,10 @@ export class HaDateRangePicker extends LitElement {
         ha-textfield {
           min-width: inherit;
         }
+      }
 
-        ha-svg-icon,
-        .prev,
-        .next {
+      @media only screen and (max-width: 380px) {
+        .label {
           display: none;
         }
       }

@@ -80,21 +80,19 @@ export class HaPanelLogbook extends LitElement {
               ></ha-menu-button>
             `}
         <div slot="title">${this.hass.localize("panel.logbook")}</div>
-        <ha-icon-button
-          slot="actionItems"
-          @click=${this._refreshLogbook}
-          .path=${mdiRefresh}
-          .label=${this.hass!.localize("ui.common.refresh")}
-        ></ha-icon-button>
+
+        <div slot="actionItems">
+          <div class="time-handle">
+            <ha-date-range-picker
+              .hass=${this.hass}
+              .startDate=${this._time.range[0]}
+              .endDate=${this._time.range[1]}
+              @change=${this._dateRangeChanged}
+            ></ha-date-range-picker>
+          </div>
+        </div>
 
         <div class="filters">
-          <ha-date-range-picker
-            .hass=${this.hass}
-            .startDate=${this._time.range[0]}
-            .endDate=${this._time.range[1]}
-            @change=${this._dateRangeChanged}
-          ></ha-date-range-picker>
-
           <ha-target-picker
             .hass=${this.hass}
             .entityFilter=${filterLogbookCompatibleEntities}
@@ -102,8 +100,12 @@ export class HaPanelLogbook extends LitElement {
             addOnTop
             @value-changed=${this._targetsChanged}
           ></ha-target-picker>
+          <ha-icon-button
+            @click=${this._refreshLogbook}
+            .path=${mdiRefresh}
+            .label=${this.hass!.localize("ui.common.refresh")}
+          ></ha-icon-button>
         </div>
-
         <ha-logbook
           .hass=${this.hass}
           .time=${this._time}
@@ -297,6 +299,21 @@ export class HaPanelLogbook extends LitElement {
           height: calc(100vh - 198px);
         }
 
+        .time-handle {
+          margin-top: 22px;
+          float: right;
+        }
+        .label div {
+          overflow: hidden;
+          display: inline-block;
+          white-space: nowrap;
+        }
+
+        @media all and (max-width: 870px) {
+          .time-handle {
+            margin-top: 0px;
+          }
+        }
         ha-date-range-picker {
           margin-right: 16px;
           margin-inline-end: 16px;
@@ -331,6 +348,12 @@ export class HaPanelLogbook extends LitElement {
         :host([narrow]) ha-entity-picker {
           max-width: none;
           width: 100%;
+        }
+
+        @media only screen and (max-width: 430px) {
+          div[slot="title"] {
+            display: none;
+          }
         }
       `,
     ];
