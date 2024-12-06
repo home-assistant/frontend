@@ -21,13 +21,13 @@ const appNames = {
 
 @customElement("ha-authorize")
 export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
-  @property() public clientId?: string;
+  @property({ attribute: false }) public clientId?: string;
 
-  @property() public redirectUri?: string;
+  @property({ attribute: false }) public redirectUri?: string;
 
-  @property() public oauth2State?: string;
+  @property({ attribute: false }) public oauth2State?: string;
 
-  @property() public translationFragment = "page-authorize";
+  @property({ attribute: false }) public translationFragment = "page-authorize";
 
   @state() private _authProvider?: AuthProvider;
 

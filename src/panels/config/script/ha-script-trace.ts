@@ -44,11 +44,11 @@ import type { EntityRegistryEntry } from "../../../data/entity_registry";
 export class HaScriptTrace extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public scriptId!: string;
+  @property({ attribute: false }) public scriptId!: string;
 
   @property({ attribute: false }) public scripts!: ScriptEntity[];
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: false, type: Boolean }) public isWide = false;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 

@@ -13,7 +13,7 @@ import "./ha-textfield";
 
 const loadDatePickerDialog = () => import("./ha-dialog-date-picker");
 
-export interface datePickerDialogParams {
+export interface DatePickerDialogParams {
   value?: string;
   min?: string;
   max?: string;
@@ -25,7 +25,7 @@ export interface datePickerDialogParams {
 
 const showDatePickerDialog = (
   element: HTMLElement,
-  dialogParams: datePickerDialogParams
+  dialogParams: DatePickerDialogParams
 ): void => {
   fireEvent(element, "show-dialog", {
     dialogTag: "ha-dialog-date-picker",
@@ -51,7 +51,7 @@ export class HaDateInput extends LitElement {
 
   @property() public helper?: string;
 
-  @property({ type: Boolean }) public canClear = false;
+  @property({ attribute: false, type: Boolean }) public canClear = false;
 
   render() {
     return html`<ha-textfield

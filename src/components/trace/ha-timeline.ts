@@ -11,9 +11,10 @@ export class HaTimeline extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public raised = false;
 
-  @property({ reflect: true, type: Boolean }) notEnabled = false;
+  @property({ attribute: false, reflect: true, type: Boolean }) notEnabled =
+    false;
 
-  @property({ type: Boolean }) public lastItem = false;
+  @property({ attribute: false, type: Boolean }) public lastItem = false;
 
   @property({ type: String }) public icon?: string;
 

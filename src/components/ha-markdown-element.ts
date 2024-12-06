@@ -19,7 +19,7 @@ const _gitHubMarkdownAlerts = {
 class HaMarkdownElement extends ReactiveElement {
   @property() public content?;
 
-  @property({ type: Boolean }) public allowSvg = false;
+  @property({ attribute: false, type: Boolean }) public allowSvg = false;
 
   @property({ type: Boolean }) public breaks = false;
 

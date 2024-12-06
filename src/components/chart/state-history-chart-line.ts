@@ -32,25 +32,26 @@ export class StateHistoryChartLine extends LitElement {
 
   @property() public identifier?: string;
 
-  @property({ type: Boolean }) public showNames = true;
+  @property({ attribute: false, type: Boolean }) public showNames = true;
 
-  @property({ type: Boolean }) public clickForMoreInfo = true;
+  @property({ attribute: false, type: Boolean }) public clickForMoreInfo = true;
 
   @property({ attribute: false }) public startTime!: Date;
 
   @property({ attribute: false }) public endTime!: Date;
 
-  @property({ type: Number }) public paddingYAxis = 0;
+  @property({ attribute: false, type: Number }) public paddingYAxis = 0;
 
-  @property({ type: Number }) public chartIndex?;
+  @property({ attribute: false, type: Number }) public chartIndex?;
 
-  @property({ type: Boolean }) public logarithmicScale = false;
+  @property({ attribute: false, type: Boolean }) public logarithmicScale =
+    false;
 
-  @property({ type: Number }) public minYAxis?: number;
+  @property({ attribute: false, type: Number }) public minYAxis?: number;
 
-  @property({ type: Number }) public maxYAxis?: number;
+  @property({ attribute: false, type: Number }) public maxYAxis?: number;
 
-  @property({ type: Boolean }) public fitYData = false;
+  @property({ attribute: false, type: Boolean }) public fitYData = false;
 
   @state() private _chartData?: ChartData<"line">;
 

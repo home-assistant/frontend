@@ -14,6 +14,7 @@ import {
   StaleWhileRevalidate,
 } from "workbox-strategies";
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 declare const __WB_MANIFEST__: Parameters<typeof precacheAndRoute>[0];
 
 const noFallBackRegEx =

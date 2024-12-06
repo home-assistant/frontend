@@ -84,9 +84,10 @@ export class HAFullCalendar extends LitElement {
     "listWeek",
   ];
 
-  @property() public initialView: FullCalendarView = "dayGridMonth";
+  @property({ attribute: false }) public initialView: FullCalendarView =
+    "dayGridMonth";
 
-  @property() public eventDisplay = "auto";
+  @property({ attribute: false }) public eventDisplay = "auto";
 
   @property({ attribute: false }) public error?: string = undefined;
 

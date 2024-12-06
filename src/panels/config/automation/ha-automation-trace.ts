@@ -49,11 +49,11 @@ const TABS = ["details", "automation_config", "timeline", "logbook"] as const;
 export class HaAutomationTrace extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public automationId!: string;
+  @property({ attribute: false }) public automationId!: string;
 
   @property({ attribute: false }) public automations!: AutomationEntity[];
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: false, type: Boolean }) public isWide = false;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 

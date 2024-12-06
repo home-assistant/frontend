@@ -32,7 +32,7 @@ export class CloudStepSignin extends LitElement {
           src=${`/static/images/logo_nabu_casa${this.hass.themes?.darkMode ? "_dark" : ""}.png`}
           alt="Nabu Casa logo"
         />
-        <h1>Sign in</h1>
+        <h1>${this.hass.localize("ui.panel.config.cloud.login.sign_in")}</h1>
         ${this._error
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
           : ""}
@@ -73,7 +73,9 @@ export class CloudStepSignin extends LitElement {
           unelevated
           @click=${this._handleLogin}
           .disabled=${this._requestInProgress}
-          >Sign in</ha-button
+          >${this.hass.localize(
+            "ui.panel.config.cloud.login.sign_in"
+          )}</ha-button
         >
       </div>`;
   }
