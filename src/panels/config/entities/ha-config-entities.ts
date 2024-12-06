@@ -750,7 +750,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           "ui.panel.config.entities.picker.search",
           { number: filteredEntities.length }
         )}
-        hasFilters
+        has-filters
         .filters=${
           Object.values(this._filters).filter((filter) =>
             Array.isArray(filter)

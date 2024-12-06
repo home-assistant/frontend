@@ -17,7 +17,7 @@ export class HaTraceConfig extends LitElement {
     return html`
       <ha-code-editor
         .value=${dump(this.trace.config).trimRight()}
-        readOnly
+        read-only
         dir="ltr"
       ></ha-code-editor>
     `;

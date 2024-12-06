@@ -25,7 +25,7 @@ export class HuiGenericEntityRow extends LitElement {
 
   @property({ attribute: false }) public secondaryText?: string;
 
-  @property({ attribute: false, type: Boolean }) public hideName = false;
+  @property({ attribute: "hide-name", type: Boolean }) public hideName = false;
 
   // Allows to control if this row should capture the user interaction, e.g. with its
   // toggle switch, button or input field. Some domains dynamically decide what to show

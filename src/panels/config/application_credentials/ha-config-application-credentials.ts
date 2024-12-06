@@ -159,7 +159,7 @@ export class HaConfigApplicationCredentials extends LitElement {
           this._applicationCredentials,
           this.hass.localize
         )}
-        hasFab
+        has-fab
         selectable
         .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}

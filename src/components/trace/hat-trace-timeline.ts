@@ -676,7 +676,8 @@ export class HaAutomationTracer extends LitElement {
 
   @property({ attribute: false }) public selectedPath?: string;
 
-  @property({ attribute: false, type: Boolean }) public allowPick = false;
+  @property({ attribute: "allow-pick", type: Boolean }) public allowPick =
+    false;
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })

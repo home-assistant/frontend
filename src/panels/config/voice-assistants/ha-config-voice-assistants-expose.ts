@@ -576,7 +576,7 @@ export class VoiceAssistantsExpose extends LitElement {
         @search-changed=${this._handleSearchChange}
         @row-click=${this._openEditEntry}
         id="entity_id"
-        hasFab
+        has-fab
       >
         ${this._selectedEntities.length
           ? html`

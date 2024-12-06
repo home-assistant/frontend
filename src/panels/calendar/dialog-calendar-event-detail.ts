@@ -93,7 +93,7 @@ class DialogCalendarEventDetail extends LitElement {
               .hass=${this.hass}
               .stateObj=${stateObj}
               .color=${this._params.color}
-              inDialog
+              in-dialog
             ></state-info>
           </div>
         </div>
