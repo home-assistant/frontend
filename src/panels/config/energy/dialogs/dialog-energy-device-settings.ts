@@ -108,6 +108,15 @@ export class DialogEnergyDeviceSettings
         >
         </ha-textfield>
 
+        <ha-textfield
+          label="parent"
+          type="text"
+          .disabled=${!this._device}
+          .value=${this._device?.parent_stat || ""}
+          @input=${this._parentChanged}
+        >
+        </ha-textfield>
+
         <mwc-button @click=${this.closeDialog} slot="secondaryAction">
           ${this.hass.localize("ui.common.cancel")}
         </mwc-button>
@@ -137,6 +146,17 @@ export class DialogEnergyDeviceSettings
     } as DeviceConsumptionEnergyPreference;
     if (!newDevice.name) {
       delete newDevice.name;
+    }
+    this._device = newDevice;
+  }
+
+  private _parentChanged(ev) {
+    const newDevice = {
+      ...this._device!,
+      parent_stat: ev.target!.value,
+    } as DeviceConsumptionEnergyPreference;
+    if (!newDevice.parent_stat) {
+      delete newDevice.parent_stat;
     }
     this._device = newDevice;
   }

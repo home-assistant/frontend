@@ -232,6 +232,16 @@ export class HuiEnergyDevicesDetailGraphCard
 
     const computedStyle = getComputedStyle(this);
 
+    const devices = energyData.prefs.device_consumption;
+
+    const childMap: Record<string, string[]> = {};
+    devices.forEach((d) => {
+      if (d.parent_stat) {
+        childMap[d.parent_stat] = childMap[d.parent_stat] || [];
+        childMap[d.parent_stat].push(d.stat_consumption);
+      }
+    });
+
     const growthValues = {};
     energyData.prefs.device_consumption.forEach((device) => {
       const value =
@@ -247,6 +257,22 @@ export class HuiEnergyDevicesDetailGraphCard
     );
     sorted_devices.sort((a, b) => growthValues[b] - growthValues[a]);
 
+    const ordered_devices: string[] = [];
+
+    // Recursively build an ordered list of devices, where each device has all its children immediately following it.
+    function orderDevices(parent?: string) {
+      sorted_devices.forEach((device) => {
+        const parent_stat = energyData.prefs.device_consumption.find(
+          (prf) => prf.stat_consumption === device
+        )?.parent_stat;
+        if ((!parent && !parent_stat) || parent === parent_stat) {
+          ordered_devices.push(device);
+          orderDevices(device);
+        }
+      });
+    }
+    orderDevices();
+
     const datasets: ChartDataset<"bar", ScatterDataPoint[]>[] = [];
     const datasetExtras: ChartDatasetExtra[] = [];
 
@@ -256,7 +282,8 @@ export class HuiEnergyDevicesDetailGraphCard
         data,
         energyData.statsMetadata,
         energyData.prefs.device_consumption,
-        sorted_devices
+        ordered_devices,
+        childMap
       );
 
     datasets.push(...processedData);
@@ -283,7 +310,9 @@ export class HuiEnergyDevicesDetailGraphCard
         this._processUntracked(
           computedStyle,
           processedData,
+          processedDataExtras,
           consumptionData,
+          energyData.prefs.device_consumption,
           false
         );
       datasets.push(untrackedData);
@@ -316,7 +345,8 @@ export class HuiEnergyDevicesDetailGraphCard
         compareData,
         energyData.statsMetadata,
         energyData.prefs.device_consumption,
-        sorted_devices,
+        ordered_devices,
+        childMap,
         true
       );
 
@@ -330,7 +360,9 @@ export class HuiEnergyDevicesDetailGraphCard
         } = this._processUntracked(
           computedStyle,
           processedCompareData,
+          processedCompareDataExtras,
           consumptionCompareData,
+          energyData.prefs.device_consumption,
           true
         );
         datasets.push(untrackedCompareData);
@@ -353,16 +385,27 @@ export class HuiEnergyDevicesDetailGraphCard
   private _processUntracked(
     computedStyle: CSSStyleDeclaration,
     processedData,
+    processedDataExtras,
     consumptionData,
+    deviceConsumptionPrefs,
     compare: boolean
   ): { dataset; datasetExtra } {
     const totalDeviceConsumption: { [start: number]: number } = {};
 
-    processedData.forEach((device) => {
-      device.data.forEach((datapoint) => {
-        totalDeviceConsumption[datapoint.x] =
-          (totalDeviceConsumption[datapoint.x] || 0) + datapoint.y;
-      });
+    processedData.forEach((device, idx) => {
+      const stat = deviceConsumptionPrefs.find(
+        (pref) => pref.stat_consumption === processedDataExtras[idx].id
+      );
+
+      // If a child is hidden, don't count it in the total, because the parent device will grow to encompass that consumption.
+      const hiddenChild =
+        stat.parent_stat && this._hiddenStats.includes(stat.stat_consumption);
+      if (!hiddenChild) {
+        device.data.forEach((datapoint) => {
+          totalDeviceConsumption[datapoint.x] =
+            (totalDeviceConsumption[datapoint.x] || 0) + datapoint.y;
+        });
+      }
     });
 
     const untrackedConsumption: { x: number; y: number }[] = [];
@@ -409,6 +452,7 @@ export class HuiEnergyDevicesDetailGraphCard
     statisticsMetaData: Record<string, StatisticsMetaData>,
     devices: DeviceConsumptionEnergyPreference[],
     sorted_devices: string[],
+    childMap: Record<string, string[]>,
     compare = false
   ) {
     const data: ChartDataset<"bar", ScatterDataPoint[]>[] = [];
@@ -421,7 +465,7 @@ export class HuiEnergyDevicesDetailGraphCard
 
       const consumptionData: ScatterDataPoint[] = [];
 
-      // Process gas consumption data.
+      // Process device consumption data.
       if (source.stat_consumption in statistics) {
         const stats = statistics[source.stat_consumption];
         let end;
@@ -434,9 +478,26 @@ export class HuiEnergyDevicesDetailGraphCard
             continue;
           }
           const date = new Date(point.start);
+
+          let sumChildren = 0;
+          const sumVisibleChildren = (parent) => {
+            const children = childMap[parent] || [];
+            children.forEach((c) => {
+              if (this._hiddenStats.includes(c)) {
+                sumVisibleChildren(c);
+              } else {
+                const cStats = statistics[c];
+                sumChildren +=
+                  cStats?.find((cStat) => cStat.start === point.start)
+                    ?.change || 0;
+              }
+            });
+          };
+          sumVisibleChildren(source.stat_consumption);
+
           consumptionData.push({
             x: date.getTime(),
-            y: point.change,
+            y: point.change - sumChildren,
           });
           prevStart = point.start;
           end = point.end;
@@ -472,7 +533,10 @@ export class HuiEnergyDevicesDetailGraphCard
         pointStyle: compare ? false : "circle",
         xAxisID: compare ? "xAxisCompare" : undefined,
       });
-      dataExtras.push({ show_legend: !compare && !itemExceedsMax });
+      dataExtras.push({
+        show_legend: !compare && !itemExceedsMax,
+        id: source.stat_consumption,
+      });
     });
     return { data, dataExtras };
   }
