@@ -49,17 +49,6 @@ do
     esac
 done
 
-# display used settings
-if [ -n "$DEVCONTAINER" ]; then
-    echo Frontend is available inside container as http://localhost:${frontendPort}
-    if [ 8123 -eq $frontendPort ]; then
-      echo Frontend is available on container host as http://localhost:8124
-    fi
-else
-    echo Frontend is hosted on http://localhost:${frontendPort}
-fi
-echo Core is used from ${coreUrl}
-
 if [ ! -d "./hassio/build" ]; then
   echo Building hassio
   # the hassio rest app doesn't need the HASS_URL override,

@@ -1,4 +1,6 @@
 import express from "express";
+import https from "https";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -12,6 +14,7 @@ import { createProxyMiddleware } from "http-proxy-middleware";
 const coreProxy = createProxyMiddleware({
   target: coreUrl,
   changeOrigin: true,
+  ws: true,
 });
 
 const app = express();
@@ -22,13 +25,38 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(repoDir, "hass_frontend/index.html"));
 });
 
-var server = app.listen(port, () => {
-  console.log(
-    `Running at http://localhost:${port}, connected to core on ${coreUrl}`
-  );
+// if the core uses https, also use https for serving to avoid problems
+// with headers like Strict-Transport-Security
+const useHttps = coreUrl.startsWith("https:");
+
+const appServer = useHttps
+  ? https.createServer(
+      {
+        pfx: fs.readFileSync(repoDir + "/script/serve.pfx"),
+        passphrase: "localhost",
+      },
+      app
+    )
+  : app;
+
+const frontendBase = `http${useHttps ? "s" : ""}://localhost`;
+appServer.listen(port, () => {
+  if (process.env.DEVCONTAINER !== undefined) {
+    console.log(
+      `Frontend is available inside container as ${frontendBase}:${port}`
+    );
+    if (port === 8123) {
+      console.log(
+        `Frontend is available on container host as ${frontendBase}://localhost:8124`
+      );
+    }
+  } else {
+    console.log(`Frontend is hosted on ${frontendBase}:${port}`);
+  }
+  console.log(`Core is used from ${coreUrl}`);
 });
 
 process.on("SIGINT", function () {
   console.log("Shutting down file server");
-  server.close();
+  process.exit(0);
 });
