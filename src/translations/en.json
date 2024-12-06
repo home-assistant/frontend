@@ -2772,6 +2772,10 @@
                 "speech": {
                   "title": "Amazing speech options for Assist",
                   "text": "Bring personality to your home by having it speak to you using our neural-network powered speech-to-text and text-to-speech services."
+                },
+                "remote_access": {
+                  "title": "Remote access",
+                  "text": " Secure remote access to your system while supporting the development of Home Assistant."
                 }
               },
               "and_more": "And more",
@@ -2824,6 +2828,83 @@
               "header": "Expose entities",
               "expose_to": "to {assistants}",
               "expose_entities": "Expose {count} {count, plural,\n  one {entity}\n  other {entities}\n}"
+            }
+          },
+          "satellite_wizard": {
+            "skip": "Skip",
+            "not_available": "Your voice assistant is not available.",
+            "update": {
+              "title": "Updating",
+              "checking": "Checking for updates",
+              "secondary": "We are making sure you have the latest updates. This may take a few minutes."
+            },
+            "check": {
+              "title": "Hello!",
+              "secondary": "Over the next couple steps we're going to personalize your voice assistant.",
+              "failed_title": "The voice assistant is unable to connect to Home Assistant",
+              "failed_secondary": "To play audio, the voice assistant device has to connect to Home Assistant to fetch the files. Our test shows that the device is unable to reach the Home Assistant server.",
+              "help": "Help me",
+              "retry": "Retry"
+            },
+            "wake_word": {
+              "title": "Say ''{wakeword}'' to wake the device up",
+              "secondary": "Setup will continue once the device is awake.",
+              "title_2": "Say ''{wakeword}'' again",
+              "secondary_2": "To make sure the wake word works for you.",
+              "change_wake_word": "Change wake word",
+              "time_out": "We have not heard the wake word, is your device muted?",
+              "muted": "Your device is muted",
+              "muted_description": "Please unmute your device to continue."
+            },
+            "change_wake_word": {
+              "title": "Change wake word",
+              "secondary": "These are the phrases you can use to wake your device and have it start listening for commands."
+            },
+            "area": {
+              "title": "Select area",
+              "secondary": "When your voice assistant knows where it is, it can better control the devices around it. This allows you to control devices in the room with short commands, like 'turn on the lights'",
+              "no_selection": "Please select an area"
+            },
+            "pipeline": {
+              "title": "What hardware do you want to use?",
+              "secondary": "How quickly your assistant responds depends on the power of the hardware.",
+              "seconds": "seconds",
+              "cloud": {
+                "description": "Ideal if you don't have a powerful system at home."
+              },
+              "local": { "title": "", "description": "", "setup": "" }
+            },
+            "cloud": {
+              "title": "The power of Home Assistant Cloud",
+              "register": {
+                "confirm_email": "Confirm email"
+              }
+            },
+            "local": {
+              "title": "Installing add-ons",
+              "secondary": "The Whisper and Piper add-ons are being installed and configured based on your hardware.",
+              "failed_title": "Failed to install add-ons",
+              "failed_secondary": "We were unable to install the Whisper and Piper add-ons automatically for you. Read the documentation to learn how to install them.",
+              "not_supported_title": "Installation of add-ons is not supported on your system",
+              "not_supported_secondary": "Your system is not supported to automatically install a local TTS and STT provider. Learn how to set up local TTS and STT providers in the documentation.",
+              "local_pipeline": "Local Assistant",
+              "state": {
+                "installing_piper": "Installing Piper add-on",
+                "starting_piper": "Starting Piper add-on",
+                "setup_piper": "Setting up Piper",
+                "installing_whisper": "Installing Whisper add-on",
+                "starting_whisper": "Starting Whisper add-on",
+                "setup_whisper": "Setting up Whisper",
+                "creating_pipeline": "Creating assistant"
+              },
+              "errors": {
+                "failed_create_entry": "Failed to create entry for {addon}",
+                "could_not_find_entities": "Could not find local TTS and STT entities"
+              }
+            },
+            "success": {
+              "title": "Ready to Assist!",
+              "secondary": "Make any final customizations here. You can always change these in the Voice Assistants section of the settings page."
             }
           }
         },
@@ -3968,6 +4049,8 @@
             "password_error_msg": "Passwords are at least 8 characters",
             "start_trial": "Start trial",
             "resend_confirm_email": "Resend confirmation email",
+            "clicked_confirm": "I clicked the confirmation link",
+            "confirm_email": "Check the email we just sent to {email} and click the confirmation link to continue.",
             "account_created": "Account created! Check your email for instructions on how to activate your account."
           },
           "account": {

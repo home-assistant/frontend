@@ -72,12 +72,17 @@ export class HaVoiceAssistantSetupStepUpdate extends LitElement {
       <h1>
         ${stateObj &&
         (stateObj.state === "unavailable" || updateIsInstalling(stateObj))
-          ? "Updating your voice assistant"
-          : "Checking for updates"}
+          ? this.hass.localize(
+              "ui.panel.config.voice_assistants.satellite_wizard.update.title"
+            )
+          : this.hass.localize(
+              "ui.panel.config.voice_assistants.satellite_wizard.update.checking"
+            )}
       </h1>
       <p class="secondary">
-        We are making sure you have the latest and greatest version of your
-        voice assistant. This may take a few minutes.
+        ${this.hass.localize(
+          "ui.panel.config.voice_assistants.satellite_wizard.update.secondary"
+        )}
       </p>
       <ha-circular-progress
         .value=${progressIsNumeric

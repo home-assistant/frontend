@@ -1,14 +1,13 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-md-list";
+import "../../components/ha-md-list-item";
 import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
 import { setWakeWords } from "../../data/assist_satellite";
 import type { HomeAssistant } from "../../types";
-import { STEP } from "./voice-assistant-setup-dialog";
 import { AssistantSetupStyles } from "./styles";
-import "../../components/ha-md-list";
-import "../../components/ha-md-list-item";
-import { formatLanguageCode } from "../../common/language/format_language";
+import { STEP } from "./voice-assistant-setup-dialog";
 
 @customElement("ha-voice-assistant-setup-step-change-wake-word")
 export class HaVoiceAssistantSetupStepChangeWakeWord extends LitElement {
@@ -25,11 +24,15 @@ export class HaVoiceAssistantSetupStepChangeWakeWord extends LitElement {
           src="/static/images/voice-assistant/change-wake-word.png"
           alt="Casita Home Assistant logo"
         />
-        <h1>Change wake word</h1>
+        <h1>
+          ${this.hass.localize(
+            "ui.panel.config.voice_assistants.satellite_wizard.change_wake_word.title"
+          )}
+        </h1>
         <p class="secondary">
-          Some wake words are better for
-          ${formatLanguageCode(this.hass.locale.language, this.hass.locale)} and
-          voice than others. Please try them out.
+          ${this.hass.localize(
+            "ui.panel.config.voice_assistants.satellite_wizard.change_wake_word.secondary"
+          )}
         </p>
       </div>
       <ha-md-list>
