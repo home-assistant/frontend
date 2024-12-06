@@ -43,9 +43,4 @@ fi
 
 ./script/develop &
 
-if [ -n "$DEVCONTAINER" ]; then
-    nodeCoreUrl="${coreUrl/localhost/host.docker.internal}"
-else
-    nodeCoreUrl="$coreUrl"
-fi
 yarn serve "$@"

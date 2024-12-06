@@ -11,7 +11,10 @@ const parsedArguments = {
   ...minimist(process.argv.slice(2)),
 };
 
-const coreUrl = parsedArguments.c;
+const coreUrl =
+  process.env.DEVCONTAINER !== undefined
+    ? parsedArguments.c.replace("/localhost:", "/host.docker.internal:")
+    : parsedArguments.c;
 const port = parseInt(parsedArguments.p);
 
 const repoDir = path.join(fileURLToPath(import.meta.url), "../..");
