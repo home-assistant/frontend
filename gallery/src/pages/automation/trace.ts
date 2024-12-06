@@ -35,7 +35,7 @@ export class DemoAutomationTrace extends LitElement {
                 .sampleIdx=${idx}
               ></hat-script-graph>
               <hat-trace-timeline
-                allowPick
+                allow-pick
                 .hass=${this.hass}
                 .trace=${trace.trace}
                 .logbookEntries=${trace.logbookEntries}

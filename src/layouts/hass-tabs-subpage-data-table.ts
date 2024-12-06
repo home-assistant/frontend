@@ -84,7 +84,7 @@ export class HaTabsSubpageDataTable extends LitElement {
    * Do we need to add padding for a fab.
    * @type {Boolean}
    */
-  @property({ attribute: false, type: Boolean }) public hasFab = false;
+  @property({ attribute: "has-fab", type: Boolean }) public hasFab = false;
 
   /**
    * Add an extra row at the bottom of the data table
@@ -156,7 +156,8 @@ export class HaTabsSubpageDataTable extends LitElement {
    * Show the filter menu.
    * @type {Boolean}
    */
-  @property({ attribute: false, type: Boolean }) public hasFilters = false;
+  @property({ attribute: "has-filters", type: Boolean }) public hasFilters =
+    false;
 
   @property({ attribute: false, type: Boolean }) public showFilters = false;
 

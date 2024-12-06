@@ -195,7 +195,7 @@ export class HaConfigUsers extends LitElement {
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
         @row-click=${this._editUser}
-        hasFab
+        has-fab
         clickable
       >
         <ha-fab
