@@ -126,7 +126,7 @@ class DialogRestoreBackupEncryptionKey
     const hasEncryptionKey = this._backupEncryptionKey != null;
 
     const schema = this._schema(
-      this._backupEncryptionKey != null,
+      hasEncryptionKey,
       this._formData.encryption_key_type
     );
 
