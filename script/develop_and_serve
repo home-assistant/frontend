@@ -2,6 +2,8 @@
 #
 # This script can be used to develop and test the frontend without having to
 # link the build in a running core instance through the frontend/development_repo setting.
+# Instead you only have to configure the cors_allowed_origins of the http element
+# to grant access to whatever url you use to access your development frontend.
 #
 # WARNING:
 # If you have an active login session in the frontend. The core that was used
@@ -19,6 +21,10 @@
 # For example: script/develop_and_serve -c https://myhost.duckdns.org:8123
 # This will also work for existing production core instances.
 # It does not need to be a development version hosted locally.
+# However note that if the core you connect to uses https, you will also need to use
+# https to connect to your local development frontend. A self signed certificate
+# for localhost is included and will be used when necessary. You just have to accept
+# it as valid when browsing to your local development frontend.
 #
 # You can change the port the frontend is served on by passing the -p option.
 # For example: script/develop_and_serve -p 8654
