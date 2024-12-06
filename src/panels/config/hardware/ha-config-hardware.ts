@@ -301,7 +301,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                         <mwc-list>
                           <ha-clickable-list-item
                             .href=${documentationURL}
-                            openNewTab
+                            open-new-tab
                             twoline
                             hasMeta
                           >

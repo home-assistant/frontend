@@ -16,7 +16,7 @@ class HassioCardContent extends LitElement {
 
   @property({ type: Boolean }) public available = true;
 
-  @property({ attribute: false, type: Boolean }) public showTopbar = false;
+  @property({ attribute: false }) public showTopbar = false;
 
   @property({ attribute: false }) public topbarClass?: string;
 

@@ -34,7 +34,7 @@ class HassioIngressView extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ attribute: false, type: Boolean }) public ingressPanel = false;
+  @property({ attribute: false }) public ingressPanel = false;
 
   @property({ type: Boolean }) public narrow = false;
 

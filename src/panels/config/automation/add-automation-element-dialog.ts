@@ -318,7 +318,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
             <ha-domain-icon
               .hass=${this.hass}
               .domain=${domain}
-              brandFallback
+              brand-fallback
             ></ha-domain-icon>
           `,
           key: `${SERVICE_PREFIX}${domain}`,

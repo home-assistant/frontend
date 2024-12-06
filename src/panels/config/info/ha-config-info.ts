@@ -172,7 +172,7 @@ class HaConfigInfo extends LitElement {
                 (page) => html`
                   <ha-clickable-list-item
                     graphic="avatar"
-                    openNewTab
+                    open-new-tab
                     href=${documentationUrl(this.hass, page.path)}
                   >
                     <div

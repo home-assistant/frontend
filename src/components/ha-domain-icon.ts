@@ -18,7 +18,8 @@ export class HaDomainIcon extends LitElement {
 
   @property() public icon?: string;
 
-  @property({ attribute: false, type: Boolean }) public brandFallback?: boolean;
+  @property({ attribute: "brand-fallback", type: Boolean })
+  public brandFallback?: boolean;
 
   protected render() {
     if (this.icon) {
