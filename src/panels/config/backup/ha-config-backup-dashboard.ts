@@ -30,7 +30,12 @@ import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import { getSignedPath } from "../../../data/auth";
-import type { BackupContent, GenerateBackupParams } from "../../../data/backup";
+import type {
+  BackupConfig,
+  BackupContent,
+  BackupMutableConfig,
+  GenerateBackupParams,
+} from "../../../data/backup";
 import {
   deleteBackup,
   fetchBackupConfig,
@@ -39,6 +44,7 @@ import {
   getBackupDownloadUrl,
   getPreferredAgentForDownload,
   subscribeBackupEvents,
+  updateBackupConfig,
 } from "../../../data/backup";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
@@ -58,6 +64,7 @@ import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup"
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
+import { showSetBackupEncryptionKeyDialog } from "./dialogs/show-dialog-set-backup-encryption-key";
 
 @customElement("ha-config-backup-dashboard")
 class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
@@ -73,7 +80,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
 
   @state() private _selected: string[] = [];
 
-  @state() private _hasStrategy = false;
+  @state() private _config?: BackupConfig;
 
   private _subscribed?: Promise<() => void>;
 
@@ -192,27 +199,34 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
         )}
       >
         <div slot="top_header" class="header">
-          ${this._hasStrategy
-            ? html`<ha-backup-summary-card
-                title="Automatically backed up"
-                description="Your configuration has been backed up."
-                has-action
-                .status=${this._backupInProgress ? "loading" : "success"}
-              >
-                <ha-button slot="action" @click=${this._configureDefaultBackup}>
-                  Configure
-                </ha-button>
-              </ha-backup-summary-card>`
-            : html`<ha-backup-summary-card
-                title="Set up default backup"
-                description="Have a one-click backup automation with selected data and locations."
-                has-action
-                status="info"
-              >
-                <ha-button slot="action" @click=${this._onboardDefaultBackup}>
-                  Setup backup strategy
-                </ha-button>
-              </ha-backup-summary-card>`}
+          ${this._needsOnboarding
+            ? html`
+                <ha-backup-summary-card
+                  title="Set up default backup"
+                  description="Have a one-click backup automation with selected data and locations."
+                  has-action
+                  status="info"
+                >
+                  <ha-button slot="action" @click=${this._onboardDefaultBackup}>
+                    Setup backup strategy
+                  </ha-button>
+                </ha-backup-summary-card>
+              `
+            : html`
+                <ha-backup-summary-card
+                  title="Automatically backed up"
+                  description="Your configuration has been backed up."
+                  has-action
+                  .status=${this._backupInProgress ? "loading" : "success"}
+                >
+                  <ha-button
+                    slot="action"
+                    @click=${this._configureDefaultBackup}
+                  >
+                    Configure
+                  </ha-button>
+                </ha-backup-summary-card>
+              `}
         </div>
 
         <div slot="toolbar-icon">
@@ -327,7 +341,16 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
 
   private async _fetchBackupConfig() {
     const { config } = await fetchBackupConfig(this.hass);
-    this._hasStrategy = !!config.create_backup.password;
+    this._config = config;
+  }
+
+  private async _updateBackupConfig(config: BackupMutableConfig) {
+    await updateBackupConfig(this.hass, config);
+    await this._fetchBackupConfig();
+  }
+
+  private get _needsOnboarding() {
+    return this._config && !this._config.create_backup.password;
   }
 
   private async _uploadBackup(ev) {
@@ -339,7 +362,21 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   }
 
   private async _newBackup(): Promise<void> {
-    const { config } = await fetchBackupConfig(this.hass);
+    if (this._needsOnboarding) {
+      const success = await showSetBackupEncryptionKeyDialog(this, {
+        saveKey: (key) => {
+          this._updateBackupConfig({
+            create_backup: {
+              password: key,
+            },
+          });
+        },
+      });
+      if (!success) {
+        return;
+      }
+    }
+    const config = this._config!;
 
     const type = await showNewBackupDialog(this, { config });
 
@@ -442,7 +479,20 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
     navigate("/config/backup/default-config");
   }
 
-  private _onboardDefaultBackup() {
+  private async _onboardDefaultBackup() {
+    const success = await showSetBackupEncryptionKeyDialog(this, {
+      saveKey: (key) => {
+        this._updateBackupConfig({
+          create_backup: {
+            password: key,
+          },
+        });
+      },
+    });
+    if (!success) {
+      return;
+    }
+
     navigate("/config/backup/default-config");
   }
 

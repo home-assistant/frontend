@@ -235,3 +235,15 @@ export const computeBackupAgentName = (
 
   return showName ? `${domainName}: ${name}` : domainName;
 };
+
+export const generateEncryptionKey = () => {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  const pattern = "xxxx-xxxx-xxxx-xxxx-xxxx-xxxx-xxxx";
+  let result = "";
+  const randomArray = new Uint8Array(pattern.length);
+  crypto.getRandomValues(randomArray);
+  randomArray.forEach((number, index) => {
+    result += pattern[index] === "-" ? "-" : chars[number % chars.length];
+  });
+  return result;
+};
