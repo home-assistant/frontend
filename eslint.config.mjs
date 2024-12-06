@@ -114,7 +114,7 @@ export default [
       "@typescript-eslint/no-shadow": ["error"],
 
       "@typescript-eslint/naming-convention": [
-        "warn",
+        "error",
         {
           selector: ["objectLiteralProperty", "objectLiteralMethod"],
           format: null,
@@ -162,16 +162,16 @@ export default [
       ],
 
       "unused-imports/no-unused-imports": "error",
-      "lit/attribute-names": "warn",
+      "lit/attribute-names": "error",
       "lit/attribute-value-entities": "off",
       "lit/no-template-map": "off",
-      "lit/no-native-attributes": "warn",
-      "lit/no-this-assign-in-render": "warn",
+      "lit/no-native-attributes": "error",
+      "lit/no-this-assign-in-render": "error",
       "lit-a11y/click-events-have-key-events": ["off"],
       "lit-a11y/no-autofocus": "off",
-      "lit-a11y/alt-text": "warn",
-      "lit-a11y/anchor-is-valid": "warn",
-      "lit-a11y/role-has-required-aria-attrs": "warn",
+      "lit-a11y/alt-text": "error",
+      "lit-a11y/anchor-is-valid": "error",
+      "lit-a11y/role-has-required-aria-attrs": "error",
       "@typescript-eslint/consistent-type-imports": "error",
       "@typescript-eslint/no-import-type-side-effects": "error",
     },
