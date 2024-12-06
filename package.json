@@ -190,7 +190,7 @@
     "@typescript-eslint/eslint-plugin": "7.18.0",
     "@typescript-eslint/parser": "7.18.0",
     "@vitest/coverage-v8": "2.1.8",
-    "@web/dev-server": "0.1.38",
+    "@web/dev-server": "0.4.6",
     "babel-loader": "9.2.1",
     "babel-plugin-template-html-minifier": "4.1.0",
     "browserslist-useragent-regexp": "4.1.3",
