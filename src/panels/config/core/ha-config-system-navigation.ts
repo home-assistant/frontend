@@ -139,7 +139,7 @@ class HaConfigSystemNavigation extends LitElement {
               .hass=${this.hass}
               .narrow=${this.narrow}
               .pages=${pages}
-              hasSecondary
+              has-secondary
               .label=${this.hass.localize(
                 "ui.panel.config.dashboard.system.main"
               )}
