@@ -10,23 +10,25 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-button-prev";
 import "../../../../components/ha-md-dialog";
 import type { HaMdDialog } from "../../../../components/ha-md-dialog";
+import "../../../../components/ha-md-list";
+import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-md-select";
 import "../../../../components/ha-md-select-option";
-import "../../../../components/ha-password-field";
-import type { HaPasswordField } from "../../../../components/ha-password-field";
-import "../../../../components/ha-settings-row";
-import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-textfield";
 import type {
   BackupAgent,
+  BackupConfig,
   GenerateBackupParams,
 } from "../../../../data/backup";
-import { fetchBackupAgentsInfo } from "../../../../data/backup";
+import {
+  fetchBackupAgentsInfo,
+  fetchBackupConfig,
+} from "../../../../data/backup";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import "../components/ha-backup-config-data";
 import "../components/ha-backup-agents-picker";
+import "../components/ha-backup-config-data";
 import type { BackupConfigData } from "../components/ha-backup-config-data";
 import type { GenerateBackupDialogParams } from "./show-dialog-generate-backup";
 
@@ -34,7 +36,6 @@ type FormData = {
   name: string;
   agents_mode: "all" | "custom";
   agent_ids: string[];
-  password: string;
   data: BackupConfigData;
 };
 
@@ -46,7 +47,6 @@ const INITIAL_DATA: FormData = {
     include_all_addons: true,
   },
   name: "",
-  password: "",
   agents_mode: "all",
   agent_ids: [],
 };
@@ -61,6 +61,8 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
 
   @state() private _agents: BackupAgent[] = [];
 
+  @state() private _backupConfig?: BackupConfig;
+
   @state() private _params?: GenerateBackupDialogParams;
 
   @state() private _formData?: FormData;
@@ -72,6 +74,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     this._formData = INITIAL_DATA;
     this._params = _params;
     this._fetchAgents();
+    this._fetchBackupConfig();
   }
 
   private _dialogClosed() {
@@ -81,6 +84,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     this._step = undefined;
     this._formData = undefined;
     this._agents = [];
+    this._backupConfig = undefined;
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -88,6 +92,11 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
   private async _fetchAgents() {
     const { agents } = await fetchBackupAgentsInfo(this.hass);
     this._agents = agents;
+  }
+
+  private async _fetchBackupConfig() {
+    const { config } = await fetchBackupConfig(this.hass);
+    this._backupConfig = config;
   }
 
   public closeDialog() {
@@ -192,32 +201,27 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
         @change=${this._nameChanged}
       >
       </ha-textfield>
-      <ha-password-field
-        name="password"
-        .label=${"Encryption key"}
-        .value=${this._formData.password}
-        @change=${this._passwordChanged}
-        required
-      >
-      </ha-password-field>
-      <ha-settings-row>
-        <span slot="heading">Locations</span>
-        <span slot="description">
-          What locations you want to automatically backup to.
-        </span>
-        <ha-md-select
-          id="agents_mode"
-          @change=${this._selectChanged}
-          .value=${this._formData.agents_mode}
-        >
-          <ha-md-select-option value="all">
-            <div slot="headline">All (${this._agents.length})</div>
-          </ha-md-select-option>
-          <ha-md-select-option value="custom">
-            <div slot="headline">Custom</div>
-          </ha-md-select-option>
-        </ha-md-select>
-      </ha-settings-row>
+      <ha-md-list>
+        <ha-md-list-item>
+          <span slot="headline">Backup locations</span>
+          <span slot="supporting-text">
+            What locations you want to automatically backup to.
+          </span>
+          <ha-md-select
+            slot="end"
+            id="agents_mode"
+            @change=${this._selectChanged}
+            .value=${this._formData.agents_mode}
+          >
+            <ha-md-select-option value="all">
+              <div slot="headline">All (${this._agents.length})</div>
+            </ha-md-select-option>
+            <ha-md-select-option value="custom">
+              <div slot="headline">Custom</div>
+            </ha-md-select-option>
+          </ha-md-select>
+        </ha-md-list-item>
+      </ha-md-list>
       ${this._formData.agents_mode === "custom"
         ? html`
             <ha-expansion-panel .header=${"Locations"} outlined expanded>
@@ -255,28 +259,14 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     };
   }
 
-  private _passwordChanged(ev) {
-    this._formData = {
-      ...this._formData!,
-      password: ev.target.value,
-    };
-  }
-
   private async _submit() {
     if (!this._formData) {
       return;
     }
 
-    const { agent_ids, agents_mode, name, password, data } = this._formData;
+    const { agent_ids, agents_mode, name, data } = this._formData;
 
-    if (!password) {
-      const passwordField = this.shadowRoot!.querySelector(
-        "ha-password-field"
-      ) as HaPasswordField;
-      passwordField.reportValidity();
-      passwordField.focus();
-      return;
-    }
+    const password = this._backupConfig?.create_backup.password || undefined;
 
     const ALL_AGENT_IDS = this._agents.map((agent) => agent.agent_id);
 
@@ -306,33 +296,35 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
           --dialog-content-padding: 24px;
           max-height: calc(100vh - 48px);
         }
-        ha-settings-row {
-          --settings-row-prefix-display: flex;
+        ha-md-list {
+          background: none;
           padding: 0;
         }
-        ha-settings-row > ha-svg-icon {
-          align-self: center;
-          margin-inline-end: 16px;
+        ha-md-list-item {
+          --md-list-item-leading-space: 0;
+          --md-list-item-trailing-space: 0;
         }
-        ha-settings-row > ha-md-select {
-          min-width: 150px;
+        ha-md-list-item ha-md-select {
+          min-width: 210px;
         }
-        ha-settings-row > ha-md-select > span {
+        @media all and (max-width: 450px) {
+          ha-md-list-item ha-md-select {
+            min-width: 160px;
+            width: 160px;
+          }
+        }
+        ha-md-list-item ha-md-select > span {
           text-overflow: ellipsis;
           overflow: hidden;
           white-space: nowrap;
         }
-        ha-settings-row > ha-md-select-option {
+        ha-md-list-item ha-md-select-option {
           white-space: nowrap;
           text-overflow: ellipsis;
           overflow: hidden;
         }
-        ha-textfield,
-        ha-password-field {
+        ha-textfield {
           width: 100%;
-        }
-        ha-password-field {
-          margin-top: 16px;
         }
         .content {
           padding-top: 0;
