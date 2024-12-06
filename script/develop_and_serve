@@ -34,25 +34,6 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-# parse input paramters
-if [ -n "$DEVCONTAINER" ]; then
-    frontendPort=8123
-else
-    frontendPort=8124
-fi
-
-coreUrl=http://localhost:8123
-
-while getopts p:c:h flag
-do
-    case "${flag}" in
-        p) frontendPort=${OPTARG};;
-        c) coreUrl="${OPTARG}";;
-        h) echo Documentation can be found inside "$0" && exit 0;;
-        *) echo Documentation can be found inside "$0" && exit 1;;
-    esac
-done
-
 if [ ! -d "./hassio/build" ]; then
   echo Building hassio
   # the hassio rest app doesn't need the HASS_URL override,
@@ -67,4 +48,4 @@ if [ -n "$DEVCONTAINER" ]; then
 else
     nodeCoreUrl="$coreUrl"
 fi
-yarn exec node ./script/serve.js "$nodeCoreUrl" $frontendPort
+yarn serve "$@"

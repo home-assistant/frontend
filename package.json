@@ -19,6 +19,7 @@
     "postinstall": "husky",
     "prepack": "pinst --disable",
     "postpack": "pinst --enable",
+    "serve": "node ./script/serve.js",
     "test": "vitest run --config test/vitest.config.ts",
     "test:coverage": "vitest run --config test/vitest.config.ts --coverage"
   },

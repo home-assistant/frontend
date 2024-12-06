@@ -1,11 +1,18 @@
 import express from "express";
 import https from "https";
 import fs from "fs";
+import minimist from "minimist";
 import path from "path";
 import { fileURLToPath } from "url";
 
-const coreUrl = process.argv[2];
-const port = parseInt(process.argv[3] ?? "8123");
+const parsedArguments = {
+  c: "http://localhost:8123",
+  p: process.env.DEVCONTAINER !== undefined ? "8123" : "8124",
+  ...minimist(process.argv.slice(2)),
+};
+
+const coreUrl = parsedArguments.c;
+const port = parseInt(parsedArguments.p);
 
 const repoDir = path.join(fileURLToPath(import.meta.url), "../..");
 
@@ -55,7 +62,7 @@ appServer.listen(port, () => {
     );
     if (port === 8123) {
       console.log(
-        `Frontend is available on container host as ${frontendBase}://localhost:8124`
+        `Frontend is available on container host as ${frontendBase}:8124`
       );
     }
   } else {
