@@ -69,12 +69,13 @@ export class HaMap extends ReactiveElement {
 
   @property({ type: Boolean }) public clickable = false;
 
-  @property({ attribute: false, type: Boolean }) public autoFit = false;
+  @property({ attribute: "auto-fit", type: Boolean }) public autoFit = false;
 
-  @property({ attribute: false, type: Boolean }) public renderPassive = false;
+  @property({ attribute: "render-passive", type: Boolean })
+  public renderPassive = false;
 
-  @property({ attribute: false, type: Boolean }) public interactiveZones =
-    false;
+  @property({ attribute: "interactive-zones", type: Boolean })
+  public interactiveZones = false;
 
   @property({ attribute: false, type: Boolean }) public fitZones = false;
 

@@ -616,7 +616,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         selectable
         .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}
-        hasFilters
+        has-filters
         .filters=${Object.values(this._filters).filter((filter) =>
           Array.isArray(filter)
             ? filter.length
@@ -641,7 +641,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         @row-click=${this._openEditDialog}
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
-        hasFab
+        has-fab
         clickable
         .noDataText=${this.hass.localize(
           "ui.panel.config.helpers.picker.no_helpers"

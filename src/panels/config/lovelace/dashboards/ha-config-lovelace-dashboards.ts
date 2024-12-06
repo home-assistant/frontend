@@ -322,7 +322,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
         @search-changed=${this._handleSearchChange}
         @row-click=${this._editDashboard}
         id="url_path"
-        hasFab
+        has-fab
         clickable
       >
         <ha-button-menu slot="toolbar-icon" activatable>
