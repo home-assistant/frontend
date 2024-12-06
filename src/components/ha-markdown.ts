@@ -7,7 +7,7 @@ import "./ha-markdown-element";
 export class HaMarkdown extends LitElement {
   @property() public content?;
 
-  @property({ type: Boolean }) public allowSvg = false;
+  @property({ attribute: false, type: Boolean }) public allowSvg = false;
 
   @property({ type: Boolean }) public breaks = false;
 

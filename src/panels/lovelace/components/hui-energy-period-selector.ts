@@ -55,7 +55,7 @@ import type { HomeAssistant } from "../../../types";
 export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public collectionKey?: string;
+  @property({ attribute: "collection-key" }) public collectionKey?: string;
 
   @property({ type: Boolean, reflect: true }) public narrow?;
 

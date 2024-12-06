@@ -16,7 +16,7 @@ export class HaVoiceAssistantSetupStepChangeWakeWord extends LitElement {
   @property({ attribute: false })
   public assistConfiguration?: AssistSatelliteConfiguration;
 
-  @property() public assistEntityId?: string;
+  @property({ attribute: false }) public assistEntityId?: string;
 
   protected override render() {
     return html`<div class="padding content">

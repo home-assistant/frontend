@@ -15,7 +15,7 @@ export class HaTextField extends TextFieldBase {
   @property({ type: Boolean }) public icon = false;
 
   // @ts-ignore
-  @property({ type: Boolean }) public iconTrailing = false;
+  @property({ attribute: false, type: Boolean }) public iconTrailing = false;
 
   @property() public autocomplete?: string;
 

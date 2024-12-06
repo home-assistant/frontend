@@ -39,7 +39,8 @@ export class HaStatisticPicker extends LitElement {
   @property({ type: Boolean, attribute: "allow-custom-entity" })
   public allowCustomEntity;
 
-  @property({ type: Array }) public statisticIds?: StatisticsMetaData[];
+  @property({ attribute: false, type: Array })
+  public statisticIds?: StatisticsMetaData[];
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -84,7 +85,8 @@ export class HaStatisticPicker extends LitElement {
   @property({ type: Array, attribute: "exclude-statistics" })
   public excludeStatistics?: string[];
 
-  @property() public helpMissingEntityUrl = "/more-info/statistics/";
+  @property({ attribute: false }) public helpMissingEntityUrl =
+    "/more-info/statistics/";
 
   @state() private _opened?: boolean;
 

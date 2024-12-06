@@ -33,13 +33,14 @@ export class ZHAGroupPage extends LitElement {
 
   @property({ type: Object }) public group?: ZHAGroup;
 
-  @property({ type: Number }) public groupId!: number;
+  @property({ attribute: false, type: Number }) public groupId!: number;
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: false, type: Boolean }) public isWide = false;
 
-  @property({ type: Array }) public deviceEndpoints: ZHADeviceEndpoint[] = [];
+  @property({ attribute: false, type: Array })
+  public deviceEndpoints: ZHADeviceEndpoint[] = [];
 
   @state() private _processingAdd = false;
 

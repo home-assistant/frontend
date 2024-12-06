@@ -96,15 +96,15 @@ export class HaSceneEditor extends SubscribeMixin(
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: false, type: Boolean }) public isWide = false;
 
   @property({ attribute: false }) public route!: Route;
 
-  @property() public sceneId: string | null = null;
+  @property({ attribute: false }) public sceneId: string | null = null;
 
   @property({ attribute: false }) public scenes!: SceneEntity[];
 
-  @property({ type: Boolean }) public showAdvanced = false;
+  @property({ attribute: false, type: Boolean }) public showAdvanced = false;
 
   @state() private _dirty = false;
 
@@ -349,7 +349,7 @@ export class HaSceneEditor extends SubscribeMixin(
           </ha-list-item>
         </ha-button-menu>
         ${this._errors ? html` <div class="errors">${this._errors}</div> ` : ""}
-        ${this._mode === "yaml" ? this.renderYamlMode() : this.renderUiMode()}
+        ${this._mode === "yaml" ? this._renderYamlMode() : this._renderUiMode()}
         <ha-fab
           slot="fab"
           .label=${this.hass.localize("ui.panel.config.scene.editor.save")}
@@ -364,7 +364,7 @@ export class HaSceneEditor extends SubscribeMixin(
     `;
   }
 
-  private renderYamlMode() {
+  private _renderYamlMode() {
     return html` <ha-yaml-editor
       .hass=${this.hass}
       .defaultValue=${this._config}
@@ -372,7 +372,7 @@ export class HaSceneEditor extends SubscribeMixin(
     ></ha-yaml-editor>`;
   }
 
-  private renderUiMode() {
+  private _renderUiMode() {
     const { devices, entities } = this._getEntitiesDevices(
       this._entities,
       this._devices,
@@ -1025,7 +1025,7 @@ export class HaSceneEditor extends SubscribeMixin(
   }
 
   private _backTapped = async (): Promise<void> => {
-    const result = await this.confirmUnsavedChanged();
+    const result = await this._confirmUnsavedChanged();
     if (result) {
       this._goBack();
     }
@@ -1062,7 +1062,7 @@ export class HaSceneEditor extends SubscribeMixin(
     history.back();
   }
 
-  private async confirmUnsavedChanged(): Promise<boolean> {
+  private async _confirmUnsavedChanged(): Promise<boolean> {
     if (this._dirty) {
       return showConfirmationDialog(this, {
         title: this.hass!.localize(
@@ -1080,7 +1080,7 @@ export class HaSceneEditor extends SubscribeMixin(
   }
 
   private async _duplicate() {
-    const result = await this.confirmUnsavedChanged();
+    const result = await this._confirmUnsavedChanged();
     if (result) {
       showSceneEditor(
         {
