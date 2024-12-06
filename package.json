@@ -166,7 +166,7 @@
     "@octokit/auth-oauth-device": "7.1.1",
     "@octokit/plugin-retry": "7.1.2",
     "@octokit/rest": "21.0.2",
-    "@rsdoctor/rspack-plugin": "0.4.10",
+    "@rsdoctor/rspack-plugin": "0.4.11",
     "@rspack/cli": "1.1.5",
     "@rspack/core": "1.1.5",
     "@types/babel__plugin-transform-runtime": "7.9.5",
