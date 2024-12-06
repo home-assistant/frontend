@@ -9,7 +9,7 @@
   "scripts": {
     "build": "script/build_frontend",
     "lint:eslint": "eslint --flag unstable_config_lookup_from_file \"**/src/**/*.{js,ts,html}\" --cache --cache-strategy=content --cache-location=node_modules/.cache/eslint/.eslintcache --ignore-pattern=.gitignore",
-    "format:eslint": "eslint --flag unstable_config_lookup_from_file \"**/src/**/*.{js,ts,html}\" --cache --cache-strategy=content --cache-location=node_modules/.cache/eslint/.eslintcache --ignore-pattern=.gitignore --fix",
+    "format:eslint": "eslint --flag unstable_config_lookup_from_file \"**/src/**/*.{js,ts,html}\" --cache --cache-strategy=content --cache-location=node_modules/.cache/eslint/.eslintcache --ignore-pattern=.gitignore --fix --max-warnings=0",
     "lint:prettier": "prettier . --cache --check",
     "format:prettier": "prettier . --cache --write",
     "lint:types": "tsc",
