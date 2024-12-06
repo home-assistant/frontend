@@ -201,6 +201,7 @@ export class HaChartBase extends LitElement {
       this.chart.data = this.data;
     }
     if (changedProps.has("options")) {
+      // @FIXME: this resets the chart zoom because min/max changed
       this.chart.options = this._createOptions();
     }
     this.chart.update("none");
