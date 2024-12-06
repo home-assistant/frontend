@@ -122,7 +122,10 @@ class HaLandingPage extends LandingPageBaseElement {
     if (language !== this.language && language) {
       this.language = language;
       try {
-        localStorage.setItem("selectedLanguage", JSON.stringify(language));
+        window.localStorage.setItem(
+          "selectedLanguage",
+          JSON.stringify(language)
+        );
       } catch (err: any) {
         // Ignore
       }
