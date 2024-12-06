@@ -46,7 +46,7 @@ export class HaTabsSubpageDataTable extends LitElement {
 
   @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
 
-  @property({ attribute: false, type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
@@ -156,10 +156,11 @@ export class HaTabsSubpageDataTable extends LitElement {
    * Show the filter menu.
    * @type {Boolean}
    */
-  @property({ attribute: "has-filters", type: Boolean }) public hasFilters =
-    false;
+  @property({ attribute: "has-filters", type: Boolean })
+  public hasFilters = false;
 
-  @property({ attribute: false, type: Boolean }) public showFilters = false;
+  @property({ attribute: "show-filters", type: Boolean })
+  public showFilters = false;
 
   @property({ attribute: false }) public initialSorting?: {
     column: string;

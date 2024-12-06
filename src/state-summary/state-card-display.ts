@@ -17,7 +17,7 @@ class StateCardDisplay extends LitElement {
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
-  @property({ attribute: false, type: Boolean }) public inDialog = false;
+  @property({ attribute: "in-dialog", type: Boolean }) public inDialog = false;
 
   // property used only in CSS
   @property({ type: Boolean, reflect: true }) public rtl = false;

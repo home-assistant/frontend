@@ -39,7 +39,8 @@ export class HuiBadgeEditMode extends LitElement {
 
   @property({ type: Array }) public path!: LovelaceCardPath;
 
-  @property({ attribute: false, type: Boolean }) public hiddenOverlay = false;
+  @property({ attribute: "hidden-overlay", type: Boolean })
+  public hiddenOverlay = false;
 
   @state()
   public _menuOpened: boolean = false;

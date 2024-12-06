@@ -32,7 +32,7 @@ export class HuiErrorSection
 {
   public hass?: HomeAssistant;
 
-  @property({ attribute: false, type: Boolean }) public isStrategy = false;
+  @property({ attribute: false }) public isStrategy = false;
 
   @state() private _config?: ErrorSectionConfig;
 

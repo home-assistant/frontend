@@ -184,9 +184,11 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ attribute: false, type: Boolean }) public alwaysExpand = false;
+  @property({ attribute: "always-expand", type: Boolean })
+  public alwaysExpand = false;
 
-  @property({ attribute: false, type: Boolean }) public editMode = false;
+  @property({ attribute: "edit-mode", type: Boolean })
+  public editMode = false;
 
   @state() private _notifications?: PersistentNotification[];
 

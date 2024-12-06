@@ -80,10 +80,9 @@ export class SupervisorBackupContent extends LitElement {
 
   @property({ attribute: false }) public addons?: AddonCheckboxItem[];
 
-  @property({ attribute: false, type: Boolean }) public homeAssistant = false;
+  @property({ attribute: false }) public homeAssistant = false;
 
-  @property({ attribute: false, type: Boolean }) public backupHasPassword =
-    false;
+  @property({ attribute: false }) public backupHasPassword = false;
 
   @property({ type: Boolean }) public onboarding = false;
 

@@ -96,7 +96,7 @@ export class HaSceneEditor extends SubscribeMixin(
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: false, type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ attribute: false }) public route!: Route;
 
@@ -104,7 +104,7 @@ export class HaSceneEditor extends SubscribeMixin(
 
   @property({ attribute: false }) public scenes!: SceneEntity[];
 
-  @property({ attribute: false, type: Boolean }) public showAdvanced = false;
+  @property({ attribute: false }) public showAdvanced = false;
 
   @state() private _dirty = false;
 
