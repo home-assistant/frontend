@@ -58,9 +58,11 @@ describe("token_storage.saveTokens", () => {
       extractSearchParam: extractSearchParamSpy,
     }));
 
-    window.localStorage = {
-      setItem: vi.fn(),
-    } as unknown as Storage;
+    const { FallbackStorage: fallbackStorage } = await import(
+      "../../../test_helper/local-storage-fallback"
+    );
+    const setItemSpy = vi.fn();
+    fallbackStorage.prototype.setItem = setItemSpy;
 
     ({ saveTokens } = await import(
       "../../../../src/common/auth/token_storage"
@@ -70,8 +72,8 @@ describe("token_storage.saveTokens", () => {
     expect(window.__tokenCache.writeEnabled).toBe(true);
     expect(extractSearchParamSpy).toHaveBeenCalledOnce();
     expect(extractSearchParamSpy).toHaveBeenCalledWith("storeToken");
-    expect(window.localStorage.setItem).toHaveBeenCalledOnce();
-    expect(window.localStorage.setItem).toHaveBeenCalledWith(
+    expect(setItemSpy).toHaveBeenCalledOnce();
+    expect(setItemSpy).toHaveBeenCalledWith(
       "hassTokens",
       JSON.stringify(tokens)
     );
@@ -101,11 +103,13 @@ describe("token_storage.saveTokens", () => {
       extractSearchParam: extractSearchParamSpy,
     }));
 
-    window.localStorage = {
-      setItem: vi.fn(() => {
-        throw new Error("Full storage");
-      }),
-    } as unknown as Storage;
+    const { FallbackStorage: fallbackStorage } = await import(
+      "../../../test_helper/local-storage-fallback"
+    );
+    const setItemSpy = vi.fn(() => {
+      throw new Error("Full storage");
+    });
+    fallbackStorage.prototype.setItem = setItemSpy;
 
     // eslint-disable-next-line no-global-assign
     console = {
@@ -120,8 +124,8 @@ describe("token_storage.saveTokens", () => {
     expect(window.__tokenCache.tokens).toEqual(tokens);
     expect(window.__tokenCache.writeEnabled).toBe(true);
     expect(extractSearchParamSpy).toBeCalledTimes(0);
-    expect(window.localStorage.setItem).toHaveBeenCalledOnce();
-    expect(window.localStorage.setItem).toHaveBeenCalledWith(
+    expect(setItemSpy).toHaveBeenCalledOnce();
+    expect(setItemSpy).toHaveBeenCalledWith(
       "hassTokens",
       JSON.stringify(tokens)
     );

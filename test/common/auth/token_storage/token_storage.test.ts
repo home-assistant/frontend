@@ -13,6 +13,7 @@ describe("token_storage", () => {
   });
 
   afterEach(() => {
+    vi.resetAllMocks();
     vi.resetModules();
   });
 
@@ -40,9 +41,11 @@ describe("token_storage", () => {
       clientId: "client",
     };
 
-    window.localStorage = {
-      getItem: vi.fn(() => JSON.stringify(tokens)),
-    } as unknown as Storage;
+    const { FallbackStorage: fallbackStorage } = await import(
+      "../../../test_helper/local-storage-fallback"
+    );
+    const getItemSpy = vi.fn(() => JSON.stringify(tokens));
+    fallbackStorage.prototype.getItem = getItemSpy;
 
     const { loadTokens } = await import(
       "../../../../src/common/auth/token_storage"
@@ -53,14 +56,16 @@ describe("token_storage", () => {
 
     expect(window.__tokenCache.tokens).toEqual(tokens);
     expect(window.__tokenCache.writeEnabled).toBe(true);
-    expect(window.localStorage.getItem).toHaveBeenCalledOnce();
-    expect(window.localStorage.getItem).toHaveBeenCalledWith("hassTokens");
+    expect(getItemSpy).toHaveBeenCalledOnce();
+    expect(getItemSpy).toHaveBeenCalledWith("hassTokens");
   });
 
   test("should load null tokens", async () => {
-    window.localStorage = {
-      getItem: vi.fn(() => null),
-    } as unknown as Storage;
+    const { FallbackStorage: fallbackStorage } = await import(
+      "../../../test_helper/local-storage-fallback"
+    );
+    const getItemSpy = vi.fn(() => "hello");
+    fallbackStorage.prototype.getItem = getItemSpy;
 
     const { loadTokens } = await import(
       "../../../../src/common/auth/token_storage"
@@ -71,8 +76,8 @@ describe("token_storage", () => {
 
     expect(window.__tokenCache.tokens).toEqual(null);
     expect(window.__tokenCache.writeEnabled).toBe(undefined);
-    expect(window.localStorage.getItem).toHaveBeenCalledOnce();
-    expect(window.localStorage.getItem).toHaveBeenCalledWith("hassTokens");
+    expect(getItemSpy).toHaveBeenCalledOnce();
+    expect(getItemSpy).toHaveBeenCalledWith("hassTokens");
   });
 
   it("should enable write", async () => {
@@ -91,9 +96,11 @@ describe("token_storage", () => {
       })
     );
 
-    window.localStorage = {
-      setItem: vi.fn(),
-    } as unknown as Storage;
+    const { FallbackStorage: fallbackStorage } = await import(
+      "../../../test_helper/local-storage-fallback"
+    );
+    const setItemSpy = vi.fn();
+    fallbackStorage.prototype.setItem = setItemSpy;
 
     const { enableWrite } = await import(
       "../../../../src/common/auth/token_storage"
@@ -101,8 +108,8 @@ describe("token_storage", () => {
 
     enableWrite();
     expect(window.__tokenCache.writeEnabled).toBe(true);
-    expect(window.localStorage.setItem).toHaveBeenCalledOnce();
-    expect(window.localStorage.setItem).toHaveBeenCalledWith(
+    expect(setItemSpy).toHaveBeenCalledOnce();
+    expect(setItemSpy).toHaveBeenCalledWith(
       "hassTokens",
       JSON.stringify("testToken")
     );

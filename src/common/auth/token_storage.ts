@@ -1,5 +1,8 @@
 import type { AuthData } from "home-assistant-js-websocket";
 import { extractSearchParam } from "../url/search-params";
+import { FallbackStorage } from "../../../test/test_helper/local-storage-fallback";
+
+const storage = window.localStorage || new FallbackStorage();
 
 declare global {
   interface Window {
@@ -36,7 +39,7 @@ export function saveTokens(tokens: AuthData | null) {
 
   if (tokenCache.writeEnabled) {
     try {
-      window.localStorage.setItem("hassTokens", JSON.stringify(tokens));
+      storage.setItem("hassTokens", JSON.stringify(tokens));
     } catch (err: any) {
       // write failed, ignore it. Happens if storage is full or private mode.
       // eslint-disable-next-line no-console
@@ -59,7 +62,7 @@ export function enableWrite() {
 export function loadTokens() {
   if (tokenCache.tokens === undefined) {
     try {
-      const tokens = window.localStorage.getItem("hassTokens");
+      const tokens = storage.getItem("hassTokens");
       if (tokens) {
         tokenCache.tokens = JSON.parse(tokens);
         tokenCache.writeEnabled = true;
