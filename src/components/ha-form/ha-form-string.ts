@@ -1,4 +1,3 @@
-/* eslint-disable lit/prefer-static-styles */
 import { mdiEye, mdiEyeOff } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";

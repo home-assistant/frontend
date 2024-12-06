@@ -20,7 +20,6 @@ type NavigationItem = {
 
 const DEFAULT_ITEMS: NavigationItem[] = [];
 
-// eslint-disable-next-line lit/prefer-static-styles
 const rowRenderer: ComboBoxLitRenderer<NavigationItem> = (item) => html`
   <mwc-list-item graphic="icon" .twoline=${!!item.title}>
     <ha-icon .icon=${item.icon} slot="graphic"></ha-icon>
