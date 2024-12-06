@@ -32,7 +32,7 @@ export class TopAppBarBaseBase extends BaseElement {
 
   protected _scrollTarget!: HTMLElement | Window;
 
-  @property({ attribute: false, type: Boolean }) centerTitle = false;
+  @property({ attribute: "center-title", type: Boolean }) centerTitle = false;
 
   @property({ type: Boolean, reflect: true }) prominent = false;
 

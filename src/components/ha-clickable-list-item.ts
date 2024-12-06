@@ -7,9 +7,10 @@ import { HaListItem } from "./ha-list-item";
 export class HaClickableListItem extends HaListItem {
   @property() public href?: string;
 
-  @property({ attribute: false, type: Boolean }) public disableHref = false;
+  @property({ attribute: "disable-href", type: Boolean })
+  public disableHref = false;
 
-  @property({ attribute: false, type: Boolean, reflect: true })
+  @property({ attribute: "open-new-tab", type: Boolean, reflect: true })
   public openNewTab = false;
 
   @query("a") private _anchor!: HTMLAnchorElement;

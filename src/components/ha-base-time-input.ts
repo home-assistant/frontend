@@ -36,7 +36,7 @@ export class HaBaseTimeInput extends LitElement {
   /**
    * auto validate time inputs
    */
-  @property({ attribute: false, type: Boolean }) autoValidate = false;
+  @property({ attribute: "auto-validate", type: Boolean }) autoValidate = false;
 
   /**
    * determines if inputs are required
@@ -106,22 +106,26 @@ export class HaBaseTimeInput extends LitElement {
   /**
    * show the sec field
    */
-  @property({ attribute: false, type: Boolean }) enableSecond = false;
+  @property({ attribute: "enable-second", type: Boolean })
+  public enableSecond = false;
 
   /**
    * show the milli sec field
    */
-  @property({ attribute: false, type: Boolean }) enableMillisecond = false;
+  @property({ attribute: "enable-millisecond", type: Boolean })
+  public enableMillisecond = false;
 
   /**
    * show the day field
    */
-  @property({ attribute: false, type: Boolean }) enableDay = false;
+  @property({ attribute: "enable-day", type: Boolean })
+  public enableDay = false;
 
   /**
    * limit hours input
    */
-  @property({ attribute: false, type: Boolean }) noHoursLimit = false;
+  @property({ attribute: "no-hours-limit", type: Boolean })
+  public noHoursLimit = false;
 
   /**
    * AM or PM

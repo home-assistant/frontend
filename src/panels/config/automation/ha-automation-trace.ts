@@ -53,7 +53,7 @@ export class HaAutomationTrace extends LitElement {
 
   @property({ attribute: false }) public automations!: AutomationEntity[];
 
-  @property({ attribute: false, type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 

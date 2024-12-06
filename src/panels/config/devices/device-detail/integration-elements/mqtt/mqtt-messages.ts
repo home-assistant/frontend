@@ -15,10 +15,11 @@ class MQTTMessages extends LitElement {
 
   @property() public direction!: string;
 
-  @property({ attribute: false, type: Boolean }) public showAsYaml = false;
+  @property({ attribute: "show-as-yaml", type: Boolean })
+  public showAsYaml = false;
 
-  @property({ attribute: false, type: Boolean }) public showDeserialized =
-    false;
+  @property({ attribute: "show-deserialized", type: Boolean })
+  public showDeserialized = false;
 
   @property({ attribute: false }) public subscribedTopic!: string;
 

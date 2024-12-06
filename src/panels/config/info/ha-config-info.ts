@@ -83,9 +83,9 @@ class HaConfigInfo extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: false, type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property({ attribute: false, type: Boolean }) public showAdvanced = false;
+  @property({ attribute: false }) public showAdvanced = false;
 
   @property({ attribute: false }) public route!: Route;
 
@@ -172,7 +172,7 @@ class HaConfigInfo extends LitElement {
                 (page) => html`
                   <ha-clickable-list-item
                     graphic="avatar"
-                    openNewTab
+                    open-new-tab
                     href=${documentationUrl(this.hass, page.path)}
                   >
                     <div

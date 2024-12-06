@@ -72,17 +72,19 @@ export class StatisticsChart extends LitElement {
 
   @property({ attribute: false, type: Number }) public maxYAxis?: number;
 
-  @property({ attribute: false, type: Boolean }) public fitYData = false;
+  @property({ attribute: "fit-y-data", type: Boolean }) public fitYData = false;
 
   @property({ attribute: "hide-legend", type: Boolean }) public hideLegend =
     false;
 
-  @property({ attribute: false, type: Boolean }) public logarithmicScale =
-    false;
+  @property({ attribute: "logarithmic-scale", type: Boolean })
+  public logarithmicScale = false;
 
-  @property({ attribute: false, type: Boolean }) public isLoadingData = false;
+  @property({ attribute: "is-loading-data", type: Boolean })
+  public isLoadingData = false;
 
-  @property({ attribute: false, type: Boolean }) public clickForMoreInfo = true;
+  @property({ attribute: "click-for-more-info", type: Boolean })
+  public clickForMoreInfo = true;
 
   @property() public period?: string;
 
@@ -165,7 +167,7 @@ export class StatisticsChart extends LitElement {
 
     return html`
       <ha-chart-base
-        externalHidden
+        external-hidden
         .hass=${this.hass}
         .data=${this._chartData}
         .extraData=${this._chartDatasetExtra}

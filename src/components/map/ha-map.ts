@@ -77,7 +77,7 @@ export class HaMap extends ReactiveElement {
   @property({ attribute: "interactive-zones", type: Boolean })
   public interactiveZones = false;
 
-  @property({ attribute: false, type: Boolean }) public fitZones = false;
+  @property({ attribute: "fit-zones", type: Boolean }) public fitZones = false;
 
   @property({ attribute: "theme-mode", type: String })
   public themeMode: ThemeMode = "auto";

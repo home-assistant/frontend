@@ -32,7 +32,8 @@ export class HuiGenericEntityRow extends LitElement {
   // => static determination will not work => the caller has to pass the desired value in.
   // Same applies for custom components that want to override the default behavior.
   // Default behavior is controlled by DOMAINS_INPUT_ROW.
-  @property({ attribute: false, type: Boolean }) public catchInteraction?;
+  @property({ attribute: "catch-interaction", type: Boolean })
+  public catchInteraction?;
 
   protected render() {
     if (!this.hass || !this.config) {
