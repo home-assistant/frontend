@@ -7,6 +7,7 @@ import "../../../../components/ha-md-list-item";
 import type { HomeAssistant } from "../../../../types";
 import { showChangeBackupEncryptionKeyDialog } from "../dialogs/show-dialog-change-backup-encryption-key";
 import { fileDownload } from "../../../../util/file_download";
+import { showSetBackupEncryptionKeyDialog } from "../dialogs/show-dialog-set-backup-encryption-key";
 
 @customElement("ha-backup-config-encryption-key")
 class HaBackupConfigEncryptionKey extends LitElement {
@@ -53,9 +54,7 @@ class HaBackupConfigEncryptionKey extends LitElement {
           <span slot="supporting-text">
             Set an encryption key for your backups.
           </span>
-          <ha-button unelevated slot="end" @click=${this._change}>
-            Set
-          </ha-button>
+          <ha-button slot="end" @click=${this._set}> Set </ha-button>
         </ha-md-list-item>
       </ha-md-list>
     `;
@@ -71,14 +70,21 @@ class HaBackupConfigEncryptionKey extends LitElement {
     );
   }
 
-  private async _change() {
-    const result = await showChangeBackupEncryptionKeyDialog(this, {
-      currentKey: this._value ?? undefined,
+  private _change() {
+    showChangeBackupEncryptionKeyDialog(this, {
+      currentKey: this._value,
+      saveKey: (key) => {
+        fireEvent(this, "value-changed", { value: key });
+      },
     });
-    if (result === null) {
-      return;
-    }
-    fireEvent(this, "value-changed", { value: result });
+  }
+
+  private _set() {
+    showSetBackupEncryptionKeyDialog(this, {
+      saveKey: (key) => {
+        fireEvent(this, "value-changed", { value: key });
+      },
+    });
   }
 
   static styles = css`
