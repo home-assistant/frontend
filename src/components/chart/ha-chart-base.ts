@@ -372,6 +372,16 @@ export class HaChartBase extends LitElement {
             },
             mode: "x",
           },
+          limits: {
+            x: {
+              min: "original",
+              max: "original",
+            },
+            y: {
+              min: "original",
+              max: "original",
+            },
+          },
         },
       },
     };
