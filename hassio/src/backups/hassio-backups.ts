@@ -198,7 +198,7 @@ export class HassioBackups extends LitElement {
         @selection-changed=${this._handleSelectionChanged}
         clickable
         selectable
-        hasFab
+        has-fab
         .mainPage=${!atLeastVersion(this.hass.config.version, 2021, 12)}
         back-path=${atLeastVersion(this.hass.config.version, 2022, 5)
           ? "/config/system"

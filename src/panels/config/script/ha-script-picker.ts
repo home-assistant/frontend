@@ -526,7 +526,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           "ui.panel.config.script.picker.search",
           { number: scripts.length }
         )}
-        hasFilters
+        has-filters
         .initialGroupColumn=${this._activeGrouping || "category"}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._activeSorting}
@@ -558,7 +558,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         @clear-filter=${this._clearFilter}
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
-        hasFab
+        has-fab
         clickable
         class=${this.narrow ? "narrow" : ""}
         @row-click=${this._handleRowClicked}

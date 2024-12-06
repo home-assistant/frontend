@@ -613,7 +613,7 @@ export default class HaAutomationTriggerRow extends LitElement {
       ),
       text: html`
         <ha-yaml-editor
-          readOnly
+          read-only
           .hass=${this.hass}
           .defaultValue=${this._triggered}
         ></ha-yaml-editor>

@@ -64,9 +64,9 @@ class HaLandingPage extends LandingPageBaseElement {
         <ha-language-picker
           .value=${this.language}
           .label=${""}
-          nativeName
+          native-name
           @value-changed=${this._languageChanged}
-          inlineArrow
+          inline-arrow
         ></ha-language-picker>
         <a
           href="https://www.home-assistant.io/getting-started/onboarding/"

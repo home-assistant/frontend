@@ -34,19 +34,22 @@ export class HaYamlEditor extends LitElement {
 
   @property({ attribute: false }) public defaultValue?: any;
 
-  @property({ attribute: false, type: Boolean }) public isValid = true;
+  @property({ attribute: "is-valid", type: Boolean }) public isValid = true;
 
   @property() public label?: string;
 
-  @property({ attribute: false, type: Boolean }) public autoUpdate = false;
+  @property({ attribute: "auto-update", type: Boolean }) public autoUpdate =
+    false;
 
-  @property({ attribute: false, type: Boolean }) public readOnly = false;
+  @property({ attribute: "read-only", type: Boolean }) public readOnly = false;
 
   @property({ type: Boolean }) public required = false;
 
-  @property({ attribute: false, type: Boolean }) public copyClipboard = false;
+  @property({ attribute: "copy-clipboard", type: Boolean })
+  public copyClipboard = false;
 
-  @property({ attribute: false, type: Boolean }) public hasExtraActions = false;
+  @property({ attribute: "has-extra-actions", type: Boolean })
+  public hasExtraActions = false;
 
   @state() private _yaml = "";
 
