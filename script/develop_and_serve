@@ -25,7 +25,10 @@
 #
 # WARNING:
 # If you change the core url in between runs but preserve the port on which the
-# frontend runs, you will need to logout to clear the session from the previous core.
+# frontend runs, you should logout before you make the switch. If you do not
+# the frontend will just keep loading and timeout as it has a session that is not
+# valid for the server. You can fix this if you forgot it by clearing the cookies
+# for your development frontend.
 
 # Stop on errors
 set -e
