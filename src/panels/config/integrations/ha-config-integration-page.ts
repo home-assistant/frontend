@@ -382,7 +382,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         target="_blank"
                       >
                         ${this.hass.localize(
-                          "ui.panel.config.integrations.config_entry.custom_integration"
+                          this._manifest.overwrites_built_in
+                            ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
+                            : "ui.panel.config.integrations.config_entry.custom_integration"
                         )}
                       </a>
                     </div>`
