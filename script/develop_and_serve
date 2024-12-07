@@ -3,17 +3,11 @@
 # This script can be used to develop and test the frontend without having to
 # link the build in a running core instance through the frontend/development_repo setting.
 #
-# WARNING:
-# If you have an active login session in the frontend. The core that was used
-# as a backend during the time of the login remains used until you logout again.
-# So if you reuse the url hosting the frontend, you will need to logout before
-# it will actually start using the core backend configured by this script.
-#
-# If you run this script without parameters, the frontend will be accessible under http://localhost:8124.
-# And it will use the core instance running under http://localhost:8123 as a backend.
-# Note that from a devcontainer, the frontend will be accessible under port 8124 on the host container.
-# Inside the devcontainer it will be accessible under port 8123 instead.
-# The core instance endpoint remains the same in both cases, as this is resolved from the browser.
+# If you run this script without parameters, the frontend will be accessible under
+# http://localhost:8124. And it will use the core instance running under
+# http://localhost:8123 as a backend. Note that if you're developing using a
+# devcontainer, these are the url's on the host container
+# (the ones used inside the devcontainer will be different)
 #
 # You can change the core instance the frontend connects to by passing the -c option.
 # For example: script/develop_and_serve -c https://myhost.duckdns.org:8123
@@ -28,6 +22,10 @@
 # For example: script/develop_and_serve -p 8654
 # Note that if you are running from a devcontainer, you will need to setup
 # port forwarding as well if you want to access it from the container host.
+#
+# WARNING:
+# If you change the core url in between runs but preserve the port on which the
+# frontend runs, you will need to logout to clear the session from the previous core.
 
 # Stop on errors
 set -e

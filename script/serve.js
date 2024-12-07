@@ -1,32 +1,41 @@
+import { createProxyMiddleware } from "http-proxy-middleware";
 import express from "express";
-import https from "https";
+import { fileURLToPath } from "url";
 import fs from "fs";
+import http from "http";
+import https from "https";
 import minimist from "minimist";
 import path from "path";
-import { fileURLToPath } from "url";
 
+const inDevContainer = process.env.DEVCONTAINER !== undefined;
 const parsedArguments = {
-  c: "http://localhost:8123",
-  p: process.env.DEVCONTAINER !== undefined ? "8123" : "8124",
+  c: inDevContainer
+    ? "http://host.docker.internal:8123"
+    : "http://localhost:8123",
+  p: inDevContainer ? "8123" : "8124",
   ...minimist(process.argv.slice(2)),
 };
-
-const coreUrl =
-  process.env.DEVCONTAINER !== undefined
-    ? parsedArguments.c.replace("/localhost:", "/host.docker.internal:")
-    : parsedArguments.c;
+const coreUrl = parsedArguments.c;
 const port = parseInt(parsedArguments.p);
-
 const repoDir = path.join(fileURLToPath(import.meta.url), "../..");
+// if the core uses https, also use https for serving to avoid problems
+// with headers like Strict-Transport-Security
+const useHttps = coreUrl.startsWith("https:");
+const frontendBase = `http${useHttps ? "s" : ""}://localhost`;
 
-import { createProxyMiddleware } from "http-proxy-middleware";
+console.log(`Frontend is hosted on ${frontendBase}:${port}`);
+if (inDevContainer && port === 8123) {
+  console.log(
+    `Frontend is available on container host as ${frontendBase}:8124`
+  );
+}
+console.log(`Core is used from ${coreUrl}`);
 
 const coreProxy = createProxyMiddleware({
   target: coreUrl,
   changeOrigin: true,
   ws: true,
 });
-
 const app = express();
 app.use("/", express.static(path.join(repoDir, "hass_frontend")));
 app.use("/api/hassio/app", express.static(path.join(repoDir, "hassio/build")));
@@ -43,10 +52,6 @@ app.get("*", (req, res) => {
 });
 app.use("/", coreProxy);
 
-// if the core uses https, also use https for serving to avoid problems
-// with headers like Strict-Transport-Security
-const useHttps = coreUrl.startsWith("https:");
-
 const appServer = useHttps
   ? https.createServer(
       {
@@ -55,26 +60,24 @@ const appServer = useHttps
       },
       app
     )
-  : app;
+  : http.createServer(app);
 
-const frontendBase = `http${useHttps ? "s" : ""}://localhost`;
-appServer.listen(port, () => {
-  if (process.env.DEVCONTAINER !== undefined) {
-    console.log(
-      `Frontend is available inside container as ${frontendBase}:${port}`
-    );
-    if (port === 8123) {
-      console.log(
-        `Frontend is available on container host as ${frontendBase}:8124`
-      );
-    }
-  } else {
-    console.log(`Frontend is hosted on ${frontendBase}:${port}`);
-  }
-  console.log(`Core is used from ${coreUrl}`);
+const appListener = appServer.listen(port, () => {
+  console.log("Starting development server");
+});
+
+let connections = [];
+appListener.on("connection", (connection) => {
+  connections.push(connection);
+  connection.on(
+    "close",
+    () => (connections = connections.filter((curr) => curr !== connection))
+  );
 });
 
 process.on("SIGINT", function () {
-  console.log("Shutting down file server");
-  process.exit(0);
+  console.log("Shutting down development server");
+  appServer.close();
+  // websockets are not closed automatically
+  connections.forEach((c) => c.end());
 });
