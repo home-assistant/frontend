@@ -638,8 +638,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                             ></ha-md-divider>`
                           : nothing}`
                     )}
-                  </ha-md-list>`
-              }
+                  </ha-md-list>`}
               <div class="card-actions">
                 <ha-button @click=${this._addIntegration}>
                   ${this._manifest?.integration_type
