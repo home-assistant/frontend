@@ -223,7 +223,7 @@
     "object-hash": "3.0.0",
     "open": "10.1.0",
     "pinst": "3.0.0",
-    "prettier": "3.4.1",
+    "prettier": "3.4.2",
     "rspack-manifest-plugin": "5.0.2",
     "serve-handler": "6.1.6",
     "sinon": "19.0.2",
