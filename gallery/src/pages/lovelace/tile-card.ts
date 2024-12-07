@@ -28,6 +28,9 @@ const ENTITIES = [
     device_class: "lock",
     supported_features: LockEntityFeature.OPEN,
   }),
+  getEntity("media_player", "living_room", "playing", {
+    friendly_name: "Living room speaker",
+  }),
   getEntity("climate", "thermostat", "heat", {
     current_temperature: 73,
     min_temp: 45,
@@ -195,6 +198,15 @@ const CONFIGS = [
   entity: lock.front_door
   features:
     - type: "lock-open-door"
+    `,
+  },
+  {
+    heading: "Media player volume feature",
+    config: `
+- type: tile
+  entity: media_player.living_room
+  features:
+    - type: "media-player-volume"
     `,
   },
   {
