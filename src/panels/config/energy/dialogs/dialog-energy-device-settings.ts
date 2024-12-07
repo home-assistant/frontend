@@ -4,13 +4,16 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-radio";
+import "../../../../components/ha-select";
 import type { DeviceConsumptionEnergyPreference } from "../../../../data/energy";
 import { energyStatisticHelpUrl } from "../../../../data/energy";
+import { getStatisticLabel } from "../../../../data/recorder";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
@@ -36,17 +39,45 @@ export class DialogEnergyDeviceSettings
 
   private _excludeList?: string[];
 
+  private _possibleParents: DeviceConsumptionEnergyPreference[] = [];
+
   public async showDialog(
     params: EnergySettingsDeviceDialogParams
   ): Promise<void> {
     this._params = params;
+    this._device = this._params.device;
+    if (this._device) {
+      this._computePossibleParents();
+    }
     this._energy_units = (
       await getSensorDeviceClassConvertibleUnits(this.hass, "energy")
     ).units;
-    this._device = this._params.device;
     this._excludeList = this._params.device_consumptions
       .map((entry) => entry.stat_consumption)
       .filter((id) => id !== this._device?.stat_consumption);
+  }
+
+  private _computePossibleParents() {
+    if (!this._device || !this._params) {
+      this._possibleParents = [];
+      return;
+    }
+    const children: string[] = [];
+    const devices = this._params.device_consumptions;
+    function getChildren(stat) {
+      devices.forEach((d) => {
+        if (d.parent_stat === stat) {
+          children.push(d.stat_consumption);
+          getChildren(d.stat_consumption);
+        }
+      });
+    }
+    getChildren(this._device.stat_consumption);
+    this._possibleParents = this._params.device_consumptions.filter(
+      (d) =>
+        d.stat_consumption !== this._device!.stat_consumption &&
+        !children.includes(d.stat_consumption)
+    );
   }
 
   public closeDialog(): void {
@@ -104,18 +135,45 @@ export class DialogEnergyDeviceSettings
           type="text"
           .disabled=${!this._device}
           .value=${this._device?.name || ""}
+          .placeholder=${this._device
+            ? getStatisticLabel(
+                this.hass,
+                this._device.stat_consumption,
+                this._params?.statsMetadata?.[this._device.stat_consumption]
+              )
+            : ""}
           @input=${this._nameChanged}
         >
         </ha-textfield>
 
-        <ha-textfield
-          label="parent"
-          type="text"
-          .disabled=${!this._device}
+        <ha-select
+          .label=${this.hass.localize(
+            "ui.panel.config.energy.device_consumption.dialog.parent_device"
+          )}
           .value=${this._device?.parent_stat || ""}
-          @input=${this._parentChanged}
+          .helper=${this.hass.localize(
+            "ui.panel.config.energy.device_consumption.dialog.parent_device_helper"
+          )}
+          .disabled=${!this._device}
+          @selected=${this._parentSelected}
+          @closed=${stopPropagation}
+          fixedMenuPosition
+          naturalMenuWidth
+          clearable
         >
-        </ha-textfield>
+          ${this._possibleParents.map(
+            (stat) => html`
+              <mwc-list-item .value=${stat.stat_consumption}
+                >${stat.name ||
+                getStatisticLabel(
+                  this.hass,
+                  stat.stat_consumption,
+                  this._params?.statsMetadata?.[stat.stat_consumption]
+                )}</mwc-list-item
+              >
+            `
+          )}
+        </ha-select>
 
         <mwc-button @click=${this.closeDialog} slot="secondaryAction">
           ${this.hass.localize("ui.common.cancel")}
@@ -137,6 +195,7 @@ export class DialogEnergyDeviceSettings
       return;
     }
     this._device = { stat_consumption: ev.detail.value };
+    this._computePossibleParents();
   }
 
   private _nameChanged(ev) {
@@ -150,7 +209,7 @@ export class DialogEnergyDeviceSettings
     this._device = newDevice;
   }
 
-  private _parentChanged(ev) {
+  private _parentSelected(ev) {
     const newDevice = {
       ...this._device!,
       parent_stat: ev.target!.value,
@@ -175,6 +234,10 @@ export class DialogEnergyDeviceSettings
       haStyleDialog,
       css`
         ha-statistic-picker {
+          width: 100%;
+        }
+        ha-select {
+          margin-top: 16px;
           width: 100%;
         }
         ha-textfield {

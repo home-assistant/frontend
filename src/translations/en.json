@@ -2389,7 +2389,9 @@
               "header": "Add a device",
               "display_name": "Display name",
               "device_consumption_energy": "Device energy consumption",
-              "selected_stat_intro": "Select the energy sensor that measures the device's energy usage in either of {unit}."
+              "selected_stat_intro": "Select the energy sensor that measures the device's energy usage in either of {unit}.",
+              "parent_device": "Parent device",
+              "parent_device_helper": "If consumption for this device is also included in another device (for example, if this is a smart switch which is also counted by a smart circuit breaker), select that upstream device here. This will prevent double counting of the consumption"
             }
           }
         },
