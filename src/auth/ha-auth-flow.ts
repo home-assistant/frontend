@@ -260,7 +260,7 @@ export class HaAuthFlow extends LitElement {
         return html`<ha-auth-external
           .localize=${this.localize}
           .step=${this.step!}
-          .title=${this.authProvider.name}
+          .title=${this.authProvider!.name}
           @step-finished=${this._externalStepFinished}
         ></ha-auth-external>`;
       default:

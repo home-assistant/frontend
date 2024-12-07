@@ -1,14 +1,14 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { DataEntryFlowStepExternal } from "../../data/data_entry_flow";
+import type { DataEntryFlowStepExternal } from "../data/data_entry_flow";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { HaForm } from "../components/ha-form/ha-form";
 
 @customElement("ha-auth-external")
 export class HaAuthExternal extends HaForm {
-  @property({ attribute: false }) public localize?: LocalizeFunc;
+  @property({ attribute: false }) public localize!: LocalizeFunc;
 
   @property({ attribute: false }) public stepTitle?: string;
 
