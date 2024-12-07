@@ -23,6 +23,7 @@ import type {
   DataEntryFlowStepForm,
 } from "../data/data_entry_flow";
 import "./ha-auth-form";
+import "./ha-auth-external";
 
 type State = "loading" | "error" | "step";
 
@@ -171,18 +172,7 @@ export class HaAuthFlow extends LitElement {
         }
 
         return html`
-          ${this._renderStep(this.step)}
-          <div class="action">
-            <mwc-button
-              raised
-              @click=${this._handleSubmit}
-              .disabled=${this._submitting}
-            >
-              ${this.step.type === "form"
-                ? this.localize("ui.panel.page-authorize.form.next")
-                : this.localize("ui.panel.page-authorize.form.start_over")}
-            </mwc-button>
-          </div>
+          ${this._renderStep(this.step)} ${this._renderAction(this.step)}
         `;
       case "error":
         return html`
@@ -266,9 +256,33 @@ export class HaAuthFlow extends LitElement {
               `
             : ""}
         `;
+      case "external":
+        return html`<ha-auth-external
+          .localize=${this.localize}
+          .step=${this.step!}
+          .title=${this.authProvider.name}
+          @step-finished=${this._externalStepFinished}
+        ></ha-auth-external>`;
       default:
         return nothing;
     }
+  }
+
+  private _renderAction(step: DataEntryFlowStep) {
+    if (step.type === "external") {
+      return nothing;
+    }
+    return html` <div class="action">
+      <mwc-button
+        raised
+        @click=${this._handleSubmit}
+        .disabled=${this._submitting}
+      >
+        ${step.type === "form"
+          ? this.localize("ui.panel.page-authorize.form.next")
+          : this.localize("ui.panel.page-authorize.form.start_over")}
+      </mwc-button>
+    </div>`;
   }
 
   private _storeTokenChanged(e: CustomEvent<HTMLInputElement>) {
@@ -364,7 +378,7 @@ export class HaAuthFlow extends LitElement {
     if (this.step == null) {
       return;
     }
-    if (this.step.type !== "form") {
+    if (this.step.type !== "form" && this.step.type !== "external") {
       this._providerChanged(this.authProvider);
       return;
     }
@@ -402,6 +416,10 @@ export class HaAuthFlow extends LitElement {
     } finally {
       this._submitting = false;
     }
+  }
+
+  private _externalStepFinished(ev: CustomEvent) {
+    this._handleSubmit(ev);
   }
 }
 
