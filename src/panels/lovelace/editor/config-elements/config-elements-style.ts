@@ -4,6 +4,7 @@ export const configElementStyle = css`
   .card-config {
     /* Cancels overlapping Margins for HAForm + Card Config options */
     overflow: auto;
+    scrollbar-width: none;
   }
   ha-switch {
     padding: 16px 6px;
