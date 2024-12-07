@@ -42,6 +42,11 @@ if [ ! -d "./hassio/build" ]; then
   hassio/script/build_hassio
 fi
 
+if [ ! -f "./script/serve.crt" ]; then
+  echo Generating self signed localhost certificate
+  openssl req -x509 -newkey rsa:4096 -keyout "./script/serve.key" -out "./script/serve.crt" -sha256 -days 3650 -nodes -subj "/CN=localhost"
+fi
+
 ./script/develop &
 
 yarn serve "$@"

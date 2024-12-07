@@ -6,6 +6,8 @@ build/
 dist/
 /hass_frontend/
 /translations/
+script/serve.key
+script/serve.crt
 
 # yarn
 .yarn/*
