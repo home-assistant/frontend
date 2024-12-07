@@ -191,6 +191,7 @@ export interface WebRTCClientConfiguration {
   configuration: RTCConfiguration;
   dataChannel?: string;
   getCandidatesUpfront: boolean;
+  audioDirection: string;
 }
 
 export const fetchWebRtcClientConfiguration = async (
