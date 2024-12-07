@@ -1607,6 +1607,8 @@
         "counter": {
           "minimum": "Minimum value",
           "maximum": "Maximum value",
+          "wrap_around": "Wrap around",
+          "wrap_around_helper": "Should wrap around once it reaches the maximum or minimum value",
           "initial": "Initial value",
           "restore": "Restore the last known value when Home Assistant starts",
           "step": "Step size"

@@ -6,6 +6,7 @@ import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import "../../../../components/ha-textfield";
+import "../../../../components/ha-selector/ha-selector-boolean";
 import type { Counter } from "../../../../data/counter";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -26,6 +27,8 @@ class HaCounterForm extends LitElement {
 
   @state() private _minimum?: number;
 
+  @state() private _wrap_around?: boolean;
+
   @state() private _restore?: boolean;
 
   @state() private _initial?: number;
@@ -41,6 +44,7 @@ class HaCounterForm extends LitElement {
       this._minimum = item.minimum ?? undefined;
       this._restore = item.restore ?? true;
       this._step = item.step ?? 1;
+      this._wrap_around = item.wrap_around ?? false;
       this._initial = item.initial ?? 0;
     } else {
       this._name = "";
@@ -49,6 +53,7 @@ class HaCounterForm extends LitElement {
       this._minimum = undefined;
       this._restore = true;
       this._step = 1;
+      this._wrap_around = false;
       this._initial = 0;
     }
   }
@@ -82,6 +87,17 @@ class HaCounterForm extends LitElement {
           )}
           dialogInitialFocus
         ></ha-textfield>
+        <ha-selector-boolean
+          .value=${this._wrap_around}
+          .configValue=${"wrap_around"}
+          @value-changed=${this._valueChanged}
+          .label=${this.hass!.localize(
+            "ui.dialogs.helper_settings.counter.wrap_around"
+          )}
+          .helper=${this.hass!.localize(
+            "ui.dialogs.helper_settings.counter.wrap_around_helper"
+          )}
+          ></ha-selector-boolean>
         <ha-icon-picker
           .hass=${this.hass}
           .value=${this._icon}
@@ -96,6 +112,7 @@ class HaCounterForm extends LitElement {
           .configValue=${"minimum"}
           type="number"
           @input=${this._valueChanged}
+          .required=${this._wrap_around}
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.counter.minimum"
           )}
@@ -105,6 +122,7 @@ class HaCounterForm extends LitElement {
           .configValue=${"maximum"}
           type="number"
           @input=${this._valueChanged}
+          .required=${this._wrap_around}
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.counter.maximum"
           )}
@@ -155,14 +173,20 @@ class HaCounterForm extends LitElement {
     ev.stopPropagation();
     const target = ev.target as any;
     const configValue = target.configValue;
-    const value =
-      target.type === "number"
-        ? target.value !== ""
-          ? Number(target.value)
-          : undefined
-        : target.localName === "ha-switch"
-          ? (ev.target as HaSwitch).checked
-          : ev.detail?.value || target.value;
+    let value = ev.detail?.value || target.value;
+
+    if (target.type === "number") {
+      if (target.value !== "") {
+        value = Number(target.value);
+      } else {
+        value = undefined;
+      }
+    } else if (target.localName === "ha-switch") {
+      value = (ev.target as HaSwitch).checked;
+    } else if (target.localName === "ha-selector-boolean") {
+      value = ev.detail.value;
+    }
+
     if (this[`_${configValue}`] === value) {
       return;
     }
