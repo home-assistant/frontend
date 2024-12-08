@@ -97,7 +97,7 @@ class HaCounterForm extends LitElement {
           .helper=${this.hass!.localize(
             "ui.dialogs.helper_settings.counter.wrap_around_helper"
           )}
-          ></ha-selector-boolean>
+        ></ha-selector-boolean>
         <ha-icon-picker
           .hass=${this.hass}
           .value=${this._icon}
