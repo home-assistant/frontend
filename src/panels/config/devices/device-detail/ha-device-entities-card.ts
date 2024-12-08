@@ -266,10 +266,20 @@ export class HaDeviceEntitiesCard extends LitElement {
         color: var(--secondary-text-color);
       }
       .move-up {
+        margin-top: -13px;
+      }
+      .move-up:has(> mwc-list) {
         margin-top: -24px;
       }
-      #entities > * {
-        margin: 8px 16px 8px 8px;
+      :not(.move-up) > mwc-list {
+        margin-top: -24px;
+      }
+      mwc-list + button.show-more,
+      .move-up + :not(:has(mwc-list)) > button.show-more {
+        margin-top: -12px;
+      }
+      #entities > mwc-list {
+        margin: 0 16px 0 8px;
       }
       #entities > paper-icon-item {
         margin: 0;
@@ -304,6 +314,9 @@ export class HaDeviceEntitiesCard extends LitElement {
       button.show-more:focus {
         outline: none;
         text-decoration: underline;
+      }
+      mwc-list > * {
+        margin: 8px 0px;
       }
       ha-list-item {
         height: 40px;
