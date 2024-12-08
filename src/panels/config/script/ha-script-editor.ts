@@ -57,8 +57,11 @@ import "./blueprint-script-editor";
 import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
 import { substituteBlueprint } from "../../../data/blueprint";
+import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 
-export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
+export class HaScriptEditor extends PreventUnsavedMixin(
+  KeyboardShortcutMixin(LitElement)
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public scriptId: string | null = null;
@@ -820,6 +823,14 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   protected handleKeyboardSave() {
     this._saveScript();
+  }
+
+  protected isDirty() {
+    return this._dirty;
+  }
+
+  protected async promptDiscardChanges() {
+    return this._confirmUnsavedChanged();
   }
 
   static get styles(): CSSResultGroup {
