@@ -8,6 +8,7 @@ export interface Counter {
   restore?: boolean;
   minimum?: number;
   maximum?: number;
+  wrap_around?: boolean;
   step?: number;
 }
 
@@ -18,6 +19,7 @@ export interface CounterMutableParams {
   restore: boolean;
   minimum: number;
   maximum: number;
+  wrap_around: boolean;
   step: number;
 }
 
