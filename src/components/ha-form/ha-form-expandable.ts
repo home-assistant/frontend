@@ -1,8 +1,14 @@
+import { mdiTrashCanOutline, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
+import { fireEvent } from "../../common/dom/fire_event";
 import type { HomeAssistant } from "../../types";
+import { computeInitialHaFormData } from "./compute-initial-ha-form-data";
+import { haStyle } from "../../resources/styles";
 import "./ha-form";
+import "../ha-button";
 import type {
   HaFormDataContainer,
   HaFormElement,
@@ -14,7 +20,9 @@ import type {
 export class HaFormExpendable extends LitElement implements HaFormElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public data!: HaFormDataContainer;
+  @property({ attribute: false }) public data!:
+    | HaFormDataContainer
+    | HaFormDataContainer[];
 
   @property({ attribute: false }) public schema!: HaFormExpandableSchema;
 
@@ -35,9 +43,18 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
     key: string
   ) => string;
 
+  private _keys: string[] = [];
+
   private _renderDescription() {
     const description = this.computeHelper?.(this.schema);
     return description ? html`<p>${description}</p>` : nothing;
+  }
+
+  private _getKey(idx: number) {
+    if (!this._keys[idx]) {
+      this._keys[idx] = Math.random().toString();
+    }
+    return this._keys[idx]!;
   }
 
   private _computeLabel = (
@@ -65,7 +82,52 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
     });
   };
 
+  private _valueChanged(ev) {
+    if (this.schema.multiple) {
+      ev.stopPropagation();
+      const data = [...(this.data as HaFormDataContainer[])];
+      data[ev.target.index] = ev.detail.value;
+      fireEvent(this, "value-changed", { value: data });
+    }
+  }
+
+  private _addItem() {
+    const data = [
+      ...(this.data as HaFormDataContainer[]),
+      computeInitialHaFormData(this.schema.schema),
+    ];
+    fireEvent(this, "value-changed", { value: data });
+  }
+
+  private _deleteItem(ev) {
+    const data = [...(this.data as HaFormDataContainer[])];
+    data.splice(ev.currentTarget.index, 1);
+    this._keys.splice(ev.currentTarget.index, 1);
+    fireEvent(this, "value-changed", { value: data });
+  }
+
   protected render() {
+    return html` ${this.schema.multiple ? this._renderDescription() : nothing}
+    ${this.schema.multiple
+      ? repeat(
+          this.data as HaFormDataContainer[],
+          (_d, idx) => this._getKey(idx),
+          (d, idx) => this.renderPanel(d, idx)
+        )
+      : this.renderPanel(this.data as HaFormDataContainer, 0)}
+    ${this.schema.multiple
+      ? html`
+          <div class="layout horizontal center-center">
+            <ha-button @click=${this._addItem} .disabled=${this.disabled}>
+              ${this.hass?.localize("ui.common.add") ?? "Add"}
+              <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+            </ha-button>
+          </div>
+        `
+      : nothing}`;
+  }
+
+  private renderPanel(data: HaFormDataContainer, index) {
     return html`
       <ha-expansion-panel outlined .expanded=${Boolean(this.schema.expanded)}>
         <div
@@ -82,16 +144,31 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
               : nothing}
           ${this.schema.title || this.computeLabel?.(this.schema)}
         </div>
+        ${this.schema.multiple
+          ? html`
+              <ha-icon-button
+                slot="icons"
+                .disabled=${this.disabled}
+                .label=${this.hass.localize("ui.common.delete")}
+                .index=${index}
+                @click=${this._deleteItem}
+              >
+                <ha-svg-icon .path=${mdiTrashCanOutline}></ha-svg-icon>
+              </ha-icon-button>
+            `
+          : nothing}
         <div class="content">
-          ${this._renderDescription()}
+          ${this.schema.multiple ? nothing : this._renderDescription()}
           <ha-form
             .hass=${this.hass}
-            .data=${this.data}
+            .data=${data}
+            .index=${index}
             .schema=${this.schema.schema}
             .disabled=${this.disabled}
             .computeLabel=${this._computeLabel}
             .computeHelper=${this._computeHelper}
             .localizeValue=${this.localizeValue}
+            @value-changed=${this._valueChanged}
           ></ha-form>
         </div>
       </ha-expansion-panel>
@@ -99,31 +176,34 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: flex !important;
-        flex-direction: column;
-      }
-      :host ha-form {
-        display: block;
-      }
-      .content {
-        padding: 12px;
-      }
-      .content p {
-        margin: 0 0 24px;
-      }
-      ha-expansion-panel {
-        display: block;
-        --expansion-panel-content-padding: 0;
-        border-radius: 6px;
-        --ha-card-border-radius: 6px;
-      }
-      ha-svg-icon,
-      ha-icon {
-        color: var(--secondary-text-color);
-      }
-    `;
+    return [
+      haStyle,
+      css`
+        :host {
+          display: flex !important;
+          flex-direction: column;
+        }
+        :host ha-form {
+          display: block;
+        }
+        .content {
+          padding: 12px;
+        }
+        .content p {
+          margin: 0 0 24px;
+        }
+        ha-expansion-panel {
+          display: block;
+          --expansion-panel-content-padding: 0;
+          border-radius: 6px;
+          --ha-card-border-radius: 6px;
+        }
+        ha-svg-icon,
+        ha-icon {
+          color: var(--secondary-text-color);
+        }
+      `,
+    ];
   }
 }
 
