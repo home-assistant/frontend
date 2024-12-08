@@ -98,6 +98,7 @@ export interface DeviceConsumptionEnergyPreference {
   // This is an ever increasing value
   stat_consumption: string;
   name?: string;
+  parent_stat?: string;
 }
 
 export interface FlowFromGridSourceEnergyPreference {
