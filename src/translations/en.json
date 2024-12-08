@@ -1613,7 +1613,7 @@
         },
         "timer": {
           "duration": "Duration",
-          "restore": "Restore?"
+          "restore": "Restore state and time when Home Assistant starts"
         },
         "schedule": {
           "delete": "Delete item?",
