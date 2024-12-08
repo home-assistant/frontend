@@ -6597,6 +6597,9 @@
               "lock-open-door": {
                 "label": "Lock open door"
               },
+              "media-player-volume": {
+                "label": "Media player volume"
+              },
               "vacuum-commands": {
                 "label": "Vacuum commands",
                 "commands": "Commands",
