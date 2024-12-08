@@ -100,7 +100,7 @@ export class HaPictureUpload extends LitElement {
     this.value = null;
   }
 
-  private async _cropFile(file: File) {
+  private async _cropFile(file: File, mediaId?: string) {
     if (!["image/png", "image/jpeg", "image/gif"].includes(file.type)) {
       showAlertDialog(this, {
         text: this.hass.localize(
@@ -116,7 +116,16 @@ export class HaPictureUpload extends LitElement {
         aspectRatio: NaN,
       },
       croppedCallback: (croppedFile) => {
-        this._uploadFile(croppedFile);
+        if (mediaId && croppedFile === file) {
+          this.value = generateImageThumbnailUrl(
+            mediaId,
+            this.size,
+            this.original
+          );
+          fireEvent(this, "change");
+        } else {
+          this._uploadFile(croppedFile);
+        }
       },
     });
   }
@@ -160,16 +169,28 @@ export class HaPictureUpload extends LitElement {
         },
       ],
       minimumNavigateLevel: 2,
-      mediaPickedCallback: (pickedMedia: MediaPickedEvent) => {
+      mediaPickedCallback: async (pickedMedia: MediaPickedEvent) => {
         const id = pickedMedia.item.media_content_id;
         const stringToRemove = "media-source://image_upload/";
         if (id.startsWith(stringToRemove)) {
-          this.value = generateImageThumbnailUrl(
-            id.substr(stringToRemove.length),
-            this.size,
-            this.original
-          );
-          fireEvent(this, "change");
+          const mediaId = id.substr(stringToRemove.length);
+          if (this.crop) {
+            const url = generateImageThumbnailUrl(mediaId, undefined, true);
+            const response = await fetch(url);
+            const data = await response.blob();
+            const metadata = {
+              type: pickedMedia.item.media_content_type,
+            };
+            const file = new File([data], pickedMedia.item.title, metadata);
+            this._cropFile(file, mediaId);
+          } else {
+            this.value = generateImageThumbnailUrl(
+              mediaId,
+              this.size,
+              this.original
+            );
+            fireEvent(this, "change");
+          }
         }
       },
     });

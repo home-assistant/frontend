@@ -1225,7 +1225,8 @@
       },
       "image_cropper": {
         "crop": "Crop",
-        "crop_image": "Picture to crop"
+        "crop_image": "Picture to crop",
+        "use_original": "Use original"
       },
       "date-picker": {
         "today": "Today",
