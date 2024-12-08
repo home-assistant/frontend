@@ -4,7 +4,10 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { MediaPlayerItem } from "../../data/media-player";
-import { isLocalMediaSourceContentId } from "../../data/media_source";
+import {
+  isLocalMediaSourceContentId,
+  isImageUploadMediaSourceContentId,
+} from "../../data/media_source";
 import type { HomeAssistant } from "../../types";
 import "../ha-svg-icon";
 import { showMediaManageDialog } from "./show-media-manage-dialog";
@@ -26,7 +29,11 @@ class MediaManageButton extends LitElement {
   protected render() {
     if (
       !this.currentItem ||
-      !isLocalMediaSourceContentId(this.currentItem.media_content_id || "")
+      !(
+        isLocalMediaSourceContentId(this.currentItem.media_content_id || "") ||
+        (this.hass!.user?.is_admin &&
+          isImageUploadMediaSourceContentId(this.currentItem.media_content_id))
+      )
     ) {
       return nothing;
     }
