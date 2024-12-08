@@ -368,11 +368,12 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     `
                   : nothing}
                 ${this._manifest?.is_built_in === false
-                  ? html`<div class="integration-info warn">
-                      <ha-svg-icon
-                        class="warning"
-                        path=${mdiPackageVariant}
-                      ></ha-svg-icon>
+                  ? html`<div
+                      class=${`integration-info ${
+                        this._manifest.overwrites_built_in ? "error" : "warn"
+                      }`}
+                    >
+                      <ha-svg-icon path=${mdiPackageVariant}></ha-svg-icon>
                       <a
                         href=${documentationUrl(
                           this.hass,
@@ -1531,6 +1532,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
         .integration-info.warn ha-svg-icon {
           color: var(--warning-color);
+        }
+        .integration-info.error ha-svg-icon {
+          color: var(--error-color);
         }
         .integration-info.info ha-svg-icon {
           color: var(--info-color);
