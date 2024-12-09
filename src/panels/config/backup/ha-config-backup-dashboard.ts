@@ -17,6 +17,7 @@ import { navigate } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type {
   DataTableColumnContainer,
+  DataTableRowData,
   RowClickedEvent,
   SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
@@ -30,11 +31,7 @@ import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import { getSignedPath } from "../../../data/auth";
-import type {
-  BackupConfig,
-  BackupContent,
-  BackupMutableConfig,
-} from "../../../data/backup";
+import type { BackupConfig, BackupContent } from "../../../data/backup";
 import {
   deleteBackup,
   fetchBackupConfig,
@@ -44,7 +41,6 @@ import {
   getBackupDownloadUrl,
   getPreferredAgentForDownload,
   subscribeBackupEvents,
-  updateBackupConfig,
 } from "../../../data/backup";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
@@ -60,9 +56,9 @@ import { brandsUrl } from "../../../util/brands-url";
 import { bytesToString } from "../../../util/bytes-to-string";
 import { fileDownload } from "../../../util/file_download";
 import "./components/ha-backup-summary-card";
+import { showBackupOnboardingDialog } from "./dialogs/show-dialog-backup_onboarding";
 import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
-import { showSetBackupEncryptionKeyDialog } from "./dialogs/show-dialog-set-backup-encryption-key";
 import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
 
 @customElement("ha-config-backup-dashboard")
@@ -191,7 +187,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
         .route=${this.route}
         @row-click=${this._showBackupDetails}
         .columns=${this._columns(this.hass.localize)}
-        .data=${this._backups ?? []}
+        .data=${(this._backups ?? []) as DataTableRowData[]}
         .noDataText=${this.hass.localize("ui.panel.config.backup.no_backups")}
         .searchLabel=${this.hass.localize(
           "ui.panel.config.backup.picker.search"
@@ -343,11 +339,6 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
     this._config = config;
   }
 
-  private async _updateBackupConfig(config: BackupMutableConfig) {
-    await updateBackupConfig(this.hass, config);
-    await this._fetchBackupConfig();
-  }
-
   private get _needsOnboarding() {
     return this._config && !this._config.create_backup.password;
   }
@@ -362,19 +353,14 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
 
   private async _newBackup(): Promise<void> {
     if (this._needsOnboarding) {
-      const success = await showSetBackupEncryptionKeyDialog(this, {
-        saveKey: (key) => {
-          this._updateBackupConfig({
-            create_backup: {
-              password: key,
-            },
-          });
-        },
-      });
+      const success = await showBackupOnboardingDialog(this, {});
       if (!success) {
         return;
       }
     }
+
+    await this._fetchBackupConfig();
+
     const config = this._config!;
 
     const type = await showNewBackupDialog(this, { config });
@@ -462,15 +448,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   }
 
   private async _onboardDefaultBackup() {
-    const success = await showSetBackupEncryptionKeyDialog(this, {
-      saveKey: (key) => {
-        this._updateBackupConfig({
-          create_backup: {
-            password: key,
-          },
-        });
-      },
-    });
+    const success = await showBackupOnboardingDialog(this, {});
     if (!success) {
       return;
     }
