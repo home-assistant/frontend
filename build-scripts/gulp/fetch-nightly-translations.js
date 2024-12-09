@@ -66,7 +66,7 @@ gulp.task("fetch-nightly-translations", async function () {
       tokenAuth = JSON.parse(await readFile(TOKEN_FILE, "utf-8"));
     } catch {
       if (!allowTokenSetup) {
-        console.log("No token found so  build will continue with English only");
+        console.log("No token found so build will continue with English only");
         return;
       }
       const auth = createOAuthDeviceAuth({
