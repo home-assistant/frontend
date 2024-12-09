@@ -161,6 +161,13 @@ export const generateBackup = (
     ...params,
   });
 
+export const generateBackupWithStoredSettings = (
+  hass: HomeAssistant
+): Promise<void> =>
+  hass.callWS({
+    type: "backup/generate_with_stored_settings",
+  });
+
 export const restoreBackup = (
   hass: HomeAssistant,
   params: RestoreBackupParams
