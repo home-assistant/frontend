@@ -44,8 +44,7 @@ import {
 } from "../../../data/backup";
 import type { ManagerStateEvent } from "../../../data/backup_manager";
 import {
-  BackupManagerState,
-  isBackupInProgress,
+  DEFAULT_MANAGER_STATE,
   subscribeBackupEvents,
 } from "../../../data/backup_manager";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
@@ -61,7 +60,10 @@ import type { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { bytesToString } from "../../../util/bytes-to-string";
 import { fileDownload } from "../../../util/file_download";
+import { showToast } from "../../../util/toast";
 import "./components/ha-backup-summary-card";
+import "./components/ha-backup-summary-progress";
+import "./components/ha-backup-summary-status";
 import { showBackupOnboardingDialog } from "./dialogs/show-dialog-backup_onboarding";
 import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
@@ -75,11 +77,11 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public route!: Route;
 
-  @state() private _manager: ManagerStateEvent = {
-    manager_state: BackupManagerState.IDLE,
-  };
+  @state() private _manager: ManagerStateEvent = DEFAULT_MANAGER_STATE;
 
   @state() private _backups: BackupContent[] = [];
+
+  @state() private _fetching = false;
 
   @state() private _selected: string[] = [];
 
@@ -175,7 +177,10 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   }
 
   protected render(): TemplateResult {
-    const backupInProgress = isBackupInProgress(this._manager);
+    const backupInProgress =
+      "state" in this._manager && this._manager.state === "in_progress";
+
+    const data: DataTableRowData[] = this._backups;
 
     return html`
       <hass-tabs-subpage-data-table
@@ -197,41 +202,71 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
         .route=${this.route}
         @row-click=${this._showBackupDetails}
         .columns=${this._columns(this.hass.localize)}
-        .data=${(this._backups ?? []) as DataTableRowData[]}
+        .data=${data}
         .noDataText=${this.hass.localize("ui.panel.config.backup.no_backups")}
         .searchLabel=${this.hass.localize(
           "ui.panel.config.backup.picker.search"
         )}
       >
         <div slot="top_header" class="header">
-          ${this._needsOnboarding
+          ${this._fetching
             ? html`
                 <ha-backup-summary-card
-                  heading="Set up default backup"
-                  description="Have a one-click backup automation with selected data and locations."
+                  heading="Loading backups"
+                  description="Your backup information is being retrieved."
                   has-action
-                  status="info"
+                  status="loading"
                 >
                   <ha-button slot="action" @click=${this._onboardDefaultBackup}>
                     Setup backup strategy
                   </ha-button>
                 </ha-backup-summary-card>
               `
-            : html`
-                <ha-backup-summary-card
-                  heading="Automatically backed up"
-                  description="Your configuration has been backed up."
-                  has-action
-                  .status=${backupInProgress ? "loading" : "info"}
-                >
-                  <ha-button
-                    slot="action"
-                    @click=${this._configureDefaultBackup}
+            : backupInProgress
+              ? html`
+                  <ha-backup-summary-progress
+                    .hass=${this.hass}
+                    .manager=${this._manager}
+                    has-action
                   >
-                    Configure
-                  </ha-button>
-                </ha-backup-summary-card>
-              `}
+                    <ha-button
+                      slot="action"
+                      @click=${this._configureDefaultBackup}
+                    >
+                      Configure
+                    </ha-button>
+                  </ha-backup-summary-progress>
+                `
+              : this._needsOnboarding
+                ? html`
+                    <ha-backup-summary-card
+                      heading="Set up default backup"
+                      description="Have a one-click backup automation with selected data and locations."
+                      has-action
+                      status="info"
+                    >
+                      <ha-button
+                        slot="action"
+                        @click=${this._onboardDefaultBackup}
+                      >
+                        Setup backup strategy
+                      </ha-button>
+                    </ha-backup-summary-card>
+                  `
+                : html`
+                    <ha-backup-summary-status
+                      .hass=${this.hass}
+                      .backups=${this._backups}
+                      has-action
+                    >
+                      <ha-button
+                        slot="action"
+                        @click=${this._configureDefaultBackup}
+                      >
+                        Configure
+                      </ha-button>
+                    </ha-backup-summary-status>
+                  `}
         </div>
 
         <div slot="toolbar-icon">
@@ -305,8 +340,6 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _isProgress = false;
-
   private async _subscribeEvents() {
     this._unsubscribeEvents();
     if (!this.isConnected) {
@@ -315,17 +348,37 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
 
     this._subscribed = subscribeBackupEvents(this.hass!, (event) => {
       this._manager = event;
-      const isProgress = isBackupInProgress(this._manager);
-      if (isProgress !== this._isProgress) {
-        this._isProgress = isProgress;
-        this._fetchBackupInfo();
+      if ("state" in event) {
+        if (event.state === "completed" || event.state === "failed") {
+          this._fetchBackupInfo();
+        }
+        if (event.state === "failed") {
+          let message = "";
+          switch (this._manager.manager_state) {
+            case "create_backup":
+              message = "Failed to create backup";
+              break;
+            case "restore_backup":
+              message = "Failed to restore backup";
+              break;
+            case "receive_backup":
+              message = "Failed to upload backup";
+              break;
+          }
+          if (message) {
+            showToast(this, { message });
+          }
+        }
       }
     });
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    this._fetchBackupInfo();
+    this._fetching = true;
+    this._fetchBackupInfo().then(() => {
+      this._fetching = false;
+    });
     this._subscribeEvents();
     this._fetchBackupConfig();
   }

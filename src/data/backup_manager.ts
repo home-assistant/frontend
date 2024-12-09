@@ -1,77 +1,59 @@
 import type { HomeAssistant } from "../types";
 
-export enum BackupManagerState {
-  IDLE = "idle",
-  CREATE_BACKUP = "create_backup",
-  RECEIVE_BACKUP = "receive_backup",
-  RESTORE_BACKUP = "restore_backup",
-}
+export type BackupManagerState =
+  | "idle"
+  | "create_backup"
+  | "receive_backup"
+  | "restore_backup";
 
-export enum CreateBackupStage {
-  ADDON_REPOSITORIES = "addon_repositories",
-  ADDONS = "addons",
-  AWAIT_ADDON_RESTARTS = "await_addon_restarts",
-  DOCKER_CONFIG = "docker_config",
-  FINISHING_FILE = "finishing_file",
-  FOLDERS = "folders",
-  HOME_ASSISTANT = "home_assistant",
-  UPLOAD_TO_AGENTS = "upload_to_agents",
-}
+export type CreateBackupStage =
+  | "addon_repositories"
+  | "addons"
+  | "await_addon_restarts"
+  | "docker_config"
+  | "finishing_file"
+  | "folders"
+  | "home_assistant"
+  | "upload_to_agents";
 
-export enum CreateBackupState {
-  COMPLETED = "completed",
-  FAILED = "failed",
-  IN_PROGRESS = "in_progress",
-}
+export type CreateBackupState = "completed" | "failed" | "in_progress";
 
-export enum ReceiveBackupStage {
-  RECEIVE_FILE = "receive_file",
-  UPLOAD_TO_AGENTS = "upload_to_agents",
-}
+export type ReceiveBackupStage = "receive_file" | "upload_to_agents";
 
-export enum ReceiveBackupState {
-  COMPLETED = "completed",
-  FAILED = "failed",
-  IN_PROGRESS = "in_progress",
-}
+export type ReceiveBackupState = "completed" | "failed" | "in_progress";
 
-export enum RestoreBackupStage {
-  ADDON_REPOSITORIES = "addon_repositories",
-  ADDONS = "addons",
-  AWAIT_ADDON_RESTARTS = "await_addon_restarts",
-  AWAIT_HOME_ASSISTANT_RESTART = "await_home_assistant_restart",
-  CHECK_HOME_ASSISTANT = "check_home_assistant",
-  DOCKER_CONFIG = "docker_config",
-  DOWNLOAD_FROM_AGENT = "download_from_agent",
-  FOLDERS = "folders",
-  HOME_ASSISTANT = "home_assistant",
-  REMOVE_DELTA_ADDONS = "remove_delta_addons",
-}
+export type RestoreBackupStage =
+  | "addon_repositories"
+  | "addons"
+  | "await_addon_restarts"
+  | "await_home_assistant_restart"
+  | "check_home_assistant"
+  | "docker_config"
+  | "download_from_agent"
+  | "folders"
+  | "home_assistant"
+  | "remove_delta_addons";
 
-export enum RestoreBackupState {
-  COMPLETED = "completed",
-  FAILED = "failed",
-  IN_PROGRESS = "in_progress",
-}
+export type RestoreBackupState = "completed" | "failed" | "in_progress";
 
 type IdleEvent = {
-  manager_state: BackupManagerState.IDLE;
+  manager_state: "idle";
 };
 
 type CreateBackupEvent = {
-  manager_state: BackupManagerState.CREATE_BACKUP;
+  manager_state: "create_backup";
   stage: CreateBackupStage | null;
   state: CreateBackupState;
 };
 
 type ReceiveBackupEvent = {
-  manager_state: BackupManagerState.RECEIVE_BACKUP;
+  manager_state: "receive_backup";
   stage: ReceiveBackupStage | null;
   state: ReceiveBackupState;
 };
 
 type RestoreBackupEvent = {
-  manager_state: BackupManagerState.RESTORE_BACKUP;
+  manager_state: "restore_backup";
   stage: RestoreBackupStage | null;
   state: RestoreBackupState;
 };
@@ -90,10 +72,6 @@ export const subscribeBackupEvents = (
     type: "backup/subscribe_events",
   });
 
-export const isBackupInProgress = (state: ManagerStateEvent) =>
-  (state.manager_state === BackupManagerState.CREATE_BACKUP &&
-    state.state === CreateBackupState.IN_PROGRESS) ||
-  (state.manager_state === BackupManagerState.RECEIVE_BACKUP &&
-    state.state === ReceiveBackupState.IN_PROGRESS) ||
-  (state.manager_state === BackupManagerState.RESTORE_BACKUP &&
-    state.state === RestoreBackupState.IN_PROGRESS);
+export const DEFAULT_MANAGER_STATE: ManagerStateEvent = {
+  manager_state: "idle",
+};
