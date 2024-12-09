@@ -28,7 +28,7 @@ export default class HaAutomationConditionEditor extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ attribute: false, type: Boolean }) public yamlMode = false;
+  @property({ attribute: false }) public yamlMode = false;
 
   private _processedCondition = memoizeOne((condition) =>
     expandConditionWithShorthand(condition)

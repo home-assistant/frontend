@@ -61,20 +61,22 @@ export class StateHistoryCharts extends LitElement {
 
   @property({ attribute: false, type: Number }) public hoursToShow?: number;
 
-  @property({ attribute: false, type: Boolean }) public showNames = true;
+  @property({ attribute: "show-names", type: Boolean }) public showNames = true;
 
-  @property({ attribute: false, type: Boolean }) public clickForMoreInfo = true;
+  @property({ attribute: "click-for-more-info", type: Boolean })
+  public clickForMoreInfo = true;
 
-  @property({ attribute: false, type: Boolean }) public isLoadingData = false;
+  @property({ attribute: "is-loading-data", type: Boolean })
+  public isLoadingData = false;
 
-  @property({ attribute: false, type: Boolean }) public logarithmicScale =
-    false;
+  @property({ attribute: "logarithmic-scale", type: Boolean })
+  public logarithmicScale = false;
 
   @property({ attribute: false, type: Number }) public minYAxis?: number;
 
   @property({ attribute: false, type: Number }) public maxYAxis?: number;
 
-  @property({ attribute: false, type: Boolean }) public fitYData = false;
+  @property({ attribute: "fit-y-data", type: Boolean }) public fitYData = false;
 
   private _computedStartTime!: Date;
 

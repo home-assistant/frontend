@@ -147,9 +147,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property({ attribute: false, type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property({ attribute: false, type: Boolean }) public showAdvanced = false;
+  @property({ attribute: false }) public showAdvanced = false;
 
   @property({ attribute: false }) public configEntries?: ConfigEntry[];
 
@@ -368,11 +368,12 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     `
                   : nothing}
                 ${this._manifest?.is_built_in === false
-                  ? html`<div class="integration-info warn">
-                      <ha-svg-icon
-                        class="warning"
-                        path=${mdiPackageVariant}
-                      ></ha-svg-icon>
+                  ? html`<div
+                      class=${`integration-info ${
+                        this._manifest.overwrites_built_in ? "error" : "warn"
+                      }`}
+                    >
+                      <ha-svg-icon path=${mdiPackageVariant}></ha-svg-icon>
                       <a
                         href=${documentationUrl(
                           this.hass,
@@ -382,7 +383,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         target="_blank"
                       >
                         ${this.hass.localize(
-                          "ui.panel.config.integrations.config_entry.custom_integration"
+                          this._manifest.overwrites_built_in
+                            ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
+                            : "ui.panel.config.integrations.config_entry.custom_integration"
                         )}
                       </a>
                     </div>`
@@ -627,19 +630,18 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                           "ui.panel.config.integrations.integration_page.no_entries"
                         )}
                   </div>`
-                : nothing}
-              <ha-md-list>
-                ${normalEntries.map(
-                  (item, index) =>
-                    html`${this._renderConfigEntry(item)}
-                    ${index < normalEntries.length - 1
-                      ? html` <ha-md-divider
-                          role="separator"
-                          tabindex="-1"
-                        ></ha-md-divider>`
-                      : nothing}`
-                )}
-              </ha-md-list>
+                : html`<ha-md-list>
+                    ${normalEntries.map(
+                      (item, index) =>
+                        html`${this._renderConfigEntry(item)}
+                        ${index < normalEntries.length - 1
+                          ? html` <ha-md-divider
+                              role="separator"
+                              tabindex="-1"
+                            ></ha-md-divider>`
+                          : nothing}`
+                    )}
+                  </ha-md-list>`}
               <div class="card-actions">
                 <ha-button @click=${this._addIntegration}>
                   ${this._manifest?.integration_type
@@ -1490,7 +1492,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           padding-bottom: 0;
         }
         .no-entries {
-          padding-top: 12px;
+          padding: 12px 16px;
         }
         .logo-container {
           display: flex;
@@ -1529,6 +1531,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
         .integration-info.warn ha-svg-icon {
           color: var(--warning-color);
+        }
+        .integration-info.error ha-svg-icon {
+          color: var(--error-color);
         }
         .integration-info.info ha-svg-icon {
           color: var(--info-color);
