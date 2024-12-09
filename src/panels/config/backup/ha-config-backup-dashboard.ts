@@ -13,6 +13,7 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type {
@@ -43,9 +44,14 @@ import {
   generateBackup,
   getBackupDownloadUrl,
   getPreferredAgentForDownload,
-  subscribeBackupEvents,
   updateBackupConfig,
 } from "../../../data/backup";
+import type { ManagerStateEvent } from "../../../data/backup_manager";
+import {
+  BackupManagerState,
+  isBackupInProgress,
+  subscribeBackupEvents,
+} from "../../../data/backup_manager";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   showAlertDialog,
@@ -62,9 +68,8 @@ import { fileDownload } from "../../../util/file_download";
 import "./components/ha-backup-summary-card";
 import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
-import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
 import { showSetBackupEncryptionKeyDialog } from "./dialogs/show-dialog-set-backup-encryption-key";
+import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
 
 @customElement("ha-config-backup-dashboard")
 class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
@@ -74,7 +79,9 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public route!: Route;
 
-  @state() private _backupInProgress = false;
+  @state() private _manager: ManagerStateEvent = {
+    manager_state: BackupManagerState.IDLE,
+  };
 
   @state() private _backups: BackupContent[] = [];
 
@@ -172,6 +179,8 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   }
 
   protected render(): TemplateResult {
+    const backupInProgress = isBackupInProgress(this._manager);
+
     return html`
       <hass-tabs-subpage-data-table
         hasFab
@@ -202,7 +211,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
           ${this._needsOnboarding
             ? html`
                 <ha-backup-summary-card
-                  title="Set up default backup"
+                  heading="Set up default backup"
                   description="Have a one-click backup automation with selected data and locations."
                   has-action
                   status="info"
@@ -214,10 +223,10 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
               `
             : html`
                 <ha-backup-summary-card
-                  title="Automatically backed up"
+                  heading="Automatically backed up"
                   description="Your configuration has been backed up."
                   has-action
-                  .status=${this._backupInProgress ? "loading" : "success"}
+                  .status=${backupInProgress ? "loading" : "info"}
                 >
                   <ha-button
                     slot="action"
@@ -282,7 +291,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
 
         <ha-fab
           slot="fab"
-          ?disabled=${this._backupInProgress}
+          ?disabled=${backupInProgress}
           .label=${this.hass.localize("ui.panel.config.backup.create_backup")}
           extended
           @click=${this._newBackup}
@@ -300,6 +309,8 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
     }
   }
 
+  private _isProgress = false;
+
   private async _subscribeEvents() {
     this._unsubscribeEvents();
     if (!this.isConnected) {
@@ -307,7 +318,10 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
     }
 
     this._subscribed = subscribeBackupEvents(this.hass!, (event) => {
-      if (event.event_type === "backup_progress" && event.done) {
+      this._manager = event;
+      const isProgress = isBackupInProgress(this._manager);
+      if (isProgress !== this._isProgress) {
+        this._isProgress = isProgress;
         this._fetchBackupInfo();
       }
     });
@@ -336,7 +350,6 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   private async _fetchBackupInfo() {
     const info = await fetchBackupInfo(this.hass);
     this._backups = info.backups;
-    this._backupInProgress = info.backing_up;
   }
 
   private async _fetchBackupConfig() {
@@ -389,6 +402,12 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
 
       if (!params) {
         return;
+      }
+
+      if (!isComponentLoaded(this.hass, "hassio")) {
+        delete params.include_folders;
+        delete params.include_all_addons;
+        delete params.include_addons;
       }
 
       this._generateBackup(params);
