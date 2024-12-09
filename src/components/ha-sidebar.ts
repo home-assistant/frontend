@@ -24,9 +24,16 @@ import "@polymer/paper-listbox/paper-listbox";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResult, CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, eventOptions, property, state } from "lit/decorators";
+import {
+  customElement,
+  eventOptions,
+  property,
+  query,
+  state,
+} from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import type { PaperListboxElement } from "@polymer/paper-listbox";
 import { storage } from "../common/decorators/storage";
 import { fireEvent } from "../common/dom/fire_event";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
@@ -196,6 +203,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   @state() private _issuesCount = 0;
 
+  @query("paper-listbox", true) private _sidebar!: PaperListboxElement;
+
   private _mouseLeaveTimeout?: number;
 
   private _tooltipHideTimeout?: number;
@@ -287,6 +296,10 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this._subscribePersistentNotifications();
+
+    window.addEventListener("hass-reset-sidebar", (ev) => {
+      this._sidebar.selected = ev.detail;
+    });
   }
 
   private _subscribePersistentNotifications(): void {
@@ -397,6 +410,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     // prettier-ignore
     return html`
       <paper-listbox
+          id="sidebar"
         attr-for-selected="data-panel"
         class="ha-scrollbar"
         .selected=${selectedPanel}
@@ -1123,5 +1137,9 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-sidebar": HaSidebar;
+  }
+
+  interface HASSDomEvents {
+    "hass-reset-sidebar": string;
   }
 }
