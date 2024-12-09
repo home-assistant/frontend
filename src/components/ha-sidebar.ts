@@ -24,7 +24,13 @@ import "@polymer/paper-listbox/paper-listbox";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResult, CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, eventOptions, property, state } from "lit/decorators";
+import {
+  customElement,
+  eventOptions,
+  property,
+  query,
+  state,
+} from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import type { PaperListboxElement } from "@polymer/paper-listbox";
@@ -197,6 +203,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   @state() private _issuesCount = 0;
 
+  @query("paper-listbox", true) private _sidebar!: PaperListboxElement;
+
   private _mouseLeaveTimeout?: number;
 
   private _tooltipHideTimeout?: number;
@@ -290,10 +298,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     this._subscribePersistentNotifications();
 
     window.addEventListener("hass-reset-sidebar", (ev) => {
-      const sidebar = this.shadowRoot?.getElementById(
-        "sidebar"
-      ) as PaperListboxElement;
-      sidebar.selected = ev.detail;
+      this._sidebar.selected = ev.detail;
     });
   }
 
