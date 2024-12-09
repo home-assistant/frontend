@@ -1298,7 +1298,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     const confirmed = await showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.integrations.config_entry.delete_confirm_title",
-        { title: configEntry.title }
+        { title: subEntry.title }
       ),
       text: this.hass.localize(
         "ui.panel.config.integrations.config_entry.delete_confirm_text"
