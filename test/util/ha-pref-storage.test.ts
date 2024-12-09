@@ -13,7 +13,7 @@ describe("ha-pref-storage", () => {
     vi.resetAllMocks();
   });
 
-  test.only("storeState", async () => {
+  test("storeState", async () => {
     const { storeState } = await import("../../src/util/ha-pref-storage");
 
     const { FallbackStorage: fallbackStorage } = await import(
