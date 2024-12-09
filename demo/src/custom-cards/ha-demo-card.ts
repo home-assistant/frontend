@@ -26,7 +26,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
 
   @state() private _switching = false;
 
-  private _hidden = localStorage.hide_demo_card;
+  private _hidden = window.localStorage.getItem("hide_demo_card");
 
   public getCardSize() {
     return this._hidden ? 0 : 2;
