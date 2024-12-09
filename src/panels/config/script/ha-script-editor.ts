@@ -818,8 +818,10 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     }
   }
 
-  protected handleKeyboardSave() {
-    this._saveScript();
+  protected supportedShortcuts(): SupportedShortcuts {
+    return {
+      s: () => this._saveScript(),
+    };
   }
 
   static get styles(): CSSResultGroup {
