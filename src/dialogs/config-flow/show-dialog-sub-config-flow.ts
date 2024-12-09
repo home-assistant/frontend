@@ -227,7 +227,8 @@ export const showSubConfigFlowDialog = (
     renderMenuHeader(hass, step) {
       return (
         hass.localize(
-          `component.${configEntry.domain}.config_subentries.step.${step.step_id}.title`
+          `component.${configEntry.domain}.config_subentries.step.${step.step_id}.title`,
+          step.description_placeholders
         ) || hass.localize(`component.${configEntry.domain}.title`)
       );
     },
