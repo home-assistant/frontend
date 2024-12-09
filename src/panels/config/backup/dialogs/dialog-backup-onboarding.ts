@@ -35,7 +35,14 @@ import "../components/ha-backup-config-schedule";
 import type { BackupConfigSchedule } from "../components/ha-backup-config-schedule";
 import type { SetBackupEncryptionKeyDialogParams } from "./show-dialog-set-backup-encryption-key";
 
-const STEPS = ["new_key", "save_key", "schedule", "data", "locations"] as const;
+const STEPS = [
+  "welcome",
+  "new_key",
+  "save_key",
+  "schedule",
+  "data",
+  "locations",
+] as const;
 
 type Step = (typeof STEPS)[number];
 
@@ -43,7 +50,7 @@ const INITIAL_CONFIG: BackupConfig = {
   create_backup: {
     agent_ids: [],
     include_addons: null,
-    include_all_addons: false,
+    include_all_addons: true,
     include_database: true,
     include_folders: null,
     name: null,
@@ -204,6 +211,8 @@ class DialogSetBackupEncryptionKey extends LitElement implements HassDialog {
 
   private get _stepTitle(): string {
     switch (this._step) {
+      case "welcome":
+        return "Set up your backup strategy";
       case "new_key":
         return "Encryption key";
       case "save_key":
@@ -242,6 +251,16 @@ class DialogSetBackupEncryptionKey extends LitElement implements HassDialog {
     }
 
     switch (this._step) {
+      case "welcome":
+        return html`
+          <p>
+            Backups are essential to a reliable smart home. They protect your
+            setup against failures and allows you to quickly have a working
+            system again. It is recommended to create a daily backup and keep
+            copies of the last 3 days on two different locations. And one of
+            them is off-site.
+          </p>
+        `;
       case "new_key":
         return html`
           <p>
