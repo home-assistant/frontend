@@ -82,6 +82,7 @@ export const showDialog = async (
     };
   }
 
+  // Get the focus targets after the dialog closes
   LOADED[dialogTag].closedFocusTargets = ancestorsWithProperty(
     deepActiveElement(),
     FOCUS_TARGET
