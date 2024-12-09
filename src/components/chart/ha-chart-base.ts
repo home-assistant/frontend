@@ -201,7 +201,9 @@ export class HaChartBase extends LitElement {
       }
       this.chart.data = this.data;
     }
-    if (changedProps.has("options")) {
+    if (changedProps.has("options") && !this.chart.isZoomedOrPanned()) {
+      // this resets the chart zoom because min/max scales changed
+      // so we only do it if the user is not zooming or panning
       this.chart.options = this._createOptions();
     }
     this.chart.update("none");
@@ -259,6 +261,7 @@ export class HaChartBase extends LitElement {
             "padding-inline-start": `${this._paddingYAxisInternal}px`,
             "padding-inline-end": 0,
           })}
+          @click=${this._handleChartClick}
         >
           <canvas></canvas>
           ${this._tooltip
@@ -343,7 +346,7 @@ export class HaChartBase extends LitElement {
     }
   }
 
-  private _createOptions() {
+  private _createOptions(): ChartOptions {
     return {
       maintainAspectRatio: false,
       ...this.options,
@@ -357,6 +360,32 @@ export class HaChartBase extends LitElement {
         legend: {
           ...this.options?.plugins?.legend,
           display: false,
+        },
+        zoom: {
+          ...this.options?.plugins?.zoom,
+          pan: {
+            enabled: true,
+            modifierKey: "shift",
+          },
+          zoom: {
+            pinch: {
+              enabled: true,
+            },
+            drag: {
+              enabled: true,
+            },
+            mode: "x",
+          },
+          limits: {
+            x: {
+              min: "original",
+              max: "original",
+            },
+            y: {
+              min: "original",
+              max: "original",
+            },
+          },
         },
       },
     };
@@ -380,6 +409,13 @@ export class HaChartBase extends LitElement {
         },
       },
     ];
+  }
+
+  private _handleChartClick(ev: MouseEvent) {
+    if (ev.detail === 2) {
+      // reset zoom with double click
+      this.chart?.resetZoom();
+    }
   }
 
   private _legendClick(ev) {
