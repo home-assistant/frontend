@@ -63,6 +63,7 @@ export type TranslationCategory =
   | "entity_component"
   | "exceptions"
   | "config"
+  | "config_subentries"
   | "config_panel"
   | "options"
   | "device_automation"
