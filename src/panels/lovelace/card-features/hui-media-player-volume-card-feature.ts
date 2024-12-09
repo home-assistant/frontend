@@ -9,10 +9,15 @@ import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type { MediaPlayerCardFeatureConfig } from "./types";
+import { MediaPlayerEntityFeature } from "../../../data/media-player";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 
 export const supportsMediaPlayerVolumeCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
-  return domain === "media_player";
+  return (
+    domain === "media_player" &&
+    supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET)
+  );
 };
 
 @customElement("hui-media-player-volume-card-feature")
