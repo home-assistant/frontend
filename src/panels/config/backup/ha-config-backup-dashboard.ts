@@ -10,9 +10,9 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type {
@@ -34,13 +34,13 @@ import type {
   BackupConfig,
   BackupContent,
   BackupMutableConfig,
-  GenerateBackupParams,
 } from "../../../data/backup";
 import {
   deleteBackup,
   fetchBackupConfig,
   fetchBackupInfo,
   generateBackup,
+  generateBackupWithStoredSettings,
   getBackupDownloadUrl,
   getPreferredAgentForDownload,
   subscribeBackupEvents,
@@ -62,9 +62,8 @@ import { fileDownload } from "../../../util/file_download";
 import "./components/ha-backup-summary-card";
 import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
-import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
 import { showSetBackupEncryptionKeyDialog } from "./dialogs/show-dialog-set-backup-encryption-key";
+import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
 
 @customElement("ha-config-backup-dashboard")
 class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
@@ -391,31 +390,14 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
         return;
       }
 
-      this._generateBackup(params);
+      await generateBackup(this.hass, params);
+      await this._fetchBackupInfo();
       return;
     }
     if (type === "default") {
-      const params: GenerateBackupParams = {
-        agent_ids: config.create_backup.agent_ids,
-        include_homeassistant: true,
-        include_database: config.create_backup.include_database,
-        password: config.create_backup.password!,
-      };
-      if (isComponentLoaded(this.hass, "hassio")) {
-        params.include_folders = config.create_backup.include_folders || [];
-        params.include_addons = config.create_backup.include_all_addons
-          ? []
-          : config.create_backup.include_addons || [];
-        params.include_all_addons = config.create_backup.include_all_addons;
-      }
-      this._generateBackup(params);
+      await generateBackupWithStoredSettings(this.hass);
+      await this._fetchBackupInfo();
     }
-  }
-
-  private async _generateBackup(params: GenerateBackupParams): Promise<void> {
-    await generateBackup(this.hass, params);
-
-    await this._fetchBackupInfo();
   }
 
   private _showBackupDetails(ev: CustomEvent): void {
