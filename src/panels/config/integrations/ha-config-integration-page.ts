@@ -630,19 +630,18 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                           "ui.panel.config.integrations.integration_page.no_entries"
                         )}
                   </div>`
-                : nothing}
-              <ha-md-list>
-                ${normalEntries.map(
-                  (item, index) =>
-                    html`${this._renderConfigEntry(item)}
-                    ${index < normalEntries.length - 1
-                      ? html` <ha-md-divider
-                          role="separator"
-                          tabindex="-1"
-                        ></ha-md-divider>`
-                      : nothing}`
-                )}
-              </ha-md-list>
+                : html`<ha-md-list>
+                    ${normalEntries.map(
+                      (item, index) =>
+                        html`${this._renderConfigEntry(item)}
+                        ${index < normalEntries.length - 1
+                          ? html` <ha-md-divider
+                              role="separator"
+                              tabindex="-1"
+                            ></ha-md-divider>`
+                          : nothing}`
+                    )}
+                  </ha-md-list>`}
               <div class="card-actions">
                 <ha-button @click=${this._addIntegration}>
                   ${this._manifest?.integration_type
@@ -1493,7 +1492,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           padding-bottom: 0;
         }
         .no-entries {
-          padding-top: 12px;
+          padding: 12px 16px;
         }
         .logo-container {
           display: flex;
