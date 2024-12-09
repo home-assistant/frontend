@@ -39,8 +39,8 @@ export interface DialogClosedParams {
 export interface DialogState {
   dialog: string;
   open: boolean;
-  oldState: null | DialogState;
   dialogParams?: unknown;
+  nextState?: DialogState;
 }
 
 interface LoadedDialogInfo {
@@ -82,42 +82,21 @@ export const showDialog = async (
     };
   }
 
-  // Get the focus targets after the dialog closes, but keep the original if dialog is being replaced
-  if (mainWindow.history.state?.replaced) {
-    LOADED[dialogTag].closedFocusTargets =
-      LOADED[mainWindow.history.state.dialog].closedFocusTargets;
-    delete LOADED[mainWindow.history.state.dialog].closedFocusTargets;
-  } else {
-    LOADED[dialogTag].closedFocusTargets = ancestorsWithProperty(
-      deepActiveElement(),
-      FOCUS_TARGET
-    );
-  }
+  LOADED[dialogTag].closedFocusTargets = ancestorsWithProperty(
+    deepActiveElement(),
+    FOCUS_TARGET
+  );
 
-  if (addHistory) {
-    mainWindow.history.replaceState(
-      {
-        dialog: dialogTag,
-        open: false,
-        oldState:
-          mainWindow.history.state?.open &&
-          mainWindow.history.state?.dialog !== dialogTag
-            ? mainWindow.history.state
-            : null,
-      },
-      ""
-    );
+  const { state } = mainWindow.history;
+  // if the same dialog is already open, don't push state
+  if (addHistory && state?.dialog !== dialogTag) {
+    const nextState = { dialog: dialogTag, dialogParams, open: true };
+    mainWindow.history.replaceState({ ...state, nextState }, "");
     try {
-      mainWindow.history.pushState(
-        { dialog: dialogTag, dialogParams: dialogParams, open: true },
-        ""
-      );
+      mainWindow.history.pushState(nextState, "");
     } catch (err: any) {
       // dialogParams could not be cloned, probably contains callback
-      mainWindow.history.pushState(
-        { dialog: dialogTag, dialogParams: null, open: true },
-        ""
-      );
+      mainWindow.history.pushState({ ...nextState, dialogParams: null }, "");
     }
   }
 
@@ -130,14 +109,6 @@ export const showDialog = async (
   dialogElement.showDialog(dialogParams);
 
   return true;
-};
-
-export const replaceDialog = (dialogElement: HassDialog) => {
-  mainWindow.history.replaceState(
-    { ...mainWindow.history.state, replaced: true },
-    ""
-  );
-  dialogElement.removeEventListener("dialog-closed", _handleClosedFocus);
 };
 
 export const closeDialog = async (dialogTag: string): Promise<boolean> => {
