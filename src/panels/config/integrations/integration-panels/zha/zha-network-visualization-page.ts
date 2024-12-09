@@ -10,6 +10,7 @@ import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/ha-button-menu";
 import "../../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../../components/ha-checkbox";
+import "../../../../../components/ha-circular-progress";
 import "../../../../../components/ha-formfield";
 import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
 import type { ZHADevice } from "../../../../../data/zha";
@@ -60,6 +61,9 @@ export class ZHANetworkVisualizationPage extends LitElement {
   private _autoZoom = true;
 
   private _enablePhysics = true;
+
+  @state()
+  private _refreshingTopology = false;
 
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
@@ -202,7 +206,16 @@ export class ZHANetworkVisualizationPage extends LitElement {
               >
               </ha-checkbox
             ></ha-formfield>
-            <mwc-button @click=${this._refreshTopology}>
+            <mwc-button
+              @click=${this._refreshTopology}
+              .disabled=${this._refreshingTopology}
+            >
+              ${this._refreshingTopology
+                ? html`<ha-circular-progress
+                    indeterminate
+                    size="small"
+                  ></ha-circular-progress>`
+                : ""}
               ${this.hass!.localize(
                 "ui.panel.config.zha.visualization.refresh_topology"
               )}
@@ -392,7 +405,13 @@ export class ZHANetworkVisualizationPage extends LitElement {
   }
 
   private async _refreshTopology(): Promise<void> {
-    await refreshTopology(this.hass);
+    this._refreshingTopology = true;
+    try {
+      await refreshTopology(this.hass);
+      await this._fetchData();
+    } finally {
+      this._refreshingTopology = false;
+    }
   }
 
   private _filterDevices = (device: DeviceRegistryEntry): boolean => {
