@@ -19,7 +19,7 @@ export interface ConfigEntry {
   supports_remove_device: boolean;
   supports_unload: boolean;
   supports_reconfigure: boolean;
-  supports_subentries: boolean;
+  supported_subentries: string[];
   num_subentries: number;
   pref_disable_new_entities: boolean;
   pref_disable_polling: boolean;
