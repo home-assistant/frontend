@@ -34,6 +34,10 @@ export interface LockOpenDoorCardFeatureConfig {
   type: "lock-open-door";
 }
 
+export interface MediaPlayerVolumeSliderCardFeatureConfig {
+  type: "media-player-volume-slider";
+}
+
 export interface FanPresetModesCardFeatureConfig {
   type: "fan-preset-modes";
   style?: "dropdown" | "icons";
@@ -59,6 +63,12 @@ export interface ClimateSwingModesCardFeatureConfig {
   type: "climate-swing-modes";
   style?: "dropdown" | "icons";
   swing_modes?: string[];
+}
+
+export interface ClimateSwingHorizontalModesCardFeatureConfig {
+  type: "climate-swing-horizontal-modes";
+  style?: "dropdown" | "icons";
+  swing_horizontal_modes?: string[];
 }
 
 export interface ClimateHvacModesCardFeatureConfig {
@@ -139,6 +149,7 @@ export type LovelaceCardFeatureConfig =
   | AlarmModesCardFeatureConfig
   | ClimateFanModesCardFeatureConfig
   | ClimateSwingModesCardFeatureConfig
+  | ClimateSwingHorizontalModesCardFeatureConfig
   | ClimateHvacModesCardFeatureConfig
   | ClimatePresetModesCardFeatureConfig
   | CoverOpenCloseCardFeatureConfig
@@ -154,6 +165,7 @@ export type LovelaceCardFeatureConfig =
   | LightColorTempCardFeatureConfig
   | LockCommandsCardFeatureConfig
   | LockOpenDoorCardFeatureConfig
+  | MediaPlayerVolumeSliderCardFeatureConfig
   | NumericInputCardFeatureConfig
   | SelectOptionsCardFeatureConfig
   | TargetHumidityCardFeatureConfig

@@ -118,7 +118,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ attribute: false }) public route!: Route;
 
@@ -339,6 +339,13 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
               narrow
               .items=${[
                 {
+                  path: mdiPlay,
+                  label: this.hass.localize(
+                    "ui.panel.config.scene.picker.apply"
+                  ),
+                  action: () => this._activateScene(scene),
+                },
+                {
                   path: mdiInformationOutline,
                   label: this.hass.localize(
                     "ui.panel.config.scene.picker.show_info"
@@ -351,13 +358,6 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                     "ui.panel.config.automation.picker.show_settings"
                   ),
                   action: () => this._openSettings(scene),
-                },
-                {
-                  path: mdiPlay,
-                  label: this.hass.localize(
-                    "ui.panel.config.scene.picker.activate"
-                  ),
-                  action: () => this._activateScene(scene),
                 },
                 {
                   path: mdiTag,
@@ -541,7 +541,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         selectable
         .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}
-        hasFilters
+        has-filters
         .filters=${Object.values(this._filters).filter((filter) =>
           Array.isArray(filter.value)
             ? filter.value.length
@@ -570,7 +570,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         @clear-filter=${this._clearFilter}
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
-        hasFab
+        has-fab
         clickable
         @row-click=${this._handleRowClicked}
       >

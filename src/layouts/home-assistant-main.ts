@@ -1,4 +1,3 @@
-/* eslint-disable lit/prefer-static-styles */
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";

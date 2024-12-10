@@ -361,6 +361,9 @@ export interface StatisticsGraphCardConfig extends LovelaceCardConfig {
   period?: "5minute" | "hour" | "day" | "month";
   stat_types?: StatisticType | StatisticType[];
   chart_type?: "line" | "bar";
+  min_y_axis?: number;
+  max_y_axis?: number;
+  fit_y_data?: boolean;
   hide_legend?: boolean;
   logarithmic_scale?: boolean;
 }

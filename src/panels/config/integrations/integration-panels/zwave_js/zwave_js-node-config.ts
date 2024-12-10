@@ -60,11 +60,11 @@ class ZWaveJSNodeConfig extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property() public configEntryId?: string;
+  @property({ attribute: false }) public configEntryId?: string;
 
-  @property() public deviceId!: string;
+  @property({ attribute: false }) public deviceId!: string;
 
   @state() private _nodeMetadata?: ZwaveJSNodeMetadata;
 
@@ -390,7 +390,7 @@ class ZWaveJSNodeConfig extends LitElement {
   }
 
   private _switchToggled(ev) {
-    this.setResult(ev.target.key, undefined);
+    this._setResult(ev.target.key, undefined);
     this._updateConfigParameter(ev.target, ev.detail.value ? 1 : 0);
   }
 
@@ -401,7 +401,7 @@ class ZWaveJSNodeConfig extends LitElement {
     if (this._config![ev.target.key].value?.toString() === ev.target.value) {
       return;
     }
-    this.setResult(ev.target.key, undefined);
+    this._setResult(ev.target.key, undefined);
 
     this._updateConfigParameter(ev.target, Number(ev.target.value));
   }
@@ -418,7 +418,7 @@ class ZWaveJSNodeConfig extends LitElement {
       (ev.target.min !== undefined && value < ev.target.min) ||
       (ev.target.max !== undefined && value > ev.target.max)
     ) {
-      this.setError(
+      this._setError(
         ev.target.key,
         this.hass.localize(
           "ui.panel.config.zwave_js.node_config.error_not_in_range",
@@ -427,7 +427,7 @@ class ZWaveJSNodeConfig extends LitElement {
       );
       return;
     }
-    this.setResult(ev.target.key, undefined);
+    this._setResult(ev.target.key, undefined);
     this._updateConfigParameter(ev.target, value);
   }
 
@@ -443,13 +443,13 @@ class ZWaveJSNodeConfig extends LitElement {
       );
       this._config![target.key].value = value;
 
-      this.setResult(target.key, result.status);
+      this._setResult(target.key, result.status);
     } catch (err: any) {
-      this.setError(target.key, err.message);
+      this._setError(target.key, err.message);
     }
   }
 
-  private setResult(key: string, value: string | undefined) {
+  private _setResult(key: string, value: string | undefined) {
     if (value === undefined) {
       delete this._results[key];
       this.requestUpdate();
@@ -458,7 +458,7 @@ class ZWaveJSNodeConfig extends LitElement {
     }
   }
 
-  private setError(key: string, message: string) {
+  private _setError(key: string, message: string) {
     const errorParam = { status: "error", error: message };
     this._results = { ...this._results, [key]: errorParam };
   }

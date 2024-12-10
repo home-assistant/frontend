@@ -53,6 +53,11 @@ module.exports.definedVars = ({ isProdBuild, latestBuild, defineOverlay }) => ({
   __SUPERVISOR__: false,
   __BACKWARDS_COMPAT__: false,
   __STATIC_PATH__: "/static/",
+  __HASS_URL__: `\`${
+    "HASS_URL" in process.env
+      ? process.env["HASS_URL"]
+      : "${location.protocol}//${location.host}"
+  }\``,
   "process.env.NODE_ENV": JSON.stringify(
     isProdBuild ? "production" : "development"
   ),
@@ -152,7 +157,6 @@ module.exports.babelOptions = ({
   exclude: [
     // \\ for Windows, / for Mac OS and Linux
     /node_modules[\\/]core-js/,
-    /node_modules[\\/]webpack[\\/]buildin/,
   ],
   sourceMaps: !isTestBuild,
   overrides: [
@@ -325,6 +329,19 @@ module.exports.config = {
       defineOverlay: {
         __DEMO__: true,
       },
+    };
+  },
+
+  landingPage({ isProdBuild, latestBuild }) {
+    return {
+      name: "landing-page" + nameSuffix(latestBuild),
+      entry: {
+        entrypoint: path.resolve(paths.landingPage_dir, "src/entrypoint.js"),
+      },
+      outputPath: outputPath(paths.landingPage_output_root, latestBuild),
+      publicPath: publicPath(latestBuild),
+      isProdBuild,
+      latestBuild,
     };
   },
 };

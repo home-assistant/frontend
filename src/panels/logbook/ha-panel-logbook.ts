@@ -99,7 +99,7 @@ export class HaPanelLogbook extends LitElement {
             .hass=${this.hass}
             .entityFilter=${filterLogbookCompatibleEntities}
             .value=${this._targetPickerValue}
-            addOnTop
+            add-on-top
             @value-changed=${this._targetsChanged}
           ></ha-target-picker>
         </div>
@@ -315,8 +315,7 @@ export class HaPanelLogbook extends LitElement {
 
         .filters {
           display: flex;
-          align-items: flex-end;
-          padding: 8px 16px 0;
+          padding: 16px 16px 0;
         }
 
         :host([narrow]) .filters {

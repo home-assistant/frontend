@@ -54,7 +54,7 @@ class HaWebRtcPlayer extends LitElement {
 
   private _sessionId?: string;
 
-  private _candidatesList: string[] = [];
+  private _candidatesList: RTCIceCandidate[] = [];
 
   protected override render(): TemplateResult {
     if (this._error) {
@@ -252,7 +252,8 @@ class HaWebRtcPlayer extends LitElement {
           this.hass,
           this.entityid!,
           event.session_id,
-          candidate
+          // toJSON returns RTCIceCandidateInit
+          candidate.toJSON()
         )
       );
       this._candidatesList = [];
@@ -266,9 +267,17 @@ class HaWebRtcPlayer extends LitElement {
       this._logEvent("remote ice candidate", event.candidate);
 
       try {
-        await this._peerConnection?.addIceCandidate(
-          new RTCIceCandidate({ candidate: event.candidate, sdpMid: "0" })
-        );
+        // The spdMid or sdpMLineIndex is required so set sdpMid="0" if not
+        // sent from the backend.
+        const candidate =
+          event.candidate.sdpMid || event.candidate.sdpMLineIndex != null
+            ? new RTCIceCandidate(event.candidate)
+            : new RTCIceCandidate({
+                candidate: event.candidate.candidate,
+                sdpMid: "0",
+              });
+
+        await this._peerConnection?.addIceCandidate(candidate);
       } catch (err: any) {
         // eslint-disable-next-line no-console
         console.error(err);
@@ -285,17 +294,22 @@ class HaWebRtcPlayer extends LitElement {
       return;
     }
 
-    this._logEvent("local ice candidate", event.candidate?.candidate);
+    this._logEvent(
+      "local ice candidate",
+      event.candidate?.candidate,
+      event.candidate?.sdpMLineIndex
+    );
 
     if (this._sessionId) {
       addWebRtcCandidate(
         this.hass,
         this.entityid,
         this._sessionId,
-        event.candidate?.candidate
+        // toJSON returns RTCIceCandidateInit
+        event.candidate.toJSON()
       );
     } else {
-      this._candidatesList.push(event.candidate?.candidate);
+      this._candidatesList.push(event.candidate);
     }
   };
 

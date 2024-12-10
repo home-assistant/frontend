@@ -398,6 +398,11 @@ export interface ZWaveJSRemovedNode {
   label: string;
 }
 
+export interface ZWaveJSS2InclusionValidateDskAndEnterPinMessage {
+  event: "validate dsk and enter pin";
+  dsk: string;
+}
+
 export const enum NodeStatus {
   Unknown,
   Asleep,
@@ -424,7 +429,7 @@ export interface RequestedGrant {
   clientSideAuth: boolean;
 }
 
-export const invokeZWaveCCApi = (
+export const invokeZWaveCCApi = <T = unknown>(
   hass: HomeAssistant,
   device_id: string,
   command_class: number,
@@ -432,7 +437,7 @@ export const invokeZWaveCCApi = (
   method_name: string,
   parameters: any[],
   wait_for_result?: boolean
-): Promise<unknown> =>
+): Promise<T> =>
   hass.callWS({
     type: "zwave_js/invoke_cc_api",
     device_id,
@@ -808,6 +813,21 @@ export const subscribeZwaveNodeStatistics = (
     }
   );
 
+export const subscribeS2Inclusion = (
+  hass: HomeAssistant,
+  entry_id: string,
+  callbackFunction: (
+    message: ZWaveJSS2InclusionValidateDskAndEnterPinMessage
+  ) => void
+): Promise<UnsubscribeFunc> =>
+  hass.connection.subscribeMessage(
+    (message: any) => callbackFunction(message),
+    {
+      type: "zwave_js/subscribe_s2_inclusion",
+      entry_id,
+    }
+  );
+
 export const fetchZwaveIsNodeFirmwareUpdateInProgress = (
   hass: HomeAssistant,
   device_id: string
@@ -950,4 +970,24 @@ export const setZWaveJSLogLevel = (
     type: "zwave_js/update_log_config",
     entry_id,
     config: { level },
+  });
+
+export interface ZWaveJSIntegrationSettings {
+  installer_mode: boolean;
+}
+
+export const fetchZwaveIntegrationSettings = (
+  hass: HomeAssistant
+): Promise<ZWaveJSIntegrationSettings> =>
+  hass.callWS({
+    type: "zwave_js/get_integration_settings",
+  });
+
+export const cancelSecureBootstrapS2 = (
+  hass: HomeAssistant,
+  entry_id: string
+): Promise<void> =>
+  hass.callWS({
+    type: "zwave_js/cancel_secure_bootstrap_s2",
+    entry_id,
   });

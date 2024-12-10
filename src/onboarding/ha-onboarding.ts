@@ -88,7 +88,8 @@ declare global {
 class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public translationFragment = "page-onboarding";
+  @property({ attribute: false }) public translationFragment =
+    "page-onboarding";
 
   @state() private _progress = 0;
 
@@ -140,8 +141,9 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         <ha-language-picker
           .value=${this.language}
           .label=${""}
-          nativeName
+          native-name
           @value-changed=${this._languageChanged}
+          inline-arrow
         ></ha-language-picker>
         <a
           href="https://www.home-assistant.io/getting-started/onboarding/"
@@ -480,7 +482,10 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       storeState(this.hass!);
     } else {
       try {
-        localStorage.setItem("selectedLanguage", JSON.stringify(language));
+        window.localStorage.setItem(
+          "selectedLanguage",
+          JSON.stringify(language)
+        );
       } catch (err: any) {
         // Ignore
       }

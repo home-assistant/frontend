@@ -184,9 +184,11 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ type: Boolean }) public alwaysExpand = false;
+  @property({ attribute: "always-expand", type: Boolean })
+  public alwaysExpand = false;
 
-  @property({ type: Boolean }) public editMode = false;
+  @property({ attribute: "edit-mode", type: Boolean })
+  public editMode = false;
 
   @state() private _notifications?: PersistentNotification[];
 
@@ -284,10 +286,10 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    this.subscribePersistentNotifications();
+    this._subscribePersistentNotifications();
   }
 
-  private subscribePersistentNotifications(): void {
+  private _subscribePersistentNotifications(): void {
     if (this._unsubPersistentNotifications) {
       this._unsubPersistentNotifications();
     }
@@ -316,7 +318,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       changedProps.get("hass")?.connected === false &&
       this.hass.connected === true
     ) {
-      this.subscribePersistentNotifications();
+      this._subscribePersistentNotifications();
     }
 
     this._calculateCounts();
@@ -441,6 +443,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       : html`
           <a
             role="option"
+            aria-selected=${urlPath === this.hass.panelUrl}
             href=${`/${urlPath}`}
             data-panel=${urlPath}
             tabindex="-1"
@@ -556,13 +559,18 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     return html`<a
       class="configuration-container"
       role="option"
+      aria-selected=${this.hass.panelUrl === "config"}
       href="/config"
       data-panel="config"
       tabindex="-1"
       @mouseenter=${this._itemMouseEnter}
       @mouseleave=${this._itemMouseLeave}
     >
-      <paper-icon-item class="configuration" role="option">
+      <paper-icon-item
+        class="configuration"
+        role="option"
+        aria-selected=${this.hass.panelUrl === "config"}
+      >
         <ha-svg-icon slot="item-icon" .path=${mdiCog}></ha-svg-icon>
         ${!this.alwaysExpand &&
         (this._updatesCount > 0 || this._issuesCount > 0)
@@ -597,6 +605,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       <paper-icon-item
         class="notifications"
         role="option"
+        aria-selected="false"
         @click=${this._handleShowNotificationDrawer}
       >
         <ha-svg-icon slot="item-icon" .path=${mdiBell}></ha-svg-icon>
@@ -628,6 +637,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       data-panel="panel"
       tabindex="-1"
       role="option"
+      aria-selected=${this.hass.panelUrl === "profile"}
       aria-label=${this.hass.localize("panel.profile")}
       @mouseenter=${this._itemMouseEnter}
       @mouseleave=${this._itemMouseLeave}
@@ -657,6 +667,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
             )}
             href="#external-app-configuration"
             tabindex="-1"
+            aria-selected="false"
             @click=${this._handleExternalAppConfiguration}
             @mouseenter=${this._itemMouseEnter}
             @mouseleave=${this._itemMouseLeave}

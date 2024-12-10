@@ -55,7 +55,7 @@ export class HaStateLabelBadge extends LitElement {
 
   @property() public image?: string;
 
-  @property({ type: Boolean }) public showName = false;
+  @property({ attribute: "show-name", type: Boolean }) public showName = false;
 
   @state() private _timerTimeRemaining?: number;
 
@@ -66,13 +66,13 @@ export class HaStateLabelBadge extends LitElement {
   public connectedCallback(): void {
     super.connectedCallback();
     this._connected = true;
-    this.startInterval(this.state);
+    this._startInterval(this.state);
   }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     this._connected = false;
-    this.clearInterval();
+    this._clearInterval();
   }
 
   protected render(): TemplateResult {
@@ -151,7 +151,7 @@ export class HaStateLabelBadge extends LitElement {
     super.updated(changedProperties);
 
     if (this._connected && changedProperties.has("state")) {
-      this.startInterval(this.state);
+      this._startInterval(this.state);
     }
   }
 
@@ -237,28 +237,28 @@ export class HaStateLabelBadge extends LitElement {
     return entityState.attributes.unit_of_measurement || null;
   }
 
-  private clearInterval() {
+  private _clearInterval() {
     if (this._updateRemaining) {
       clearInterval(this._updateRemaining);
       this._updateRemaining = undefined;
     }
   }
 
-  private startInterval(stateObj) {
-    this.clearInterval();
+  private _startInterval(stateObj) {
+    this._clearInterval();
     if (stateObj && computeStateDomain(stateObj) === "timer") {
-      this.calculateTimerRemaining(stateObj);
+      this._calculateTimerRemaining(stateObj);
 
       if (stateObj.state === "active") {
         this._updateRemaining = window.setInterval(
-          () => this.calculateTimerRemaining(this.state),
+          () => this._calculateTimerRemaining(this.state),
           1000
         );
       }
     }
   }
 
-  private calculateTimerRemaining(stateObj) {
+  private _calculateTimerRemaining(stateObj) {
     this._timerTimeRemaining = timerTimeRemaining(stateObj);
   }
 

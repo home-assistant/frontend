@@ -22,11 +22,13 @@ import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
 import "./capability-controls/zwave_js-capability-control-multilevel-switch";
 import "./capability-controls/zwave_js-capability-control-thermostat-setback";
+import "./capability-controls/zwave_js-capability-control-door-lock";
 import "./capability-controls/zwave_js-capability-control-color-switch";
 
 const CAPABILITY_CONTROLS = {
   38: "multilevel_switch",
   71: "thermostat_setback",
+  98: "door_lock",
   51: "color_switch",
 };
 
@@ -38,11 +40,11 @@ class ZWaveJSNodeInstaller extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property() public configEntryId?: string;
+  @property({ attribute: false }) public configEntryId?: string;
 
-  @property() public deviceId!: string;
+  @property({ attribute: false }) public deviceId!: string;
 
   @state() private _nodeMetadata?: ZwaveJSNodeMetadata;
 

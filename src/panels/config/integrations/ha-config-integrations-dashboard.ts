@@ -69,6 +69,7 @@ import type { HaIntegrationCard } from "./ha-integration-card";
 import "./ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
 import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
+import type { ImprovDiscoveredDevice } from "../../../external_app/external_messaging";
 
 export interface ConfigEntryExtended extends Omit<ConfigEntry, "entry_id"> {
   entry_id?: string;
@@ -94,9 +95,9 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public showAdvanced = false;
+  @property({ attribute: false }) public showAdvanced = false;
 
   @property({ attribute: false }) public route!: Route;
 
@@ -104,6 +105,9 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false })
   public configEntriesInProgress?: DataEntryFlowProgressExtended[];
+
+  @state() private _improvDiscovered: Map<string, ImprovDiscoveredDevice> =
+    new Map();
 
   @state()
   private _entityRegistryEntries: EntityRegistryEntry[] = [];
@@ -130,6 +134,18 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
   @state() private _logInfos?: {
     [integration: string]: IntegrationLogInfo;
   };
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.removeEventListener(
+      "improv-discovered-device",
+      this._handleImprovDiscovered
+    );
+    window.removeEventListener(
+      "improv-device-setup-done",
+      this._reScanImprovDevices
+    );
+  }
 
   public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
     return [
@@ -244,8 +260,38 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
   private _filterConfigEntriesInProgress = memoizeOne(
     (
       configEntriesInProgress: DataEntryFlowProgressExtended[],
+      improvDiscovered: Map<string, ImprovDiscoveredDevice>,
       filter?: string
     ): DataEntryFlowProgressExtended[] => {
+      let inProgress = [...configEntriesInProgress];
+
+      const improvDiscoveredArray = Array.from(improvDiscovered.values());
+
+      if (improvDiscoveredArray.length) {
+        // filter out native flows that have been discovered by both mobile and local bluetooth
+        inProgress = inProgress.filter(
+          (flow) =>
+            !improvDiscoveredArray.some(
+              (discovered) => discovered.name === flow.localized_title
+            )
+        );
+
+        // add mobile flows to the list
+        improvDiscovered.forEach((discovered) => {
+          inProgress.push({
+            flow_id: "external",
+            handler: "improv_ble",
+            context: {
+              title_placeholders: {
+                name: discovered.name,
+              },
+            },
+            step_id: "bluetooth_confirm",
+            localized_title: discovered.name,
+          });
+        });
+      }
+
       let filteredEntries: DataEntryFlowProgressExtended[];
       if (filter) {
         const options: IFuseOptions<DataEntryFlowProgressExtended> = {
@@ -255,12 +301,12 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
           threshold: 0.2,
           getFn: getStripDiacriticsFn,
         };
-        const fuse = new Fuse(configEntriesInProgress, options);
+        const fuse = new Fuse(inProgress, options);
         filteredEntries = fuse
           .search(stripDiacritics(filter))
           .map((result) => result.item);
       } else {
-        filteredEntries = configEntriesInProgress;
+        filteredEntries = inProgress;
       }
       return filteredEntries.sort((a, b) =>
         caseInsensitiveStringCompare(
@@ -280,6 +326,8 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
       this._handleAdd();
     }
     this._scanUSBDevices();
+    this._scanImprovDevices();
+
     if (isComponentLoaded(this.hass, "diagnostics")) {
       fetchDiagnosticHandlers(this.hass).then((infos) => {
         const handlers = {};
@@ -334,6 +382,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
       );
     const configEntriesInProgress = this._filterConfigEntriesInProgress(
       this.configEntriesInProgress,
+      this._improvDiscovered,
       this._filter
     );
 
@@ -608,6 +657,43 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     await scanUSBDevices(this.hass);
   }
 
+  private _scanImprovDevices() {
+    if (!this.hass.auth.external?.config.canSetupImprov) {
+      return;
+    }
+
+    window.addEventListener(
+      "improv-discovered-device",
+      this._handleImprovDiscovered
+    );
+
+    window.addEventListener(
+      "improv-device-setup-done",
+      this._reScanImprovDevices
+    );
+
+    this.hass.auth.external!.fireMessage({
+      type: "improv/scan",
+    });
+  }
+
+  private _reScanImprovDevices = () => {
+    if (!this.hass.auth.external?.config.canSetupImprov) {
+      return;
+    }
+    this._improvDiscovered = new Map();
+    this.hass.auth.external!.fireMessage({
+      type: "improv/scan",
+    });
+  };
+
+  private _handleImprovDiscovered = (ev) => {
+    this._fetchManifests(["improv_ble"]);
+    this._improvDiscovered.set(ev.detail.name, ev.detail);
+    // copy for memoize and reactive updates
+    this._improvDiscovered = new Map(Array.from(this._improvDiscovered));
+  };
+
   private async _fetchEntitySources() {
     const entitySources = await fetchEntitySourcesWithCache(this.hass);
 
@@ -657,6 +743,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
 
   private _handleFlowUpdated() {
     getConfigFlowInProgressCollection(this.hass.connection).refresh();
+    this._reScanImprovDevices();
     this._fetchManifests();
   }
 
@@ -664,11 +751,6 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     showAddIntegrationDialog(this, {
       initialFilter: this._filter,
     });
-    if (this.hass.auth.external?.config.canSetupImprov) {
-      this.hass.auth.external!.fireMessage({
-        type: "improv/scan",
-      });
-    }
   }
 
   private _handleMenuAction(ev: CustomEvent<ActionDetail>) {

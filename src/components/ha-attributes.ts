@@ -20,7 +20,7 @@ class HaAttributes extends LitElement {
   @state() private _expanded = false;
 
   private get _filteredAttributes() {
-    return this.computeDisplayAttributes(
+    return this._computeDisplayAttributes(
       STATE_ATTRIBUTES.concat(
         this.extraFilters ? this.extraFilters.split(",") : []
       )
@@ -53,7 +53,7 @@ class HaAttributes extends LitElement {
           "ui.components.attributes.expansion_header"
         )}
         outlined
-        @expanded-will-change=${this.expandedChanged}
+        @expanded-will-change=${this._expandedChanged}
       >
         <div class="attribute-container">
           ${this._expanded
@@ -128,7 +128,7 @@ class HaAttributes extends LitElement {
     ];
   }
 
-  private computeDisplayAttributes(filtersArray: string[]): string[] {
+  private _computeDisplayAttributes(filtersArray: string[]): string[] {
     if (!this.stateObj) {
       return [];
     }
@@ -137,7 +137,7 @@ class HaAttributes extends LitElement {
     );
   }
 
-  private expandedChanged(ev) {
+  private _expandedChanged(ev) {
     this._expanded = ev.detail.expanded;
   }
 }

@@ -21,13 +21,13 @@ const appNames = {
 
 @customElement("ha-authorize")
 export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
-  @property() public clientId?: string;
+  @property({ attribute: false }) public clientId?: string;
 
-  @property() public redirectUri?: string;
+  @property({ attribute: false }) public redirectUri?: string;
 
-  @property() public oauth2State?: string;
+  @property({ attribute: false }) public oauth2State?: string;
 
-  @property() public translationFragment = "page-authorize";
+  @property({ attribute: false }) public translationFragment = "page-authorize";
 
   @state() private _authProvider?: AuthProvider;
 
@@ -202,8 +202,9 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
         <ha-language-picker
           .value=${this.language}
           .label=${""}
-          nativeName
+          native-name
           @value-changed=${this._languageChanged}
+          inline-arrow
         ></ha-language-picker>
         <a
           href="https://www.home-assistant.io/docs/authentication/"
@@ -326,7 +327,7 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     this.language = language;
 
     try {
-      localStorage.setItem("selectedLanguage", JSON.stringify(language));
+      window.localStorage.setItem("selectedLanguage", JSON.stringify(language));
     } catch (err: any) {
       // Ignore
     }

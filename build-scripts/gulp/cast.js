@@ -4,7 +4,7 @@ import "./entry-html.js";
 import "./gather-static.js";
 import "./service-worker.js";
 import "./translations.js";
-import "./webpack.js";
+import "./rspack.js";
 
 gulp.task(
   "develop-cast",
@@ -17,7 +17,7 @@ gulp.task(
     gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
     "copy-static-cast",
     "gen-pages-cast-dev",
-    "webpack-dev-server-cast"
+    "rspack-dev-server-cast"
   )
 );
 
@@ -31,7 +31,7 @@ gulp.task(
     "translations-enable-merge-backend",
     gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
     "copy-static-cast",
-    "webpack-prod-cast",
+    "rspack-prod-cast",
     "gen-pages-cast-prod"
   )
 );

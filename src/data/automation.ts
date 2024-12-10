@@ -425,6 +425,10 @@ export const migrateAutomationConfig = <
 export const migrateAutomationTrigger = (
   trigger: Trigger | Trigger[]
 ): Trigger | Trigger[] => {
+  if (!trigger) {
+    return trigger;
+  }
+
   if (Array.isArray(trigger)) {
     return trigger.map(migrateAutomationTrigger) as Trigger[];
   }

@@ -37,7 +37,7 @@ const statTypes: StatisticsTypes = ["state", "min", "mean", "max"];
 export class MoreInfoHistory extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public entityId!: string;
+  @property({ attribute: false }) public entityId!: string;
 
   @state() private _stateHistory?: HistoryResult;
 
@@ -93,8 +93,7 @@ export class MoreInfoHistory extends LitElement {
                   .metadata=${this._metadata}
                   .statTypes=${statTypes}
                   .names=${this._statNames}
-                  hideLegend
-                  .showNames=${false}
+                  hide-legend
                   .clickForMoreInfo=${false}
                 ></statistics-chart>`
               : html`<state-history-charts
