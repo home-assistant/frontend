@@ -12,6 +12,8 @@ class HaEntityMarker extends LitElement {
 
   @property({ attribute: "entity-color" }) public entityColor?: string;
 
+  @property({ attribute: "entity-icon" }) public entityIcon?: string;
+
   protected render() {
     return html`
       <div
@@ -26,7 +28,9 @@ class HaEntityMarker extends LitElement {
                 "background-image": `url(${this.entityPicture})`,
               })}
             ></div>`
-          : this.entityName}
+          : this.entityIcon
+            ? html`<ha-icon .icon=${this.entityIcon}></ha-icon>`
+            : this.entityName}
       </div>
     `;
   }
