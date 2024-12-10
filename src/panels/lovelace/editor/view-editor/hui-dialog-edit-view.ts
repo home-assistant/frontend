@@ -2,7 +2,7 @@ import "@material/mwc-button";
 import type { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
-import { mdiCheck, mdiClose, mdiDotsVertical } from "@mdi/js";
+import { mdiClose, mdiDotsVertical, mdiPlaylistEdit } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -203,31 +203,15 @@ export class HuiDialogEditView extends LitElement {
               .label=${this.hass!.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-            <mwc-list-item graphic="icon">
+            <ha-list-item graphic="icon">
               ${this.hass!.localize(
-                "ui.panel.lovelace.editor.edit_view.edit_ui"
+                `ui.panel.lovelace.editor.edit_view.edit_${!this._yamlMode ? "yaml" : "ui"}`
               )}
-              ${!this._yamlMode
-                ? html`<ha-svg-icon
-                    class="selected_menu_item"
-                    slot="graphic"
-                    .path=${mdiCheck}
-                  ></ha-svg-icon>`
-                : ``}
-            </mwc-list-item>
-
-            <mwc-list-item graphic="icon">
-              ${this.hass!.localize(
-                "ui.panel.lovelace.editor.edit_view.edit_yaml"
-              )}
-              ${this._yamlMode
-                ? html`<ha-svg-icon
-                    class="selected_menu_item"
-                    slot="graphic"
-                    .path=${mdiCheck}
-                  ></ha-svg-icon>`
-                : ``}
-            </mwc-list-item>
+              <ha-svg-icon
+                slot="graphic"
+                .path=${mdiPlaylistEdit}
+              ></ha-svg-icon>
+            </ha-list-item>
           </ha-button-menu>
           ${convertToSection
             ? html`
@@ -314,10 +298,7 @@ export class HuiDialogEditView extends LitElement {
     ev.preventDefault();
     switch (ev.detail.index) {
       case 0:
-        this._yamlMode = false;
-        break;
-      case 1:
-        this._yamlMode = true;
+        this._yamlMode = !this._yamlMode;
         break;
     }
   }
@@ -550,9 +531,6 @@ export class HuiDialogEditView extends LitElement {
           margin-right: auto;
           margin-inline-end: auto;
           margin-inline-start: initial;
-        }
-        .selected_menu_item {
-          color: var(--primary-color);
         }
         .hidden {
           display: none;
