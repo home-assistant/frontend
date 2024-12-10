@@ -5,18 +5,30 @@ import type { ScriptConfig } from "../../../../data/script";
 export const loadAutomationRenameDialog = () =>
   import("./dialog-automation-rename");
 
-export interface AutomationRenameDialogParams {
-  config: AutomationConfig;
-  domain: "automation";
-  updateConfig: (config: AutomationConfig) => void;
+interface BaseRenameDialogParams {
+  category?: string;
+  labels?: string[];
   onClose: () => void;
 }
 
-export interface ScriptRenameDialogParams {
+export interface AutomationRenameDialogParams extends BaseRenameDialogParams {
+  config: AutomationConfig;
+  domain: "automation";
+  updateConfig: (
+    config: AutomationConfig,
+    category?: string,
+    labels?: string[]
+  ) => void;
+}
+
+export interface ScriptRenameDialogParams extends BaseRenameDialogParams {
   config: ScriptConfig;
   domain: "script";
-  updateConfig: (config: ScriptConfig) => void;
-  onClose: () => void;
+  updateConfig: (
+    config: ScriptConfig,
+    category?: string,
+    labels?: string[]
+  ) => void;
 }
 
 export const showAutomationRenameDialog = (
