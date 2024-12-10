@@ -44,6 +44,7 @@ interface MapEntityConfig extends EntityConfig {
 
 interface GeoEntity {
   entity_id: string;
+  display_mode: "icon" | undefined;
   focus: boolean;
 }
 
@@ -351,6 +352,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       ) {
         geoEntities.push({
           entity_id: stateObj.entity_id,
+          display_mode: sourceObj?.display_mode ?? allSource?.display_mode,
           focus: sourceObj
             ? (sourceObj.focus ?? true)
             : (allSource?.focus ?? true),
@@ -370,8 +372,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         name: entityConf.name,
       })),
       ...this._getSourceEntities(this.hass?.states).map((entity) => ({
-        entity_id: entity.entity_id,
-        focus: entity.focus,
+        ...entity,
         color: this._getColor(entity.entity_id),
       })),
     ];
