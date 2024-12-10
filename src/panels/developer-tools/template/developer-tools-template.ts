@@ -181,16 +181,15 @@ class HaPanelDevTemplate extends LitElement {
                 >`
               : nothing}
             ${this._templateResult
-              ? html`
-                  <pre
+              ? html`<pre
                     class="rendered ${classMap({
                       [resultType]: resultType,
                     })}"
                   >
                     ${type === "object"
                       ? JSON.stringify(this._templateResult.result, null, 2)
-                      : this._templateResult.result}
-                  </pre>
+                      : this._templateResult.result}</pre
+                  >
                   <p>
                     ${this.hass.localize(
                       "ui.panel.developer-tools.tabs.templates.result_type"
