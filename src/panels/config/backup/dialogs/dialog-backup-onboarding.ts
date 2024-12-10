@@ -212,7 +212,7 @@ class DialogSetBackupEncryptionKey extends LitElement implements HassDialog {
   private get _stepTitle(): string {
     switch (this._step) {
       case "welcome":
-        return "Set up your backup strategy";
+        return "";
       case "new_key":
         return "Encryption key";
       case "save_key":
@@ -253,13 +253,20 @@ class DialogSetBackupEncryptionKey extends LitElement implements HassDialog {
     switch (this._step) {
       case "welcome":
         return html`
-          <p>
-            Backups are essential to a reliable smart home. They protect your
-            setup against failures and allows you to quickly have a working
-            system again. It is recommended to create a daily backup and keep
-            copies of the last 3 days on two different locations. And one of
-            them is off-site.
-          </p>
+          <div class="welcome">
+            <img
+              src="/static/images/voice-assistant/hi.png"
+              alt="Casita Home Assistant logo"
+            />
+            <h1>Set up your backup strategy</h1>
+            <p class="secondary">
+              Backups are essential to a reliable smart home. They protect your
+              setup against failures and allows you to quickly have a working
+              system again. It is recommended to create a daily backup and keep
+              copies of the last 3 days on two different locations. And one of
+              them is off-site.
+            </p>
+          </div>
         `;
       case "new_key":
         return html`
@@ -454,6 +461,9 @@ class DialogSetBackupEncryptionKey extends LitElement implements HassDialog {
         }
         p {
           margin-top: 0;
+        }
+        .welcome {
+          text-align: center;
         }
       `,
     ];
