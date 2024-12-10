@@ -84,7 +84,7 @@ class HaBackupConfigData extends LitElement {
     ];
   }
 
-  private getData = memoizeOne((value?: BackupConfigData): FormData => {
+  private _getData = memoizeOne((value?: BackupConfigData): FormData => {
     if (!value) {
       return INITIAL_FORM_DATA;
     }
@@ -111,7 +111,7 @@ class HaBackupConfigData extends LitElement {
     };
   });
 
-  private setData(data: FormData) {
+  private _setData(data: FormData) {
     const hasSelfCreatedAddons = data.addons.includes(SELF_CREATED_ADDONS_NAME);
 
     const include_folders = [
@@ -140,7 +140,7 @@ class HaBackupConfigData extends LitElement {
   }
 
   protected render() {
-    const data = this.getData(this.value);
+    const data = this._getData(this.value);
 
     const isHassio = isComponentLoaded(this.hass, "hassio");
 
@@ -263,8 +263,8 @@ class HaBackupConfigData extends LitElement {
 
   private _switchChanged(ev: Event) {
     const target = ev.currentTarget as HaSwitch;
-    const data = this.getData(this.value);
-    this.setData({
+    const data = this._getData(this.value);
+    this._setData({
       ...data,
       [target.id]: target.checked,
     });
@@ -273,8 +273,8 @@ class HaBackupConfigData extends LitElement {
 
   private _selectChanged(ev: Event) {
     const target = ev.currentTarget as HaMdSelect;
-    const data = this.getData(this.value);
-    this.setData({
+    const data = this._getData(this.value);
+    this._setData({
       ...data,
       [target.id]: target.value,
     });
@@ -284,8 +284,8 @@ class HaBackupConfigData extends LitElement {
   private _addonsChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const addons = ev.detail.value;
-    const data = this.getData(this.value);
-    this.setData({
+    const data = this._getData(this.value);
+    this._setData({
       ...data,
       addons,
     });
