@@ -181,21 +181,17 @@ class HaPanelDevTemplate extends LitElement {
                 >`
               : nothing}
             ${this._templateResult
-              ? html`<pre
-                    class="rendered ${classMap({
-                      [resultType]: resultType,
-                    })}"
-                  >
-                    ${type === "object"
-                      ? JSON.stringify(this._templateResult.result, null, 2)
-                      : this._templateResult.result}</pre
-                  >
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.developer-tools.tabs.templates.result_type"
-                    )}:
-                    ${resultType}
-                  </p>
+              ? html`${this.hass.localize(
+                    "ui.panel.developer-tools.tabs.templates.result_type"
+                  )}:
+                  ${resultType}
+                  <!-- prettier-ignore -->
+                  <pre class="rendered ${classMap({
+                    [resultType]: resultType,
+                  })}"
+                  >${type === "object"
+                    ? JSON.stringify(this._templateResult.result, null, 2)
+                    : this._templateResult.result}</pre>
                   ${this._templateResult.listeners.time
                     ? html`
                         <p>
@@ -253,11 +249,11 @@ class HaPanelDevTemplate extends LitElement {
                             </ul>
                           `
                         : !this._templateResult.listeners.time
-                          ? html`<p class="all_listeners">
+                          ? html`<span class="all_listeners">
                               ${this.hass.localize(
                                 "ui.panel.developer-tools.tabs.templates.no_listeners"
                               )}
-                            </p>`
+                            </span>`
                           : nothing}`
               : nothing}
           </div>
@@ -285,10 +281,6 @@ class HaPanelDevTemplate extends LitElement {
             max(16px, env(safe-area-inset-left));
         }
 
-        .content.horizontal {
-          --code-mirror-max-height: calc(100vh - 389px);
-        }
-
         ha-card {
           margin-bottom: 16px;
         }
@@ -301,9 +293,8 @@ class HaPanelDevTemplate extends LitElement {
           color: var(--primary-color);
         }
 
-        .content.horizontal > * {
-          width: 50%;
-          margin-bottom: 0px;
+        .horizontal .edit-pane {
+          max-width: 50%;
         }
 
         .render-spinner {
@@ -325,21 +316,7 @@ class HaPanelDevTemplate extends LitElement {
           white-space: pre-wrap;
           background-color: var(--secondary-background-color);
           padding: 8px;
-          margin-top: 0;
-          margin-bottom: 0;
           direction: ltr;
-          overflow: auto;
-        }
-
-        p,
-        ul {
-          margin-block-end: 0;
-        }
-
-        .content.horizontal .render-pane .card-content {
-          display: flex;
-          flex-direction: column;
-          max-height: calc(var(--code-mirror-max-height) + 47px);
         }
 
         .all_listeners {
@@ -347,7 +324,7 @@ class HaPanelDevTemplate extends LitElement {
         }
 
         @media all and (max-width: 870px) {
-          .content ha-card {
+          .render-pane {
             max-width: 100%;
           }
         }
