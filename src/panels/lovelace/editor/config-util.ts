@@ -179,12 +179,21 @@ export const moveCard = (
 export const addView = (
   hass: HomeAssistant,
   config: LovelaceConfig,
-  viewConfig: LovelaceViewConfig
+  viewConfig: LovelaceViewConfig,
+  tolerantPath = false
 ): LovelaceConfig => {
   if (viewConfig.path && config.views.some((v) => v.path === viewConfig.path)) {
-    throw new Error(
-      hass.localize("ui.panel.lovelace.editor.edit_view.error_same_url")
-    );
+    if (!tolerantPath) {
+      throw new Error(
+        hass.localize("ui.panel.lovelace.editor.edit_view.error_same_url")
+      );
+    } else {
+      // add a suffix to the path
+      viewConfig = {
+        ...viewConfig,
+        path: `${viewConfig.path}-2`,
+      };
+    }
   }
   return {
     ...config,
@@ -239,6 +248,20 @@ export const deleteView = (
   ...config,
   views: config.views.filter((_origView, index) => index !== viewIndex),
 });
+
+export const moveViewToDashboard = (
+  hass: HomeAssistant,
+  fromConfig: LovelaceConfig,
+  toConfig: LovelaceConfig,
+  viewIndex: number
+): [LovelaceConfig, LovelaceConfig] => {
+  const view = fromConfig.views[viewIndex];
+
+  return [
+    deleteView(fromConfig, viewIndex),
+    addView(hass, toConfig, view, true),
+  ];
+};
 
 export const addSection = (
   config: LovelaceConfig,
