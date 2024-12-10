@@ -204,7 +204,7 @@ export class HuiDialogEditView extends LitElement {
               .path=${mdiDotsVertical}
             ></ha-icon-button>
             <ha-list-item graphic="icon">
-              ${this.hass.localize(
+              ${this.hass!.localize(
                 `ui.panel.lovelace.editor.edit_view.edit_${!this._yamlMode ? "yaml" : "ui"}`
               )}
               <ha-svg-icon
