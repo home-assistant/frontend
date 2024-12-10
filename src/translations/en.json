@@ -7149,6 +7149,10 @@
               }
             }
           }
+        },
+        "external": {
+          "description": "This step requires you to visit an external website to be completed.",
+          "open_site": "Open website"
         }
       },
       "page-demo": {
