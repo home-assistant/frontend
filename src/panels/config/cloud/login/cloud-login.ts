@@ -298,9 +298,9 @@ export class CloudLogin extends LitElement {
               "ui.panel.config.cloud.login.alert_mfa_code_required"
             );
             break;
-          case "mfaexpired":
+          case "mfaexpiredornotstarted":
             this._error = this.hass.localize(
-              "ui.panel.config.cloud.login.alert_mfa_expired"
+              "ui.panel.config.cloud.login.alert_mfa_expired_or_not_started"
             );
             break;
           case "invalidtotpcode":
