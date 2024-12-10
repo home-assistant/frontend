@@ -233,15 +233,18 @@ class DialogAutomationRename extends LitElement implements HassDialog {
   }
 
   private _addOptional(ev) {
+    ev.stopPropagation();
     const option: string = ev.target.id;
     this._visibleOptionals = [...this._visibleOptionals, option];
   }
 
   private _categoryChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
     this._category = ev.detail.value;
   }
 
   private _labelsChanged(ev: CustomEvent) {
+    ev.stopPropagation();
     this._labels = ev.detail.value;
   }
 
