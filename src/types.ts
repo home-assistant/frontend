@@ -23,7 +23,7 @@ import type { Themes } from "./data/ws-themes";
 import type { ExternalMessaging } from "./external_app/external_messaging";
 
 declare global {
-  /* eslint-disable no-var */
+  /* eslint-disable no-var, @typescript-eslint/naming-convention */
   var __DEV__: boolean;
   var __DEMO__: boolean;
   var __BUILD__: "modern" | "legacy";
@@ -31,7 +31,8 @@ declare global {
   var __STATIC_PATH__: string;
   var __BACKWARDS_COMPAT__: boolean;
   var __SUPERVISOR__: boolean;
-  /* eslint-enable no-var */
+  var __HASS_URL__: string;
+  /* eslint-enable no-var, @typescript-eslint/naming-convention */
 
   interface Window {
     // Custom panel entry point url
@@ -69,6 +70,7 @@ declare global {
   // Intl.DurationFormat is not yet part of the TypeScript standard
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Intl {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     const DurationFormat: DurationFormatConstructor;
   }
 }

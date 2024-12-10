@@ -100,7 +100,7 @@ class HaScheduleForm extends LitElement {
   public connectedCallback(): void {
     super.connectedCallback();
     if (this.hasUpdated && !this.calendar) {
-      this.setupCalendar();
+      this._setupCalendar();
     }
   }
 
@@ -175,10 +175,10 @@ class HaScheduleForm extends LitElement {
   }
 
   protected firstUpdated(): void {
-    this.setupCalendar();
+    this._setupCalendar();
   }
 
-  private setupCalendar(): void {
+  private _setupCalendar(): void {
     const config: CalendarOptions = {
       ...defaultFullCalendarConfig,
       locale: this.hass.language,

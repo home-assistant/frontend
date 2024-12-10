@@ -95,9 +95,9 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public showAdvanced = false;
+  @property({ attribute: false }) public showAdvanced = false;
 
   @property({ attribute: false }) public route!: Route;
 

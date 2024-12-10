@@ -18,8 +18,8 @@ class SearchInputOutlined extends LitElement {
   @property({ type: Boolean })
   public suffix = false;
 
-  @property({ type: Boolean })
-  public autofocus = false;
+  // eslint-disable-next-line lit/no-native-attributes
+  @property({ type: Boolean }) public autofocus = false;
 
   @property({ type: String })
   public label?: string;

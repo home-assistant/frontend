@@ -31,13 +31,14 @@ import {
 export class HaDeviceEntitiesCard extends LitElement {
   @property() public header!: string;
 
-  @property() public deviceName!: string;
+  @property({ attribute: false }) public deviceName!: string;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public entities!: EntityRegistryStateEntry[];
 
-  @property({ type: Boolean }) public showHidden = false;
+  @property({ attribute: "show-hidden", type: Boolean })
+  public showHidden = false;
 
   @state() private _extDisabledEntityEntries?: Record<
     string,
@@ -53,6 +54,7 @@ export class HaDeviceEntitiesCard extends LitElement {
       });
       return false;
     }
+    this._entityRows = [];
     return true;
   }
 
@@ -69,7 +71,6 @@ export class HaDeviceEntitiesCard extends LitElement {
 
     const shownEntities: EntityRegistryStateEntry[] = [];
     const hiddenEntities: EntityRegistryStateEntry[] = [];
-    this._entityRows = [];
 
     this.entities.forEach((entry) => {
       if (entry.disabled_by) {

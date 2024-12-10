@@ -65,7 +65,7 @@ type DataTableItem = Pick<
 export class HaConfigLovelaceDashboards extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -322,7 +322,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
         @search-changed=${this._handleSearchChange}
         @row-click=${this._editDashboard}
         id="url_path"
-        hasFab
+        has-fab
         clickable
       >
         <ha-button-menu slot="toolbar-icon" activatable>

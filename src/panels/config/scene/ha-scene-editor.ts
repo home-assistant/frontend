@@ -6,7 +6,9 @@ import {
   mdiContentSave,
   mdiDelete,
   mdiDotsVertical,
+  mdiEye,
   mdiInformationOutline,
+  mdiMotionPlayOutline,
   mdiPlay,
   mdiPlaylistEdit,
   mdiTag,
@@ -94,15 +96,15 @@ export class HaSceneEditor extends SubscribeMixin(
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ attribute: false }) public route!: Route;
 
-  @property() public sceneId: string | null = null;
+  @property({ attribute: false }) public sceneId: string | null = null;
 
   @property({ attribute: false }) public scenes!: SceneEntity[];
 
-  @property({ type: Boolean }) public showAdvanced = false;
+  @property({ attribute: false }) public showAdvanced = false;
 
   @state() private _dirty = false;
 
@@ -203,6 +205,14 @@ export class HaSceneEditor extends SubscribeMixin(
       return { devices: outputDevices, entities: outputEntities };
     }
   );
+
+  public connectedCallback() {
+    super.connectedCallback();
+    if (!this.sceneId) {
+      this._mode = "live";
+      this._subscribeEvents();
+    }
+  }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
@@ -310,7 +320,7 @@ export class HaSceneEditor extends SubscribeMixin(
           </ha-list-item>
         </ha-button-menu>
         ${this._errors ? html` <div class="errors">${this._errors}</div> ` : ""}
-        ${this._mode === "yaml" ? this.renderYamlMode() : this.renderUiMode()}
+        ${this._mode === "yaml" ? this._renderYamlMode() : this._renderUiMode()}
         <ha-fab
           slot="fab"
           .label=${this.hass.localize("ui.panel.config.scene.editor.save")}
@@ -325,7 +335,7 @@ export class HaSceneEditor extends SubscribeMixin(
     `;
   }
 
-  private renderYamlMode() {
+  private _renderYamlMode() {
     return html` <ha-yaml-editor
       .hass=${this.hass}
       .defaultValue=${this._config}
@@ -333,7 +343,7 @@ export class HaSceneEditor extends SubscribeMixin(
     ></ha-yaml-editor>`;
   }
 
-  private renderUiMode() {
+  private _renderUiMode() {
     const { devices, entities } = this._getEntitiesDevices(
       this._entities,
       this._devices,
@@ -358,15 +368,22 @@ export class HaSceneEditor extends SubscribeMixin(
                 alert-type="info"
                 .narrow=${this.narrow}
                 .title=${this.hass.localize(
-                  `ui.panel.config.scene.editor.${this._mode === "live" ? "live_preview" : "review_mode"}`
+                  `ui.panel.config.scene.editor.${this._mode === "live" ? "live_edit" : "review_mode"}`
                 )}
               >
                 ${this.hass.localize(
-                  `ui.panel.config.scene.editor.${this._mode === "live" ? "live_preview_detail" : "review_mode_detail"}`
+                  `ui.panel.config.scene.editor.${this._mode === "live" ? "live_edit_detail" : "review_mode_detail"}`
                 )}
+                <span slot="icon">
+                  <ha-svg-icon
+                    .path=${this._mode === "live"
+                      ? mdiMotionPlayOutline
+                      : mdiEye}
+                  ></ha-svg-icon>
+                </span>
                 <ha-button slot="action" @click=${this._toggleLiveMode}>
                   ${this.hass.localize(
-                    `ui.panel.config.scene.editor.${this._mode === "live" ? "back_to_review_mode" : "live_preview"}`
+                    `ui.panel.config.scene.editor.${this._mode === "live" ? "switch_to_review_mode" : "live_edit"}`
                   )}
                 </ha-button>
               </ha-alert>
@@ -513,6 +530,7 @@ export class HaSceneEditor extends SubscribeMixin(
                               }
                               return html`
                                 <ha-list-item
+                                  class="entity"
                                   hasMeta
                                   .graphic=${this._mode === "live"
                                     ? "icon"
@@ -727,13 +745,15 @@ export class HaSceneEditor extends SubscribeMixin(
         text: this.hass.localize(
           "ui.panel.config.scene.editor.enter_live_mode_unsaved"
         ),
-        confirmText: this.hass!.localize("ui.common.continue"),
-        destructive: true,
+        confirmText: this.hass!.localize(
+          "ui.panel.config.scene.editor.save_before_live"
+        ),
         dismissText: this.hass!.localize("ui.common.cancel"),
       });
       if (!result) {
         return;
       }
+      await this._saveScene();
     }
 
     this._entities.forEach((entity) => this._storeState(entity));
@@ -973,7 +993,7 @@ export class HaSceneEditor extends SubscribeMixin(
   }
 
   private _backTapped = async (): Promise<void> => {
-    const result = await this.confirmUnsavedChanged();
+    const result = await this._confirmUnsavedChanged();
     if (result) {
       this._goBack();
     }
@@ -1010,7 +1030,7 @@ export class HaSceneEditor extends SubscribeMixin(
     history.back();
   }
 
-  private async confirmUnsavedChanged(): Promise<boolean> {
+  private async _confirmUnsavedChanged(): Promise<boolean> {
     if (this._dirty) {
       return showConfirmationDialog(this, {
         title: this.hass!.localize(
@@ -1028,7 +1048,7 @@ export class HaSceneEditor extends SubscribeMixin(
   }
 
   private async _duplicate() {
-    const result = await this.confirmUnsavedChanged();
+    const result = await this._confirmUnsavedChanged();
     if (result) {
       showSceneEditor(
         {
@@ -1276,6 +1296,9 @@ export class HaSceneEditor extends SubscribeMixin(
         }
         li[role="separator"] {
           border-bottom-color: var(--divider-color);
+        }
+        ha-list-item.entity {
+          padding-right: 28px;
         }
       `,
     ];

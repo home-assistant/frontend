@@ -61,13 +61,13 @@ import { substituteBlueprint } from "../../../data/blueprint";
 export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public scriptId: string | null = null;
+  @property({ attribute: false }) public scriptId: string | null = null;
 
-  @property() public entityId: string | null = null;
+  @property({ attribute: false }) public entityId: string | null = null;
 
   @property({ attribute: false }) public entityRegistry!: EntityRegistryEntry[];
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -355,7 +355,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
               `
             : this._mode === "yaml"
               ? html`<ha-yaml-editor
-                  copyClipboard
+                  copy-clipboard
                   .hass=${this.hass}
                   .defaultValue=${this._preprocessYaml()}
                   .readOnly=${this._readOnly}
@@ -572,7 +572,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   private async _showTrace() {
     if (this.scriptId) {
-      const result = await this.confirmUnsavedChanged();
+      const result = await this._confirmUnsavedChanged();
       if (result) {
         navigate(`/config/script/trace/${this.scriptId}`);
       }
@@ -603,7 +603,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     this._errors = undefined;
   }
 
-  private async confirmUnsavedChanged(): Promise<boolean> {
+  private async _confirmUnsavedChanged(): Promise<boolean> {
     if (this._dirty) {
       return showConfirmationDialog(this, {
         title: this.hass!.localize(
@@ -621,7 +621,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   }
 
   private _backTapped = async () => {
-    const result = await this.confirmUnsavedChanged();
+    const result = await this._confirmUnsavedChanged();
     if (result) {
       afterNextRender(() => history.back());
     }
@@ -681,7 +681,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
             "ui.panel.config.script.picker.migrate_script_description"
           ),
         })
-      : await this.confirmUnsavedChanged();
+      : await this._confirmUnsavedChanged();
     if (result) {
       this._entityId = undefined;
       showScriptEditor({

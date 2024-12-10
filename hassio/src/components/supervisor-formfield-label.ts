@@ -7,9 +7,9 @@ import "../../../src/components/ha-svg-icon";
 class SupervisorFormfieldLabel extends LitElement {
   @property({ type: String }) public label!: string;
 
-  @property({ type: String }) public imageUrl?: string;
+  @property({ attribute: false }) public imageUrl?: string;
 
-  @property({ type: String }) public iconPath?: string;
+  @property({ attribute: false }) public iconPath?: string;
 
   @property({ type: String }) public version?: string;
 

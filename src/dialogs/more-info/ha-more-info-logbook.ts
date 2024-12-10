@@ -13,7 +13,7 @@ import type { HomeAssistant } from "../../types";
 export class MoreInfoLogbook extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public entityId!: string;
+  @property({ attribute: false }) public entityId!: string;
 
   private _showMoreHref = "";
 

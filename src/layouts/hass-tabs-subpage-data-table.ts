@@ -46,7 +46,7 @@ export class HaTabsSubpageDataTable extends LitElement {
 
   @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
@@ -84,7 +84,7 @@ export class HaTabsSubpageDataTable extends LitElement {
    * Do we need to add padding for a fab.
    * @type {Boolean}
    */
-  @property({ type: Boolean }) public hasFab = false;
+  @property({ attribute: "has-fab", type: Boolean }) public hasFab = false;
 
   /**
    * Add an extra row at the bottom of the data table
@@ -96,6 +96,7 @@ export class HaTabsSubpageDataTable extends LitElement {
    * Field with a unique id per entry in data.
    * @type {String}
    */
+  // eslint-disable-next-line lit/no-native-attributes
   @property({ type: String }) public id = "id";
 
   /**
@@ -104,7 +105,7 @@ export class HaTabsSubpageDataTable extends LitElement {
    */
   @property({ type: String }) public filter = "";
 
-  @property() public searchLabel?: string;
+  @property({ attribute: false }) public searchLabel?: string;
 
   /**
    * Number of active filters.
@@ -135,7 +136,7 @@ export class HaTabsSubpageDataTable extends LitElement {
    * String to show when there are no records in the data table.
    * @type {String}
    */
-  @property({ type: String }) public noDataText?: string;
+  @property({ attribute: false, type: String }) public noDataText?: string;
 
   /**
    * Hides the data table and show an empty message.
@@ -155,16 +156,18 @@ export class HaTabsSubpageDataTable extends LitElement {
    * Show the filter menu.
    * @type {Boolean}
    */
-  @property({ type: Boolean }) public hasFilters = false;
+  @property({ attribute: "has-filters", type: Boolean })
+  public hasFilters = false;
 
-  @property({ type: Boolean }) public showFilters = false;
+  @property({ attribute: "show-filters", type: Boolean })
+  public showFilters = false;
 
   @property({ attribute: false }) public initialSorting?: {
     column: string;
     direction: SortingDirection;
   };
 
-  @property() public initialGroupColumn?: string;
+  @property({ attribute: false }) public initialGroupColumn?: string;
 
   @property({ attribute: false }) public groupOrder?: string[];
 

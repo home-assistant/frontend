@@ -43,12 +43,6 @@
       "description": "Group date-fns with dependent timezone package",
       "groupName": "date-fns",
       "matchPackageNames": ["date-fns", "date-fns-tz"]
-    },
-    {
-      "description": "Group and temporarily disable WDS packages",
-      "groupName": "Web Dev Server",
-      "enabled": false,
-      "matchPackageNames": ["@web/dev-server{/,}**"]
     }
   ]
 }

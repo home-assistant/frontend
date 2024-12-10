@@ -49,7 +49,7 @@ export class DialogYamlIntegration extends LitElement {
         </mwc-button>
         ${docLink
           ? html`<a
-              .href=${docLink}
+              href=${docLink}
               target="_blank"
               rel="noreferrer noopener"
               slot="primaryAction"
