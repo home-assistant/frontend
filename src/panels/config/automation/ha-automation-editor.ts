@@ -852,8 +852,10 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     ev.detail.callback(this._config);
   }
 
-  protected handleKeyboardSave() {
-    this._saveAutomation();
+  protected supportedShortcuts(): SupportedShortcuts {
+    return {
+      s: () => this._saveAutomation(),
+    };
   }
 
   static get styles(): CSSResultGroup {
