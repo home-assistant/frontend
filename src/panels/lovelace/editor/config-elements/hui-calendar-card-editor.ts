@@ -10,6 +10,7 @@ import {
   optional,
   string,
   union,
+  number,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
@@ -28,6 +29,8 @@ const cardConfigStruct = assign(
     initial_view: optional(string()),
     theme: optional(string()),
     entities: array(string()),
+    height: optional(number()),
+    multi_day: optional(boolean()),
   })
 );
 
@@ -69,6 +72,12 @@ export class HuiCalendarCardEditor
                 },
               },
             },
+            {
+              name: "height",
+              required: false,
+              selector: { number: { mode: "box", step: "any" } },
+            },
+            { name: "multi_day", required: false, selector: { boolean: {} } },
           ],
         },
         { name: "theme", required: false, selector: { theme: {} } },
@@ -124,6 +133,14 @@ export class HuiCalendarCardEditor
   ) => {
     if (schema.name === "title") {
       return this.hass!.localize("ui.panel.lovelace.editor.card.generic.title");
+    }
+
+    if (schema.name === "height") {
+      return "Height in pixels (default 400)";
+    }
+
+    if (schema.name === "multi_day") {
+      return "Display Multi-Day Blocks";
     }
 
     if (schema.name === "theme") {
