@@ -38,7 +38,7 @@ import { supportsLightBrightnessCardFeature } from "../../card-features/hui-ligh
 import { supportsLightColorTempCardFeature } from "../../card-features/hui-light-color-temp-card-feature";
 import { supportsLockCommandsCardFeature } from "../../card-features/hui-lock-commands-card-feature";
 import { supportsLockOpenDoorCardFeature } from "../../card-features/hui-lock-open-door-card-feature";
-import { supportsMediaPlayerVolumeCardFeature } from "../../card-features/hui-media-player-volume-card-feature";
+import { supportsMediaPlayerVolumeSliderCardFeature } from "../../card-features/hui-media-player-volume-slider-card-feature";
 import { supportsNumericInputCardFeature } from "../../card-features/hui-numeric-input-card-feature";
 import { supportsSelectOptionsCardFeature } from "../../card-features/hui-select-options-card-feature";
 import { supportsTargetHumidityCardFeature } from "../../card-features/hui-target-humidity-card-feature";
@@ -72,7 +72,7 @@ const UI_FEATURE_TYPES = [
   "light-color-temp",
   "lock-commands",
   "lock-open-door",
-  "media-player-volume",
+  "media-player-volume-slider",
   "numeric-input",
   "select-options",
   "target-humidity",
@@ -125,7 +125,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "light-color-temp": supportsLightColorTempCardFeature,
   "lock-commands": supportsLockCommandsCardFeature,
   "lock-open-door": supportsLockOpenDoorCardFeature,
-  "media-player-volume": supportsMediaPlayerVolumeCardFeature,
+  "media-player-volume-slider": supportsMediaPlayerVolumeSliderCardFeature,
   "numeric-input": supportsNumericInputCardFeature,
   "select-options": supportsSelectOptionsCardFeature,
   "target-humidity": supportsTargetHumidityCardFeature,

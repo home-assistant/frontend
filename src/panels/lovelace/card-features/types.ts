@@ -34,8 +34,8 @@ export interface LockOpenDoorCardFeatureConfig {
   type: "lock-open-door";
 }
 
-export interface MediaPlayerCardFeatureConfig {
-  type: "media-player-volume";
+export interface MediaPlayerVolumeSliderCardFeatureConfig {
+  type: "media-player-volume-slider";
 }
 
 export interface FanPresetModesCardFeatureConfig {

@@ -8,11 +8,13 @@ import { isUnavailableState } from "../../../data/entity";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
-import type { MediaPlayerCardFeatureConfig } from "./types";
+import type { MediaPlayerVolumeSliderCardFeatureConfig } from "./types";
 import { MediaPlayerEntityFeature } from "../../../data/media-player";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 
-export const supportsMediaPlayerVolumeCardFeature = (stateObj: HassEntity) => {
+export const supportsMediaPlayerVolumeSliderCardFeature = (
+  stateObj: HassEntity
+) => {
   const domain = computeDomain(stateObj.entity_id);
   return (
     domain === "media_player" &&
@@ -20,8 +22,8 @@ export const supportsMediaPlayerVolumeCardFeature = (stateObj: HassEntity) => {
   );
 };
 
-@customElement("hui-media-player-volume-card-feature")
-class HuiMediaPlayerVolumeCardFeature
+@customElement("hui-media-player-volume-slider-card-feature")
+class HuiMediaPlayerVolumeSliderCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
@@ -29,15 +31,15 @@ class HuiMediaPlayerVolumeCardFeature
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  @state() private _config?: MediaPlayerCardFeatureConfig;
+  @state() private _config?: MediaPlayerVolumeSliderCardFeatureConfig;
 
-  static getStubConfig(): MediaPlayerCardFeatureConfig {
+  static getStubConfig(): MediaPlayerVolumeSliderCardFeatureConfig {
     return {
-      type: "media-player-volume",
+      type: "media-player-volume-slider",
     };
   }
 
-  public setConfig(config: MediaPlayerCardFeatureConfig): void {
+  public setConfig(config: MediaPlayerVolumeSliderCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -49,7 +51,7 @@ class HuiMediaPlayerVolumeCardFeature
       !this._config ||
       !this.hass ||
       !this.stateObj ||
-      !supportsMediaPlayerVolumeCardFeature(this.stateObj)
+      !supportsMediaPlayerVolumeSliderCardFeature(this.stateObj)
     ) {
       return nothing;
     }
@@ -90,6 +92,6 @@ class HuiMediaPlayerVolumeCardFeature
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-media-player-volume-card-feature": HuiMediaPlayerVolumeCardFeature;
+    "hui-media-player-volume-slider-card-feature": HuiMediaPlayerVolumeSliderCardFeature;
   }
 }
