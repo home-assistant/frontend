@@ -311,13 +311,9 @@ export default class HaAutomationActionRow extends LitElement {
             ></ha-list-item>
 
             <ha-list-item graphic="icon" .disabled=${!this._uiModeAvailable}>
-              ${!yamlMode
-                ? this.hass.localize(
-                    "ui.panel.config.automation.editor.edit_yaml"
-                  )
-                : this.hass.localize(
-                    "ui.panel.config.automation.editor.edit_ui"
-                  )}
+              ${this.hass.localize(
+                `ui.panel.config.automation.editor.edit_${!yamlMode ? "yaml" : "ui"}`
+              )}
               <ha-svg-icon
                 slot="graphic"
                 .path=${mdiPlaylistEdit}
@@ -455,11 +451,10 @@ export default class HaAutomationActionRow extends LitElement {
       case 7:
         if (this._yamlMode) {
           this._switchUiMode();
-          this.expand();
         } else {
           this._switchYamlMode();
-          this.expand();
         }
+        this.expand();
         break;
       case 8:
         this._onDisable();

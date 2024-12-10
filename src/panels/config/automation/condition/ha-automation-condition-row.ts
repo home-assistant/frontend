@@ -213,13 +213,9 @@ export default class HaAutomationConditionRow extends LitElement {
             ></ha-list-item>
 
             <ha-list-item graphic="icon" .disabled=${this._warnings}>
-              ${!this._yamlMode
-                ? this.hass.localize(
-                    "ui.panel.config.automation.editor.edit_yaml"
-                  )
-                : this.hass.localize(
-                    "ui.panel.config.automation.editor.edit_ui"
-                  )}
+              ${this.hass.localize(
+                `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
+              )}
               <ha-svg-icon
                 slot="graphic"
                 .path=${mdiPlaylistEdit}
@@ -356,11 +352,10 @@ export default class HaAutomationConditionRow extends LitElement {
       case 7:
         if (this._yamlMode) {
           this._switchUiMode();
-          this.expand();
         } else {
           this._switchYamlMode();
-          this.expand();
         }
+        this.expand();
         break;
       case 8:
         this._onDisable();

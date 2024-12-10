@@ -265,11 +265,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
               ? this._switchYamlMode
               : this._switchUiMode}
           >
-            ${this._mode === "gui"
-              ? this.hass.localize(
-                  "ui.panel.config.automation.editor.edit_yaml"
-                )
-              : this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
+            ${this.hass.localize(
+              `ui.panel.config.automation.editor.edit_${this._mode === "gui" ? "yaml" : "ui"}`
+            )}
             <ha-svg-icon slot="graphic" .path=${mdiPlaylistEdit}></ha-svg-icon>
           </ha-list-item>
 

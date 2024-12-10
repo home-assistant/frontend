@@ -247,13 +247,9 @@ export default class HaAutomationTriggerRow extends LitElement {
             ></ha-list-item>
 
             <ha-list-item graphic="icon" .disabled=${!supported}>
-              ${!yamlMode
-                ? this.hass.localize(
-                    "ui.panel.config.automation.editor.edit_yaml"
-                  )
-                : this.hass.localize(
-                    "ui.panel.config.automation.editor.edit_ui"
-                  )}
+              ${this.hass.localize(
+                `ui.panel.config.automation.editor.edit_${!yamlMode ? "yaml" : "ui"}`
+              )}
               <ha-svg-icon
                 slot="graphic"
                 .path=${mdiPlaylistEdit}

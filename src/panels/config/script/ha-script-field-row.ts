@@ -98,13 +98,9 @@ export default class HaScriptFieldRow extends LitElement {
             ></ha-icon-button>
 
             <ha-list-item graphic="icon">
-              ${!this._yamlMode
-                ? this.hass.localize(
-                    "ui.panel.config.automation.editor.edit_yaml"
-                  )
-                : this.hass.localize(
-                    "ui.panel.config.automation.editor.edit_ui"
-                  )}
+              ${this.hass.localize(
+                `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
+              )}
               <ha-svg-icon
                 slot="graphic"
                 .path=${mdiPlaylistEdit}

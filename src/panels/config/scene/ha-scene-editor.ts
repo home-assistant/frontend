@@ -277,11 +277,9 @@ export class HaSceneEditor extends SubscribeMixin(
           </ha-list-item>
 
           <ha-list-item graphic="icon">
-            ${this._mode !== "yaml"
-              ? this.hass.localize(
-                  "ui.panel.config.automation.editor.edit_yaml"
-                )
-              : this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
+            ${this.hass.localize(
+              `ui.panel.config.automation.editor.edit_${this._mode !== "yaml" ? "yaml" : "ui"}`
+            )}
             <ha-svg-icon slot="graphic" .path=${mdiPlaylistEdit}></ha-svg-icon>
           </ha-list-item>
 
