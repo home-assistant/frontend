@@ -1,9 +1,14 @@
-import { afterEach, describe, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import type { AuthData } from "home-assistant-js-websocket";
+import { FallbackStorage } from "../../../test_helper/local-storage-fallback";
 
 let saveTokens;
 
 describe("token_storage.saveTokens", () => {
+  beforeEach(() => {
+    window.localStorage = new FallbackStorage();
+  });
+
   afterEach(() => {
     vi.resetModules();
     vi.resetAllMocks();
@@ -57,12 +62,8 @@ describe("token_storage.saveTokens", () => {
     vi.doMock("../../../../src/common/url/search-params", () => ({
       extractSearchParam: extractSearchParamSpy,
     }));
-
-    const { FallbackStorage: fallbackStorage } = await import(
-      "../../../test_helper/local-storage-fallback"
-    );
     const setItemSpy = vi.fn();
-    fallbackStorage.prototype.setItem = setItemSpy;
+    window.localStorage.setItem = setItemSpy;
 
     ({ saveTokens } = await import(
       "../../../../src/common/auth/token_storage"
@@ -103,13 +104,11 @@ describe("token_storage.saveTokens", () => {
       extractSearchParam: extractSearchParamSpy,
     }));
 
-    const { FallbackStorage: fallbackStorage } = await import(
-      "../../../test_helper/local-storage-fallback"
-    );
     const setItemSpy = vi.fn(() => {
       throw new Error("Full storage");
     });
-    fallbackStorage.prototype.setItem = setItemSpy;
+
+    window.localStorage.setItem = setItemSpy;
 
     // eslint-disable-next-line no-global-assign
     console = {

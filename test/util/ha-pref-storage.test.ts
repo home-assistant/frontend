@@ -1,5 +1,6 @@
-import { describe, expect, afterEach, vi, test } from "vitest";
+import { describe, expect, afterEach, vi, test, beforeEach } from "vitest";
 import type { HomeAssistant } from "../../src/types";
+import { FallbackStorage } from "../test_helper/local-storage-fallback";
 
 describe("ha-pref-storage", () => {
   const mockHass = {
@@ -7,6 +8,10 @@ describe("ha-pref-storage", () => {
     selectedTheme: { theme: "default" },
     unknownKey: "unknownValue",
   };
+
+  beforeEach(() => {
+    window.localStorage = new FallbackStorage();
+  });
 
   afterEach(() => {
     vi.resetModules();
@@ -16,27 +21,23 @@ describe("ha-pref-storage", () => {
   test("storeState", async () => {
     const { storeState } = await import("../../src/util/ha-pref-storage");
 
-    const { FallbackStorage: fallbackStorage } = await import(
-      "../test_helper/local-storage-fallback"
-    );
-    const setItemSpy = vi.fn();
-    fallbackStorage.prototype.setItem = setItemSpy;
+    window.localStorage.setItem = vi.fn();
 
     storeState(mockHass as unknown as HomeAssistant);
-    expect(setItemSpy).toHaveBeenCalledTimes(8);
-    expect(setItemSpy).toHaveBeenCalledWith(
+    expect(window.localStorage.setItem).toHaveBeenCalledTimes(8);
+    expect(window.localStorage.setItem).toHaveBeenCalledWith(
       "dockedSidebar",
       JSON.stringify("auto")
     );
-    expect(setItemSpy).toHaveBeenCalledWith(
+    expect(window.localStorage.setItem).toHaveBeenCalledWith(
       "selectedTheme",
       JSON.stringify({ theme: "default" })
     );
-    expect(setItemSpy).toHaveBeenCalledWith(
+    expect(window.localStorage.setItem).toHaveBeenCalledWith(
       "selectedLanguage",
       JSON.stringify(null)
     );
-    expect(setItemSpy).not.toHaveBeenCalledWith(
+    expect(window.localStorage.setItem).not.toHaveBeenCalledWith(
       "unknownKey",
       JSON.stringify("unknownValue")
     );
@@ -44,15 +45,12 @@ describe("ha-pref-storage", () => {
 
   test("storeState fails", async () => {
     const { storeState } = await import("../../src/util/ha-pref-storage");
-    const { FallbackStorage: fallbackStorage } = await import(
-      "../test_helper/local-storage-fallback"
-    );
-    const setItemSpy = vi.fn((key) => {
+
+    window.localStorage.setItem = vi.fn((key) => {
       if (key === "selectedTheme") {
         throw new Error("Test error");
       }
     });
-    fallbackStorage.prototype.setItem = setItemSpy;
 
     // eslint-disable-next-line no-global-assign
     console = {
@@ -61,16 +59,16 @@ describe("ha-pref-storage", () => {
     } as unknown as Console;
 
     storeState(mockHass as unknown as HomeAssistant);
-    expect(setItemSpy).toHaveBeenCalledTimes(2);
-    expect(setItemSpy).toHaveBeenCalledWith(
+    expect(window.localStorage.setItem).toHaveBeenCalledTimes(2);
+    expect(window.localStorage.setItem).toHaveBeenCalledWith(
       "dockedSidebar",
       JSON.stringify("auto")
     );
-    expect(setItemSpy).toHaveBeenCalledWith(
+    expect(window.localStorage.setItem).toHaveBeenCalledWith(
       "selectedTheme",
       JSON.stringify({ theme: "default" })
     );
-    expect(setItemSpy).not.toHaveBeenCalledWith(
+    expect(window.localStorage.setItem).not.toHaveBeenCalledWith(
       "selectedLanguage",
       JSON.stringify(null)
     );
@@ -86,22 +84,13 @@ describe("ha-pref-storage", () => {
 
   test("getState", async () => {
     const { getState } = await import("../../src/util/ha-pref-storage");
-    const { FallbackStorage: fallbackStorage } = await import(
-      "../test_helper/local-storage-fallback"
-    );
-    const getItemSpy = vi.fn((key) => {
-      if (key === "selectedTheme") {
-        return JSON.stringify("test");
-      }
-      if (key === "dockedSidebar") {
-        return JSON.stringify(true);
-      }
-      if (key === "selectedLanguage") {
-        return JSON.stringify("german");
-      }
-      return null;
-    });
-    fallbackStorage.prototype.getItem = getItemSpy;
+
+    window.localStorage.setItem("selectedTheme", JSON.stringify("test"));
+    window.localStorage.setItem("dockedSidebar", JSON.stringify(true));
+    window.localStorage.setItem("selectedLanguage", JSON.stringify("german"));
+
+    // should not be in state
+    window.localStorage.setItem("testEntry", JSON.stringify("this is a test"));
 
     const state = getState();
     expect(state).toEqual({
@@ -113,13 +102,12 @@ describe("ha-pref-storage", () => {
 
   test("clearState", async () => {
     const { clearState } = await import("../../src/util/ha-pref-storage");
-    const { FallbackStorage: fallbackStorage } = await import(
-      "../test_helper/local-storage-fallback"
-    );
-    const clearSpy = vi.fn();
-    fallbackStorage.prototype.clear = clearSpy;
+
+    window.localStorage.setItem("test", "test");
+
+    expect(window.localStorage.length).toEqual(1);
 
     clearState();
-    expect(clearSpy).toHaveBeenCalled();
+    expect(window.localStorage.length).toEqual(0);
   });
 });

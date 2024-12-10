@@ -1,5 +1,6 @@
 import { describe, it, expect, test, vi, afterEach, beforeEach } from "vitest";
 import type { AuthData } from "home-assistant-js-websocket";
+import { FallbackStorage } from "../../../test_helper/local-storage-fallback";
 
 describe("token_storage", () => {
   beforeEach(() => {
@@ -10,6 +11,7 @@ describe("token_storage", () => {
         writeEnabled: undefined,
       })
     );
+    window.localStorage = new FallbackStorage();
   });
 
   afterEach(() => {
@@ -41,11 +43,8 @@ describe("token_storage", () => {
       clientId: "client",
     };
 
-    const { FallbackStorage: fallbackStorage } = await import(
-      "../../../test_helper/local-storage-fallback"
-    );
     const getItemSpy = vi.fn(() => JSON.stringify(tokens));
-    fallbackStorage.prototype.getItem = getItemSpy;
+    window.localStorage.getItem = getItemSpy;
 
     const { loadTokens } = await import(
       "../../../../src/common/auth/token_storage"
@@ -61,11 +60,8 @@ describe("token_storage", () => {
   });
 
   test("should load null tokens", async () => {
-    const { FallbackStorage: fallbackStorage } = await import(
-      "../../../test_helper/local-storage-fallback"
-    );
     const getItemSpy = vi.fn(() => "hello");
-    fallbackStorage.prototype.getItem = getItemSpy;
+    window.localStorage.getItem = getItemSpy;
 
     const { loadTokens } = await import(
       "../../../../src/common/auth/token_storage"
@@ -96,11 +92,8 @@ describe("token_storage", () => {
       })
     );
 
-    const { FallbackStorage: fallbackStorage } = await import(
-      "../../../test_helper/local-storage-fallback"
-    );
     const setItemSpy = vi.fn();
-    fallbackStorage.prototype.setItem = setItemSpy;
+    window.localStorage.setItem = setItemSpy;
 
     const { enableWrite } = await import(
       "../../../../src/common/auth/token_storage"

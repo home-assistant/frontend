@@ -1,7 +1,4 @@
-import { FallbackStorage } from "../../test/test_helper/local-storage-fallback";
 import type { HomeAssistant } from "../types";
-
-const storage = window.localStorage || new FallbackStorage();
 
 const STORED_STATE = [
   "dockedSidebar",
@@ -18,7 +15,10 @@ export function storeState(hass: HomeAssistant) {
   try {
     STORED_STATE.forEach((key) => {
       const value = hass[key];
-      storage.setItem(key, JSON.stringify(value === undefined ? null : value));
+      window.localStorage.setItem(
+        key,
+        JSON.stringify(value === undefined ? null : value)
+      );
     });
   } catch (err: any) {
     // Safari throws exception in private mode
@@ -35,7 +35,7 @@ export function getState() {
   const state = {};
 
   STORED_STATE.forEach((key) => {
-    const storageItem = storage.getItem(key);
+    const storageItem = window.localStorage.getItem(key);
     if (storageItem !== null) {
       let value = JSON.parse(storageItem);
       // selectedTheme went from string to object on 20200718
@@ -53,5 +53,5 @@ export function getState() {
 }
 
 export function clearState() {
-  storage.clear();
+  window.localStorage.clear();
 }
