@@ -46,7 +46,6 @@ const showDialogHelper = (
   extra?: {
     confirmation?: DialogBoxParams["confirmation"];
     prompt?: DialogBoxParams["prompt"];
-    alert?: boolean;
   }
 ) =>
   new Promise((resolve) => {
@@ -72,15 +71,13 @@ const showDialogHelper = (
           }
         },
       },
-      // simple alerts don't need to be added to history
-      addHistory: extra?.alert ? false : undefined,
     });
   });
 
 export const showAlertDialog = (
   element: HTMLElement,
   dialogParams: AlertDialogParams
-) => showDialogHelper(element, dialogParams, { alert: true });
+) => showDialogHelper(element, dialogParams);
 
 export const showConfirmationDialog = (
   element: HTMLElement,
