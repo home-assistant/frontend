@@ -82,13 +82,13 @@ class HaBackupConfigSchedule extends LitElement {
   protected willUpdate(changedProperties: PropertyValues): void {
     if (changedProperties.has("value")) {
       if (this._retentionPreset !== RetentionPreset.CUSTOM) {
-        const data = this.getData(this.value);
+        const data = this._getData(this.value);
         this._retentionPreset = computeRetentionPreset(data.retention);
       }
     }
   }
 
-  private getData = memoizeOne((value?: BackupConfigSchedule): FormData => {
+  private _getData = memoizeOne((value?: BackupConfigSchedule): FormData => {
     if (!value) {
       return INITIAL_FORM_DATA;
     }
@@ -105,7 +105,7 @@ class HaBackupConfigSchedule extends LitElement {
     };
   });
 
-  private setData(data: FormData) {
+  private _setData(data: FormData) {
     this.value = {
       schedule: {
         state: data.enabled ? data.schedule : BackupScheduleState.NEVER,
@@ -120,7 +120,7 @@ class HaBackupConfigSchedule extends LitElement {
   }
 
   protected render() {
-    const data = this.getData(this.value);
+    const data = this._getData(this.value);
 
     return html`
       <ha-md-list>
@@ -238,8 +238,8 @@ class HaBackupConfigSchedule extends LitElement {
   private _enabledChanged(ev) {
     ev.stopPropagation();
     const target = ev.currentTarget as HaCheckbox;
-    const data = this.getData(this.value);
-    this.setData({
+    const data = this._getData(this.value);
+    this._setData({
       ...data,
       enabled: target.checked,
       schedule: target.checked
@@ -252,8 +252,8 @@ class HaBackupConfigSchedule extends LitElement {
   private _scheduleChanged(ev) {
     ev.stopPropagation();
     const target = ev.currentTarget as HaMdSelect;
-    const data = this.getData(this.value);
-    this.setData({
+    const data = this._getData(this.value);
+    this._setData({
       ...data,
       schedule: target.value as BackupScheduleState,
     });
@@ -267,11 +267,11 @@ class HaBackupConfigSchedule extends LitElement {
 
     this._retentionPreset = value;
     if (value !== RetentionPreset.CUSTOM) {
-      const data = this.getData(this.value);
+      const data = this._getData(this.value);
       const retention = RETENTION_PRESETS[value];
       // Ensure we have at least 1 in defaut value because user can't select 0
       retention.value = Math.max(retention.value, 1);
-      this.setData({
+      this._setData({
         ...data,
         retention: RETENTION_PRESETS[value],
       });
@@ -285,8 +285,8 @@ class HaBackupConfigSchedule extends LitElement {
     const target = ev.currentTarget as HaMdSelect;
     const value = parseInt(target.value);
     const clamped = clamp(value, MIN_VALUE, MAX_VALUE);
-    const data = this.getData(this.value);
-    this.setData({
+    const data = this._getData(this.value);
+    this._setData({
       ...data,
       retention: {
         ...data.retention,
@@ -302,8 +302,8 @@ class HaBackupConfigSchedule extends LitElement {
     const target = ev.currentTarget as HaMdSelect;
     const value = target.value as "copies" | "days";
 
-    const data = this.getData(this.value);
-    this.setData({
+    const data = this._getData(this.value);
+    this._setData({
       ...data,
       retention: {
         ...data.retention,
