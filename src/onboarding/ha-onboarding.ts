@@ -482,7 +482,10 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       storeState(this.hass!);
     } else {
       try {
-        localStorage.setItem("selectedLanguage", JSON.stringify(language));
+        window.localStorage.setItem(
+          "selectedLanguage",
+          JSON.stringify(language)
+        );
       } catch (err: any) {
         // Ignore
       }
