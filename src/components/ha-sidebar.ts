@@ -408,7 +408,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     // prettier-ignore
     return html`
       <paper-listbox
-          id="sidebar"
         attr-for-selected="data-panel"
         class="ha-scrollbar"
         .selected=${selectedPanel}
