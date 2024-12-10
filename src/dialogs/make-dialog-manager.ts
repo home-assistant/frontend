@@ -156,10 +156,14 @@ export const closeDialog = async (dialogTag: string): Promise<boolean> => {
 };
 
 // called on back()
-export const closeLastDialog = () => {
+export const closeLastDialog = async () => {
   if (OPEN_DIALOG_STACK.length) {
     const lastDialog = OPEN_DIALOG_STACK.pop();
-    closeDialog(lastDialog!.dialogTag);
+    const closed = await closeDialog(lastDialog!.dialogTag);
+    if (!closed) {
+      // if the dialog was not closed, put it back on the stack
+      OPEN_DIALOG_STACK.push(lastDialog!);
+    }
     if (OPEN_DIALOG_STACK.length && mainWindow.history.state?.opensDialog) {
       // if there are more dialogs open, push a new state so back() will close the next top dialog
       mainWindow.history.pushState(
