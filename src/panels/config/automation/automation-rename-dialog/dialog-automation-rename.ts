@@ -2,10 +2,9 @@ import "@material/mwc-button";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { mdiPlus } from "@mdi/js";
+import { mdiClose, mdiPlus } from "@mdi/js";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
-import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-domain-icon";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-textarea";
@@ -99,15 +98,23 @@ class DialogAutomationRename extends LitElement implements HassDialog {
         open
         scrimClickAction
         @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize(
-            this._params.config.alias
-              ? "ui.panel.config.automation.editor.rename"
-              : "ui.panel.config.automation.editor.save"
-          )
-        )}
+        .heading=${true}
       >
+        <ha-dialog-header slot="heading">
+          <ha-icon-button
+            slot="navigationIcon"
+            dialogAction="cancel"
+            .label=${this.hass.localize("ui.common.close")}
+            .path=${mdiClose}
+          ></ha-icon-button>
+          <span slot="title"
+            >${this.hass.localize(
+              this._params.config.alias
+                ? "ui.panel.config.automation.editor.rename"
+                : "ui.panel.config.automation.editor.save"
+            )}</span
+          >
+        </ha-dialog-header>
         ${this._error
           ? html`<ha-alert alert-type="error"
               >${this.hass.localize(
@@ -199,16 +206,18 @@ class DialogAutomationRename extends LitElement implements HassDialog {
           )}
         </ha-chip-set>
 
-        <mwc-button @click=${this.closeDialog} slot="secondaryAction">
-          ${this.hass.localize("ui.dialogs.generic.cancel")}
-        </mwc-button>
-        <mwc-button @click=${this._save} slot="primaryAction">
-          ${this.hass.localize(
-            this._params.config.alias
-              ? "ui.panel.config.automation.editor.rename"
-              : "ui.panel.config.automation.editor.save"
-          )}
-        </mwc-button>
+        <div slot="primaryAction">
+          <mwc-button @click=${this.closeDialog}>
+            ${this.hass.localize("ui.dialogs.generic.cancel")}
+          </mwc-button>
+          <mwc-button @click=${this._save}>
+            ${this.hass.localize(
+              this._params.config.alias
+                ? "ui.panel.config.automation.editor.rename"
+                : "ui.panel.config.automation.editor.save"
+            )}
+          </mwc-button>
+        </div>
       </ha-dialog>
     `;
   }
