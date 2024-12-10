@@ -111,13 +111,9 @@ export class HuiCardLayoutEditor extends LitElement {
           </ha-icon-button>
 
           <ha-list-item graphic="icon" .disabled=${!this._uiAvailable}>
-            ${!this._yamlMode
-              ? this.hass.localize(
-                  "ui.panel.lovelace.editor.edit_view.edit_yaml"
-                )
-              : this.hass.localize(
-                  "ui.panel.lovelace.editor.edit_view.edit_ui"
-                )}
+            ${this.hass.localize(
+              `ui.panel.lovelace.editor.edit_view.edit_${!this._yamlMode ? "yaml" : "ui"}`
+            )}
             <ha-svg-icon slot="graphic" .path=${mdiPlaylistEdit}></ha-svg-icon>
           </ha-list-item>
         </ha-button-menu>

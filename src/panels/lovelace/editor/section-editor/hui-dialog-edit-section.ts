@@ -157,13 +157,9 @@ export class HuiDialogEditSection
               .path=${mdiDotsVertical}
             ></ha-icon-button>
             <ha-list-item graphic="icon">
-              ${!this._yamlMode
-                ? this.hass.localize(
-                    "ui.panel.lovelace.editor.edit_view.edit_yaml"
-                  )
-                : this.hass.localize(
-                    "ui.panel.lovelace.editor.edit_view.edit_ui"
-                  )}
+              ${this.hass.localize(
+                `ui.panel.lovelace.editor.edit_view.edit_${!this._yamlMode ? "yaml" : "ui"}`
+              )}
               <ha-svg-icon
                 slot="graphic"
                 .path=${mdiPlaylistEdit}
