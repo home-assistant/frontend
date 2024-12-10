@@ -1,3 +1,4 @@
+import { differenceInDays } from "date-fns";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -47,8 +48,7 @@ export class HaBackupSummaryProgress extends LitElement {
     }
 
     const lastBackupDate = new Date(lastBackup.date);
-    const lastBackupPeriod = new Date().getTime() - lastBackupDate.getTime();
-    const numberOfDays = Math.floor(lastBackupPeriod / (1000 * 60 * 60 * 24));
+    const numberOfDays = differenceInDays(new Date(), lastBackupDate);
 
     // TODO : Improve time format
     const description = `Last successful backup ${formatShortDateTime(lastBackupDate, this.hass.locale, this.hass.config)} and synced to ${lastBackup.agent_ids?.length} locations`;
