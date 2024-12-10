@@ -55,6 +55,7 @@ import { haStyle } from "../../../resources/styles";
 import type { Entries, HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import { showAutomationModeDialog } from "../automation/automation-mode-dialog/show-dialog-automation-mode";
+import type { EntityRegistryUpdate } from "../automation/automation-rename-dialog/show-dialog-automation-rename";
 import { showAutomationRenameDialog } from "../automation/automation-rename-dialog/show-dialog-automation-rename";
 import "./blueprint-script-editor";
 import "./manual-script-editor";
@@ -97,11 +98,9 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   @state() private _blueprintConfig?: BlueprintScriptConfig;
 
-  @state() private _category?: string;
-
-  @state() private _labels?: string[];
-
   @state() private _saving = false;
+
+  private _entityRegistryUpdate!: EntityRegistryUpdate;
 
   protected render(): TemplateResult | typeof nothing {
     if (!this._config) {
@@ -427,8 +426,10 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         (ent) => ent.platform === "script" && ent.unique_id === this.scriptId
       );
       this._entityId = entity?.entity_id;
-      this._category = entity?.categories?.script;
-      this._labels = entity?.labels;
+      this._entityRegistryUpdate = {
+        category: entity?.categories?.script || "",
+        labels: entity?.labels || [],
+      };
     }
 
     if (changedProps.has("scriptId") && !this.scriptId && this.hass) {
@@ -767,17 +768,15 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       showAutomationRenameDialog(this, {
         config: this._config!,
         domain: "script",
-        updateConfig: (config, category, labels) => {
+        updateConfig: (config, entityRegistryUpdate) => {
           this._config = config;
-          this._category = category;
-          this._labels = labels;
+          this._entityRegistryUpdate = entityRegistryUpdate;
           this._dirty = true;
           this.requestUpdate();
           resolve(true);
         },
         onClose: () => resolve(false),
-        category: this._category,
-        labels: this._labels,
+        entityRegistryUpdate: this._entityRegistryUpdate,
       });
     });
   }
@@ -822,7 +821,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         this._config
       );
 
-      if (this._category !== undefined || this._labels !== undefined) {
+      if (this._entityRegistryUpdate !== undefined) {
         // wait for new script to appear in entity registry
         if (!this.scriptId) {
           await new Promise<void>((resolve, _reject) => {
@@ -835,9 +834,9 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           : `script.${id}`;
         await updateEntityRegistryEntry(this.hass, entityId, {
           categories: {
-            script: this._category || "",
+            script: this._entityRegistryUpdate.category,
           },
-          labels: this._labels || [],
+          labels: this._entityRegistryUpdate.labels,
         });
       }
 

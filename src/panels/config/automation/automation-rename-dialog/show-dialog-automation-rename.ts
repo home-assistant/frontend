@@ -6,9 +6,13 @@ export const loadAutomationRenameDialog = () =>
   import("./dialog-automation-rename");
 
 interface BaseRenameDialogParams {
-  category?: string;
-  labels?: string[];
+  entityRegistryUpdate: EntityRegistryUpdate;
   onClose: () => void;
+}
+
+export interface EntityRegistryUpdate {
+  labels: string[];
+  category: string;
 }
 
 export interface AutomationRenameDialogParams extends BaseRenameDialogParams {
@@ -16,8 +20,7 @@ export interface AutomationRenameDialogParams extends BaseRenameDialogParams {
   domain: "automation";
   updateConfig: (
     config: AutomationConfig,
-    category?: string,
-    labels?: string[]
+    entityRegistryUpdate: EntityRegistryUpdate
   ) => void;
 }
 
@@ -26,8 +29,7 @@ export interface ScriptRenameDialogParams extends BaseRenameDialogParams {
   domain: "script";
   updateConfig: (
     config: ScriptConfig,
-    category?: string,
-    labels?: string[]
+    entityRegistryUpdate: EntityRegistryUpdate
   ) => void;
 }
 
