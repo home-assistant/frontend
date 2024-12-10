@@ -32,6 +32,7 @@ interface Tooltip
 export interface ChartDatasetExtra {
   show_legend?: boolean;
   legend_label?: string;
+  id?: string;
 }
 
 @customElement("ha-chart-base")
