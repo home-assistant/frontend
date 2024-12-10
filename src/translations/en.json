@@ -4017,6 +4017,7 @@
             "alert_password_change_required": "You need to change your password before logging in.",
             "alert_email_confirm_necessary": "You need to confirm your email before logging in.",
             "alert_mfa_code_required": "You need to enter your two-factor authentication code.",
+            "alert_mfa_expired": "Multi-factor authentication expired. Please try again.",
             "alert_totp_code_invalid": "Invalid two-factor authentication code.",
             "cloud_pipeline_title": "Want to use Home Assistant Cloud for your voice assistant?",
             "cloud_pipeline_text": "We created a new assistant for you, using the superior text-to-speech and speech-to-text engines from Home Assistant Cloud. Would you like to set this assistant as the preferred assistant?"

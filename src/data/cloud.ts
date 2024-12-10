@@ -70,20 +70,27 @@ export interface CloudWebhook {
   managed?: boolean;
 }
 
-export const cloudLogin = (
-  hass: HomeAssistant,
-  email: string,
-  password: string,
-  code?: string
-) =>
+interface CloudLoginBase {
+  hass: HomeAssistant;
+  email: string;
+}
+
+export interface CloudLoginPassword extends CloudLoginBase {
+  password: string;
+}
+
+export interface CloudLoginMFA extends CloudLoginBase {
+  code: string;
+}
+
+export const cloudLogin = ({
+  hass,
+  ...rest
+}: CloudLoginPassword | CloudLoginMFA) =>
   hass.callApi<{ success: boolean; cloud_pipeline?: string }>(
     "POST",
     "cloud/login",
-    {
-      email,
-      password,
-      code,
-    }
+    rest
   );
 
 export const cloudLogout = (hass: HomeAssistant) =>

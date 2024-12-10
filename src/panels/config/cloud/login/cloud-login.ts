@@ -233,12 +233,11 @@ export class CloudLogin extends LitElement {
 
     const doLogin = async (username: string, code?: string) => {
       try {
-        const result = await cloudLogin(
-          this.hass,
-          username,
-          password,
-          code === "" ? undefined : code
-        );
+        const result = await cloudLogin({
+          hass: this.hass,
+          email: username,
+          ...(code ? { code } : { password }),
+        });
         fireEvent(this, "ha-refresh-cloud-status");
         this.email = "";
         this._password = "";
@@ -297,6 +296,11 @@ export class CloudLogin extends LitElement {
           case "mfarequired":
             this._error = this.hass.localize(
               "ui.panel.config.cloud.login.alert_mfa_code_required"
+            );
+            break;
+          case "mfaexpired":
+            this._error = this.hass.localize(
+              "ui.panel.config.cloud.login.alert_mfa_expired"
             );
             break;
           case "invalidtotpcode":
