@@ -1,7 +1,8 @@
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "@lit-labs/context";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { debounce } from "../../../common/util/debounce";
 import type { AutomationEntity } from "../../../data/automation";
@@ -10,6 +11,8 @@ import { HassRouterPage } from "../../../layouts/hass-router-page";
 import type { HomeAssistant } from "../../../types";
 import "./ha-automation-editor";
 import "./ha-automation-picker";
+import { fullEntitiesContext } from "../../../data/context";
+import type { EntityRegistryEntry } from "../../../data/entity_registry";
 
 const equal = (a: AutomationEntity[], b: AutomationEntity[]): boolean => {
   if (a.length !== b.length) {
@@ -29,6 +32,10 @@ class HaConfigAutomation extends HassRouterPage {
   @property({ attribute: false }) public showAdvanced = false;
 
   @property({ attribute: false }) public automations: AutomationEntity[] = [];
+
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  _entityReg!: EntityRegistryEntry[];
 
   private _debouncedUpdateAutomations = debounce((pageEl) => {
     const newAutomations = this._getAutomations(this.hass.states);
@@ -77,6 +84,7 @@ class HaConfigAutomation extends HassRouterPage {
     pageEl.isWide = this.isWide;
     pageEl.route = this.routeTail;
     pageEl.showAdvanced = this.showAdvanced;
+    pageEl.entityRegistry = this._entityReg;
 
     if (this.hass) {
       if (!pageEl.automations || !changedProps) {

@@ -20,6 +20,7 @@ import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type {
   AutomationRenameDialogParams,
+  EntityRegistryUpdate,
   ScriptRenameDialogParams,
 } from "./show-dialog-automation-rename";
 
@@ -31,11 +32,9 @@ class DialogAutomationRename extends LitElement implements HassDialog {
 
   @state() private _error?: string;
 
-  @state() private _category?: string;
-
-  @state() private _labels?: string[];
-
   @state() private _visibleOptionals: string[] = [];
+
+  @state() private _entryUpdates!: EntityRegistryUpdate;
 
   private _params!: AutomationRenameDialogParams | ScriptRenameDialogParams;
 
@@ -57,14 +56,14 @@ class DialogAutomationRename extends LitElement implements HassDialog {
         `ui.panel.config.${this._params.domain}.editor.default_name`
       );
     this._newDescription = params.config.description || "";
-    this._labels = params.labels || [];
-    this._category = params.category || "";
+
+    this._entryUpdates = params.entityRegistryUpdate;
 
     this._visibleOptionals = [
       this._newDescription! ? "description" : "",
       this._newIcon! ? "icon" : "",
-      this._category! ? "category" : "",
-      this._labels.length > 0 ? "labels" : "",
+      this._entryUpdates.category ? "category" : "",
+      this._entryUpdates.labels.length > 0 ? "labels" : "",
     ];
   }
 
@@ -173,17 +172,19 @@ class DialogAutomationRename extends LitElement implements HassDialog {
           : nothing}
         ${this._visibleOptionals.includes("category")
           ? html` <ha-category-picker
+              id="category"
               .hass=${this.hass}
               .scope=${this._params.domain}
-              .value=${this._category}
-              @value-changed=${this._categoryChanged}
+              .value=${this._entryUpdates.category}
+              @value-changed=${this._registryEntryChanged}
             ></ha-category-picker>`
           : nothing}
         ${this._visibleOptionals.includes("labels")
           ? html` <ha-labels-picker
+              id="labels"
               .hass=${this.hass}
-              .value=${this._labels}
-              @value-changed=${this._labelsChanged}
+              .value=${this._entryUpdates.labels}
+              @value-changed=${this._registryEntryChanged}
             ></ha-labels-picker>`
           : nothing}
 
@@ -238,14 +239,12 @@ class DialogAutomationRename extends LitElement implements HassDialog {
     this._visibleOptionals = [...this._visibleOptionals, option];
   }
 
-  private _categoryChanged(ev: CustomEvent): void {
+  private _registryEntryChanged(ev) {
     ev.stopPropagation();
-    this._category = ev.detail.value;
-  }
+    const id: string = ev.target.id;
+    const value = ev.detail.value;
 
-  private _labelsChanged(ev: CustomEvent) {
-    ev.stopPropagation();
-    this._labels = ev.detail.value;
+    this._entryUpdates = { ...this._entryUpdates, [id]: value };
   }
 
   private _iconChanged(ev: CustomEvent) {
@@ -268,6 +267,7 @@ class DialogAutomationRename extends LitElement implements HassDialog {
       this._error = "Name is required";
       return;
     }
+
     if (this._params.domain === "script") {
       this._params.updateConfig(
         {
@@ -276,8 +276,7 @@ class DialogAutomationRename extends LitElement implements HassDialog {
           description: this._newDescription,
           icon: this._newIcon,
         },
-        this._category,
-        this._labels
+        this._entryUpdates
       );
     } else {
       this._params.updateConfig(
@@ -286,8 +285,7 @@ class DialogAutomationRename extends LitElement implements HassDialog {
           alias: this._newName,
           description: this._newDescription,
         },
-        this._category,
-        this._labels
+        this._entryUpdates
       );
     }
 

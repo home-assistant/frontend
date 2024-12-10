@@ -69,7 +69,10 @@ import type { Entries, HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import "../ha-config-section";
 import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-automation-mode";
-import { showAutomationRenameDialog } from "./automation-rename-dialog/show-dialog-automation-rename";
+import {
+  type EntityRegistryUpdate,
+  showAutomationRenameDialog,
+} from "./automation-rename-dialog/show-dialog-automation-rename";
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
@@ -105,6 +108,8 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
   @property({ attribute: false }) public entityId: string | null = null;
 
   @property({ attribute: false }) public automations!: AutomationEntity[];
+
+  @property({ attribute: false }) public entityRegistry!: EntityRegistryEntry[];
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
@@ -146,9 +151,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
   private _configSubscriptionsId = 1;
 
-  @state() private _category?: string;
-
-  @state() private _labels?: string[];
+  private _entityRegistryUpdate!: EntityRegistryUpdate;
 
   @state() private _saving = false;
 
@@ -550,14 +553,17 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
         sub(this._config)
       );
     }
-  }
 
-  public async firstUpdated(changedProps: PropertyValues) {
-    super.firstUpdated(changedProps);
-    const entityRegistry = await fetchEntityRegistry(this.hass.connection);
-    const entry = this._getAutomationEntity(entityRegistry, this._entityId);
-    this._category = entry?.categories?.automation;
-    this._labels = entry?.labels;
+    if (changedProps.has("entityRegistry")) {
+      const entry = this._getAutomationEntity(
+        this.entityRegistry,
+        this._entityId
+      );
+      this._entityRegistryUpdate = {
+        category: entry?.categories?.automation || "",
+        labels: entry?.labels || [],
+      };
+    }
   }
 
   private _setEntityId() {
@@ -868,17 +874,15 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       showAutomationRenameDialog(this, {
         config: this._config!,
         domain: "automation",
-        updateConfig: (config, category, labels) => {
+        updateConfig: (config, entityRegistryUpdate) => {
           this._config = config;
-          this._category = category;
-          this._labels = labels;
+          this._entityRegistryUpdate = entityRegistryUpdate;
           this._dirty = true;
           this.requestUpdate();
           resolve(true);
         },
         onClose: () => resolve(false),
-        category: this._category,
-        labels: this._labels,
+        entityRegistryUpdate: this._entityRegistryUpdate,
       });
     });
   }
@@ -920,7 +924,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
     try {
       await saveAutomationConfig(this.hass, id, this._config!);
 
-      if (this._category !== undefined || this._labels !== undefined) {
+      if (this._entityRegistryUpdate !== undefined) {
         let entityId = this._entityId;
 
         // no entity id check if we have it in the automations list
@@ -945,9 +949,9 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
         if (entityId) {
           await updateEntityRegistryEntry(this.hass, entityId, {
             categories: {
-              automation: this._category || "",
+              automation: this._entityRegistryUpdate.category,
             },
-            labels: this._labels || [],
+            labels: this._entityRegistryUpdate.labels,
           });
         }
       }
