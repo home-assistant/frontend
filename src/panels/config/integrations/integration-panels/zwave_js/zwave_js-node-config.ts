@@ -214,6 +214,7 @@ class ZWaveJSNodeConfig extends LitElement {
             <zwave_js-custom-param
               .hass=${this.hass}
               .deviceId=${this.deviceId}
+              .onNewValue=${this._fetchData}
             ></zwave_js-custom-param>
           </ha-card>
         </ha-config-section>

@@ -18,6 +18,11 @@ class ZWaveJSCustomParam extends LitElement {
 
   @property({ attribute: false }) public deviceId!: string;
 
+  @property({ attribute: false }) public onNewValue?: (
+    param: number,
+    value: number
+  ) => void;
+
   @state() private _customParamNumber?: number;
 
   @state() private _valueSize = 1;
@@ -165,6 +170,9 @@ class ZWaveJSCustomParam extends LitElement {
         this._customParamNumber
       );
       this._value = value;
+      if (this.onNewValue) {
+        this.onNewValue(this._customParamNumber, value);
+      }
     } catch (err: any) {
       this._error = err?.message || "Unknown error";
     } finally {
@@ -206,6 +214,9 @@ class ZWaveJSCustomParam extends LitElement {
         this._valueSize,
         this._valueFormat
       );
+      if (this.onNewValue) {
+        this.onNewValue(this._customParamNumber, this._value);
+      }
     } catch (err: any) {
       this._error = err?.message || "Unknown error";
     } finally {
