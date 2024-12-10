@@ -1,6 +1,7 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import { getColorByIndex } from "../../../common/color/colors";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -115,6 +116,11 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       "listWeek",
     ];
 
+    const style = {
+      "--calendar-height":
+        (this._config.height ? this._config.height : 400) + "px",
+    };
+
     return html`
       <ha-card>
         <div class="header">${this._config.title}</div>
@@ -127,6 +133,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
           .eventDisplay=${this._eventDisplay}
           .error=${this._error}
           @view-changed=${this._handleViewChanged}
+          style=${styleMap(style)}
         ></ha-full-calendar>
       </ha-card>
     `;
@@ -154,8 +161,12 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   }
 
   private _handleViewChanged(ev: HASSDomEvent<CalendarViewChanged>): void {
-    this._eventDisplay =
-      ev.detail.view === "dayGridMonth" ? "list-item" : "auto";
+    if (this._config.multi_day) {
+      this._eventDisplay = "auto";
+    } else {
+      this._eventDisplay =
+        ev.detail.view === "dayGridMonth" ? "list-item" : "auto";
+    }
     this._startDate = ev.detail.start;
     this._endDate = ev.detail.end;
     this._fetchCalendarEvents();
@@ -229,10 +240,6 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
         padding-left: 8px;
         padding-inline-start: 8px;
         direction: var(--direction);
-      }
-
-      ha-full-calendar {
-        --calendar-height: 400px;
       }
     `;
   }
