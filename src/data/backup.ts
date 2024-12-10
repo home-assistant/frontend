@@ -210,11 +210,17 @@ export const getPreferredAgentForDownload = (agents: string[]) => {
   return localAgents[0] || agents[0];
 };
 
+export const isLocalAgent = (agentId: string) =>
+  ["backup.local", "hassio.local"].includes(agentId);
+
 export const computeBackupAgentName = (
   localize: LocalizeFunc,
   agentId: string,
   agentIds?: string[]
 ) => {
+  if (isLocalAgent(agentId)) {
+    return "This system";
+  }
   const [domain, name] = agentId.split(".");
   const domainName = domainToName(localize, domain);
 

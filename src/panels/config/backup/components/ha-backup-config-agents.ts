@@ -1,3 +1,4 @@
+import { mdiDatabase } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -6,10 +7,12 @@ import { computeDomain } from "../../../../common/entity/compute_domain";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-switch";
+import "../../../../components/ha-svg-icon";
 import type { BackupAgent } from "../../../../data/backup";
 import {
   computeBackupAgentName,
   fetchBackupAgentsInfo,
+  isLocalAgent,
 } from "../../../../data/backup";
 import type { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
@@ -39,38 +42,45 @@ class HaBackupConfigAgents extends LitElement {
   }
 
   protected render() {
-    const allAgentIds = this._agents.map((agent) => agent.agent_id);
+    const agentIds = this._agents.map((agent) => agent.agent_id);
 
     return html`
-      ${this._agents.length > 0
+      ${agentIds.length > 0
         ? html`
             <ha-md-list>
-              ${this._agents.map((agent) => {
-                const domain = computeDomain(agent.agent_id);
+              ${agentIds.map((agentId) => {
+                const domain = computeDomain(agentId);
                 const name = computeBackupAgentName(
                   this.hass.localize,
-                  agent.agent_id,
-                  allAgentIds
+                  agentId,
+                  agentIds
                 );
                 return html`
                   <ha-md-list-item>
-                    <img
-                      .src=${brandsUrl({
-                        domain,
-                        type: "icon",
-                        useFallback: true,
-                        darkOptimized: this.hass.themes?.darkMode,
-                      })}
-                      crossorigin="anonymous"
-                      referrerpolicy="no-referrer"
-                      alt=""
-                      slot="start"
-                    />
+                    ${isLocalAgent(agentId)
+                      ? html`
+                          <ha-svg-icon .path=${mdiDatabase} slot="start">
+                          </ha-svg-icon>
+                        `
+                      : html`
+                          <img
+                            .src=${brandsUrl({
+                              domain,
+                              type: "icon",
+                              useFallback: true,
+                              darkOptimized: this.hass.themes?.darkMode,
+                            })}
+                            crossorigin="anonymous"
+                            referrerpolicy="no-referrer"
+                            alt=""
+                            slot="start"
+                          />
+                        `}
                     <div slot="headline">${name}</div>
                     <ha-switch
                       slot="end"
-                      id=${agent.agent_id}
-                      .checked=${this._value.includes(agent.agent_id)}
+                      id=${agentId}
+                      .checked=${this._value.includes(agentId)}
                       @change=${this._agentToggled}
                     ></ha-switch>
                   </ha-md-list-item>
@@ -108,6 +118,10 @@ class HaBackupConfigAgents extends LitElement {
     }
     ha-md-list-item img {
       width: 48px;
+    }
+    ha-md-list-item ha-svg-icon[slot="start"] {
+      --mdc-icon-size: 48px;
+      color: var(--primary-text-color);
     }
   `;
 }

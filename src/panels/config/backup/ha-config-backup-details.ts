@@ -1,5 +1,5 @@
 import type { ActionDetail } from "@material/mwc-list";
-import { mdiDelete, mdiDotsVertical, mdiDownload } from "@mdi/js";
+import { mdiDatabase, mdiDelete, mdiDotsVertical, mdiDownload } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
@@ -22,6 +22,7 @@ import {
   fetchBackupDetails,
   getBackupDownloadUrl,
   getPreferredAgentForDownload,
+  isLocalAgent,
   restoreBackup,
 } from "../../../data/backup";
 import type { HassioAddonInfo } from "../../../data/hassio/addon";
@@ -140,33 +141,44 @@ class HaConfigBackupDetails extends LitElement {
                   <ha-card header="Locations">
                     <div class="card-content">
                       <ha-md-list>
-                        ${this._backup.agent_ids?.map((agent) => {
-                          const domain = computeDomain(agent);
+                        ${this._backup.agent_ids?.map((agentId) => {
+                          const domain = computeDomain(agentId);
                           const name = computeBackupAgentName(
                             this.hass.localize,
-                            agent,
+                            agentId,
                             this._backup!.agent_ids!
                           );
 
                           return html`
                             <ha-md-list-item>
-                              <img
-                                .src=${brandsUrl({
-                                  domain,
-                                  type: "icon",
-                                  useFallback: true,
-                                  darkOptimized: this.hass.themes?.darkMode,
-                                })}
-                                crossorigin="anonymous"
-                                referrerpolicy="no-referrer"
-                                alt=""
-                                slot="start"
-                              />
+                              ${isLocalAgent(agentId)
+                                ? html`
+                                    <ha-svg-icon
+                                      .path=${mdiDatabase}
+                                      slot="start"
+                                    >
+                                    </ha-svg-icon>
+                                  `
+                                : html`
+                                    <img
+                                      .src=${brandsUrl({
+                                        domain,
+                                        type: "icon",
+                                        useFallback: true,
+                                        darkOptimized:
+                                          this.hass.themes?.darkMode,
+                                      })}
+                                      crossorigin="anonymous"
+                                      referrerpolicy="no-referrer"
+                                      alt=""
+                                      slot="start"
+                                    />
+                                  `}
                               <div slot="headline">${name}</div>
                               <ha-button-menu
                                 slot="end"
                                 @action=${this._handleAgentAction}
-                                .agent=${agent}
+                                .agent=${agentId}
                                 fixed
                               >
                                 <ha-icon-button
@@ -327,6 +339,10 @@ class HaConfigBackupDetails extends LitElement {
     }
     ha-md-list-item img {
       width: 48px;
+    }
+    ha-md-list-item ha-svg-icon[slot="start"] {
+      --mdc-icon-size: 48px;
+      color: var(--primary-text-color);
     }
     .warning {
       color: var(--error-color);
