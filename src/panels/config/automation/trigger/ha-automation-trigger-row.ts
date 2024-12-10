@@ -492,13 +492,11 @@ export default class HaAutomationTriggerRow extends LitElement {
       case 7:
         if (this._yamlMode) {
           this._switchUiMode();
-          this.expand();
         } else {
           this._switchYamlMode();
-          this.expand();
         }
+        this.expand();
         break;
-
       case 8:
         this._onDisable();
         break;
