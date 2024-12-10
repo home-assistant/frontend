@@ -3700,6 +3700,7 @@
             },
             "dialog": {
               "add_description": "Add description",
+              "add_icon": "Add icon",
               "add_category": "Add category",
               "add_labels": "Add labels"
             }

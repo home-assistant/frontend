@@ -62,6 +62,7 @@ class DialogAutomationRename extends LitElement implements HassDialog {
 
     this._visibleOptionals = [
       this._newDescription! ? "description" : "",
+      this._newIcon! ? "icon" : "",
       this._category! ? "category" : "",
       this._labels.length > 0 ? "labels" : "",
     ];
@@ -136,7 +137,8 @@ class DialogAutomationRename extends LitElement implements HassDialog {
           @input=${this._valueChanged}
         ></ha-textfield>
 
-        ${this._params.domain === "script"
+        ${this._params.domain === "script" &&
+        this._visibleOptionals.includes("icon")
           ? html`
               <ha-icon-picker
                 .hass=${this.hass}
@@ -192,6 +194,14 @@ class DialogAutomationRename extends LitElement implements HassDialog {
               "ui.panel.config.automation.editor.dialog.add_description"
             )
           )}
+          ${this._params.domain === "script"
+            ? this._renderOptionalChip(
+                "icon",
+                this.hass.localize(
+                  "ui.panel.config.automation.editor.dialog.add_icon"
+                )
+              )
+            : nothing}
           ${this._renderOptionalChip(
             "category",
             this.hass.localize(
