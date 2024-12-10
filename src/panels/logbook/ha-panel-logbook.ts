@@ -301,8 +301,14 @@ export class HaPanelLogbook extends LitElement {
           margin-right: 16px;
           margin-inline-end: 16px;
           margin-inline-start: initial;
-          width: 100%;
+          max-width: 100%;
           direction: var(--direction);
+        }
+
+        @media all and (max-width: 870px) {
+          ha-date-range-picker {
+            width: 100%;
+          }
         }
 
         :host([narrow]) ha-date-range-picker {
