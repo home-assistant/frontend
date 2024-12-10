@@ -545,7 +545,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
       return;
     }
 
-    navigate("/config/backup/default-config");
+    await this._fetchBackupConfig();
   }
 
   static get styles(): CSSResultGroup {
