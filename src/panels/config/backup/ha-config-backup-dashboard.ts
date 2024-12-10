@@ -1,4 +1,5 @@
 import {
+  mdiDatabase,
   mdiDelete,
   mdiDotsVertical,
   mdiDownload,
@@ -34,6 +35,7 @@ import "../../../components/ha-svg-icon";
 import { getSignedPath } from "../../../data/auth";
 import type { BackupConfig, BackupContent } from "../../../data/backup";
 import {
+  computeBackupAgentName,
   deleteBackup,
   fetchBackupConfig,
   fetchBackupInfo,
@@ -41,6 +43,7 @@ import {
   generateBackupWithStoredSettings,
   getBackupDownloadUrl,
   getPreferredAgentForDownload,
+  isLocalAgent,
 } from "../../../data/backup";
 import type { ManagerStateEvent } from "../../../data/backup_manager";
 import {
@@ -68,6 +71,7 @@ import { showBackupOnboardingDialog } from "./dialogs/show-dialog-backup_onboard
 import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
 import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
+import { computeDomain } from "../../../common/entity/compute_domain";
 
 @customElement("ha-config-backup-dashboard")
 class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
@@ -118,9 +122,23 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
       },
       locations: {
         title: "Locations",
-        template: (backup) =>
-          html`${(backup.agent_ids || []).map((agent) => {
-            const [domain, name] = agent.split(".");
+        template: (backup) => html`
+          ${(backup.agent_ids || []).map((agentId) => {
+            const name = computeBackupAgentName(
+              this.hass.localize,
+              agentId,
+              backup.agent_ids
+            );
+            if (isLocalAgent(agentId)) {
+              return html`
+                <ha-svg-icon
+                  .path=${mdiDatabase}
+                  title=${name}
+                  slot="graphic"
+                ></ha-svg-icon>
+              `;
+            }
+            const domain = computeDomain(agentId);
             return html`
               <img
                 title=${name}
@@ -137,7 +155,8 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
                 slot="graphic"
               />
             `;
-          })}`,
+          })}
+        `,
       },
       actions: {
         title: "",
