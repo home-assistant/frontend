@@ -18,6 +18,7 @@ export const loadSubConfigFlowDialog = loadDataEntryFlowDialog;
 export const showSubConfigFlowDialog = (
   element: HTMLElement,
   configEntry: ConfigEntry,
+  flowType: string,
   dialogParams: Omit<DataEntryFlowDialogParams, "flowConfig">
 ): void =>
   showFlowDialog(element, dialogParams, {
@@ -25,7 +26,7 @@ export const showSubConfigFlowDialog = (
     showDevices: true,
     createFlow: async (hass, handler) => {
       const [step] = await Promise.all([
-        createSubConfigFlow(hass, handler, dialogParams.entryId),
+        createSubConfigFlow(hass, handler, flowType),
         hass.loadFragmentTranslation("config"),
         hass.loadBackendTranslation("config_subentries", configEntry.domain),
         hass.loadBackendTranslation("selector", configEntry.domain),
@@ -49,7 +50,7 @@ export const showSubConfigFlowDialog = (
 
     renderAbortDescription(hass, step) {
       const description = hass.localize(
-        `component.${step.translation_domain || configEntry.domain}.config_subentries.abort.${step.reason}`,
+        `component.${step.translation_domain || configEntry.domain}.config_subentries.${flowType}.abort.${step.reason}`,
         step.description_placeholders
       );
 
@@ -63,7 +64,7 @@ export const showSubConfigFlowDialog = (
     renderShowFormStepHeader(hass, step) {
       return (
         hass.localize(
-          `component.${step.translation_domain || configEntry.domain}.config_subentries.step.${step.step_id}.title`,
+          `component.${step.translation_domain || configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.title`,
           step.description_placeholders
         ) || hass.localize(`component.${configEntry.domain}.title`)
       );
@@ -71,7 +72,7 @@ export const showSubConfigFlowDialog = (
 
     renderShowFormStepDescription(hass, step) {
       const description = hass.localize(
-        `component.${step.translation_domain || configEntry.domain}.config_subentries.step.${step.step_id}.description`,
+        `component.${step.translation_domain || configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.description`,
         step.description_placeholders
       );
       return description
@@ -84,7 +85,7 @@ export const showSubConfigFlowDialog = (
     renderShowFormStepFieldLabel(hass, step, field, options) {
       if (field.type === "expandable") {
         return hass.localize(
-          `component.${configEntry.domain}.config_subentries.step.${step.step_id}.sections.${field.name}.name`
+          `component.${configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.sections.${field.name}.name`
         );
       }
 
@@ -92,7 +93,7 @@ export const showSubConfigFlowDialog = (
 
       return (
         hass.localize(
-          `component.${configEntry.domain}.config_subentries.step.${step.step_id}.${prefix}data.${field.name}`
+          `component.${configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.${prefix}data.${field.name}`
         ) || field.name
       );
     },
@@ -100,14 +101,14 @@ export const showSubConfigFlowDialog = (
     renderShowFormStepFieldHelper(hass, step, field, options) {
       if (field.type === "expandable") {
         return hass.localize(
-          `component.${step.translation_domain || configEntry.domain}.config_subentries.step.${step.step_id}.sections.${field.name}.description`
+          `component.${step.translation_domain || configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.sections.${field.name}.description`
         );
       }
 
       const prefix = options?.path?.[0] ? `sections.${options.path[0]}.` : "";
 
       const description = hass.localize(
-        `component.${step.translation_domain || configEntry.domain}.config_subentries.step.${step.step_id}.${prefix}data_description.${field.name}`,
+        `component.${step.translation_domain || configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.${prefix}data_description.${field.name}`,
         step.description_placeholders
       );
 
@@ -119,7 +120,7 @@ export const showSubConfigFlowDialog = (
     renderShowFormStepFieldError(hass, step, error) {
       return (
         hass.localize(
-          `component.${step.translation_domain || step.translation_domain || configEntry.domain}.config_subentries.error.${error}`,
+          `component.${step.translation_domain || step.translation_domain || configEntry.domain}.config_subentries.${flowType}.error.${error}`,
           step.description_placeholders
         ) || error
       );
@@ -132,7 +133,7 @@ export const showSubConfigFlowDialog = (
     renderShowFormStepSubmitButton(hass, step) {
       return (
         hass.localize(
-          `component.${configEntry.domain}.config_subentries.step.${step.step_id}.submit`
+          `component.${configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.submit`
         ) ||
         hass.localize(
           `ui.panel.config.integrations.config_flow.${
@@ -145,7 +146,7 @@ export const showSubConfigFlowDialog = (
     renderExternalStepHeader(hass, step) {
       return (
         hass.localize(
-          `component.${configEntry.domain}.config_subentries.step.${step.step_id}.title`
+          `component.${configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.title`
         ) ||
         hass.localize(
           "ui.panel.config.integrations.config_flow.external_step.open_site"
@@ -155,7 +156,7 @@ export const showSubConfigFlowDialog = (
 
     renderExternalStepDescription(hass, step) {
       const description = hass.localize(
-        `component.${step.translation_domain || configEntry.domain}.config_subentries.${step.step_id}.description`,
+        `component.${step.translation_domain || configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.description`,
         step.description_placeholders
       );
 
@@ -179,7 +180,7 @@ export const showSubConfigFlowDialog = (
 
     renderCreateEntryDescription(hass, step) {
       const description = hass.localize(
-        `component.${step.translation_domain || configEntry.domain}.config_subentries.create_entry.${
+        `component.${step.translation_domain || configEntry.domain}.config_subentries.${flowType}.create_entry.${
           step.description || "default"
         }`,
         step.description_placeholders
@@ -207,14 +208,14 @@ export const showSubConfigFlowDialog = (
     renderShowFormProgressHeader(hass, step) {
       return (
         hass.localize(
-          `component.${configEntry.domain}.config_subentries.step.${step.step_id}.title`
+          `component.${configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.title`
         ) || hass.localize(`component.${configEntry.domain}.title`)
       );
     },
 
     renderShowFormProgressDescription(hass, step) {
       const description = hass.localize(
-        `component.${step.translation_domain || configEntry.domain}.config_subentries.progress.${step.progress_action}`,
+        `component.${step.translation_domain || configEntry.domain}.config_subentries.${flowType}.progress.${step.progress_action}`,
         step.description_placeholders
       );
       return description
@@ -227,7 +228,7 @@ export const showSubConfigFlowDialog = (
     renderMenuHeader(hass, step) {
       return (
         hass.localize(
-          `component.${configEntry.domain}.config_subentries.step.${step.step_id}.title`,
+          `component.${configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.title`,
           step.description_placeholders
         ) || hass.localize(`component.${configEntry.domain}.title`)
       );
@@ -235,7 +236,7 @@ export const showSubConfigFlowDialog = (
 
     renderMenuDescription(hass, step) {
       const description = hass.localize(
-        `component.${step.translation_domain || configEntry.domain}.config_subentries.step.${step.step_id}.description`,
+        `component.${step.translation_domain || configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.description`,
         step.description_placeholders
       );
       return description
@@ -247,7 +248,7 @@ export const showSubConfigFlowDialog = (
 
     renderMenuOption(hass, step, option) {
       return hass.localize(
-        `component.${step.translation_domain || configEntry.domain}.config_subentries.step.${step.step_id}.menu_options.${option}`,
+        `component.${step.translation_domain || configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.menu_options.${option}`,
         step.description_placeholders
       );
     },

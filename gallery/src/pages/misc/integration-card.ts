@@ -32,7 +32,7 @@ const createConfigEntry = (
   supports_remove_device: false,
   supports_unload: true,
   supports_reconfigure: true,
-  supports_subentries: false,
+  supported_subentries: [],
   num_subentries: 0,
   disabled_by: null,
   pref_disable_new_entities: false,
