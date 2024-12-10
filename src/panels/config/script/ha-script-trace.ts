@@ -487,13 +487,15 @@ export class HaScriptTrace extends LitElement {
     if (!traceText) {
       return;
     }
-    localStorage.devTrace = traceText;
+
+    window.localStorage.setItem("devTrace", traceText);
     this._loadLocalTrace(traceText);
   }
 
   private _loadLocalStorageTrace() {
-    if (localStorage.devTrace) {
-      this._loadLocalTrace(localStorage.devTrace);
+    const devTrace = window.localStorage.getItem("devTrace");
+    if (devTrace) {
+      this._loadLocalTrace(devTrace);
     }
   }
 

@@ -339,34 +339,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 ${this._manifest?.version != null
                   ? html`<div class="version">${this._manifest.version}</div>`
                   : nothing}
-                ${this._manifest?.quality_scale &&
-                Object.keys(QUALITY_SCALE_MAP).includes(
-                  this._manifest.quality_scale
-                )
-                  ? html`
-                      <div class="quality-scale integration-info">
-                        <ha-svg-icon
-                          class=${`${this._manifest.quality_scale}-quality`}
-                          .path=${QUALITY_SCALE_MAP[
-                            this._manifest.quality_scale
-                          ].icon}
-                        ></ha-svg-icon>
-                        <a
-                          href=${documentationUrl(
-                            this.hass,
-                            `/docs/quality_scale/#-${this._manifest.quality_scale}`
-                          )}
-                          rel="noopener noreferrer"
-                          target="_blank"
-                        >
-                          ${this.hass.localize(
-                            QUALITY_SCALE_MAP[this._manifest.quality_scale]
-                              .translationKey
-                          )}
-                        </a>
-                      </div>
-                    `
-                  : nothing}
                 ${this._manifest?.is_built_in === false
                   ? html`<div
                       class=${`integration-info ${
@@ -414,6 +386,39 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               </div>
 
               <div class="card-actions">
+                ${this._manifest?.quality_scale &&
+                Object.keys(QUALITY_SCALE_MAP).includes(
+                  this._manifest.quality_scale
+                )
+                  ? html`
+                      <a
+                        href=${documentationUrl(
+                          this.hass,
+                          `/docs/quality_scale/#-${this._manifest.quality_scale}`
+                        )}
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        <ha-list-item hasMeta graphic="icon">
+                          <ha-svg-icon
+                            slot="graphic"
+                            class=${`quality-scale ${this._manifest.quality_scale}-quality`}
+                            .path=${QUALITY_SCALE_MAP[
+                              this._manifest.quality_scale
+                            ].icon}
+                          ></ha-svg-icon>
+                          ${this.hass.localize(
+                            QUALITY_SCALE_MAP[this._manifest.quality_scale]
+                              .translationKey
+                          )}
+                          <ha-svg-icon
+                            slot="meta"
+                            .path=${mdiOpenInNew}
+                          ></ha-svg-icon>
+                        </ha-list-item>
+                      </a>
+                    `
+                  : nothing}
                 ${devices.length > 0
                   ? html`<a
                       href=${devices.length === 1
@@ -1538,7 +1543,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         .integration-info.info ha-svg-icon {
           color: var(--info-color);
         }
-        .quality-scale ha-svg-icon {
+        .quality-scale {
           mask: linear-gradient(-60deg, #000 30%, #0005, #000 70%) right/350%
             100%;
           animation: shimmer 2.5s infinite;
