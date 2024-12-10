@@ -67,7 +67,11 @@ export class HuiLogbookCardEditor
   get _targetPicker(): HassServiceTarget {
     const entities = this._config!.entities || [];
     if (this._config!.entities) {
-      delete this._config!.entities;
+      this._config = {
+        ...this._config!,
+        entities: undefined,
+        target: { entity_id: entities },
+      };
     }
     return (
       this._config!.target || {
@@ -92,8 +96,9 @@ export class HuiLogbookCardEditor
 
       <ha-target-picker
         .hass=${this.hass}
-        .value=${this._targetPicker}
         .entityFilter=${filterLogbookCompatibleEntities}
+        .value=${this._targetPicker}
+        addOnTop
         @value-changed=${this._entitiesChanged}
       ></ha-target-picker>
     `;

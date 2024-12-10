@@ -115,7 +115,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
   }
 
   private _getEntityIds(): string[] | undefined {
-    const entities = this.__getEntityIds(
+    const entities = this._getMemoizedEntityIds(
       this._targetPickerValue,
       this.hass.entities,
       this.hass.devices,
@@ -127,7 +127,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     return entities;
   }
 
-  private __getEntityIds = memoizeOne(
+  private _getMemoizedEntityIds = memoizeOne(
     (
       targetPickerValue: HassServiceTarget,
       entities: HomeAssistant["entities"],
