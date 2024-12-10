@@ -190,7 +190,11 @@ export class CloudStepSignup extends LitElement {
     }
 
     try {
-      await cloudLogin(this.hass, this._email, this._password);
+      await cloudLogin({
+        hass: this.hass,
+        email: this._email,
+        password: this._password,
+      });
       fireEvent(this, "cloud-step", { step: "DONE" });
     } catch (e: any) {
       if (e?.body?.code === "usernotconfirmed") {
