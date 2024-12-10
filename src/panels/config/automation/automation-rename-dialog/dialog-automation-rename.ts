@@ -286,6 +286,9 @@ class DialogAutomationRename extends LitElement implements HassDialog {
       haStyle,
       haStyleDialog,
       css`
+        ha-dialog {
+          --dialog-content-padding: 0 24px 24px 24px;
+        }
         ha-textfield,
         ha-textarea,
         ha-icon-picker,
