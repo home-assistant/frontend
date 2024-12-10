@@ -25,7 +25,7 @@ const ICONS: Record<SummaryStatus, string> = {
 @customElement("ha-backup-summary-card")
 class HaBackupSummaryCard extends LitElement {
   @property()
-  public title!: string;
+  public heading!: string;
 
   @property()
   public description!: string;
@@ -49,7 +49,7 @@ class HaBackupSummaryCard extends LitElement {
               `}
 
           <div class="content">
-            <p class="title">${this.title}</p>
+            <p class="heading">${this.heading}</p>
             <p class="description">${this.description}</p>
           </div>
           ${this.hasAction
@@ -116,7 +116,7 @@ class HaBackupSummaryCard extends LitElement {
       flex: 1;
       min-width: 0;
     }
-    .title {
+    .heading {
       font-size: 22px;
       font-style: normal;
       font-weight: 400;

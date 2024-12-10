@@ -203,23 +203,6 @@ export const uploadBackup = async (
   }
 };
 
-type BackupEvent = BackupProgressEvent;
-
-type BackupProgressEvent = {
-  event_type: "backup_progress";
-  done: boolean;
-  stage: string;
-  success?: boolean;
-};
-
-export const subscribeBackupEvents = (
-  hass: HomeAssistant,
-  callback: (event: BackupEvent) => void
-) =>
-  hass.connection.subscribeMessage<BackupEvent>(callback, {
-    type: "backup/subscribe_events",
-  });
-
 export const getPreferredAgentForDownload = (agents: string[]) => {
   const localAgents = agents.filter(
     (agent) => agent.split(".")[0] === "backup"
