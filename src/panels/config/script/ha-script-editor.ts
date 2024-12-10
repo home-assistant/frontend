@@ -35,7 +35,10 @@ import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
 import { validateConfig } from "../../../data/config";
 import { UNAVAILABLE } from "../../../data/entity";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
+import {
+  type EntityRegistryEntry,
+  updateEntityRegistryEntry,
+} from "../../../data/entity_registry";
 import type { BlueprintScriptConfig, ScriptConfig } from "../../../data/script";
 import {
   deleteScript,
@@ -115,6 +118,12 @@ export class HaScriptEditor extends SubscribeMixin(
   @state() private _validationErrors?: (string | TemplateResult)[];
 
   @state() private _blueprintConfig?: BlueprintScriptConfig;
+
+  @state() private _category?: string;
+
+  @state() private _labels?: string[];
+
+  @state() private _saving = false;
 
   protected render(): TemplateResult | typeof nothing {
     if (!this._config) {
@@ -410,11 +419,13 @@ export class HaScriptEditor extends SubscribeMixin(
         <ha-fab
           slot="fab"
           class=${classMap({
-            dirty: this._dirty,
+            dirty: !this._readOnly && this._dirty,
+            saving: this._saving,
           })}
           .label=${this.hass.localize(
             "ui.panel.config.script.editor.save_script"
           )}
+          .disabled=${this._saving}
           extended
           @click=${this._saveScript}
         >
@@ -449,6 +460,8 @@ export class HaScriptEditor extends SubscribeMixin(
         (ent) => ent.platform === "script" && ent.unique_id === this.scriptId
       );
       this._entityId = entity?.entity_id;
+      this._category = entity?.categories?.script;
+      this._labels = entity?.labels;
     }
 
     if (changedProps.has("scriptId") && !this.scriptId && this.hass) {
@@ -812,13 +825,17 @@ export class HaScriptEditor extends SubscribeMixin(
       showAutomationRenameDialog(this, {
         config: this._config!,
         domain: "script",
-        updateConfig: (config) => {
+        updateConfig: (config, category, labels) => {
           this._config = config;
+          this._category = category;
+          this._labels = labels;
           this._dirty = true;
           this.requestUpdate();
           resolve(true);
         },
         onClose: () => resolve(false),
+        category: this._category,
+        labels: this._labels,
       });
     });
   }
@@ -855,24 +872,46 @@ export class HaScriptEditor extends SubscribeMixin(
     }
     const id = this.scriptId || this._entityId || Date.now();
 
+    this._saving = true;
     try {
       await this.hass!.callApi(
         "POST",
         "config/script/config/" + id,
         this._config
       );
+
+      if (this._category !== undefined || this._labels !== undefined) {
+        // wait for new script to appear in entity registry
+        if (!this.scriptId) {
+          await new Promise<void>((resolve, _reject) => {
+            setTimeout(resolve, 3000);
+          });
+        }
+
+        const entityId = id.toString().startsWith("script.")
+          ? id.toString()
+          : `script.${id}`;
+        await updateEntityRegistryEntry(this.hass, entityId, {
+          categories: {
+            script: this._category || "",
+          },
+          labels: this._labels || [],
+        });
+      }
+
+      this._dirty = false;
+
+      if (!this.scriptId) {
+        navigate(`/config/script/edit/${id}`, { replace: true });
+      }
     } catch (errors: any) {
       this._errors = errors.body.message || errors.error || errors.body;
       showToast(this, {
         message: errors.body.message || errors.error || errors.body,
       });
       throw errors;
-    }
-
-    this._dirty = false;
-
-    if (!this.scriptId) {
-      navigate(`/config/script/edit/${id}`, { replace: true });
+    } finally {
+      this._saving = false;
     }
   }
 
@@ -939,6 +978,9 @@ export class HaScriptEditor extends SubscribeMixin(
         }
         ha-fab.dirty {
           bottom: 0;
+        }
+        ha-fab.saving {
+          opacity: var(--light-disabled-opacity);
         }
         li[role="separator"] {
           border-bottom-color: var(--divider-color);
