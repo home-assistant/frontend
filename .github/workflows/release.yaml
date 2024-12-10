@@ -86,6 +86,8 @@ jobs:
     name: Release landing-page frontend
     if: github.event.release.prerelease == false
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required to upload release assets
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4.2.2
@@ -113,6 +115,8 @@ jobs:
     name: Release supervisor frontend
     if: github.event.release.prerelease == false
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required to upload release assets
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4.2.2
