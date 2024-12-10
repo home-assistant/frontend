@@ -259,8 +259,7 @@ class HaPanelDevTemplate extends LitElement {
                                 "ui.panel.developer-tools.tabs.templates.no_listeners"
                               )}
                             </p>`
-                          : nothing
-                  }`
+                          : nothing}`
               : nothing}
           </div>
         </ha-card>
@@ -332,12 +331,12 @@ class HaPanelDevTemplate extends LitElement {
           direction: ltr;
           overflow: auto;
         }
-        
+
         p,
         ul {
           margin-block-end: 0;
         }
-        
+
         .content.horizontal .render-pane .card-content {
           display: flex;
           flex-direction: column;
