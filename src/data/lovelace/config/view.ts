@@ -10,18 +10,18 @@ export interface ShowViewConfig {
 export interface LovelaceViewBackgroundConfig {
   image?: string;
   transparency?: number;
-  size?: "original" | "fill_view" | "fit_view";
+  size?: "auto" | "cover" | "contain";
   alignment?:
-    | "top_left"
-    | "top_center"
-    | "top_right"
-    | "center_left"
+    | "top left"
+    | "top center"
+    | "top right"
+    | "center left"
     | "center"
-    | "center_right"
-    | "bottom_left"
-    | "bottom_center"
-    | "bottom_right";
-  tile?: boolean;
+    | "center right"
+    | "bottom left"
+    | "bottom center"
+    | "bottom right";
+  repeat?: "repeat" | "no-repeat";
 }
 
 export interface LovelaceBaseViewConfig {

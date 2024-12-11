@@ -49,35 +49,10 @@ export class HUIViewBackground extends LitElement {
     background?: string | LovelaceViewBackgroundConfig
   ) {
     if (typeof background === "object" && background.image) {
-      let size = "auto";
-      if (
-        background.size &&
-        ["original", "fill_view", "fit_view"].includes(background.size)
-      ) {
-        size = {
-          fill_view: "cover",
-          fit_view: "contain",
-          original: "auto",
-        }[background.size];
-      }
-      let alignment = "center";
-      if (
-        background.alignment &&
-        [
-          "top_left",
-          "top_center",
-          "top_right",
-          "center_left",
-          "center",
-          "center_right",
-          "bottom_left",
-          "bottom_center",
-          "bottom_right",
-        ].includes(background.alignment)
-      ) {
-        alignment = background.alignment.replace("_", " ");
-      }
-      return `${alignment} / ${size} ${background.tile ? "repeat" : "no-repeat"} url('${background.image}')`;
+      let size = background.size ?? "auto";
+      let alignment = background.alignment ?? "center";
+      let repeat = background.repeat ?? "repeat";
+      return `${alignment} / ${size} ${repeat} url('${background.image}')`;
     }
     if (typeof background === "string") {
       return background;
