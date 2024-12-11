@@ -381,7 +381,6 @@ export class HuiDialogEditView extends LitElement {
       );
       // eslint-disable-next-line no-console
       console.error(err);
-      return;
     }
 
     if (toConfig && isStrategyDashboard(toConfig)) {
