@@ -928,15 +928,15 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
             (entity: EntityRegistryEntry) => entity.unique_id === id
           );
           entityId = automation?.entity_id;
+        }
 
-          if (entityId) {
-            await updateEntityRegistryEntry(this.hass, entityId, {
-              categories: {
-                automation: this._entityRegistryUpdate.category || "",
-              },
-              labels: this._entityRegistryUpdate.labels || [],
-            });
-          }
+        if (entityId) {
+          await updateEntityRegistryEntry(this.hass, entityId, {
+            categories: {
+              automation: this._entityRegistryUpdate.category || "",
+            },
+            labels: this._entityRegistryUpdate.labels || [],
+          });
         }
       }
 
