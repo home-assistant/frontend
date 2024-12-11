@@ -1,5 +1,6 @@
 import "@material/mwc-button";
 import {
+  mdiCog,
   mdiContentDuplicate,
   mdiContentSave,
   mdiDebugStepOver,
@@ -13,6 +14,7 @@ import {
   mdiRenameBox,
   mdiRobotConfused,
   mdiStopCircleOutline,
+  mdiTag,
   mdiTransitConnection,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -49,7 +51,11 @@ import {
 import { substituteBlueprint } from "../../../data/blueprint";
 import { validateConfig } from "../../../data/config";
 import { UNAVAILABLE } from "../../../data/entity";
-import { fetchEntityRegistry } from "../../../data/entity_registry";
+import {
+  fetchEntityRegistry,
+  subscribeEntityRegistry,
+  type EntityRegistryEntry,
+} from "../../../data/entity_registry";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -64,6 +70,9 @@ import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-a
 import { showAutomationRenameDialog } from "./automation-rename-dialog/show-dialog-automation-rename";
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
+import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
+import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -82,7 +91,9 @@ declare global {
   }
 }
 
-export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
+export class HaAutomationEditor extends SubscribeMixin(
+  KeyboardShortcutMixin(LitElement)
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public automationId: string | null = null;
@@ -114,6 +125,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   @state() private _validationErrors?: (string | TemplateResult)[];
 
   @state() private _blueprintConfig?: BlueprintAutomationConfig;
+
+  @state() private _registryEntry?: EntityRegistryEntry;
 
   private _configSubscriptions: Record<
     string,
@@ -172,6 +185,17 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
           <ha-list-item
             graphic="icon"
             .disabled=${!stateObj}
+            @click=${this._showSettings}
+          >
+            ${this.hass.localize(
+              "ui.panel.config.automation.picker.show_settings"
+            )}
+            <ha-svg-icon slot="graphic" .path=${mdiCog}></ha-svg-icon>
+          </ha-list-item>
+
+          <ha-list-item
+            graphic="icon"
+            .disabled=${!stateObj}
             @click=${this._runActions}
           >
             ${this.hass.localize("ui.panel.config.automation.editor.run")}
@@ -205,6 +229,17 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
           >
             ${this.hass.localize("ui.panel.config.automation.editor.rename")}
             <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
+          </ha-list-item>
+
+          <ha-list-item
+            graphic="icon"
+            .disabled=${!stateObj}
+            @click=${this._editCategory}
+          >
+            ${this.hass.localize(
+              `ui.panel.config.scene.picker.${this._registryEntry?.categories?.automation ? "edit_category" : "assign_category"}`
+            )}
+            <ha-svg-icon slot="graphic" .path=${mdiTag}></ha-svg-icon>
           </ha-list-item>
           ${!useBlueprint
             ? html`
@@ -489,6 +524,16 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     }
   }
 
+  public hassSubscribe() {
+    return [
+      subscribeEntityRegistry(this.hass.connection, (entries) => {
+        this._registryEntry = entries.find(
+          ({ entity_id }) => entity_id === this._entityId
+        );
+      }),
+    ];
+  }
+
   private _setEntityId() {
     const automation = this.automations.find(
       (entity: AutomationEntity) => entity.attributes.id === this.automationId
@@ -575,6 +620,31 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       return;
     }
     fireEvent(this, "hass-more-info", { entityId: this._entityId });
+  }
+
+  private _showSettings() {
+    showMoreInfoDialog(this, {
+      entityId: this._entityId!,
+      view: "settings",
+    });
+  }
+
+  private _editCategory() {
+    if (!this._registryEntry) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.scene.picker.no_category_support"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.scene.picker.no_category_entity_reg"
+        ),
+      });
+      return;
+    }
+    showAssignCategoryDialog(this, {
+      scope: "automation",
+      entityReg: this._registryEntry,
+    });
   }
 
   private async _showTrace() {
