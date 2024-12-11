@@ -48,7 +48,7 @@ export class HuiViewBackgroundEditor extends LitElement {
                   select: {
                     translation_key:
                       "ui.panel.lovelace.editor.edit_view.background.size",
-                    options: ["original", "fill_view", "fit_view"],
+                    options: ["auto", "cover", "contain"],
                   },
                 },
               },
@@ -59,22 +59,28 @@ export class HuiViewBackgroundEditor extends LitElement {
                     translation_key:
                       "ui.panel.lovelace.editor.edit_view.background.alignment",
                     options: [
-                      "top_left",
-                      "top_center",
-                      "top_right",
-                      "center_left",
+                      "top left",
+                      "top center",
+                      "top right",
+                      "center left",
                       "center",
-                      "center_right",
-                      "bottom_left",
-                      "bottom_center",
-                      "bottom_right",
+                      "center right",
+                      "bottom left",
+                      "bottom center",
+                      "bottom right",
                     ],
                   },
                 },
               },
               {
-                name: "tile",
-                selector: { boolean: {} },
+                name: "repeat",
+                selector: {
+                  select: {
+                    translation_key:
+                      "ui.panel.lovelace.editor.edit_view.background.repeat",
+                    options: ["repeat", "no-repeat"],
+                  },
+                },
               },
             ],
           },
@@ -99,7 +105,8 @@ export class HuiViewBackgroundEditor extends LitElement {
     background = {
       transparency: 100,
       alignment: "center",
-      size: "original",
+      size: "auto",
+      repeat: "repeat",
       ...background,
     };
 
@@ -142,6 +149,10 @@ export class HuiViewBackgroundEditor extends LitElement {
       case "size":
         return this.hass.localize(
           "ui.panel.lovelace.editor.edit_view.background.size.name"
+        );
+      case "repeat":
+        return this.hass.localize(
+          "ui.panel.lovelace.editor.edit_view.background.repeat.name"
         );
       default:
         return this.hass.localize(

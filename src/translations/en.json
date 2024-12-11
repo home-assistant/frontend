@@ -5931,27 +5931,33 @@
               "size": {
                 "name": "Background size",
                 "options": {
-                  "original": "Original",
-                  "fill_view": "Fill view",
-                  "fit_view": "Fit view"
+                  "auto": "Original",
+                  "cover": "Fill view",
+                  "contain": "Fit view"
                 }
               },
               "alignment": {
                 "name": "Background alignment",
                 "options": {
-                  "top_left": "Top left",
-                  "top_center": "Top center",
-                  "top_right": "Top right",
-                  "center_left": "Center left",
+                  "top left": "Top left",
+                  "top center": "Top center",
+                  "top right": "Top right",
+                  "center left": "Center left",
                   "center": "Center",
-                  "center_right": "Center right",
-                  "bottom_left": "Bottom left",
-                  "bottom_center": "Bottom center",
-                  "bottom_right": "Bottom right"
+                  "center right": "Center right",
+                  "bottom left": "Bottom left",
+                  "bottom center": "Bottom center",
+                  "bottom right": "Bottom right"
                 }
               },
               "transparency": "Background transparency",
-              "tile": "Tile background"
+              "repeat": {
+                "name": "Background repeat",
+                "options": {
+                  "repeat": "Repeat (tile)",
+                  "no-repeat": "No repeat"
+                }
+              }
             },
             "edit": "Edit view",
             "delete": "Delete view",
