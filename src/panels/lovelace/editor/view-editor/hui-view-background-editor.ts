@@ -7,10 +7,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import "../../../../components/ha-selector/ha-selector-image";
-import type {
-  LovelaceViewBackgroundConfig,
-  LovelaceViewConfig,
-} from "../../../../data/lovelace/config/view";
+import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 
 @customElement("hui-view-background-editor")

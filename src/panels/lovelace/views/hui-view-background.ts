@@ -49,9 +49,6 @@ export class HUIViewBackground extends LitElement {
     background?: string | LovelaceViewBackgroundConfig
   ) {
     if (typeof background === "object" && background.image) {
-      if (background.tile) {
-        return `top / auto repeat url('${background.image}')`;
-      }
       let size = "auto";
       if (
         background.size &&
@@ -80,7 +77,7 @@ export class HUIViewBackground extends LitElement {
       ) {
         alignment = background.alignment.replace("_", " ");
       }
-      return `${alignment} / ${size} no-repeat url('${background.image}')`;
+      return `${alignment} / ${size} ${background.tile ? "repeat" : "no-repeat"} url('${background.image}')`;
     }
     if (typeof background === "string") {
       return background;
