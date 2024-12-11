@@ -120,42 +120,51 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
         template: (backup) =>
           relativeTime(new Date(backup.date), this.hass.locale),
       },
+      with_strategy_settings: {
+        title: "Type",
+        filterable: true,
+        sortable: true,
+        template: (backup) =>
+          backup.with_strategy_settings ? "Strategy" : "Custom",
+      },
       locations: {
         title: "Locations",
         template: (backup) => html`
-          ${(backup.agent_ids || []).map((agentId) => {
-            const name = computeBackupAgentName(
-              this.hass.localize,
-              agentId,
-              backup.agent_ids
-            );
-            if (isLocalAgent(agentId)) {
+          <div style="display: flex; gap: 4px;">
+            ${(backup.agent_ids || []).map((agentId) => {
+              const name = computeBackupAgentName(
+                this.hass.localize,
+                agentId,
+                backup.agent_ids
+              );
+              if (isLocalAgent(agentId)) {
+                return html`
+                  <ha-svg-icon
+                    .path=${mdiDatabase}
+                    title=${name}
+                    slot="graphic"
+                  ></ha-svg-icon>
+                `;
+              }
+              const domain = computeDomain(agentId);
               return html`
-                <ha-svg-icon
-                  .path=${mdiDatabase}
+                <img
                   title=${name}
+                  .src=${brandsUrl({
+                    domain,
+                    type: "icon",
+                    useFallback: true,
+                    darkOptimized: this.hass.themes?.darkMode,
+                  })}
+                  height="24"
+                  crossorigin="anonymous"
+                  referrerpolicy="no-referrer"
+                  alt=${name}
                   slot="graphic"
-                ></ha-svg-icon>
+                />
               `;
-            }
-            const domain = computeDomain(agentId);
-            return html`
-              <img
-                title=${name}
-                .src=${brandsUrl({
-                  domain,
-                  type: "icon",
-                  useFallback: true,
-                  darkOptimized: this.hass.themes?.darkMode,
-                })}
-                height="24"
-                crossorigin="anonymous"
-                referrerpolicy="no-referrer"
-                alt=${name}
-                slot="graphic"
-              />
-            `;
-          })}
+            })}
+          </div>
         `,
       },
       actions: {
@@ -236,8 +245,11 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
                   has-action
                   status="loading"
                 >
-                  <ha-button slot="action" @click=${this._onboardDefaultBackup}>
-                    Setup backup strategy
+                  <ha-button
+                    slot="action"
+                    @click=${this._configureDefaultBackup}
+                  >
+                    Configure
                   </ha-button>
                 </ha-backup-summary-card>
               `
