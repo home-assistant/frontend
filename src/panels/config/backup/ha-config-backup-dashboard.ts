@@ -40,7 +40,7 @@ import {
   fetchBackupConfig,
   fetchBackupInfo,
   generateBackup,
-  generateBackupWithStoredSettings,
+  generateBackupWithStrategySettings,
   getBackupDownloadUrl,
   getPreferredAgentForDownload,
   isLocalAgent,
@@ -259,7 +259,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
               : this._needsOnboarding
                 ? html`
                     <ha-backup-summary-card
-                      heading="Set up default backup"
+                      heading="Configure backup strategy"
                       description="Have a one-click backup automation with selected data and locations."
                       has-action
                       status="info"
@@ -472,8 +472,8 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
       await this._fetchBackupInfo();
       return;
     }
-    if (type === "default") {
-      await generateBackupWithStoredSettings(this.hass);
+    if (type === "strategy") {
+      await generateBackupWithStrategySettings(this.hass);
       await this._fetchBackupInfo();
     }
   }
