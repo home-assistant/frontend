@@ -258,7 +258,6 @@ export class HaDateRangePicker extends LitElement {
                 </ha-icon-button-prev>
                 <ha-icon-button-next
                   .label=${this.hass.localize("ui.common.next")}
-                  class="next"
                   @click=${this._handleNext}
                 >
                 </ha-icon-button-next>`
