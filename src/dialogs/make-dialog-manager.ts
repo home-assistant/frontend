@@ -202,7 +202,8 @@ const _handleClosed = async (ev: HASSDomEvent<DialogClosedParams>) => {
         { dialog: OPEN_DIALOG_STACK[OPEN_DIALOG_STACK.length - 1].dialogTag },
         ""
       );
-    } else {
+    } else if (dialogIndex !== -1) {
+      // if the dialog is the last one and it was indeed open, go back
       mainWindow.history.back();
     }
   }
