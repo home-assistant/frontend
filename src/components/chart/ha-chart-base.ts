@@ -261,7 +261,6 @@ export class HaChartBase extends LitElement {
             "padding-inline-start": `${this._paddingYAxisInternal}px`,
             "padding-inline-end": 0,
           })}
-          @click=${this._handleChartClick}
         >
           <canvas></canvas>
           ${this._tooltip
@@ -365,7 +364,6 @@ export class HaChartBase extends LitElement {
           ...this.options?.plugins?.zoom,
           pan: {
             enabled: true,
-            modifierKey: "shift",
           },
           zoom: {
             pinch: {
@@ -373,6 +371,11 @@ export class HaChartBase extends LitElement {
             },
             drag: {
               enabled: true,
+              modifierKey: "ctrl",
+            },
+            wheel: {
+              enabled: true,
+              modifierKey: "ctrl",
             },
             mode: "x",
           },
@@ -409,13 +412,6 @@ export class HaChartBase extends LitElement {
         },
       },
     ];
-  }
-
-  private _handleChartClick(ev: MouseEvent) {
-    if (ev.detail === 2) {
-      // reset zoom with double click
-      this.chart?.resetZoom();
-    }
   }
 
   private _legendClick(ev) {
