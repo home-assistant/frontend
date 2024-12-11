@@ -79,7 +79,7 @@ export class HuiDialogSelectDashboard extends LitElement {
             @click=${this.closeDialog}
             .disabled=${this._saving}
           ></ha-icon-button>
-          <span slot="title" .title=${dialogTitle}> ${dialogTitle} </span>
+          <span slot="title" .title=${dialogTitle}>${dialogTitle}</span>
         </ha-dialog-header>
         <div slot="content">
           ${this._dashboards && !this._saving
