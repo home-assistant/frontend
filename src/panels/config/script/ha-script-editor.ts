@@ -1,6 +1,5 @@
 import "@material/mwc-button";
 import {
-  mdiCheck,
   mdiContentDuplicate,
   mdiContentSave,
   mdiDebugStepOver,
@@ -10,6 +9,7 @@ import {
   mdiFormTextbox,
   mdiInformationOutline,
   mdiPlay,
+  mdiPlaylistEdit,
   mdiRenameBox,
   mdiRobotConfused,
   mdiTransitConnection,
@@ -245,27 +245,16 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
               `
             : nothing}
 
-          <li divider role="separator"></li>
-
-          <ha-list-item graphic="icon" @click=${this._switchUiMode}>
-            ${this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
-            ${this._mode === "gui"
-              ? html`<ha-svg-icon
-                  class="selected_menu_item"
-                  slot="graphic"
-                  .path=${mdiCheck}
-                ></ha-svg-icon> `
-              : ``}
-          </ha-list-item>
-          <ha-list-item graphic="icon" @click=${this._switchYamlMode}>
-            ${this.hass.localize("ui.panel.config.automation.editor.edit_yaml")}
-            ${this._mode === "yaml"
-              ? html`<ha-svg-icon
-                  class="selected_menu_item"
-                  slot="graphic"
-                  .path=${mdiCheck}
-                ></ha-svg-icon>`
-              : ``}
+          <ha-list-item
+            graphic="icon"
+            @click=${this._mode === "gui"
+              ? this._switchYamlMode
+              : this._switchUiMode}
+          >
+            ${this.hass.localize(
+              `ui.panel.config.automation.editor.edit_${this._mode === "gui" ? "yaml" : "ui"}`
+            )}
+            <ha-svg-icon slot="graphic" .path=${mdiPlaylistEdit}></ha-svg-icon>
           </ha-list-item>
 
           <li divider role="separator"></li>
@@ -873,9 +862,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         }
         ha-fab.dirty {
           bottom: 0;
-        }
-        .selected_menu_item {
-          color: var(--primary-color);
         }
         li[role="separator"] {
           border-bottom-color: var(--divider-color);
