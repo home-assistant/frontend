@@ -1215,7 +1215,9 @@
         "manage_assistants": "Manage assistants",
         "not_supported_microphone_browser": "Your connection to Home Assistant is not secured using HTTPS. This causes browsers to block Home Assistant from accessing the microphone.",
         "not_supported_microphone_documentation": "Use the Home Assistant app or visit {documentation_link} to learn how to use a secure URL",
-        "not_supported_microphone_documentation_link": "the documentation"
+        "not_supported_microphone_documentation_link": "the documentation",
+        "unknown_error_load_assist": "Loading the assist pipeline failed",
+        "not_found_error_load_assist": "Cannot find the assist pipeline"
       },
       "generic": {
         "cancel": "Cancel",
@@ -1613,7 +1615,7 @@
         },
         "timer": {
           "duration": "Duration",
-          "restore": "Restore?"
+          "restore": "Restore state and time when Home Assistant starts"
         },
         "schedule": {
           "delete": "Delete item?",
@@ -5927,7 +5929,8 @@
             "edit_ui": "Edit in visual editor",
             "edit_yaml": "Edit in YAML",
             "saving_failed": "Saving failed",
-            "error_same_url": "You cannot save a view with the same URL as a different existing view."
+            "error_same_url": "You cannot save a view with the same URL as a different existing view.",
+            "move_to_dashboard": "Move to dashboard"
           },
           "edit_badges": {
             "view_no_badges": "Badges are not be supported by the current view type."
@@ -6019,6 +6022,14 @@
             "no_config": "No config found.",
             "no_views": "No views in this dashboard.",
             "strategy_type": "strategy"
+          },
+          "select_dashboard": {
+            "header": "Choose a dasboard",
+            "cannot_move_to_strategy": "The view cannot be moved because the selected dashboard is auto generated.",
+            "get_config_failed": "Failed to load selected dashboard config.",
+            "move_failed": "Failed to move the view to the new dashboard, please try again.",
+            "revert_failed": "Failed to move the view to the new dashboard, your dashboards are in an unknown state. Please reload the page and check if everything is in place.",
+            "success": "View moved successfully"
           },
           "section": {
             "add_badge": "Add badge",
@@ -6596,6 +6607,9 @@
               },
               "lock-open-door": {
                 "label": "Lock open door"
+              },
+              "media-player-volume-slider": {
+                "label": "Media player volume slider"
               },
               "vacuum-commands": {
                 "label": "Vacuum commands",

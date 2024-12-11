@@ -38,11 +38,11 @@ class HaConfigSystemNavigation extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property({ attribute: false, type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
-  @property({ attribute: false, type: Boolean }) public showAdvanced = false;
+  @property({ attribute: false }) public showAdvanced = false;
 
   @state() private _latestBackupDate?: string;
 
@@ -139,7 +139,7 @@ class HaConfigSystemNavigation extends LitElement {
               .hass=${this.hass}
               .narrow=${this.narrow}
               .pages=${pages}
-              hasSecondary
+              has-secondary
               .label=${this.hass.localize(
                 "ui.panel.config.dashboard.system.main"
               )}

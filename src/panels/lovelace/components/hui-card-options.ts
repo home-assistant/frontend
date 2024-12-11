@@ -56,7 +56,8 @@ export class HuiCardOptions extends LitElement {
 
   @queryAssignedNodes() private _assignedNodes?: NodeListOf<LovelaceCard>;
 
-  @property({ attribute: false, type: Boolean }) public hidePosition = false;
+  @property({ attribute: "hide-position", type: Boolean })
+  public hidePosition = false;
 
   @storage({
     key: "dashboardCardClipboard",

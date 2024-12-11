@@ -84,7 +84,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
-  @property({ attribute: false, type: Boolean }) public addOnTop = false;
+  @property({ attribute: "add-on-top", type: Boolean }) public addOnTop = false;
 
   @state() private _addMode?:
     | "area_id"

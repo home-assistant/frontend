@@ -55,7 +55,8 @@ export class HaChartBase extends LitElement {
 
   @property({ attribute: false, type: Number }) public paddingYAxis = 0;
 
-  @property({ attribute: false, type: Boolean }) public externalHidden = false;
+  @property({ attribute: "external-hidden", type: Boolean })
+  public externalHidden = false;
 
   @state() private _chartHeight?: number;
 
