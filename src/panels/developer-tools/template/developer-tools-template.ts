@@ -287,10 +287,10 @@ class HaPanelDevTemplate extends LitElement {
         .content.horizontal {
           --code-mirror-max-height: calc(
             100vh - var(--header-height) -
-            var(--paper-font-body1_-_line-height) * 3 -
-            1em * 2 - max(16px,env(safe-area-inset-top)) * 2 -
-            max(16px,env(safe-area-inset-bottom)) * 2 -
-            var(--ha-card-border-width,1px) * 2 - 179px
+              var(--paper-font-body1_-_line-height) * 3 -
+              1em * 2 - max(16px,env(safe-area-inset-top)) * 2 -
+              max(16px,env(safe-area-inset-bottom)) * 2 -
+              var(--ha-card-border-width,1px) * 2 - 179px
           );
         }
 
@@ -342,7 +342,9 @@ class HaPanelDevTemplate extends LitElement {
 
         .content.horizontal .render-pane .card-content {
           overflow: auto;
-          max-height: calc(var(--code-mirror-max-height) + 47px - var(--ha-card-border-radius, 12px));
+          max-height: calc(
+            var(--code-mirror-max-height) + 47px -
+              var(--ha-card-border-radius, 12px));
         }
 
         .content.horizontal .render-pane {
