@@ -772,8 +772,6 @@ class HaPanelHistory extends LitElement {
             flex-direction: column;
           }
           ha-date-range-picker {
-            margin-inline-end: 0;
-            margin-inline-start: initial;
             width: 100%;
             margin-bottom: 8px;
           }

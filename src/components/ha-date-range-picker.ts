@@ -220,7 +220,7 @@ export class HaDateRangePicker extends LitElement {
         <div slot="input" class="date-range-inputs" @click=${this._handleClick}>
           ${!this.minimal
             ? html`<ha-textarea
-                  mobile2multiline
+                  mobile-multiline
                   .value=${(isThisYear(this.startDate)
                     ? formatShortDateTime(
                         this.startDate,
@@ -245,7 +245,11 @@ export class HaDateRangePicker extends LitElement {
                         this.hass.config
                       ))}
                   .label=${this.hass.localize(
-                    "ui.components.selectors.selector.types.datetime"
+                    "ui.components.date-range-picker.start_date"
+                  ) +
+                  " - " +
+                  this.hass.localize(
+                    "ui.components.date-range-picker.end_date"
                   )}
                   .disabled=${this.disabled}
                   @click=${this._handleInputClick}

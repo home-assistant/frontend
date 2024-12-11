@@ -54,7 +54,7 @@ export class HaTextArea extends TextAreaBase {
         transform-origin: var(--float-start) top;
       }
       @media only screen and (min-width: 459px) {
-        :host([mobile2multiline]) .mdc-text-field__input {
+        :host([mobile-multiline]) .mdc-text-field__input {
           white-space: nowrap;
           max-height: 16px;
         }
