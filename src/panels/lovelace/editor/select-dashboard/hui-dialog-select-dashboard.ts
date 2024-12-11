@@ -74,7 +74,7 @@ export class HuiDialogSelectDashboard extends LitElement {
         <ha-dialog-header slot="headline">
           <ha-icon-button
             slot="navigationIcon"
-            .label=${this.hass.localize("ui.dialogs.generic.close") ?? "Close"}
+            .label=${this.hass.localize("ui.dialogs.generic.close")}
             .path=${mdiClose}
             @click=${this.closeDialog}
             .disabled=${this._saving}
