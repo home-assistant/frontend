@@ -13,7 +13,6 @@ import type { RegistryEntry } from "./registry";
 type EntityCategory = "config" | "diagnostic";
 
 export type EntityRegistryIcon = {
-  default: string;
   state?: Record<string, string>;
 };
 

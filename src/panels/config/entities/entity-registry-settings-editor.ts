@@ -1,6 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-formfield/mwc-formfield";
-import { mdiCog, mdiContentCopy } from "@mdi/js";
+import { mdiBrush, mdiContentCopy } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -374,12 +374,11 @@ export class EntityRegistrySettingsEditor extends LitElement {
         >
           ${useStateIcon
             ? html`
-                <ha-icon
+                <ha-state-icon
                   slot="fallback"
-                  .icon=${(this._icon as EntityRegistryIcon).state?.[
-                    stateObj.state
-                  ] || (this._icon as EntityRegistryIcon).default}
-                ></ha-icon>
+                  .hass=${this.hass}
+                  .stateObj=${stateObj}
+                ></ha-state-icon>
               `
             : !this._icon && !stateObj?.attributes.icon && stateObj
               ? html`
@@ -392,7 +391,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
               : nothing}
         </ha-icon-picker>
         <ha-icon-button
-          .path=${mdiCog}
+          .path=${mdiBrush}
           @click=${this._openEntityStateIcon}
         ></ha-icon-button>
       </div>

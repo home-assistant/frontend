@@ -1,18 +1,22 @@
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { until } from "lit/directives/until";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-button";
+import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
+import { getStates } from "../../../../common/entity/get_states";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-area-picker";
+import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-labels-picker";
 import "../../../../components/ha-textfield";
 import "../../../../components/ha-yaml-editor";
-import { EntityRegistryIcon } from "../../../../data/entity_registry";
-import { entryIcon } from "../../../../data/icons";
+import type { EntityRegistryIcon } from "../../../../data/entity_registry";
+import { getEntityIcon } from "../../../../data/icons";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import { HomeAssistant } from "../../../../types";
-import { EntityStateIconDialogParams } from "./show-dialog-entity-state-icon";
+import type { HomeAssistant } from "../../../../types";
+import type { EntityStateIconDialogParams } from "./show-dialog-entity-state-icon";
 
 @customElement("dialog-entity-state-icon")
 class DialogEntityStateIcon extends LitElement {
@@ -29,13 +33,7 @@ class DialogEntityStateIcon extends LitElement {
 
     const icon = this._params.icon;
 
-    this._config =
-      typeof icon === "object"
-        ? icon
-        : {
-            default:
-              icon || (await entryIcon(this.hass, this._params.entry)) || "",
-          };
+    this._config = typeof icon === "object" ? icon : {};
 
     await this.updateComplete;
   }
@@ -46,10 +44,20 @@ class DialogEntityStateIcon extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
+  private get _states() {
+    const entity = this.hass.states[this._params!.entry.entity_id];
+    const states = getStates(entity);
+    return states.filter((s) => !["unknown", "unavailable"].includes(s));
+  }
+
   protected render() {
-    if (!this._params) {
+    if (!this._params || !this._config) {
       return nothing;
     }
+
+    const stateObj = this.hass.states[this._params.entry.entity_id];
+
+    const domain = computeStateDomain(stateObj);
 
     return html`
       <ha-dialog
@@ -57,10 +65,26 @@ class DialogEntityStateIcon extends LitElement {
         @closed=${this.closeDialog}
         .heading=${"Entity state icon"}
       >
-        <ha-yaml-editor
-          .defaultValue=${this._config}
-          @value-changed=${this._dataChanged}
-        ></ha-yaml-editor>
+        ${this._states.map((s) => {
+          const value = this._config?.state?.[s];
+
+          const placeholder = until(
+            getEntityIcon(this.hass, domain, stateObj, s, this._params!.entry)
+          );
+
+          return html`
+            <div class="row">
+              <p>${this.hass.formatEntityState(stateObj, s)}</p>
+              <ha-icon-picker
+                .hass=${this.hass}
+                .id=${s}
+                .value=${value}
+                @value-changed=${this._iconChanged}
+                .placeholder=${placeholder}
+              ></ha-icon-picker>
+            </div>
+          `;
+        })}
 
         <ha-button
           slot="secondaryAction"
@@ -80,8 +104,23 @@ class DialogEntityStateIcon extends LitElement {
     `;
   }
 
-  private _dataChanged(ev): void {
-    this._config = ev.detail.value;
+  private _iconChanged(ev): void {
+    const value = ev.detail.value;
+    const id = ev.currentTarget.id;
+
+    const newConfig = {
+      ...this._config!,
+      state: {
+        ...this._config!.state,
+        [id]: value,
+      },
+    };
+
+    if (!value) {
+      delete newConfig.state[id];
+    }
+
+    this._config = newConfig;
   }
 
   private async _updateEntry(): Promise<void> {
@@ -102,7 +141,25 @@ class DialogEntityStateIcon extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [haStyle, haStyleDialog, css``];
+    return [
+      haStyle,
+      haStyleDialog,
+      css`
+        .row {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+          width: 100%;
+        }
+        .row p {
+          width: 100px;
+        }
+        .row ha-icon-picker {
+          flex: 1;
+        }
+      `,
+    ];
   }
 }
 
