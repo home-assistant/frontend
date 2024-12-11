@@ -174,6 +174,9 @@ export const closeLastDialog = async () => {
   }
 };
 
+export const closeAllDialogs = () =>
+  Promise.all(OPEN_DIALOG_STACK.map((state) => closeDialog(state.dialogTag)));
+
 const _handleClosed = async (ev: HASSDomEvent<DialogClosedParams>) => {
   // If not closed by navigating back, remove the open state from history
   const dialogIndex = OPEN_DIALOG_STACK.findIndex(

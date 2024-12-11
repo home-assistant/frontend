@@ -1,3 +1,4 @@
+import { closeAllDialogs } from "../dialogs/make-dialog-manager";
 import { fireEvent } from "./dom/fire_event";
 import { mainWindow } from "./dom/get_main_window";
 
@@ -13,35 +14,40 @@ export interface NavigateOptions {
   data?: any;
 }
 
-export const navigate = (path: string, options?: NavigateOptions) => {
-  const replace = options?.replace || false;
+export const navigate = async (path: string, options?: NavigateOptions) => {
+  const { history } = mainWindow;
+  let replace = options?.replace || false;
 
-  setTimeout(() => {
-    if (__DEMO__) {
-      if (replace) {
-        mainWindow.history.replaceState(
-          mainWindow.history.state?.root
-            ? { root: true }
-            : (options?.data ?? null),
-          "",
-          `${mainWindow.location.pathname}#${path}`
-        );
-      } else {
-        mainWindow.location.hash = path;
-      }
-    } else if (replace) {
-      mainWindow.history.replaceState(
-        mainWindow.history.state?.root
-          ? { root: true }
-          : (options?.data ?? null),
+  if (history.state?.dialog) {
+    const closed = await closeAllDialogs();
+    if (!closed) {
+      // block navigation if dialogs refuse to close
+      return;
+    }
+    // if there were open dialogs, we discard the current state
+    replace = true;
+  }
+
+  if (__DEMO__) {
+    if (replace) {
+      history.replaceState(
+        history.state?.root ? { root: true } : (options?.data ?? null),
         "",
-        path
+        `${mainWindow.location.pathname}#${path}`
       );
     } else {
-      mainWindow.history.pushState(options?.data ?? null, "", path);
+      mainWindow.location.hash = path;
     }
-    fireEvent(mainWindow, "location-changed", {
-      replace,
-    });
+  } else if (replace) {
+    history.replaceState(
+      history.state?.root ? { root: true } : (options?.data ?? null),
+      "",
+      path
+    );
+  } else {
+    history.pushState(options?.data ?? null, "", path);
+  }
+  fireEvent(mainWindow, "location-changed", {
+    replace,
   });
 };
