@@ -21,8 +21,9 @@ export const navigate = async (path: string, options?: NavigateOptions) => {
   if (history.state?.dialog) {
     const closed = await closeAllDialogs();
     if (!closed) {
-      // block navigation if dialogs refuse to close
-      return;
+      // eslint-disable-next-line no-console
+      console.warn("Navigation blocked, because dialog refused to close");
+      return false;
     }
     // if there were open dialogs, we discard the current state
     replace = true;
@@ -50,4 +51,5 @@ export const navigate = async (path: string, options?: NavigateOptions) => {
   fireEvent(mainWindow, "location-changed", {
     replace,
   });
+  return true;
 };
