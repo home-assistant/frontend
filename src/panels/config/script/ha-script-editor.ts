@@ -122,7 +122,7 @@ export class HaScriptEditor extends SubscribeMixin(
 
   @state() private _saving = false;
 
-  private _entityRegistryUpdate!: EntityRegistryUpdate;
+  private _entityRegistryUpdate?: EntityRegistryUpdate;
 
   protected render(): TemplateResult | typeof nothing {
     if (!this._config) {
@@ -419,7 +419,6 @@ export class HaScriptEditor extends SubscribeMixin(
           slot="fab"
           class=${classMap({
             dirty: !this._readOnly && this._dirty,
-            saving: this._saving,
           })}
           .label=${this.hass.localize(
             "ui.panel.config.script.editor.save_script"
@@ -882,8 +881,8 @@ export class HaScriptEditor extends SubscribeMixin(
       if (this._entityRegistryUpdate !== undefined) {
         // wait for new script to appear in entity registry
         if (!this.scriptId) {
-          await new Promise<void>((resolve, _reject) => {
-            setTimeout(resolve, 3000);
+          await new Promise((resolve, _reject) => {
+            setTimeout(resolve, 1000);
           });
         }
 
@@ -892,9 +891,9 @@ export class HaScriptEditor extends SubscribeMixin(
           : `script.${id}`;
         await updateEntityRegistryEntry(this.hass, entityId, {
           categories: {
-            script: this._entityRegistryUpdate.category,
+            script: this._entityRegistryUpdate.category || "",
           },
-          labels: this._entityRegistryUpdate.labels,
+          labels: this._entityRegistryUpdate.labels || [],
         });
       }
 
@@ -977,9 +976,6 @@ export class HaScriptEditor extends SubscribeMixin(
         }
         ha-fab.dirty {
           bottom: 0;
-        }
-        ha-fab.saving {
-          opacity: var(--light-disabled-opacity);
         }
         li[role="separator"] {
           border-bottom-color: var(--divider-color);

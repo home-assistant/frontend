@@ -6,7 +6,7 @@ export const loadAutomationRenameDialog = () =>
   import("./dialog-automation-rename");
 
 interface BaseRenameDialogParams {
-  entityRegistryUpdate: EntityRegistryUpdate;
+  entityRegistryUpdate?: EntityRegistryUpdate;
   onClose: () => void;
 }
 

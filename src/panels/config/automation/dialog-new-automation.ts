@@ -205,24 +205,24 @@ class DialogNewAutomation extends LitElement implements HassDialog {
       return;
     }
     const path = (ev.currentTarget! as any).path;
-    this.closeDialog();
     if (this._mode === "script") {
       showScriptEditor({ use_blueprint: { path } });
     } else {
       showAutomationEditor({ use_blueprint: { path } });
     }
+    this.closeDialog();
   }
 
   private async _blank(ev) {
     if (!shouldHandleRequestSelectedEvent(ev)) {
       return;
     }
-    this.closeDialog();
     if (this._mode === "script") {
       showScriptEditor();
     } else {
       showAutomationEditor();
     }
+    this.closeDialog();
   }
 
   static get styles(): CSSResultGroup {

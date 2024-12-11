@@ -144,6 +144,8 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
   })
   private _registryEntry?: EntityRegistryEntry;
 
+  @state() private _saving = false;
+
   private _configSubscriptions: Record<
     string,
     (config?: AutomationConfig) => void
@@ -151,16 +153,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
   private _configSubscriptionsId = 1;
 
-  private _entityRegistryUpdate!: EntityRegistryUpdate;
-
-  @state() private _saving = false;
-
-  private _getAutomationEntity = memoizeOne(
-    (automations: EntityRegistryEntry[], entity_id: string | undefined) =>
-      automations.find(
-        (entity: EntityRegistryEntry) => entity.entity_id === entity_id
-      )
-  );
+  private _entityRegistryUpdate?: EntityRegistryUpdate;
 
   protected render(): TemplateResult | typeof nothing {
     if (!this._config) {
@@ -476,7 +469,6 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           slot="fab"
           class=${classMap({
             dirty: !this._readOnly && this._dirty,
-            saving: this._saving,
           })}
           .label=${this.hass.localize("ui.panel.config.automation.editor.save")}
           .disabled=${this._saving}
@@ -554,10 +546,10 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       );
     }
 
-    if (changedProps.has("entityRegistry")) {
-      const entry = this._getAutomationEntity(
-        this.entityRegistry,
-        this._entityId
+    if (changedProps.has("entityRegistry") && this.automationId) {
+      const entry = this.entityRegistry.find(
+        (ent) =>
+          ent.platform === "automation" && ent.unique_id === this.automationId
       );
       this._entityRegistryUpdate = {
         category: entry?.categories?.automation || "",
@@ -610,8 +602,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       this._config = normalizeAutomationConfig(config);
       this._checkValidation();
     } catch (err: any) {
-      const entityRegistry = await fetchEntityRegistry(this.hass.connection);
-      const entity = entityRegistry.find(
+      const entity = this.entityRegistry.find(
         (ent) =>
           ent.platform === "automation" && ent.unique_id === this.automationId
       );
@@ -927,32 +918,25 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       if (this._entityRegistryUpdate !== undefined) {
         let entityId = this._entityId;
 
-        // no entity id check if we have it in the automations list
+        // wait for automation to appear in entity registry when creating a new automation
         if (!entityId) {
-          let automation = this.automations.find(
-            (entity: AutomationEntity) => entity.attributes.id === id
+          await new Promise<void>((resolve) => {
+            setTimeout(resolve, 1000);
+          });
+
+          const automation = this.entityRegistry.find(
+            (entity: EntityRegistryEntry) => entity.unique_id === id
           );
           entityId = automation?.entity_id;
 
-          // wait for new automation to appear in entity registry
-          if (!entityId) {
-            await new Promise<void>((resolve, _reject) => {
-              setTimeout(resolve, 3000);
+          if (entityId) {
+            await updateEntityRegistryEntry(this.hass, entityId, {
+              categories: {
+                automation: this._entityRegistryUpdate.category || "",
+              },
+              labels: this._entityRegistryUpdate.labels || [],
             });
-            automation = this.automations.find(
-              (entity: AutomationEntity) => entity.attributes.id === id
-            );
-            entityId = automation?.entity_id;
           }
-        }
-
-        if (entityId) {
-          await updateEntityRegistryEntry(this.hass, entityId, {
-            categories: {
-              automation: this._entityRegistryUpdate.category,
-            },
-            labels: this._entityRegistryUpdate.labels,
-          });
         }
       }
 
@@ -1039,9 +1023,6 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
         }
         ha-fab.dirty {
           bottom: 0;
-        }
-        ha-fab.saving {
-          opacity: var(--light-disabled-opacity);
         }
         li[role="separator"] {
           border-bottom-color: var(--divider-color);

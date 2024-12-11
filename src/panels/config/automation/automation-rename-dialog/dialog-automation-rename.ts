@@ -57,7 +57,10 @@ class DialogAutomationRename extends LitElement implements HassDialog {
       );
     this._newDescription = params.config.description || "";
 
-    this._entryUpdates = params.entityRegistryUpdate;
+    this._entryUpdates = params.entityRegistryUpdate || {
+      labels: [],
+      category: "",
+    };
 
     this._visibleOptionals = [
       this._newDescription! ? "description" : "",
