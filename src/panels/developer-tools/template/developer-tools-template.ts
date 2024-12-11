@@ -186,8 +186,8 @@ class HaPanelDevTemplate extends LitElement {
                       [resultType]: resultType,
                     })}"
                   >${type === "object"
-                    ? JSON.stringify(this._templateResult.result, null, 2)
-                    : this._templateResult.result}</pre
+                      ? JSON.stringify(this._templateResult.result, null, 2)
+                      : this._templateResult.result}</pre
                   >
                   <p>
                     ${this.hass.localize(
