@@ -49,9 +49,9 @@ export class HUIViewBackground extends LitElement {
     background?: string | LovelaceViewBackgroundConfig
   ) {
     if (typeof background === "object" && background.image) {
-      let size = background.size ?? "auto";
-      let alignment = background.alignment ?? "center";
-      let repeat = background.repeat ?? "repeat";
+      const size = background.size ?? "auto";
+      const alignment = background.alignment ?? "center";
+      const repeat = background.repeat ?? "repeat";
       return `${alignment} / ${size} ${repeat} url('${background.image}')`;
     }
     if (typeof background === "string") {
