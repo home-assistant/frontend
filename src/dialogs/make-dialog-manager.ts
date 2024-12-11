@@ -171,7 +171,20 @@ export const closeLastDialog = async () => {
         ""
       );
     }
+    return closed;
   }
+  return true;
+};
+
+export const closeAllDialogs = async () => {
+  while (OPEN_DIALOG_STACK.length) {
+    // eslint-disable-next-line no-await-in-loop
+    const closed = await closeLastDialog();
+    if (!closed) {
+      return false;
+    }
+  }
+  return true;
 };
 
 const _handleClosed = async (ev: HASSDomEvent<DialogClosedParams>) => {
