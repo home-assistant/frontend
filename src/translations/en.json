@@ -828,7 +828,8 @@
         "error": "Unable to load history",
         "duration": "Duration",
         "source_history": "Source: History",
-        "source_stats": "Source: Long term statistics"
+        "source_stats": "Source: Long term statistics",
+        "zoom_hint": "Use ctrl + scroll to zoom in/out"
       },
       "map": {
         "error": "Unable to load map"

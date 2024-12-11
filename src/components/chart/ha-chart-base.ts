@@ -64,6 +64,8 @@ export class HaChartBase extends LitElement {
 
   @state() private _hiddenDatasets: Set<number> = new Set();
 
+  @state() private _showZoomHint = false;
+
   private _paddingUpdateCount = 0;
 
   private _paddingUpdateLock = false;
@@ -251,7 +253,7 @@ export class HaChartBase extends LitElement {
         })}
       >
         <div
-          class="chartContainer"
+          class="chart-container"
           style=${styleMap({
             height: `${
               this.height ?? this._chartHeight ?? this.clientWidth / 2
@@ -261,8 +263,18 @@ export class HaChartBase extends LitElement {
             "padding-inline-start": `${this._paddingYAxisInternal}px`,
             "padding-inline-end": 0,
           })}
+          @wheel=${this._handleChartScroll}
         >
           <canvas></canvas>
+          <div
+            class="zoom-hint ${classMap({
+              visible: this._showZoomHint,
+            })}"
+          >
+            <div>
+              ${this.hass.localize("ui.components.history_charts.zoom_hint")}
+            </div>
+          </div>
           ${this._tooltip
             ? html`<div
                 class="chartTooltip ${classMap({
@@ -414,6 +426,15 @@ export class HaChartBase extends LitElement {
     ];
   }
 
+  private _handleChartScroll(ev: MouseEvent) {
+    if (!ev.ctrlKey && !this._showZoomHint) {
+      this._showZoomHint = true;
+      setTimeout(() => {
+        this._showZoomHint = false;
+      }, 1000);
+    }
+  }
+
   private _legendClick(ev) {
     if (!this.chart) {
       return;
@@ -481,6 +502,9 @@ export class HaChartBase extends LitElement {
         overflow: hidden;
         height: 0;
         transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .chart-container {
+        position: relative;
       }
       canvas {
         max-height: var(--chart-max-height, 400px);
@@ -570,6 +594,31 @@ export class HaChartBase extends LitElement {
         text-align: center;
         font-weight: 300;
         word-break: break-all;
+      }
+      .zoom-hint {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 500ms cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
+      }
+      .zoom-hint.visible {
+        opacity: 1;
+      }
+      .zoom-hint > div {
+        color: white;
+        font-size: 1.5em;
+        font-weight: 500;
+        padding: 8px;
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.3);
+        box-shadow: 0 0 32px 32px rgba(0, 0, 0, 0.3);
       }
     `;
   }
