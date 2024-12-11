@@ -1,8 +1,12 @@
-import "@material/mwc-button";
 import type { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
-import { mdiClose, mdiDotsVertical, mdiPlaylistEdit } from "@mdi/js";
+import {
+  mdiClose,
+  mdiDotsVertical,
+  mdiFileMoveOutline,
+  mdiPlaylistEdit,
+} from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -31,12 +35,25 @@ import "../../components/hui-entity-editor";
 import { SECTIONS_VIEW_LAYOUT } from "../../views/const";
 import { generateDefaultSection } from "../../views/default-section";
 import { getViewType } from "../../views/get-view-type";
-import { addView, deleteView, replaceView } from "../config-util";
+import {
+  addView,
+  deleteView,
+  moveViewToDashboard,
+  replaceView,
+} from "../config-util";
 import type { ViewEditEvent, ViewVisibilityChangeEvent } from "../types";
 import "./hui-view-background-editor";
 import "./hui-view-editor";
 import "./hui-view-visibility-editor";
 import type { EditViewDialogParams } from "./show-edit-view-dialog";
+import { showSelectDashboardDialog } from "../select-dashboard/show-select-dashboard-dialog";
+import {
+  fetchConfig,
+  isStrategyDashboard,
+  saveConfig,
+  type LovelaceConfig,
+} from "../../../../data/lovelace/config/types";
+import type { Lovelace } from "../../types";
 
 const TABS = ["tab-settings", "tab-background", "tab-visibility"] as const;
 
@@ -45,6 +62,8 @@ export class HuiDialogEditView extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _params?: EditViewDialogParams;
+
+  @state() private _lovelace?: Lovelace;
 
   @state() private _config?: LovelaceViewConfig;
 
@@ -83,7 +102,10 @@ export class HuiDialogEditView extends LitElement {
       this._dirty = false;
       return;
     }
-    const view = this._params.lovelace!.config.views[this._params.viewIndex];
+
+    this._lovelace = this._params.lovelace;
+
+    const view = this._lovelace.config.views[this._params.viewIndex];
     // Todo : add better support for strategy views
     if (isStrategyView(view)) {
       const { strategy, ...viewConfig } = view;
@@ -212,6 +234,15 @@ export class HuiDialogEditView extends LitElement {
                 .path=${mdiPlaylistEdit}
               ></ha-svg-icon>
             </ha-list-item>
+            <ha-list-item graphic="icon">
+              ${this.hass!.localize(
+                "ui.panel.lovelace.editor.edit_view.move_to_dashboard"
+              )}
+              <ha-svg-icon
+                slot="graphic"
+                .path=${mdiFileMoveOutline}
+              ></ha-svg-icon>
+            </ha-list-item>
           </ha-button-menu>
           ${convertToSection
             ? html`
@@ -300,8 +331,101 @@ export class HuiDialogEditView extends LitElement {
       case 0:
         this._yamlMode = !this._yamlMode;
         break;
+      case 1:
+        this._openSelectDashboard();
+        break;
     }
   }
+
+  private _openSelectDashboard(): void {
+    showSelectDashboardDialog(this, {
+      lovelaceConfig: this._lovelace!.config,
+      dashboardSelectedCallback: this._moveViewToDashboard,
+      urlPath: this._lovelace!.urlPath,
+    });
+  }
+
+  private _moveViewToDashboard = async (urlPath: string | null) => {
+    let errorMessage;
+    let toConfig;
+    let undoAction;
+
+    try {
+      toConfig = (await fetchConfig(
+        this.hass!.connection,
+        urlPath,
+        false
+      )) as LovelaceConfig;
+    } catch (err: any) {
+      errorMessage = this.hass!.localize(
+        "ui.panel.lovelace.editor.select_dashboard.get_config_failed"
+      );
+      // eslint-disable-next-line no-console
+      console.error(err);
+    }
+
+    if (toConfig && isStrategyDashboard(toConfig)) {
+      errorMessage = this.hass!.localize(
+        "ui.panel.lovelace.editor.select_dashboard.cannot_move_to_strategy"
+      );
+    }
+
+    if (!errorMessage) {
+      const [newFromConfig, newToConfig] = moveViewToDashboard(
+        this.hass!,
+        this._lovelace!.config,
+        toConfig,
+        this._params!.viewIndex!
+      );
+
+      const oldFromConfig = this._lovelace!.config;
+      const oldToConfig = toConfig;
+
+      undoAction = async () => {
+        await saveConfig(this.hass!, urlPath, oldToConfig);
+        await this._lovelace!.saveConfig(oldFromConfig);
+      };
+
+      try {
+        await this._lovelace!.saveConfig(newFromConfig);
+        await saveConfig(this.hass!, urlPath, newToConfig);
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error(err);
+        try {
+          await undoAction();
+          errorMessage = this.hass!.localize(
+            "ui.panel.lovelace.editor.select_dashboard.move_failed"
+          );
+        } catch (revertError) {
+          // eslint-disable-next-line no-console
+          console.error(revertError);
+          errorMessage = this.hass!.localize(
+            "ui.panel.lovelace.editor.select_dashboard.revert_failed"
+          );
+        }
+      }
+    }
+
+    if (errorMessage) {
+      showAlertDialog(this, {
+        text: errorMessage,
+      });
+    } else {
+      this._lovelace!.showToast({
+        message: this.hass!.localize(
+          "ui.panel.lovelace.editor.select_dashboard.success"
+        ),
+        duration: 4000,
+        action: {
+          action: undoAction,
+          text: this.hass!.localize("ui.common.undo"),
+        },
+      });
+      this.closeDialog();
+      navigate(`/${window.location.pathname.split("/")[1]}`);
+    }
+  };
 
   private async _convertToSection() {
     if (!this._params || !this._config) {
