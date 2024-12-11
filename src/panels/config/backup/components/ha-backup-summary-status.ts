@@ -24,7 +24,7 @@ export class HaBackupSummaryProgress extends LitElement {
       // eslint-disable-next-line arrow-body-style
       .filter((backup) => {
         // TODO : only show backups with default flag
-        return backup;
+        return backup.with_strategy_settings;
       })
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
