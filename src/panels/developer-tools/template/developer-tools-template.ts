@@ -343,8 +343,9 @@ class HaPanelDevTemplate extends LitElement {
         .content.horizontal .render-pane .card-content {
           overflow: auto;
           max-height: calc(
-            var(--code-mirror-max-height) + 47px -
-              var(--ha-card-border-radius, 12px));
+            var(--code-mirror-max-height) +
+              47px - var(--ha-card-border-radius, 12px)
+          );
         }
 
         .content.horizontal .render-pane {
