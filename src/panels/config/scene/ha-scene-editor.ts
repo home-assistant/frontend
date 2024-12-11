@@ -1226,7 +1226,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     });
   }
 
-  protected isDirty() {
+  protected get isDirty() {
     return this._dirty;
   }
 
