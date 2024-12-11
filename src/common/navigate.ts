@@ -16,28 +16,32 @@ export interface NavigateOptions {
 export const navigate = (path: string, options?: NavigateOptions) => {
   const replace = options?.replace || false;
 
-  if (__DEMO__) {
-    if (replace) {
+  setTimeout(() => {
+    if (__DEMO__) {
+      if (replace) {
+        mainWindow.history.replaceState(
+          mainWindow.history.state?.root
+            ? { root: true }
+            : (options?.data ?? null),
+          "",
+          `${mainWindow.location.pathname}#${path}`
+        );
+      } else {
+        mainWindow.location.hash = path;
+      }
+    } else if (replace) {
       mainWindow.history.replaceState(
         mainWindow.history.state?.root
           ? { root: true }
           : (options?.data ?? null),
         "",
-        `${mainWindow.location.pathname}#${path}`
+        path
       );
     } else {
-      mainWindow.location.hash = path;
+      mainWindow.history.pushState(options?.data ?? null, "", path);
     }
-  } else if (replace) {
-    mainWindow.history.replaceState(
-      mainWindow.history.state?.root ? { root: true } : (options?.data ?? null),
-      "",
-      path
-    );
-  } else {
-    mainWindow.history.pushState(options?.data ?? null, "", path);
-  }
-  fireEvent(mainWindow, "location-changed", {
-    replace,
+    fireEvent(mainWindow, "location-changed", {
+      replace,
+    });
   });
 };
