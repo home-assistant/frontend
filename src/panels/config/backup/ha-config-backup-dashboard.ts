@@ -40,7 +40,7 @@ import {
   fetchBackupConfig,
   fetchBackupInfo,
   generateBackup,
-  generateBackupWithStoredSettings,
+  generateBackupWithStrategySettings,
   getBackupDownloadUrl,
   getPreferredAgentForDownload,
   isLocalAgent,
@@ -472,8 +472,8 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
       await this._fetchBackupInfo();
       return;
     }
-    if (type === "default") {
-      await generateBackupWithStoredSettings(this.hass);
+    if (type === "strategy") {
+      await generateBackupWithStrategySettings(this.hass);
       await this._fetchBackupInfo();
     }
   }
