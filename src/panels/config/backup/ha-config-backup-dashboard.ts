@@ -247,7 +247,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
                 >
                   <ha-button
                     slot="action"
-                    @click=${this._configureDefaultBackup}
+                    @click=${this._configureBackupStrategy}
                   >
                     Configure
                   </ha-button>
@@ -262,7 +262,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
                   >
                     <ha-button
                       slot="action"
-                      @click=${this._configureDefaultBackup}
+                      @click=${this._configureBackupStrategy}
                     >
                       Configure
                     </ha-button>
@@ -278,7 +278,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
                     >
                       <ha-button
                         slot="action"
-                        @click=${this._onboardDefaultBackup}
+                        @click=${this._setupBackupStrategy}
                       >
                         Setup backup strategy
                       </ha-button>
@@ -292,7 +292,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
                     >
                       <ha-button
                         slot="action"
-                        @click=${this._configureDefaultBackup}
+                        @click=${this._configureBackupStrategy}
                       >
                         Configure
                       </ha-button>
@@ -547,11 +547,11 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
     this._dataTable.clearSelection();
   }
 
-  private _configureDefaultBackup() {
-    navigate("/config/backup/default-config");
+  private _configureBackupStrategy() {
+    navigate("/config/backup/strategy");
   }
 
-  private async _onboardDefaultBackup() {
+  private async _setupBackupStrategy() {
     const success = await showBackupOnboardingDialog(this, {});
     if (!success) {
       return;

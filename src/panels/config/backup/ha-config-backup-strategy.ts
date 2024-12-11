@@ -32,15 +32,18 @@ const INITIAL_BACKUP_CONFIG: BackupConfig = {
     name: null,
   },
   retention: {
-    days: null,
     copies: 3,
+    days: null,
   },
-  schedule: { state: BackupScheduleState.NEVER },
-  last_automatic_backup: null,
+  schedule: {
+    state: BackupScheduleState.DAILY,
+  },
+  last_attempted_strategy_backup: null,
+  last_completed_strategy_backup: null,
 };
 
-@customElement("ha-config-backup-default-config")
-class HaConfigBackupDefaultConfig extends LitElement {
+@customElement("ha-config-backup-strategy")
+class HaConfigBackupStrategy extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -242,6 +245,6 @@ class HaConfigBackupDefaultConfig extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-config-backup-default-config": HaConfigBackupDefaultConfig;
+    "ha-config-backup-strategy": HaConfigBackupStrategy;
   }
 }

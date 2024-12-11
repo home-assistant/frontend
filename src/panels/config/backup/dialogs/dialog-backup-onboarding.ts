@@ -49,12 +49,12 @@ type Step = (typeof STEPS)[number];
 const INITIAL_CONFIG: BackupConfig = {
   create_backup: {
     agent_ids: [],
-    include_addons: null,
-    include_all_addons: true,
+    include_folders: [],
     include_database: true,
-    include_folders: null,
-    name: null,
+    include_addons: [],
+    include_all_addons: true,
     password: null,
+    name: null,
   },
   retention: {
     copies: 3,
@@ -63,7 +63,8 @@ const INITIAL_CONFIG: BackupConfig = {
   schedule: {
     state: BackupScheduleState.DAILY,
   },
-  last_automatic_backup: null,
+  last_attempted_strategy_backup: null,
+  last_completed_strategy_backup: null,
 };
 
 @customElement("ha-dialog-backup-onboarding")

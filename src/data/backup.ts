@@ -15,8 +15,8 @@ export const enum BackupScheduleState {
 }
 
 export interface BackupConfig {
-  last_attempted_strategy_backup: string;
-  last_completed_strategy_backup: string;
+  last_attempted_strategy_backup: string | null;
+  last_completed_strategy_backup: string | null;
   create_backup: {
     agent_ids: string[];
     include_addons: string[] | null;
@@ -30,7 +30,6 @@ export interface BackupConfig {
     copies?: number | null;
     days?: number | null;
   };
-  last_automatic_backup: string | null;
   schedule: {
     state: BackupScheduleState;
   };
