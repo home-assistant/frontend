@@ -173,7 +173,7 @@ class HaCounterForm extends LitElement {
     ev.stopPropagation();
     const target = ev.target as any;
     const configValue = target.configValue;
-    let value = ev.detail?.value || target.value;
+    let value = ev.detail?.value ?? target.value;
 
     if (target.type === "number") {
       if (target.value !== "") {
@@ -183,8 +183,6 @@ class HaCounterForm extends LitElement {
       }
     } else if (target.localName === "ha-switch") {
       value = (ev.target as HaSwitch).checked;
-    } else if (target.localName === "ha-selector-boolean") {
-      value = ev.detail.value;
     }
 
     if (this[`_${configValue}`] === value) {
