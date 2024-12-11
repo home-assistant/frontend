@@ -69,7 +69,7 @@ class HaConfigBackupDefaultConfig extends LitElement {
         back-path="/config/backup"
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .header=${"Default backup"}
+        .header=${"Backup strategy"}
       >
         <div class="content">
           <ha-card>
