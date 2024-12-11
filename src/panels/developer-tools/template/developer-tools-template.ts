@@ -327,8 +327,6 @@ class HaPanelDevTemplate extends LitElement {
           margin-top: 0;
           margin-bottom: 0;
           direction: ltr;
-          overflow: auto;
-          max-height: calc(var(--code-mirror-max-height) - 16px);
         }
 
         p,
@@ -337,8 +335,13 @@ class HaPanelDevTemplate extends LitElement {
         }
 
         .content.horizontal .render-pane .card-content {
-          display: flex;
-          flex-direction: column;
+          overflow: auto;
+          max-height: calc(var(--code-mirror-max-height) + 35px);
+        }
+
+        .content.horizontal .render-pane {
+          overflow: hidden;
+          padding-bottom: var(--ha-card-border-radius, 12px);
         }
 
         .all_listeners {
