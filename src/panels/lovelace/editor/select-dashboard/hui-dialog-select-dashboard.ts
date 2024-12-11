@@ -140,9 +140,7 @@ export class HuiDialogSelectDashboard extends LitElement {
         mode: this.hass.panels.lovelace?.config?.mode,
       },
       ...(this._params!.dashboards || (await fetchDashboards(this.hass))),
-    ].filter(
-      (dashboard) => this.hass.user!.is_admin || !dashboard.require_admin
-    );
+    ];
 
     const currentPath = this._fromUrlPath || this.hass.defaultPanel;
     for (const dashboard of this._dashboards!) {
