@@ -19,7 +19,6 @@ export const navigate = async (path: string, options?: NavigateOptions) =>
     // need to wait for history state to be updated in case a dialog was closed before calling navigate
     setTimeout(async () => {
       const { history } = mainWindow;
-      let replace = options?.replace || false;
       if (history.state?.dialog) {
         const closed = await closeAllDialogs();
         if (!closed) {
@@ -28,9 +27,14 @@ export const navigate = async (path: string, options?: NavigateOptions) =>
           resolve(false);
           return;
         }
-        // if there were open dialogs, we discard the current state
-        replace = true;
+
+        // wait for history state to be updated
+        await new Promise((r) => {
+          setTimeout(r, 0);
+        });
       }
+
+      const replace = options?.replace || false;
 
       if (__DEMO__) {
         if (replace) {
