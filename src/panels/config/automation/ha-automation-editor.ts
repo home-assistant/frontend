@@ -850,7 +850,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
     };
   }
 
-  protected isDirty() {
+  protected get isDirty() {
     return this._dirty;
   }
 

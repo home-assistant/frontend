@@ -24,16 +24,9 @@ import "@polymer/paper-listbox/paper-listbox";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResult, CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import {
-  customElement,
-  eventOptions,
-  property,
-  query,
-  state,
-} from "lit/decorators";
+import { customElement, eventOptions, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import type { PaperListboxElement } from "@polymer/paper-listbox";
 import { storage } from "../common/decorators/storage";
 import { fireEvent } from "../common/dom/fire_event";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
@@ -55,6 +48,7 @@ import "./ha-menu-button";
 import "./ha-sortable";
 import "./ha-svg-icon";
 import "./user/ha-user-badge";
+import { preventDefault } from "../common/dom/prevent_default";
 
 const SHOW_AFTER_SPACER = ["config", "developer-tools"];
 
@@ -203,8 +197,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   @state() private _issuesCount = 0;
 
-  @query("paper-listbox", true) private _sidebar!: PaperListboxElement;
-
   private _mouseLeaveTimeout?: number;
 
   private _tooltipHideTimeout?: number;
@@ -296,10 +288,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this._subscribePersistentNotifications();
-
-    window.addEventListener("hass-reset-sidebar", (ev) => {
-      this._sidebar.selected = ev.detail;
-    });
   }
 
   private _subscribePersistentNotifications(): void {
@@ -417,6 +405,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         @focusout=${this._listboxFocusOut}
         @scroll=${this._listboxScroll}
         @keydown=${this._listboxKeydown}
+        @iron-activate=${preventDefault}
       >
         ${this.editMode
           ? this._renderPanelsEdit(beforeSpacer)
@@ -1136,9 +1125,5 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-sidebar": HaSidebar;
-  }
-
-  interface HASSDomEvents {
-    "hass-reset-sidebar": string;
   }
 }
