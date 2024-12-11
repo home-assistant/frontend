@@ -1215,8 +1215,10 @@ export class HaSceneEditor extends SubscribeMixin(
     }
   }
 
-  protected handleKeyboardSave() {
-    this._saveScene();
+  protected supportedShortcuts(): SupportedShortcuts {
+    return {
+      s: () => this._saveScene(),
+    };
   }
 
   private get _sceneAreaIdWithUpdates(): string | undefined | null {
