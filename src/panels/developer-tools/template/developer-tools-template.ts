@@ -185,7 +185,8 @@ class HaPanelDevTemplate extends LitElement {
                     class="rendered ${classMap({
                       [resultType]: resultType,
                     })}"
-                  >${type === "object"
+                  >
+${type === "object"
                       ? JSON.stringify(this._templateResult.result, null, 2)
                       : this._templateResult.result}</pre
                   >
