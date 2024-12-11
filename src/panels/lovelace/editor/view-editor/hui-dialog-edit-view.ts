@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import type { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
@@ -235,7 +234,7 @@ export class HuiDialogEditView extends LitElement {
                 .path=${mdiPlaylistEdit}
               ></ha-svg-icon>
             </ha-list-item>
-            <mwc-list-item graphic="icon">
+            <ha-list-item graphic="icon">
               ${this.hass!.localize(
                 "ui.panel.lovelace.editor.edit_view.move_to_dashboard"
               )}
@@ -243,7 +242,7 @@ export class HuiDialogEditView extends LitElement {
                 slot="graphic"
                 .path=${mdiFileMoveOutline}
               ></ha-svg-icon>
-            </mwc-list-item>
+            </ha-list-item>
           </ha-button-menu>
           ${convertToSection
             ? html`
