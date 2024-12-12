@@ -1,5 +1,6 @@
 import "@material/mwc-button";
 import {
+  mdiCog,
   mdiContentDuplicate,
   mdiContentSave,
   mdiDebugStepOver,
@@ -13,6 +14,7 @@ import {
   mdiRenameBox,
   mdiRobotConfused,
   mdiStopCircleOutline,
+  mdiTag,
   mdiTransitConnection,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -20,6 +22,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consume } from "@lit-labs/context";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
@@ -49,7 +52,10 @@ import {
 import { substituteBlueprint } from "../../../data/blueprint";
 import { validateConfig } from "../../../data/config";
 import { UNAVAILABLE } from "../../../data/entity";
-import { fetchEntityRegistry } from "../../../data/entity_registry";
+import {
+  fetchEntityRegistry,
+  type EntityRegistryEntry,
+} from "../../../data/entity_registry";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -64,7 +70,11 @@ import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-a
 import { showAutomationRenameDialog } from "./automation-rename-dialog/show-dialog-automation-rename";
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
+import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
+import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
+import { fullEntitiesContext } from "../../../data/context";
+import { transform } from "../../../common/decorators/transform";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -118,6 +128,15 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
   @state() private _blueprintConfig?: BlueprintAutomationConfig;
 
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  @transform<EntityRegistryEntry | undefined, EntityRegistryEntry[]>({
+    transformer: function (this: HaAutomationEditor, value) {
+      return value.find(({ entity_id }) => entity_id === this._entityId);
+    },
+    watch: ["_entityId"],
+  })
+  private _registryEntry?: EntityRegistryEntry;
+
   private _configSubscriptions: Record<
     string,
     (config?: AutomationConfig) => void
@@ -170,6 +189,28 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
               slot="graphic"
               .path=${mdiInformationOutline}
             ></ha-svg-icon>
+          </ha-list-item>
+
+          <ha-list-item
+            graphic="icon"
+            .disabled=${!stateObj}
+            @click=${this._showSettings}
+          >
+            ${this.hass.localize(
+              "ui.panel.config.automation.picker.show_settings"
+            )}
+            <ha-svg-icon slot="graphic" .path=${mdiCog}></ha-svg-icon>
+          </ha-list-item>
+
+          <ha-list-item
+            graphic="icon"
+            .disabled=${!stateObj}
+            @click=${this._editCategory}
+          >
+            ${this.hass.localize(
+              `ui.panel.config.scene.picker.${this._registryEntry?.categories?.automation ? "edit_category" : "assign_category"}`
+            )}
+            <ha-svg-icon slot="graphic" .path=${mdiTag}></ha-svg-icon>
           </ha-list-item>
 
           <ha-list-item
@@ -578,6 +619,31 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       return;
     }
     fireEvent(this, "hass-more-info", { entityId: this._entityId });
+  }
+
+  private _showSettings() {
+    showMoreInfoDialog(this, {
+      entityId: this._entityId!,
+      view: "settings",
+    });
+  }
+
+  private _editCategory() {
+    if (!this._registryEntry) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.scene.picker.no_category_support"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.scene.picker.no_category_entity_reg"
+        ),
+      });
+      return;
+    }
+    showAssignCategoryDialog(this, {
+      scope: "automation",
+      entityReg: this._registryEntry,
+    });
   }
 
   private async _showTrace() {
