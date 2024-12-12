@@ -1,5 +1,6 @@
 import "@material/mwc-button";
 import {
+  mdiCog,
   mdiContentDuplicate,
   mdiContentSave,
   mdiDebugStepOver,
@@ -12,6 +13,7 @@ import {
   mdiPlaylistEdit,
   mdiRenameBox,
   mdiRobotConfused,
+  mdiTag,
   mdiTransitConnection,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -32,7 +34,10 @@ import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
 import { validateConfig } from "../../../data/config";
 import { UNAVAILABLE } from "../../../data/entity";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
+import {
+  subscribeEntityRegistry,
+  type EntityRegistryEntry,
+} from "../../../data/entity_registry";
 import type { BlueprintScriptConfig, ScriptConfig } from "../../../data/script";
 import {
   deleteScript,
@@ -44,7 +49,10 @@ import {
   showScriptEditor,
   triggerScript,
 } from "../../../data/script";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
@@ -57,8 +65,12 @@ import "./blueprint-script-editor";
 import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
 import { substituteBlueprint } from "../../../data/blueprint";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 
-export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
+export class HaScriptEditor extends SubscribeMixin(
+  KeyboardShortcutMixin(LitElement)
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public scriptId: string | null = null;
@@ -86,6 +98,8 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   @state() private _mode: "gui" | "yaml" = "gui";
 
   @state() private _readOnly = false;
+
+  @state() private _registryEntry?: EntityRegistryEntry;
 
   @query("manual-script-editor")
   private _manualEditor?: HaManualScriptEditor;
@@ -142,6 +156,17 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
           <ha-list-item
             graphic="icon"
+            .disabled=${!stateObj}
+            @click=${this._showSettings}
+          >
+            ${this.hass.localize(
+              "ui.panel.config.automation.picker.show_settings"
+            )}
+            <ha-svg-icon slot="graphic" .path=${mdiCog}></ha-svg-icon>
+          </ha-list-item>
+
+          <ha-list-item
+            graphic="icon"
             .disabled=${!this.scriptId}
             @click=${this._runScript}
           >
@@ -191,6 +216,17 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           >
             ${this.hass.localize("ui.panel.config.script.editor.rename")}
             <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
+          </ha-list-item>
+
+          <ha-list-item
+            graphic="icon"
+            .disabled=${!stateObj}
+            @click=${this._editCategory}
+          >
+            ${this.hass.localize(
+              `ui.panel.config.scene.picker.${this._registryEntry?.categories?.script ? "edit_category" : "assign_category"}`
+            )}
+            <ha-svg-icon slot="graphic" .path=${mdiTag}></ha-svg-icon>
           </ha-list-item>
           ${!useBlueprint
             ? html`
@@ -441,6 +477,16 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     }
   }
 
+  public hassSubscribe() {
+    return [
+      subscribeEntityRegistry(this.hass.connection, (entries) => {
+        this._registryEntry = entries.find(
+          ({ entity_id }) => entity_id === this._entityId
+        );
+      }),
+    ];
+  }
+
   private async _checkValidation() {
     this._validationErrors = undefined;
     if (!this._entityId || !this._config) {
@@ -536,6 +582,31 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       message: this.hass.localize("ui.notification_toast.triggered", {
         name: this._config!.alias,
       }),
+    });
+  }
+
+  private _showSettings() {
+    showMoreInfoDialog(this, {
+      entityId: this._entityId!,
+      view: "settings",
+    });
+  }
+
+  private _editCategory() {
+    if (!this._registryEntry) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.scene.picker.no_category_support"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.scene.picker.no_category_entity_reg"
+        ),
+      });
+      return;
+    }
+    showAssignCategoryDialog(this, {
+      scope: "script",
+      entityReg: this._registryEntry,
     });
   }
 
