@@ -405,16 +405,21 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
               </div>
             </div> `
           : nothing}
-
-        <ha-fab
-          slot="fab"
-          ?disabled=${backupInProgress}
-          .label=${this.hass.localize("ui.panel.config.backup.create_backup")}
-          extended
-          @click=${this._newBackup}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        ${!this._needsOnboarding
+          ? html`
+              <ha-fab
+                slot="fab"
+                ?disabled=${backupInProgress}
+                .label=${this.hass.localize(
+                  "ui.panel.config.backup.create_backup"
+                )}
+                extended
+                @click=${this._newBackup}
+              >
+                <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+              </ha-fab>
+            `
+          : nothing}
       </hass-tabs-subpage-data-table>
     `;
   }
@@ -508,17 +513,6 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   }
 
   private async _newBackup(): Promise<void> {
-    if (this._needsOnboarding) {
-      const success = await showBackupOnboardingDialog(this, {
-        cloudStatus: this.cloudStatus,
-      });
-      if (!success) {
-        return;
-      }
-    }
-
-    await this._fetchBackupConfig();
-
     const config = this._config!;
 
     const type = await showNewBackupDialog(this, { config });
