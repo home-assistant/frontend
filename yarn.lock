@@ -9315,7 +9315,6 @@ __metadata:
     open: "npm:10.1.0"
     pinst: "npm:3.0.0"
     prettier: "npm:3.4.2"
-    proxy-polyfill: "npm:0.3.2"
     punycode: "npm:2.3.1"
     qr-scanner: "npm:1.4.2"
     qrcode: "npm:1.5.4"
@@ -9336,7 +9335,6 @@ __metadata:
     tsparticles-preset-links: "npm:2.12.0"
     typescript: "npm:5.7.2"
     ua-parser-js: "npm:1.0.39"
-    unfetch: "npm:5.0.0"
     vis-data: "npm:7.1.9"
     vis-network: "npm:9.1.9"
     vitest: "npm:2.1.8"
@@ -12319,13 +12317,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"proxy-polyfill@npm:0.3.2":
-  version: 0.3.2
-  resolution: "proxy-polyfill@npm:0.3.2"
-  checksum: 10/0e43c8ba9cc14d3ce12d029f5647b8c03120fb0b912a176bcb8fb2c560f8fb94e49f89707b6e2df0443e3514d0bb63cc1960d671b39904b479bb09e4ae7e09a4
-  languageName: node
-  linkType: hard
-
 "punycode@npm:2.3.1, punycode@npm:^2.1.0, punycode@npm:^2.3.1":
   version: 2.3.1
   resolution: "punycode@npm:2.3.1"
@@ -14529,13 +14520,6 @@ __metadata:
   version: 6.19.8
   resolution: "undici-types@npm:6.19.8"
   checksum: 10/cf0b48ed4fc99baf56584afa91aaffa5010c268b8842f62e02f752df209e3dea138b372a60a963b3b2576ed932f32329ce7ddb9cb5f27a6c83040d8cd74b7a70
-  languageName: node
-  linkType: hard
-
-"unfetch@npm:5.0.0":
-  version: 5.0.0
-  resolution: "unfetch@npm:5.0.0"
-  checksum: 10/8a59f9d910f179ef588aa30885849de7b4c895a85b3679ab4da7305be3751b85a4811d9164d87960fef1a388b9a7afdc23ab2154f517db040b27171578fa9e8b
   languageName: node
   linkType: hard
 
