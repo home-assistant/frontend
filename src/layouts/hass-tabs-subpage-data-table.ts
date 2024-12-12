@@ -468,6 +468,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                 ${!this.narrow
                   ? html`
                       <div slot="header">
+                        <slot name="top_header"></slot>
                         <slot name="header">
                           <div class="table-header">
                             ${this.hasFilters && !this.showFilters

@@ -77,6 +77,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import "../ha-config-section";
+import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 
 interface DeviceEntities {
   id: string;
@@ -89,8 +90,8 @@ interface DeviceEntitiesLookup {
 }
 
 @customElement("ha-scene-editor")
-export class HaSceneEditor extends SubscribeMixin(
-  KeyboardShortcutMixin(LitElement)
+export class HaSceneEditor extends PreventUnsavedMixin(
+  SubscribeMixin(KeyboardShortcutMixin(LitElement))
 ) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -1223,6 +1224,14 @@ export class HaSceneEditor extends SubscribeMixin(
       scope: "scene",
       entityReg,
     });
+  }
+
+  protected get isDirty() {
+    return this._dirty;
+  }
+
+  protected async promptDiscardChanges() {
+    return this._confirmUnsavedChanged();
   }
 
   static get styles(): CSSResultGroup {

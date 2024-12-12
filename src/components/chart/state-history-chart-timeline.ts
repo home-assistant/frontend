@@ -106,7 +106,7 @@ export class StateHistoryChartTimeline extends LitElement {
       animation: false,
       scales: {
         x: {
-          type: "timeline",
+          type: "time",
           position: "bottom",
           adapters: {
             date: {
