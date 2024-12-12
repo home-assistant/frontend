@@ -39,9 +39,10 @@ import type { HomeAssistant, Route } from "../types";
 import "./hass-tabs-subpage";
 import type { PageNavigation } from "./hass-tabs-subpage";
 import { showDataTableSettingsDialog } from "../components/data-table/show-dialog-data-table-settings";
+import { KeyboardShortcutMixin } from "../mixins/keyboard-shortcut-mixin";
 
 @customElement("hass-tabs-subpage-data-table")
-export class HaTabsSubpageDataTable extends LitElement {
+export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
@@ -188,6 +189,14 @@ export class HaTabsSubpageDataTable extends LitElement {
   @query("#group-by-menu") private _groupByMenu!: HaMenu;
 
   @query("#sort-by-menu") private _sortByMenu!: HaMenu;
+
+  @query("search-input-outlined") private _searchInput!: HTMLElement;
+
+  protected supportedShortcuts(): SupportedShortcuts {
+    return {
+      f: () => this._searchInput.focus(),
+    };
+  }
 
   private _showPaneController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width > 750,
@@ -459,6 +468,7 @@ export class HaTabsSubpageDataTable extends LitElement {
                 ${!this.narrow
                   ? html`
                       <div slot="header">
+                        <slot name="top_header"></slot>
                         <slot name="header">
                           <div class="table-header">
                             ${this.hasFilters && !this.showFilters
