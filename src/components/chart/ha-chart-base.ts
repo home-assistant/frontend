@@ -14,6 +14,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { clamp } from "../../common/number/clamp";
 import type { HomeAssistant } from "../../types";
 import { debounce } from "../../common/util/debounce";
+import { isMac } from "../../util/is_mac";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 
@@ -272,7 +273,11 @@ export class HaChartBase extends LitElement {
             })}"
           >
             <div>
-              ${this.hass.localize("ui.components.history_charts.zoom_hint")}
+              ${isMac
+                ? this.hass.localize(
+                    "ui.components.history_charts.zoom_hint_mac"
+                  )
+                : this.hass.localize("ui.components.history_charts.zoom_hint")}
             </div>
           </div>
           ${this._tooltip
@@ -358,6 +363,7 @@ export class HaChartBase extends LitElement {
   }
 
   private _createOptions(): ChartOptions {
+    const modifierKey = isMac ? "meta" : "ctrl";
     return {
       maintainAspectRatio: false,
       ...this.options,
@@ -383,11 +389,11 @@ export class HaChartBase extends LitElement {
             },
             drag: {
               enabled: true,
-              modifierKey: "ctrl",
+              modifierKey,
             },
             wheel: {
               enabled: true,
-              modifierKey: "ctrl",
+              modifierKey,
             },
             mode: "x",
           },
@@ -427,7 +433,8 @@ export class HaChartBase extends LitElement {
   }
 
   private _handleChartScroll(ev: MouseEvent) {
-    if (!ev.ctrlKey && !this._showZoomHint) {
+    const modifier = isMac ? "metaKey" : "ctrlKey";
+    if (!ev[modifier] && !this._showZoomHint) {
       this._showZoomHint = true;
       setTimeout(() => {
         this._showZoomHint = false;
