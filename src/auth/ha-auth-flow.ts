@@ -272,7 +272,7 @@ export class HaAuthFlow extends LitElement {
     if (step.type === "external") {
       return nothing;
     }
-    return html` <div class="action">
+    return html`<div class="action">
       <mwc-button
         raised
         @click=${this._handleSubmit}
