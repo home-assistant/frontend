@@ -335,7 +335,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
                         slot="action"
                         @click=${this._setupBackupStrategy}
                       >
-                        Setup backup strategy
+                        Set up backup strategy
                       </ha-button>
                     </ha-backup-summary-card>
                   `
