@@ -20,6 +20,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consume } from "@lit-labs/context";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
@@ -34,10 +35,7 @@ import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
 import { validateConfig } from "../../../data/config";
 import { UNAVAILABLE } from "../../../data/entity";
-import {
-  subscribeEntityRegistry,
-  type EntityRegistryEntry,
-} from "../../../data/entity_registry";
+import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import type { BlueprintScriptConfig, ScriptConfig } from "../../../data/script";
 import {
   deleteScript,
@@ -68,6 +66,8 @@ import { substituteBlueprint } from "../../../data/blueprint";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
+import { fullEntitiesContext } from "../../../data/context";
+import { transform } from "../../../common/decorators/transform";
 
 export class HaScriptEditor extends SubscribeMixin(
   PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
@@ -100,7 +100,14 @@ export class HaScriptEditor extends SubscribeMixin(
 
   @state() private _readOnly = false;
 
-  @state() private _registryEntry?: EntityRegistryEntry;
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  @transform<EntityRegistryEntry | undefined, EntityRegistryEntry[]>({
+    transformer: function (this: HaScriptEditor, value) {
+      return value.find(({ entity_id }) => entity_id === this._entityId);
+    },
+    watch: ["_entityId"],
+  })
+  private _registryEntry?: EntityRegistryEntry;
 
   @query("manual-script-editor")
   private _manualEditor?: HaManualScriptEditor;
@@ -476,16 +483,6 @@ export class HaScriptEditor extends SubscribeMixin(
       this._dirty = false;
       this._readOnly = true;
     }
-  }
-
-  public hassSubscribe() {
-    return [
-      subscribeEntityRegistry(this.hass.connection, (entries) => {
-        this._registryEntry = entries.find(
-          ({ entity_id }) => entity_id === this._entityId
-        );
-      }),
-    ];
   }
 
   private async _checkValidation() {

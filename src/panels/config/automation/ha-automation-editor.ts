@@ -22,6 +22,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consume } from "@lit-labs/context";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
@@ -53,7 +54,6 @@ import { validateConfig } from "../../../data/config";
 import { UNAVAILABLE } from "../../../data/entity";
 import {
   fetchEntityRegistry,
-  subscribeEntityRegistry,
   type EntityRegistryEntry,
 } from "../../../data/entity_registry";
 import {
@@ -72,8 +72,9 @@ import "./blueprint-automation-editor";
 import "./manual-automation-editor";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
+import { fullEntitiesContext } from "../../../data/context";
+import { transform } from "../../../common/decorators/transform";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -92,8 +93,8 @@ declare global {
   }
 }
 
-export class HaAutomationEditor extends SubscribeMixin(
-  PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
+export class HaAutomationEditor extends PreventUnsavedMixin(
+  KeyboardShortcutMixin(LitElement)
 ) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -127,7 +128,14 @@ export class HaAutomationEditor extends SubscribeMixin(
 
   @state() private _blueprintConfig?: BlueprintAutomationConfig;
 
-  @state() private _registryEntry?: EntityRegistryEntry;
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  @transform<EntityRegistryEntry | undefined, EntityRegistryEntry[]>({
+    transformer: function (this: HaAutomationEditor, value) {
+      return value.find(({ entity_id }) => entity_id === this._entityId);
+    },
+    watch: ["_entityId"],
+  })
+  private _registryEntry?: EntityRegistryEntry;
 
   private _configSubscriptions: Record<
     string,
@@ -523,16 +531,6 @@ export class HaAutomationEditor extends SubscribeMixin(
         sub(this._config)
       );
     }
-  }
-
-  public hassSubscribe() {
-    return [
-      subscribeEntityRegistry(this.hass.connection, (entries) => {
-        this._registryEntry = entries.find(
-          ({ entity_id }) => entity_id === this._entityId
-        );
-      }),
-    ];
   }
 
   private _setEntityId() {
