@@ -177,9 +177,9 @@ export const closeLastDialog = async () => {
 };
 
 export const closeAllDialogs = async () => {
-  while (OPEN_DIALOG_STACK.length) {
+  for (let i = OPEN_DIALOG_STACK.length - 1; i >= 0; i--) {
     // eslint-disable-next-line no-await-in-loop
-    const closed = await closeLastDialog();
+    const closed = await closeDialog(OPEN_DIALOG_STACK[i].dialogTag);
     if (!closed) {
       return false;
     }
@@ -187,7 +187,7 @@ export const closeAllDialogs = async () => {
   return true;
 };
 
-const _handleClosed = async (ev: HASSDomEvent<DialogClosedParams>) => {
+const _handleClosed = (ev: HASSDomEvent<DialogClosedParams>) => {
   // If not closed by navigating back, remove the open state from history
   const dialogIndex = OPEN_DIALOG_STACK.findIndex(
     (state) => state.dialogTag === ev.detail.dialog
