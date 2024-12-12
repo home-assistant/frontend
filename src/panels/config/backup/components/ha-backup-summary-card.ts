@@ -71,7 +71,7 @@ class HaBackupSummaryCard extends LitElement {
       column-gap: 16px;
       row-gap: 8px;
       align-items: center;
-      padding: 16px;
+      padding: 20px;
       width: 100%;
       box-sizing: border-box;
     }
