@@ -11,10 +11,7 @@ import type { UpdateEntity } from "../data/update";
 import { computeUpdateStateDisplay } from "../data/update";
 import "../panels/lovelace/components/hui-timestamp-display";
 import type { HomeAssistant } from "../types";
-import {
-  TIMESTAMP_RENDERING_FORMATS,
-  type TimestampRenderingFormat,
-} from "../panels/lovelace/components/types";
+import type { TimestampRenderingFormat } from "../panels/lovelace/components/types";
 
 const TIMESTAMP_STATE_DOMAINS = ["button", "input_button", "scene"];
 
@@ -83,10 +80,7 @@ class StateDisplay extends LitElement {
     const stateObj = this.stateObj;
     const domain = computeStateDomain(stateObj);
 
-    if (
-      content === "state" ||
-      (this.format && TIMESTAMP_RENDERING_FORMATS.includes(this.format))
-    ) {
+    if (content === "state") {
       if (this.dashUnavailable && isUnavailableState(stateObj.state)) {
         return "—";
       }
