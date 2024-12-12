@@ -64,6 +64,7 @@ import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-a
 import { showAutomationRenameDialog } from "./automation-rename-dialog/show-dialog-automation-rename";
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
+import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -82,7 +83,9 @@ declare global {
   }
 }
 
-export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
+export class HaAutomationEditor extends PreventUnsavedMixin(
+  KeyboardShortcutMixin(LitElement)
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public automationId: string | null = null;
@@ -845,6 +848,14 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     return {
       s: () => this._saveAutomation(),
     };
+  }
+
+  protected get isDirty() {
+    return this._dirty;
+  }
+
+  protected async promptDiscardChanges() {
+    return this._confirmUnsavedChanged();
   }
 
   static get styles(): CSSResultGroup {
