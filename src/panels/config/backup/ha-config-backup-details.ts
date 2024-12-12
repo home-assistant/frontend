@@ -17,6 +17,7 @@ import "../../../components/ha-md-list-item";
 import { getSignedPath } from "../../../data/auth";
 import type { BackupContentExtended } from "../../../data/backup";
 import {
+  compareAgents,
   computeBackupAgentName,
   deleteBackup,
   fetchBackupDetails,
@@ -265,7 +266,10 @@ class HaConfigBackupDetails extends LitElement {
   private async _fetchBackup() {
     try {
       const response = await fetchBackupDetails(this.hass, this.backupId);
-      this._backup = response.backup;
+      this._backup = {
+        ...response.backup,
+        agent_ids: response.backup.agent_ids?.sort(compareAgents),
+      };
     } catch (err: any) {
       this._error = err?.message || "Could not fetch backup details";
     }

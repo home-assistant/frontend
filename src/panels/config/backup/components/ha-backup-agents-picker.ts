@@ -8,6 +8,7 @@ import "../../../../components/ha-checkbox";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-svg-icon";
 import {
+  compareAgents,
   computeBackupAgentName,
   isLocalAgent,
   type BackupAgent,
@@ -33,7 +34,7 @@ class HaBackupAgentsPicker extends LitElement {
   public value!: string[];
 
   private _agentIds = memoizeOne((agents: BackupAgent[]) =>
-    agents.map((agent) => agent.agent_id)
+    agents.map((agent) => agent.agent_id).sort(compareAgents)
   );
 
   render() {

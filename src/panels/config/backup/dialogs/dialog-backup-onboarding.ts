@@ -20,7 +20,10 @@ import type {
 } from "../../../../data/backup";
 import {
   BackupScheduleState,
+  CLOUD_AGENT,
+  CORE_LOCAL_AGENT,
   generateEncryptionKey,
+  HASSIO_LOCAL_AGENT,
   updateBackupConfig,
 } from "../../../../data/backup";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
@@ -33,7 +36,7 @@ import "../components/ha-backup-config-data";
 import type { BackupConfigData } from "../components/ha-backup-config-data";
 import "../components/ha-backup-config-schedule";
 import type { BackupConfigSchedule } from "../components/ha-backup-config-schedule";
-import type { SetBackupEncryptionKeyDialogParams } from "./show-dialog-set-backup-encryption-key";
+import type { BackupOnboardingDialogParams } from "./show-dialog-backup_onboarding";
 
 const STEPS = [
   "welcome",
@@ -46,7 +49,7 @@ const STEPS = [
 
 type Step = (typeof STEPS)[number];
 
-const INITIAL_CONFIG: BackupConfig = {
+const RECOMMENDED_CONFIG: BackupConfig = {
   create_backup: {
     agent_ids: [],
     include_folders: [],
@@ -68,14 +71,14 @@ const INITIAL_CONFIG: BackupConfig = {
 };
 
 @customElement("ha-dialog-backup-onboarding")
-class DialogSetBackupEncryptionKey extends LitElement implements HassDialog {
+class DialogBackupOnboarding extends LitElement implements HassDialog {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _opened = false;
 
   @state() private _step?: Step;
 
-  @state() private _params?: SetBackupEncryptionKeyDialogParams;
+  @state() private _params?: BackupOnboardingDialogParams;
 
   @query("ha-md-dialog") private _dialog!: HaMdDialog;
 
@@ -83,10 +86,22 @@ class DialogSetBackupEncryptionKey extends LitElement implements HassDialog {
 
   private _suggestedEncryptionKey?: string;
 
-  public showDialog(params: SetBackupEncryptionKeyDialogParams): void {
+  public showDialog(params: BackupOnboardingDialogParams): void {
     this._params = params;
     this._step = STEPS[0];
-    this._config = INITIAL_CONFIG;
+    this._config = RECOMMENDED_CONFIG;
+
+    // Enable local location by default
+    if (isComponentLoaded(this.hass, "hassio")) {
+      this._config.create_backup.agent_ids.push(HASSIO_LOCAL_AGENT);
+    } else {
+      this._config.create_backup.agent_ids.push(CORE_LOCAL_AGENT);
+    }
+    // Enable cloud location if logged in
+    if (this._params.cloudStatus.logged_in) {
+      this._config.create_backup.agent_ids.push(CLOUD_AGENT);
+    }
+
     this._opened = true;
     this._suggestedEncryptionKey = generateEncryptionKey();
   }
@@ -473,6 +488,6 @@ class DialogSetBackupEncryptionKey extends LitElement implements HassDialog {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-dialog-backup-onboarding": DialogSetBackupEncryptionKey;
+    "ha-dialog-backup-onboarding": DialogBackupOnboarding;
   }
 }

@@ -212,8 +212,12 @@ export const getPreferredAgentForDownload = (agents: string[]) => {
   return localAgents[0] || agents[0];
 };
 
+export const CORE_LOCAL_AGENT = "backup.local";
+export const HASSIO_LOCAL_AGENT = "backup.hassio";
+export const CLOUD_AGENT = "cloud.cloud";
+
 export const isLocalAgent = (agentId: string) =>
-  ["backup.local", "hassio.local"].includes(agentId);
+  [CORE_LOCAL_AGENT, HASSIO_LOCAL_AGENT].includes(agentId);
 
 export const computeBackupAgentName = (
   localize: LocalizeFunc,
@@ -232,6 +236,12 @@ export const computeBackupAgentName = (
     : true;
 
   return showName ? `${domainName}: ${name}` : domainName;
+};
+
+export const compareAgents = (a: string, b: string) => {
+  const isLocalA = isLocalAgent(a);
+  const isLocalB = isLocalAgent(b);
+  return isLocalA === isLocalB ? a.localeCompare(b) : isLocalA ? -1 : 1;
 };
 
 export const generateEncryptionKey = () => {

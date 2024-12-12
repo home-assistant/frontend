@@ -36,6 +36,7 @@ import "../../../components/ha-svg-icon";
 import { getSignedPath } from "../../../data/auth";
 import type { BackupConfig, BackupContent } from "../../../data/backup";
 import {
+  compareAgents,
   computeBackupAgentName,
   deleteBackup,
   fetchBackupConfig,
@@ -480,7 +481,10 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
 
   private async _fetchBackupInfo() {
     const info = await fetchBackupInfo(this.hass);
-    this._backups = info.backups;
+    this._backups = info.backups.map((backup) => ({
+      ...backup,
+      agent_ids: backup.agent_ids?.sort(compareAgents),
+    }));
   }
 
   private async _fetchBackupConfig() {
@@ -502,7 +506,9 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
 
   private async _newBackup(): Promise<void> {
     if (this._needsOnboarding) {
-      const success = await showBackupOnboardingDialog(this, {});
+      const success = await showBackupOnboardingDialog(this, {
+        cloudStatus: this._cloudStatus,
+      });
       if (!success) {
         return;
       }
@@ -603,7 +609,9 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   }
 
   private async _setupBackupStrategy() {
-    const success = await showBackupOnboardingDialog(this, {});
+    const success = await showBackupOnboardingDialog(this, {
+      cloudStatus: this._cloudStatus,
+    });
     if (!success) {
       return;
     }
