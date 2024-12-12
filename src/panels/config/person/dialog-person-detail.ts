@@ -34,6 +34,7 @@ import { showAddUserDialog } from "../users/show-dialog-add-user";
 import { showAdminChangePasswordDialog } from "../users/show-dialog-admin-change-password";
 import type { PersonDetailDialogParams } from "./show-dialog-person-detail";
 import { fireEvent } from "../../../common/dom/fire_event";
+import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 
 const includeDomains = ["device_tracker"];
 
@@ -43,7 +44,7 @@ const cropOptions: CropOptions = {
   aspectRatio: 1,
 };
 
-class DialogPersonDetail extends LitElement {
+class DialogPersonDetail extends LitElement implements HassDialog {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _name!: string;
