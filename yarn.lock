@@ -1335,10 +1335,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/state@npm:6.4.1, @codemirror/state@npm:^6.0.0, @codemirror/state@npm:^6.4.0":
-  version: 6.4.1
-  resolution: "@codemirror/state@npm:6.4.1"
-  checksum: 10/a9ec56c7d7d52034ce8ebea3a9a4d216b9e972d701b32b5000e56c97790d0d46af129aeba0b80bed36648b4024b3ba3e4910cf5bfed11de4a9e89252e0707a70
+"@codemirror/state@npm:6.5.0, @codemirror/state@npm:^6.0.0, @codemirror/state@npm:^6.4.0":
+  version: 6.5.0
+  resolution: "@codemirror/state@npm:6.5.0"
+  dependencies:
+    "@marijn/find-cluster-break": "npm:^1.0.0"
+  checksum: 10/7d29461ee05851b03aadd84fed5ce55430b396097954cf47f464840a0b9af3f896375c0fc52726c50039e58bb25755e9a55ad63c6ba65646ac49e62af9cc35b6
   languageName: node
   linkType: hard
 
@@ -2229,6 +2231,13 @@ __metadata:
   dependencies:
     lit: "npm:^3.1.2"
   checksum: 10/cc432c516ed176f1b99a04071f500bea2c1620a2b505e60867f3464e2a9cf54b78b4c84ac3ed85ac34e3579d8671112953d085bb37c2ff7202a1639e6ae0db4e
+  languageName: node
+  linkType: hard
+
+"@marijn/find-cluster-break@npm:^1.0.0":
+  version: 1.0.2
+  resolution: "@marijn/find-cluster-break@npm:1.0.2"
+  checksum: 10/92fe7ba43ce3d3314f593e4c2fd822d7089649baff47a474fe04b83e3119931d7cf58388747d429ff65fa2db14f5ca57e787268c482e868fc67759511f61f09b
   languageName: node
   linkType: hard
 
@@ -9129,7 +9138,7 @@ __metadata:
     "@codemirror/language": "npm:6.10.6"
     "@codemirror/legacy-modes": "npm:6.4.2"
     "@codemirror/search": "npm:6.5.8"
-    "@codemirror/state": "npm:6.4.1"
+    "@codemirror/state": "npm:6.5.0"
     "@codemirror/view": "npm:6.35.2"
     "@egjs/hammerjs": "npm:2.0.17"
     "@formatjs/intl-datetimeformat": "npm:6.16.6"
