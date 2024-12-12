@@ -57,10 +57,10 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
     }, 600);
     setTimeout(() => {
       this._showThird = true;
-    }, 3000);
+    }, 2000);
     setTimeout(() => {
       this._showFourth = true;
-    }, 8000);
+    }, 3000);
   }
 
   protected override render() {
@@ -123,7 +123,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
           </div>
           ${this._showThird
             ? html`<div class="timing user">
-                3
+                2
                 ${this.hass.localize(
                   "ui.panel.config.voice_assistants.satellite_wizard.pipeline.seconds"
                 )}
@@ -136,7 +136,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
             : nothing}
           ${this._showFourth
             ? html`<div class="timing hass">
-                5
+                1
                 ${this.hass.localize(
                   "ui.panel.config.voice_assistants.satellite_wizard.pipeline.seconds"
                 )}
