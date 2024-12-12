@@ -155,6 +155,31 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
   private _entityRegistryUpdate?: EntityRegistryUpdate;
 
+  private _newAutomationId?: string;
+
+  private _entityRegCreated?: (
+    value: PromiseLike<EntityRegistryEntry> | EntityRegistryEntry
+  ) => void;
+
+  protected willUpdate(changedProps) {
+    super.willUpdate(changedProps);
+
+    if (
+      this._entityRegCreated &&
+      this._newAutomationId &&
+      changedProps.has("entityRegistry")
+    ) {
+      const automation = this.entityRegistry.find(
+        (entity: EntityRegistryEntry) =>
+          entity.unique_id === this._newAutomationId
+      );
+      if (automation) {
+        this._entityRegCreated(automation);
+        this._entityRegCreated = undefined;
+      }
+    }
+  }
+
   protected render(): TemplateResult | typeof nothing {
     if (!this._config) {
       return nothing;
@@ -545,17 +570,6 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
         sub(this._config)
       );
     }
-
-    if (changedProps.has("entityRegistry") && this.automationId) {
-      const entry = this.entityRegistry.find(
-        (ent) =>
-          ent.platform === "automation" && ent.unique_id === this.automationId
-      );
-      this._entityRegistryUpdate = {
-        category: entry?.categories?.automation || "",
-        labels: entry?.labels || [],
-      };
-    }
   }
 
   private _setEntityId() {
@@ -874,6 +888,9 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
         },
         onClose: () => resolve(false),
         entityRegistryUpdate: this._entityRegistryUpdate,
+        entityRegistryEntry: this.entityRegistry.find(
+          (entry) => entry.unique_id === this.automationId
+        ),
       });
     });
   }
@@ -920,14 +937,13 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
         // wait for automation to appear in entity registry when creating a new automation
         if (!entityId) {
-          await new Promise<void>((resolve) => {
-            setTimeout(resolve, 1000);
-          });
-
-          const automation = this.entityRegistry.find(
-            (entity: EntityRegistryEntry) => entity.unique_id === id
+          this._newAutomationId = id;
+          const automation = await new Promise<EntityRegistryEntry>(
+            (resolve) => {
+              this._entityRegCreated = resolve;
+            }
           );
-          entityId = automation?.entity_id;
+          entityId = automation.entity_id;
         }
 
         if (entityId) {

@@ -56,10 +56,9 @@ class DialogAutomationRename extends LitElement implements HassDialog {
         `ui.panel.config.${this._params.domain}.editor.default_name`
       );
     this._newDescription = params.config.description || "";
-
     this._entryUpdates = params.entityRegistryUpdate || {
-      labels: [],
-      category: "",
+      labels: params.entityRegistryEntry?.labels || [],
+      category: params.entityRegistryEntry?.categories[params.domain] || "",
     };
 
     this._visibleOptionals = [

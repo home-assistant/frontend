@@ -124,6 +124,30 @@ export class HaScriptEditor extends SubscribeMixin(
 
   private _entityRegistryUpdate?: EntityRegistryUpdate;
 
+  private _newScriptId?: string;
+
+  private _entityRegCreated?: (
+    value: PromiseLike<EntityRegistryEntry> | EntityRegistryEntry
+  ) => void;
+
+  protected willUpdate(changedProps) {
+    super.willUpdate(changedProps);
+
+    if (
+      this._entityRegCreated &&
+      this._newScriptId &&
+      changedProps.has("entityRegistry")
+    ) {
+      const script = this.entityRegistry.find(
+        (entity: EntityRegistryEntry) => entity.unique_id === this._newScriptId
+      );
+      if (script) {
+        this._entityRegCreated(script);
+        this._entityRegCreated = undefined;
+      }
+    }
+  }
+
   protected render(): TemplateResult | typeof nothing {
     if (!this._config) {
       return nothing;
@@ -458,10 +482,6 @@ export class HaScriptEditor extends SubscribeMixin(
         (ent) => ent.platform === "script" && ent.unique_id === this.scriptId
       );
       this._entityId = entity?.entity_id;
-      this._entityRegistryUpdate = {
-        category: entity?.categories?.script || "",
-        labels: entity?.labels || [],
-      };
     }
 
     if (changedProps.has("scriptId") && !this.scriptId && this.hass) {
@@ -834,6 +854,9 @@ export class HaScriptEditor extends SubscribeMixin(
         },
         onClose: () => resolve(false),
         entityRegistryUpdate: this._entityRegistryUpdate,
+        entityRegistryEntry: this.entityRegistry.find(
+          (entry) => entry.unique_id === this.scriptId
+        ),
       });
     });
   }
@@ -879,16 +902,18 @@ export class HaScriptEditor extends SubscribeMixin(
       );
 
       if (this._entityRegistryUpdate !== undefined) {
-        // wait for new script to appear in entity registry
-        if (!this.scriptId) {
-          await new Promise((resolve, _reject) => {
-            setTimeout(resolve, 1000);
-          });
-        }
-
-        const entityId = id.toString().startsWith("script.")
+        let entityId = id.toString().startsWith("script.")
           ? id.toString()
           : `script.${id}`;
+
+        // wait for new script to appear in entity registry
+        if (!this.scriptId) {
+          const script = await new Promise<EntityRegistryEntry>((resolve) => {
+            this._entityRegCreated = resolve;
+          });
+          entityId = script.entity_id;
+        }
+
         await updateEntityRegistryEntry(this.hass, entityId, {
           categories: {
             script: this._entityRegistryUpdate.category || "",

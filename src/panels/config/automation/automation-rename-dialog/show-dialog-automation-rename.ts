@@ -1,12 +1,14 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { AutomationConfig } from "../../../../data/automation";
 import type { ScriptConfig } from "../../../../data/script";
+import type { EntityRegistryEntry } from "../../../../data/entity_registry";
 
 export const loadAutomationRenameDialog = () =>
   import("./dialog-automation-rename");
 
 interface BaseRenameDialogParams {
   entityRegistryUpdate?: EntityRegistryUpdate;
+  entityRegistryEntry?: EntityRegistryEntry;
   onClose: () => void;
 }
 
