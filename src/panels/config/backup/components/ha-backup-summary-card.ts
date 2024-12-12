@@ -68,9 +68,10 @@ class HaBackupSummaryCard extends LitElement {
     .summary {
       display: flex;
       flex-direction: row;
-      gap: 16px;
+      column-gap: 16px;
+      row-gap: 8px;
       align-items: center;
-      padding: 20px;
+      padding: 16px;
       width: 100%;
       box-sizing: border-box;
     }
@@ -138,6 +139,18 @@ class HaBackupSummaryCard extends LitElement {
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
+    }
+
+    @media all and (max-width: 550px) {
+      .summary {
+        flex-wrap: wrap;
+        padding: 8px;
+      }
+      .action {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+      }
     }
   `;
 }
