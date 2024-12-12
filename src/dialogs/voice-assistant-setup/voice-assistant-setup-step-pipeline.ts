@@ -57,10 +57,10 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
     }, 600);
     setTimeout(() => {
       this._showThird = true;
-    }, 3000);
+    }, 2000);
     setTimeout(() => {
       this._showFourth = true;
-    }, 8000);
+    }, 3000);
   }
 
   protected override render() {
