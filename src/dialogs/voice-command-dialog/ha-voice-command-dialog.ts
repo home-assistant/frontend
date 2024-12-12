@@ -142,7 +142,7 @@ export class HaVoiceCommandDialog extends LitElement {
               ${this.hass.user?.is_admin
                 ? html`<li divider role="separator"></li>
                     <a href="/config/voice-assistants/assistants"
-                      ><ha-list-item @click=${this.closeDialog}
+                      ><ha-list-item
                         >${this.hass.localize(
                           "ui.dialogs.voice_command.manage_assistants"
                         )}</ha-list-item
