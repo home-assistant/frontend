@@ -2,8 +2,6 @@ import "@material/mwc-button/mwc-button";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import {
-  addDays,
-  addMonths,
   differenceInDays,
   differenceInMonths,
   endOfDay,
@@ -32,6 +30,7 @@ import {
   calcDateDifferenceProperty,
 } from "../../../common/datetime/calc_date";
 import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
+import { handlePrev, handleNext } from "../../../common/datetime/calc_timespan";
 import {
   formatDate,
   formatDateMonthYear,
@@ -512,84 +511,11 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   private _shift(forward: boolean) {
     if (!this._startDate) return;
-
-    let start: Date;
-    let end: Date;
-    if (
-      (calcDateProperty(
-        this._startDate,
-        isFirstDayOfMonth,
-        this.hass.locale,
-        this.hass.config
-      ) as boolean) &&
-      (calcDateProperty(
-        this._endDate!,
-        isLastDayOfMonth,
-        this.hass.locale,
-        this.hass.config
-      ) as boolean)
-    ) {
-      // Shift date range with respect to month/year selection
-      const difference =
-        ((calcDateDifferenceProperty(
-          this._endDate!,
-          this._startDate,
-          differenceInMonths,
-          this.hass.locale,
-          this.hass.config
-        ) as number) +
-          1) *
-        (forward ? 1 : -1);
-      start = calcDate(
-        this._startDate,
-        addMonths,
-        this.hass.locale,
-        this.hass.config,
-        difference
-      );
-      end = calcDate(
-        calcDate(
-          this._endDate!,
-          addMonths,
-          this.hass.locale,
-          this.hass.config,
-          difference
-        ),
-        endOfMonth,
-        this.hass.locale,
-        this.hass.config
-      );
-    } else {
-      // Shift date range by period length
-      const difference =
-        ((calcDateDifferenceProperty(
-          this._endDate!,
-          this._startDate,
-          differenceInDays,
-          this.hass.locale,
-          this.hass.config
-        ) as number) +
-          1) *
-        (forward ? 1 : -1);
-      start = calcDate(
-        this._startDate,
-        addDays,
-        this.hass.locale,
-        this.hass.config,
-        difference
-      );
-      end = calcDate(
-        this._endDate!,
-        addDays,
-        this.hass.locale,
-        this.hass.config,
-        difference
-      );
-    }
-
-    this._startDate = start;
-    this._endDate = end;
-
+    const dateRange = forward
+      ? handleNext(this._startDate, this._endDate!)
+      : handlePrev(this._startDate, this._endDate!);
+    this._startDate = dateRange[0];
+    this._endDate = dateRange[1];
     this._updateCollectionPeriod();
   }
 

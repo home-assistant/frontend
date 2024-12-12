@@ -5,7 +5,6 @@ import "@material/mwc-list/mwc-list-item";
 import { mdiCalendar } from "@mdi/js";
 import {
   addDays,
-  addMonths,
   endOfDay,
   endOfMonth,
   endOfWeek,
@@ -14,14 +13,6 @@ import {
   startOfMonth,
   startOfWeek,
   startOfYear,
-  differenceInMilliseconds,
-  addMilliseconds,
-  subMilliseconds,
-  roundToNearestHours,
-  isFirstDayOfMonth,
-  isLastDayOfMonth,
-  subMonths,
-  differenceInMonths,
   isThisYear,
 } from "date-fns";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -30,6 +21,7 @@ import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { calcDate } from "../common/datetime/calc_date";
 import { firstWeekdayIndex } from "../common/datetime/first_weekday";
+import { handlePrev, handleNext } from "../common/datetime/calc_timespan";
 import {
   formatShortDateTimeWithYear,
   formatShortDateTime,
@@ -296,64 +288,14 @@ export class HaDateRangePicker extends LitElement {
   }
 
   private _handleNext(): void {
-    let dateRange: [Date, Date];
-    if (isFirstDayOfMonth(this.startDate) && isLastDayOfMonth(this.endDate)) {
-      dateRange = [
-        roundToNearestHours(this.endDate),
-        subMilliseconds(
-          addMonths(
-            roundToNearestHours(this.endDate),
-            differenceInMonths(addMilliseconds(this.endDate, 1), this.startDate)
-          ),
-          1
-        ),
-      ];
-    } else {
-      dateRange = [
-        roundToNearestHours(this.endDate),
-        subMilliseconds(
-          roundToNearestHours(
-            addMilliseconds(
-              this.endDate,
-              Math.max(
-                3600000,
-                differenceInMilliseconds(this.endDate, this.startDate)
-              )
-            )
-          ),
-          1
-        ),
-      ];
-    }
+    const dateRange = handleNext(this.startDate, this.endDate);
     const dateRangePicker = this._dateRangePicker;
     dateRangePicker.clickRange(dateRange);
     dateRangePicker.clickedApply();
   }
 
   private _handlePrev(): void {
-    let dateRange: [Date, Date];
-    if (isFirstDayOfMonth(this.startDate) && isLastDayOfMonth(this.endDate)) {
-      dateRange = [
-        subMonths(
-          this.startDate,
-          differenceInMonths(addMilliseconds(this.endDate, 1), this.startDate)
-        ),
-        subMilliseconds(roundToNearestHours(this.startDate), 1),
-      ];
-    } else {
-      dateRange = [
-        roundToNearestHours(
-          subMilliseconds(
-            this.startDate,
-            Math.max(
-              3600000,
-              differenceInMilliseconds(this.endDate, this.startDate)
-            )
-          )
-        ),
-        subMilliseconds(roundToNearestHours(this.startDate), 1),
-      ];
-    }
+    const dateRange = handlePrev(this.startDate, this.endDate);
     const dateRangePicker = this._dateRangePicker;
     dateRangePicker.clickRange(dateRange);
     dateRangePicker.clickedApply();
