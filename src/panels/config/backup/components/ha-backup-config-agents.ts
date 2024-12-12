@@ -1,6 +1,6 @@
 import { mdiDatabase } from "@mdi/js";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
@@ -82,6 +82,14 @@ class HaBackupConfigAgents extends LitElement {
                           />
                         `}
                     <div slot="headline">${name}</div>
+                    ${agentId === CLOUD_AGENT
+                      ? html`
+                          <div slot="supporting-text">
+                            It stores one backup. The oldest backups are
+                            deleted.
+                          </div>
+                        `
+                      : nothing}
                     <ha-switch
                       slot="end"
                       id=${agentId}
