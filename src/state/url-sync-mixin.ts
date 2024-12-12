@@ -1,10 +1,7 @@
 /* eslint-disable no-console */
 import type { PropertyValueMap, ReactiveElement } from "lit";
 import { mainWindow } from "../common/dom/get_main_window";
-import {
-  closeLastDialog,
-  showDialogFromHistory,
-} from "../dialogs/make-dialog-manager";
+import { closeLastDialog } from "../dialogs/make-dialog-manager";
 import type { ProvideHassElement } from "../mixins/provide-hass-lit-mixin";
 import type { Constructor } from "../types";
 
@@ -43,7 +40,9 @@ export const urlSyncMixin = <
         ): void {
           super.firstUpdated(changedProperties);
           if (mainWindow.history.state?.dialog) {
-            showDialogFromHistory(mainWindow.history.state.dialog);
+            // this is a page refresh with a dialog open
+            // the dialog stack must be empty in this case so this state should be cleaned up
+            mainWindow.history.back();
           }
         }
 
@@ -59,8 +58,8 @@ export const urlSyncMixin = <
             }
             if ("dialog" in ev.state) {
               // coming to a dialog
-              // in practice the dialog stack is empty when navigating forward, so this is a no-op
-              showDialogFromHistory(ev.state.dialog);
+              // the dialog stack must be empty in this case so this state should be cleaned up
+              mainWindow.history.back();
             }
           }
         };

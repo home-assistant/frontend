@@ -125,25 +125,6 @@ export const showDialog = async (
   return true;
 };
 
-export const showDialogFromHistory = async (dialogTag: string) => {
-  const dialogState = OPEN_DIALOG_STACK.find(
-    (state) => state.dialogTag === dialogTag
-  );
-  if (dialogState) {
-    showDialog(
-      dialogState.element,
-      dialogState.root,
-      dialogTag,
-      dialogState.dialogParams,
-      dialogState.dialogImport,
-      false
-    );
-  } else {
-    // remove the dialog from history if already closed
-    mainWindow.history.back();
-  }
-};
-
 export const closeDialog = async (dialogTag: string): Promise<boolean> => {
   if (!(dialogTag in LOADED)) {
     return true;
