@@ -196,6 +196,17 @@ export class HaAutomationEditor extends SubscribeMixin(
           <ha-list-item
             graphic="icon"
             .disabled=${!stateObj}
+            @click=${this._editCategory}
+          >
+            ${this.hass.localize(
+              `ui.panel.config.scene.picker.${this._registryEntry?.categories?.automation ? "edit_category" : "assign_category"}`
+            )}
+            <ha-svg-icon slot="graphic" .path=${mdiTag}></ha-svg-icon>
+          </ha-list-item>
+
+          <ha-list-item
+            graphic="icon"
+            .disabled=${!stateObj}
             @click=${this._runActions}
           >
             ${this.hass.localize("ui.panel.config.automation.editor.run")}
@@ -229,17 +240,6 @@ export class HaAutomationEditor extends SubscribeMixin(
           >
             ${this.hass.localize("ui.panel.config.automation.editor.rename")}
             <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
-          </ha-list-item>
-
-          <ha-list-item
-            graphic="icon"
-            .disabled=${!stateObj}
-            @click=${this._editCategory}
-          >
-            ${this.hass.localize(
-              `ui.panel.config.scene.picker.${this._registryEntry?.categories?.automation ? "edit_category" : "assign_category"}`
-            )}
-            <ha-svg-icon slot="graphic" .path=${mdiTag}></ha-svg-icon>
           </ha-list-item>
           ${!useBlueprint
             ? html`

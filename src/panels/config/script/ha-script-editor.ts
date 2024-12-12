@@ -167,6 +167,17 @@ export class HaScriptEditor extends SubscribeMixin(
 
           <ha-list-item
             graphic="icon"
+            .disabled=${!stateObj}
+            @click=${this._editCategory}
+          >
+            ${this.hass.localize(
+              `ui.panel.config.scene.picker.${this._registryEntry?.categories?.script ? "edit_category" : "assign_category"}`
+            )}
+            <ha-svg-icon slot="graphic" .path=${mdiTag}></ha-svg-icon>
+          </ha-list-item>
+
+          <ha-list-item
+            graphic="icon"
             .disabled=${!this.scriptId}
             @click=${this._runScript}
           >
@@ -216,17 +227,6 @@ export class HaScriptEditor extends SubscribeMixin(
           >
             ${this.hass.localize("ui.panel.config.script.editor.rename")}
             <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
-          </ha-list-item>
-
-          <ha-list-item
-            graphic="icon"
-            .disabled=${!stateObj}
-            @click=${this._editCategory}
-          >
-            ${this.hass.localize(
-              `ui.panel.config.scene.picker.${this._registryEntry?.categories?.script ? "edit_category" : "assign_category"}`
-            )}
-            <ha-svg-icon slot="graphic" .path=${mdiTag}></ha-svg-icon>
           </ha-list-item>
           ${!useBlueprint
             ? html`
