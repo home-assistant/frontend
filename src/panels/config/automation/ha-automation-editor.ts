@@ -22,7 +22,6 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import memoizeOne from "memoize-one";
 import { consume } from "@lit-labs/context";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
@@ -54,9 +53,8 @@ import { substituteBlueprint } from "../../../data/blueprint";
 import { validateConfig } from "../../../data/config";
 import { UNAVAILABLE } from "../../../data/entity";
 import {
-  fetchEntityRegistry,
   type EntityRegistryEntry,
-    updateEntityRegistryEntry,
+  updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import {
   showAlertDialog,
@@ -888,9 +886,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
         },
         onClose: () => resolve(false),
         entityRegistryUpdate: this._entityRegistryUpdate,
-        entityRegistryEntry: this.entityRegistry.find(
-          (entry) => entry.unique_id === this.automationId
-        ),
+        entityRegistryEntry: this._registryEntry,
       });
     });
   }
