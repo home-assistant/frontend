@@ -48,6 +48,7 @@ import "./ha-menu-button";
 import "./ha-sortable";
 import "./ha-svg-icon";
 import "./user/ha-user-badge";
+import { preventDefault } from "../common/dom/prevent_default";
 
 const SHOW_AFTER_SPACER = ["config", "developer-tools"];
 
@@ -184,9 +185,11 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ attribute: false, type: Boolean }) public alwaysExpand = false;
+  @property({ attribute: "always-expand", type: Boolean })
+  public alwaysExpand = false;
 
-  @property({ attribute: false, type: Boolean }) public editMode = false;
+  @property({ attribute: "edit-mode", type: Boolean })
+  public editMode = false;
 
   @state() private _notifications?: PersistentNotification[];
 
@@ -402,6 +405,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         @focusout=${this._listboxFocusOut}
         @scroll=${this._listboxScroll}
         @keydown=${this._listboxKeydown}
+        @iron-activate=${preventDefault}
       >
         ${this.editMode
           ? this._renderPanelsEdit(beforeSpacer)

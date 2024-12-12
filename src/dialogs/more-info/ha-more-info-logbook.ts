@@ -4,7 +4,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { fireEvent } from "../../common/dom/fire_event";
 import { createSearchParam } from "../../common/url/search-params";
 import "../../panels/logbook/ha-logbook";
 import type { HomeAssistant } from "../../types";
@@ -36,7 +35,7 @@ export class MoreInfoLogbook extends LitElement {
         <div class="title">
           ${this.hass.localize("ui.dialogs.more_info_control.logbook")}
         </div>
-        <a href=${this._showMoreHref} @click=${this._close}
+        <a href=${this._showMoreHref}
           >${this.hass.localize("ui.dialogs.more_info_control.show_more")}</a
         >
       </div>
@@ -65,10 +64,6 @@ export class MoreInfoLogbook extends LitElement {
 
       this._showMoreHref = `/logbook?${createSearchParam(params)}`;
     }
-  }
-
-  private _close(): void {
-    setTimeout(() => fireEvent(this, "close-dialog"), 500);
   }
 
   static get styles() {

@@ -30,9 +30,10 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property() public identifier?: string;
 
-  @property({ attribute: false, type: Boolean }) public showNames = true;
+  @property({ attribute: "show-names", type: Boolean }) public showNames = true;
 
-  @property({ attribute: false, type: Boolean }) public clickForMoreInfo = true;
+  @property({ attribute: "click-for-more-info", type: Boolean })
+  public clickForMoreInfo = true;
 
   @property({ type: Boolean }) public chunked = false;
 

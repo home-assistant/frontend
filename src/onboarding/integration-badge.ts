@@ -11,8 +11,8 @@ class IntegrationBadge extends LitElement {
   // eslint-disable-next-line lit/no-native-attributes
   @property({ attribute: false }) public title!: string;
 
-  @property({ attribute: false, type: Boolean }) public darkOptimizedIcon =
-    false;
+  @property({ attribute: "dark-optimized-icon", type: Boolean })
+  public darkOptimizedIcon = false;
 
   @property({ attribute: false, type: Boolean, reflect: true })
   public clickable = false;

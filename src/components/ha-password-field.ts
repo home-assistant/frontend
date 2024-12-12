@@ -23,7 +23,8 @@ export class HaPasswordField extends LitElement {
 
   @property({ type: Boolean }) public icon = false;
 
-  @property({ attribute: false, type: Boolean }) public iconTrailing = false;
+  // eslint-disable-next-line lit/attribute-names
+  @property({ type: Boolean }) public iconTrailing = false;
 
   @property() public autocomplete?: string;
 
@@ -42,32 +43,38 @@ export class HaPasswordField extends LitElement {
 
   @property({ type: Boolean }) required = false;
 
-  @property({ attribute: false, type: Number }) minLength = -1;
+  // eslint-disable-next-line lit/attribute-names
+  @property({ type: Number }) minLength = -1;
 
-  @property({ attribute: false, type: Number }) maxLength = -1;
+  // eslint-disable-next-line lit/attribute-names
+  @property({ type: Number }) maxLength = -1;
 
   @property({ type: Boolean, reflect: true }) outlined = false;
 
   @property({ type: String }) helper = "";
 
-  @property({ attribute: false, type: Boolean }) validateOnInitialRender =
-    false;
+  // eslint-disable-next-line lit/attribute-names
+  @property({ type: Boolean }) validateOnInitialRender = false;
 
-  @property({ attribute: false, type: String }) validationMessage = "";
+  // eslint-disable-next-line lit/attribute-names
+  @property({ type: String }) validationMessage = "";
 
-  @property({ attribute: false, type: Boolean }) autoValidate = false;
+  // eslint-disable-next-line lit/attribute-names
+  @property({ type: Boolean }) autoValidate = false;
 
   @property({ type: String }) pattern = "";
 
   @property({ type: Number }) size: number | null = null;
 
-  @property({ attribute: false, type: Boolean }) helperPersistent = false;
+  // eslint-disable-next-line lit/attribute-names
+  @property({ type: Boolean }) helperPersistent = false;
 
-  @property({ attribute: false, type: Boolean }) charCounter:
-    | boolean
-    | TextAreaCharCounter = false;
+  // eslint-disable-next-line lit/attribute-names
+  @property({ type: Boolean }) charCounter: boolean | TextAreaCharCounter =
+    false;
 
-  @property({ attribute: false, type: Boolean }) endAligned = false;
+  // eslint-disable-next-line lit/attribute-names
+  @property({ type: Boolean }) endAligned = false;
 
   @property({ type: String }) prefix = "";
 
@@ -78,7 +85,8 @@ export class HaPasswordField extends LitElement {
   @property({ type: String, attribute: "input-mode" })
   inputMode!: string;
 
-  @property({ attribute: false, type: Boolean }) readOnly = false;
+  // eslint-disable-next-line lit/attribute-names
+  @property({ type: Boolean }) readOnly = false;
 
   // eslint-disable-next-line lit/no-native-attributes
   @property({ attribute: false, type: String }) autocapitalize = "";
@@ -133,6 +141,10 @@ export class HaPasswordField extends LitElement {
         @click=${this._toggleUnmaskedPassword}
         .path=${this._unmaskedPassword ? mdiEyeOff : mdiEye}
       ></ha-icon-button>`;
+  }
+
+  public focus(): void {
+    this._textField.focus();
   }
 
   public checkValidity(): boolean {

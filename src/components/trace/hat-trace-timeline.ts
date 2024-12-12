@@ -839,7 +839,7 @@ export class HaAutomationTracer extends LitElement {
 
     entries.push(html`
       <ha-timeline
-        lastItem
+        last-item
         .icon=${entry.icon}
         class=${ifDefined(entry.className)}
       >

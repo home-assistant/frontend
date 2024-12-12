@@ -99,7 +99,7 @@ export class HaPanelLogbook extends LitElement {
             .hass=${this.hass}
             .entityFilter=${filterLogbookCompatibleEntities}
             .value=${this._targetPickerValue}
-            addOnTop
+            add-on-top
             @value-changed=${this._targetsChanged}
           ></ha-target-picker>
         </div>

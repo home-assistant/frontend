@@ -21,7 +21,8 @@ export class HaIntegrationListItem extends ListItemBase {
 
   @property({ type: String, reflect: true }) graphic: GraphicType = "medium";
 
-  @property({ attribute: false, type: Boolean }) hasMeta = true;
+  // eslint-disable-next-line lit/attribute-names
+  @property({ type: Boolean }) hasMeta = true;
 
   @property({ type: Boolean }) brand = false;
 

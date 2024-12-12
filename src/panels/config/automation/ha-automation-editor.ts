@@ -1,6 +1,5 @@
 import "@material/mwc-button";
 import {
-  mdiCheck,
   mdiContentDuplicate,
   mdiContentSave,
   mdiDebugStepOver,
@@ -10,6 +9,7 @@ import {
   mdiInformationOutline,
   mdiPlay,
   mdiPlayCircleOutline,
+  mdiPlaylistEdit,
   mdiRenameBox,
   mdiRobotConfused,
   mdiStopCircleOutline,
@@ -64,6 +64,7 @@ import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-a
 import { showAutomationRenameDialog } from "./automation-rename-dialog/show-dialog-automation-rename";
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
+import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -82,7 +83,9 @@ declare global {
   }
 }
 
-export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
+export class HaAutomationEditor extends PreventUnsavedMixin(
+  KeyboardShortcutMixin(LitElement)
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public automationId: string | null = null;
@@ -91,7 +94,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   @property({ attribute: false }) public automations!: AutomationEntity[];
 
-  @property({ attribute: false, type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -259,27 +262,16 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
               `
             : nothing}
 
-          <li divider role="separator"></li>
-
-          <ha-list-item graphic="icon" @click=${this._switchUiMode}>
-            ${this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
-            ${this._mode === "gui"
-              ? html`<ha-svg-icon
-                  class="selected_menu_item"
-                  slot="graphic"
-                  .path=${mdiCheck}
-                ></ha-svg-icon>`
-              : ``}
-          </ha-list-item>
-          <ha-list-item graphic="icon" @click=${this._switchYamlMode}>
-            ${this.hass.localize("ui.panel.config.automation.editor.edit_yaml")}
-            ${this._mode === "yaml"
-              ? html`<ha-svg-icon
-                  class="selected_menu_item"
-                  slot="graphic"
-                  .path=${mdiCheck}
-                ></ha-svg-icon>`
-              : ``}
+          <ha-list-item
+            graphic="icon"
+            @click=${this._mode === "gui"
+              ? this._switchYamlMode
+              : this._switchUiMode}
+          >
+            ${this.hass.localize(
+              `ui.panel.config.automation.editor.edit_${this._mode === "gui" ? "yaml" : "ui"}`
+            )}
+            <ha-svg-icon slot="graphic" .path=${mdiPlaylistEdit}></ha-svg-icon>
           </ha-list-item>
 
           <li divider role="separator"></li>
@@ -852,8 +844,18 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     ev.detail.callback(this._config);
   }
 
-  protected handleKeyboardSave() {
-    this._saveAutomation();
+  protected supportedShortcuts(): SupportedShortcuts {
+    return {
+      s: () => this._saveAutomation(),
+    };
+  }
+
+  protected get isDirty() {
+    return this._dirty;
+  }
+
+  protected async promptDiscardChanges() {
+    return this._confirmUnsavedChanged();
   }
 
   static get styles(): CSSResultGroup {
@@ -900,9 +902,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         }
         ha-fab.dirty {
           bottom: 0;
-        }
-        .selected_menu_item {
-          color: var(--primary-color);
         }
         li[role="separator"] {
           border-bottom-color: var(--divider-color);
