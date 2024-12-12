@@ -1,5 +1,6 @@
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { LitElement, html } from "lit";
+import type { nothing, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { FlowType } from "../../../data/data_entry_flow";
 import type { GenericPreview } from "../../../data/preview";
@@ -46,7 +47,7 @@ export class FlowPreviewGeneric extends LitElement {
     }
   }
 
-  protected render() {
+  protected render(): TemplateResult | typeof nothing {
     if (this._error) {
       return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
     }
