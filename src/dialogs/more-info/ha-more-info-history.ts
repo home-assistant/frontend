@@ -3,7 +3,6 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { createSearchParam } from "../../common/url/search-params";
 import type { ChartResizeOptions } from "../../components/chart/ha-chart-base";
@@ -77,7 +76,7 @@ export class MoreInfoHistory extends LitElement {
             </div>
             ${__DEMO__
               ? nothing
-              : html`<a href=${this._showMoreHref} @click=${this._close}
+              : html`<a href=${this._showMoreHref}
                   >${this.hass.localize(
                     "ui.dialogs.more_info_control.show_more"
                   )}</a
@@ -242,10 +241,6 @@ export class MoreInfoHistory extends LitElement {
       this._error = err;
     });
     this._setRedrawTimer();
-  }
-
-  private _close(): void {
-    setTimeout(() => fireEvent(this, "close-dialog"), 500);
   }
 
   static styles = css`
