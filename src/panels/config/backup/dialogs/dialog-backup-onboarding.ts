@@ -1,20 +1,21 @@
-import { mdiClose, mdiDownload, mdiKey } from "@mdi/js";
+import { mdiClose, mdiContentCopy, mdiDownload } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-button-prev";
+import "../../../../components/ha-icon-next";
 import "../../../../components/ha-md-dialog";
 import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-password-field";
 import "../../../../components/ha-svg-icon";
-import "../../../../components/ha-icon-next";
 import type {
   BackupConfig,
   BackupMutableConfig,
@@ -41,8 +42,7 @@ import type { BackupOnboardingDialogParams } from "./show-dialog-backup_onboardi
 
 const STEPS = [
   "welcome",
-  "new_key",
-  "save_key",
+  "key",
   "setup",
   "schedule",
   "data",
@@ -88,8 +88,6 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
 
   @state() private _config?: BackupConfig;
 
-  private _suggestedEncryptionKey?: string;
-
   public showDialog(params: BackupOnboardingDialogParams): void {
     this._params = params;
     this._step = STEPS[0];
@@ -106,8 +104,8 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
       this._config.create_backup.agent_ids.push(CLOUD_AGENT);
     }
 
+    this._config.create_backup.password = generateEncryptionKey();
     this._opened = true;
-    this._suggestedEncryptionKey = generateEncryptionKey();
   }
 
   public closeDialog(): void {
@@ -121,7 +119,6 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
     this._step = undefined;
     this._config = undefined;
     this._params = undefined;
-    this._suggestedEncryptionKey = undefined;
   }
 
   private async _done() {
@@ -237,10 +234,8 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
     switch (this._step) {
       case "welcome":
         return "";
-      case "new_key":
+      case "key":
         return "Encryption key";
-      case "save_key":
-        return "Save encryption key";
       case "setup":
         return "Set up your backup strategy";
       case "schedule":
@@ -256,9 +251,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
 
   private _isStepValid(): boolean {
     switch (this._step) {
-      case "new_key":
-        return !!this._config?.create_backup.password;
-      case "save_key":
+      case "key":
         return true;
       case "setup":
         return true;
@@ -296,37 +289,20 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
             </p>
           </div>
         `;
-      case "new_key":
+      case "key":
         return html`
           <p>
             All your backups are encrypted to keep your data private and secure.
-            You need this encryption key to restore any backup.
+            We recommend to save this key somewhere secure. As you can only
+            restore your data with the backup encryption key.
           </p>
-          <ha-password-field
-            placeholder="New encryption key"
-            @input=${this._encryptionKeyChanged}
-            .value=${this._config.create_backup.password ?? ""}
-          ></ha-password-field>
-          <ha-md-list>
-            <ha-md-list-item>
-              <ha-svg-icon slot="start" .path=${mdiKey}></ha-svg-icon>
-              <span slot="headline">Use suggested encryption key</span>
-              <span slot="supporting-text">
-                ${this._suggestedEncryptionKey}
-              </span>
-              <ha-button slot="end" @click=${this._useSuggestedEncryptionKey}>
-                Enter
-              </ha-button>
-            </ha-md-list-item>
-          </ha-md-list>
-        `;
-      case "save_key":
-        return html`
-          <p>
-            It’s important that you don’t lose this encryption key. We recommend
-            to save this key somewhere secure. As you can only restore your data
-            with the backup encryption key.
-          </p>
+          <div class="encryption-key">
+            <p>${this._config.create_backup.password}</p>
+            <ha-icon-button
+              .path=${mdiContentCopy}
+              @click=${this._copyKeyToClipboard}
+            ></ha-icon-button>
+          </div>
           <ha-md-list>
             <ha-md-list-item>
               <span slot="headline">Download emergency kit</span>
@@ -416,23 +392,11 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
     );
   }
 
-  private _encryptionKeyChanged(ev) {
-    const value = ev.target.value;
-    this._setEncryptionKey(value);
-  }
-
-  private _useSuggestedEncryptionKey() {
-    this._setEncryptionKey(this._suggestedEncryptionKey!);
-  }
-
-  private _setEncryptionKey(value: string) {
-    this._config = {
-      ...this._config!,
-      create_backup: {
-        ...this._config!.create_backup,
-        password: value,
-      },
-    };
+  private _copyKeyToClipboard() {
+    copyToClipboard(this._config!.create_backup.password!);
+    showToast(this, {
+      message: this.hass.localize("ui.common.copied_clipboard"),
+    });
   }
 
   private _dataConfig(config: BackupConfig): BackupConfigData {
@@ -493,7 +457,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
       css`
         ha-md-dialog {
           width: 90vw;
-          max-width: 500px;
+          max-width: 560px;
         }
         div[slot="content"] {
           margin-top: -16px;
@@ -522,6 +486,30 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
         }
         .welcome {
           text-align: center;
+        }
+        .encryption-key {
+          border: 1px solid var(--divider-color);
+          background-color: var(--primary-background-color);
+          border-radius: 8px;
+          padding: 16px;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 24px;
+        }
+        .encryption-key p {
+          margin: 0;
+          flex: 1;
+          font-family: "Roboto Mono", "Consolas", "Menlo", monospace;
+          font-size: 20px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 28px;
+          text-align: center;
+        }
+        .encryption-key ha-icon-button {
+          flex: none;
+          margin: -16px;
         }
       `,
     ];
