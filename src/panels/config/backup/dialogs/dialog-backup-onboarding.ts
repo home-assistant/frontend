@@ -362,6 +362,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
           <ha-backup-config-agents
             .hass=${this.hass}
             .value=${this._config.create_backup.agent_ids}
+            .cloudStatus=${this._params!.cloudStatus}
             @value-changed=${this._agentsConfigChanged}
           ></ha-backup-config-agents>
         `;

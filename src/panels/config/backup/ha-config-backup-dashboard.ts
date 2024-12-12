@@ -18,6 +18,7 @@ import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../../common/navigate";
+import { capitalizeFirstLetter } from "../../../common/string/capitalize-first-letter";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type {
   DataTableColumnContainer,
@@ -52,6 +53,7 @@ import {
   DEFAULT_MANAGER_STATE,
   subscribeBackupEvents,
 } from "../../../data/backup_manager";
+import type { CloudStatus } from "../../../data/cloud";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   showAlertDialog,
@@ -73,7 +75,6 @@ import { showBackupOnboardingDialog } from "./dialogs/show-dialog-backup_onboard
 import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
 import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
-import { capitalizeFirstLetter } from "../../../common/string/capitalize-first-letter";
 
 interface BackupRow extends BackupContent {
   formatted_type: string;
@@ -86,6 +87,8 @@ const TYPE_ORDER: Array<BackupType> = ["strategy", "custom"];
 @customElement("ha-config-backup-dashboard")
 class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public cloudStatus!: CloudStatus;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -507,7 +510,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   private async _newBackup(): Promise<void> {
     if (this._needsOnboarding) {
       const success = await showBackupOnboardingDialog(this, {
-        cloudStatus: this._cloudStatus,
+        cloudStatus: this.cloudStatus,
       });
       if (!success) {
         return;
@@ -610,7 +613,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
 
   private async _setupBackupStrategy() {
     const success = await showBackupOnboardingDialog(this, {
-      cloudStatus: this._cloudStatus,
+      cloudStatus: this.cloudStatus,
     });
     if (!success) {
       return;

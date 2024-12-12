@@ -9,11 +9,13 @@ import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-switch";
 import {
+  CLOUD_AGENT,
   compareAgents,
   computeBackupAgentName,
   fetchBackupAgentsInfo,
   isLocalAgent,
 } from "../../../../data/backup";
+import type { CloudStatus } from "../../../../data/cloud";
 import type { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
 
@@ -22,6 +24,8 @@ const DEFAULT_AGENTS = [];
 @customElement("ha-backup-config-agents")
 class HaBackupConfigAgents extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public cloudStatus!: CloudStatus;
 
   @state() private _agentIds: string[] = [];
 
@@ -34,7 +38,10 @@ class HaBackupConfigAgents extends LitElement {
 
   private async _fetchAgents() {
     const { agents } = await fetchBackupAgentsInfo(this.hass);
-    this._agentIds = agents.map((agent) => agent.agent_id).sort(compareAgents);
+    this._agentIds = agents
+      .map((agent) => agent.agent_id)
+      .filter((id) => id !== CLOUD_AGENT || this.cloudStatus.logged_in)
+      .sort(compareAgents);
   }
 
   private get _value() {
@@ -102,9 +109,9 @@ class HaBackupConfigAgents extends LitElement {
     }
 
     // Ensure agents exist in the list
-    this.value = this.value.filter((agent) =>
-      this._agentIds.some((id) => id === agent)
-    );
+    this.value = this.value
+      .filter((agent) => this._agentIds.some((id) => id === agent))
+      .filter((id) => id !== CLOUD_AGENT || this.cloudStatus);
     fireEvent(this, "value-changed", { value: this.value });
   }
 
