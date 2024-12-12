@@ -237,7 +237,6 @@ class HaDomainIntegrations extends LitElement {
       ["cloud", "google_assistant", "alexa"].includes(domain) &&
       isComponentLoaded(this.hass, "cloud")
     ) {
-      fireEvent(this, "close-dialog");
       navigate("/config/cloud");
       return;
     }

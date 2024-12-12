@@ -164,7 +164,6 @@ export class HaRelatedItems extends LitElement {
                 return html`
                   <a
                     href=${`/config/integrations/integration/${entry.domain}#config_entry=${entry.entry_id}`}
-                    @click=${this._navigateAwayClose}
                   >
                     <ha-list-item hasMeta graphic="icon">
                       <img
@@ -191,7 +190,6 @@ export class HaRelatedItems extends LitElement {
                   (integration) =>
                     html`<a
                       href=${`/config/integrations/integration/${integration}`}
-                      @click=${this._navigateAwayClose}
                     >
                       <ha-list-item hasMeta graphic="icon">
                         <img
@@ -223,10 +221,7 @@ export class HaRelatedItems extends LitElement {
                 return nothing;
               }
               return html`
-                <a
-                  href="/config/devices/device/${relatedDeviceId}"
-                  @click=${this._navigateAwayClose}
-                >
+                <a href="/config/devices/device/${relatedDeviceId}">
                   <ha-list-item hasMeta graphic="icon">
                     <ha-svg-icon
                       .path=${mdiDevices}
@@ -251,10 +246,7 @@ export class HaRelatedItems extends LitElement {
                   return nothing;
                 }
                 return html`
-                  <a
-                    href="/config/areas/area/${relatedAreaId}"
-                    @click=${this._navigateAwayClose}
-                  >
+                  <a href="/config/areas/area/${relatedAreaId}">
                     <ha-list-item
                       hasMeta
                       .graphic=${area.picture ? "avatar" : "icon"}
@@ -364,10 +356,7 @@ export class HaRelatedItems extends LitElement {
                 const blueprintMeta = this._blueprints
                   ? this._blueprints.automation[path]
                   : undefined;
-                return html`<a
-                  href="/config/blueprint/dashboard"
-                  @click=${this._navigateAwayClose}
-                >
+                return html`<a href="/config/blueprint/dashboard">
                   <ha-list-item hasMeta graphic="icon">
                     <ha-svg-icon
                       .path=${mdiPaletteSwatch}
@@ -421,10 +410,7 @@ export class HaRelatedItems extends LitElement {
                 const blueprintMeta = this._blueprints
                   ? this._blueprints.script[path]
                   : undefined;
-                return html`<a
-                  href="/config/blueprint/dashboard"
-                  @click=${this._navigateAwayClose}
-                >
+                return html`<a href="/config/blueprint/dashboard">
                   <ha-list-item hasMeta graphic="icon">
                     <ha-svg-icon
                       .path=${mdiPaletteSwatch}
@@ -466,14 +452,6 @@ export class HaRelatedItems extends LitElement {
           `
         : nothing}
     `;
-  }
-
-  private async _navigateAwayClose() {
-    // allow new page to open before closing dialog
-    await new Promise((resolve) => {
-      setTimeout(resolve, 0);
-    });
-    fireEvent(this, "close-dialog");
   }
 
   private async _findRelated() {
