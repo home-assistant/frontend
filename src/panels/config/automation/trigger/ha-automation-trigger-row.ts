@@ -651,6 +651,9 @@ export default class HaAutomationTriggerRow extends LitElement {
         ha-button-menu {
           --mdc-theme-text-primary-on-background: var(--primary-text-color);
         }
+        ha-card {
+          overflow: hidden;
+        }
         .disabled {
           opacity: 0.5;
           pointer-events: none;
@@ -683,8 +686,6 @@ export default class HaAutomationTriggerRow extends LitElement {
         .disabled-bar {
           background: var(--divider-color, #e0e0e0);
           text-align: center;
-          border-top-right-radius: var(--ha-card-border-radius);
-          border-top-left-radius: var(--ha-card-border-radius);
         }
         .triggered {
           cursor: pointer;
@@ -701,8 +702,6 @@ export default class HaAutomationTriggerRow extends LitElement {
           overflow: hidden;
           transition: max-height 0.3s;
           text-align: center;
-          border-top-right-radius: var(--ha-card-border-radius, 12px);
-          border-top-left-radius: var(--ha-card-border-radius, 12px);
         }
         .triggered.active {
           max-height: 100px;
