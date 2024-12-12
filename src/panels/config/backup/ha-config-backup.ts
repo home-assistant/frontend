@@ -37,6 +37,7 @@ class HaConfigBackup extends HassRouterPage {
   protected updatePageEl(pageEl, changedProps: PropertyValues) {
     pageEl.hass = this.hass;
     pageEl.route = this.routeTail;
+    pageEl.narrow = this.narrow;
 
     if (
       (!changedProps || changedProps.has("route")) &&
