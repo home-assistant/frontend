@@ -67,9 +67,10 @@ import type { HaManualScriptEditor } from "./manual-script-editor";
 import { substituteBlueprint } from "../../../data/blueprint";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
+import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 
 export class HaScriptEditor extends SubscribeMixin(
-  KeyboardShortcutMixin(LitElement)
+  PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
 ) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -882,6 +883,14 @@ export class HaScriptEditor extends SubscribeMixin(
     return {
       s: () => this._saveScript(),
     };
+  }
+
+  protected get isDirty() {
+    return this._dirty;
+  }
+
+  protected async promptDiscardChanges() {
+    return this._confirmUnsavedChanged();
   }
 
   static get styles(): CSSResultGroup {

@@ -73,6 +73,7 @@ import "./manual-automation-editor";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -92,7 +93,7 @@ declare global {
 }
 
 export class HaAutomationEditor extends SubscribeMixin(
-  KeyboardShortcutMixin(LitElement)
+  PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
 ) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -915,6 +916,14 @@ export class HaAutomationEditor extends SubscribeMixin(
     return {
       s: () => this._saveAutomation(),
     };
+  }
+
+  protected get isDirty() {
+    return this._dirty;
+  }
+
+  protected async promptDiscardChanges() {
+    return this._confirmUnsavedChanged();
   }
 
   static get styles(): CSSResultGroup {
