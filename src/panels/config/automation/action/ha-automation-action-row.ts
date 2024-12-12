@@ -624,7 +624,6 @@ export default class HaAutomationActionRow extends LitElement {
         ha-expansion-panel {
           --expansion-panel-summary-padding: 0 0 0 8px;
           --expansion-panel-content-padding: 0;
-          --ha-card-border-radius: 0;
         }
         h3 {
           margin: 0;
