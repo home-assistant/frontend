@@ -14,6 +14,7 @@ import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-password-field";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-icon-next";
 import type {
   BackupConfig,
   BackupMutableConfig,
@@ -42,12 +43,15 @@ const STEPS = [
   "welcome",
   "new_key",
   "save_key",
+  "setup",
   "schedule",
   "data",
   "locations",
 ] as const;
 
 type Step = (typeof STEPS)[number];
+
+const FULL_DIALOG_STEPS = new Set<Step>(["setup"]);
 
 const RECOMMENDED_CONFIG: BackupConfig = {
   create_backup: {
@@ -173,7 +177,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
   }
 
   protected render() {
-    if (!this._opened || !this._params) {
+    if (!this._opened || !this._params || !this._step) {
       return nothing;
     }
 
@@ -202,25 +206,29 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
           <span slot="title">${this._stepTitle}</span>
         </ha-dialog-header>
         <div slot="content">${this._renderStepContent()}</div>
-        <div slot="actions">
-          ${isLastStep
-            ? html`
-                <ha-button
-                  @click=${this._done}
-                  .disabled=${!this._isStepValid()}
-                >
-                  Save
-                </ha-button>
-              `
-            : html`
-                <ha-button
-                  @click=${this._nextStep}
-                  .disabled=${!this._isStepValid()}
-                >
-                  Next
-                </ha-button>
-              `}
-        </div>
+        ${!FULL_DIALOG_STEPS.has(this._step)
+          ? html`
+              <div slot="actions">
+                ${isLastStep
+                  ? html`
+                      <ha-button
+                        @click=${this._done}
+                        .disabled=${!this._isStepValid()}
+                      >
+                        Save
+                      </ha-button>
+                    `
+                  : html`
+                      <ha-button
+                        @click=${this._nextStep}
+                        .disabled=${!this._isStepValid()}
+                      >
+                        Next
+                      </ha-button>
+                    `}
+              </div>
+            `
+          : nothing}
       </ha-md-dialog>
     `;
   }
@@ -233,6 +241,8 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
         return "Encryption key";
       case "save_key":
         return "Save encryption key";
+      case "setup":
+        return "Set up your backup strategy";
       case "schedule":
         return "Automatic backups";
       case "data":
@@ -249,6 +259,8 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
       case "new_key":
         return !!this._config?.create_backup.password;
       case "save_key":
+        return true;
+      case "setup":
         return true;
       case "schedule":
         return !!this._config?.schedule;
@@ -325,6 +337,29 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
                 <ha-svg-icon .path=${mdiDownload} slot="icon"></ha-svg-icon>
                 Download
               </ha-button>
+            </ha-md-list-item>
+          </ha-md-list>
+        `;
+      case "setup":
+        return html`
+          <p>
+            It is recommended to create a daily backup and keep copies of the
+            last 3 days on two different locations. And one of them is off-site.
+          </p>
+          <ha-md-list class="full">
+            <ha-md-list-item type="button" @click=${this._done}>
+              <span slot="headline">Recommended settings</span>
+              <span slot="supporting-text">
+                Set the proven backup strategy of daily backup.
+              </span>
+              <ha-icon-next slot="end"> </ha-icon-next>
+            </ha-md-list-item>
+            <ha-md-list-item type="button" @click=${this._nextStep}>
+              <span slot="headline">Custom settings</span>
+              <span slot="supporting-text">
+                Select your own automation, data and locations
+              </span>
+              <ha-icon-next slot="end"> </ha-icon-next>
             </ha-md-list-item>
           </ha-md-list>
         `;
@@ -467,6 +502,12 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
           background: none;
           --md-list-item-leading-space: 0;
           --md-list-item-trailing-space: 0;
+        }
+        ha-md-list.full {
+          --md-list-item-leading-space: 24px;
+          --md-list-item-trailing-space: 24px;
+          margin-left: -24px;
+          margin-right: -24px;
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           ha-md-dialog {

@@ -501,7 +501,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   }
 
   private get _needsOnboarding() {
-    return this._config && !this._config.create_backup.password;
+    return !this._config?.create_backup.password;
   }
 
   private async _uploadBackup(ev) {
@@ -613,7 +613,9 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
       return;
     }
 
-    await this._fetchBackupConfig();
+    this._fetchBackupConfig();
+    await generateBackupWithStrategySettings(this.hass);
+    await this._fetchBackupInfo();
   }
 
   static get styles(): CSSResultGroup {
