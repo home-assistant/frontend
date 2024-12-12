@@ -1,12 +1,16 @@
-import { html } from "lit";
+import { html, nothing } from "lit";
 import { customElement } from "lit/decorators";
 import { FlowPreviewGeneric } from "./flow-preview-generic";
 import "../../../components/ha-hls-player";
+import "../../../components/ha-circular-progress";
 
 @customElement("flow-preview-generic_camera")
 class FlowPreviewGenericCamera extends FlowPreviewGeneric {
   protected override render() {
     if (!this._preview) {
+      return nothing;
+    }
+    if (this._error) {
       return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
     }
 
@@ -21,14 +25,25 @@ class FlowPreviewGenericCamera extends FlowPreviewGeneric {
       : ""}
     ${streamUrl
       ? html`<p>Stream:</p>
+          <ha-circular-progress
+            class="render-spinner"
+            id="hls-load-spinner"
+            indeterminate
+            size="large"
+          ></ha-circular-progress>
           <ha-hls-player
             autoplay
             playsinline
             .hass=${this.hass}
             .url=${streamUrl}
-            posterUrl="/static/icons/spinner-48x48.svg"
           ></ha-hls-player>`
       : ""}`;
+  }
+
+  protected firstUpdated() {
+    this.addEventListener("load", () => {
+      this.shadowRoot!.getElementById("hls-load-spinner")?.remove();
+    });
   }
 }
 
