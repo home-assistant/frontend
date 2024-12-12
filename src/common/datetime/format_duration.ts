@@ -1,10 +1,12 @@
+import type { DurationInput } from "@formatjs/intl-durationformat/src/types";
+import memoizeOne from "memoize-one";
 import type { HaDurationData } from "../../components/ha-duration-input";
 import type { FrontendLocaleData } from "../../data/translation";
-import { formatListWithAnds } from "../string/format-list";
+import { round } from "../number/round";
 
 const leftPad = (num: number) => (num < 10 ? `0${num}` : num);
 
-export const formatDuration = (
+export const formatNumericDuration = (
   locale: FrontendLocaleData,
   duration: HaDurationData
 ) => {
@@ -44,61 +46,99 @@ export const formatDuration = (
   return null;
 };
 
+const formatDurationLongMem = memoizeOne(
+  (locale: FrontendLocaleData) =>
+    new Intl.DurationFormat(locale.language, {
+      style: "long",
+    })
+);
+
 export const formatDurationLong = (
   locale: FrontendLocaleData,
   duration: HaDurationData
-) => {
-  const d = duration.days || 0;
-  const h = duration.hours || 0;
-  const m = duration.minutes || 0;
-  const s = duration.seconds || 0;
-  const ms = duration.milliseconds || 0;
+) => formatDurationLongMem(locale).format(duration);
 
-  const parts: string[] = [];
-  if (d > 0) {
-    parts.push(
-      Intl.NumberFormat(locale.language, {
-        style: "unit",
-        unit: "day",
-        unitDisplay: "long",
-      }).format(d)
-    );
+const formatDigitalDurationMem = memoizeOne(
+  (locale: FrontendLocaleData) =>
+    new Intl.DurationFormat(locale.language, {
+      style: "digital",
+      hoursDisplay: "auto",
+    })
+);
+
+export const formatDurationDigital = (
+  locale: FrontendLocaleData,
+  duration: HaDurationData
+) => formatDigitalDurationMem(locale).format(duration);
+
+export const DURATION_UNITS = ["min", "h", "d"] as const;
+
+type DurationUnit = (typeof DURATION_UNITS)[number];
+
+const formatDurationDayMem = memoizeOne(
+  (locale: FrontendLocaleData) =>
+    new Intl.DurationFormat(locale.language, {
+      style: "narrow",
+      daysDisplay: "always",
+    })
+);
+
+const formatDurationHourMem = memoizeOne(
+  (locale: FrontendLocaleData) =>
+    new Intl.DurationFormat(locale.language, {
+      style: "narrow",
+      hoursDisplay: "always",
+    })
+);
+
+const formatDurationMinuteMem = memoizeOne(
+  (locale: FrontendLocaleData) =>
+    new Intl.DurationFormat(locale.language, {
+      style: "narrow",
+      minutesDisplay: "always",
+    })
+);
+
+export const formatDuration = (
+  locale: FrontendLocaleData,
+  duration: string,
+  unit: DurationUnit,
+  precision?: number | undefined
+): string => {
+  const value =
+    precision !== undefined
+      ? round(parseFloat(duration), precision)
+      : parseFloat(duration);
+
+  switch (unit) {
+    case "d": {
+      const days = Math.floor(value);
+      const hours = Math.floor((value - days) * 24);
+      const input: DurationInput = {
+        days,
+        hours,
+      };
+      return formatDurationDayMem(locale).format(input);
+    }
+    case "h": {
+      const hours = Math.floor(value);
+      const minutes = Math.floor((value - hours) * 60);
+      const input: DurationInput = {
+        hours,
+        minutes,
+      };
+      return formatDurationHourMem(locale).format(input);
+    }
+    case "min": {
+      const minutes = Math.floor(value);
+      const seconds = Math.floor((value - minutes) * 60);
+      const input: DurationInput = {
+        minutes,
+        seconds,
+      };
+      return formatDurationMinuteMem(locale).format(input);
+    }
+    default:
+      throw new Error("Invalid duration unit");
   }
-  if (h > 0) {
-    parts.push(
-      Intl.NumberFormat(locale.language, {
-        style: "unit",
-        unit: "hour",
-        unitDisplay: "long",
-      }).format(h)
-    );
-  }
-  if (m > 0) {
-    parts.push(
-      Intl.NumberFormat(locale.language, {
-        style: "unit",
-        unit: "minute",
-        unitDisplay: "long",
-      }).format(m)
-    );
-  }
-  if (s > 0) {
-    parts.push(
-      Intl.NumberFormat(locale.language, {
-        style: "unit",
-        unit: "second",
-        unitDisplay: "long",
-      }).format(s)
-    );
-  }
-  if (ms > 0) {
-    parts.push(
-      Intl.NumberFormat(locale.language, {
-        style: "unit",
-        unit: "millisecond",
-        unitDisplay: "long",
-      }).format(ms)
-    );
-  }
-  return formatListWithAnds(locale, parts);
 };

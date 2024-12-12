@@ -153,7 +153,7 @@ class HaPanelDevAction extends LitElement {
                   .hass=${this.hass}
                   .value=${this._serviceData}
                   .narrow=${this.narrow}
-                  showAdvanced
+                  show-advanced
                   @value-changed=${this._serviceDataChanged}
                   class="card-content"
                 ></ha-service-control>
@@ -203,10 +203,10 @@ class HaPanelDevAction extends LitElement {
               <div class="card-content">
                 <ha-yaml-editor
                   .hass=${this.hass}
-                  copyClipboard
-                  readOnly
-                  autoUpdate
-                  hasExtraActions
+                  copy-clipboard
+                  read-only
+                  auto-update
+                  has-extra-actions
                   .value=${this._response}
                 >
                   <ha-button slot="extra-actions" @click=${this._copyTemplate}

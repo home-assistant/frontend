@@ -23,7 +23,7 @@ class ZWaveJSProvisioned extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property() public configEntryId!: string;
+  @property({ attribute: false }) public configEntryId!: string;
 
   @state() private _provisioningEntries: ZwaveJSProvisioningEntry[] = [];
 

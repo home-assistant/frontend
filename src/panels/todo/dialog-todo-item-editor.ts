@@ -168,7 +168,7 @@ class DialogTodoItemEditor extends LitElement {
                     .locale=${this.hass.locale}
                     .disabled=${!canUpdate}
                     @value-changed=${this._dueDateChanged}
-                    canClear
+                    can-clear
                   ></ha-date-input>
                   ${this._todoListSupportsFeature(
                     TodoListEntityFeature.SET_DUE_DATETIME_ON_ITEM

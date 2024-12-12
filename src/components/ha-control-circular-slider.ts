@@ -435,7 +435,7 @@ export class HaControlCircularSlider extends LitElement {
     this._activeSlider = undefined;
   }
 
-  _handleKeyUp(e: KeyboardEvent) {
+  private _handleKeyUp(e: KeyboardEvent) {
     if (!A11Y_KEY_CODES.has(e.code)) return;
     this._activeSlider = (e.currentTarget as any).id as ActiveSlider;
     e.preventDefault();

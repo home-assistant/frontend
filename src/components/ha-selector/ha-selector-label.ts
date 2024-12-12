@@ -34,6 +34,7 @@ export class HaLabelSelector extends LitElement {
           no-add
           .hass=${this.hass}
           .value=${ensureArray(this.value ?? [])}
+          .required=${this.required}
           .disabled=${this.disabled}
           .label=${this.label}
           @value-changed=${this._handleChange}
@@ -46,6 +47,7 @@ export class HaLabelSelector extends LitElement {
         no-add
         .hass=${this.hass}
         .value=${this.value}
+        .required=${this.required}
         .disabled=${this.disabled}
         .label=${this.label}
         @value-changed=${this._handleChange}

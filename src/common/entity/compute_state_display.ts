@@ -4,10 +4,7 @@ import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
 import type { FrontendLocaleData } from "../../data/translation";
 import { TimeZone } from "../../data/translation";
 import type { HomeAssistant } from "../../types";
-import {
-  UNIT_TO_MILLISECOND_CONVERT,
-  formatDuration,
-} from "../datetime/duration";
+import { DURATION_UNITS, formatDuration } from "../datetime/format_duration";
 import { formatDate } from "../datetime/format_date";
 import { formatDateTime } from "../datetime/format_date_time";
 import { formatTime } from "../datetime/format_time";
@@ -32,7 +29,6 @@ export const computeStateDisplay = (
   const entity = entities?.[stateObj.entity_id] as
     | EntityRegistryDisplayEntry
     | undefined;
-
   return computeStateDisplayFromEntityAttributes(
     localize,
     locale,
@@ -60,22 +56,29 @@ export const computeStateDisplayFromEntityAttributes = (
   }
 
   const domain = computeDomain(entityId);
-
+  const is_number_domain =
+    domain === "counter" || domain === "number" || domain === "input_number";
   // Entities with a `unit_of_measurement` or `state_class` are numeric values and should use `formatNumber`
   if (
     isNumericFromAttributes(
       attributes,
       domain === "sensor" ? sensorNumericDeviceClasses : []
-    )
+    ) ||
+    is_number_domain
   ) {
     // state is duration
     if (
       attributes.device_class === "duration" &&
       attributes.unit_of_measurement &&
-      UNIT_TO_MILLISECOND_CONVERT[attributes.unit_of_measurement]
+      DURATION_UNITS.includes(attributes.unit_of_measurement)
     ) {
       try {
-        return formatDuration(state, attributes.unit_of_measurement);
+        return formatDuration(
+          locale,
+          state,
+          attributes.unit_of_measurement,
+          entity?.display_precision
+        );
       } catch (_err) {
         // fallback to default
       }
@@ -162,20 +165,6 @@ export const computeStateDisplayFromEntityAttributes = (
       // just return the state string in that case.
       return state;
     }
-  }
-
-  // `counter` `number` and `input_number` domains do not have a unit of measurement but should still use `formatNumber`
-  if (
-    domain === "counter" ||
-    domain === "number" ||
-    domain === "input_number"
-  ) {
-    // Format as an integer if the value and step are integers
-    return formatNumber(
-      state,
-      locale,
-      getNumberFormatOptions({ state, attributes } as HassEntity, entity)
-    );
   }
 
   // state is a timestamp
