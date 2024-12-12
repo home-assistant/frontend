@@ -716,12 +716,12 @@ export const getZwaveNodeRawConfigParameter = (
   property: number
 ): Promise<number> =>
   hass
-    .callWS({
+    .callWS<{ value: number }>({
       type: "zwave_js/get_raw_config_parameter",
       device_id,
       property,
     })
-    .then((res: any) => res.value);
+    .then((res) => res.value);
 
 export const reinterviewZwaveNode = (
   hass: HomeAssistant,

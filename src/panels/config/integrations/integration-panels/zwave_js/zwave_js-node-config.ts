@@ -214,7 +214,7 @@ class ZWaveJSNodeConfig extends LitElement {
             <zwave_js-custom-param
               .hass=${this.hass}
               .deviceId=${this.deviceId}
-              .onNewValue=${this._fetchData}
+              @new-value=${this._handleNewValue}
             ></zwave_js-custom-param>
           </ha-card>
         </ha-config-section>
@@ -388,6 +388,10 @@ class ZWaveJSNodeConfig extends LitElement {
       return true;
     }
     return false;
+  }
+
+  private _handleNewValue() {
+    this._fetchData();
   }
 
   private _switchToggled(ev) {

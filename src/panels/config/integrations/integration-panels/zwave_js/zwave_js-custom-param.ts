@@ -11,17 +11,13 @@ import {
   getZwaveNodeRawConfigParameter,
   setZwaveNodeRawConfigParameter,
 } from "../../../../../data/zwave_js";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 
 @customElement("zwave_js-custom-param")
 class ZWaveJSCustomParam extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public deviceId!: string;
-
-  @property({ attribute: false }) public onNewValue?: (
-    param: number,
-    value: number
-  ) => void;
 
   @state() private _customParamNumber?: number;
 
@@ -170,9 +166,10 @@ class ZWaveJSCustomParam extends LitElement {
         this._customParamNumber
       );
       this._value = value;
-      if (this.onNewValue) {
-        this.onNewValue(this._customParamNumber, value);
-      }
+      fireEvent(this, "new-value", {
+        property: this._customParamNumber,
+        value: this._value,
+      });
     } catch (err: any) {
       this._error = err?.message || "Unknown error";
     } finally {
@@ -214,9 +211,10 @@ class ZWaveJSCustomParam extends LitElement {
         this._valueSize,
         this._valueFormat
       );
-      if (this.onNewValue) {
-        this.onNewValue(this._customParamNumber, this._value);
-      }
+      fireEvent(this, "new-value", {
+        property: this._customParamNumber,
+        value: this._value,
+      });
     } catch (err: any) {
       this._error = err?.message || "Unknown error";
     } finally {
@@ -271,5 +269,11 @@ class ZWaveJSCustomParam extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "zwave_js-custom-param": ZWaveJSCustomParam;
+  }
+  interface HASSDomEvents {
+    "new-value": {
+      property: number;
+      value: number;
+    };
   }
 }
