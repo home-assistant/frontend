@@ -828,7 +828,9 @@
         "error": "Unable to load history",
         "duration": "Duration",
         "source_history": "Source: History",
-        "source_stats": "Source: Long term statistics"
+        "source_stats": "Source: Long term statistics",
+        "zoom_hint": "Use ctrl + scroll to zoom in/out",
+        "zoom_hint_mac": "Use ⌘ + scroll to zoom in/out"
       },
       "map": {
         "error": "Unable to load map"
@@ -2874,7 +2876,11 @@
               "cloud": {
                 "description": "Ideal if you don't have a powerful system at home."
               },
-              "local": { "title": "", "description": "", "setup": "" }
+              "local": {
+                "title": "Do-it-yourself",
+                "description": "Install add-ons or containers to run it on your own system. Powerful hardware is needed for fast responses.",
+                "setup": "Set up"
+              }
             },
             "cloud": {
               "title": "The power of Home Assistant Cloud",

@@ -1,5 +1,6 @@
 import "@material/mwc-button";
 import {
+  mdiCog,
   mdiContentDuplicate,
   mdiContentSave,
   mdiDebugStepOver,
@@ -12,12 +13,14 @@ import {
   mdiPlaylistEdit,
   mdiRenameBox,
   mdiRobotConfused,
+  mdiTag,
   mdiTransitConnection,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consume } from "@lit-labs/context";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
@@ -44,7 +47,10 @@ import {
   showScriptEditor,
   triggerScript,
 } from "../../../data/script";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
@@ -57,10 +63,14 @@ import "./blueprint-script-editor";
 import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
 import { substituteBlueprint } from "../../../data/blueprint";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
+import { fullEntitiesContext } from "../../../data/context";
+import { transform } from "../../../common/decorators/transform";
 
-export class HaScriptEditor extends PreventUnsavedMixin(
-  KeyboardShortcutMixin(LitElement)
+export class HaScriptEditor extends SubscribeMixin(
+  PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
 ) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -89,6 +99,15 @@ export class HaScriptEditor extends PreventUnsavedMixin(
   @state() private _mode: "gui" | "yaml" = "gui";
 
   @state() private _readOnly = false;
+
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  @transform<EntityRegistryEntry | undefined, EntityRegistryEntry[]>({
+    transformer: function (this: HaScriptEditor, value) {
+      return value.find(({ entity_id }) => entity_id === this._entityId);
+    },
+    watch: ["_entityId"],
+  })
+  private _registryEntry?: EntityRegistryEntry;
 
   @query("manual-script-editor")
   private _manualEditor?: HaManualScriptEditor;
@@ -141,6 +160,28 @@ export class HaScriptEditor extends PreventUnsavedMixin(
               slot="graphic"
               .path=${mdiInformationOutline}
             ></ha-svg-icon>
+          </ha-list-item>
+
+          <ha-list-item
+            graphic="icon"
+            .disabled=${!stateObj}
+            @click=${this._showSettings}
+          >
+            ${this.hass.localize(
+              "ui.panel.config.automation.picker.show_settings"
+            )}
+            <ha-svg-icon slot="graphic" .path=${mdiCog}></ha-svg-icon>
+          </ha-list-item>
+
+          <ha-list-item
+            graphic="icon"
+            .disabled=${!stateObj}
+            @click=${this._editCategory}
+          >
+            ${this.hass.localize(
+              `ui.panel.config.scene.picker.${this._registryEntry?.categories?.script ? "edit_category" : "assign_category"}`
+            )}
+            <ha-svg-icon slot="graphic" .path=${mdiTag}></ha-svg-icon>
           </ha-list-item>
 
           <ha-list-item
@@ -539,6 +580,31 @@ export class HaScriptEditor extends PreventUnsavedMixin(
       message: this.hass.localize("ui.notification_toast.triggered", {
         name: this._config!.alias,
       }),
+    });
+  }
+
+  private _showSettings() {
+    showMoreInfoDialog(this, {
+      entityId: this._entityId!,
+      view: "settings",
+    });
+  }
+
+  private _editCategory() {
+    if (!this._registryEntry) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.scene.picker.no_category_support"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.scene.picker.no_category_entity_reg"
+        ),
+      });
+      return;
+    }
+    showAssignCategoryDialog(this, {
+      scope: "script",
+      entityReg: this._registryEntry,
     });
   }
 

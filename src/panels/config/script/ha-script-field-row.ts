@@ -295,6 +295,9 @@ export default class HaScriptFieldRow extends LitElement {
         ha-icon-button {
           --mdc-theme-text-primary-on-background: var(--primary-text-color);
         }
+        ha-card {
+          overflow: hidden;
+        }
         .disabled {
           opacity: 0.5;
           pointer-events: none;
@@ -327,8 +330,6 @@ export default class HaScriptFieldRow extends LitElement {
         .disabled-bar {
           background: var(--divider-color, #e0e0e0);
           text-align: center;
-          border-top-right-radius: var(--ha-card-border-radius);
-          border-top-left-radius: var(--ha-card-border-radius);
         }
 
         ha-list-item[disabled] {
