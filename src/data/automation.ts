@@ -91,6 +91,8 @@ export interface StateTrigger extends BaseTrigger {
   attribute?: string;
   from?: string | string[];
   to?: string | string[];
+  not_from?: string | string[];
+  not_to?: string | string[];
   for?: string | number | ForDict;
 }
 

@@ -10,7 +10,9 @@ import {
   number,
   object,
   optional,
+  refine,
   string,
+  tuple,
   union,
 } from "superstruct";
 import memoizeOne from "memoize-one";
@@ -34,12 +36,15 @@ const stateTriggerStruct = assign(
     entity_id: optional(union([string(), array(string())])),
     attribute: optional(string()),
     from: optional(nullable(string())),
+    not_from: optional(tuple([literal("unavailable"), literal("unknown")])),
     to: optional(nullable(string())),
+    not_to: optional(tuple([literal("unavailable"), literal("unknown")])),
     for: optional(union([number(), string(), forDictStruct])),
   })
 );
 
 const ANY_STATE_VALUE = "__ANY_STATE_IGNORE_ATTRIBUTES__";
+const ANY_KNOWN_STATE_VALUE = "__ANY_KNOWN_STATE__";
 
 @customElement("ha-automation-trigger-state")
 export class HaStateTrigger extends LitElement implements TriggerElement {
@@ -132,6 +137,12 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
                       ),
                       value: ANY_STATE_VALUE,
                     },
+                    {
+                      label: localize(
+                        "ui.panel.config.automation.editor.triggers.type.state.any_known_state"
+                      ),
+                      value: ANY_KNOWN_STATE_VALUE,
+                    },
                   ]) as any,
               entity_id: entityId ? entityId[0] : undefined,
               attribute: attribute,
@@ -150,6 +161,12 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
                         "ui.panel.config.automation.editor.triggers.type.state.any_state_ignore_attributes"
                       ),
                       value: ANY_STATE_VALUE,
+                    },
+                    {
+                      label: localize(
+                        "ui.panel.config.automation.editor.triggers.type.state.any_known_state"
+                      ),
+                      value: ANY_KNOWN_STATE_VALUE,
                     },
                   ]) as any,
               entity_id: entityId ? entityId[0] : undefined,
@@ -182,7 +199,22 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
       return false;
     }
     try {
-      assert(this.trigger, stateTriggerStruct);
+      assert(
+        this.trigger,
+        refine(
+          stateTriggerStruct,
+          "one each of: to/not_to, from/not_from",
+          (value) => {
+            if ("to" in value && "not_to" in value) {
+              return "bad";
+            }
+            if ("from" in value && "not_from" in value) {
+              return "bad";
+            }
+            return true;
+          }
+        )
+      );
     } catch (e: any) {
       fireEvent(this, "ui-mode-not-available", e);
       return false;
@@ -203,6 +235,12 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     }
     if (!data.attribute && data.from === null) {
       data.from = ANY_STATE_VALUE;
+    }
+    if ("not_to" in data) {
+      data.to = ANY_KNOWN_STATE_VALUE;
+    }
+    if ("not_from" in data) {
+      data.from = ANY_KNOWN_STATE_VALUE;
     }
     const schema = this._schema(
       this.hass.localize,
@@ -231,6 +269,22 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     }
     if (newTrigger.from === ANY_STATE_VALUE) {
       newTrigger.from = newTrigger.attribute ? undefined : null;
+    }
+    if (newTrigger.to === ANY_KNOWN_STATE_VALUE) {
+      delete newTrigger.to;
+      newTrigger.not_to = newTrigger.attribute
+        ? undefined
+        : ["unavailable", "unknown"];
+    } else {
+      delete newTrigger.not_to;
+    }
+    if (newTrigger.from === ANY_KNOWN_STATE_VALUE) {
+      delete newTrigger.from;
+      newTrigger.not_from = newTrigger.attribute
+        ? undefined
+        : ["unavailable", "unknown"];
+    } else {
+      delete newTrigger.not_from;
     }
 
     Object.keys(newTrigger).forEach((key) =>

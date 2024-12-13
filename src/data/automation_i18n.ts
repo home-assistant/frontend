@@ -319,7 +319,9 @@ const tryDescribeTrigger = (
     if (
       !trigger.attribute &&
       trigger.from === undefined &&
-      trigger.to === undefined
+      trigger.to === undefined &&
+      trigger.not_from === undefined &&
+      trigger.not_to === undefined
     ) {
       toChoice = "special";
     }
