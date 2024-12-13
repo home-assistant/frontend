@@ -28,9 +28,9 @@ import {
   calcDate,
   calcDateProperty,
   calcDateDifferenceProperty,
+  shiftDateRange,
 } from "../../../common/datetime/calc_date";
 import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
-import { handlePrev, handleNext } from "../../../common/datetime/calc_timespan";
 import {
   formatDate,
   formatDateMonthYear,
@@ -511,11 +511,15 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   private _shift(forward: boolean) {
     if (!this._startDate) return;
-    const dateRange = forward
-      ? handleNext(this._startDate, this._endDate!)
-      : handlePrev(this._startDate, this._endDate!);
-    this._startDate = dateRange[0];
-    this._endDate = dateRange[1];
+    const { start, end } = shiftDateRange(
+      this._startDate,
+      this._endDate!,
+      forward,
+      this.hass.locale,
+      this.hass.config
+    );
+    this._startDate = start;
+    this._endDate = end;
     this._updateCollectionPeriod();
   }
 

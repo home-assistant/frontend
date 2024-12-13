@@ -19,9 +19,8 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
-import { calcDate } from "../common/datetime/calc_date";
+import { calcDate, shiftDateRange } from "../common/datetime/calc_date";
 import { firstWeekdayIndex } from "../common/datetime/first_weekday";
-import { handlePrev, handleNext } from "../common/datetime/calc_timespan";
 import {
   formatShortDateTimeWithYear,
   formatShortDateTime,
@@ -287,15 +286,28 @@ export class HaDateRangePicker extends LitElement {
     `;
   }
 
-  private _handleNext(): void {
-    const dateRange = handleNext(this.startDate, this.endDate);
-    const dateRangePicker = this._dateRangePicker;
-    dateRangePicker.clickRange(dateRange);
-    dateRangePicker.clickedApply();
+  private _handleNext(e): void {
+    if (e && e.stopPropagation) e.stopPropagation();
+    this._shift(true);
   }
 
-  private _handlePrev(): void {
-    const dateRange = handlePrev(this.startDate, this.endDate);
+  private _handlePrev(e): void {
+    if (e && e.stopPropagation) e.stopPropagation();
+    this._shift(false);
+  }
+
+  private _shift(forward: boolean) {
+    if (!this.startDate) return;
+    const { start, end } = shiftDateRange(
+      this.startDate,
+      this.endDate,
+      forward,
+      this.hass.locale,
+      this.hass.config
+    );
+    this.startDate = start;
+    this.endDate = end;
+    const dateRange = [start, end];
     const dateRangePicker = this._dateRangePicker;
     dateRangePicker.clickRange(dateRange);
     dateRangePicker.clickedApply();
