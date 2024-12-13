@@ -23,26 +23,13 @@ export class HUIViewBackground extends LitElement {
       "--lovelace-background"
     );
 
-    const fixedBackground = this._isFixedBackground(
-      this.background || themeBackground
-    );
     const viewBackground = this._computeBackgroundProperty(this.background);
-    this.toggleAttribute("fixed-background", fixedBackground);
     this.style.setProperty("--view-background", viewBackground);
 
     const viewBackgroundOpacity = this._computeBackgroundOpacityProperty(
       this.background
     );
     this.style.setProperty("--view-background-opacity", viewBackgroundOpacity);
-  }
-
-  private _isFixedBackground(
-    background?: string | LovelaceViewBackgroundConfig
-  ) {
-    if (typeof background === "string") {
-      return background.includes(" fixed");
-    }
-    return false;
   }
 
   private _computeBackgroundProperty(
@@ -95,6 +82,10 @@ export class HUIViewBackground extends LitElement {
       :host {
         z-index: -1;
         position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
         height: 100%;
         width: 100%;
         background: var(
@@ -102,7 +93,6 @@ export class HUIViewBackground extends LitElement {
           var(--lovelace-background, var(--primary-background-color))
         );
         opacity: var(--view-background-opacity);
-        background-attachment: scroll !important;
       }
     `;
   }
