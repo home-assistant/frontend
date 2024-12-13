@@ -1,7 +1,7 @@
 import { mdiClose, mdiCog, mdiPencil } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
@@ -14,6 +14,7 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { NewBackupDialogParams } from "./show-dialog-new-backup";
+import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 
 @customElement("ha-dialog-new-backup")
 class DialogNewBackup extends LitElement implements HassDialog {
@@ -23,12 +24,18 @@ class DialogNewBackup extends LitElement implements HassDialog {
 
   @state() private _params?: NewBackupDialogParams;
 
+  @query("ha-md-dialog") private _dialog?: HaMdDialog;
+
   public showDialog(params: NewBackupDialogParams): void {
     this._opened = true;
     this._params = params;
   }
 
   public closeDialog(): void {
+    this._dialog?.close();
+  }
+
+  private _dialogClosed() {
     if (this._params!.cancel) {
       this._params!.cancel();
     }
@@ -45,7 +52,7 @@ class DialogNewBackup extends LitElement implements HassDialog {
     }
 
     return html`
-      <ha-md-dialog open @closed=${this.closeDialog}>
+      <ha-md-dialog open @closed=${this._dialogClosed}>
         <ha-dialog-header slot="headline">
           <ha-icon-button
             slot="navigationIcon"

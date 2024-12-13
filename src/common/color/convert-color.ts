@@ -90,9 +90,9 @@ export const lab2rgb = (
   x = Xn * lab_xyz(x);
   z = Zn * lab_xyz(z);
 
-  const r = xyz_rgb(3.2404542 * x - 1.5371385 * y - 0.4985314 * z); // D65 -> sRGB
-  const g = xyz_rgb(-0.969266 * x + 1.8760108 * y + 0.041556 * z);
-  const b_ = xyz_rgb(0.0556434 * x - 0.2040259 * y + 1.0572252 * z);
+  const r = Math.round(xyz_rgb(3.2404542 * x - 1.5371385 * y - 0.4985314 * z)); // D65 -> sRGB
+  const g = Math.round(xyz_rgb(-0.969266 * x + 1.8760108 * y + 0.041556 * z));
+  const b_ = Math.round(xyz_rgb(0.0556434 * x - 0.2040259 * y + 1.0572252 * z));
 
   return [r, g, b_];
 };
