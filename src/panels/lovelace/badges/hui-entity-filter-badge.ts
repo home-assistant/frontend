@@ -1,6 +1,7 @@
-import { PropertyValues, ReactiveElement } from "lit";
+import type { PropertyValues } from "lit";
+import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { evaluateStateFilter } from "../common/evaluate-filter";
 import { processConfigEntities } from "../common/process-config-entities";
 import {
@@ -8,11 +9,11 @@ import {
   checkConditionsMet,
   extractConditionEntityIds,
 } from "../common/validate-condition";
-import { EntityFilterEntityConfig } from "../entity-rows/types";
-import { LovelaceBadge } from "../types";
+import type { EntityFilterEntityConfig } from "../entity-rows/types";
+import type { LovelaceBadge } from "../types";
 import "./hui-badge";
 import type { HuiBadge } from "./hui-badge";
-import { EntityFilterBadgeConfig } from "./types";
+import type { EntityFilterBadgeConfig } from "./types";
 
 @customElement("hui-entity-filter-badge")
 export class HuiEntityFilterBadge
@@ -69,7 +70,7 @@ export class HuiEntityFilterBadge
     if (
       changedProperties.has("_config") ||
       (changedProperties.has("hass") &&
-        this.haveEntitiesChanged(
+        this._haveEntitiesChanged(
           changedProperties.get("hass") as HomeAssistant | undefined
         ))
     ) {
@@ -155,7 +156,7 @@ export class HuiEntityFilterBadge
     this.style.gap = "8px";
   }
 
-  private haveEntitiesChanged(oldHass?: HomeAssistant): boolean {
+  private _haveEntitiesChanged(oldHass?: HomeAssistant): boolean {
     if (!oldHass) {
       return true;
     }

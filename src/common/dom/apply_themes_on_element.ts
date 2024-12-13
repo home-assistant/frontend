@@ -1,4 +1,4 @@
-import { ThemeVars } from "../../data/ws-themes";
+import type { ThemeVars } from "../../data/ws-themes";
 import { darkStyles, derivedStyles } from "../../resources/styles-data";
 import type { HomeAssistant } from "../../types";
 import {

@@ -3,11 +3,11 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-yaml-editor";
-import { Action } from "../../../../src/data/script";
+import type { Action } from "../../../../src/data/script";
 import { describeAction } from "../../../../src/data/script_i18n";
 import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
-import { HomeAssistant } from "../../../../src/types";
+import type { HomeAssistant } from "../../../../src/types";
 
 const ENTITIES = [
   getEntity("scene", "kitchen_morning", "scening", {
@@ -142,7 +142,7 @@ export class DemoAutomationDescribeAction extends LitElement {
         <div class="action">
           <span>
             ${this._action
-              ? describeAction(this.hass, [], [], this._action)
+              ? describeAction(this.hass, [], [], {}, this._action)
               : "<invalid YAML>"}
           </span>
           <ha-yaml-editor
@@ -155,7 +155,7 @@ export class DemoAutomationDescribeAction extends LitElement {
         ${ACTIONS.map(
           (conf) => html`
             <div class="action">
-              <span>${describeAction(this.hass, [], [], conf as any)}</span>
+              <span>${describeAction(this.hass, [], [], {}, conf as any)}</span>
               <pre>${dump(conf)}</pre>
             </div>
           `

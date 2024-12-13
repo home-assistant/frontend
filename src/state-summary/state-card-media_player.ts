@@ -1,9 +1,10 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/entity/state-info";
 import HassMediaPlayerEntity from "../util/hass-media-player-model";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import { haStyle } from "../resources/styles";
 
 @customElement("state-card-media_player")
@@ -12,7 +13,7 @@ class StateCardMediaPlayer extends LitElement {
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
-  @property({ type: Boolean }) public inDialog = false;
+  @property({ attribute: "in-dialog", type: Boolean }) public inDialog = false;
 
   protected render(): TemplateResult {
     const playerObj = new HassMediaPlayerEntity(this.hass, this.stateObj);

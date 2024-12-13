@@ -5,7 +5,7 @@ import {
   canCommissionMatterExternal,
   startExternalCommissioning,
 } from "../../../../../../data/matter";
-import { HomeAssistant } from "../../../../../../types";
+import type { HomeAssistant } from "../../../../../../types";
 import { sharedStyles } from "./matter-add-device-shared-styles";
 
 @customElement("matter-add-device-new")

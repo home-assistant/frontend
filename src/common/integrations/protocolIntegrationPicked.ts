@@ -34,9 +34,11 @@ export const protocolIntegrationPicked = async (
   if (domain === "zwave_js") {
     const entries = options?.config_entry
       ? undefined
-      : await getConfigEntries(hass, {
-          domain,
-        });
+      : (
+          await getConfigEntries(hass, {
+            domain,
+          })
+        ).filter((e) => !e.disabled_by);
 
     if (
       !isComponentLoaded(hass, "zwave_js") ||
@@ -81,9 +83,11 @@ export const protocolIntegrationPicked = async (
   } else if (domain === "zha") {
     const entries = options?.config_entry
       ? undefined
-      : await getConfigEntries(hass, {
-          domain,
-        });
+      : (
+          await getConfigEntries(hass, {
+            domain,
+          })
+        ).filter((e) => !e.disabled_by);
 
     if (
       !isComponentLoaded(hass, "zha") ||
@@ -129,9 +133,11 @@ export const protocolIntegrationPicked = async (
   } else if (domain === "matter") {
     const entries = options?.config_entry
       ? undefined
-      : await getConfigEntries(hass, {
-          domain,
-        });
+      : (
+          await getConfigEntries(hass, {
+            domain,
+          })
+        ).filter((e) => !e.disabled_by);
     if (
       !isComponentLoaded(hass, domain) ||
       (!options?.config_entry && !entries?.length)

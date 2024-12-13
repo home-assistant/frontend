@@ -1,4 +1,4 @@
-import { TextAreaCharCounter } from "@material/mwc-textfield/mwc-textfield-base";
+import type { TextAreaCharCounter } from "@material/mwc-textfield/mwc-textfield-base";
 import { mdiEye, mdiEyeOff } from "@mdi/js";
 import { LitElement, css, html } from "lit";
 import {
@@ -8,7 +8,7 @@ import {
   query,
   state,
 } from "lit/decorators";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "./ha-icon-button";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
@@ -23,6 +23,7 @@ export class HaPasswordField extends LitElement {
 
   @property({ type: Boolean }) public icon = false;
 
+  // eslint-disable-next-line lit/attribute-names
   @property({ type: Boolean }) public iconTrailing = false;
 
   @property() public autocomplete?: string;
@@ -42,29 +43,37 @@ export class HaPasswordField extends LitElement {
 
   @property({ type: Boolean }) required = false;
 
+  // eslint-disable-next-line lit/attribute-names
   @property({ type: Number }) minLength = -1;
 
+  // eslint-disable-next-line lit/attribute-names
   @property({ type: Number }) maxLength = -1;
 
   @property({ type: Boolean, reflect: true }) outlined = false;
 
   @property({ type: String }) helper = "";
 
+  // eslint-disable-next-line lit/attribute-names
   @property({ type: Boolean }) validateOnInitialRender = false;
 
+  // eslint-disable-next-line lit/attribute-names
   @property({ type: String }) validationMessage = "";
 
+  // eslint-disable-next-line lit/attribute-names
   @property({ type: Boolean }) autoValidate = false;
 
   @property({ type: String }) pattern = "";
 
   @property({ type: Number }) size: number | null = null;
 
+  // eslint-disable-next-line lit/attribute-names
   @property({ type: Boolean }) helperPersistent = false;
 
+  // eslint-disable-next-line lit/attribute-names
   @property({ type: Boolean }) charCounter: boolean | TextAreaCharCounter =
     false;
 
+  // eslint-disable-next-line lit/attribute-names
   @property({ type: Boolean }) endAligned = false;
 
   @property({ type: String }) prefix = "";
@@ -76,9 +85,11 @@ export class HaPasswordField extends LitElement {
   @property({ type: String, attribute: "input-mode" })
   inputMode!: string;
 
+  // eslint-disable-next-line lit/attribute-names
   @property({ type: Boolean }) readOnly = false;
 
-  @property({ type: String }) autocapitalize = "";
+  // eslint-disable-next-line lit/no-native-attributes
+  @property({ attribute: false, type: String }) autocapitalize = "";
 
   @state() private _unmaskedPassword = false;
 
@@ -117,7 +128,8 @@ export class HaPasswordField extends LitElement {
         .autocapitalize=${this.autocapitalize}
         .type=${this._unmaskedPassword ? "text" : "password"}
         .suffix=${html`<div style="width: 24px"></div>`}
-        @input=${this._handleInputChange}
+        @input=${this._handleInputEvent}
+        @change=${this._handleChangeEvent}
       ></ha-textfield>
       <ha-icon-button
         toggles
@@ -129,6 +141,10 @@ export class HaPasswordField extends LitElement {
         @click=${this._toggleUnmaskedPassword}
         .path=${this._unmaskedPassword ? mdiEyeOff : mdiEye}
       ></ha-icon-button>`;
+  }
+
+  public focus(): void {
+    this._textField.focus();
   }
 
   public checkValidity(): boolean {
@@ -152,8 +168,19 @@ export class HaPasswordField extends LitElement {
   }
 
   @eventOptions({ passive: true })
-  private _handleInputChange(ev) {
+  private _handleInputEvent(ev) {
     this.value = ev.target.value;
+  }
+
+  @eventOptions({ passive: true })
+  private _handleChangeEvent(ev) {
+    this.value = ev.target.value;
+    this._reDispatchEvent(ev);
+  }
+
+  private _reDispatchEvent(oldEvent: Event) {
+    const newEvent = new Event(oldEvent.type, oldEvent);
+    this.dispatchEvent(newEvent);
   }
 
   static styles = css`

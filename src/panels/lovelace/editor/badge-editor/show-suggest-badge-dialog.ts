@@ -1,7 +1,7 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
-import { LovelaceConfig } from "../../../../data/lovelace/config/types";
-import { LovelaceContainerPath } from "../lovelace-path";
+import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
+import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
+import type { LovelaceContainerPath } from "../lovelace-path";
 
 export interface SuggestBadgeDialogParams {
   lovelaceConfig?: LovelaceConfig;

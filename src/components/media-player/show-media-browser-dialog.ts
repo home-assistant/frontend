@@ -1,9 +1,9 @@
 import { fireEvent } from "../../common/dom/fire_event";
-import {
+import type {
   MediaPickedEvent,
   MediaPlayerBrowseAction,
 } from "../../data/media-player";
-import { MediaPlayerItemId } from "./ha-media-player-browse";
+import type { MediaPlayerItemId } from "./ha-media-player-browse";
 
 export interface MediaPlayerBrowseDialogParams {
   action: MediaPlayerBrowseAction;

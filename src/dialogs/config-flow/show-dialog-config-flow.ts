@@ -6,8 +6,8 @@ import {
   handleConfigFlowStep,
 } from "../../data/config_flow";
 import { domainToName } from "../../data/integration";
+import type { DataEntryFlowDialogParams } from "./show-dialog-data-entry-flow";
 import {
-  DataEntryFlowDialogParams,
   loadDataEntryFlowDialog,
   showFlowDialog,
 } from "./show-dialog-data-entry-flow";

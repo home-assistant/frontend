@@ -1,8 +1,9 @@
 import { mdiNfcVariant } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-svg-icon";
-import { TagRowData } from "./ha-config-tags";
+import type { TagRowData } from "./ha-config-tags";
 
 @customElement("tag-image")
 export class HaTagImage extends LitElement {

@@ -4,7 +4,7 @@ import {
   mdiChatQuestion,
   mdiExportVariant,
 } from "@mdi/js";
-import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import {
   NetworkType,
   getMatterNodeDiagnostics,

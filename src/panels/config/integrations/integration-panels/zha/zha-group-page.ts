@@ -1,23 +1,16 @@
 import "@material/mwc-button";
 import { mdiDelete } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { HASSDomEvent } from "../../../../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
-import { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
+import type { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-circular-progress";
 import "../../../../../components/ha-icon-button";
+import type { ZHADeviceEndpoint, ZHAGroup } from "../../../../../data/zha";
 import {
-  ZHADeviceEndpoint,
-  ZHAGroup,
   addMembersToGroup,
   fetchGroup,
   fetchGroupableDevices,
@@ -26,7 +19,7 @@ import {
 } from "../../../../../data/zha";
 import "../../../../../layouts/hass-error-screen";
 import "../../../../../layouts/hass-subpage";
-import { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant } from "../../../../../types";
 import "../../../ha-config-section";
 import { formatAsPaddedHex } from "./functions";
 import "./zha-device-endpoint-data-table";
@@ -40,13 +33,14 @@ export class ZHAGroupPage extends LitElement {
 
   @property({ type: Object }) public group?: ZHAGroup;
 
-  @property({ type: Number }) public groupId!: number;
+  @property({ attribute: false, type: Number }) public groupId!: number;
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property({ type: Array }) public deviceEndpoints: ZHADeviceEndpoint[] = [];
+  @property({ attribute: false, type: Array })
+  public deviceEndpoints: ZHADeviceEndpoint[] = [];
 
   @state() private _processingAdd = false;
 

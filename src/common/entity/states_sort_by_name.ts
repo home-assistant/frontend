@@ -5,7 +5,7 @@
  *   const states = [state1, state2]
  *   states.sort(statessortStatesByName);
  */
-import { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { computeStateName } from "./compute_state_name";
 
 export const sortStatesByName = (entityA: HassEntity, entityB: HassEntity) => {

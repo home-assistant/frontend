@@ -1,8 +1,8 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
-import { LovelaceConfig } from "../../../../data/lovelace/config/types";
-import { LovelaceStrategyEditor } from "../types";
-import { IframeViewStrategyConfig } from "./iframe-view-strategy";
+import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
+import type { LovelaceStrategyEditor } from "../types";
+import type { IframeViewStrategyConfig } from "./iframe-view-strategy";
 
 export type IframeDashboardStrategyConfig = IframeViewStrategyConfig;
 

@@ -1,16 +1,17 @@
-import {
-  GraphicType,
-  ListItemBase,
-} from "@material/mwc-list/mwc-list-item-base";
+import type { GraphicType } from "@material/mwc-list/mwc-list-item-base";
+import { ListItemBase } from "@material/mwc-list/mwc-list-item-base";
 import { styles } from "@material/mwc-list/mwc-list-item.css";
-import { mdiCloudOutline, mdiOpenInNew, mdiPackageVariant } from "@mdi/js";
-import { css, CSSResultGroup, html, nothing } from "lit";
+import { mdiFileCodeOutline, mdiPackageVariant, mdiWeb } from "@mdi/js";
+import type { CSSResultGroup } from "lit";
+import { css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { domainToName } from "../../../data/integration";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import { IntegrationListItem } from "./dialog-add-integration";
+import type { IntegrationListItem } from "./dialog-add-integration";
+import "../../../components/ha-svg-icon";
+import "../../../components/ha-icon-next";
 
 @customElement("ha-integration-list-item")
 export class HaIntegrationListItem extends ListItemBase {
@@ -20,6 +21,7 @@ export class HaIntegrationListItem extends ListItemBase {
 
   @property({ type: String, reflect: true }) graphic: GraphicType = "medium";
 
+  // eslint-disable-next-line lit/attribute-names
   @property({ type: Boolean }) hasMeta = true;
 
   @property({ type: Boolean }) brand = false;
@@ -72,7 +74,7 @@ export class HaIntegrationListItem extends ListItemBase {
     return html`<span class="mdc-deprecated-list-item__meta material-icons">
       ${this.integration.cloud
         ? html`<span
-            ><ha-svg-icon .path=${mdiCloudOutline}></ha-svg-icon
+            ><ha-svg-icon .path=${mdiWeb}></ha-svg-icon
             ><simple-tooltip animation-delay="0" position="left"
               >${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.depends_on_cloud"
@@ -82,10 +84,15 @@ export class HaIntegrationListItem extends ListItemBase {
         : ""}
       ${!this.integration.is_built_in
         ? html`<span
+            class=${this.integration.overwrites_built_in
+              ? "overwrites"
+              : "custom"}
             ><ha-svg-icon .path=${mdiPackageVariant}></ha-svg-icon
             ><simple-tooltip animation-delay="0" position="left"
               >${this.hass.localize(
-                "ui.panel.config.integrations.config_entry.custom_integration"
+                this.integration.overwrites_built_in
+                  ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
+                  : "ui.panel.config.integrations.config_entry.custom_integration"
               )}</simple-tooltip
             ></span
           >`
@@ -99,7 +106,7 @@ export class HaIntegrationListItem extends ListItemBase {
                 "ui.panel.config.integrations.config_entry.yaml_only"
               )}</simple-tooltip
             ><ha-svg-icon
-              .path=${mdiOpenInNew}
+              .path=${mdiFileCodeOutline}
               class="open-in-new"
             ></ha-svg-icon
           ></span>`
@@ -158,6 +165,12 @@ export class HaIntegrationListItem extends ListItemBase {
         .open-in-new {
           --mdc-icon-size: 22px;
           padding: 1px;
+        }
+        .custom {
+          color: var(--warning-color);
+        }
+        .overwrites {
+          color: var(--error-color);
         }
       `,
     ];

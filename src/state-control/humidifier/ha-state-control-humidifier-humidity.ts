@@ -1,5 +1,6 @@
 import { mdiMinus, mdiPlus, mdiThermostat, mdiWaterPercent } from "@mdi/js";
-import { CSSResultGroup, LitElement, PropertyValues, html, nothing } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { stateActive } from "../../common/entity/state_active";
@@ -12,12 +13,12 @@ import "../../components/ha-outlined-icon-button";
 import "../../components/ha-svg-icon";
 import { UNAVAILABLE } from "../../data/entity";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../data/entity_attributes";
+import type { HumidifierEntity } from "../../data/humidifier";
 import {
   HUMIDIFIER_ACTION_MODE,
-  HumidifierEntity,
   HumidifierEntityDeviceClass,
 } from "../../data/humidifier";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import {
   createStateControlCircularSliderController,
   stateControlCircularSliderStyle,

@@ -5,7 +5,7 @@ import {
   mdiFanSpeed2,
   mdiFanSpeed3,
 } from "@mdi/js";
-import {
+import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";

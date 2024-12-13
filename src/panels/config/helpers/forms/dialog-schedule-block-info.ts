@@ -1,29 +1,18 @@
-import { CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { html, LitElement, nothing } from "lit";
+import memoizeOne from "memoize-one";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-form/ha-form";
 import "../../../../components/ha-button";
 import { haStyleDialog } from "../../../../resources/styles";
-import { HomeAssistant } from "../../../../types";
-import {
+import type { HomeAssistant } from "../../../../types";
+import type {
   ScheduleBlockInfo,
   ScheduleBlockInfoDialogParams,
 } from "./show-dialog-schedule-block-info";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
-
-const SCHEMA = [
-  {
-    name: "from",
-    required: true,
-    selector: { time: { no_second: true } },
-  },
-  {
-    name: "to",
-    required: true,
-    selector: { time: { no_second: true } },
-  },
-];
 
 class DialogScheduleBlockInfo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -34,10 +23,39 @@ class DialogScheduleBlockInfo extends LitElement {
 
   @state() private _params?: ScheduleBlockInfoDialogParams;
 
+  private _expand = false;
+
+  private _schema = memoizeOne((expand: boolean) => [
+    {
+      name: "from",
+      required: true,
+      selector: { time: { no_second: true } },
+    },
+    {
+      name: "to",
+      required: true,
+      selector: { time: { no_second: true } },
+    },
+    {
+      name: "advanced_settings",
+      type: "expandable" as const,
+      flatten: true,
+      expanded: expand,
+      schema: [
+        {
+          name: "data",
+          required: false,
+          selector: { object: {} },
+        },
+      ],
+    },
+  ]);
+
   public showDialog(params: ScheduleBlockInfoDialogParams): void {
     this._params = params;
     this._error = undefined;
     this._data = params.block;
+    this._expand = !!params.block?.data;
   }
 
   public closeDialog(): void {
@@ -65,7 +83,7 @@ class DialogScheduleBlockInfo extends LitElement {
         <div>
           <ha-form
             .hass=${this.hass}
-            .schema=${SCHEMA}
+            .schema=${this._schema(this._expand)}
             .data=${this._data}
             .error=${this._error}
             .computeLabel=${this._computeLabelCallback}
@@ -109,12 +127,20 @@ class DialogScheduleBlockInfo extends LitElement {
     }
   }
 
-  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
     switch (schema.name) {
       case "from":
         return this.hass!.localize("ui.dialogs.helper_settings.schedule.start");
       case "to":
         return this.hass!.localize("ui.dialogs.helper_settings.schedule.end");
+      case "data":
+        return this.hass!.localize("ui.dialogs.helper_settings.schedule.data");
+      case "advanced_settings":
+        return this.hass!.localize(
+          "ui.dialogs.helper_settings.schedule.advanced_settings"
+        );
     }
     return "";
   };

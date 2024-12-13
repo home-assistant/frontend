@@ -1,4 +1,5 @@
-import { css, CSSResultGroup, html } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { HaListItem } from "./ha-list-item";
 
@@ -6,9 +7,11 @@ import { HaListItem } from "./ha-list-item";
 export class HaClickableListItem extends HaListItem {
   @property() public href?: string;
 
-  @property({ type: Boolean }) public disableHref = false;
+  @property({ attribute: "disable-href", type: Boolean })
+  public disableHref = false;
 
-  @property({ type: Boolean, reflect: true }) public openNewTab = false;
+  @property({ attribute: "open-new-tab", type: Boolean, reflect: true })
+  public openNewTab = false;
 
   @query("a") private _anchor!: HTMLAnchorElement;
 
@@ -17,7 +20,7 @@ export class HaClickableListItem extends HaListItem {
     const href = this.href || "";
 
     return html`${this.disableHref
-      ? html`<a>${r}</a>`
+      ? html`<a href="#" class="disabled">${r}</a>`
       : html`<a target=${this.openNewTab ? "_blank" : ""} href=${href}
           >${r}</a
         >`}`;
@@ -42,6 +45,9 @@ export class HaClickableListItem extends HaListItem {
           display: flex;
           align-items: center;
           overflow: hidden;
+        }
+        .disabled {
+          pointer-events: none;
         }
       `,
     ];

@@ -1,23 +1,29 @@
-import { mdiRefresh } from "@mdi/js";
 import "@material/mwc-list/mwc-list";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import { mdiDotsVertical, mdiDownload, mdiRefresh, mdiText } from "@mdi/js";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { LocalizeFunc } from "../../../common/translations/localize";
+import { fireEvent } from "../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/buttons/ha-progress-button";
+import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
+import { getSignedPath } from "../../../data/auth";
+import { getErrorLogDownloadUrl } from "../../../data/error_log";
 import { domainToName } from "../../../data/integration";
+import type { LoggedError } from "../../../data/system_log";
 import {
   fetchSystemLog,
   getLoggedErrorIntegration,
   isCustomIntegrationError,
-  LoggedError,
 } from "../../../data/system_log";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
+import { fileDownload } from "../../../util/file_download";
 import { showSystemLogDetailDialog } from "./show-dialog-system-log-detail";
 import { formatSystemLogTime } from "./util";
 
@@ -103,11 +109,34 @@ export class SystemLogCard extends LitElement {
             : html`
                 <div class="header">
                   <h1 class="card-header">${this.header || "Logs"}</h1>
-                  <ha-icon-button
-                    .path=${mdiRefresh}
-                    @click=${this.fetchData}
-                    .label=${this.hass.localize("ui.common.refresh")}
-                  ></ha-icon-button>
+                  <div class="header-buttons">
+                    <ha-icon-button
+                      .path=${mdiDownload}
+                      @click=${this._downloadLogs}
+                      .label=${this.hass.localize(
+                        "ui.panel.config.logs.download_logs"
+                      )}
+                    ></ha-icon-button>
+                    <ha-icon-button
+                      .path=${mdiRefresh}
+                      @click=${this.fetchData}
+                      .label=${this.hass.localize("ui.common.refresh")}
+                    ></ha-icon-button>
+
+                    <ha-button-menu @action=${this._handleOverflowAction}>
+                      <ha-icon-button slot="trigger" .path=${mdiDotsVertical}>
+                      </ha-icon-button>
+                      <ha-list-item graphic="icon">
+                        <ha-svg-icon
+                          slot="graphic"
+                          .path=${mdiText}
+                        ></ha-svg-icon>
+                        ${this.hass.localize(
+                          "ui.panel.config.logs.show_full_logs"
+                        )}
+                      </ha-list-item>
+                    </ha-button-menu>
+                  </div>
                 </div>
                 ${this._items.length === 0
                   ? html`
@@ -194,6 +223,19 @@ export class SystemLogCard extends LitElement {
     }
   }
 
+  private _handleOverflowAction() {
+    // @ts-ignore
+    fireEvent(this, "switch-log-view");
+  }
+
+  private async _downloadLogs() {
+    const timeString = new Date().toISOString().replace(/:/g, "-");
+    const downloadUrl = getErrorLogDownloadUrl;
+    const logFileName = `home-assistant_${timeString}.log`;
+    const signedUrl = await getSignedPath(this.hass, downloadUrl);
+    fileDownload(signedUrl.path, logFileName);
+  }
+
   private _openLog(ev: Event): void {
     const item = (ev.currentTarget as any).logItem;
     showSystemLogDetailDialog(this, { item });
@@ -202,7 +244,7 @@ export class SystemLogCard extends LitElement {
   static get styles(): CSSResultGroup {
     return css`
       ha-card {
-        padding-top: 16px;
+        padding-top: 8px;
       }
 
       .header {
@@ -211,8 +253,13 @@ export class SystemLogCard extends LitElement {
         padding: 0 16px;
       }
 
+      .header-buttons {
+        display: flex;
+        align-items: center;
+      }
+
       .card-header {
-        color: var(--ha-card-header-color, --primary-text-color);
+        color: var(--ha-card-header-color, var(--primary-text-color));
         font-family: var(--ha-card-header-font-family, inherit);
         font-size: var(--ha-card-header-font-size, 24px);
         letter-spacing: -0.012em;
@@ -240,6 +287,10 @@ export class SystemLogCard extends LitElement {
 
       .warning {
         color: var(--warning-color);
+      }
+
+      .card-content {
+        border-top: 1px solid var(--divider-color);
       }
 
       .card-actions,

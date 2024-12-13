@@ -1,31 +1,25 @@
 import { mdiFolder, mdiPuzzle } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { formatDate } from "../../../src/common/datetime/format_date";
 import { formatDateTime } from "../../../src/common/datetime/format_date_time";
-import { LocalizeFunc } from "../../../src/common/translations/localize";
+import type { LocalizeFunc } from "../../../src/common/translations/localize";
 import "../../../src/components/ha-checkbox";
 import "../../../src/components/ha-formfield";
 import "../../../src/components/ha-textfield";
 import "../../../src/components/ha-password-field";
 import "../../../src/components/ha-radio";
 import type { HaRadio } from "../../../src/components/ha-radio";
-import {
+import type {
   HassioBackupDetail,
   HassioFullBackupCreateParams,
   HassioPartialBackupCreateParams,
 } from "../../../src/data/hassio/backup";
-import { Supervisor } from "../../../src/data/supervisor/supervisor";
+import type { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { mdiHomeAssistant } from "../../../src/resources/home-assistant-logo-svg";
-import { HomeAssistant, TranslationDict } from "../../../src/types";
+import type { HomeAssistant, TranslationDict } from "../../../src/types";
 import "./supervisor-formfield-label";
 import type { HaTextField } from "../../../src/components/ha-textfield";
 
@@ -79,23 +73,24 @@ export class SupervisorBackupContent extends LitElement {
 
   @property({ attribute: false }) public backup?: HassioBackupDetail;
 
-  @property() public backupType: HassioBackupDetail["type"] = "full";
+  @property({ attribute: false })
+  public backupType: HassioBackupDetail["type"] = "full";
 
   @property({ attribute: false }) public folders?: CheckboxItem[];
 
   @property({ attribute: false }) public addons?: AddonCheckboxItem[];
 
-  @property({ type: Boolean }) public homeAssistant = false;
+  @property({ attribute: false }) public homeAssistant = false;
 
-  @property({ type: Boolean }) public backupHasPassword = false;
+  @property({ attribute: false }) public backupHasPassword = false;
 
   @property({ type: Boolean }) public onboarding = false;
 
-  @property() public backupName = "";
+  @property({ attribute: false }) public backupName = "";
 
-  @property() public backupPassword = "";
+  @property({ attribute: false }) public backupPassword = "";
 
-  @property() public confirmBackupPassword = "";
+  @property({ attribute: false }) public confirmBackupPassword = "";
 
   @query("ha-textfield, ha-radio, ha-checkbox", true) private _focusTarget;
 
@@ -197,7 +192,7 @@ export class SupervisorBackupContent extends LitElement {
                 >
                   <ha-checkbox
                     .checked=${this.homeAssistant}
-                    @change=${this.toggleHomeAssistant}
+                    @change=${this._toggleHomeAssistant}
                   >
                   </ha-checkbox>
                 </ha-formfield>`
@@ -283,7 +278,7 @@ export class SupervisorBackupContent extends LitElement {
     `;
   }
 
-  private toggleHomeAssistant() {
+  private _toggleHomeAssistant() {
     this.homeAssistant = !this.homeAssistant;
   }
 

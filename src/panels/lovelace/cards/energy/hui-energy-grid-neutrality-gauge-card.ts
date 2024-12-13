@@ -1,25 +1,19 @@
 import { mdiInformation } from "@mdi/js";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/ha-card";
 import "../../../../components/ha-gauge";
 import type { LevelDefinition } from "../../../../components/ha-gauge";
 import "../../../../components/ha-svg-icon";
-import {
+import type {
   EnergyData,
-  getEnergyDataCollection,
   GridSourceTypeEnergyPreference,
 } from "../../../../data/energy";
+import { getEnergyDataCollection } from "../../../../data/energy";
 import { calculateStatisticsSumGrowth } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";

@@ -1,14 +1,7 @@
-import { ActionDetail } from "@material/mwc-list";
-import { mdiCheck, mdiClose, mdiDotsVertical } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { ActionDetail } from "@material/mwc-list";
+import { mdiClose, mdiDotsVertical, mdiPlaylistEdit } from "@mdi/js";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -21,7 +14,7 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
+import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -34,7 +27,7 @@ import "./hui-section-visibility-editor";
 import type { EditSectionDialogParams } from "./show-edit-section-dialog";
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
-import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 
 const TABS = ["tab-settings", "tab-visibility"] as const;
 
@@ -164,29 +157,13 @@ export class HuiDialogEditSection
               .path=${mdiDotsVertical}
             ></ha-icon-button>
             <ha-list-item graphic="icon">
-              ${this.hass!.localize(
-                "ui.panel.lovelace.editor.edit_section.edit_ui"
+              ${this.hass.localize(
+                `ui.panel.lovelace.editor.edit_view.edit_${!this._yamlMode ? "yaml" : "ui"}`
               )}
-              ${!this._yamlMode
-                ? html`<ha-svg-icon
-                    class="selected_menu_item"
-                    slot="graphic"
-                    .path=${mdiCheck}
-                  ></ha-svg-icon>`
-                : ``}
-            </ha-list-item>
-
-            <ha-list-item graphic="icon">
-              ${this.hass!.localize(
-                "ui.panel.lovelace.editor.edit_section.edit_yaml"
-              )}
-              ${this._yamlMode
-                ? html`<ha-svg-icon
-                    class="selected_menu_item"
-                    slot="graphic"
-                    .path=${mdiCheck}
-                  ></ha-svg-icon>`
-                : ``}
+              <ha-svg-icon
+                slot="graphic"
+                .path=${mdiPlaylistEdit}
+              ></ha-svg-icon>
             </ha-list-item>
           </ha-button-menu>
           ${!this._yamlMode
@@ -239,10 +216,7 @@ export class HuiDialogEditSection
     ev.preventDefault();
     switch (ev.detail.index) {
       case 0:
-        this._yamlMode = false;
-        break;
-      case 1:
-        this._yamlMode = true;
+        this._yamlMode = !this._yamlMode;
         break;
     }
   }
@@ -303,9 +277,6 @@ export class HuiDialogEditSection
           color: var(--primary-text-color);
           text-transform: uppercase;
           padding: 0 20px;
-        }
-        .selected_menu_item {
-          color: var(--primary-color);
         }
         @media all and (min-width: 600px) {
           ha-dialog {

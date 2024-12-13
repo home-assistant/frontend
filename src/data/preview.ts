@@ -1,5 +1,5 @@
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { HomeAssistant } from "../types";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { HomeAssistant } from "../types";
 
 const HAS_CUSTOM_PREVIEW = ["template"];
 

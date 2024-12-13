@@ -3,7 +3,7 @@ import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-markdown";
 import { fetchBlueprints } from "../../../data/blueprint";
-import { BlueprintScriptConfig } from "../../../data/script";
+import type { BlueprintScriptConfig } from "../../../data/script";
 import { HaBlueprintGenericEditor } from "../blueprint/blueprint-generic-editor";
 
 @customElement("blueprint-script-editor")

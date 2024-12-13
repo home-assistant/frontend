@@ -1,5 +1,5 @@
-/* eslint-disable lit/no-template-arrow */
-import { LitElement, TemplateResult, html, css } from "lit";
+import type { TemplateResult } from "lit";
+import { LitElement, html, css } from "lit";
 import { customElement, state } from "lit/decorators";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import type { HomeAssistant } from "../../../../src/types";
@@ -149,11 +149,6 @@ export class DemoAutomationEditorTrigger extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const valueChanged = (ev) => {
-      const sampleIdx = ev.target.sampleIdx;
-      this.data[sampleIdx] = ev.detail.value;
-      this.requestUpdate();
-    };
     return html`
       <div class="options">
         <ha-formfield label="Disabled">
@@ -178,7 +173,7 @@ export class DemoAutomationEditorTrigger extends LitElement {
                   .triggers=${this.data[sampleIdx]}
                   .sampleIdx=${sampleIdx}
                   .disabled=${this._disabled}
-                  @value-changed=${valueChanged}
+                  @value-changed=${this._handleValueChange}
                 ></ha-automation-trigger>
               `
             )}
@@ -186,6 +181,12 @@ export class DemoAutomationEditorTrigger extends LitElement {
         `
       )}
     `;
+  }
+
+  private _handleValueChange(ev) {
+    const sampleIdx = ev.target.sampleIdx;
+    this.data[sampleIdx] = ev.detail.value;
+    this.requestUpdate();
   }
 
   private _handleOptionChange(ev) {

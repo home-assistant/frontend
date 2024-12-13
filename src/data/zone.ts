@@ -1,5 +1,5 @@
 import { navigate } from "../common/navigate";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 
 export interface Zone {
   id: string;

@@ -1,10 +1,16 @@
-export const fileDownload = (href: string, filename = ""): void => {
-  const a = document.createElement("a");
-  a.target = "_blank";
-  a.href = href;
-  a.download = filename;
+import type { HomeAssistant } from "../types";
+import { isIosApp } from "./is_ios";
 
-  document.body.appendChild(a);
-  a.dispatchEvent(new MouseEvent("click"));
-  document.body.removeChild(a);
+export const fileDownload = (href: string, filename = ""): void => {
+  const element = document.createElement("a");
+  element.target = "_blank";
+  element.href = href;
+  element.download = filename;
+  element.style.display = "none";
+  document.body.appendChild(element);
+  element.dispatchEvent(new MouseEvent("click"));
+  document.body.removeChild(element);
 };
+
+export const downloadFileSupported = (hass: HomeAssistant): boolean =>
+  !isIosApp(hass) || !!hass.auth.external?.config.downloadFileSupported;

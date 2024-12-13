@@ -3,11 +3,11 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-yaml-editor";
-import { Trigger } from "../../../../src/data/automation";
+import type { Trigger } from "../../../../src/data/automation";
 import { describeTrigger } from "../../../../src/data/automation_i18n";
 import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
-import { HomeAssistant } from "../../../../src/types";
+import type { HomeAssistant } from "../../../../src/types";
 
 const ENTITIES = [
   getEntity("light", "kitchen", "on", {

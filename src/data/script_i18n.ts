@@ -1,22 +1,23 @@
 import { ensureArray } from "../common/array/ensure-array";
-import { formatDuration } from "../common/datetime/format_duration";
+import { formatNumericDuration } from "../common/datetime/format_duration";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { formatListWithAnds } from "../common/string/format-list";
 import { isTemplate } from "../common/string/has-template";
-import { HomeAssistant } from "../types";
-import { Condition } from "./automation";
+import type { HomeAssistant } from "../types";
+import type { Condition } from "./automation";
 import { describeCondition } from "./automation_i18n";
 import { localizeDeviceAutomationAction } from "./device_automation";
 import { computeDeviceName } from "./device_registry";
+import type { EntityRegistryEntry } from "./entity_registry";
 import {
-  EntityRegistryEntry,
   computeEntityRegistryName,
   entityRegistryById,
 } from "./entity_registry";
+import type { FloorRegistryEntry } from "./floor_registry";
 import { domainToName } from "./integration";
-import { LabelRegistryEntry } from "./label_registry";
-import {
+import type { LabelRegistryEntry } from "./label_registry";
+import type {
   ActionType,
   ActionTypes,
   ChooseAction,
@@ -27,14 +28,13 @@ import {
   ParallelAction,
   PlayMediaAction,
   RepeatAction,
-  SceneAction,
   SequenceAction,
   SetConversationResponseAction,
   StopAction,
   VariablesAction,
   WaitForTriggerAction,
-  getActionType,
 } from "./script";
+import { getActionType } from "./script";
 
 const actionTranslationBaseKey =
   "ui.panel.config.automation.editor.actions.type";
@@ -43,6 +43,7 @@ export const describeAction = <T extends ActionType>(
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],
   labelRegistry: LabelRegistryEntry[],
+  floorRegistry: { [id: string]: FloorRegistryEntry },
   action: ActionTypes[T],
   actionType?: T,
   ignoreAlias = false
@@ -52,6 +53,7 @@ export const describeAction = <T extends ActionType>(
       hass,
       entityRegistry,
       labelRegistry,
+      floorRegistry,
       action,
       actionType,
       ignoreAlias
@@ -75,6 +77,7 @@ const tryDescribeAction = <T extends ActionType>(
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],
   labelRegistry: LabelRegistryEntry[],
+  floorRegistry: { [id: string]: FloorRegistryEntry },
   action: ActionTypes[T],
   actionType?: T,
   ignoreAlias = false
@@ -164,7 +167,7 @@ const tryDescribeAction = <T extends ActionType>(
               );
             }
           } else if (key === "floor_id") {
-            const floor = hass.floors[targetThing] ?? undefined;
+            const floor = floorRegistry[targetThing] ?? undefined;
             if (floor?.name) {
               targets.push(floor.name);
             } else {
@@ -274,7 +277,7 @@ const tryDescribeAction = <T extends ActionType>(
       duration = hass.localize(
         `${actionTranslationBaseKey}.delay.description.duration_string`,
         {
-          string: formatDuration(hass.locale, config.delay),
+          string: formatNumericDuration(hass.locale, config.delay),
         }
       );
     } else {
@@ -291,26 +294,6 @@ const tryDescribeAction = <T extends ActionType>(
     return hass.localize(`${actionTranslationBaseKey}.delay.description.full`, {
       duration: duration,
     });
-  }
-
-  if (actionType === "activate_scene") {
-    const config = action as SceneAction;
-    let entityId: string | undefined;
-    if ("scene" in config) {
-      entityId = config.scene;
-    } else {
-      entityId = config.target?.entity_id || config.entity_id;
-    }
-    if (!entityId) {
-      return hass.localize(
-        `${actionTranslationBaseKey}.activate_scene.description.activate_scene`
-      );
-    }
-    const sceneStateObj = entityId ? hass.states[entityId] : undefined;
-    return hass.localize(
-      `${actionTranslationBaseKey}.activate_scene.description.activate_scene_with_name`,
-      { name: sceneStateObj ? computeStateName(sceneStateObj) : entityId }
-    );
   }
 
   if (actionType === "play_media") {
@@ -503,6 +486,11 @@ const tryDescribeAction = <T extends ActionType>(
 
   if (actionType === "set_conversation_response") {
     const config = action as SetConversationResponseAction;
+    if (isTemplate(config.set_conversation_response)) {
+      return hass.localize(
+        `${actionTranslationBaseKey}.set_conversation_response.description.template`
+      );
+    }
     return hass.localize(
       `${actionTranslationBaseKey}.set_conversation_response.description.full`,
       { response: config.set_conversation_response }

@@ -6,7 +6,7 @@ import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
-import {
+import type {
   LovelaceCardFeatureContext,
   UpdateActionsCardFeatureConfig,
 } from "../../card-features/types";

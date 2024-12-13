@@ -1,5 +1,5 @@
 import { strokeWidth } from "../../../../data/graph";
-import { EntityHistoryState } from "../../../../data/history";
+import type { EntityHistoryState } from "../../../../data/history";
 
 const average = (items: any[]): number =>
   items.reduce((sum, entry) => sum + parseFloat(entry.state), 0) / items.length;

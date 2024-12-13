@@ -1,4 +1,5 @@
-import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-yaml-editor";
 import "../../../components/ha-textfield";
@@ -9,7 +10,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import "./event-subscribe-card";
 import "./events-list";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
 
 @customElement("developer-tools-event")

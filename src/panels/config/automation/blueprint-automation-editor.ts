@@ -1,10 +1,10 @@
 import "@material/mwc-button/mwc-button";
-import { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-alert";
 import "../../../components/ha-markdown";
-import { BlueprintAutomationConfig } from "../../../data/automation";
+import type { BlueprintAutomationConfig } from "../../../data/automation";
 import { fetchBlueprints } from "../../../data/blueprint";
 import { HaBlueprintGenericEditor } from "../blueprint/blueprint-generic-editor";
 

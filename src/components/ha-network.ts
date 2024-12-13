@@ -1,23 +1,17 @@
 import { mdiStar } from "@mdi/js";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import {
+import type {
   Adapter,
   IPv4ConfiguredAddress,
   IPv6ConfiguredAddress,
   NetworkConfig,
 } from "../data/network";
 import { haStyle } from "../resources/styles";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "./ha-checkbox";
 import type { HaCheckbox } from "./ha-checkbox";
 import "./ha-settings-row";

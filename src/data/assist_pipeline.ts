@@ -9,6 +9,7 @@ export interface AssistPipeline {
   language: string;
   conversation_engine: string;
   conversation_language: string | null;
+  prefer_local_intents?: boolean;
   stt_engine: string | null;
   stt_language: string | null;
   tts_engine: string | null;
@@ -28,6 +29,7 @@ export interface AssistPipelineMutableParams {
   language: string;
   conversation_engine: string;
   conversation_language: string | null;
+  prefer_local_intents?: boolean;
   stt_engine: string | null;
   stt_language: string | null;
   tts_engine: string | null;
@@ -37,7 +39,7 @@ export interface AssistPipelineMutableParams {
   wake_word_id: string | null;
 }
 
-export interface assistRunListing {
+export interface AssistRunListing {
   pipeline_run_id: string;
   timestamp: string;
 }
@@ -102,12 +104,14 @@ interface PipelineIntentStartEvent extends PipelineEventBase {
   data: {
     engine: string;
     language: string;
+    prefer_local_intents: boolean;
     intent_input: string;
   };
 }
 interface PipelineIntentEndEvent extends PipelineEventBase {
   type: "intent-end";
   data: {
+    processed_locally: boolean;
     intent_output: ConversationResult;
   };
 }
@@ -299,7 +303,7 @@ export const listAssistPipelineRuns = (
   pipeline_id: string
 ) =>
   hass.callWS<{
-    pipeline_runs: assistRunListing[];
+    pipeline_runs: AssistRunListing[];
   }>({
     type: "assist_pipeline/pipeline_debug/list",
     pipeline_id,

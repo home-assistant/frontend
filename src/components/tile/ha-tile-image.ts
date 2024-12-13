@@ -1,15 +1,16 @@
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 
 export type TileImageStyle = "square" | "rounded-square" | "circle";
 @customElement("ha-tile-image")
 export class HaTileImage extends LitElement {
-  @property() public imageUrl?: string;
+  @property({ attribute: false }) public imageUrl?: string;
 
-  @property() public imageAlt?: string;
+  @property({ attribute: false }) public imageAlt?: string;
 
-  @property() public imageStyle: TileImageStyle = "circle";
+  @property({ attribute: false }) public imageStyle: TileImageStyle = "circle";
 
   protected render() {
     return html`

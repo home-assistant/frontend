@@ -3,12 +3,14 @@ import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { getAllCombinations } from "../../../../../common/array/combinations";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { LocalizeFunc } from "../../../../../common/translations/localize";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../../components/ha-form/types";
-import { HaFormSchema } from "../../../../../components/ha-form/types";
+import type {
+  SchemaUnion,
+  HaFormSchema,
+} from "../../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../../types";
-import { ScreenCondition } from "../../../common/validate-condition";
+import type { ScreenCondition } from "../../../common/validate-condition";
 
 const BREAKPOINT_VALUES = [0, 768, 1024, 1280, Infinity];
 const BREAKPOINTS = ["mobile", "tablet", "desktop", "wide"] as const;

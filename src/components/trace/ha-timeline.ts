@@ -1,5 +1,6 @@
 import { mdiCircleOutline } from "@mdi/js";
-import { css, html, LitElement, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { buttonLinkStyle } from "../../resources/styles";
 import "../ha-svg-icon";
@@ -10,9 +11,10 @@ export class HaTimeline extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public raised = false;
 
-  @property({ reflect: true, type: Boolean }) notEnabled = false;
+  @property({ attribute: false, reflect: true, type: Boolean }) notEnabled =
+    false;
 
-  @property({ type: Boolean }) public lastItem = false;
+  @property({ attribute: "last-item", type: Boolean }) public lastItem = false;
 
   @property({ type: String }) public icon?: string;
 

@@ -4,7 +4,7 @@ import { fireEvent } from "../../../../../../common/dom/fire_event";
 import "../../../../../../components/ha-icon-next";
 import "../../../../../../components/ha-md-list-item";
 import "../../../../../../components/ha-md-list";
-import { HomeAssistant } from "../../../../../../types";
+import type { HomeAssistant } from "../../../../../../types";
 import { sharedStyles } from "./matter-add-device-shared-styles";
 
 @customElement("matter-add-device-google-home")
@@ -44,7 +44,6 @@ class MatterAddDeviceGoogleHome extends LitElement {
                 home_assistant: html`<b>Home Assistant</b>`,
               }
             )}
-            <br />
             <span
               class="link"
               type="button"
@@ -57,13 +56,13 @@ class MatterAddDeviceGoogleHome extends LitElement {
               )}
             </span>
           </li>
+          <li>
+            ${this.hass.localize(
+              `ui.dialogs.matter-add-device.google_home.redirect`
+            )}
+          </li>
         </ol>
         <br />
-        <p>
-          ${this.hass.localize(
-            `ui.dialogs.matter-add-device.google_home.redirect`
-          )}
-        </p>
       </div>
     `;
   }

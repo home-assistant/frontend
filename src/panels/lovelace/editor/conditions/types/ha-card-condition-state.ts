@@ -1,14 +1,17 @@
-import { html, LitElement, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { assert, literal, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { LocalizeFunc } from "../../../../../common/translations/localize";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../../components/ha-form/types";
-import { HaFormSchema } from "../../../../../components/ha-form/types";
+import type {
+  SchemaUnion,
+  HaFormSchema,
+} from "../../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../../types";
-import { StateCondition } from "../../../common/validate-condition";
+import type { StateCondition } from "../../../common/validate-condition";
 
 const stateConditionStruct = object({
   condition: literal("state"),
@@ -137,24 +140,13 @@ export class HaCardConditionState extends LitElement {
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ): string => {
-    const entity = this.condition.entity
-      ? this.hass.states[this.condition.entity]
-      : undefined;
     switch (schema.name) {
       case "entity":
         return this.hass.localize("ui.components.entity.entity-picker.entity");
       case "state":
-        if (entity) {
-          return `${this.hass.localize(
-            "ui.components.entity.entity-state-picker.state"
-          )} (${this.hass.localize(
-            "ui.panel.lovelace.editor.condition-editor.condition.state.current_state"
-          )}: ${this.hass.formatEntityState(entity)})`;
-        }
-        return `${this.hass.localize(
+        return this.hass.localize(
           "ui.components.entity.entity-state-picker.state"
-        )}`;
-
+        );
       default:
         return "";
     }

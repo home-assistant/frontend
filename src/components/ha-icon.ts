@@ -1,20 +1,13 @@
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { debounce } from "../common/util/debounce";
-import { CustomIcon, customIcons } from "../data/custom_icons";
+import type { CustomIcon } from "../data/custom_icons";
+import { customIcons } from "../data/custom_icons";
+import type { Chunks, Icons } from "../data/iconsets";
 import {
-  Chunks,
-  Icons,
   MDI_PREFIXES,
-  checkCacheVersion,
   findIconChunk,
   getIcon,
   writeCache,
@@ -31,11 +24,6 @@ interface DeprecatedIcon {
 const mdiDeprecatedIcons: DeprecatedIcon = {};
 
 const chunks: Chunks = {};
-
-// Supervisor doesn't use icons, and should not update/downgrade the icon DB.
-if (!__SUPERVISOR__) {
-  checkCacheVersion();
-}
 
 const debouncedWriteCache = debounce(() => writeCache(chunks), 2000);
 

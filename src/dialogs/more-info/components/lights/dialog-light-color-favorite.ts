@@ -1,5 +1,6 @@
 import { mdiClose } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -12,10 +13,9 @@ import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button-toggle";
 import type { EntityRegistryEntry } from "../../../../data/entity_registry";
+import type { LightColor, LightEntity } from "../../../../data/light";
 import {
-  LightColor,
   LightColorMode,
-  LightEntity,
   lightSupportsColor,
   lightSupportsColorMode,
 } from "../../../../data/light";

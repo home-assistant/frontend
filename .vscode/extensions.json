@@ -4,6 +4,7 @@
     "esbenp.prettier-vscode",
     "runem.lit-plugin",
     "github.vscode-pull-request-github",
-    "eamodio.gitlens"
+    "eamodio.gitlens",
+    "vitest.explorer"
   ]
 }

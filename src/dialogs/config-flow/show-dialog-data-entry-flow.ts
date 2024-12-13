@@ -1,7 +1,7 @@
-import { TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HaFormSchema } from "../../components/ha-form/types";
-import {
+import type {
   DataEntryFlowStep,
   DataEntryFlowStepAbort,
   DataEntryFlowStepCreateEntry,

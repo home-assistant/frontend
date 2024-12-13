@@ -1,10 +1,10 @@
-import {
+import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
 import { UNAVAILABLE } from "./entity";
 import { stateActive } from "../common/entity/state_active";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 
 export const enum ValveEntityFeature {
   OPEN = 1,

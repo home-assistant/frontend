@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file */
-import {
+import type {
   HassEntity,
   HassEntityAttributeBase,
 } from "home-assistant-js-websocket";

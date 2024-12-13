@@ -13,7 +13,8 @@ import {
   string,
   union,
 } from "superstruct";
-import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-form/ha-form";
 import type {
@@ -22,7 +23,7 @@ import type {
 } from "../../../../components/ha-form/types";
 import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
-import {
+import type {
   LovelaceCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
@@ -31,7 +32,7 @@ import type { TileCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { EditDetailElementEvent, EditSubElementEvent } from "../types";
+import type { EditDetailElementEvent, EditSubElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import "./hui-card-features-editor";
 
@@ -48,6 +49,7 @@ const cardConfigStruct = assign(
     vertical: optional(boolean()),
     tap_action: optional(actionConfigStruct),
     icon_tap_action: optional(actionConfigStruct),
+    hold_action: optional(actionConfigStruct),
     features: optional(array(any())),
   })
 );
@@ -153,6 +155,14 @@ export class HuiTileCardEditor
                   default_action: entityId
                     ? getEntityDefaultTileIconAction(entityId)
                     : "more-info",
+                },
+              },
+            },
+            {
+              name: "hold_action",
+              selector: {
+                ui_action: {
+                  default_action: "none",
                 },
               },
             },

@@ -1,10 +1,10 @@
 import { framework } from "./cast_framework";
 import { CAST_NS } from "../../../src/cast/const";
-import { HassMessage } from "../../../src/cast/receiver_messages";
+import type { HassMessage } from "../../../src/cast/receiver_messages";
 import "../../../src/resources/custom-card-support";
 import { castContext } from "./cast_context";
 import { HcMain } from "./layout/hc-main";
-import { ReceivedMessage } from "./types";
+import type { ReceivedMessage } from "./types";
 
 const lovelaceController = new HcMain();
 document.body.append(lovelaceController);

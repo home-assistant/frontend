@@ -5,7 +5,7 @@ import {
   mdiClose,
   mdiInformationOutline,
 } from "@mdi/js";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
@@ -27,6 +27,7 @@ declare global {
 
 @customElement("ha-alert")
 class HaAlert extends LitElement {
+  // eslint-disable-next-line lit/no-native-attributes
   @property() public title = "";
 
   @property({ attribute: "alert-type" }) public alertType:
@@ -36,6 +37,8 @@ class HaAlert extends LitElement {
     | "success" = "info";
 
   @property({ type: Boolean }) public dismissable = false;
+
+  @property({ type: Boolean }) public narrow = false;
 
   public render() {
     return html`
@@ -50,20 +53,22 @@ class HaAlert extends LitElement {
             <ha-svg-icon .path=${ALERT_ICONS[this.alertType]}></ha-svg-icon>
           </slot>
         </div>
-        <div class="content">
+        <div class=${classMap({ content: true, narrow: this.narrow })}>
           <div class="main-content">
-            ${this.title ? html`<div class="title">${this.title}</div>` : ""}
+            ${this.title
+              ? html`<div class="title">${this.title}</div>`
+              : nothing}
             <slot></slot>
           </div>
           <div class="action">
             <slot name="action">
               ${this.dismissable
                 ? html`<ha-icon-button
-                    @click=${this._dismiss_clicked}
+                    @click=${this._dismissClicked}
                     label="Dismiss alert"
                     .path=${mdiClose}
                   ></ha-icon-button>`
-                : ""}
+                : nothing}
             </slot>
           </div>
         </div>
@@ -71,7 +76,7 @@ class HaAlert extends LitElement {
     `;
   }
 
-  private _dismiss_clicked() {
+  private _dismissClicked() {
     fireEvent(this, "alert-dismissed-clicked");
   }
 
@@ -104,6 +109,10 @@ class HaAlert extends LitElement {
       align-items: center;
       width: 100%;
       text-align: var(--float-start);
+    }
+    .content.narrow {
+      flex-direction: column;
+      align-items: flex-end;
     }
     .action {
       z-index: 1;

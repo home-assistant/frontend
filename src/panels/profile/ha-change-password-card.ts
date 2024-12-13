@@ -1,12 +1,6 @@
 import "@material/mwc-button";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-card";
 import "../../components/ha-circular-progress";
@@ -19,7 +13,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
-import { RefreshToken } from "../../data/refresh_token";
+import type { RefreshToken } from "../../data/refresh_token";
 import { changePassword, deleteAllRefreshTokens } from "../../data/auth";
 
 @customElement("ha-change-password-card")
@@ -77,7 +71,7 @@ class HaChangePasswordCard extends LitElement {
                   @input=${this._newPasswordChanged}
                   @change=${this._newPasswordChanged}
                   required
-                  auto-validate
+                  autoValidate
                 ></ha-password-field>
                 <ha-password-field
                   .label=${this.hass.localize(
@@ -89,7 +83,7 @@ class HaChangePasswordCard extends LitElement {
                   @input=${this._newPasswordConfirmChanged}
                   @change=${this._newPasswordConfirmChanged}
                   required
-                  auto-validate
+                  autoValidate
                 ></ha-password-field>`
             : ""}
         </div>

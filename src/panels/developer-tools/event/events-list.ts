@@ -1,8 +1,9 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { stringCompare } from "../../../common/string/compare";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 
 interface EventListenerCount {
   event: string;

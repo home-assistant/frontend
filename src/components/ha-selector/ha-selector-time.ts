@@ -1,7 +1,7 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { TimeSelector } from "../../data/selector";
-import { HomeAssistant } from "../../types";
+import type { TimeSelector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
 import "../ha-time-input";
 
 @customElement("ha-selector-time")

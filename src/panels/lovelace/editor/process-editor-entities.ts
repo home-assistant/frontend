@@ -1,4 +1,4 @@
-import { EntityConfig } from "../entity-rows/types";
+import type { EntityConfig } from "../entity-rows/types";
 
 export function processEditorEntities(
   entities: (any | string)[]

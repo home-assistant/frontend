@@ -1,4 +1,5 @@
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
@@ -97,7 +98,6 @@ export class HaBadge extends LitElement {
         align-items: flex-start;
         padding-inline-start: initial;
         text-align: center;
-        font-family: Roboto;
       }
       .label {
         font-size: 10px;

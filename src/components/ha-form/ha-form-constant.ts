@@ -1,6 +1,7 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { HaFormConstantSchema, HaFormElement } from "./types";
+import type { HaFormConstantSchema, HaFormElement } from "./types";
 
 @customElement("ha-form-constant")
 export class HaFormConstant extends LitElement implements HaFormElement {

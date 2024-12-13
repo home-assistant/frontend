@@ -4,10 +4,10 @@ import { customElement, state } from "lit/decorators";
 import { formatTimeWithSeconds } from "../../../../src/common/datetime/format_time";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-control-select";
+import type { FrontendLocaleData } from "../../../../src/data/translation";
 import {
   DateFormat,
   FirstWeekday,
-  FrontendLocaleData,
   NumberFormat,
   TimeFormat,
   TimeZone,

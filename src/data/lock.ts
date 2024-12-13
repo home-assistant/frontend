@@ -1,10 +1,10 @@
-import {
+import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
 import { getExtendedEntityRegistryEntry } from "./entity_registry";
 import { showEnterCodeDialog } from "../dialogs/enter-code/show-enter-code-dialog";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import { UNAVAILABLE } from "./entity";
 
 export const enum LockEntityFeature {

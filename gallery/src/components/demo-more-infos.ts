@@ -3,7 +3,7 @@ import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../src/common/dom/apply_themes_on_element";
 import "../../../src/components/ha-formfield";
 import "../../../src/components/ha-switch";
-import { HomeAssistant } from "../../../src/types";
+import type { HomeAssistant } from "../../../src/types";
 import "../ha-demo-options";
 import "./demo-more-info";
 
@@ -58,11 +58,11 @@ class DemoMoreInfos extends LitElement {
     }
   `;
 
-  _showConfigToggled(ev) {
+  private _showConfigToggled(ev) {
     this._showConfig = ev.target.checked;
   }
 
-  _darkThemeToggled(ev) {
+  private _darkThemeToggled(ev) {
     applyThemesOnElement(
       this.shadowRoot!.querySelector("#container"),
       {

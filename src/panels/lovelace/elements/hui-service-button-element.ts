@@ -1,9 +1,10 @@
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import "../../../components/buttons/ha-call-service-button";
-import { HomeAssistant } from "../../../types";
-import { LovelaceElement, ServiceButtonElementConfig } from "./types";
-import { LovelacePictureElementEditor } from "../types";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceElement, ServiceButtonElementConfig } from "./types";
+import type { LovelacePictureElementEditor } from "../types";
 
 @customElement("hui-service-button-element")
 export class HuiServiceButtonElement

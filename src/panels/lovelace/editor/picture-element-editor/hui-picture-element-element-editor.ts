@@ -1,5 +1,5 @@
 import { customElement } from "lit/decorators";
-import { LovelaceElementConfig } from "../../elements/types";
+import type { LovelaceElementConfig } from "../../elements/types";
 import type { LovelacePictureElementEditor } from "../../types";
 import { HuiTypedElementEditor } from "../hui-typed-element-editor";
 import { getPictureElementClass } from "../../create-element/create-picture-element";

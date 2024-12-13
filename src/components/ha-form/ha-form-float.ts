@@ -1,10 +1,15 @@
-import { css, html, LitElement, TemplateResult, PropertyValues } from "lit";
+import type { TemplateResult, PropertyValues } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HaTextField } from "../ha-textfield";
 import "../ha-textfield";
-import { HaFormElement, HaFormFloatData, HaFormFloatSchema } from "./types";
-import { LocalizeFunc } from "../../common/translations/localize";
+import type {
+  HaFormElement,
+  HaFormFloatData,
+  HaFormFloatSchema,
+} from "./types";
+import type { LocalizeFunc } from "../../common/translations/localize";
 
 @customElement("ha-form-float")
 export class HaFormFloat extends LitElement implements HaFormElement {

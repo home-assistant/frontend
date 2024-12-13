@@ -1,28 +1,21 @@
 import "@material/mwc-button";
 import { mdiClose, mdiHelpCircle } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { HASSDomEvent, fireEvent } from "../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
+import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-circular-progress";
 import "../../components/ha-dialog";
 import "../../components/ha-icon-button";
-import {
-  DataEntryFlowStep,
-  subscribeDataEntryFlowProgressed,
-} from "../../data/data_entry_flow";
+import type { DataEntryFlowStep } from "../../data/data_entry_flow";
+import { subscribeDataEntryFlowProgressed } from "../../data/data_entry_flow";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { showAlertDialog } from "../generic/show-dialog-box";
-import {
+import type {
   DataEntryFlowDialogParams,
   LoadingReason,
 } from "./show-dialog-data-entry-flow";

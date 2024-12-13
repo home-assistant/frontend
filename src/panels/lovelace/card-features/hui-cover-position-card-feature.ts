@@ -1,4 +1,4 @@
-import { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -11,10 +11,11 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 import { CoverEntityFeature } from "../../../data/cover";
 import { UNAVAILABLE } from "../../../data/entity";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity_attributes";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCardFeature } from "../types";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
-import { CoverPositionCardFeatureConfig } from "./types";
+import type { CoverPositionCardFeatureConfig } from "./types";
+import "../../../components/ha-control-slider";
 
 export const supportsCoverPositionCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);

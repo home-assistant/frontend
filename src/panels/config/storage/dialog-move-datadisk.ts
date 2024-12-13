@@ -1,28 +1,32 @@
 import "@material/mwc-list/mwc-list-item";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-select";
+import "../../../components/ha-dialog";
 import {
   extractApiErrorMessage,
   ignoreSupervisorError,
 } from "../../../data/hassio/common";
-import {
+import type {
   DatadiskList,
-  fetchHassioHassOsInfo,
   HassioHassOSInfo,
   HassioHostInfo,
+} from "../../../data/hassio/host";
+import {
+  fetchHassioHassOsInfo,
   listDatadisks,
   moveDatadisk,
 } from "../../../data/hassio/host";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { bytesToString } from "../../../util/bytes-to-string";
-import { MoveDatadiskDialogParams } from "./show-dialog-move-datadisk";
+import type { MoveDatadiskDialogParams } from "./show-dialog-move-datadisk";
 
 const calculateMoveTime = memoizeOne((hostInfo: HassioHostInfo): number => {
   const speed = hostInfo.disk_life_time !== "" ? 30 : 10;
@@ -131,7 +135,7 @@ class MoveDatadiskDialog extends LitElement {
                 .label=${this.hass.localize(
                   "ui.panel.config.storage.datadisk.select_device"
                 )}
-                @selected=${this._select_device}
+                @selected=${this._selectDevice}
                 @closed=${stopPropagation}
                 dialogInitialFocus
                 fixedMenuPosition
@@ -173,7 +177,7 @@ class MoveDatadiskDialog extends LitElement {
     `;
   }
 
-  private _select_device(ev) {
+  private _selectDevice(ev) {
     this._selectedDevice = ev.target.value;
   }
 

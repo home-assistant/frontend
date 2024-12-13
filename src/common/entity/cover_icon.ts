@@ -5,7 +5,7 @@ import {
   mdiArrowExpandHorizontal,
   mdiArrowUp,
 } from "@mdi/js";
-import { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 
 export const computeOpenIcon = (stateObj: HassEntity): string => {
   switch (stateObj.attributes.device_class) {

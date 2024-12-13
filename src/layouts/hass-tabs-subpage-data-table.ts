@@ -13,18 +13,12 @@ import {
   mdiUnfoldLessHorizontal,
   mdiUnfoldMoreHorizontal,
 } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
-import { LocalizeFunc } from "../common/translations/localize";
+import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/chips/ha-assist-chip";
 import "../components/chips/ha-filter-chip";
 import "../components/data-table/ha-data-table";
@@ -36,22 +30,24 @@ import type {
 } from "../components/data-table/ha-data-table";
 import "../components/ha-md-button-menu";
 import "../components/ha-dialog";
+import "../components/ha-dialog-header";
 import "../components/ha-md-divider";
-import { HaMenu } from "../components/ha-menu";
+import type { HaMenu } from "../components/ha-menu";
 import "../components/ha-md-menu-item";
 import "../components/search-input-outlined";
 import type { HomeAssistant, Route } from "../types";
 import "./hass-tabs-subpage";
 import type { PageNavigation } from "./hass-tabs-subpage";
 import { showDataTableSettingsDialog } from "../components/data-table/show-dialog-data-table-settings";
+import { KeyboardShortcutMixin } from "../mixins/keyboard-shortcut-mixin";
 
 @customElement("hass-tabs-subpage-data-table")
-export class HaTabsSubpageDataTable extends LitElement {
+export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
@@ -89,7 +85,7 @@ export class HaTabsSubpageDataTable extends LitElement {
    * Do we need to add padding for a fab.
    * @type {Boolean}
    */
-  @property({ type: Boolean }) public hasFab = false;
+  @property({ attribute: "has-fab", type: Boolean }) public hasFab = false;
 
   /**
    * Add an extra row at the bottom of the data table
@@ -101,6 +97,7 @@ export class HaTabsSubpageDataTable extends LitElement {
    * Field with a unique id per entry in data.
    * @type {String}
    */
+  // eslint-disable-next-line lit/no-native-attributes
   @property({ type: String }) public id = "id";
 
   /**
@@ -109,7 +106,7 @@ export class HaTabsSubpageDataTable extends LitElement {
    */
   @property({ type: String }) public filter = "";
 
-  @property() public searchLabel?: string;
+  @property({ attribute: false }) public searchLabel?: string;
 
   /**
    * Number of active filters.
@@ -140,7 +137,7 @@ export class HaTabsSubpageDataTable extends LitElement {
    * String to show when there are no records in the data table.
    * @type {String}
    */
-  @property({ type: String }) public noDataText?: string;
+  @property({ attribute: false, type: String }) public noDataText?: string;
 
   /**
    * Hides the data table and show an empty message.
@@ -160,16 +157,18 @@ export class HaTabsSubpageDataTable extends LitElement {
    * Show the filter menu.
    * @type {Boolean}
    */
-  @property({ type: Boolean }) public hasFilters = false;
+  @property({ attribute: "has-filters", type: Boolean })
+  public hasFilters = false;
 
-  @property({ type: Boolean }) public showFilters = false;
+  @property({ attribute: "show-filters", type: Boolean })
+  public showFilters = false;
 
   @property({ attribute: false }) public initialSorting?: {
     column: string;
     direction: SortingDirection;
   };
 
-  @property() public initialGroupColumn?: string;
+  @property({ attribute: false }) public initialGroupColumn?: string;
 
   @property({ attribute: false }) public groupOrder?: string[];
 
@@ -190,6 +189,14 @@ export class HaTabsSubpageDataTable extends LitElement {
   @query("#group-by-menu") private _groupByMenu!: HaMenu;
 
   @query("#sort-by-menu") private _sortByMenu!: HaMenu;
+
+  @query("search-input-outlined") private _searchInput!: HTMLElement;
+
+  protected supportedShortcuts(): SupportedShortcuts {
+    return {
+      f: () => this._searchInput.focus(),
+    };
+  }
 
   private _showPaneController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width > 750,
@@ -371,16 +378,18 @@ export class HaTabsSubpageDataTable extends LitElement {
                   >
                     <div slot="headline">
                       ${localize(
-                        "ui.components.subpage-data-table.close_select_mode"
+                        "ui.components.subpage-data-table.exit_selection_mode"
                       )}
                     </div>
                   </ha-md-menu-item>
                 </ha-md-button-menu>
-                <p>
-                  ${localize("ui.components.subpage-data-table.selected", {
-                    selected: this.selected || "0",
-                  })}
-                </p>
+                ${this.selected !== undefined
+                  ? html`<p>
+                      ${localize("ui.components.subpage-data-table.selected", {
+                        selected: this.selected || "0",
+                      })}
+                    </p>`
+                  : nothing}
               </div>
               <div class="center-vertical">
                 <slot name="selection-bar"></slot>
@@ -459,6 +468,7 @@ export class HaTabsSubpageDataTable extends LitElement {
                 ${!this.narrow
                   ? html`
                       <div slot="header">
+                        <slot name="top_header"></slot>
                         <slot name="header">
                           <div class="table-header">
                             ${this.hasFilters && !this.showFilters

@@ -1,12 +1,14 @@
 import "@material/mwc-button/mwc-button";
 import { mdiOpenInNew } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import { LocalizeFunc } from "../common/translations/localize";
+import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-analytics";
 import "../components/ha-svg-icon";
-import { Analytics, setAnalyticsPreferences } from "../data/analytics";
+import type { Analytics } from "../data/analytics";
+import { setAnalyticsPreferences } from "../data/analytics";
 import { onboardAnalyticsStep } from "../data/onboarding";
 import type { HomeAssistant } from "../types";
 import { documentationUrl } from "../util/documentation-url";
@@ -30,7 +32,7 @@ class OnboardingAnalytics extends LitElement {
       <p>${this.localize("ui.panel.page-onboarding.analytics.intro")}</p>
       <p>
         <a
-          .href=${documentationUrl(this.hass, "/integrations/analytics/")}
+          href=${documentationUrl(this.hass, "/integrations/analytics/")}
           target="_blank"
           rel="noreferrer"
         >

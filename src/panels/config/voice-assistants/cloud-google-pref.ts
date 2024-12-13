@@ -1,6 +1,7 @@
 import "@material/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -12,13 +13,14 @@ import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
-import { CloudStatusLoggedIn, updateCloudPref } from "../../../data/cloud";
+import type { CloudStatusLoggedIn } from "../../../data/cloud";
+import { updateCloudPref } from "../../../data/cloud";
+import type { ExposeEntitySettings } from "../../../data/expose";
 import {
-  ExposeEntitySettings,
   getExposeNewEntities,
   setExposeNewEntities,
 } from "../../../data/expose";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { showSaveSuccessToast } from "../../../util/toast-saved-success";
 

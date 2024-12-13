@@ -1,5 +1,5 @@
-import { HomeAssistant } from "../types";
-import { DataEntryFlowStep } from "./data_entry_flow";
+import type { HomeAssistant } from "../types";
+import type { DataEntryFlowStep } from "./data_entry_flow";
 
 export const createOptionsFlow = (hass: HomeAssistant, handler: string) =>
   hass.callApi<DataEntryFlowStep>(

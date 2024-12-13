@@ -1,5 +1,6 @@
 import "@material/mwc-list/mwc-list-item";
-import { css, html, LitElement, TemplateResult, nothing } from "lit";
+import type { TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { mdiClose } from "@mdi/js";
 import { ifDefined } from "lit/directives/if-defined";
@@ -7,7 +8,8 @@ import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import "./ha-select";
 import "./ha-icon-button";
-import { HaTextField } from "./ha-textfield";
+import "./ha-textfield";
+import type { HaTextField } from "./ha-textfield";
 import "./ha-input-helper-text";
 
 export interface TimeChangedEvent {
@@ -34,7 +36,7 @@ export class HaBaseTimeInput extends LitElement {
   /**
    * auto validate time inputs
    */
-  @property({ type: Boolean }) autoValidate = false;
+  @property({ attribute: "auto-validate", type: Boolean }) autoValidate = false;
 
   /**
    * determines if inputs are required
@@ -79,52 +81,56 @@ export class HaBaseTimeInput extends LitElement {
   /**
    * Label for the day input
    */
-  @property() dayLabel = "";
+  @property({ attribute: false }) dayLabel = "";
 
   /**
    * Label for the hour input
    */
-  @property() hourLabel = "";
+  @property({ attribute: false }) hourLabel = "";
 
   /**
    * Label for the min input
    */
-  @property() minLabel = "";
+  @property({ attribute: false }) minLabel = "";
 
   /**
    * Label for the sec input
    */
-  @property() secLabel = "";
+  @property({ attribute: false }) secLabel = "";
 
   /**
    * Label for the milli sec input
    */
-  @property() millisecLabel = "";
+  @property({ attribute: false }) millisecLabel = "";
 
   /**
    * show the sec field
    */
-  @property({ type: Boolean }) enableSecond = false;
+  @property({ attribute: "enable-second", type: Boolean })
+  public enableSecond = false;
 
   /**
    * show the milli sec field
    */
-  @property({ type: Boolean }) enableMillisecond = false;
+  @property({ attribute: "enable-millisecond", type: Boolean })
+  public enableMillisecond = false;
 
   /**
    * show the day field
    */
-  @property({ type: Boolean }) enableDay = false;
+  @property({ attribute: "enable-day", type: Boolean })
+  public enableDay = false;
 
   /**
    * limit hours input
    */
-  @property({ type: Boolean }) noHoursLimit = false;
+  @property({ attribute: "no-hours-limit", type: Boolean })
+  public noHoursLimit = false;
 
   /**
    * AM or PM
    */
-  @property() amPm: "AM" | "PM" = "AM";
+  @property({ attribute: false }) amPm: "AM" | "PM" = "AM";
 
   @property({ type: Boolean, reflect: true }) public clearable?: boolean;
 
@@ -132,7 +138,7 @@ export class HaBaseTimeInput extends LitElement {
     return html`
       ${this.label
         ? html`<label>${this.label}${this.required ? " *" : ""}</label>`
-        : ""}
+        : nothing}
       <div class="time-input-wrap-wrap">
         <div class="time-input-wrap">
           ${this.enableDay
@@ -156,7 +162,7 @@ export class HaBaseTimeInput extends LitElement {
                 >
                 </ha-textfield>
               `
-            : ""}
+            : nothing}
 
           <ha-textfield
             id="hour"
@@ -219,7 +225,7 @@ export class HaBaseTimeInput extends LitElement {
                 class=${this.enableMillisecond ? "has-suffix" : ""}
               >
               </ha-textfield>`
-            : ""}
+            : nothing}
           ${this.enableMillisecond
             ? html`<ha-textfield
                 id="millisec"
@@ -238,7 +244,7 @@ export class HaBaseTimeInput extends LitElement {
                 .disabled=${this.disabled}
               >
               </ha-textfield>`
-            : ""}
+            : nothing}
           ${this.clearable && !this.required && !this.disabled
             ? html`<ha-icon-button
                 label="clear"
@@ -249,7 +255,7 @@ export class HaBaseTimeInput extends LitElement {
         </div>
 
         ${this.format === 24
-          ? ""
+          ? nothing
           : html`<ha-select
               .required=${this.required}
               .value=${this.amPm}
@@ -263,10 +269,10 @@ export class HaBaseTimeInput extends LitElement {
               <mwc-list-item value="AM">AM</mwc-list-item>
               <mwc-list-item value="PM">PM</mwc-list-item>
             </ha-select>`}
-        ${this.helper
-          ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
-          : ""}
       </div>
+      ${this.helper
+        ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
+        : nothing}
     `;
   }
 
@@ -361,17 +367,17 @@ export class HaBaseTimeInput extends LitElement {
       width: 85px;
     }
     :host([clearable]) .mdc-select__anchor {
-        padding-inline-end: var(--select-selected-text-padding-end, 12px);
+      padding-inline-end: var(--select-selected-text-padding-end, 12px);
     }
     ha-icon-button {
-      position: relative
+      position: relative;
       --mdc-icon-button-size: 36px;
       --mdc-icon-size: 20px;
       color: var(--secondary-text-color);
       direction: var(--direction);
       display: flex;
       align-items: center;
-      background-color:var(--mdc-text-field-fill-color, whitesmoke);
+      background-color: var(--mdc-text-field-fill-color, whitesmoke);
       border-bottom-style: solid;
       border-bottom-width: 1px;
     }
@@ -395,6 +401,10 @@ export class HaBaseTimeInput extends LitElement {
       padding-left: 4px;
       padding-inline-start: 4px;
       padding-inline-end: initial;
+    }
+    ha-input-helper-text {
+      padding-top: 8px;
+      line-height: normal;
     }
   `;
 }

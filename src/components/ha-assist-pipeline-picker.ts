@@ -1,17 +1,12 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValueMap,
-} from "lit";
+import type { CSSResultGroup, PropertyValueMap } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { formatLanguageCode } from "../common/language/format_language";
-import { AssistPipeline, listAssistPipelines } from "../data/assist_pipeline";
-import { HomeAssistant } from "../types";
+import type { AssistPipeline } from "../data/assist_pipeline";
+import { listAssistPipelines } from "../data/assist_pipeline";
+import type { HomeAssistant } from "../types";
 import "./ha-list-item";
 import "./ha-select";
 import type { HaSelect } from "./ha-select";
@@ -31,7 +26,7 @@ export class HaAssistPipelinePicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
-  @property({ type: Boolean }) public includeLastUsed = false;
+  @property({ attribute: false }) public includeLastUsed = false;
 
   @state() _pipelines?: AssistPipeline[];
 

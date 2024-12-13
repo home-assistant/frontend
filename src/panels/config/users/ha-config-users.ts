@@ -1,10 +1,11 @@
 import { mdiCheck, mdiPlus } from "@mdi/js";
-import { LitElement, PropertyValues, html } from "lit";
+import type { PropertyValues } from "lit";
+import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
-import { LocalizeFunc } from "../../../common/translations/localize";
-import {
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import type {
   DataTableColumnContainer,
   RowClickedEvent,
   SortingChangedEvent,
@@ -13,8 +14,8 @@ import "../../../components/data-table/ha-data-table-icon";
 import "../../../components/ha-fab";
 import "../../../components/ha-help-tooltip";
 import "../../../components/ha-svg-icon";
+import type { User } from "../../../data/user";
 import {
-  User,
   computeUserBadges,
   deleteUser,
   fetchUsers,
@@ -22,7 +23,7 @@ import {
 } from "../../../data/user";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
-import { HomeAssistant, Route } from "../../../types";
+import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { showAddUserDialog } from "./show-dialog-add-user";
 import { showUserDetailDialog } from "./show-dialog-user-detail";
@@ -32,7 +33,7 @@ import { storage } from "../../../common/decorators/storage";
 export class HaConfigUsers extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -194,7 +195,7 @@ export class HaConfigUsers extends LitElement {
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
         @row-click=${this._editUser}
-        hasFab
+        has-fab
         clickable
       >
         <ha-fab

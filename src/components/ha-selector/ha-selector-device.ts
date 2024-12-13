@@ -1,17 +1,17 @@
-import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, PropertyValues, nothing } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { DeviceRegistryEntry } from "../../data/device_registry";
 import { getDeviceIntegrationLookup } from "../../data/device_registry";
-import {
-  EntitySources,
-  fetchEntitySourcesWithCache,
-} from "../../data/entity_sources";
+import type { EntitySources } from "../../data/entity_sources";
+import { fetchEntitySourcesWithCache } from "../../data/entity_sources";
 import type { DeviceSelector } from "../../data/selector";
-import { ConfigEntry, getConfigEntries } from "../../data/config_entries";
+import type { ConfigEntry } from "../../data/config_entries";
+import { getConfigEntries } from "../../data/config_entries";
 import {
   filterSelectorDevices,
   filterSelectorEntities,

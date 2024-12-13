@@ -2,21 +2,14 @@ import "@material/mwc-button/mwc-button";
 import Cropper from "cropperjs";
 // @ts-ignore
 import cropperCss from "cropperjs/dist/cropper.css";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  unsafeCSS,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, unsafeCSS } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import "../../components/ha-dialog";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import { HaImageCropperDialogParams } from "./show-image-cropper-dialog";
+import type { HaImageCropperDialogParams } from "./show-image-cropper-dialog";
 
 @customElement("image-cropper-dialog")
 export class HaImagecropperDialog extends LitElement {

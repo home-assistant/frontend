@@ -1,13 +1,7 @@
 import { mdiAlert } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
@@ -28,9 +22,9 @@ export class StateBadge extends LitElement {
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  @property() public overrideIcon?: string;
+  @property({ attribute: false }) public overrideIcon?: string;
 
-  @property() public overrideImage?: string;
+  @property({ attribute: false }) public overrideImage?: string;
 
   // Cannot be a boolean attribute because undefined is treated different than
   // false.  When it is undefined, state is still colored for light entities.

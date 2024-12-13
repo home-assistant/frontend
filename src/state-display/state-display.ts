@@ -1,12 +1,14 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, nothing, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ensureArray } from "../common/array/ensure-array";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import "../components/ha-relative-time";
 import { isUnavailableState } from "../data/entity";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../data/sensor";
-import { computeUpdateStateDisplay, UpdateEntity } from "../data/update";
+import type { UpdateEntity } from "../data/update";
+import { computeUpdateStateDisplay } from "../data/update";
 import "../panels/lovelace/components/hui-timestamp-display";
 import type { HomeAssistant } from "../types";
 

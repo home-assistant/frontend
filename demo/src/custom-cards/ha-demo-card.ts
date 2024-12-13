@@ -1,13 +1,17 @@
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-button";
 import "../../../src/components/ha-circular-progress";
-import { LovelaceCardConfig } from "../../../src/data/lovelace/config/card";
-import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
-import { Lovelace, LovelaceCard } from "../../../src/panels/lovelace/types";
+import type { LovelaceCardConfig } from "../../../src/data/lovelace/config/card";
+import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
+import type {
+  Lovelace,
+  LovelaceCard,
+} from "../../../src/panels/lovelace/types";
 import {
   demoConfigs,
   selectedDemoConfig,
@@ -22,7 +26,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
 
   @state() private _switching = false;
 
-  private _hidden = localStorage.hide_demo_card;
+  private _hidden = window.localStorage.getItem("hide_demo_card");
 
   public getCardSize() {
     return this._hidden ? 0 : 2;

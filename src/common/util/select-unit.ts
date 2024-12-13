@@ -1,5 +1,5 @@
 import { differenceInDays, differenceInWeeks, startOfWeek } from "date-fns";
-import { FrontendLocaleData } from "../../data/translation";
+import type { FrontendLocaleData } from "../../data/translation";
 import { firstWeekdayIndex } from "../datetime/first_weekday";
 
 export type Unit =

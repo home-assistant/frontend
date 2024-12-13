@@ -1,17 +1,18 @@
 import { mdiRefresh, mdiStorePlus } from "@mdi/js";
-import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/ha-fab";
 import { reloadHassioAddons } from "../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
-import { Supervisor } from "../../../src/data/supervisor/supervisor";
+import type { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import "../../../src/layouts/hass-subpage";
 import "../../../src/layouts/hass-tabs-subpage";
 import { haStyle } from "../../../src/resources/styles";
-import { HomeAssistant, Route } from "../../../src/types";
+import type { HomeAssistant, Route } from "../../../src/types";
 import { supervisorTabs } from "../hassio-tabs";
 import "./hassio-addons";
 
@@ -75,7 +76,7 @@ class HassioDashboard extends LitElement {
         .mainPage=${!atLeastVersion(this.hass.config.version, 2021, 12)}
         back-path="/config"
         supervisor
-        hasFab
+        has-fab
       >
         <span slot="header">
           ${this.supervisor.localize(

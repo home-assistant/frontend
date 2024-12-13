@@ -1,4 +1,4 @@
-import { HassEntities } from "home-assistant-js-websocket";
+import type { HassEntities } from "home-assistant-js-websocket";
 import type { GroupEntity } from "../../data/group";
 import { DEFAULT_VIEW_ENTITY_ID } from "../const";
 

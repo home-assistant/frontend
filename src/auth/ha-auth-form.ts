@@ -3,7 +3,7 @@ import { html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { HaForm } from "../components/ha-form/ha-form";
 import "./ha-auth-form-string";
-import { LocalizeFunc } from "../common/translations/localize";
+import type { LocalizeFunc } from "../common/translations/localize";
 
 const localizeBaseKey = "ui.panel.page-authorize.form";
 

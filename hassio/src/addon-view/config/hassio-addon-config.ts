@@ -1,16 +1,10 @@
 import "@material/mwc-button";
-import { ActionDetail } from "@material/mwc-list";
+import type { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import { DEFAULT_SCHEMA, Type } from "js-yaml";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
@@ -25,14 +19,16 @@ import "../../../../src/components/ha-icon-button";
 import "../../../../src/components/ha-switch";
 import "../../../../src/components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../src/components/ha-yaml-editor";
-import {
+import type {
   HassioAddonDetails,
   HassioAddonSetOptionParams,
+} from "../../../../src/data/hassio/addon";
+import {
   setHassioAddonOption,
   validateHassioAddonOption,
 } from "../../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
-import { Supervisor } from "../../../../src/data/supervisor/supervisor";
+import type { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import { showConfirmationDialog } from "../../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
@@ -319,6 +315,7 @@ class HassioAddonConfig extends LitElement {
       text: this.supervisor.localize("confirm.reset_options.text"),
       confirmText: this.supervisor.localize("common.reset_options"),
       dismissText: this.supervisor.localize("common.cancel"),
+      destructive: true,
     });
 
     if (!confirmed) {
@@ -417,7 +414,7 @@ class HassioAddonConfig extends LitElement {
           justify-content: space-between;
         }
         .header h2 {
-          color: var(--ha-card-header-color, --primary-text-color);
+          color: var(--ha-card-header-color, var(--primary-text-color));
           font-family: var(--ha-card-header-font-family, inherit);
           font-size: var(--ha-card-header-font-size, 24px);
           letter-spacing: -0.012em;

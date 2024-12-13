@@ -1,6 +1,9 @@
-import { HassConfig } from "home-assistant-js-websocket";
+import type { HassConfig } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
-import { formatDuration } from "../common/datetime/format_duration";
+import {
+  formatDurationLong,
+  formatNumericDuration,
+} from "../common/datetime/format_duration";
 import {
   formatTime,
   formatTimeWithSeconds,
@@ -9,20 +12,19 @@ import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { computeAttributeNameDisplay } from "../common/entity/compute_attribute_display";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { isValidEntityId } from "../common/entity/valid_entity_id";
-import type { HomeAssistant } from "../types";
-import { Condition, ForDict, Trigger } from "./automation";
-import {
-  DeviceCondition,
-  DeviceTrigger,
-  localizeDeviceAutomationCondition,
-  localizeDeviceAutomationTrigger,
-} from "./device_automation";
-import { EntityRegistryEntry } from "./entity_registry";
-import { FrontendLocaleData } from "./translation";
 import {
   formatListWithAnds,
   formatListWithOrs,
 } from "../common/string/format-list";
+import type { HomeAssistant } from "../types";
+import type { Condition, ForDict, Trigger } from "./automation";
+import type { DeviceCondition, DeviceTrigger } from "./device_automation";
+import {
+  localizeDeviceAutomationCondition,
+  localizeDeviceAutomationTrigger,
+} from "./device_automation";
+import type { EntityRegistryEntry } from "./entity_registry";
+import type { FrontendLocaleData } from "./translation";
 import { isTriggerList } from "./trigger";
 
 const triggerTranslationBaseKey =
@@ -40,7 +42,7 @@ const describeDuration = (
   } else if (typeof forTime === "string") {
     duration = forTime;
   } else {
-    duration = formatDuration(locale, forTime);
+    duration = formatNumericDuration(locale, forTime);
   }
   return duration;
 };
@@ -680,19 +682,27 @@ const tryDescribeTrigger = (
 
   // Conversation Trigger
   if (trigger.trigger === "conversation") {
-    if (!trigger.command) {
+    if (!trigger.command || !trigger.command.length) {
       return hass.localize(
         `${triggerTranslationBaseKey}.conversation.description.empty`
       );
     }
 
+    const commands = ensureArray(trigger.command);
+
+    if (commands.length === 1) {
+      return hass.localize(
+        `${triggerTranslationBaseKey}.conversation.description.single`,
+        {
+          sentence: commands[0],
+        }
+      );
+    }
     return hass.localize(
-      `${triggerTranslationBaseKey}.conversation.description.full`,
+      `${triggerTranslationBaseKey}.conversation.description.multiple`,
       {
-        sentence: formatListWithOrs(
-          hass.locale,
-          ensureArray(trigger.command).map((cmd) => `'${cmd}'`)
-        ),
+        sentence: commands[0],
+        count: commands.length - 1,
       }
     );
   }
@@ -719,6 +729,38 @@ const tryDescribeTrigger = (
     return `${stateObj ? computeStateName(stateObj) : config.entity_id} ${
       config.type
     }`;
+  }
+
+  // Calendar Trigger
+  if (trigger.trigger === "calendar") {
+    const calendarEntity = hass.states[trigger.entity_id]
+      ? computeStateName(hass.states[trigger.entity_id])
+      : trigger.entity_id;
+
+    let offsetChoice = trigger.offset.startsWith("-") ? "before" : "after";
+    let offset: string | string[] = trigger.offset.startsWith("-")
+      ? trigger.offset.substring(1).split(":")
+      : trigger.offset.split(":");
+    const duration = {
+      hours: offset.length > 0 ? +offset[0] : 0,
+      minutes: offset.length > 1 ? +offset[1] : 0,
+      seconds: offset.length > 2 ? +offset[2] : 0,
+    };
+    offset = formatDurationLong(hass.locale, duration);
+    if (offset === "") {
+      offsetChoice = "other";
+    }
+
+    return hass.localize(
+      `${triggerTranslationBaseKey}.calendar.description.full`,
+      {
+        eventChoice: trigger.event,
+        offsetChoice: offsetChoice,
+        offset: offset,
+        hasCalendar: trigger.entity_id ? "true" : "false",
+        calendar: calendarEntity,
+      }
+    );
   }
 
   return (

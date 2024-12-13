@@ -1,16 +1,10 @@
 import "@material/mwc-list/mwc-list-item";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  nothing,
-  LitElement,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, nothing, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "./ha-select";
 
 const DEFAULT_THEME = "default";
@@ -21,7 +15,8 @@ export class HaThemePicker extends LitElement {
 
   @property() public label?: string;
 
-  @property({ type: Boolean }) includeDefault = false;
+  @property({ attribute: "include-default", type: Boolean })
+  public includeDefault = false;
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 

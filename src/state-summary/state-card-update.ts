@@ -1,7 +1,9 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/entity/state-info";
-import { computeUpdateStateDisplay, UpdateEntity } from "../data/update";
+import type { UpdateEntity } from "../data/update";
+import { computeUpdateStateDisplay } from "../data/update";
 import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 
@@ -11,7 +13,7 @@ export class StateCardUpdate extends LitElement {
 
   @property({ attribute: false }) public stateObj!: UpdateEntity;
 
-  @property({ type: Boolean }) public inDialog = false;
+  @property({ attribute: "in-dialog", type: Boolean }) public inDialog = false;
 
   protected render(): TemplateResult {
     return html`

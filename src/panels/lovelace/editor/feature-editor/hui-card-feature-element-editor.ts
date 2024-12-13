@@ -1,6 +1,6 @@
 import { customElement } from "lit/decorators";
 import { getCardFeatureElementClass } from "../../create-element/create-card-feature-element";
-import {
+import type {
   LovelaceCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "../../card-features/types";

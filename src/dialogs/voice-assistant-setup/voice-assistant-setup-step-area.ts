@@ -2,25 +2,34 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { updateDeviceRegistryEntry } from "../../data/device_registry";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import { showAlertDialog } from "../generic/show-dialog-box";
 import { AssistantSetupStyles } from "./styles";
+import "../../components/ha-area-picker";
 
 @customElement("ha-voice-assistant-setup-step-area")
 export class HaVoiceAssistantSetupStepArea extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public deviceId!: string;
+  @property({ attribute: false }) public deviceId!: string;
 
   protected override render() {
     const device = this.hass.devices[this.deviceId];
 
     return html`<div class="content">
-        <img src="/static/icons/casita/loving.png" />
-        <h1>Select area</h1>
+        <img
+          src="/static/images/voice-assistant/area.png"
+          alt="Casita Home Assistant logo"
+        />
+        <h1>
+          ${this.hass.localize(
+            "ui.panel.config.voice_assistants.satellite_wizard.area.title"
+          )}
+        </h1>
         <p class="secondary">
-          When you voice assistant knows where it is, it can better control the
-          devices around it.
+          ${this.hass.localize(
+            "ui.panel.config.voice_assistants.satellite_wizard.area.secondary"
+          )}
         </p>
         <ha-area-picker
           .hass=${this.hass}
@@ -28,14 +37,20 @@ export class HaVoiceAssistantSetupStepArea extends LitElement {
         ></ha-area-picker>
       </div>
       <div class="footer">
-        <ha-button @click=${this._setArea} unelevated>Next</ha-button>
+        <ha-button @click=${this._setArea} unelevated
+          >${this.hass.localize("ui.common.next")}</ha-button
+        >
       </div>`;
   }
 
   private async _setArea() {
     const area = this.shadowRoot!.querySelector("ha-area-picker")!.value;
     if (!area) {
-      showAlertDialog(this, { text: "Please select an area" });
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.config.voice_assistants.satellite_wizard.area.no_selection"
+        ),
+      });
       return;
     }
     await updateDeviceRegistryEntry(this.hass, this.deviceId, {

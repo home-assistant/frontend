@@ -1,4 +1,5 @@
 import { consume } from "@lit-labs/context";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -7,16 +8,18 @@ import "../../../../../components/device/ha-device-action-picker";
 import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/ha-form/ha-form";
 import { fullEntitiesContext } from "../../../../../data/context";
-import {
+import type {
   DeviceAction,
-  deviceAutomationsEqual,
   DeviceCapabilities,
+} from "../../../../../data/device_automation";
+import {
+  deviceAutomationsEqual,
   fetchDeviceActionCapabilities,
   localizeExtraFieldsComputeLabelCallback,
   localizeExtraFieldsComputeHelperCallback,
 } from "../../../../../data/device_automation";
-import { EntityRegistryEntry } from "../../../../../data/entity_registry";
-import { HomeAssistant } from "../../../../../types";
+import type { EntityRegistryEntry } from "../../../../../data/entity_registry";
+import type { HomeAssistant } from "../../../../../types";
 
 @customElement("ha-automation-action-device_id")
 export class HaDeviceAction extends LitElement {
@@ -55,6 +58,28 @@ export class HaDeviceAction extends LitElement {
       return extraFieldsData;
     }
   );
+
+  public shouldUpdate(changedProperties: PropertyValues) {
+    if (!changedProperties.has("action")) {
+      return true;
+    }
+    if (
+      this.action.device_id &&
+      !(this.action.device_id in this.hass.devices)
+    ) {
+      fireEvent(
+        this,
+        "ui-mode-not-available",
+        Error(
+          this.hass.localize(
+            "ui.panel.config.automation.editor.edit_unknown_device"
+          )
+        )
+      );
+      return false;
+    }
+    return true;
+  }
 
   protected render() {
     const deviceId = this._deviceId || this.action.device_id;

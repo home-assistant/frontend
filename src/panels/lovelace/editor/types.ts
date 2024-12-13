@@ -1,15 +1,15 @@
-import { ActionConfig } from "../../../data/lovelace/config/action";
-import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import {
+import type { ActionConfig } from "../../../data/lovelace/config/action";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type {
   LovelaceViewConfig,
   ShowViewConfig,
 } from "../../../data/lovelace/config/view";
-import { EntityConfig, LovelaceRowConfig } from "../entity-rows/types";
-import { LovelaceHeaderFooterConfig } from "../header-footer/types";
-import { LovelaceCardFeatureConfig } from "../card-features/types";
-import { LovelaceElementConfig } from "../elements/types";
-import { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
-import { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
+import type { EntityConfig, LovelaceRowConfig } from "../entity-rows/types";
+import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
+import type { LovelaceCardFeatureConfig } from "../card-features/types";
+import type { LovelaceElementConfig } from "../elements/types";
+import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
+import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
 
 export interface YamlChangedEvent extends Event {
   detail: {

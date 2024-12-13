@@ -1,7 +1,8 @@
 import "@material/mwc-drawer";
 import "@material/mwc-top-app-bar-fixed";
 import { mdiMenu } from "@mdi/js";
-import { LitElement, PropertyValues, css, html } from "lit";
+import type { PropertyValues } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, query, state } from "lit/decorators";
 import { dynamicElement } from "../../src/common/dom/dynamic-element-directive";
 import { HaExpansionPanel } from "../../src/components/ha-expansion-panel";
@@ -181,7 +182,7 @@ class HaGallery extends LitElement {
     }
   }
 
-  _menuTapped() {
+  private _menuTapped() {
     this._drawer.open = !this._drawer.open;
   }
 

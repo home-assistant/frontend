@@ -5,7 +5,7 @@ import "../elements/hui-service-button-element";
 import "../elements/hui-state-badge-element";
 import "../elements/hui-state-icon-element";
 import "../elements/hui-state-label-element";
-import { LovelaceElementConfig } from "../elements/types";
+import type { LovelaceElementConfig } from "../elements/types";
 import {
   createLovelaceElement,
   getLovelaceElementClass,

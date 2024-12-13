@@ -1,5 +1,6 @@
 import { mdiPlus } from "@mdi/js";
-import { CSSResultGroup, LitElement, PropertyValues, css, html } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
@@ -9,10 +10,13 @@ import type { HaSelect } from "../../../../components/ha-select";
 import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
 import { ICON_CONDITION } from "../../common/icon-condition";
-import { Condition, LegacyCondition } from "../../common/validate-condition";
+import type {
+  Condition,
+  LegacyCondition,
+} from "../../common/validate-condition";
 import "./ha-card-condition-editor";
 import type { HaCardConditionEditor } from "./ha-card-condition-editor";
-import { LovelaceConditionEditorConstructor } from "./types";
+import type { LovelaceConditionEditorConstructor } from "./types";
 import "./types/ha-card-condition-and";
 import "./types/ha-card-condition-numeric_state";
 import "./types/ha-card-condition-or";

@@ -1,14 +1,10 @@
 /* eslint-disable max-classes-per-file */
 import { noChange } from "lit";
-import {
-  AttributePart,
-  directive,
-  Directive,
-  DirectiveParameters,
-} from "lit/directive";
+import type { AttributePart, DirectiveParameters } from "lit/directive";
+import { directive, Directive } from "lit/directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { deepEqual } from "../../../../common/util/deep-equal";
-import {
+import type {
   ActionHandlerDetail,
   ActionHandlerOptions,
 } from "../../../../data/lovelace/action_handler";
@@ -76,7 +72,7 @@ class ActionHandler extends HTMLElement implements ActionHandlerType {
         () => {
           this.cancelled = true;
           if (this.timer) {
-            this.stopAnimation();
+            this._stopAnimation();
             clearTimeout(this.timer);
             this.timer = undefined;
           }
@@ -145,7 +141,7 @@ class ActionHandler extends HTMLElement implements ActionHandlerType {
       if (options.hasHold) {
         this.held = false;
         this.timer = window.setTimeout(() => {
-          this.startAnimation(x, y);
+          this._startAnimation(x, y);
           this.held = true;
         }, this.holdTime);
       }
@@ -153,7 +149,10 @@ class ActionHandler extends HTMLElement implements ActionHandlerType {
 
     element.actionHandler.end = (ev: Event) => {
       // Don't respond when moved or scrolled while touch
-      if (["touchend", "touchcancel"].includes(ev.type) && this.cancelled) {
+      if (
+        ev.type === "touchcancel" ||
+        (ev.type === "touchend" && this.cancelled)
+      ) {
         return;
       }
       const target = ev.target as HTMLElement;
@@ -163,7 +162,7 @@ class ActionHandler extends HTMLElement implements ActionHandlerType {
       }
       if (options.hasHold) {
         clearTimeout(this.timer);
-        this.stopAnimation();
+        this._stopAnimation();
         this.timer = undefined;
       }
       if (options.hasHold && this.held) {
@@ -208,7 +207,7 @@ class ActionHandler extends HTMLElement implements ActionHandlerType {
     element.addEventListener("keydown", element.actionHandler.handleKeyDown);
   }
 
-  private startAnimation(x: number, y: number) {
+  private _startAnimation(x: number, y: number) {
     Object.assign(this.style, {
       left: `${x}px`,
       top: `${y}px`,
@@ -216,7 +215,7 @@ class ActionHandler extends HTMLElement implements ActionHandlerType {
     });
   }
 
-  private stopAnimation() {
+  private _stopAnimation() {
     Object.assign(this.style, {
       left: null,
       top: null,

@@ -1,14 +1,12 @@
 /* eslint-disable no-console */
 
-import { Auth } from "home-assistant-js-websocket";
+import type { Auth } from "home-assistant-js-websocket";
 import { castApiAvailable } from "./cast_framework";
 import { CAST_APP_ID, CAST_DEV, CAST_NS } from "./const";
 import { CAST_DEV_HASS_URL } from "./dev_const";
-import {
-  castSendAuth,
-  HassMessage as ReceiverMessage,
-} from "./receiver_messages";
-import { ReceiverStatusMessage, SenderMessage } from "./sender_messages";
+import type { HassMessage as ReceiverMessage } from "./receiver_messages";
+import { castSendAuth } from "./receiver_messages";
+import type { ReceiverStatusMessage, SenderMessage } from "./sender_messages";
 
 let managerProm: Promise<CastManager> | undefined;
 

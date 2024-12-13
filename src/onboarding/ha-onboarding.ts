@@ -1,12 +1,13 @@
 import "@material/mwc-linear-progress/mwc-linear-progress";
+import type { Auth } from "home-assistant-js-websocket";
 import {
-  Auth,
   createConnection,
   genClientId,
   getAuth,
   subscribeConfig,
 } from "home-assistant-js-websocket";
-import { PropertyValues, css, html, nothing } from "lit";
+import type { PropertyValues } from "lit";
+import { css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
   enableWrite,
@@ -14,7 +15,7 @@ import {
   saveTokens,
 } from "../common/auth/token_storage";
 import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
-import { HASSDomEvent } from "../common/dom/fire_event";
+import type { HASSDomEvent } from "../common/dom/fire_event";
 import {
   addSearchParam,
   extractSearchParam,
@@ -22,10 +23,10 @@ import {
 } from "../common/url/search-params";
 import { subscribeOne } from "../common/util/subscribe-one";
 import "../components/ha-card";
-import { AuthUrlSearchParams, hassUrl } from "../data/auth";
+import type { AuthUrlSearchParams } from "../data/auth";
+import { hassUrl } from "../data/auth";
+import type { OnboardingResponses, OnboardingStep } from "../data/onboarding";
 import {
-  OnboardingResponses,
-  OnboardingStep,
   fetchInstallationType,
   fetchOnboardingOverview,
   onboardIntegrationStep,
@@ -33,7 +34,7 @@ import {
 import { subscribeUser } from "../data/ws-user";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import { HassElement } from "../state/hass-element";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import { registerServiceWorker } from "../util/register-service-worker";
 import "./onboarding-analytics";
@@ -87,7 +88,8 @@ declare global {
 class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public translationFragment = "page-onboarding";
+  @property({ attribute: false }) public translationFragment =
+    "page-onboarding";
 
   @state() private _progress = 0;
 
@@ -139,8 +141,9 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         <ha-language-picker
           .value=${this.language}
           .label=${""}
-          nativeName
+          native-name
           @value-changed=${this._languageChanged}
+          inline-arrow
         ></ha-language-picker>
         <a
           href="https://www.home-assistant.io/getting-started/onboarding/"
@@ -479,7 +482,10 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       storeState(this.hass!);
     } else {
       try {
-        localStorage.setItem("selectedLanguage", JSON.stringify(language));
+        window.localStorage.setItem(
+          "selectedLanguage",
+          JSON.stringify(language)
+        );
       } catch (err: any) {
         // Ignore
       }

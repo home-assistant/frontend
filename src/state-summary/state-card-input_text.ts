@@ -1,16 +1,10 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../components/entity/state-info";
 import "../components/ha-textfield";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import { haStyle } from "../resources/styles";
 import { stopPropagation } from "../common/dom/stop_propagation";
 
@@ -20,7 +14,7 @@ class StateCardInputText extends LitElement {
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
-  @property({ type: Boolean }) public inDialog = false;
+  @property({ attribute: "in-dialog", type: Boolean }) public inDialog = false;
 
   @state() public value: string = "";
 
@@ -36,7 +30,6 @@ class StateCardInputText extends LitElement {
           .minlength=${this.stateObj.attributes.min}
           .maxlength=${this.stateObj.attributes.max}
           .value=${this.value}
-          .auto-validate=${this.stateObj.attributes.pattern}
           .pattern=${this.stateObj.attributes.pattern}
           .type=${this.stateObj.attributes.mode}
           @input=${this._onInput}

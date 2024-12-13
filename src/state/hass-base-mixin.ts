@@ -1,7 +1,7 @@
-import { Auth, Connection } from "home-assistant-js-websocket";
+import type { Auth, Connection } from "home-assistant-js-websocket";
 import { LitElement } from "lit";
 import { property } from "lit/decorators";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 
 export class HassBaseEl extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -18,29 +18,18 @@ export class HassBaseEl extends LitElement {
 
   protected initializeHass(_auth: Auth, _conn: Connection) {
     // implemented in connection-mixin
-    // eslint-disable-next-line
   }
 
   // Exists so all methods can safely call super method
-  protected hassConnected() {
-    // eslint-disable-next-line
-  }
+  protected hassConnected() {}
 
-  protected hassReconnected() {
-    // eslint-disable-next-line
-  }
+  protected hassReconnected() {}
 
-  protected hassDisconnected() {
-    // eslint-disable-next-line
-  }
+  protected hassDisconnected() {}
 
-  protected panelUrlChanged(_newPanelUrl) {
-    // eslint-disable-next-line
-  }
+  protected panelUrlChanged(_newPanelUrl) {}
 
-  protected checkDataBaseMigration() {
-    // eslint-disable-next-line
-  }
+  protected checkDataBaseMigration() {}
 
   protected hassChanged(hass, _oldHass) {
     this.__provideHass.forEach((el) => {

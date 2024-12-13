@@ -1,4 +1,5 @@
-import { html, LitElement, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
   assert,
@@ -15,7 +16,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
-import { NumericStateCondition } from "../../../../../data/automation";
+import type { NumericStateCondition } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 
 const numericStateConditionStruct = object({
@@ -59,6 +60,18 @@ export default class HaNumericStateCondition extends LitElement {
     }
     return true;
   }
+
+  private _data = memoizeOne(
+    (
+      inputAboveIsEntity: boolean,
+      inputBelowIsEntity: boolean,
+      condition: NumericStateCondition
+    ) => ({
+      mode_above: inputAboveIsEntity ? "input" : "value",
+      mode_below: inputBelowIsEntity ? "input" : "value",
+      ...condition,
+    })
+  );
 
   private _schema = memoizeOne(
     (
@@ -233,31 +246,33 @@ export default class HaNumericStateCondition extends LitElement {
       ] as const
   );
 
-  public render() {
-    const inputAboveIsEntity =
+  public willUpdate() {
+    this._inputAboveIsEntity =
       this._inputAboveIsEntity ??
       (typeof this.condition.above === "string" &&
         ((this.condition.above as string).startsWith("input_number.") ||
           (this.condition.above as string).startsWith("number.") ||
           (this.condition.above as string).startsWith("sensor.")));
-    const inputBelowIsEntity =
+    this._inputBelowIsEntity =
       this._inputBelowIsEntity ??
       (typeof this.condition.below === "string" &&
         ((this.condition.below as string).startsWith("input_number.") ||
           (this.condition.below as string).startsWith("number.") ||
           (this.condition.below as string).startsWith("sensor.")));
+  }
 
+  public render() {
     const schema = this._schema(
       this.hass.localize,
-      inputAboveIsEntity,
-      inputBelowIsEntity
+      this._inputAboveIsEntity,
+      this._inputBelowIsEntity
     );
 
-    const data = {
-      mode_above: inputAboveIsEntity ? "input" : "value",
-      mode_below: inputBelowIsEntity ? "input" : "value",
-      ...this.condition,
-    };
+    const data = this._data(
+      this._inputAboveIsEntity!,
+      this._inputBelowIsEntity!,
+      this.condition
+    );
 
     return html`
       <ha-form

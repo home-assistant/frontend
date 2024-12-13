@@ -1,4 +1,5 @@
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
 import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
@@ -85,9 +86,11 @@ const ENTITIES = [
     friendly_name: "Sensibo purifier",
     fan_modes: ["low", "high"],
     fan_mode: "low",
-    swing_modes: ["on", "off", "both", "vertical", "horizontal"],
-    swing_mode: "vertical",
-    supported_features: 41,
+    swing_modes: ["both", "rangefull", "off"],
+    swing_mode: "rangefull",
+    swing_horizontal_modes: ["both", "rangefull", "off"],
+    swing_horizontal_mode: "both",
+    supported_features: 553,
   }),
   getEntity("climate", "unavailable", "unavailable", {
     supported_features: 43,
@@ -187,11 +190,13 @@ const CONFIGS = [
     - type: climate-swing-modes
       style: icons
       swing_modes:
-        - 'on'
-        - 'off'
         - 'both'
-        - 'vertical'
-        - 'horizontal'
+        - 'rangefull'
+        - 'off'
+      swing_horizontal_modes:
+        - 'both'
+        - 'rangefull'
+        - 'off'
     `,
   },
   {

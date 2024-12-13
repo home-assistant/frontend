@@ -7,7 +7,7 @@ export const AssistantSetupStyles = [
     :host {
       align-items: center;
       text-align: center;
-      min-height: 300px;
+      min-height: 400px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -22,6 +22,10 @@ export const AssistantSetupStyles = [
       width: 120px;
     }
     @media all and (max-width: 450px), all and (max-height: 500px) {
+      :host {
+        min-height: 100%;
+        height: auto;
+      }
       .content img {
         margin-top: 68px;
         margin-bottom: 68px;
@@ -38,6 +42,9 @@ export const AssistantSetupStyles = [
     }
     .footer.full-width ha-button {
       width: 100%;
+    }
+    .footer.centered {
+      justify-content: center;
     }
     .footer.side-by-side {
       justify-content: space-between;

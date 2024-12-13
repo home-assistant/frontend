@@ -1,28 +1,29 @@
 import "@material/mwc-button/mwc-button";
 import { mdiDelete, mdiFire, mdiPencil } from "@mdi/js";
-import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
-import {
+import type {
   EnergyPreferences,
   EnergyPreferencesValidation,
   EnergyValidationIssue,
   GasSourceTypeEnergyPreference,
+} from "../../../../data/energy";
+import {
   getEnergyGasUnitClass,
   saveEnergyPreferences,
 } from "../../../../data/energy";
-import {
-  StatisticsMetaData,
-  getStatisticLabel,
-} from "../../../../data/recorder";
+import type { StatisticsMetaData } from "../../../../data/recorder";
+import { getStatisticLabel } from "../../../../data/recorder";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import { HomeAssistant } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
 import { showEnergySettingsGasDialog } from "../dialogs/show-dialogs-energy";
 import "./ha-energy-validation-result";

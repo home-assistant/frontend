@@ -1,4 +1,5 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "./hat-logbook-note";
 import "./hat-trace-timeline";
@@ -24,10 +25,13 @@ export class HaTraceTimeline extends LitElement {
         .trace=${this.trace}
         .logbookEntries=${this.logbookEntries}
         .selectedPath=${this.selected.path}
-        allowPick
+        allow-pick
       >
       </hat-trace-timeline>
-      <hat-logbook-note .domain=${this.trace.domain}></hat-logbook-note>
+      <hat-logbook-note
+        .hass=${this.hass}
+        .domain=${this.trace.domain}
+      ></hat-logbook-note>
     `;
   }
 

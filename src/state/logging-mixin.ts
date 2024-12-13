@@ -1,7 +1,7 @@
-import { HASSDomEvent } from "../common/dom/fire_event";
-import { SystemLogLevel } from "../data/system_log";
-import { Constructor } from "../types";
-import { HassBaseEl } from "./hass-base-mixin";
+import type { HASSDomEvent } from "../common/dom/fire_event";
+import type { SystemLogLevel } from "../data/system_log";
+import type { Constructor } from "../types";
+import type { HassBaseEl } from "./hass-base-mixin";
 
 interface WriteLogParams {
   level?: SystemLogLevel;

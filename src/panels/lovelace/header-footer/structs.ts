@@ -9,7 +9,7 @@ import {
 } from "superstruct";
 import { actionConfigStruct } from "../editor/structs/action-struct";
 import { buttonEntityConfigStruct } from "../editor/structs/button-entity-struct";
-import { LovelaceHeaderFooterConfig } from "./types";
+import type { LovelaceHeaderFooterConfig } from "./types";
 
 export const pictureHeaderFooterConfigStruct = object({
   type: string(),

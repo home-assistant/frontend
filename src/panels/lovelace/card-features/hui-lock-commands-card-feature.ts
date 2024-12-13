@@ -1,6 +1,7 @@
 import { mdiLock, mdiLockOpenVariant } from "@mdi/js";
-import { HassEntity } from "home-assistant-js-websocket";
-import { CSSResultGroup, LitElement, html, nothing } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 
@@ -12,10 +13,10 @@ import {
   canLock,
   canUnlock,
 } from "../../../data/lock";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCardFeature } from "../types";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
-import { LockCommandsCardFeatureConfig } from "./types";
+import type { LockCommandsCardFeatureConfig } from "./types";
 
 export const supportsLockCommandsCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);

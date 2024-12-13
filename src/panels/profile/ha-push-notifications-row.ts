@@ -1,10 +1,11 @@
-import { LitElement, TemplateResult, css, html } from "lit";
+import type { TemplateResult } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { pushSupported } from "../../components/ha-push-notifications-toggle";
 import "../../components/ha-settings-row";
 import { documentationUrl } from "../../util/documentation-url";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 
 @customElement("ha-push-notifications-row")
 class HaPushNotificationsRow extends LitElement {

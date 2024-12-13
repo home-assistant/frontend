@@ -1,14 +1,15 @@
 import "@material/mwc-button";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-form/ha-form";
-import { HomeZoneMutableParams } from "../../../data/zone";
+import type { HomeZoneMutableParams } from "../../../data/zone";
 import { haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
-import { HomeZoneDetailDialogParams } from "./show-dialog-home-zone-detail";
+import type { HomeAssistant } from "../../../types";
+import type { HomeZoneDetailDialogParams } from "./show-dialog-home-zone-detail";
 
 const SCHEMA = [
   {

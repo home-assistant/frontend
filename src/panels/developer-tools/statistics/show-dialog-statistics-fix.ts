@@ -1,5 +1,5 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import { StatisticsValidationResult } from "../../../data/recorder";
+import type { StatisticsValidationResult } from "../../../data/recorder";
 
 export const loadFixDialog = () => import("./dialog-statistics-fix");
 

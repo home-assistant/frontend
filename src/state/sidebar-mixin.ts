@@ -1,7 +1,7 @@
-import { HASSDomEvent } from "../common/dom/fire_event";
-import { Constructor, HomeAssistant } from "../types";
+import type { HASSDomEvent } from "../common/dom/fire_event";
+import type { Constructor, HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
-import { HassBaseEl } from "./hass-base-mixin";
+import type { HassBaseEl } from "./hass-base-mixin";
 
 interface DockSidebarParams {
   dock: HomeAssistant["dockedSidebar"];

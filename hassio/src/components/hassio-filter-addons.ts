@@ -1,7 +1,7 @@
 import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
 import { stripDiacritics } from "../../../src/common/string/strip-diacritics";
-import { StoreAddon } from "../../../src/data/supervisor/store";
+import type { StoreAddon } from "../../../src/data/supervisor/store";
 import { getStripDiacriticsFn } from "../../../src/util/fuse";
 
 export function filterAndSort(addons: StoreAddon[], filter: string) {

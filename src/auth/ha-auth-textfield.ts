@@ -1,7 +1,8 @@
 /* eslint-disable lit/value-after-constraints */
 /* eslint-disable lit/prefer-static-styles */
 import { floatingLabel } from "@material/mwc-floating-label/mwc-floating-label-directive";
-import { TemplateResult, html } from "lit";
+import type { TemplateResult } from "lit";
+import { html } from "lit";
 import { customElement } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { live } from "lit/directives/live";
@@ -68,6 +69,7 @@ export class HaAuthTextField extends HaTextField {
       name=${ifDefined(this.name === "" ? undefined : this.name)}
       inputmode=${ifDefined(this.inputMode)}
       autocapitalize=${ifDefined(autocapitalizeOrUndef)}
+      ?autofocus=${this.autofocus}
       @input=${this.handleInputChange}
       @focus=${this.onInputFocus}
       @blur=${this.onInputBlur}
@@ -244,6 +246,14 @@ export class HaAuthTextField extends HaTextField {
     style.textContent = HaTextField.elementStyles as unknown as string;
     this.append(style);
     return this;
+  }
+
+  public firstUpdated() {
+    super.firstUpdated();
+
+    if (this.autofocus) {
+      this.focus();
+    }
   }
 }
 

@@ -1,13 +1,14 @@
 import { fireEvent } from "../common/dom/fire_event";
-import { HomeAssistant, PanelInfo } from "../types";
+import type { HomeAssistant, PanelInfo } from "../types";
 
 /** Panel to show when no panel is picked. */
 export const DEFAULT_PANEL = "lovelace";
 
-export const getStorageDefaultPanelUrlPath = (): string =>
-  localStorage.defaultPanel
-    ? JSON.parse(localStorage.defaultPanel)
-    : DEFAULT_PANEL;
+export const getStorageDefaultPanelUrlPath = (): string => {
+  const defaultPanel = window.localStorage.getItem("defaultPanel");
+
+  return defaultPanel ? JSON.parse(defaultPanel) : DEFAULT_PANEL;
+};
 
 export const setDefaultPanel = (
   element: HTMLElement,

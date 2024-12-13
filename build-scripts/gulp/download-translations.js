@@ -13,7 +13,7 @@ const srcMeta = "src/translations/translationMetadata.json";
 const encoding = "utf8";
 
 function hasHtml(data) {
-  return /<[a-z][\s\S]*>/i.test(data);
+  return /<\S*>/i.test(data);
 }
 
 function recursiveCheckHasHtml(file, data, errors, recKey) {
@@ -127,6 +127,7 @@ gulp.task("fetch-lokalise", async function () {
           replace_breaks: false,
           json_unescaped_slashes: true,
           export_empty_as: "skip",
+          filter_data: ["verified"],
         })
         .then((download) => fetch(download.bundle_url))
         .then((response) => {

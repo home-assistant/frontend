@@ -1,29 +1,30 @@
 import { mdiCog, mdiMicrophone, mdiPlay } from "@mdi/js";
-import { css, html, LitElement, nothing, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import "../../components/ha-select";
 import "../../components/ha-tts-voice-picker";
+import type { AssistPipeline } from "../../data/assist_pipeline";
 import {
-  AssistPipeline,
   listAssistPipelines,
-  setAssistPipelinePreferred,
   updateAssistPipeline,
 } from "../../data/assist_pipeline";
+import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
 import {
   assistSatelliteAnnounce,
-  AssistSatelliteConfiguration,
   setWakeWords,
 } from "../../data/assist_satellite";
 import { fetchCloudStatus } from "../../data/cloud";
+import type { InputSelectEntity } from "../../data/input_select";
+import { setSelectOption } from "../../data/select";
 import { showVoiceAssistantPipelineDetailDialog } from "../../panels/config/voice-assistants/show-dialog-voice-assistant-pipeline-detail";
 import "../../panels/lovelace/entity-rows/hui-select-entity-row";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import { AssistantSetupStyles } from "./styles";
 import { STEP } from "./voice-assistant-setup-dialog";
-import { setSelectOption } from "../../data/select";
-import { InputSelectEntity } from "../../data/input_select";
+import { getTranslation } from "../../util/common-translation";
 
 @customElement("ha-voice-assistant-setup-step-success")
 export class HaVoiceAssistantSetupStepSuccess extends LitElement {
@@ -32,9 +33,9 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
   @property({ attribute: false })
   public assistConfiguration?: AssistSatelliteConfiguration;
 
-  @property() public deviceId!: string;
+  @property({ attribute: false }) public deviceId!: string;
 
-  @property() public assistEntityId?: string;
+  @property({ attribute: false }) public assistEntityId?: string;
 
   @state() private _ttsSettings?: any;
 
@@ -67,11 +68,19 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
       : undefined;
 
     return html`<div class="content">
-        <img src="/static/icons/casita/loving.png" />
-        <h1>Ready to assist!</h1>
+        <img
+          src="/static/images/voice-assistant/heart.png"
+          alt="Casita Home Assistant logo"
+        />
+        <h1>
+          ${this.hass.localize(
+            "ui.panel.config.voice_assistants.satellite_wizard.success.title"
+          )}
+        </h1>
         <p class="secondary">
-          Your device is all ready to go! If you want to tweak some more
-          settings, you can change that below.
+          ${this.hass.localize(
+            "ui.panel.config.voice_assistants.satellite_wizard.success.secondary"
+          )}
         </p>
         <div class="rows">
           ${this.assistConfiguration &&
@@ -213,8 +222,24 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
     });
   }
 
-  private _testTts() {
-    this._announce("Hello, how can I help you?");
+  private async _testTts() {
+    const [pipeline] = await this._getPipeline();
+
+    if (!pipeline) {
+      return;
+    }
+
+    if (pipeline.language !== this.hass.locale.language) {
+      try {
+        const result = await getTranslation(null, pipeline.language, false);
+        this._announce(result.data["ui.dialogs.tts-try.message_example"]);
+        return;
+      } catch (e) {
+        // ignore fallback to user language
+      }
+    }
+
+    this._announce(this.hass.localize("ui.dialogs.tts-try.message_example"));
   }
 
   private async _announce(message: string) {
@@ -233,7 +258,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
   }
 
   private async _openPipeline() {
-    const [pipeline, preferred_pipeline] = await this._getPipeline();
+    const [pipeline] = await this._getPipeline();
 
     if (!pipeline) {
       return;
@@ -245,12 +270,8 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
       cloudActiveSubscription:
         cloudStatus.logged_in && cloudStatus.active_subscription,
       pipeline,
-      preferred: pipeline.id === preferred_pipeline,
       updatePipeline: async (values) => {
         await updateAssistPipeline(this.hass!, pipeline!.id, values);
-      },
-      setPipelinePreferred: async () => {
-        await setAssistPipelinePreferred(this.hass!, pipeline!.id);
       },
       hideWakeWord: true,
     });

@@ -1,4 +1,4 @@
-import { DemoTrace } from "./types";
+import type { DemoTrace } from "./types";
 
 export const motionLightTrace: DemoTrace = {
   trace: {

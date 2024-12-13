@@ -1,4 +1,5 @@
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement } from "lit";
 import { property, state } from "lit/decorators";
 
 class HaInitPage extends LitElement {
@@ -81,6 +82,9 @@ class HaInitPage extends LitElement {
   }
 
   private _retry() {
+    if (this._retryInterval) {
+      clearInterval(this._retryInterval);
+    }
     location.reload();
   }
 

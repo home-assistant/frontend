@@ -1,4 +1,5 @@
-import { Connection, createCollection } from "home-assistant-js-websocket";
+import type { Connection } from "home-assistant-js-websocket";
+import { createCollection } from "home-assistant-js-websocket";
 
 export interface ThemeVars {
   // Incomplete

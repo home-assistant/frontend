@@ -1,5 +1,6 @@
 import { mdiOpenInNew } from "@mdi/js";
-import { css, html, LitElement, nothing, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -8,11 +9,11 @@ import {
   createAssistPipeline,
   listAssistPipelines,
 } from "../../data/assist_pipeline";
-import { AssistSatelliteConfiguration } from "../../data/assist_satellite";
+import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
 import { fetchCloudStatus } from "../../data/cloud";
 import { listSTTEngines } from "../../data/stt";
 import { listTTSEngines, listTTSVoices } from "../../data/tts";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { AssistantSetupStyles } from "./styles";
 import { STEP } from "./voice-assistant-setup-dialog";
@@ -24,13 +25,19 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
   @property({ attribute: false })
   public assistConfiguration?: AssistSatelliteConfiguration;
 
-  @property() public deviceId!: string;
+  @property({ attribute: false }) public deviceId!: string;
 
-  @property() public assistEntityId?: string;
+  @property({ attribute: false }) public assistEntityId?: string;
+
+  @state() private _cloudChecked = false;
 
   @state() private _showFirst = false;
 
   @state() private _showSecond = false;
+
+  @state() private _showThird = false;
+
+  @state() private _showFourth = false;
 
   protected override willUpdate(changedProperties: PropertyValues): void {
     super.willUpdate(changedProperties);
@@ -44,71 +51,142 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
     super.firstUpdated(changedProperties);
     setTimeout(() => {
       this._showFirst = true;
-    }, 1);
+    }, 200);
     setTimeout(() => {
       this._showSecond = true;
-    }, 1500);
+    }, 600);
+    setTimeout(() => {
+      this._showThird = true;
+    }, 2000);
+    setTimeout(() => {
+      this._showFourth = true;
+    }, 3000);
   }
 
   protected override render() {
-    return html`<div class="padding content">
-        <div class="messages-container">
+    if (!this._cloudChecked) {
+      return nothing;
+    }
+
+    return html`<div class="content">
+      <h1>
+        ${this.hass.localize(
+          "ui.panel.config.voice_assistants.satellite_wizard.pipeline.title"
+        )}
+      </h1>
+      <p class="secondary">
+        ${this.hass.localize(
+          "ui.panel.config.voice_assistants.satellite_wizard.pipeline.secondary"
+        )}
+      </p>
+      <div class="container">
+        <div class="messages-container cloud">
           <div class="message user ${this._showFirst ? "show" : ""}">
             ${!this._showFirst ? "…" : "Turn on the lights in the bedroom"}
           </div>
+          ${this._showFirst
+            ? html`<div class="timing user">
+                0.2
+                ${this.hass.localize(
+                  "ui.panel.config.voice_assistants.satellite_wizard.pipeline.seconds"
+                )}
+              </div>`
+            : nothing}
           ${this._showFirst
             ? html` <div class="message hass ${this._showSecond ? "show" : ""}">
                 ${!this._showSecond ? "…" : "Turned on the lights"}
               </div>`
             : nothing}
+          ${this._showSecond
+            ? html`<div class="timing hass">
+                0.4
+                ${this.hass.localize(
+                  "ui.panel.config.voice_assistants.satellite_wizard.pipeline.seconds"
+                )}
+              </div>`
+            : nothing}
         </div>
-        <h1>Select system</h1>
-        <p class="secondary">
-          How quickly your voice assistant responds depends on the power of your
-          system.
-        </p>
-      </div>
-      <ha-md-list>
-        <ha-md-list-item interactive type="button" @click=${this._setupCloud}>
-          Home Assistant Cloud
-          <span slot="supporting-text"
-            >Ideal if you don't have a powerful system at home</span
-          >
-          <ha-icon-next slot="end"></ha-icon-next>
-        </ha-md-list-item>
-        <ha-md-list-item interactive type="button" @click=${this._thisSystem}>
-          On this system
-          <span slot="supporting-text"
-            >Local setup with the Whisper and Piper add-ons</span
-          >
-          <ha-icon-next slot="end"></ha-icon-next>
-        </ha-md-list-item>
-        <ha-md-list-item
-          interactive
-          type="link"
-          href=${documentationUrl(
-            this.hass,
-            "/voice_control/voice_remote_local_assistant/"
+        <h2>Home Assistant Cloud</h2>
+        <p>
+          ${this.hass.localize(
+            "ui.panel.config.voice_assistants.satellite_wizard.pipeline.cloud.description"
           )}
-          rel="noreferrer noopenner"
-          target="_blank"
-          @click=${this._skip}
+        </p>
+        <ha-button @click=${this._setupCloud} unelevated
+          >${this.hass.localize("ui.panel.config.common.learn_more")}</ha-button
         >
-          Use external system
-          <span slot="supporting-text"
-            >Learn more about how to host it on another system</span
+      </div>
+      <div class="container">
+        <div class="messages-container rpi">
+          <div class="message user ${this._showThird ? "show" : ""}">
+            ${!this._showThird ? "…" : "Turn on the lights in the bedroom"}
+          </div>
+          ${this._showThird
+            ? html`<div class="timing user">
+                2
+                ${this.hass.localize(
+                  "ui.panel.config.voice_assistants.satellite_wizard.pipeline.seconds"
+                )}
+              </div>`
+            : nothing}
+          ${this._showThird
+            ? html`<div class="message hass ${this._showFourth ? "show" : ""}">
+                ${!this._showFourth ? "…" : "Turned on the lights"}
+              </div>`
+            : nothing}
+          ${this._showFourth
+            ? html`<div class="timing hass">
+                1
+                ${this.hass.localize(
+                  "ui.panel.config.voice_assistants.satellite_wizard.pipeline.seconds"
+                )}
+              </div>`
+            : nothing}
+        </div>
+        <h2>
+          ${this.hass.localize(
+            "ui.panel.config.voice_assistants.satellite_wizard.pipeline.local.title"
+          )}
+        </h2>
+        <p>
+          ${this.hass.localize(
+            "ui.panel.config.voice_assistants.satellite_wizard.pipeline.local.description"
+          )}
+        </p>
+        <div class="row">
+          <a
+            href=${documentationUrl(
+              this.hass,
+              "/voice_control/voice_remote_local_assistant/"
+            )}
+            target="_blank"
+            rel="noreferrer noopener"
           >
-          <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
-        </ha-md-list-item>
-      </ha-md-list>`;
+            <ha-button>
+              <ha-svg-icon .path=${mdiOpenInNew} slot="icon"></ha-svg-icon>
+              ${this.hass.localize(
+                "ui.panel.config.common.learn_more"
+              )}</ha-button
+            >
+          </a>
+          <ha-button @click=${this._setupLocal} unelevated
+            >${this.hass.localize(
+              "ui.panel.config.voice_assistants.satellite_wizard.pipeline.local.setup"
+            )}</ha-button
+          >
+        </div>
+      </div>
+    </div>`;
   }
 
   private async _checkCloud() {
     if (!isComponentLoaded(this.hass, "cloud")) {
+      this._cloudChecked = true;
       return;
     }
     const cloudStatus = await fetchCloudStatus(this.hass);
     if (!cloudStatus.logged_in || !cloudStatus.active_subscription) {
+      this._cloudChecked = true;
       return;
     }
     let cloudTtsEntityId;
@@ -185,15 +263,15 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
           (pipeline) => pipeline.name === pipelineName
         )
       ) {
-        pipelineName = `${pipelineName} ${i}`;
+        pipelineName = `Home Assistant Cloud ${i}`;
         i++;
       }
 
       cloudPipeline = await createAssistPipeline(this.hass, {
         name: pipelineName,
-        language: this.hass.config.language,
+        language: this.hass.config.language.split("-")[0],
         conversation_engine: "conversation.home_assistant",
-        conversation_language: this.hass.config.language,
+        conversation_language: this.hass.config.language.split("-")[0],
         stt_engine: cloudSttEntityId,
         stt_language: sttEngine!.supported_languages![0],
         tts_engine: cloudTtsEntityId,
@@ -217,12 +295,8 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
     this._nextStep(STEP.CLOUD);
   }
 
-  private async _thisSystem() {
-    this._nextStep(STEP.ADDONS);
-  }
-
-  private _skip() {
-    this._nextStep(STEP.SUCCESS);
+  private async _setupLocal() {
+    this._nextStep(STEP.LOCAL);
   }
 
   private _nextStep(step?: STEP) {
@@ -232,21 +306,22 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
   static styles = [
     AssistantSetupStyles,
     css`
-      :host {
-        padding: 0;
+      .container {
+        border-radius: 16px;
+        border: 1px solid var(--divider-color);
+        overflow: hidden;
+        padding-bottom: 16px;
       }
-      .padding {
-        padding: 24px;
+      .container:last-child {
+        margin-top: 16px;
       }
-      ha-md-list {
-        width: 100%;
-        text-align: initial;
-      }
-
       .messages-container {
         padding: 24px;
         box-sizing: border-box;
-        height: 152px;
+        height: 195px;
+        background: var(--input-fill-color);
+        display: flex;
+        flex-direction: column;
       }
       .message {
         white-space: nowrap;
@@ -259,20 +334,28 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
         box-sizing: border-box;
         overflow: hidden;
         text-overflow: ellipsis;
-        transition: width 1s;
         width: 30px;
+      }
+      .rpi .message {
+        transition: width 1s;
+      }
+      .cloud .message {
+        transition: width 0.5s;
       }
 
       .message.user {
         margin-left: 24px;
         margin-inline-start: 24px;
         margin-inline-end: initial;
-        float: var(--float-end);
+        align-self: self-end;
         text-align: right;
         border-bottom-right-radius: 0px;
         background-color: var(--primary-color);
         color: var(--text-primary-color);
         direction: var(--direction);
+      }
+      .timing.user {
+        align-self: self-end;
       }
 
       .message.user.show {
@@ -283,15 +366,23 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
         margin-right: 24px;
         margin-inline-end: 24px;
         margin-inline-start: initial;
-        float: var(--float-start);
+        align-self: self-start;
         border-bottom-left-radius: 0px;
         background-color: var(--secondary-background-color);
         color: var(--primary-text-color);
         direction: var(--direction);
       }
+      .timing.hass {
+        align-self: self-start;
+      }
 
       .message.hass.show {
         width: 184px;
+      }
+      .row {
+        display: flex;
+        justify-content: space-between;
+        margin: 0 16px;
       }
     `,
   ];

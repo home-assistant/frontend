@@ -1,7 +1,7 @@
 import { mdiLightbulbOutline } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 
 import "./ha-svg-icon";
 

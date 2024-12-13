@@ -4,40 +4,40 @@ import {
   mdiInformationVariant,
   mdiMathLog,
 } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import { navigate } from "../../../src/common/navigate";
 import { extractSearchParam } from "../../../src/common/url/search-params";
 import "../../../src/components/ha-circular-progress";
+import type { HassioAddonDetails } from "../../../src/data/hassio/addon";
 import {
   fetchAddonInfo,
   fetchHassioAddonInfo,
   fetchHassioAddonsInfo,
-  HassioAddonDetails,
 } from "../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
+import type { StoreAddonDetails } from "../../../src/data/supervisor/store";
 import {
   addStoreRepository,
   fetchSupervisorStore,
-  StoreAddonDetails,
 } from "../../../src/data/supervisor/store";
-import { Supervisor } from "../../../src/data/supervisor/supervisor";
+import type { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { showConfirmationDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import "../../../src/layouts/hass-error-screen";
 import "../../../src/layouts/hass-loading-screen";
 import "../../../src/layouts/hass-tabs-subpage";
 import type { PageNavigation } from "../../../src/layouts/hass-tabs-subpage";
 import { haStyle } from "../../../src/resources/styles";
-import { HomeAssistant, Route } from "../../../src/types";
+import type { HomeAssistant, Route } from "../../../src/types";
 import { hassioStyle } from "../resources/hassio-style";
 import "./config/hassio-addon-audio";
 import "./config/hassio-addon-config";
 import "./config/hassio-addon-network";
 import "./hassio-addon-router";
 import "./info/hassio-addon-info";
-import "./log/hassio-addon-logs";
 
 @customElement("hassio-addon-dashboard")
 class HassioAddonDashboard extends LitElement {
@@ -161,16 +161,11 @@ class HassioAddonDashboard extends LitElement {
           margin-bottom: 24px;
           width: 600px;
         }
-        hassio-addon-logs {
-          max-width: calc(100% - 8px);
-          min-width: 600px;
-        }
         @media only screen and (max-width: 600px) {
           hassio-addon-info,
           hassio-addon-network,
           hassio-addon-audio,
-          hassio-addon-config,
-          hassio-addon-logs {
+          hassio-addon-config {
             max-width: 100%;
             min-width: 100%;
           }

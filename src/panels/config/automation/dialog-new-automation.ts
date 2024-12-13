@@ -6,7 +6,8 @@ import {
   mdiPencilOutline,
   mdiWeb,
 } from "@mdi/js";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -17,16 +18,18 @@ import "../../../components/ha-icon-next";
 import "../../../components/ha-list-item";
 import "../../../components/ha-tip";
 import { showAutomationEditor } from "../../../data/automation";
-import {
+import type {
   Blueprint,
   BlueprintDomain,
   BlueprintSourceType,
   Blueprints,
+} from "../../../data/blueprint";
+import {
   fetchBlueprints,
   getBlueprintSourceType,
 } from "../../../data/blueprint";
 import { showScriptEditor } from "../../../data/script";
-import { HassDialog } from "../../../dialogs/make-dialog-manager";
+import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";

@@ -1,19 +1,18 @@
 import "../../../../src/components/ha-card";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-circular-progress";
 import "../../../../src/components/ha-markdown";
 import { customElement, property, state } from "lit/decorators";
-import {
-  fetchHassioAddonDocumentation,
-  HassioAddonDetails,
-} from "../../../../src/data/hassio/addon";
+import type { HassioAddonDetails } from "../../../../src/data/hassio/addon";
+import { fetchHassioAddonDocumentation } from "../../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import "../../../../src/layouts/hass-loading-screen";
 import { haStyle } from "../../../../src/resources/styles";
-import { HomeAssistant } from "../../../../src/types";
+import type { HomeAssistant } from "../../../../src/types";
 import { hassioStyle } from "../../resources/hassio-style";
-import { Supervisor } from "../../../../src/data/supervisor/supervisor";
+import type { Supervisor } from "../../../../src/data/supervisor/supervisor";
 
 @customElement("hassio-addon-documentation-tab")
 class HassioAddonDocumentationDashboard extends LitElement {

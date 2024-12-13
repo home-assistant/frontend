@@ -1,24 +1,19 @@
 import { mdiPlus } from "@mdi/js";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-ripple";
 import "../../../components/ha-sortable";
 import type { HaSortableOptions } from "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import "../components/hui-badge-edit-mode";
 import { moveBadge } from "../editor/config-util";
-import { Lovelace } from "../types";
-import { HuiBadge } from "./hui-badge";
+import type { Lovelace } from "../types";
+import type { HuiBadge } from "./hui-badge";
 
 const BADGE_SORTABLE_OPTIONS: HaSortableOptions = {
   delay: 100,
@@ -82,11 +77,11 @@ export class HuiViewBadges extends LitElement {
 
   private _badgeMoved(ev) {
     ev.stopPropagation();
-    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
+    const { oldIndex, newIndex } = ev.detail;
     const newConfig = moveBadge(
       this.lovelace!.config,
-      [...oldPath, oldIndex] as [number, number, number],
-      [...newPath, newIndex] as [number, number, number]
+      [this.viewIndex!, oldIndex],
+      [this.viewIndex!, newIndex]
     );
     this.lovelace!.saveConfig(newConfig);
   }
@@ -120,7 +115,6 @@ export class HuiViewBadges extends LitElement {
               @drag-end=${this._dragEnd}
               group="badge"
               draggable-selector="[data-sortable]"
-              .path=${[this.viewIndex]}
               .rollback=${false}
               .options=${BADGE_SORTABLE_OPTIONS}
               invert-swap
@@ -157,6 +151,7 @@ export class HuiViewBadges extends LitElement {
                           "ui.panel.lovelace.editor.section.add_badge"
                         )}
                       >
+                        <ha-ripple></ha-ripple>
                         <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
                       </button>
                     `
@@ -208,6 +203,9 @@ export class HuiViewBadges extends LitElement {
         --mdc-icon-size: 18px;
         cursor: pointer;
         color: var(--primary-text-color);
+        --ha-ripple-color: var(--primary-color);
+        --ha-ripple-hover-opacity: 0.04;
+        --ha-ripple-pressed-opacity: 0.12;
       }
       .add:focus {
         border-style: solid;

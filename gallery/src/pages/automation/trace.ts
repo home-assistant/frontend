@@ -6,10 +6,10 @@ import "../../../../src/components/ha-card";
 import "../../../../src/components/trace/hat-script-graph";
 import "../../../../src/components/trace/hat-trace-timeline";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
-import { HomeAssistant } from "../../../../src/types";
+import type { HomeAssistant } from "../../../../src/types";
 import { basicTrace } from "../../data/traces/basic_trace";
 import { motionLightTrace } from "../../data/traces/motion-light-trace";
-import { DemoTrace } from "../../data/traces/types";
+import type { DemoTrace } from "../../data/traces/types";
 
 const traces: DemoTrace[] = [basicTrace, motionLightTrace];
 
@@ -31,22 +31,17 @@ export class DemoAutomationTrace extends LitElement {
               <hat-script-graph
                 .trace=${trace.trace}
                 .selected=${this._selected[idx]}
-                @graph-node-selected=${(ev) => {
-                  this._selected = { ...this._selected, [idx]: ev.detail.path };
-                }}
+                @graph-node-selected=${this._handleGraphNodeSelected}
+                .sampleIdx=${idx}
               ></hat-script-graph>
               <hat-trace-timeline
-                allowPick
+                allow-pick
                 .hass=${this.hass}
                 .trace=${trace.trace}
                 .logbookEntries=${trace.logbookEntries}
                 .selectedPath=${this._selected[idx]}
-                @value-changed=${(ev) => {
-                  this._selected = {
-                    ...this._selected,
-                    [idx]: ev.detail.value,
-                  };
-                }}
+                @value-changed=${this._handleTimelineValueChanged}
+                .sampleIdx=${idx}
               ></hat-trace-timeline>
               <button @click=${() => console.log(trace)}>Log trace</button>
             </div>
@@ -61,6 +56,16 @@ export class DemoAutomationTrace extends LitElement {
     const hass = provideHass(this);
     hass.updateTranslations(null, "en");
     hass.updateTranslations("config", "en");
+  }
+
+  private _handleTimelineValueChanged(ev) {
+    const sampleIdx = ev.target.sampleIdx;
+    this._selected = { ...this._selected, [sampleIdx]: ev.detail.value };
+  }
+
+  private _handleGraphNodeSelected(ev) {
+    const sampleIdx = ev.target.sampleIdx;
+    this._selected = { ...this._selected, [sampleIdx]: ev.detail.path };
   }
 
   static get styles() {

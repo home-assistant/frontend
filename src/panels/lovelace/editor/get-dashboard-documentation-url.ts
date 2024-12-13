@@ -4,7 +4,7 @@ import {
   isCustomType,
   stripCustomPrefix,
 } from "../../../data/lovelace_custom_cards";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 
 export const getCardDocumentationURL = (

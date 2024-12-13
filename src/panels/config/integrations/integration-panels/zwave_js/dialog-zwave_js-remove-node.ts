@@ -1,13 +1,16 @@
 import "@material/mwc-button/mwc-button";
 import { mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-circular-progress";
+import "../../../../../components/ha-alert";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import { haStyleDialog } from "../../../../../resources/styles";
-import { HomeAssistant } from "../../../../../types";
-import { ZWaveJSRemoveNodeDialogParams } from "./show-dialog-zwave_js-remove-node";
+import type { HomeAssistant } from "../../../../../types";
+import type { ZWaveJSRemoveNodeDialogParams } from "./show-dialog-zwave_js-remove-node";
 
 export interface ZWaveJSRemovedNode {
   node_id: number;
@@ -25,9 +28,13 @@ class DialogZWaveJSRemoveNode extends LitElement {
 
   @state() private _node?: ZWaveJSRemovedNode;
 
+  @state() private _removedCallback?: () => void;
+
   private _removeNodeTimeoutHandle?: number;
 
-  private _subscribed?: Promise<() => Promise<void>>;
+  private _subscribed?: Promise<UnsubscribeFunc>;
+
+  @state() private _error?: string;
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
@@ -38,6 +45,10 @@ class DialogZWaveJSRemoveNode extends LitElement {
     params: ZWaveJSRemoveNodeDialogParams
   ): Promise<void> {
     this.entry_id = params.entry_id;
+    this._removedCallback = params.removedCallback;
+    if (params.skipConfirmation) {
+      this._startExclusion();
+    }
   }
 
   protected render() {
@@ -67,7 +78,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
                 )}
               </mwc-button>
             `
-          : ``}
+          : nothing}
         ${this._status === "started"
           ? html`
               <div class="flex-container">
@@ -93,7 +104,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
                 )}
               </mwc-button>
             `
-          : ``}
+          : nothing}
         ${this._status === "failed"
           ? html`
               <div class="flex-container">
@@ -107,13 +118,18 @@ class DialogZWaveJSRemoveNode extends LitElement {
                       "ui.panel.config.zwave_js.remove_node.exclusion_failed"
                     )}
                   </p>
+                  ${this._error
+                    ? html`<ha-alert alert-type="error">
+                        ${this._error}
+                      </ha-alert>`
+                    : nothing}
                 </div>
               </div>
               <mwc-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize("ui.common.close")}
               </mwc-button>
             `
-          : ``}
+          : nothing}
         ${this._status === "finished"
           ? html`
               <div class="flex-container">
@@ -134,7 +150,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
                 ${this.hass.localize("ui.common.close")}
               </mwc-button>
             `
-          : ``}
+          : nothing}
       </ha-dialog>
     `;
   }
@@ -143,13 +159,17 @@ class DialogZWaveJSRemoveNode extends LitElement {
     if (!this.hass) {
       return;
     }
-    this._subscribed = this.hass.connection.subscribeMessage(
-      (message) => this._handleMessage(message),
-      {
+    this._subscribed = this.hass.connection
+      .subscribeMessage((message) => this._handleMessage(message), {
         type: "zwave_js/remove_node",
         entry_id: this.entry_id,
-      }
-    );
+      })
+      .catch((err) => {
+        this._status = "failed";
+        this._error = err.message;
+        return () => {};
+      });
+    this._status = "started";
     this._removeNodeTimeoutHandle = window.setTimeout(
       () => this._unsubscribe(),
       120000
@@ -174,6 +194,9 @@ class DialogZWaveJSRemoveNode extends LitElement {
       this._status = "finished";
       this._node = message.node;
       this._unsubscribe();
+      if (this._removedCallback) {
+        this._removedCallback();
+      }
     }
   }
 

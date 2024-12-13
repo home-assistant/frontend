@@ -1,10 +1,12 @@
 import "@material/mwc-button/mwc-button";
-import { ActionDetail } from "@material/mwc-list/mwc-list";
+import "@material/mwc-list/mwc-list";
+import type { ActionDetail } from "@material/mwc-list/mwc-list";
 import { mdiCast, mdiCastConnected, mdiViewDashboard } from "@mdi/js";
-import { Auth, Connection } from "home-assistant-js-websocket";
-import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
+import type { Auth, Connection } from "home-assistant-js-websocket";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { CastManager } from "../../../../src/cast/cast_manager";
+import type { CastManager } from "../../../../src/cast/cast_manager";
 import {
   castSendShowLovelaceView,
   ensureConnectedCastSession,
@@ -23,7 +25,7 @@ import {
   getLovelaceCollection,
 } from "../../../../src/data/lovelace";
 import { isStrategyDashboard } from "../../../../src/data/lovelace/config/types";
-import { LovelaceViewConfig } from "../../../../src/data/lovelace/config/view";
+import type { LovelaceViewConfig } from "../../../../src/data/lovelace/config/view";
 import "../../../../src/layouts/hass-loading-screen";
 import { generateDefaultViewConfig } from "../../../../src/panels/lovelace/common/generate-lovelace-config";
 import "./hc-layout";
@@ -89,8 +91,8 @@ class HcCast extends LitElement {
                       generateDefaultViewConfig({}, {}, {}, {}, () => ""),
                     ]
                   ).map(
-                    (view, idx) =>
-                      html`<ha-list-item
+                    (view, idx) => html`
+                      <ha-list-item
                         graphic="avatar"
                         .activated=${this.castManager.status?.lovelacePath ===
                         (view.path ?? idx)}
@@ -108,8 +110,9 @@ class HcCast extends LitElement {
                           : html`<ha-svg-icon
                               slot="item-icon"
                               .path=${mdiViewDashboard}
-                            ></ha-svg-icon>`}</ha-list-item
-                      > `
+                            ></ha-svg-icon>`}
+                      </ha-list-item>
+                    `
                   )}</mwc-list
                 >
               `}

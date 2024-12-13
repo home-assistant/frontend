@@ -1,31 +1,23 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../../src/common/dom/stop_propagation";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-select";
-import {
+import type {
   HassioAddonDetails,
   HassioAddonSetOptionParams,
-  setHassioAddonOption,
 } from "../../../../src/data/hassio/addon";
-import {
-  fetchHassioHardwareAudio,
-  HassioHardwareAudioDevice,
-} from "../../../../src/data/hassio/hardware";
-import { Supervisor } from "../../../../src/data/supervisor/supervisor";
+import { setHassioAddonOption } from "../../../../src/data/hassio/addon";
+import type { HassioHardwareAudioDevice } from "../../../../src/data/hassio/hardware";
+import { fetchHassioHardwareAudio } from "../../../../src/data/hassio/hardware";
+import type { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import { haStyle } from "../../../../src/resources/styles";
-import { HomeAssistant } from "../../../../src/types";
+import type { HomeAssistant } from "../../../../src/types";
 import { suggestAddonRestart } from "../../dialogs/suggestAddonRestart";
 import { hassioStyle } from "../../resources/hassio-style";
 

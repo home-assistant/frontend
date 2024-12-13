@@ -1,8 +1,8 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
-import { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
-import { LovelaceConfig } from "../../../../data/lovelace/config/types";
-import { LovelaceContainerPath } from "../lovelace-path";
+import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
+import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
+import type { LovelaceContainerPath } from "../lovelace-path";
 
 export interface SuggestCardDialogParams {
   lovelaceConfig?: LovelaceConfig;

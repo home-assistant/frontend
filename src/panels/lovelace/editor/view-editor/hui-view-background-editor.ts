@@ -1,10 +1,11 @@
 import "@material/mwc-list/mwc-list-item";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-selector/ha-selector-image";
-import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
-import { HomeAssistant, ValueChangedEvent } from "../../../../types";
+import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 
 const SELECTOR = { image: { original: true } };
 

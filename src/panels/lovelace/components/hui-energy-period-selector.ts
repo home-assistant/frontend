@@ -21,15 +21,9 @@ import {
   startOfYear,
   subDays,
 } from "date-fns";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import {
@@ -52,15 +46,16 @@ import "../../../components/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../../components/ha-date-range-picker";
 import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-button-prev";
-import { EnergyData, getEnergyDataCollection } from "../../../data/energy";
+import type { EnergyData } from "../../../data/energy";
+import { getEnergyDataCollection } from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 
 @customElement("hui-energy-period-selector")
 export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public collectionKey?: string;
+  @property({ attribute: "collection-key" }) public collectionKey?: string;
 
   @property({ type: Boolean, reflect: true }) public narrow?;
 
@@ -253,7 +248,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
             .endDate=${this._endDate || new Date()}
             .ranges=${this._ranges}
             @change=${this._dateRangeChanged}
-            .timePicker=${false}
+            time-picker
             minimal
           ></ha-date-range-picker>
         </div>

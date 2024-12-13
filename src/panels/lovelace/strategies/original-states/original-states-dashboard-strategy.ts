@@ -1,8 +1,8 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
-import { LovelaceConfig } from "../../../../data/lovelace/config/types";
-import { LovelaceStrategyEditor } from "../types";
-import { OriginalStatesViewStrategyConfig } from "./original-states-view-strategy";
+import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
+import type { LovelaceStrategyEditor } from "../types";
+import type { OriginalStatesViewStrategyConfig } from "./original-states-view-strategy";
 
 export type OriginalStatesDashboardStrategyConfig =
   OriginalStatesViewStrategyConfig;

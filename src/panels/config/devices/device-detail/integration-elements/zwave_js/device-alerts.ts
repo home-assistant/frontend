@@ -1,7 +1,7 @@
-import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import { fetchZwaveNodeAlerts } from "../../../../../../data/zwave_js";
-import { HomeAssistant } from "../../../../../../types";
-import { DeviceAlert } from "../../../ha-config-device-page";
+import type { HomeAssistant } from "../../../../../../types";
+import type { DeviceAlert } from "../../../ha-config-device-page";
 
 export const getZwaveDeviceAlerts = async (
   hass: HomeAssistant,

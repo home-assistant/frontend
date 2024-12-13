@@ -1,6 +1,7 @@
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 
 export interface ThreadRouter {
+  instance_name: string;
   addresses: [string];
   border_agent_id: string | null;
   brand: "google" | "apple" | "homeassistant";

@@ -1,5 +1,5 @@
 import { fireEvent } from "../../../../src/common/dom/fire_event";
-import { Supervisor } from "../../../../src/data/supervisor/supervisor";
+import type { Supervisor } from "../../../../src/data/supervisor/supervisor";
 
 export interface HassioBackupLocationDialogParams {
   supervisor: Supervisor;

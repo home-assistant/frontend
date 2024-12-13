@@ -1,14 +1,7 @@
 import "@material/mwc-button/mwc-button";
 import { formatISO9075 } from "date-fns";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
@@ -21,16 +14,16 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-selector/ha-selector-datetime";
 import "../../../components/ha-selector/ha-selector-number";
 import "../../../components/ha-svg-icon";
+import type { StatisticValue } from "../../../data/recorder";
 import {
   adjustStatisticsSum,
   fetchStatistics,
   getDisplayUnit,
-  StatisticValue,
 } from "../../../data/recorder";
 import type { DateTimeSelector, NumberSelector } from "../../../data/selector";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
 import type { DialogStatisticsAdjustSumParams } from "./show-dialog-statistics-adjust-sum";
 

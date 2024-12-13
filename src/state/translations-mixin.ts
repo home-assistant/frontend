@@ -1,31 +1,34 @@
 import { atLeastVersion } from "../common/config/version";
 import { fireEvent } from "../common/dom/fire_event";
-import { computeLocalize, LocalizeFunc } from "../common/translations/localize";
+import type { LocalizeFunc } from "../common/translations/localize";
+import { computeLocalize } from "../common/translations/localize";
 import {
   computeRTLDirection,
   setDirectionStyles,
 } from "../common/util/compute_rtl";
 import { debounce } from "../common/util/debounce";
-import {
+import type {
   FirstWeekday,
-  getHassTranslations,
-  getHassTranslationsPre109,
   NumberFormat,
-  saveTranslationPreferences,
   TimeFormat,
   DateFormat,
   TranslationCategory,
   TimeZone,
 } from "../data/translation";
+import {
+  getHassTranslations,
+  getHassTranslationsPre109,
+  saveTranslationPreferences,
+} from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
-import { Constructor, HomeAssistant } from "../types";
+import type { Constructor, HomeAssistant } from "../types";
 import {
   getLocalLanguage,
   getTranslation,
   getUserLocale,
 } from "../util/common-translation";
 import { storeState } from "../util/ha-pref-storage";
-import { HassBaseEl } from "./hass-base-mixin";
+import type { HassBaseEl } from "./hass-base-mixin";
 
 declare global {
   // for fire event

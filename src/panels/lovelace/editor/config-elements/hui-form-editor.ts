@@ -1,11 +1,12 @@
-import { CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
-import { LocalizeFunc } from "../../../../common/translations/localize";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../components/ha-form/types";
-import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceGenericElementEditor } from "../../types";
 import { configElementStyle } from "./config-elements-style";

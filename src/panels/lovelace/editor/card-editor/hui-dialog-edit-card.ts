@@ -1,13 +1,7 @@
 import { mdiClose, mdiHelpCircle } from "@mdi/js";
 import deepFreeze from "deep-freeze";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
@@ -17,9 +11,9 @@ import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
-import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
-import { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
-import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
+import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import {
   getCustomCardEntry,
   isCustomType,

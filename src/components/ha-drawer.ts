@@ -1,6 +1,7 @@
 import { DrawerBase } from "@material/mwc-drawer/mwc-drawer-base";
 import { styles } from "@material/mwc-drawer/mwc-drawer.css";
-import { css, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
+import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 

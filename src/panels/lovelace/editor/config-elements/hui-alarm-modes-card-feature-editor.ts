@@ -1,4 +1,4 @@
-import { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -11,7 +11,7 @@ import type {
 } from "../../../../components/ha-form/types";
 import { supportedAlarmModes } from "../../../../data/alarm_control_panel";
 import type { HomeAssistant } from "../../../../types";
-import {
+import type {
   AlarmModesCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "../../card-features/types";

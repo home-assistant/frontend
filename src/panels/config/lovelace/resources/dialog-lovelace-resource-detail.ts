@@ -9,10 +9,10 @@ import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-form/ha-form";
 import "../../../../components/ha-icon-button";
-import { SchemaUnion } from "../../../../components/ha-form/types";
-import { LovelaceResourcesMutableParams } from "../../../../data/lovelace/resource";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceResourceDetailsDialogParams } from "./show-dialog-lovelace-resource-detail";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type { LovelaceResourcesMutableParams } from "../../../../data/lovelace/resource";
+import type { HomeAssistant } from "../../../../types";
+import type { LovelaceResourceDetailsDialogParams } from "./show-dialog-lovelace-resource-detail";
 
 const detectResourceType = (url?: string) => {
   if (!url) {

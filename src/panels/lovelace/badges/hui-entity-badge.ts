@@ -1,6 +1,7 @@
 import { mdiAlertCircle } from "@mdi/js";
-import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
@@ -16,14 +17,14 @@ import "../../../components/ha-ripple";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
 import { cameraUrlWithWidthHeight } from "../../../data/camera";
-import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import { HomeAssistant } from "../../../types";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
-import { LovelaceBadge, LovelaceBadgeEditor } from "../types";
-import { EntityBadgeConfig } from "./types";
+import type { LovelaceBadge, LovelaceBadgeEditor } from "../types";
+import type { EntityBadgeConfig } from "./types";
 
 export const DISPLAY_TYPES = ["minimal", "standard", "complete"] as const;
 export type DisplayType = (typeof DISPLAY_TYPES)[number];

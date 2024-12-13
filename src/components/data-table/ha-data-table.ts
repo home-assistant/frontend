@@ -1,14 +1,7 @@
 import { mdiArrowDown, mdiArrowUp, mdiChevronUp } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import {
   customElement,
   eventOptions,
@@ -27,13 +20,13 @@ import { debounce } from "../../common/util/debounce";
 import { groupBy } from "../../common/util/group-by";
 import { haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-svg-icon";
 import "../search-input";
 import { filterData, sortData } from "./sort-filter";
-import { LocalizeFunc } from "../../common/translations/localize";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import { nextRender } from "../../common/util/render-status";
 
 export interface RowClickedEvent {
@@ -123,7 +116,7 @@ export class HaDataTable extends LitElement {
 
   @property({ type: Boolean }) public clickable = false;
 
-  @property({ type: Boolean }) public hasFab = false;
+  @property({ attribute: "has-fab", type: Boolean }) public hasFab = false;
 
   /**
    * Add an extra row at the bottom of the data table
@@ -134,24 +127,25 @@ export class HaDataTable extends LitElement {
   @property({ type: Boolean, attribute: "auto-height" })
   public autoHeight = false;
 
+  // eslint-disable-next-line lit/no-native-attributes
   @property({ type: String }) public id = "id";
 
-  @property({ type: String }) public noDataText?: string;
+  @property({ attribute: false, type: String }) public noDataText?: string;
 
-  @property({ type: String }) public searchLabel?: string;
+  @property({ attribute: false, type: String }) public searchLabel?: string;
 
   @property({ type: Boolean, attribute: "no-label-float" })
   public noLabelFloat? = false;
 
   @property({ type: String }) public filter = "";
 
-  @property() public groupColumn?: string;
+  @property({ attribute: false }) public groupColumn?: string;
 
   @property({ attribute: false }) public groupOrder?: string[];
 
-  @property() public sortColumn?: string;
+  @property({ attribute: false }) public sortColumn?: string;
 
-  @property() public sortDirection: SortingDirection = null;
+  @property({ attribute: false }) public sortDirection: SortingDirection = null;
 
   @property({ attribute: false }) public initialCollapsedGroups?: string[];
 
@@ -1192,6 +1186,7 @@ export class HaDataTable extends LitElement {
 
         .group-header {
           padding-top: 12px;
+          height: var(--data-table-row-height, 52px);
           padding-left: 12px;
           padding-inline-start: 12px;
           padding-inline-end: initial;
@@ -1200,6 +1195,7 @@ export class HaDataTable extends LitElement {
           display: flex;
           align-items: center;
           cursor: pointer;
+          background-color: var(--primary-background-color);
         }
 
         .group-header ha-icon-button {

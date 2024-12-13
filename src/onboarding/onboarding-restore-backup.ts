@@ -1,5 +1,6 @@
 import "@material/mwc-button/mwc-button";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { showHassioBackupDialog } from "../../hassio/src/dialogs/backup/show-dialog-hassio-backup";
 import "../../hassio/src/components/hassio-upload-backup";
@@ -7,7 +8,7 @@ import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-ansi-to-html";
 import "../components/ha-card";
 import { fetchInstallationType } from "../data/onboarding";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "./onboarding-loading";
 import { onBoardingStyles } from "./styles";
 import { removeSearchParam } from "../common/url/search-params";

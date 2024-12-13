@@ -1,13 +1,7 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { mdiDotsVertical } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -16,18 +10,18 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
-import { HumidifierEntity } from "../../../data/humidifier";
+import type { HumidifierEntity } from "../../../data/humidifier";
 import "../../../state-control/humidifier/ha-state-control-humidifier-humidity";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import "../card-features/hui-card-features";
 import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import {
+import type {
   LovelaceCard,
   LovelaceCardEditor,
-  LovelaceLayoutOptions,
+  LovelaceGridOptions,
 } from "../types";
-import { HumidifierCardConfig } from "./types";
+import type { HumidifierCardConfig } from "./types";
 
 @customElement("hui-humidifier-card")
 export class HuiHumidifierCard extends LitElement implements LovelaceCard {
@@ -177,21 +171,21 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  public getLayoutOptions(): LovelaceLayoutOptions {
-    const grid_columns = 4;
-    let grid_rows = 5;
-    let grid_min_rows = 2;
-    const grid_min_columns = 2;
+  public getGridOptions(): LovelaceGridOptions {
+    const columns = 12;
+    let rows = 5;
+    let min_rows = 2;
+    const min_columns = 6;
     if (this._config?.features?.length) {
       const featureHeight = Math.ceil((this._config.features.length * 2) / 3);
-      grid_rows += featureHeight;
-      grid_min_rows += featureHeight;
+      rows += featureHeight;
+      min_rows += featureHeight;
     }
     return {
-      grid_columns,
-      grid_rows,
-      grid_min_rows,
-      grid_min_columns,
+      columns,
+      rows,
+      min_columns,
+      min_rows,
     };
   }
 

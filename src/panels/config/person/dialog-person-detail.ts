@@ -1,5 +1,6 @@
 import { mdiPencil } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import "../../../components/entity/ha-entities-picker";
@@ -12,26 +13,28 @@ import type { HaPictureUpload } from "../../../components/ha-picture-upload";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-textfield";
 import { adminChangeUsername } from "../../../data/auth";
-import { PersonMutableParams } from "../../../data/person";
+import type { PersonMutableParams } from "../../../data/person";
+import type { User } from "../../../data/user";
 import {
   deleteUser,
   SYSTEM_GROUP_ID_ADMIN,
   SYSTEM_GROUP_ID_USER,
   updateUser,
-  User,
 } from "../../../data/user";
 import {
   showAlertDialog,
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
+import type { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant, ValueChangedEvent } from "../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showAddUserDialog } from "../users/show-dialog-add-user";
 import { showAdminChangePasswordDialog } from "../users/show-dialog-admin-change-password";
-import { PersonDetailDialogParams } from "./show-dialog-person-detail";
+import type { PersonDetailDialogParams } from "./show-dialog-person-detail";
+import { fireEvent } from "../../../common/dom/fire_event";
+import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 
 const includeDomains = ["device_tracker"];
 
@@ -41,7 +44,7 @@ const cropOptions: CropOptions = {
   aspectRatio: 1,
 };
 
-class DialogPersonDetail extends LitElement {
+class DialogPersonDetail extends LitElement implements HassDialog {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _name!: string;
@@ -100,6 +103,20 @@ class DialogPersonDetail extends LitElement {
     await this.updateComplete;
   }
 
+  public closeDialog() {
+    // If we do not have a person ID yet (= person creation dialog was just cancelled), but
+    // we already created a user ID for it, delete it now to not have it "free floating".
+    if (!this._personExists && this._userId) {
+      const callback = this._params?.refreshUsers;
+      deleteUser(this.hass, this._userId).then(() => {
+        callback?.();
+      });
+      this._userId = undefined;
+    }
+    this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
   protected render() {
     if (!this._params) {
       return nothing;
@@ -108,7 +125,7 @@ class DialogPersonDetail extends LitElement {
     return html`
       <ha-dialog
         open
-        @closed=${this._close}
+        @closed=${this.closeDialog}
         scrimClickAction
         escapeKeyAction
         .heading=${createCloseHeading(
@@ -162,7 +179,7 @@ class DialogPersonDetail extends LitElement {
             </ha-settings-row>
 
             ${this._renderUserFields()}
-            ${this._deviceTrackersAvailable(this.hass)
+            ${!this._deviceTrackersAvailable(this.hass)
               ? html`
                   <p>
                     ${this.hass.localize(
@@ -204,10 +221,7 @@ class DialogPersonDetail extends LitElement {
                       >
                     </li>
                     <li>
-                      <a
-                        @click=${this._closeDialog}
-                        href="/config/integrations"
-                      >
+                      <a @click=${this.closeDialog} href="/config/integrations">
                         ${this.hass!.localize(
                           "ui.panel.config.person.detail.link_integrations_page"
                         )}</a
@@ -326,10 +340,6 @@ class DialogPersonDetail extends LitElement {
         </ha-switch>
       </ha-settings-row>
     `;
-  }
-
-  private _closeDialog() {
-    this._params = undefined;
   }
 
   private _nameChanged(ev) {
@@ -495,7 +505,7 @@ class DialogPersonDetail extends LitElement {
         await this._params!.createEntry(values);
         this._personExists = true;
       }
-      this._params = undefined;
+      this.closeDialog();
     } catch (err: any) {
       this._error = err ? err.message : "Unknown error";
     } finally {
@@ -510,23 +520,11 @@ class DialogPersonDetail extends LitElement {
         if (this._params!.entry!.user_id) {
           deleteUser(this.hass, this._params!.entry!.user_id);
         }
-        this._params = undefined;
+        this.closeDialog();
       }
     } finally {
       this._submitting = false;
     }
-  }
-
-  private _close(): void {
-    // If we do not have a person ID yet (= person creation dialog was just cancelled), but
-    // we already created a user ID for it, delete it now to not have it "free floating".
-    if (!this._personExists && this._userId) {
-      deleteUser(this.hass, this._userId);
-      this._params?.refreshUsers();
-      this._userId = undefined;
-    }
-
-    this._params = undefined;
   }
 
   static get styles(): CSSResultGroup {

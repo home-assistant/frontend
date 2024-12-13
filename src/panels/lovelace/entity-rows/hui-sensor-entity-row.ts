@@ -1,26 +1,16 @@
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { PropertyValues } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isUnavailableState } from "../../../data/entity";
-import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
-import { HomeAssistant } from "../../../types";
-import { EntitiesCardEntityConfig } from "../cards/types";
-import { actionHandler } from "../common/directives/action-handler-directive";
-import { handleAction } from "../common/handle-action";
-import { hasAction } from "../common/has-action";
+import type { HomeAssistant } from "../../../types";
+import type { EntitiesCardEntityConfig } from "../cards/types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import "../components/hui-timestamp-display";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import { TimestampRenderingFormat } from "../components/types";
-import { LovelaceRow } from "./types";
+import type { TimestampRenderingFormat } from "../components/types";
+import type { LovelaceRow } from "./types";
 
 interface SensorEntityConfig extends EntitiesCardEntityConfig {
   format?: TimestampRenderingFormat;
@@ -60,42 +50,18 @@ class HuiSensorEntityRow extends LitElement implements LovelaceRow {
 
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
-        <div
-          class="text-content value"
-          @action=${this._handleAction}
-          .actionHandler=${actionHandler({
-            hasHold: hasAction(this._config.hold_action),
-            hasDoubleClick: hasAction(this._config.double_tap_action),
-          })}
-        >
-          ${stateObj.attributes.device_class ===
-            SENSOR_DEVICE_CLASS_TIMESTAMP && !isUnavailableState(stateObj.state)
-            ? html`
-                <hui-timestamp-display
-                  .hass=${this.hass}
-                  .ts=${new Date(stateObj.state)}
-                  .format=${this._config.format}
-                  capitalize
-                ></hui-timestamp-display>
-              `
-            : this.hass.formatEntityState(stateObj)}
-        </div>
+        ${stateObj.attributes.device_class === SENSOR_DEVICE_CLASS_TIMESTAMP &&
+        !isUnavailableState(stateObj.state)
+          ? html`
+              <hui-timestamp-display
+                .hass=${this.hass}
+                .ts=${new Date(stateObj.state)}
+                .format=${this._config.format}
+                capitalize
+              ></hui-timestamp-display>
+            `
+          : this.hass.formatEntityState(stateObj)}
       </hui-generic-entity-row>
-    `;
-  }
-
-  private _handleAction(ev: ActionHandlerEvent) {
-    handleAction(this, this.hass!, this._config!, ev.detail.action);
-  }
-
-  static get styles(): CSSResultGroup {
-    return css`
-      div {
-        text-align: right;
-      }
-      .value {
-        direction: ltr;
-      }
     `;
   }
 }

@@ -1,12 +1,13 @@
 import "@material/mwc-list/mwc-list-item";
-import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
-import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
+import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import type { PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { titleCase } from "../common/string/title-case";
 import { fetchConfig } from "../data/lovelace/config/types";
-import { LovelaceViewRawConfig } from "../data/lovelace/config/view";
-import { HomeAssistant, PanelInfo, ValueChangedEvent } from "../types";
+import type { LovelaceViewRawConfig } from "../data/lovelace/config/view";
+import type { HomeAssistant, PanelInfo, ValueChangedEvent } from "../types";
 import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
 import "./ha-icon";
@@ -19,7 +20,6 @@ type NavigationItem = {
 
 const DEFAULT_ITEMS: NavigationItem[] = [];
 
-// eslint-disable-next-line lit/prefer-static-styles
 const rowRenderer: ComboBoxLitRenderer<NavigationItem> = (item) => html`
   <mwc-list-item graphic="icon" .twoline=${!!item.title}>
     <ha-icon .icon=${item.icon} slot="graphic"></ha-icon>

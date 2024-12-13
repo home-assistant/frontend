@@ -1,5 +1,5 @@
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { DeviceRegistryEntry } from "../../../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
 
 export interface ZWaveJSRebuildNodeRoutesDialogParams {
   device: DeviceRegistryEntry;

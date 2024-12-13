@@ -1,17 +1,12 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { debounce } from "../common/util/debounce";
-import { listTTSVoices, TTSVoice } from "../data/tts";
-import { HomeAssistant } from "../types";
+import type { TTSVoice } from "../data/tts";
+import { listTTSVoices } from "../data/tts";
+import type { HomeAssistant } from "../types";
 import "./ha-list-item";
 import "./ha-select";
 import type { HaSelect } from "./ha-select";
@@ -24,7 +19,7 @@ export class HaTTSVoicePicker extends LitElement {
 
   @property() public label?: string;
 
-  @property() public engineId?: string;
+  @property({ attribute: false }) public engineId?: string;
 
   @property() public language?: string;
 

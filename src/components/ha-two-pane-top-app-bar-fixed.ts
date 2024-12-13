@@ -3,7 +3,7 @@ import {
   BaseElement,
 } from "@material/mwc-base/base-element";
 import { supportsPassiveEventListener } from "@material/mwc-base/utils";
-import { MDCTopAppBarAdapter } from "@material/top-app-bar/adapter";
+import type { MDCTopAppBarAdapter } from "@material/top-app-bar/adapter";
 import { strings } from "@material/top-app-bar/constants";
 import MDCFixedTopAppBarFoundation from "@material/top-app-bar/fixed/foundation";
 import { html, css, nothing } from "lit";
@@ -32,7 +32,7 @@ export class TopAppBarBaseBase extends BaseElement {
 
   protected _scrollTarget!: HTMLElement | Window;
 
-  @property({ type: Boolean }) centerTitle = false;
+  @property({ attribute: "center-title", type: Boolean }) centerTitle = false;
 
   @property({ type: Boolean, reflect: true }) prominent = false;
 
@@ -46,7 +46,7 @@ export class TopAppBarBaseBase extends BaseElement {
 
   @query(".pane .ha-scrollbar") private _paneElement?: HTMLElement;
 
-  @property({ type: Object })
+  @property({ attribute: false, type: Object })
   get scrollTarget() {
     return this._scrollTarget || window;
   }
@@ -321,7 +321,7 @@ export class TopAppBarBaseBase extends BaseElement {
         overflow: auto;
       }
       .mdc-top-app-bar__title {
-        padding-inline-start: 20px;
+        padding-inline-start: 24px;
         padding-inline-end: initial;
       }
     `,

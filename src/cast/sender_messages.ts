@@ -1,4 +1,4 @@
-import { BaseCastMessage } from "./types";
+import type { BaseCastMessage } from "./types";
 
 // Messages to be processed inside the Home Assistant UI
 

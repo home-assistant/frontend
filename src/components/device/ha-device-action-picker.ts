@@ -1,6 +1,6 @@
 import { customElement } from "lit/decorators";
+import type { DeviceAction } from "../../data/device_automation";
 import {
-  DeviceAction,
   fetchDeviceActions,
   localizeDeviceAutomationAction,
 } from "../../data/device_automation";

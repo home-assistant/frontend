@@ -20,12 +20,13 @@ import {
   mdiWeatherWindy,
   mdiWeatherWindyVariant,
 } from "@mdi/js";
-import {
+import type {
   HassConfig,
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
-import { SVGTemplateResult, TemplateResult, css, html, svg } from "lit";
+import type { SVGTemplateResult, TemplateResult } from "lit";
+import { css, html, svg } from "lit";
 import { styleMap } from "lit/directives/style-map";
 import { supportsFeature } from "../common/entity/supports-feature";
 import { round } from "../common/number/round";

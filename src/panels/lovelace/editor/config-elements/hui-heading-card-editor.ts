@@ -12,8 +12,9 @@ import {
   optional,
   string,
 } from "superstruct";
-import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
-import { LocalizeFunc } from "../../../../common/translations/localize";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-form/ha-form";
 import type {
@@ -24,15 +25,15 @@ import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
 import { migrateHeadingCardConfig } from "../../cards/hui-heading-card";
 import type { HeadingCardConfig } from "../../cards/types";
-import { UiAction } from "../../components/hui-action-editor";
-import {
+import type { UiAction } from "../../components/hui-action-editor";
+import type {
   EntityHeadingBadgeConfig,
   LovelaceHeadingBadgeConfig,
 } from "../../heading-badges/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { EditSubElementEvent } from "../types";
+import type { EditSubElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import "./hui-heading-badges-editor";
 

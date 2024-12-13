@@ -6,15 +6,16 @@ import {
   mdiRobot,
   mdiShape,
 } from "@mdi/js";
-import { LitElement, PropertyValues, html, nothing } from "lit";
+import type { PropertyValues } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { storage } from "../../../common/decorators/storage";
 import { navigate } from "../../../common/navigate";
-import { LocalizeFunc } from "../../../common/translations/localize";
-import {
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import type {
   DataTableColumnContainer,
   RowClickedEvent,
   SortingChangedEvent,
@@ -23,9 +24,11 @@ import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-relative-time";
-import {
+import type {
   LabelRegistryEntry,
   LabelRegistryEntryMutableParams,
+} from "../../../data/label_registry";
+import {
   createLabelRegistryEntry,
   deleteLabelRegistryEntry,
   fetchLabelRegistry,
@@ -36,7 +39,7 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
-import { HomeAssistant, Route } from "../../../types";
+import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "./show-dialog-label-detail";
 
@@ -44,7 +47,7 @@ import { showLabelDetailDialog } from "./show-dialog-label-detail";
 export class HaConfigLabels extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -103,6 +106,8 @@ export class HaConfigLabels extends LitElement {
                 style="
           background-color: ${computeCssColor(label.color)};
           border-radius: 10px;
+          border: 1px solid var(--outline-color);
+          box-sizing: border-box;
           width: 20px;
           height: 20px;"
               ></div>`
@@ -224,7 +229,7 @@ export class HaConfigLabels extends LitElement {
         .columns=${this._columns(this.hass.localize, this.narrow)}
         .data=${this._data(this._labels)}
         .noDataText=${this.hass.localize("ui.panel.config.labels.no_labels")}
-        hasFab
+        has-fab
         .initialSorting=${this._activeSorting}
         .columnOrder=${this._activeColumnOrder}
         .hiddenColumns=${this._activeHiddenColumns}

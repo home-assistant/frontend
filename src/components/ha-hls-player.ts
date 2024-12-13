@@ -1,17 +1,13 @@
 import type HlsType from "hls.js";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { nextRender } from "../common/util/render-status";
 import type { HomeAssistant } from "../types";
 import "./ha-alert";
+import { fetchStreamUrl } from "../data/camera";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
 
 type HlsLite = Omit<
   HlsType,
@@ -22,9 +18,11 @@ type HlsLite = Omit<
 class HaHLSPlayer extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public url!: string;
+  @property() public entityid?: string;
 
-  @property() public posterUrl!: string;
+  @property() public url?: string;
+
+  @property({ attribute: "poster-url" }) public posterUrl?: string;
 
   @property({ type: Boolean, attribute: "controls" })
   public controls = false;
@@ -47,6 +45,8 @@ class HaHLSPlayer extends LitElement {
   @state() private _error?: string;
 
   @state() private _errorIsFatal = false;
+
+  @state() private _url!: string;
 
   private _hlsPolyfillInstance?: HlsLite;
 
@@ -95,20 +95,51 @@ class HaHLSPlayer extends LitElement {
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
 
+    const entityChanged = changedProps.has("entityid");
     const urlChanged = changedProps.has("url");
 
-    if (!urlChanged) {
+    if (entityChanged) {
+      this._getStreamUrlFromEntityId();
+    } else if (urlChanged && this.url) {
+      this._cleanUp();
+      this._resetError();
+      this._url = this.url;
+      this._startHls();
+    }
+  }
+
+  private async _getStreamUrlFromEntityId(): Promise<void> {
+    this._cleanUp();
+    this._resetError();
+
+    if (!isComponentLoaded(this.hass!, "stream")) {
+      this._setFatalError("Streaming component is not loaded.");
       return;
     }
 
-    this._cleanUp();
-    this._resetError();
-    this._startHls();
+    if (!this.entityid) {
+      return;
+    }
+    try {
+      const { url } = await fetchStreamUrl(this.hass!, this.entityid);
+
+      this._url = url;
+      this._cleanUp();
+      this._resetError();
+      this._startHls();
+    } catch (err: any) {
+      // Fails if we were unable to get a stream
+      // eslint-disable-next-line
+      console.error(err);
+
+      fireEvent(this, "streams", { hasAudio: false, hasVideo: false });
+    }
   }
 
   private async _startHls(): Promise<void> {
-    const masterPlaylistPromise = fetch(this.url);
+    const masterPlaylistPromise = fetch(this._url);
 
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     const Hls: typeof HlsType = (await import("hls.js/dist/hls.light.mjs"))
       .default;
 
@@ -138,10 +169,10 @@ class HaHLSPlayer extends LitElement {
       return;
     }
 
-    // Parse playlist assuming it is a master playlist. Match group 1 is whether hevc, match group 2 is regular playlist url
+    // Parse playlist assuming it is a master playlist. Match group 1 and 2 are codec, match group 3 is regular playlist url
     // See https://tools.ietf.org/html/rfc8216 for HLS spec details
     const playlistRegexp =
-      /#EXT-X-STREAM-INF:.*?(?:CODECS=".*?(hev1|hvc1)?\..*?".*?)?(?:\n|\r\n)(.+)/g;
+      /#EXT-X-STREAM-INF:.*?(?:CODECS=".*?([^.]*)?\..*?,([^.]*)?\..*?".*?)?(?:\n|\r\n)(.+)/g;
     const match = playlistRegexp.exec(masterPlaylist);
     const matchTwice = playlistRegexp.exec(masterPlaylist);
 
@@ -150,13 +181,20 @@ class HaHLSPlayer extends LitElement {
     let playlist_url: string;
     if (match !== null && matchTwice === null) {
       // Only send the regular playlist url if we match exactly once
-      playlist_url = new URL(match[2], this.url).href;
+      playlist_url = new URL(match[3], this._url).href;
     } else {
-      playlist_url = this.url;
+      playlist_url = this._url;
     }
 
+    const codecs = match ? `${match[1]},${match[2]}` : undefined;
+
+    this._reportStreams(codecs);
+
     // If codec is HEVC and ExoPlayer is supported, use ExoPlayer.
-    if (useExoPlayer && match !== null && match[1] !== undefined) {
+    if (
+      useExoPlayer &&
+      (codecs?.includes("hevc") || codecs?.includes("hev1"))
+    ) {
       this._renderHLSExoPlayer(playlist_url);
     } else if (Hls.isSupported()) {
       this._renderHLSPolyfill(this._videoEl, Hls, playlist_url);
@@ -313,15 +351,26 @@ class HaHLSPlayer extends LitElement {
   private _setFatalError(errorMessage: string) {
     this._error = errorMessage;
     this._errorIsFatal = true;
+    fireEvent(this, "streams", { hasAudio: false, hasVideo: false });
   }
 
   private _setRetryableError(errorMessage: string) {
     this._error = errorMessage;
     this._errorIsFatal = false;
+    fireEvent(this, "streams", { hasAudio: false, hasVideo: false });
+  }
+
+  private _reportStreams(codecs?: string) {
+    const codec = codecs?.split(",");
+    fireEvent(this, "streams", {
+      hasAudio: codec?.includes("mp4a") ?? false,
+      hasVideo: codec?.includes("mp4a")
+        ? codec?.length > 1
+        : Boolean(codec?.length),
+    });
   }
 
   private _loadedData() {
-    // @ts-ignore
     fireEvent(this, "load");
   }
 

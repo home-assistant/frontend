@@ -1,14 +1,11 @@
 import { customElement, property, state } from "lit/decorators";
-import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
-import {
-  IntegrationManifest,
-  fetchIntegrationManifests,
-} from "../../../data/integration";
-import {
-  HassRouterPage,
-  RouterOptions,
-} from "../../../layouts/hass-router-page";
-import { HomeAssistant } from "../../../types";
+import type { ConfigEntry } from "../../../data/config_entries";
+import { getConfigEntries } from "../../../data/config_entries";
+import type { IntegrationManifest } from "../../../data/integration";
+import { fetchIntegrationManifests } from "../../../data/integration";
+import type { RouterOptions } from "../../../layouts/hass-router-page";
+import { HassRouterPage } from "../../../layouts/hass-router-page";
+import type { HomeAssistant } from "../../../types";
 import "./ha-config-device-page";
 import "./ha-config-devices-dashboard";
 
@@ -18,9 +15,9 @@ class HaConfigDevices extends HassRouterPage {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public showAdvanced = false;
+  @property({ attribute: false }) public showAdvanced = false;
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",

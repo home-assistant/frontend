@@ -1,11 +1,9 @@
 import { consume } from "@lit-labs/context";
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
-import "@material/mwc-list/mwc-list-item";
+import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import {
   mdiAlertCircleCheck,
   mdiArrowDown,
   mdiArrowUp,
-  mdiCheck,
   mdiContentCopy,
   mdiContentCut,
   mdiContentDuplicate,
@@ -13,18 +11,13 @@ import {
   mdiDotsVertical,
   mdiPlay,
   mdiPlayCircleOutline,
+  mdiPlaylistEdit,
   mdiRenameBox,
   mdiStopCircleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { storage } from "../../../../common/decorators/storage";
@@ -41,14 +34,18 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-service-icon";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { ACTION_ICONS, YAML_ONLY_ACTION_TYPES } from "../../../../data/action";
-import { AutomationClipboard } from "../../../../data/automation";
+import type { AutomationClipboard } from "../../../../data/automation";
 import { validateConfig } from "../../../../data/config";
-import { fullEntitiesContext, labelsContext } from "../../../../data/context";
-import { EntityRegistryEntry } from "../../../../data/entity_registry";
-import { LabelRegistryEntry } from "../../../../data/label_registry";
 import {
-  Action,
-  NonConditionAction,
+  floorsContext,
+  fullEntitiesContext,
+  labelsContext,
+} from "../../../../data/context";
+import type { EntityRegistryEntry } from "../../../../data/entity_registry";
+import type { FloorRegistryEntry } from "../../../../data/floor_registry";
+import type { LabelRegistryEntry } from "../../../../data/label_registry";
+import type { Action, NonConditionAction } from "../../../../data/script";
+import {
   getActionType,
   migrateAutomationAction,
 } from "../../../../data/script";
@@ -60,9 +57,8 @@ import {
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant, ItemPath } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
-import "./types/ha-automation-action-activate_scene";
 import "./types/ha-automation-action-choose";
 import "./types/ha-automation-action-condition";
 import "./types/ha-automation-action-delay";
@@ -83,8 +79,8 @@ export const getType = (action: Action | undefined) => {
   if (!action) {
     return undefined;
   }
-  if ("action" in action || "scene" in action) {
-    return getActionType(action) as "activate_scene" | "action" | "play_media";
+  if ("action" in action) {
+    return getActionType(action) as "action" | "play_media";
   }
   if (["and", "or", "not"].some((key) => key in action)) {
     return "condition" as const;
@@ -132,8 +128,6 @@ export default class HaAutomationActionRow extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Array }) public path?: ItemPath;
-
   @property({ type: Boolean }) public first?: boolean;
 
   @property({ type: Boolean }) public last?: boolean;
@@ -153,6 +147,10 @@ export default class HaAutomationActionRow extends LitElement {
   @state()
   @consume({ context: labelsContext, subscribe: true })
   _labelReg!: LabelRegistryEntry[];
+
+  @state()
+  @consume({ context: floorsContext, subscribe: true })
+  _floorReg!: { [id: string]: FloorRegistryEntry };
 
   @state() private _warnings?: string[];
 
@@ -222,6 +220,7 @@ export default class HaAutomationActionRow extends LitElement {
                 this.hass,
                 this._entityReg,
                 this._labelReg,
+                this._floorReg,
                 this.action
               )
             )}
@@ -253,23 +252,23 @@ export default class HaAutomationActionRow extends LitElement {
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-            <mwc-list-item graphic="icon">
+            <ha-list-item graphic="icon">
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.run"
               )}
               <ha-svg-icon slot="graphic" .path=${mdiPlay}></ha-svg-icon>
-            </mwc-list-item>
+            </ha-list-item>
 
-            <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+            <ha-list-item graphic="icon" .disabled=${this.disabled}>
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.rename"
               )}
               <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
-            </mwc-list-item>
+            </ha-list-item>
 
             <li divider role="separator"></li>
 
-            <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+            <ha-list-item graphic="icon" .disabled=${this.disabled}>
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.duplicate"
               )}
@@ -277,31 +276,31 @@ export default class HaAutomationActionRow extends LitElement {
                 slot="graphic"
                 .path=${mdiContentDuplicate}
               ></ha-svg-icon>
-            </mwc-list-item>
+            </ha-list-item>
 
-            <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+            <ha-list-item graphic="icon" .disabled=${this.disabled}>
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.triggers.copy"
               )}
               <ha-svg-icon slot="graphic" .path=${mdiContentCopy}></ha-svg-icon>
-            </mwc-list-item>
+            </ha-list-item>
 
-            <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+            <ha-list-item graphic="icon" .disabled=${this.disabled}>
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.triggers.cut"
               )}
               <ha-svg-icon slot="graphic" .path=${mdiContentCut}></ha-svg-icon>
-            </mwc-list-item>
+            </ha-list-item>
 
-            <mwc-list-item
+            <ha-list-item
               graphic="icon"
               .disabled=${this.disabled || this.first}
             >
               ${this.hass.localize("ui.panel.config.automation.editor.move_up")}
               <ha-svg-icon slot="graphic" .path=${mdiArrowUp}></ha-svg-icon
-            ></mwc-list-item>
+            ></ha-list-item>
 
-            <mwc-list-item
+            <ha-list-item
               graphic="icon"
               .disabled=${this.disabled || this.last}
             >
@@ -309,37 +308,21 @@ export default class HaAutomationActionRow extends LitElement {
                 "ui.panel.config.automation.editor.move_down"
               )}
               <ha-svg-icon slot="graphic" .path=${mdiArrowDown}></ha-svg-icon
-            ></mwc-list-item>
+            ></ha-list-item>
 
-            <li divider role="separator"></li>
-
-            <mwc-list-item .disabled=${!this._uiModeAvailable} graphic="icon">
-              ${this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
-              ${!yamlMode
-                ? html`<ha-svg-icon
-                    class="selected_menu_item"
-                    slot="graphic"
-                    .path=${mdiCheck}
-                  ></ha-svg-icon>`
-                : ``}
-            </mwc-list-item>
-
-            <mwc-list-item .disabled=${!this._uiModeAvailable} graphic="icon">
+            <ha-list-item graphic="icon" .disabled=${!this._uiModeAvailable}>
               ${this.hass.localize(
-                "ui.panel.config.automation.editor.edit_yaml"
+                `ui.panel.config.automation.editor.edit_${!yamlMode ? "yaml" : "ui"}`
               )}
-              ${yamlMode
-                ? html`<ha-svg-icon
-                    class="selected_menu_item"
-                    slot="graphic"
-                    .path=${mdiCheck}
-                  ></ha-svg-icon>`
-                : ``}
-            </mwc-list-item>
+              <ha-svg-icon
+                slot="graphic"
+                .path=${mdiPlaylistEdit}
+              ></ha-svg-icon>
+            </ha-list-item>
 
             <li divider role="separator"></li>
 
-            <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+            <ha-list-item graphic="icon" .disabled=${this.disabled}>
               ${this.action.enabled === false
                 ? this.hass.localize(
                     "ui.panel.config.automation.editor.actions.enable"
@@ -353,8 +336,8 @@ export default class HaAutomationActionRow extends LitElement {
                   ? mdiPlayCircleOutline
                   : mdiStopCircleOutline}
               ></ha-svg-icon>
-            </mwc-list-item>
-            <mwc-list-item
+            </ha-list-item>
+            <ha-list-item
               class="warning"
               graphic="icon"
               .disabled=${this.disabled}
@@ -367,7 +350,7 @@ export default class HaAutomationActionRow extends LitElement {
                 slot="graphic"
                 .path=${mdiDelete}
               ></ha-svg-icon>
-            </mwc-list-item>
+            </ha-list-item>
           </ha-button-menu>
 
           <div
@@ -422,7 +405,6 @@ export default class HaAutomationActionRow extends LitElement {
                       action: this.action,
                       narrow: this.narrow,
                       disabled: this.disabled,
-                      path: this.path,
                     })}
                   </div>
                 `}
@@ -467,17 +449,17 @@ export default class HaAutomationActionRow extends LitElement {
         fireEvent(this, "move-down");
         break;
       case 7:
-        this._switchUiMode();
+        if (this._yamlMode) {
+          this._switchUiMode();
+        } else {
+          this._switchYamlMode();
+        }
         this.expand();
         break;
       case 8:
-        this._switchYamlMode();
-        this.expand();
-        break;
-      case 9:
         this._onDisable();
         break;
-      case 10:
+      case 9:
         this._onDelete();
         break;
     }
@@ -593,6 +575,7 @@ export default class HaAutomationActionRow extends LitElement {
           this.hass,
           this._entityReg,
           this._labelReg,
+          this._floorReg,
           this.action,
           undefined,
           true
@@ -631,6 +614,9 @@ export default class HaAutomationActionRow extends LitElement {
         ha-icon-button {
           --mdc-theme-text-primary-on-background: var(--primary-text-color);
         }
+        ha-card {
+          overflow: hidden;
+        }
         .disabled {
           opacity: 0.5;
           pointer-events: none;
@@ -663,8 +649,6 @@ export default class HaAutomationActionRow extends LitElement {
         .disabled-bar {
           background: var(--divider-color, #e0e0e0);
           text-align: center;
-          border-top-right-radius: var(--ha-card-border-radius);
-          border-top-left-radius: var(--ha-card-border-radius);
         }
 
         mwc-list-item[disabled] {
@@ -675,9 +659,6 @@ export default class HaAutomationActionRow extends LitElement {
         }
         .warning ul {
           margin: 4px 0;
-        }
-        .selected_menu_item {
-          color: var(--primary-color);
         }
         li[role="separator"] {
           border-bottom-color: var(--divider-color);

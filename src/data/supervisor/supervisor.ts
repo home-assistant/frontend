@@ -1,20 +1,21 @@
-import { Connection, getCollection } from "home-assistant-js-websocket";
-import { Store } from "home-assistant-js-websocket/dist/store";
-import {
+import type { Connection } from "home-assistant-js-websocket";
+import { getCollection } from "home-assistant-js-websocket";
+import type { Store } from "home-assistant-js-websocket/dist/store";
+import type {
   FlattenObjectKeys,
   LocalizeFunc,
 } from "../../common/translations/localize";
-import { TranslationDict } from "../../types";
-import { HassioAddonsInfo } from "../hassio/addon";
-import { HassioHassOSInfo, HassioHostInfo } from "../hassio/host";
-import { NetworkInfo } from "../hassio/network";
-import { HassioResolution } from "../hassio/resolution";
-import {
+import type { TranslationDict } from "../../types";
+import type { HassioAddonsInfo } from "../hassio/addon";
+import type { HassioHassOSInfo, HassioHostInfo } from "../hassio/host";
+import type { NetworkInfo } from "../hassio/network";
+import type { HassioResolution } from "../hassio/resolution";
+import type {
   HassioHomeAssistantInfo,
   HassioInfo,
   HassioSupervisorInfo,
 } from "../hassio/supervisor";
-import { SupervisorStore } from "./store";
+import type { SupervisorStore } from "./store";
 
 export const supervisorWSbaseCommand = {
   type: "supervisor/api",
@@ -45,7 +46,7 @@ export type SupervisorObject =
   | "addon"
   | "store";
 
-interface supervisorApiRequest {
+interface SupervisorApiRequest {
   endpoint: string;
   method?: "get" | "post" | "delete" | "put";
   force_rest?: boolean;
@@ -77,7 +78,7 @@ export interface Supervisor {
 
 export const supervisorApiWsRequest = <T>(
   conn: Connection,
-  request: supervisorApiRequest
+  request: SupervisorApiRequest
 ): Promise<T> =>
   conn.sendMessagePromise<T>({ ...supervisorWSbaseCommand, ...request });
 

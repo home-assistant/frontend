@@ -1,13 +1,12 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { titleCase } from "../../../../common/string/title-case";
 import "../../../../components/ha-card";
-import {
-  computeDeviceName,
-  DeviceRegistryEntry,
-} from "../../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../../data/device_registry";
+import { computeDeviceName } from "../../../../data/device_registry";
 import { haStyle } from "../../../../resources/styles";
-import { HomeAssistant } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 
 @customElement("ha-device-info-card")
 export class HaDeviceCard extends LitElement {

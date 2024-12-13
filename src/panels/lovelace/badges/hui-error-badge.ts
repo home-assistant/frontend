@@ -1,13 +1,14 @@
 import { mdiAlertCircle } from "@mdi/js";
 import { dump } from "js-yaml";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import "../../../components/ha-badge";
 import "../../../components/ha-svg-icon";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { showAlertDialog } from "../custom-card-helpers";
-import { LovelaceBadge } from "../types";
-import { ErrorBadgeConfig } from "./types";
+import type { LovelaceBadge } from "../types";
+import type { ErrorBadgeConfig } from "./types";
 
 export const createErrorBadgeElement = (config) => {
   const el = document.createElement("hui-error-badge");
