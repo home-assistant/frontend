@@ -23,13 +23,26 @@ export class HUIViewBackground extends LitElement {
       "--lovelace-background"
     );
 
+    const fixedBackground = this._isFixedBackground(
+      this.background || themeBackground
+    );
     const viewBackground = this._computeBackgroundProperty(this.background);
+    this.toggleAttribute("fixed-background", fixedBackground);
     this.style.setProperty("--view-background", viewBackground);
 
     const viewBackgroundOpacity = this._computeBackgroundOpacityProperty(
       this.background
     );
     this.style.setProperty("--view-background-opacity", viewBackgroundOpacity);
+  }
+
+  private _isFixedBackground(
+    background?: string | LovelaceViewBackgroundConfig
+  ) {
+    if (typeof background === "string") {
+      return background.includes(" fixed");
+    }
+    return false;
   }
 
   private _computeBackgroundProperty(
@@ -79,9 +92,18 @@ export class HUIViewBackground extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      :host {
+      /* Fixed background hack for Safari iOS */
+      :host([fixed-background]) {
+        display: block;
+        z-index: -1;
+        position: fixed;
+        background-attachment: scroll !important;
+      }
+      :host(:not(fixed-background)) {
         z-index: -1;
         position: absolute;
+      }
+      :host {
         top: 0;
         left: 0;
         right: 0;
