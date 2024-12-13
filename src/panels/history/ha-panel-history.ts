@@ -177,14 +177,14 @@ class HaPanelHistory extends LitElement {
               ?disabled=${this._isLoading}
               .startDate=${this._startDate}
               .endDate=${this._endDate}
-              extendedPresets
+              extended-presets
               @change=${this._dateRangeChanged}
             ></ha-date-range-picker>
             <ha-target-picker
               .hass=${this.hass}
               .value=${this._targetPickerValue}
               .disabled=${this._isLoading}
-              addOnTop
+              add-on-top
               @value-changed=${this._targetsChanged}
             ></ha-target-picker>
           </div>
@@ -210,7 +210,7 @@ class HaPanelHistory extends LitElement {
     `;
   }
 
-  private mergeHistoryResults(
+  private _mergeHistoryResults(
     ltsResult: HistoryResult,
     historyResult: HistoryResult
   ): HistoryResult {
@@ -307,7 +307,7 @@ class HaPanelHistory extends LitElement {
       changedProps.has("_targetPickerValue")
     ) {
       if (this._statisticsHistory && this._stateHistory) {
-        this._mungedStateHistory = this.mergeHistoryResults(
+        this._mungedStateHistory = this._mergeHistoryResults(
           this._statisticsHistory,
           this._stateHistory
         );

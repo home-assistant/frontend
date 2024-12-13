@@ -14,7 +14,8 @@ export class HaSelect extends SelectBase {
 
   @property({ type: Boolean, reflect: true }) public clearable = false;
 
-  @property({ type: Boolean }) public inlineArrow = false;
+  @property({ attribute: "inline-arrow", type: Boolean })
+  public inlineArrow = false;
 
   protected override render() {
     return html`

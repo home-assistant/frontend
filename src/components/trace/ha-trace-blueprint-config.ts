@@ -17,7 +17,7 @@ export class HaTraceBlueprintConfig extends LitElement {
     return html`
       <ha-code-editor
         .value=${dump(this.trace.blueprint_inputs || "").trimRight()}
-        readOnly
+        read-only
         dir="ltr"
       ></ha-code-editor>
     `;

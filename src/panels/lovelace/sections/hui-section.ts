@@ -48,7 +48,7 @@ export class HuiSection extends ReactiveElement {
 
   @property({ type: Number }) public index!: number;
 
-  @property({ type: Number }) public viewIndex!: number;
+  @property({ attribute: false, type: Number }) public viewIndex!: number;
 
   @state() private _cards: HuiCard[] = [];
 

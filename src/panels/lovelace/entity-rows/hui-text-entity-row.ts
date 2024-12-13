@@ -50,7 +50,7 @@ class HuiTextEntityRow extends LitElement implements LovelaceRow {
       <hui-generic-entity-row
         .hass=${this.hass}
         .config=${this._config}
-        hideName
+        hide-name
       >
         <ha-textfield
           .label=${this._config.name || computeStateName(stateObj)}

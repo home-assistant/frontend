@@ -15,6 +15,7 @@ export class HaTextField extends TextFieldBase {
   @property({ type: Boolean }) public icon = false;
 
   // @ts-ignore
+  // eslint-disable-next-line lit/attribute-names
   @property({ type: Boolean }) public iconTrailing = false;
 
   @property() public autocomplete?: string;

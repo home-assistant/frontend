@@ -31,7 +31,7 @@ jobs:
         with:
           node-version-file: ".nvmrc"
           cache: yarn
-      - uses: actions/cache@v4.1.2
+      - uses: actions/cache@v4.2.0
         id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
           path: "node_modules"
@@ -43,7 +43,7 @@ jobs:
       - name: Build resources
         run: ./node_modules/.bin/gulp gen-icons-json build-translations build-locale-data gather-gallery-pages
       - name: Setup lint cache
-        uses: actions/cache@v4.1.2
+        uses: actions/cache@v4.2.0
         with:
           path: |
             node_modules/.cache/prettier
@@ -71,7 +71,7 @@ jobs:
         with:
           node-version-file: ".nvmrc"
           cache: yarn
-      - uses: actions/cache@v4.1.2
+      - uses: actions/cache@v4.2.0
         id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
           path: "node_modules"
@@ -97,7 +97,7 @@ jobs:
         with:
           node-version-file: ".nvmrc"
           cache: yarn
-      - uses: actions/cache@v4.1.2
+      - uses: actions/cache@v4.2.0
         id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
           path: "node_modules"
@@ -129,7 +129,7 @@ jobs:
         with:
           node-version-file: ".nvmrc"
           cache: yarn
-      - uses: actions/cache@v4.1.2
+      - uses: actions/cache@v4.2.0
         id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
           path: "node_modules"

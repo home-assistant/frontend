@@ -1,14 +1,19 @@
 import type { PropertyValues } from "lit";
 import { tinykeys } from "tinykeys";
+import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { mainWindow } from "../common/dom/get_main_window";
 import type { QuickBarParams } from "../dialogs/quick-bar/show-dialog-quick-bar";
-import { showQuickBar } from "../dialogs/quick-bar/show-dialog-quick-bar";
+import {
+  QuickBarMode,
+  showQuickBar,
+} from "../dialogs/quick-bar/show-dialog-quick-bar";
 import type { Constructor, HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import { showToast } from "../util/toast";
 import type { HassElement } from "./hass-element";
 import { extractSearchParamsObject } from "../common/url/search-params";
+import { showVoiceCommandDialog } from "../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 
 declare global {
   interface HASSDomEvents {
@@ -34,10 +39,16 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
             this._showQuickBar(ev.detail);
             break;
           case "c":
-            this._showQuickBar(ev.detail, true);
+            this._showQuickBar(ev.detail, QuickBarMode.Command);
+            break;
+          case "d":
+            this._showQuickBar(ev.detail, QuickBarMode.Device);
             break;
           case "m":
             this._createMyLink(ev.detail);
+            break;
+          case "a":
+            this._showVoiceCommandDialog(ev.detail);
             break;
         }
       });
@@ -49,16 +60,44 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       tinykeys(window, {
         // Those are for latin keyboards that have e, c, m keys
         e: (ev) => this._showQuickBar(ev),
-        c: (ev) => this._showQuickBar(ev, true),
+        c: (ev) => this._showQuickBar(ev, QuickBarMode.Command),
         m: (ev) => this._createMyLink(ev),
+        a: (ev) => this._showVoiceCommandDialog(ev),
+        d: (ev) => this._showQuickBar(ev, QuickBarMode.Device),
         // Those are fallbacks for non-latin keyboards that don't have e, c, m keys (qwerty-based shortcuts)
         KeyE: (ev) => this._showQuickBar(ev),
-        KeyC: (ev) => this._showQuickBar(ev, true),
+        KeyC: (ev) => this._showQuickBar(ev, QuickBarMode.Command),
         KeyM: (ev) => this._createMyLink(ev),
+        KeyA: (ev) => this._showVoiceCommandDialog(ev),
+        KeyD: (ev) => this._showQuickBar(ev, QuickBarMode.Device),
       });
     }
 
-    private _showQuickBar(e: KeyboardEvent, commandMode = false) {
+    private _conversation = memoizeOne((_components) =>
+      isComponentLoaded(this.hass!, "conversation")
+    );
+
+    private _showVoiceCommandDialog(e: KeyboardEvent) {
+      if (
+        !this.hass?.enableShortcuts ||
+        !this._canOverrideAlphanumericInput(e) ||
+        !this._conversation(this.hass.config.components)
+      ) {
+        return;
+      }
+
+      if (e.defaultPrevented) {
+        return;
+      }
+      e.preventDefault();
+
+      showVoiceCommandDialog(this, this.hass!, { pipeline_id: "last_used" });
+    }
+
+    private _showQuickBar(
+      e: KeyboardEvent,
+      mode: QuickBarMode = QuickBarMode.Entity
+    ) {
       if (!this._canShowQuickBar(e)) {
         return;
       }
@@ -68,7 +107,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       }
       e.preventDefault();
 
-      showQuickBar(this, { commandMode });
+      showQuickBar(this, { mode });
     }
 
     private async _createMyLink(e: KeyboardEvent) {

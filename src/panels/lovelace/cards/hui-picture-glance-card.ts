@@ -233,12 +233,12 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
             : ""}
           <div class="row">
             ${this._entitiesDialog!.map((entityConf) =>
-              this.renderEntity(entityConf, true)
+              this._renderEntity(entityConf, true)
             )}
           </div>
           <div class="row">
             ${this._entitiesToggle!.map((entityConf) =>
-              this.renderEntity(entityConf, false)
+              this._renderEntity(entityConf, false)
             )}
           </div>
         </div>
@@ -246,7 +246,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private renderEntity(
+  private _renderEntity(
     entityConf: PictureGlanceEntityConfig,
     dialog: boolean
   ): TemplateResult {

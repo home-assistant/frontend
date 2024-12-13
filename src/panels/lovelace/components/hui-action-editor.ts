@@ -71,13 +71,13 @@ const ASSIST_SCHEMA = [
 export class HuiActionEditor extends LitElement {
   @property({ attribute: false }) public config?: ActionConfig;
 
-  @property() public label?: string;
+  @property({ attribute: false }) public label?: string;
 
   @property({ attribute: false }) public actions?: UiAction[];
 
   @property({ attribute: false }) public defaultAction?: UiAction;
 
-  @property() public tooltipText?: string;
+  @property({ attribute: false }) public tooltipText?: string;
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 

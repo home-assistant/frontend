@@ -486,6 +486,11 @@ const tryDescribeAction = <T extends ActionType>(
 
   if (actionType === "set_conversation_response") {
     const config = action as SetConversationResponseAction;
+    if (isTemplate(config.set_conversation_response)) {
+      return hass.localize(
+        `${actionTranslationBaseKey}.set_conversation_response.description.template`
+      );
+    }
     return hass.localize(
       `${actionTranslationBaseKey}.set_conversation_response.description.full`,
       { response: config.set_conversation_response }

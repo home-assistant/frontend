@@ -1,5 +1,5 @@
 import type { ActionDetail } from "@material/mwc-list";
-import { mdiCheck, mdiDelete, mdiDotsVertical, mdiFlask } from "@mdi/js";
+import { mdiDelete, mdiDotsVertical, mdiFlask, mdiPlaylistEdit } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -132,32 +132,12 @@ export class HaCardConditionEditor extends LitElement {
 
             <ha-list-item graphic="icon" .disabled=${!this._uiAvailable}>
               ${this.hass.localize(
-                "ui.panel.lovelace.editor.edit_card.edit_ui"
+                `ui.panel.lovelace.editor.edit_view.edit_${!this._yamlMode ? "yaml" : "ui"}`
               )}
-              ${!this._yamlMode
-                ? html`
-                    <ha-svg-icon
-                      class="selected_menu_item"
-                      slot="graphic"
-                      .path=${mdiCheck}
-                    ></ha-svg-icon>
-                  `
-                : ``}
-            </ha-list-item>
-
-            <ha-list-item graphic="icon">
-              ${this.hass.localize(
-                "ui.panel.lovelace.editor.edit_card.edit_yaml"
-              )}
-              ${this._yamlMode
-                ? html`
-                    <ha-svg-icon
-                      class="selected_menu_item"
-                      slot="graphic"
-                      .path=${mdiCheck}
-                    ></ha-svg-icon>
-                  `
-                : ``}
+              <ha-svg-icon
+                slot="graphic"
+                .path=${mdiPlaylistEdit}
+              ></ha-svg-icon>
             </ha-list-item>
 
             <li divider role="separator"></li>
@@ -239,12 +219,9 @@ export class HaCardConditionEditor extends LitElement {
         await this._testCondition();
         break;
       case 1:
-        this._yamlMode = false;
+        this._yamlMode = !this._yamlMode;
         break;
       case 2:
-        this._yamlMode = true;
-        break;
-      case 3:
         this._delete();
         break;
     }
@@ -324,9 +301,6 @@ export class HaCardConditionEditor extends LitElement {
       }
       .content {
         padding: 12px;
-      }
-      .selected_menu_item {
-        color: var(--primary-color);
       }
       .disabled {
         opacity: 0.5;

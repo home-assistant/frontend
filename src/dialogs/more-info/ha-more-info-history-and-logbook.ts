@@ -15,7 +15,7 @@ import "./ha-more-info-logbook";
 export class MoreInfoHistoryAndLogbook extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public entityId!: string;
+  @property({ attribute: false }) public entityId!: string;
 
   @query("ha-more-info-history")
   private _history?: MoreInfoHistory;

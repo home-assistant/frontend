@@ -50,7 +50,7 @@ import { showZoneDetailDialog } from "./show-dialog-zone-detail";
 export class HaConfigZone extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -509,6 +509,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         title: this.hass!.localize("ui.panel.config.zone.confirm_delete"),
         dismissText: this.hass!.localize("ui.common.cancel"),
         confirmText: this.hass!.localize("ui.common.delete"),
+        destructive: true,
       }))
     ) {
       return false;

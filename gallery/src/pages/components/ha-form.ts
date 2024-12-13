@@ -489,14 +489,8 @@ class DemoHaForm extends LitElement {
             .title=${info.title}
             .value=${this.data[idx]}
             .disabled=${this.disabled[idx]}
-            @submitted=${() => {
-              this.disabled[idx] = true;
-              this.requestUpdate();
-              setTimeout(() => {
-                this.disabled[idx] = false;
-                this.requestUpdate();
-              }, 2000);
-            }}
+            @submitted=${this._handleSubmit}
+            .sampleIdx=${idx}
           >
             ${["light", "dark"].map(
               (slot) => html`
@@ -511,10 +505,8 @@ class DemoHaForm extends LitElement {
                   .computeLabel=${(schema) =>
                     translations[schema.name] || schema.name}
                   .computeHelper=${() => "Helper text"}
-                  @value-changed=${(e) => {
-                    this.data[idx] = e.detail.value;
-                    this.requestUpdate();
-                  }}
+                  @value-changed=${this._handleValueChanged}
+                  .sampleIdx=${idx}
                 ></ha-form>
               `
             )}
@@ -522,6 +514,22 @@ class DemoHaForm extends LitElement {
         `;
       })}
     `;
+  }
+
+  private _handleValueChanged(ev) {
+    const sampleIdx = ev.target.sampleIdx;
+    this.data[sampleIdx] = ev.detail.value;
+    this.requestUpdate();
+  }
+
+  private _handleSubmit(ev) {
+    const sampleIdx = ev.target.sampleIdx;
+    this.disabled[sampleIdx] = true;
+    this.requestUpdate();
+    setTimeout(() => {
+      this.disabled[sampleIdx] = false;
+      this.requestUpdate();
+    }, 2000);
   }
 }
 

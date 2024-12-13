@@ -12,7 +12,7 @@ class StepFlowLoading extends LitElement {
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public loadingReason!: LoadingReason;
+  @property({ attribute: false }) public loadingReason!: LoadingReason;
 
   @property() public handler?: string;
 

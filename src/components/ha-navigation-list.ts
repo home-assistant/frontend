@@ -19,7 +19,8 @@ class HaNavigationList extends LitElement {
 
   @property({ attribute: false }) public pages!: PageNavigation[];
 
-  @property({ type: Boolean }) public hasSecondary = false;
+  @property({ attribute: "has-secondary", type: Boolean })
+  public hasSecondary = false;
 
   @property() public label?: string;
 

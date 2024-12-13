@@ -196,7 +196,9 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
         })}
       >
         <div class="addRow">
-          ${this.todoListSupportsFeature(TodoListEntityFeature.CREATE_TODO_ITEM)
+          ${this._todoListSupportsFeature(
+            TodoListEntityFeature.CREATE_TODO_ITEM
+          )
             ? html`
                 <ha-textfield
                   class="addBox"
@@ -234,7 +236,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                         "ui.panel.lovelace.cards.todo-list.unchecked_items"
                       )}
                     </h2>
-                    ${this.todoListSupportsFeature(
+                    ${this._todoListSupportsFeature(
                       TodoListEntityFeature.MOVE_TODO_ITEM
                     )
                       ? html`<ha-button-menu @closed=${stopPropagation}>
@@ -278,7 +280,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                           "ui.panel.lovelace.cards.todo-list.checked_items"
                         )}
                       </h2>
-                      ${this.todoListSupportsFeature(
+                      ${this._todoListSupportsFeature(
                         TodoListEntityFeature.DELETE_TODO_ITEM
                       )
                         ? html`<ha-button-menu @closed=${stopPropagation}>
@@ -322,10 +324,10 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
         (item) => item.uid,
         (item) => {
           const showDelete =
-            this.todoListSupportsFeature(
+            this._todoListSupportsFeature(
               TodoListEntityFeature.DELETE_TODO_ITEM
             ) &&
-            !this.todoListSupportsFeature(
+            !this._todoListSupportsFeature(
               TodoListEntityFeature.UPDATE_TODO_ITEM
             );
           const showReorder =
@@ -348,7 +350,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
               })}"
               .selected=${item.status === TodoItemStatus.Completed}
               .disabled=${unavailable ||
-              !this.todoListSupportsFeature(
+              !this._todoListSupportsFeature(
                 TodoListEntityFeature.UPDATE_TODO_ITEM
               )}
               item-id=${item.uid}
@@ -412,7 +414,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private todoListSupportsFeature(feature: number): boolean {
+  private _todoListSupportsFeature(feature: number): boolean {
     const entityStateObj = this.hass!.states[this._entityId!];
     return entityStateObj && supportsFeature(entityStateObj, feature);
   }

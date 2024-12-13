@@ -17,7 +17,7 @@ class HaUserPicker extends LitElement {
 
   @property() public label?: string;
 
-  @property() public noUserLabel?: string;
+  @property({ attribute: false }) public noUserLabel?: string;
 
   @property() public value = "";
 

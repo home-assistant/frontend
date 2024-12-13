@@ -279,7 +279,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     }
   }
 
-  private precisionLabel(precision?: number, stateValue?: string) {
+  private _precisionLabel(precision?: number, stateValue?: string) {
     const stateValueNumber = Number(stateValue);
     const value = !isNaN(stateValueNumber) ? stateValue! : 0;
     return formatNumber(value, this.hass.locale, {
@@ -641,7 +641,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
                 >${this.hass.localize(
                   "ui.dialogs.entity_registry.editor.precision_default",
                   {
-                    value: this.precisionLabel(
+                    value: this._precisionLabel(
                       defaultPrecision,
                       stateObj?.state
                     ),
@@ -651,7 +651,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
               ${PRECISIONS.map(
                 (precision) => html`
                   <ha-list-item .value=${precision.toString()}>
-                    ${this.precisionLabel(precision, stateObj?.state)}
+                    ${this._precisionLabel(precision, stateObj?.state)}
                   </ha-list-item>
                 `
               )}

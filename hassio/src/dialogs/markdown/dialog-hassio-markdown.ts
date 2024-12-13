@@ -12,6 +12,7 @@ import type { HassioMarkdownDialogParams } from "./show-dialog-hassio-markdown";
 class HassioMarkdownDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  // eslint-disable-next-line lit/no-native-attributes
   @property() public title!: string;
 
   @property() public content!: string;

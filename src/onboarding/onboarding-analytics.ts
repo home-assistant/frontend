@@ -32,7 +32,7 @@ class OnboardingAnalytics extends LitElement {
       <p>${this.localize("ui.panel.page-onboarding.analytics.intro")}</p>
       <p>
         <a
-          .href=${documentationUrl(this.hass, "/integrations/analytics/")}
+          href=${documentationUrl(this.hass, "/integrations/analytics/")}
           target="_blank"
           rel="noreferrer"
         >

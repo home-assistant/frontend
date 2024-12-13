@@ -71,7 +71,7 @@ class HaChangePasswordCard extends LitElement {
                   @input=${this._newPasswordChanged}
                   @change=${this._newPasswordChanged}
                   required
-                  auto-validate
+                  autoValidate
                 ></ha-password-field>
                 <ha-password-field
                   .label=${this.hass.localize(
@@ -83,7 +83,7 @@ class HaChangePasswordCard extends LitElement {
                   @input=${this._newPasswordConfirmChanged}
                   @change=${this._newPasswordConfirmChanged}
                   required
-                  auto-validate
+                  autoValidate
                 ></ha-password-field>`
             : ""}
         </div>

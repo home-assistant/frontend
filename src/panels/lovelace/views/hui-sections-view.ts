@@ -57,7 +57,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   @property({ type: Number }) public index?: number;
 
-  @property({ type: Boolean }) public isStrategy = false;
+  @property({ attribute: false }) public isStrategy = false;
 
   @property({ attribute: false }) public sections: HuiSection[] = [];
 
@@ -246,7 +246,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                 <ha-sortable
                   group="card"
                   @item-added=${this._handleCardAdded}
-                  filter="button"
+                  draggable-selector=".card"
                   .rollback=${false}
                 >
                   <div class="create-section-container">

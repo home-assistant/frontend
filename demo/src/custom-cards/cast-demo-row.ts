@@ -46,7 +46,6 @@ class CastDemoRow extends LitElement implements LovelaceRow {
           this.requestUpdate();
         });
         mgr.castContext.addEventListener(
-          // eslint-disable-next-line no-undef
           cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
           (ev) => {
             // On Android, opening a new session always results in SESSION_RESUMED.

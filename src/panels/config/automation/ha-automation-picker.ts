@@ -128,7 +128,7 @@ type AutomationItem = AutomationEntity & {
 class HaAutomationPicker extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -522,7 +522,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         selectable
         .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}
-        hasFilters
+        has-filters
         .filters=${
           Object.values(this._filters).filter((filter) =>
             Array.isArray(filter.value)
@@ -556,7 +556,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         @clear-filter=${this._clearFilter}
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
-        hasFab
+        has-fab
         clickable
         class=${this.narrow ? "narrow" : ""}
       >

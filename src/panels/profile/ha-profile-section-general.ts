@@ -40,7 +40,7 @@ class HaProfileSectionGeneral extends LitElement {
 
   private _unsubCoreData?: UnsubscribeFunc;
 
-  private getCoreData() {
+  private _getCoreData() {
     this._unsubCoreData = getOptimisticFrontendUserDataCollection(
       this.hass.connection,
       "core"
@@ -52,13 +52,13 @@ class HaProfileSectionGeneral extends LitElement {
   public connectedCallback() {
     super.connectedCallback();
     if (this.hass) {
-      this.getCoreData();
+      this._getCoreData();
     }
   }
 
   public firstUpdated() {
     if (!this._unsubCoreData) {
-      this.getCoreData();
+      this._getCoreData();
     }
   }
 

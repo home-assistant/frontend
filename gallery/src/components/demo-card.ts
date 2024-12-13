@@ -18,7 +18,8 @@ class DemoCard extends LitElement {
 
   @property({ attribute: false }) public config!: DemoCardConfig;
 
-  @property({ type: Boolean }) public showConfig = false;
+  @property({ attribute: "show-config", type: Boolean })
+  public showConfig = false;
 
   @state() private _size?: number;
 

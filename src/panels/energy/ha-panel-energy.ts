@@ -81,7 +81,7 @@ class PanelEnergy extends LitElement {
 
           <hui-energy-period-selector
             .hass=${this.hass}
-            collectionKey="energy_dashboard"
+            collection-key="energy_dashboard"
           >
             ${this.hass.user?.is_admin
               ? html` <ha-list-item

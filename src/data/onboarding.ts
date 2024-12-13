@@ -10,7 +10,6 @@ export interface InstallationType {
     | "Unknown";
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface OnboardingCoreConfigStepResponse {}
 
 export interface OnboardingUserStepResponse {
@@ -21,7 +20,6 @@ export interface OnboardingIntegrationStepResponse {
   auth_code: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface OnboardingAnalyticsStepResponse {}
 
 export interface OnboardingResponses {

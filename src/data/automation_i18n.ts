@@ -682,19 +682,27 @@ const tryDescribeTrigger = (
 
   // Conversation Trigger
   if (trigger.trigger === "conversation") {
-    if (!trigger.command) {
+    if (!trigger.command || !trigger.command.length) {
       return hass.localize(
         `${triggerTranslationBaseKey}.conversation.description.empty`
       );
     }
 
+    const commands = ensureArray(trigger.command);
+
+    if (commands.length === 1) {
+      return hass.localize(
+        `${triggerTranslationBaseKey}.conversation.description.single`,
+        {
+          sentence: commands[0],
+        }
+      );
+    }
     return hass.localize(
-      `${triggerTranslationBaseKey}.conversation.description.full`,
+      `${triggerTranslationBaseKey}.conversation.description.multiple`,
       {
-        sentence: formatListWithOrs(
-          hass.locale,
-          ensureArray(trigger.command).map((cmd) => `'${cmd}'`)
-        ),
+        sentence: commands[0],
+        count: commands.length - 1,
       }
     );
   }

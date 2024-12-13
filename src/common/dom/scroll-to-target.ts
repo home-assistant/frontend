@@ -14,10 +14,8 @@ export default function scrollToTarget(element, target) {
   const top = 0;
   const scroller = target;
   const easingFn = function easeOutQuad(t, b, c, d) {
-    /* eslint-disable no-param-reassign, space-infix-ops, no-mixed-operators */
     t /= d;
     return -c * t * (t - 2) + b;
-    /* eslint-enable no-param-reassign, space-infix-ops, no-mixed-operators */
   };
   const animationId = Math.random();
   const duration = 200;

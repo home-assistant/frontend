@@ -78,7 +78,7 @@ export class HuiViewVisibilityEditor extends LitElement {
             <ha-switch
               slot="meta"
               .userId=${user.id}
-              @change=${this.valChange}
+              @change=${this._valChange}
               .checked=${this.checkUser(user.id)}
             ></ha-switch>
           </ha-list-item>
@@ -97,7 +97,7 @@ export class HuiViewVisibilityEditor extends LitElement {
     return (this._visible as ShowViewConfig[]).some((u) => u.user === userId);
   }
 
-  private valChange(ev: Event): void {
+  private _valChange(ev: Event): void {
     const userId = (ev.currentTarget as any).userId;
     const checked = (ev.currentTarget as HaSwitch).checked;
 

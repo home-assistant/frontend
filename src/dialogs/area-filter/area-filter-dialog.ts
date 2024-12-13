@@ -147,7 +147,7 @@ export class DialogAreaFilter
     `;
   }
 
-  _toggle(ev) {
+  private _toggle(ev) {
     const area = ev.target.area;
     const hidden = [...(this._hidden ?? [])];
     if (hidden.includes(area)) {

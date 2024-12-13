@@ -123,7 +123,7 @@ export class CloudTTSPref extends LitElement {
     });
   }
 
-  async _handleLanguageChange(ev) {
+  private async _handleLanguageChange(ev) {
     if (ev.detail.value === this.cloudStatus!.prefs.tts_default_voice[0]) {
       return;
     }
@@ -152,7 +152,7 @@ export class CloudTTSPref extends LitElement {
     }
   }
 
-  async _handleVoiceChange(ev) {
+  private async _handleVoiceChange(ev) {
     if (ev.target.value === this.cloudStatus!.prefs.tts_default_voice[1]) {
       return;
     }

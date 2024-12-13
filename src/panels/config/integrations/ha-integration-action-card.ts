@@ -17,7 +17,7 @@ export class HaIntegrationActionCard extends LitElement {
 
   @property() public banner!: string;
 
-  @property() public localizedDomainName?: string;
+  @property({ attribute: false }) public localizedDomainName?: string;
 
   @property() public domain!: string;
 

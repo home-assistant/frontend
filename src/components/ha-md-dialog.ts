@@ -116,7 +116,7 @@ export class HaMdDialog extends MdDialog {
     });
   }
 
-  _handleCancel(closeEvent: Event) {
+  private _handleCancel(closeEvent: Event) {
     if (this.disableCancelAction) {
       closeEvent.preventDefault();
       const dialogElement = this.shadowRoot?.querySelector("dialog .container");

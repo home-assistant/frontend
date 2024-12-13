@@ -77,11 +77,12 @@ export interface MediaPlayerItemId {
 export class HaMediaPlayerBrowse extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public entityId!: string;
+  @property({ attribute: false }) public entityId!: string;
 
   @property() public action: MediaPlayerBrowseAction = "play";
 
-  @property() public preferredLayout: MediaPlayerLayoutType = "auto";
+  @property({ attribute: false })
+  public preferredLayout: MediaPlayerLayoutType = "auto";
 
   @property({ type: Boolean }) public dialog = false;
 

@@ -1,7 +1,7 @@
 import { mdiPlus } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
@@ -37,6 +37,7 @@ const IMPORT_MODE_CARD_SORTABLE_OPTIONS: HaSortableOptions = {
   },
 };
 
+@customElement("hui-grid-section")
 export class GridSection extends LitElement implements LovelaceSectionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -44,13 +45,14 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
 
   @property({ type: Number }) public index?: number;
 
-  @property({ type: Number }) public viewIndex?: number;
+  @property({ attribute: false, type: Number }) public viewIndex?: number;
 
-  @property({ type: Boolean }) public isStrategy = false;
+  @property({ attribute: false }) public isStrategy = false;
 
   @property({ attribute: false }) public cards: HuiCard[] = [];
 
-  @property({ attribute: false }) public importOnly = false;
+  @property({ attribute: "import-only", type: Boolean })
+  public importOnly = false;
 
   @state() _config?: LovelaceSectionConfig;
 
@@ -309,5 +311,3 @@ declare global {
     "hui-grid-section": GridSection;
   }
 }
-
-customElements.define("hui-grid-section", GridSection);

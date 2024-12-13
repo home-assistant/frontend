@@ -53,9 +53,11 @@ export class HaDateRangePicker extends LitElement {
 
   @state() private _ranges?: DateRangePickerRanges;
 
-  @property({ type: Boolean }) public autoApply = false;
+  @property({ attribute: "auto-apply", type: Boolean })
+  public autoApply = false;
 
-  @property({ type: Boolean }) public timePicker = true;
+  @property({ attribute: "time-picker", type: Boolean })
+  public timePicker = true;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -63,9 +65,14 @@ export class HaDateRangePicker extends LitElement {
 
   @state() private _hour24format = false;
 
-  @property({ type: Boolean }) public extendedPresets = false;
+  @property({ attribute: "extended-presets", type: Boolean })
+  public extendedPresets = false;
 
-  @property() public openingDirection?: "right" | "left" | "center" | "inline";
+  @property({ attribute: false }) public openingDirection?:
+    | "right"
+    | "left"
+    | "center"
+    | "inline";
 
   @state() private _calcedOpeningDirection?:
     | "right"

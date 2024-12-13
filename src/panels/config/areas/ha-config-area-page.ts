@@ -62,13 +62,13 @@ declare type NameAndEntity<EntityType extends HassEntity> = {
 class HaConfigAreaPage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public areaId!: string;
+  @property({ attribute: false }) public areaId!: string;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public showAdvanced = false;
+  @property({ attribute: false }) public showAdvanced = false;
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })

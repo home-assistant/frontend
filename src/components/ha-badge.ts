@@ -98,7 +98,6 @@ export class HaBadge extends LitElement {
         align-items: flex-start;
         padding-inline-start: initial;
         text-align: center;
-        font-family: Roboto;
       }
       .label {
         font-size: 10px;

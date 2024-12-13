@@ -56,13 +56,15 @@ export const computeStateDisplayFromEntityAttributes = (
   }
 
   const domain = computeDomain(entityId);
-
+  const is_number_domain =
+    domain === "counter" || domain === "number" || domain === "input_number";
   // Entities with a `unit_of_measurement` or `state_class` are numeric values and should use `formatNumber`
   if (
     isNumericFromAttributes(
       attributes,
       domain === "sensor" ? sensorNumericDeviceClasses : []
-    )
+    ) ||
+    is_number_domain
   ) {
     // state is duration
     if (
@@ -163,20 +165,6 @@ export const computeStateDisplayFromEntityAttributes = (
       // just return the state string in that case.
       return state;
     }
-  }
-
-  // `counter` `number` and `input_number` domains do not have a unit of measurement but should still use `formatNumber`
-  if (
-    domain === "counter" ||
-    domain === "number" ||
-    domain === "input_number"
-  ) {
-    // Format as an integer if the value and step are integers
-    return formatNumber(
-      state,
-      locale,
-      getNumberFormatOptions({ state, attributes } as HassEntity, entity)
-    );
   }
 
   // state is a timestamp

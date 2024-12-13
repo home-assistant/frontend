@@ -70,7 +70,7 @@ export class HuiEntityFilterBadge
     if (
       changedProperties.has("_config") ||
       (changedProperties.has("hass") &&
-        this.haveEntitiesChanged(
+        this._haveEntitiesChanged(
           changedProperties.get("hass") as HomeAssistant | undefined
         ))
     ) {
@@ -156,7 +156,7 @@ export class HuiEntityFilterBadge
     this.style.gap = "8px";
   }
 
-  private haveEntitiesChanged(oldHass?: HomeAssistant): boolean {
+  private _haveEntitiesChanged(oldHass?: HomeAssistant): boolean {
     if (!oldHass) {
       return true;
     }

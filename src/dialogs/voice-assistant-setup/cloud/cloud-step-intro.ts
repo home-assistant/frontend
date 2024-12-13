@@ -18,7 +18,11 @@ export class CloudStepIntro extends LitElement {
           src=${`/static/images/logo_nabu_casa${this.hass.themes?.darkMode ? "_dark" : ""}.png`}
           alt="Nabu Casa logo"
         />
-        <h1>The power of Home Assistant Cloud</h1>
+        <h1>
+          ${this.hass.localize(
+            "ui.panel.config.voice_assistants.satellite_wizard.cloud.title"
+          )}
+        </h1>
         <div class="features">
           <div class="feature speech">
             <div class="logos">
@@ -45,12 +49,15 @@ export class CloudStepIntro extends LitElement {
               </div>
             </div>
             <h2>
-              Remote access
+              ${this.hass.localize(
+                "ui.panel.config.voice_assistants.assistants.cloud.features.remote_access.title"
+              )}
               <span class="no-wrap"></span>
             </h2>
             <p>
-              Secure remote access to your system while supporting the
-              development of Home Assistant.
+              ${this.hass.localize(
+                "ui.panel.config.voice_assistants.assistants.cloud.features.remote_access.text"
+              )}
             </p>
           </div>
           <div class="feature">
@@ -101,7 +108,9 @@ export class CloudStepIntro extends LitElement {
           </ha-button>
         </a>
         <ha-button unelevated @click=${this._signUp}
-          >Try 1 month for free</ha-button
+          >${this.hass.localize(
+            "ui.panel.config.cloud.register.headline"
+          )}</ha-button
         >
       </div>`;
   }

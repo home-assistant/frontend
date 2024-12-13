@@ -42,6 +42,7 @@ import { showVoiceAssistantPipelineDetailDialog } from "./show-dialog-voice-assi
 import { showVoiceCommandDialog } from "../../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { navigate } from "../../../common/navigate";
 
 @customElement("assist-pref")
 export class AssistPref extends LitElement {
@@ -159,14 +160,16 @@ export class AssistPref extends LitElement {
                     )}
                     <ha-svg-icon slot="graphic" .path=${mdiStar}></ha-svg-icon>
                   </ha-list-item>
-                  <a href=${`/config/voice-assistants/debug/${pipeline.id}`}>
-                    <ha-list-item graphic="icon">
-                      ${this.hass.localize(
-                        "ui.panel.config.voice_assistants.assistants.pipeline.detail.debug"
-                      )}
-                      <ha-svg-icon slot="graphic" .path=${mdiBug}></ha-svg-icon>
-                    </ha-list-item>
-                  </a>
+                  <ha-list-item
+                    graphic="icon"
+                    .id=${pipeline.id}
+                    @request-selected=${this._debugPipeline}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.voice_assistants.assistants.pipeline.detail.debug"
+                    )}
+                    <ha-svg-icon slot="graphic" .path=${mdiBug}></ha-svg-icon>
+                  </ha-list-item>
                   <ha-list-item
                     class="danger"
                     graphic="icon"
@@ -231,6 +234,11 @@ export class AssistPref extends LitElement {
     const id = ev.currentTarget.id as string;
     await setAssistPipelinePreferred(this.hass!, id);
     this._preferred = id;
+  }
+
+  private async _debugPipeline(ev) {
+    const id = ev.currentTarget.id as string;
+    navigate(`/config/voice-assistants/debug/${id}`);
   }
 
   private async _deletePipeline(ev) {

@@ -13,7 +13,7 @@ import "../../../../components/ha-radio";
 import "../../../../components/ha-settings-row";
 import "../../../../components/ha-switch";
 import "../../../../components/ha-textfield";
-// eslint-disable-next-line
+
 import { formatDate } from "../../../../common/datetime/format_date";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import type { CloudStatusLoggedIn } from "../../../../data/cloud";

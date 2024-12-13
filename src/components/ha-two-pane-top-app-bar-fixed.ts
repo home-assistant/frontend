@@ -32,7 +32,7 @@ export class TopAppBarBaseBase extends BaseElement {
 
   protected _scrollTarget!: HTMLElement | Window;
 
-  @property({ type: Boolean }) centerTitle = false;
+  @property({ attribute: "center-title", type: Boolean }) centerTitle = false;
 
   @property({ type: Boolean, reflect: true }) prominent = false;
 
@@ -46,7 +46,7 @@ export class TopAppBarBaseBase extends BaseElement {
 
   @query(".pane .ha-scrollbar") private _paneElement?: HTMLElement;
 
-  @property({ type: Object })
+  @property({ attribute: false, type: Object })
   get scrollTarget() {
     return this._scrollTarget || window;
   }

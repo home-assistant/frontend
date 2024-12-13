@@ -105,7 +105,7 @@ export class HuiCardEditMode extends LitElement {
     document.removeEventListener("click", this._documentClicked);
   }
 
-  _documentClicked = (ev) => {
+  private _documentClicked = (ev) => {
     this._hover = ev.composedPath().includes(this);
     document.removeEventListener("click", this._documentClicked);
   };

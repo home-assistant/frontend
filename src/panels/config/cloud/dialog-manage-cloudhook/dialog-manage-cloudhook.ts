@@ -89,7 +89,7 @@ export class DialogManageCloudhook extends LitElement {
             .value=${cloudhook.cloudhook_url}
             iconTrailing
             readOnly
-            @click=${this.focusInput}
+            @click=${this._focusInput}
           >
             <ha-icon-button
               @click=${this._copyUrl}
@@ -137,7 +137,7 @@ export class DialogManageCloudhook extends LitElement {
     }
   }
 
-  private focusInput(ev) {
+  private _focusInput(ev) {
     const inputElement = ev.currentTarget as HaTextField;
     inputElement.select();
   }

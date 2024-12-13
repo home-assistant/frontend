@@ -123,7 +123,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
           </div>
         </div>
         <div class="content">
-          ${this.computeAttributes(stateObj).map(
+          ${this._computeAttributes(stateObj).map(
             (item) => html`
               <div
                 class="attributes"
@@ -246,7 +246,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private computeAttributes(stateObj: HassEntity): string[] {
+  private _computeAttributes(stateObj: HassEntity): string[] {
     return Object.keys(SENSOR_ICONS).filter(
       (key) => key in stateObj.attributes
     );

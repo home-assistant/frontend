@@ -56,7 +56,7 @@ class IntegrationsStartupTime extends LitElement {
               graphic="avatar"
               twoline
               hasMeta
-              openNewTab
+              open-new-tab
               href=${docLink}
             >
               <img

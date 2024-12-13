@@ -137,7 +137,7 @@ export class MoreInfoDialog extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  private shouldShowEditIcon(
+  private _shouldShowEditIcon(
     domain: string,
     stateObj: HassEntity | undefined
   ): boolean {
@@ -157,7 +157,7 @@ export class MoreInfoDialog extends LitElement {
     return false;
   }
 
-  private shouldShowHistory(domain: string): boolean {
+  private _shouldShowHistory(domain: string): boolean {
     return (
       DOMAINS_WITH_MORE_INFO.includes(domain) &&
       (computeShowHistoryComponent(this.hass, this._entityId!) ||
@@ -172,7 +172,7 @@ export class MoreInfoDialog extends LitElement {
     return entity?.device_id ?? null;
   }
 
-  private setView(view: View) {
+  private _setView(view: View) {
     history.replaceState(
       {
         ...history.state,
@@ -190,21 +190,21 @@ export class MoreInfoDialog extends LitElement {
     if (this._childView) {
       this._childView = undefined;
     } else {
-      this.setView(this._initialView);
+      this._setView(this._initialView);
     }
   }
 
   private _resetInitialView() {
     this._initialView = DEFAULT_VIEW;
-    this.setView(DEFAULT_VIEW);
+    this._setView(DEFAULT_VIEW);
   }
 
   private _goToHistory() {
-    this.setView("history");
+    this._setView("history");
   }
 
   private _goToSettings(): void {
-    this.setView("settings");
+    this._setView("settings");
   }
 
   private _showChildView(ev: CustomEvent): void {
@@ -255,7 +255,7 @@ export class MoreInfoDialog extends LitElement {
 
   private _goToRelated(ev): void {
     if (!shouldHandleRequestSelectedEvent(ev)) return;
-    this.setView("related");
+    this._setView("related");
   }
 
   protected render() {
@@ -314,7 +314,7 @@ export class MoreInfoDialog extends LitElement {
           </span>
           ${isDefaultView
             ? html`
-                ${this.shouldShowHistory(domain)
+                ${this._shouldShowHistory(domain)
                   ? html`
                       <ha-icon-button
                         slot="actionItems"
@@ -365,7 +365,7 @@ export class MoreInfoDialog extends LitElement {
                               </ha-list-item>
                             `
                           : nothing}
-                        ${this.shouldShowEditIcon(domain, stateObj)
+                        ${this._shouldShowEditIcon(domain, stateObj)
                           ? html`
                               <ha-list-item
                                 graphic="icon"

@@ -36,7 +36,7 @@ class StateCardContent extends LitElement {
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
-  @property({ type: Boolean }) public inDialog = false;
+  @property({ attribute: "in-dialog", type: Boolean }) public inDialog = false;
 
   protected render() {
     let stateCard: string;

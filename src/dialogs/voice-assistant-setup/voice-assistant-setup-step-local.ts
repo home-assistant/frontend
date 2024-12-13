@@ -11,7 +11,11 @@ import {
   listAssistPipelines,
 } from "../../data/assist_pipeline";
 import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
-import { createConfigFlow, handleConfigFlowStep } from "../../data/config_flow";
+import {
+  createConfigFlow,
+  fetchConfigFlowInProgress,
+  handleConfigFlowStep,
+} from "../../data/config_flow";
 import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
 import {
   fetchHassioAddonsInfo,
@@ -37,6 +41,8 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
 
   @state() private _detailState?: string;
 
+  @state() private _error?: string;
+
   @state() private _localTts?: EntityRegistryDisplayEntry[];
 
   @state() private _localStt?: EntityRegistryDisplayEntry[];
@@ -48,9 +54,15 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
               src="/static/images/voice-assistant/update.png"
               alt="Casita Home Assistant loading logo"
             />
-            <h1>Installing add-ons</h1>
+            <h1>
+              ${this.hass.localize(
+                "ui.panel.config.voice_assistants.satellite_wizard.local.title"
+              )}
+            </h1>
             <p>
-              The Whisper and Piper add-ons are being installed and configured.
+              ${this.hass.localize(
+                "ui.panel.config.voice_assistants.satellite_wizard.local.secondary"
+              )}
             </p>
             <ha-circular-progress indeterminate></ha-circular-progress>
             <p>
@@ -61,12 +73,20 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
                 src="/static/images/voice-assistant/error.png"
                 alt="Casita Home Assistant error logo"
               />
-              <h1>Failed to install add-ons</h1>
+              <h1>
+                ${this.hass.localize(
+                  "ui.panel.config.voice_assistants.satellite_wizard.local.failed_title"
+                )}
+              </h1>
+              <p>${this._error}</p>
               <p>
-                We could not automatically install a local TTS and STT provider
-                for you. Read the documentation to learn how to install them.
+                ${this.hass.localize(
+                  "ui.panel.config.voice_assistants.satellite_wizard.local.failed_secondary"
+                )}
               </p>
-              <ha-button @click=${this._prevStep}>Go back</ha-button>
+              <ha-button @click=${this._prevStep}
+                >${this.hass.localize("ui.common.back")}</ha-button
+              >
               <a
                 href=${documentationUrl(
                   this.hass,
@@ -77,7 +97,9 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
               >
                 <ha-button>
                   <ha-svg-icon .path=${mdiOpenInNew} slot="icon"></ha-svg-icon>
-                  Learn more</ha-button
+                  ${this.hass.localize(
+                    "ui.panel.config.common.learn_more"
+                  )}</ha-button
                 >
               </a>`
           : this._state === "NOT_SUPPORTED"
@@ -85,13 +107,19 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
                   src="/static/images/voice-assistant/error.png"
                   alt="Casita Home Assistant error logo"
                 />
-                <h1>Installation of add-ons is not supported on your system</h1>
+                <h1>
+                  ${this.hass.localize(
+                    "ui.panel.config.voice_assistants.satellite_wizard.local.not_supported_title"
+                  )}
+                </h1>
                 <p>
-                  Your system is not supported to automatically install a local
-                  TTS and STT provider. Learn how to set up local TTS and STT
-                  providers in the documentation.
+                  ${this.hass.localize(
+                    "ui.panel.config.voice_assistants.satellite_wizard.local.not_supported_secondary"
+                  )}
                 </p>
-                <ha-button @click=${this._prevStep}>Go back</ha-button>
+                <ha-button @click=${this._prevStep}
+                  >${this.hass.localize("ui.common.back")}</ha-button
+                >
                 <a
                   href=${documentationUrl(
                     this.hass,
@@ -105,7 +133,9 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
                       .path=${mdiOpenInNew}
                       slot="icon"
                     ></ha-svg-icon>
-                    Learn more</ha-button
+                    ${this.hass.localize(
+                      "ui.panel.config.common.learn_more"
+                    )}</ha-button
                   >
                 </a>`
             : nothing}
@@ -135,6 +165,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     }
     if (this._localTts.length && this._localStt.length) {
       this._pickOrCreatePipelineExists();
+      return;
     }
     if (!isComponentLoaded(this.hass, "hassio")) {
       this._state = "NOT_SUPPORTED";
@@ -145,42 +176,49 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
       const { addons } = await fetchHassioAddonsInfo(this.hass);
       const whisper = addons.find((addon) => addon.slug === "core_whisper");
       const piper = addons.find((addon) => addon.slug === "core_piper");
-      if (piper && !this._localTts.length) {
-        if (piper.state !== "started") {
-          this._detailState = "Starting Piper add-on";
+      if (!this._localTts.length) {
+        if (!piper) {
+          this._detailState = this.hass.localize(
+            "ui.panel.config.voice_assistants.satellite_wizard.local.state.installing_piper"
+          );
+          await installHassioAddon(this.hass, "core_piper");
+        }
+        if (!piper || piper.state !== "started") {
+          this._detailState = this.hass.localize(
+            "ui.panel.config.voice_assistants.satellite_wizard.local.state.starting_piper"
+          );
           await startHassioAddon(this.hass, "core_piper");
         }
-        this._detailState = "Setting up Piper";
+        this._detailState = this.hass.localize(
+          "ui.panel.config.voice_assistants.satellite_wizard.local.state.setup_piper"
+        );
         await this._setupConfigEntry("piper");
       }
-      if (whisper && !this._localStt.length) {
-        if (whisper.state !== "started") {
-          this._detailState = "Starting Whisper add-on";
+      if (!this._localStt.length) {
+        if (!whisper) {
+          this._detailState = this.hass.localize(
+            "ui.panel.config.voice_assistants.satellite_wizard.local.state.installing_whisper"
+          );
+          await installHassioAddon(this.hass, "core_whisper");
+        }
+        if (!whisper || whisper.state !== "started") {
+          this._detailState = this.hass.localize(
+            "ui.panel.config.voice_assistants.satellite_wizard.local.state.starting_whisper"
+          );
           await startHassioAddon(this.hass, "core_whisper");
         }
-        this._detailState = "Setting up Whisper";
+        this._detailState = this.hass.localize(
+          "ui.panel.config.voice_assistants.satellite_wizard.local.state.setup_whisper"
+        );
         await this._setupConfigEntry("whisper");
       }
-      if (!piper) {
-        this._detailState = "Installing Piper add-on";
-        await installHassioAddon(this.hass, "core_piper");
-        this._detailState = "Starting Piper add-on";
-        await startHassioAddon(this.hass, "core_piper");
-        this._detailState = "Setting up Piper";
-        await this._setupConfigEntry("piper");
-      }
-      if (!whisper) {
-        this._detailState = "Installing Whisper add-on";
-        await installHassioAddon(this.hass, "core_whisper");
-        this._detailState = "Starting Whisper add-on";
-        await startHassioAddon(this.hass, "core_whisper");
-        this._detailState = "Setting up Whisper";
-        await this._setupConfigEntry("whisper");
-      }
-      this._detailState = "Creating assistant";
+      this._detailState = this.hass.localize(
+        "ui.panel.config.voice_assistants.satellite_wizard.local.state.creating_pipeline"
+      );
       await this._findEntitiesAndCreatePipeline();
-    } catch (e) {
+    } catch (e: any) {
       this._state = "ERROR";
+      this._error = e.message;
     }
   }
 
@@ -197,13 +235,44 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
   }
 
   private async _setupConfigEntry(addon: string) {
+    const configFlow = await this._findConfigFlowInProgress(addon);
+
+    if (configFlow) {
+      const step = await handleConfigFlowStep(
+        this.hass,
+        configFlow.flow_id,
+        {}
+      );
+      if (step.type === "create_entry") {
+        return undefined;
+      }
+    }
+
+    return this._createConfigEntry(addon);
+  }
+
+  private async _findConfigFlowInProgress(addon: string) {
+    const configFlows = await fetchConfigFlowInProgress(this.hass.connection);
+
+    return configFlows.find(
+      (flow) =>
+        flow.handler === "wyoming" &&
+        flow.context.source === "hassio" &&
+        (flow.context.configuration_url.includes(`core_${addon}`) ||
+          flow.context.title_placeholders.title.toLowerCase().includes(addon))
+    );
+  }
+
+  private async _createConfigEntry(addon: string) {
     const configFlow = await createConfigFlow(this.hass, "wyoming");
     const step = await handleConfigFlowStep(this.hass, configFlow.flow_id, {
-      host: `core_${addon}`,
+      host: `core-${addon}`,
       port: addon === "piper" ? 10200 : 10300,
     });
     if (step.type !== "create_entry") {
-      throw new Error("Failed to create entry");
+      throw new Error(
+        `${this.hass.localize("ui.panel.config.voice_assistants.satellite_wizard.local.errors.failed_create_entry", { addon })}${"errors" in step ? `: ${step.errors.base}` : ""}`
+      );
     }
   }
 
@@ -290,7 +359,9 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
       )
     ).providers.find((provider) => provider.engine_id === sttEntityId);
 
-    let pipelineName = "Local Assistant";
+    let pipelineName = this.hass.localize(
+      "ui.panel.config.voice_assistants.satellite_wizard.local.local_pipeline"
+    );
     let i = 1;
     while (
       pipelines.pipelines.find(
@@ -298,7 +369,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
         (pipeline) => pipeline.name === pipelineName
       )
     ) {
-      pipelineName = `Local Assistant ${i}`;
+      pipelineName = `${this.hass.localize("ui.panel.config.voice_assistants.satellite_wizard.local.local_pipeline")} ${i}`;
       i++;
     }
 
@@ -321,7 +392,11 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     this._findLocalEntities();
     if (!this._localTts?.length || !this._localStt?.length) {
       if (tryNo > 3) {
-        throw new Error("Timeout searching for local TTS and STT entities");
+        throw new Error(
+          this.hass.localize(
+            "ui.panel.config.voice_assistants.satellite_wizard.local.errors.could_not_find_entities"
+          )
+        );
       }
       await new Promise<void>((resolve) => {
         setTimeout(resolve, 2000);

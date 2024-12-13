@@ -22,15 +22,8 @@ export class HaQrCode extends LitElement {
   @property({ type: Number })
   public margin = 4;
 
-  @property({ type: Number }) public maskPattern?:
-    | 0
-    | 1
-    | 2
-    | 3
-    | 4
-    | 5
-    | 6
-    | 7;
+  @property({ attribute: false, type: Number })
+  public maskPattern?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
   @property({ attribute: "center-image" }) public centerImage?: string;
 

@@ -22,9 +22,9 @@ export class StateBadge extends LitElement {
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  @property() public overrideIcon?: string;
+  @property({ attribute: false }) public overrideIcon?: string;
 
-  @property() public overrideImage?: string;
+  @property({ attribute: false }) public overrideImage?: string;
 
   // Cannot be a boolean attribute because undefined is treated different than
   // false.  When it is undefined, state is still colored for light entities.

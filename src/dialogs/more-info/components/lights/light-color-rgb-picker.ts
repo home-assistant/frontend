@@ -158,7 +158,7 @@ class LightRgbColorPicker extends LitElement {
     `;
   }
 
-  public _updateSliderValues() {
+  private _updateSliderValues() {
     const stateObj = this.stateObj;
 
     if (stateObj.state === "on") {

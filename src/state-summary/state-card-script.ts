@@ -18,7 +18,7 @@ class StateCardScript extends LitElement {
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
-  @property({ type: Boolean }) public inDialog = false;
+  @property({ attribute: "in-dialog", type: Boolean }) public inDialog = false;
 
   protected render() {
     const stateObj = this.stateObj as ScriptEntity;

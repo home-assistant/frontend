@@ -4,6 +4,7 @@ import { customElement, query } from "lit/decorators";
 import { CoverEntityFeature } from "../../../../src/data/cover";
 import { LightColorMode } from "../../../../src/data/light";
 import { LockEntityFeature } from "../../../../src/data/lock";
+import { MediaPlayerEntityFeature } from "../../../../src/data/media-player";
 import { VacuumEntityFeature } from "../../../../src/data/vacuum";
 import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
@@ -27,6 +28,10 @@ const ENTITIES = [
     friendly_name: "Front Door Lock",
     device_class: "lock",
     supported_features: LockEntityFeature.OPEN,
+  }),
+  getEntity("media_player", "living_room", "playing", {
+    friendly_name: "Living room speaker",
+    supported_features: MediaPlayerEntityFeature.VOLUME_SET,
   }),
   getEntity("climate", "thermostat", "heat", {
     current_temperature: 73,
@@ -195,6 +200,15 @@ const CONFIGS = [
   entity: lock.front_door
   features:
     - type: "lock-open-door"
+    `,
+  },
+  {
+    heading: "Media player volume slider feature",
+    config: `
+- type: tile
+  entity: media_player.living_room
+  features:
+    - type: "media-player-volume-slider"
     `,
   },
   {

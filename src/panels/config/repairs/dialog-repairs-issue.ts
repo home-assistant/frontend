@@ -131,7 +131,7 @@ class DialogRepairsIssue extends LitElement {
             ? html`
                 <a
                   rel="noopener noreferrer"
-                  .href=${learnMoreUrlIsHomeAssistant
+                  href=${learnMoreUrlIsHomeAssistant
                     ? this._issue.learn_more_url.replace(
                         "homeassistant://",
                         "/"

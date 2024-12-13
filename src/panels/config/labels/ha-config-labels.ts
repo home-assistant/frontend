@@ -47,7 +47,7 @@ import { showLabelDetailDialog } from "./show-dialog-label-detail";
 export class HaConfigLabels extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -229,7 +229,7 @@ export class HaConfigLabels extends LitElement {
         .columns=${this._columns(this.hass.localize, this.narrow)}
         .data=${this._data(this._labels)}
         .noDataText=${this.hass.localize("ui.panel.config.labels.no_labels")}
-        hasFab
+        has-fab
         .initialSorting=${this._activeSorting}
         .columnOrder=${this._activeColumnOrder}
         .hiddenColumns=${this._activeHiddenColumns}

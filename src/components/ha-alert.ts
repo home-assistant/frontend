@@ -27,6 +27,7 @@ declare global {
 
 @customElement("ha-alert")
 class HaAlert extends LitElement {
+  // eslint-disable-next-line lit/no-native-attributes
   @property() public title = "";
 
   @property({ attribute: "alert-type" }) public alertType:
@@ -63,7 +64,7 @@ class HaAlert extends LitElement {
             <slot name="action">
               ${this.dismissable
                 ? html`<ha-icon-button
-                    @click=${this._dismiss_clicked}
+                    @click=${this._dismissClicked}
                     label="Dismiss alert"
                     .path=${mdiClose}
                   ></ha-icon-button>`
@@ -75,7 +76,7 @@ class HaAlert extends LitElement {
     `;
   }
 
-  private _dismiss_clicked() {
+  private _dismissClicked() {
     fireEvent(this, "alert-dismissed-clicked");
   }
 

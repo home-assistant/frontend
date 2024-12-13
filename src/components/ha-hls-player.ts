@@ -139,6 +139,7 @@ class HaHLSPlayer extends LitElement {
   private async _startHls(): Promise<void> {
     const masterPlaylistPromise = fetch(this._url);
 
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     const Hls: typeof HlsType = (await import("hls.js/dist/hls.light.mjs"))
       .default;
 

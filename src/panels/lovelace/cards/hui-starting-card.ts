@@ -18,9 +18,7 @@ export class HuiStartingCard extends LitElement implements LovelaceCard {
     return 2;
   }
 
-  public setConfig(_config: LovelaceCardConfig): void {
-    // eslint-disable-next-line
-  }
+  public setConfig(_config: LovelaceCardConfig): void {}
 
   protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);

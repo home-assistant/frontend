@@ -183,7 +183,7 @@ export class HaAnsiToHtml extends LitElement {
 
     /* eslint-disable no-cond-assign */
     let match;
-    // eslint-disable-next-line
+
     while ((match = re.exec(line)) !== null) {
       const j = match!.index;
       const substring = line.substring(i, j);

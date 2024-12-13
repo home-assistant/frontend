@@ -80,7 +80,7 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
       <hui-generic-entity-row
         .hass=${this.hass}
         .config=${this._config}
-        hideName
+        hide-name
       >
         <ha-select
           .label=${this._config.name || computeStateName(stateObj)}

@@ -169,8 +169,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             .autoFit=${this._config.auto_fit || false}
             .fitZones=${this._config.fit_zones}
             .themeMode=${themeMode}
-            interactiveZones
-            renderPassive
+            interactive-zones
+            render-passive
           ></ha-map>
           <ha-icon-button
             .label=${this.hass!.localize(

@@ -17,6 +17,7 @@ export const SCENE_IGNORED_DOMAINS = [
   "person",
   "scene",
   "schedule",
+  "script",
   "sensor",
   "sun",
   "update",

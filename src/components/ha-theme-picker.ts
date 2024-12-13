@@ -15,7 +15,8 @@ export class HaThemePicker extends LitElement {
 
   @property() public label?: string;
 
-  @property({ type: Boolean }) includeDefault = false;
+  @property({ attribute: "include-default", type: Boolean })
+  public includeDefault = false;
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 

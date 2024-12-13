@@ -56,14 +56,14 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
       <hui-generic-entity-row
         .hass=${this.hass}
         .config=${this._config}
-        hideName
+        hide-name
       >
         <ha-select
           .label=${this._config.name || computeStateName(stateObj)}
           .value=${stateObj.state}
           .disabled=${stateObj.state === UNAVAILABLE}
           naturalMenuWidth
-          @selected=${this._selectedChanged}
+          @action=${this._handleAction}
           @click=${stopPropagation}
           @closed=${stopPropagation}
         >
@@ -94,11 +94,13 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  private _selectedChanged(ev): void {
+  private _handleAction(ev): void {
     const stateObj = this.hass!.states[
       this._config!.entity
     ] as InputSelectEntity;
+
     const option = ev.target.value;
+
     if (
       option === stateObj.state ||
       !stateObj.attributes.options.includes(option)

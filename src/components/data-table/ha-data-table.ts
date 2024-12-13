@@ -116,7 +116,7 @@ export class HaDataTable extends LitElement {
 
   @property({ type: Boolean }) public clickable = false;
 
-  @property({ type: Boolean }) public hasFab = false;
+  @property({ attribute: "has-fab", type: Boolean }) public hasFab = false;
 
   /**
    * Add an extra row at the bottom of the data table
@@ -127,24 +127,25 @@ export class HaDataTable extends LitElement {
   @property({ type: Boolean, attribute: "auto-height" })
   public autoHeight = false;
 
+  // eslint-disable-next-line lit/no-native-attributes
   @property({ type: String }) public id = "id";
 
-  @property({ type: String }) public noDataText?: string;
+  @property({ attribute: false, type: String }) public noDataText?: string;
 
-  @property({ type: String }) public searchLabel?: string;
+  @property({ attribute: false, type: String }) public searchLabel?: string;
 
   @property({ type: Boolean, attribute: "no-label-float" })
   public noLabelFloat? = false;
 
   @property({ type: String }) public filter = "";
 
-  @property() public groupColumn?: string;
+  @property({ attribute: false }) public groupColumn?: string;
 
   @property({ attribute: false }) public groupOrder?: string[];
 
-  @property() public sortColumn?: string;
+  @property({ attribute: false }) public sortColumn?: string;
 
-  @property() public sortDirection: SortingDirection = null;
+  @property({ attribute: false }) public sortDirection: SortingDirection = null;
 
   @property({ attribute: false }) public initialCollapsedGroups?: string[];
 

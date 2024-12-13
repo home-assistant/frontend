@@ -21,7 +21,7 @@ export class HaVoiceAssistantSetupStepWakeWord extends LitElement {
   @property({ attribute: false })
   public assistConfiguration?: AssistSatelliteConfiguration;
 
-  @property() public assistEntityId?: string;
+  @property({ attribute: false }) public assistEntityId?: string;
 
   @property({ attribute: false })
   public deviceEntities?: EntityRegistryDisplayEntry[];
@@ -92,34 +92,55 @@ export class HaVoiceAssistantSetupStepWakeWord extends LitElement {
           ? html`
           <img src="/static/images/voice-assistant/sleep.png" alt="Casita Home Assistant logo"/>
           <h1>
-            Say “${this._activeWakeWord(this.assistConfiguration)}” to wake the
-            device up
+          ${this.hass.localize(
+            "ui.panel.config.voice_assistants.satellite_wizard.wake_word.title",
+            { wakeword: this._activeWakeWord(this.assistConfiguration) }
+          )}  
           </h1>
-          <p class="secondary">Setup will continue once the device is awake.</p>
+          <p class="secondary">${this.hass.localize(
+            "ui.panel.config.voice_assistants.satellite_wizard.wake_word.secondary"
+          )}</p>
         </div>`
           : html`<img
                 src="/static/images/voice-assistant/ok-nabu.png"
                 alt="Casita Home Assistant logo"
               />
               <h1>
-                Say “${this._activeWakeWord(this.assistConfiguration)}” again
+                ${this.hass.localize(
+                  "ui.panel.config.voice_assistants.satellite_wizard.wake_word.title_2",
+                  { wakeword: this._activeWakeWord(this.assistConfiguration) }
+                )}
               </h1>
               <p class="secondary">
-                To make sure the wake word works for you.
+                ${this.hass.localize(
+                  "ui.panel.config.voice_assistants.satellite_wizard.wake_word.secondary_2"
+                )}
               </p>`}
         ${this._timedout
           ? html`<ha-alert alert-type="warning"
-              >We have not heard the wake word, is your device muted?</ha-alert
+              >${this.hass.localize(
+                "ui.panel.config.voice_assistants.satellite_wizard.wake_word.time_out"
+              )}</ha-alert
             >`
           : this._muteSwitchEntity &&
               this.hass.states[this._muteSwitchEntity].state === "on"
-            ? html`<ha-alert alert-type="warning" title="Your device is muted"
-                >Please unmute your device to continue.</ha-alert
+            ? html`<ha-alert
+                alert-type="warning"
+                .title=${this.hass.localize(
+                  "ui.panel.config.voice_assistants.satellite_wizard.wake_word.muted"
+                )}
+                >${this.hass.localize(
+                  "ui.panel.config.voice_assistants.satellite_wizard.wake_word.muted_description"
+                )}</ha-alert
               >`
             : nothing}
       </div>
       <div class="footer centered">
-        <ha-button @click=${this._changeWakeWord}>Change wake word</ha-button>
+        <ha-button @click=${this._changeWakeWord}
+          >${this.hass.localize(
+            "ui.panel.config.voice_assistants.satellite_wizard.wake_word.change_wake_word"
+          )}</ha-button
+        >
       </div>`;
   }
 

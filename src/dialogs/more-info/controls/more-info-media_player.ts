@@ -207,10 +207,15 @@ class MoreInfoMediaPlayer extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      ha-icon-button[action="turn_off"],
-      ha-icon-button[action="turn_on"],
       ha-slider {
         flex-grow: 1;
+      }
+
+      ha-icon-button[action="turn_off"],
+      ha-icon-button[action="turn_on"] {
+        margin-inline-end: auto;
+        margin-right: auto;
+        margin-left: inherit;
       }
 
       .controls {

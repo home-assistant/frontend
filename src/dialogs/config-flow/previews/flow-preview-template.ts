@@ -17,13 +17,13 @@ import "../../../components/ha-alert";
 class FlowPreviewTemplate extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public flowType!: FlowType;
+  @property({ attribute: false }) public flowType!: FlowType;
 
   public handler!: string;
 
-  @property() public stepId!: string;
+  @property({ attribute: false }) public stepId!: string;
 
-  @property() public flowId!: string;
+  @property({ attribute: false }) public flowId!: string;
 
   @property({ attribute: false }) public stepData!: Record<string, any>;
 

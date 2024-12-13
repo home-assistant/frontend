@@ -14,11 +14,12 @@ export class HaDomainIcon extends LitElement {
 
   @property() public domain?: string;
 
-  @property() public deviceClass?: string;
+  @property({ attribute: false }) public deviceClass?: string;
 
   @property() public icon?: string;
 
-  @property({ type: Boolean }) public brandFallback?: boolean;
+  @property({ attribute: "brand-fallback", type: Boolean })
+  public brandFallback?: boolean;
 
   protected render() {
     if (this.icon) {

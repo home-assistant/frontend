@@ -14,13 +14,12 @@ class HuiMarquee extends LitElement {
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
 
-    // eslint-disable-next-line wc/no-self-class
     this.addEventListener("mouseover", () => this.classList.add("hovering"), {
       // Capture because we need to run before a parent sets active on us.
       // Hovering will disable the overflow, allowing us to calc if we overflow.
       capture: true,
     });
-    // eslint-disable-next-line wc/no-self-class
+
     this.addEventListener("mouseout", () => this.classList.remove("hovering"));
   }
 

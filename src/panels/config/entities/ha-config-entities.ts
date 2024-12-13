@@ -136,7 +136,7 @@ export interface EntityRow extends StateEntity {
 export class HaConfigEntities extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -750,7 +750,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           "ui.panel.config.entities.picker.search",
           { number: filteredEntities.length }
         )}
-        hasFilters
+        has-filters
         .filters=${
           Object.values(this._filters).filter((filter) =>
             Array.isArray(filter)

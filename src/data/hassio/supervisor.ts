@@ -226,6 +226,25 @@ export const fetchHassioLogsFollow = async (
     signal
   );
 
+export const fetchHassioLogsFollowSkip = async (
+  hass: HomeAssistant,
+  provider: string,
+  signal: AbortSignal,
+  cursor: string,
+  skipLines: number,
+  lines = 100,
+  boot = 0
+) =>
+  hass.callApiRaw(
+    "GET",
+    `hassio/${provider.includes("_") ? `addons/${provider}` : provider}/logs${boot !== 0 ? `/boots/${boot}` : ""}/follow`,
+    undefined,
+    {
+      Range: `entries=${cursor}:${skipLines}:${lines}`,
+    },
+    signal
+  );
+
 export const getHassioLogDownloadUrl = (provider: string) =>
   `/api/hassio/${
     provider.includes("_") ? `addons/${provider}` : provider

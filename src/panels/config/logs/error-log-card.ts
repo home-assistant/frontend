@@ -50,6 +50,7 @@ import {
   fetchHassioBoots,
   fetchHassioLogs,
   fetchHassioLogsFollow,
+  fetchHassioLogsFollowSkip,
   fetchHassioLogsLegacy,
   getHassioLogDownloadLinesUrl,
   getHassioLogDownloadUrl,
@@ -428,13 +429,21 @@ class ErrorLogCard extends LitElement {
     }
   }
 
-  private async _loadLogs(): Promise<void> {
+  private async _loadLogs(retry = false): Promise<void> {
     this._error = undefined;
     this._loadingState = "loading";
-    this._loadingPrevState = undefined;
-    this._firstCursor = undefined;
-    this._numberOfLines = 0;
-    this._ansiToHtmlElement?.clear();
+    this._numberOfLines = retry ? (this._numberOfLines ?? 0) : 0;
+
+    if (!retry) {
+      this._loadingPrevState = undefined;
+      this._firstCursor = undefined;
+      this._ansiToHtmlElement?.clear();
+    }
+
+    const streamLogs =
+      this._streamSupported &&
+      isComponentLoaded(this.hass, "hassio") &&
+      this.provider;
 
     try {
       if (this._logStreamAborter) {
@@ -442,32 +451,44 @@ class ErrorLogCard extends LitElement {
         this._logStreamAborter = undefined;
       }
 
-      if (
-        this._streamSupported &&
-        isComponentLoaded(this.hass, "hassio") &&
-        this.provider
-      ) {
+      if (streamLogs) {
         this._logStreamAborter = new AbortController();
 
-        // check if there are any logs at all
-        const testResponse = await fetchHassioLogs(
-          this.hass,
-          this.provider,
-          `entries=:-1:`,
-          this._boot
-        );
-        const testLogs = await testResponse.text();
-        if (!testLogs.trim()) {
-          this._loadingState = "empty";
+        if (!retry) {
+          // check if there are any logs at all
+          const testResponse = await fetchHassioLogs(
+            this.hass,
+            this.provider!,
+            `entries=:-1:`,
+            this._boot
+          );
+          const testLogs = await testResponse.text();
+          if (!testLogs.trim()) {
+            this._loadingState = "empty";
+          }
         }
 
-        const response = await fetchHassioLogsFollow(
-          this.hass,
-          this.provider,
-          this._logStreamAborter.signal,
-          NUMBER_OF_LINES,
-          this._boot
-        );
+        let response: Response;
+
+        if (retry && this._firstCursor) {
+          response = await fetchHassioLogsFollowSkip(
+            this.hass,
+            this.provider!,
+            this._logStreamAborter.signal,
+            this._firstCursor,
+            this._numberOfLines,
+            NUMBER_OF_LINES,
+            this._boot
+          );
+        } else {
+          response = await fetchHassioLogsFollow(
+            this.hass,
+            this.provider!,
+            this._logStreamAborter.signal,
+            NUMBER_OF_LINES,
+            this._boot
+          );
+        }
 
         if (response.headers.has("X-First-Cursor")) {
           this._firstCursor = response.headers.get("X-First-Cursor")!;
@@ -524,7 +545,7 @@ class ErrorLogCard extends LitElement {
 
             if (!this._downloadSupported) {
               const downloadUrl = getHassioLogDownloadLinesUrl(
-                this.provider,
+                this.provider!,
                 this._numberOfLines,
                 this._boot
               );
@@ -532,6 +553,9 @@ class ErrorLogCard extends LitElement {
                 this._logsFileLink = signedUrl.path;
               });
             }
+
+            // first chunk loads successfully, reset retry param
+            retry = false;
           }
         }
       } else {
@@ -554,6 +578,13 @@ class ErrorLogCard extends LitElement {
       if (err.name === "AbortError") {
         return;
       }
+
+      // The stream can fail if the connection is lost or firefox service worker intercept the connection
+      if (!retry && streamLogs) {
+        this._loadLogs(true);
+        return;
+      }
+
       this._error = (this.localizeFunc || this.hass.localize)(
         "ui.panel.config.logs.failed_get_logs",
         {
@@ -590,9 +621,10 @@ class ErrorLogCard extends LitElement {
   private _handleConnectionStatus = (ev: HASSDomEvent<ConnectionStatus>) => {
     if (ev.detail === "disconnected" && this._logStreamAborter) {
       this._logStreamAborter.abort();
+      this._loadingState = "loading";
     }
     if (ev.detail === "connected") {
-      this._loadLogs();
+      this._loadLogs(true);
     }
   };
 

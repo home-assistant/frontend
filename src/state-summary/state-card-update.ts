@@ -13,7 +13,7 @@ export class StateCardUpdate extends LitElement {
 
   @property({ attribute: false }) public stateObj!: UpdateEntity;
 
-  @property({ type: Boolean }) public inDialog = false;
+  @property({ attribute: "in-dialog", type: Boolean }) public inDialog = false;
 
   protected render(): TemplateResult {
     return html`
