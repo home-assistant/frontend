@@ -373,8 +373,10 @@ export class HaAuthFlow extends LitElement {
     this._providerChanged(this.authProvider);
   }
 
-  private async _handleSubmit(ev: Event) {
-    ev.preventDefault();
+  private async _handleSubmit(ev?: Event) {
+    if (ev) {
+      ev.preventDefault();
+    }
     if (this.step == null) {
       return;
     }
@@ -418,8 +420,8 @@ export class HaAuthFlow extends LitElement {
     }
   }
 
-  private _externalStepFinished(ev: CustomEvent) {
-    this._handleSubmit(ev);
+  private _externalStepFinished(_ev: CustomEvent) {
+    this._handleSubmit();
   }
 }
 
