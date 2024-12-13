@@ -176,8 +176,8 @@ class HaCounterForm extends LitElement {
     let value = ev.detail?.value ?? target.value;
 
     if (target.type === "number") {
-      if (target.value !== "") {
-        value = Number(target.value);
+      if (value !== "") {
+        value = Number(value);
       } else {
         value = undefined;
       }
