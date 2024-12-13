@@ -32,9 +32,13 @@ export class HaAuthExternal extends HaForm {
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    window.open(this.step.url);
+    const source = window.open(this.step.url);
     window.addEventListener("message", async (message: MessageEvent) => {
-      if (message.data.type === "externalCallback") {
+      if (
+        message.origin === window.location.origin &&
+        message.source === source &&
+        message.data.type === "externalCallback"
+      ) {
         fireEvent(this, "step-finished");
       }
     });
