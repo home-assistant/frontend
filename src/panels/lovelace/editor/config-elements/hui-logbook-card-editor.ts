@@ -98,7 +98,7 @@ export class HuiLogbookCardEditor
         .hass=${this.hass}
         .entityFilter=${filterLogbookCompatibleEntities}
         .value=${this._targetPicker}
-        addOnTop
+        add-on-top
         @value-changed=${this._entitiesChanged}
       ></ha-target-picker>
     `;
