@@ -40,7 +40,7 @@ export class HUIViewBackground extends LitElement {
     background?: string | LovelaceViewBackgroundConfig
   ) {
     if (typeof background === "string") {
-      return background.includes(" fixed");
+      return background.split(" ").includes("fixed");
     }
     return false;
   }
