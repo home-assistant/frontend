@@ -286,13 +286,13 @@ export class HaDateRangePicker extends LitElement {
     `;
   }
 
-  private _handleNext(e): void {
-    if (e && e.stopPropagation) e.stopPropagation();
+  private _handleNext(ev: MouseEvent): void {
+    if (ev && ev.stopPropagation) ev.stopPropagation();
     this._shift(true);
   }
 
-  private _handlePrev(e): void {
-    if (e && e.stopPropagation) e.stopPropagation();
+  private _handlePrev(ev: MouseEvent): void {
+    if (ev && ev.stopPropagation) ev.stopPropagation();
     this._shift(false);
   }
 

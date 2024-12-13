@@ -1,9 +1,9 @@
 import {
-  addDays,
+  addMilliseconds,
   addMonths,
   isFirstDayOfMonth,
   isLastDayOfMonth,
-  differenceInDays,
+  differenceInMilliseconds,
   differenceInMonths,
   endOfMonth,
 } from "date-fns";
@@ -105,14 +105,14 @@ export const shiftDateRange = (
       ((calcDateDifferenceProperty(
         endDate,
         startDate,
-        differenceInDays,
+        differenceInMilliseconds,
         locale,
         config
       ) as number) +
         1) *
       (forward ? 1 : -1);
-    start = calcDate(startDate, addDays, locale, config, difference);
-    end = calcDate(endDate, addDays, locale, config, difference);
+    start = calcDate(startDate, addMilliseconds, locale, config, difference);
+    end = calcDate(endDate, addMilliseconds, locale, config, difference);
   }
   return { start, end };
 };
