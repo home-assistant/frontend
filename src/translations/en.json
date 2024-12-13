@@ -828,7 +828,9 @@
         "error": "Unable to load history",
         "duration": "Duration",
         "source_history": "Source: History",
-        "source_stats": "Source: Long term statistics"
+        "source_stats": "Source: Long term statistics",
+        "zoom_hint": "Use ctrl + scroll to zoom in/out",
+        "zoom_hint_mac": "Use ⌘ + scroll to zoom in/out"
       },
       "map": {
         "error": "Unable to load map"
@@ -2874,7 +2876,11 @@
               "cloud": {
                 "description": "Ideal if you don't have a powerful system at home."
               },
-              "local": { "title": "", "description": "", "setup": "" }
+              "local": {
+                "title": "Do-it-yourself",
+                "description": "Install add-ons or containers to run it on your own system. Powerful hardware is needed for fast responses.",
+                "setup": "Set up"
+              }
             },
             "cloud": {
               "title": "The power of Home Assistant Cloud",
@@ -5929,7 +5935,8 @@
             "edit_ui": "Edit in visual editor",
             "edit_yaml": "Edit in YAML",
             "saving_failed": "Saving failed",
-            "error_same_url": "You cannot save a view with the same URL as a different existing view."
+            "error_same_url": "You cannot save a view with the same URL as a different existing view.",
+            "move_to_dashboard": "Move to dashboard"
           },
           "edit_badges": {
             "view_no_badges": "Badges are not be supported by the current view type."
@@ -6021,6 +6028,14 @@
             "no_config": "No config found.",
             "no_views": "No views in this dashboard.",
             "strategy_type": "strategy"
+          },
+          "select_dashboard": {
+            "header": "Choose a dasboard",
+            "cannot_move_to_strategy": "The view cannot be moved because the selected dashboard is auto generated.",
+            "get_config_failed": "Failed to load selected dashboard config.",
+            "move_failed": "Failed to move the view to the new dashboard, please try again.",
+            "revert_failed": "Failed to move the view to the new dashboard, your dashboards are in an unknown state. Please reload the page and check if everything is in place.",
+            "success": "View moved successfully"
           },
           "section": {
             "add_badge": "Add badge",

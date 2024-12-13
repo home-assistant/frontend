@@ -125,25 +125,6 @@ export const showDialog = async (
   return true;
 };
 
-export const showDialogFromHistory = async (dialogTag: string) => {
-  const dialogState = OPEN_DIALOG_STACK.find(
-    (state) => state.dialogTag === dialogTag
-  );
-  if (dialogState) {
-    showDialog(
-      dialogState.element,
-      dialogState.root,
-      dialogTag,
-      dialogState.dialogParams,
-      dialogState.dialogImport,
-      false
-    );
-  } else {
-    // remove the dialog from history if already closed
-    mainWindow.history.back();
-  }
-};
-
 export const closeDialog = async (dialogTag: string): Promise<boolean> => {
   if (!(dialogTag in LOADED)) {
     return true;
@@ -171,10 +152,23 @@ export const closeLastDialog = async () => {
         ""
       );
     }
+    return closed;
   }
+  return true;
 };
 
-const _handleClosed = async (ev: HASSDomEvent<DialogClosedParams>) => {
+export const closeAllDialogs = async () => {
+  for (let i = OPEN_DIALOG_STACK.length - 1; i >= 0; i--) {
+    // eslint-disable-next-line no-await-in-loop
+    const closed = await closeDialog(OPEN_DIALOG_STACK[i].dialogTag);
+    if (!closed) {
+      return false;
+    }
+  }
+  return true;
+};
+
+const _handleClosed = (ev: HASSDomEvent<DialogClosedParams>) => {
   // If not closed by navigating back, remove the open state from history
   const dialogIndex = OPEN_DIALOG_STACK.findIndex(
     (state) => state.dialogTag === ev.detail.dialog
@@ -189,7 +183,8 @@ const _handleClosed = async (ev: HASSDomEvent<DialogClosedParams>) => {
         { dialog: OPEN_DIALOG_STACK[OPEN_DIALOG_STACK.length - 1].dialogTag },
         ""
       );
-    } else {
+    } else if (dialogIndex !== -1) {
+      // if the dialog is the last one and it was indeed open, go back
       mainWindow.history.back();
     }
   }

@@ -13,28 +13,41 @@ const brotliOptions = {
   },
 };
 
-const compressDistBrotli = (rootDir, modernDir, compressServiceWorker = true) =>
+const compressModern = (rootDir, modernDir) =>
+  gulp
+    .src([`${modernDir}/**/${filesGlob}`, `${rootDir}/sw-modern.js`], {
+      base: rootDir,
+      allowEmpty: true,
+    })
+    .pipe(brotli(brotliOptions))
+    .pipe(gulp.dest(rootDir));
+
+const compressOther = (rootDir, modernDir) =>
   gulp
     .src(
       [
-        `${modernDir}/**/${filesGlob}`,
-        compressServiceWorker ? `${rootDir}/sw-modern.js` : undefined,
-      ].filter(Boolean),
-      {
-        base: rootDir,
-      }
+        `${rootDir}/**/${filesGlob}`,
+        `!${modernDir}/**/${filesGlob}`,
+        `!${rootDir}/{sw-modern,service_worker}.js`,
+        `${rootDir}/{authorize,onboarding}.html`,
+      ],
+      { base: rootDir, allowEmpty: true }
     )
     .pipe(brotli(brotliOptions))
     .pipe(gulp.dest(rootDir));
 
-const compressAppBrotli = () =>
-  compressDistBrotli(paths.app_output_root, paths.app_output_latest);
-const compressHassioBrotli = () =>
-  compressDistBrotli(
-    paths.hassio_output_root,
-    paths.hassio_output_latest,
-    false
-  );
+const compressAppModern = () =>
+  compressModern(paths.app_output_root, paths.app_output_latest);
+const compressHassioModern = () =>
+  compressModern(paths.hassio_output_root, paths.hassio_output_latest);
 
-gulp.task("compress-app", compressAppBrotli);
-gulp.task("compress-hassio", compressHassioBrotli);
+const compressAppOther = () =>
+  compressOther(paths.app_output_root, paths.app_output_latest);
+const compressHassioOther = () =>
+  compressOther(paths.hassio_output_root, paths.hassio_output_latest);
+
+gulp.task("compress-app", gulp.parallel(compressAppModern, compressAppOther));
+gulp.task(
+  "compress-hassio",
+  gulp.parallel(compressHassioModern, compressHassioOther)
+);
