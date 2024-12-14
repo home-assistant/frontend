@@ -3351,7 +3351,7 @@
                   "label": "Device",
                   "condition": "Condition",
                   "description": {
-                    "picker": "Set of conditions provided by your device. Great way to start."
+                    "picker": "Set of conditions provided by a device. Great way to start."
                   }
                 },
                 "not": {
