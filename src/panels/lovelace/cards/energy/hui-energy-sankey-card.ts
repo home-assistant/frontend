@@ -325,7 +325,10 @@ class HuiEnergySankeyCard
       )
       .forEach((floorId) => {
         let floorNodeId = `floor_${floorId}`;
-        if (floorId in this.hass.floors) {
+        if (floorId === "no_floor") {
+          // link "no_floor" areas to home
+          floorNodeId = "home";
+        } else {
           nodes.push({
             id: floorNodeId,
             label: this.hass.floors[floorId].name,
@@ -337,13 +340,13 @@ class HuiEnergySankeyCard
             source: "home",
             target: floorNodeId,
           });
-        } else {
-          // link "no_floor" areas to home
-          floorNodeId = "home";
         }
         floors[floorId].areas.forEach((areaId) => {
           let areaNodeId = `area_${areaId}`;
-          if (this.hass.areas[areaId]) {
+          if (areaId === "no_area") {
+            // link "no_area" devices to home
+            areaNodeId = "home";
+          } else {
             nodes.push({
               id: areaNodeId,
               label: this.hass.areas[areaId]!.name,
@@ -356,9 +359,6 @@ class HuiEnergySankeyCard
               target: areaNodeId,
               value: areas[areaId].value,
             });
-          } else {
-            // link "no_area" devices to home
-            areaNodeId = "home";
           }
           areas[areaId].devices.forEach((device) => {
             nodes.push(device);
