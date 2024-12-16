@@ -229,7 +229,7 @@
     "sinon": "19.0.2",
     "systemjs": "6.15.1",
     "tar": "7.4.3",
-    "terser-webpack-plugin": "5.3.10",
+    "terser-webpack-plugin": "5.3.11",
     "ts-lit-plugin": "2.0.2",
     "typescript": "5.7.2",
     "vitest": "2.1.8",
