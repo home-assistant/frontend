@@ -468,7 +468,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                 ${!this.narrow
                   ? html`
                       <div slot="header">
-                        <slot name="top_header"></slot>
+                        <slot name="top-header"></slot>
                         <slot name="header">
                           <div class="table-header">
                             ${this.hasFilters && !this.showFilters
@@ -478,13 +478,19 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                         </slot>
                       </div>
                     `
-                  : html`<div slot="header"></div>
+                  : html`
+                      <div slot="header">
+                        <slot name="top-header"></slot>
+                      </div>
                       <div slot="header-row" class="narrow-header-row">
                         ${this.hasFilters && !this.showFilters
                           ? html`${filterButton}`
                           : nothing}
-                        ${selectModeBtn}${groupByMenu}${sortByMenu}${settingsButton}
-                      </div>`}
+                        ${selectModeBtn}
+                        <div class="flex"></div>
+                        ${groupByMenu}${sortByMenu}${settingsButton}
+                      </div>
+                    `}
               </ha-data-table>`}
         <div slot="fab"><slot name="fab"></slot></div>
       </hass-tabs-subpage>
@@ -835,11 +841,18 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       .narrow-header-row {
         display: flex;
         align-items: center;
+        min-width: 100%;
         gap: 16px;
         padding: 0 16px;
+        box-sizing: border-box;
         overflow-x: scroll;
         -ms-overflow-style: none;
         scrollbar-width: none;
+      }
+
+      .narrow-header-row .flex {
+        flex: 1;
+        margin-left: -16px;
       }
 
       .selection-bar {

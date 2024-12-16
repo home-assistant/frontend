@@ -57,7 +57,6 @@ export function getCommonOptions(
 
   const options: ChartOptions = {
     parsing: false,
-    animation: false,
     interaction: {
       mode: "x",
     },

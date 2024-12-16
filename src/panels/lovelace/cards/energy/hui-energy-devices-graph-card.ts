@@ -111,7 +111,6 @@ export class HuiEnergyDevicesGraphCard
   private _createOptions = memoizeOne(
     (locale: FrontendLocaleData): ChartOptions => ({
       parsing: false,
-      animation: false,
       responsive: true,
       maintainAspectRatio: false,
       indexAxis: "y",

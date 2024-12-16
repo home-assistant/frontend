@@ -17,6 +17,7 @@ import "../../../components/ha-md-list-item";
 import { getSignedPath } from "../../../data/auth";
 import type { BackupContentExtended } from "../../../data/backup";
 import {
+  compareAgents,
   computeBackupAgentName,
   deleteBackup,
   fetchBackupDetails,
@@ -35,6 +36,22 @@ import { showConfirmationDialog } from "../../lovelace/custom-card-helpers";
 import "./components/ha-backup-data-picker";
 import { showRestoreBackupEncryptionKeyDialog } from "./dialogs/show-dialog-restore-backup-encryption-key";
 
+type Agent = {
+  id: string;
+  success: boolean;
+};
+
+const computeAgents = (agent_ids: string[], failed_agent_ids: string[]) =>
+  [
+    ...agent_ids.filter((id) => !failed_agent_ids.includes(id)),
+    ...failed_agent_ids,
+  ]
+    .map<Agent>((id) => ({
+      id,
+      success: !failed_agent_ids.includes(id),
+    }))
+    .sort((a, b) => compareAgents(a.id, b.id));
+
 @customElement("ha-config-backup-details")
 class HaConfigBackupDetails extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -44,6 +61,8 @@ class HaConfigBackupDetails extends LitElement {
   @property({ attribute: "backup-id" }) public backupId!: string;
 
   @state() private _backup?: BackupContentExtended | null;
+
+  @state() private _agents: Agent[] = [];
 
   @state() private _error?: string;
 
@@ -92,9 +111,11 @@ class HaConfigBackupDetails extends LitElement {
           ${this._error &&
           html`<ha-alert alert-type="error">${this._error}</ha-alert>`}
           ${this._backup === null
-            ? html`<ha-alert alert-type="warning" title="Not found">
-                Backup matching ${this.backupId} not found
-              </ha-alert>`
+            ? html`
+                <ha-alert alert-type="warning" title="Not found">
+                  Backup matching ${this.backupId} not found
+                </ha-alert>
+              `
             : !this._backup
               ? html`<ha-circular-progress active></ha-circular-progress>`
               : html`
@@ -141,7 +162,9 @@ class HaConfigBackupDetails extends LitElement {
                   <ha-card header="Locations">
                     <div class="card-content">
                       <ha-md-list>
-                        ${this._backup.agent_ids?.map((agentId) => {
+                        ${this._agents.map((agent) => {
+                          const agentId = agent.id;
+                          const success = agent.success;
                           const domain = computeDomain(agentId);
                           const name = computeBackupAgentName(
                             this.hass.localize,
@@ -175,25 +198,38 @@ class HaConfigBackupDetails extends LitElement {
                                     />
                                   `}
                               <div slot="headline">${name}</div>
-                              <ha-button-menu
-                                slot="end"
-                                @action=${this._handleAgentAction}
-                                .agent=${agentId}
-                                fixed
-                              >
-                                <ha-icon-button
-                                  slot="trigger"
-                                  .label=${this.hass.localize("ui.common.menu")}
-                                  .path=${mdiDotsVertical}
-                                ></ha-icon-button>
-                                <ha-list-item graphic="icon">
-                                  <ha-svg-icon
-                                    slot="graphic"
-                                    .path=${mdiDownload}
-                                  ></ha-svg-icon>
-                                  Download from this location
-                                </ha-list-item>
-                              </ha-button-menu>
+                              <div slot="supporting-text">
+                                <span
+                                  class="dot ${success ? "success" : "error"}"
+                                >
+                                </span>
+                                <span>
+                                  ${success ? "Backup synced" : "Backup failed"}
+                                </span>
+                              </div>
+                              ${success
+                                ? html`<ha-button-menu
+                                    slot="end"
+                                    @action=${this._handleAgentAction}
+                                    .agent=${agentId}
+                                    fixed
+                                  >
+                                    <ha-icon-button
+                                      slot="trigger"
+                                      .label=${this.hass.localize(
+                                        "ui.common.menu"
+                                      )}
+                                      .path=${mdiDotsVertical}
+                                    ></ha-icon-button>
+                                    <ha-list-item graphic="icon">
+                                      <ha-svg-icon
+                                        slot="graphic"
+                                        .path=${mdiDownload}
+                                      ></ha-svg-icon>
+                                      Download from this location
+                                    </ha-list-item>
+                                  </ha-button-menu>`
+                                : nothing}
                             </ha-md-list-item>
                           `;
                         })}
@@ -266,6 +302,10 @@ class HaConfigBackupDetails extends LitElement {
     try {
       const response = await fetchBackupDetails(this.hass, this.backupId);
       this._backup = response.backup;
+      this._agents = computeAgents(
+        response.backup.agent_ids || [],
+        response.backup.failed_agent_ids || []
+      );
     } catch (err: any) {
       this._error = err?.message || "Could not fetch backup details";
     }
@@ -352,6 +392,28 @@ class HaConfigBackupDetails extends LitElement {
     }
     ha-backup-data-picker {
       display: block;
+    }
+    ha-md-list-item [slot="supporting-text"] {
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      gap: 8px;
+      line-height: normal;
+    }
+    .dot {
+      display: block;
+      position: relative;
+      width: 8px;
+      height: 8px;
+      background-color: var(--disabled-color);
+      border-radius: 50%;
+      flex: none;
+    }
+    .dot.success {
+      background-color: var(--success-color);
+    }
+    .dot.error {
+      background-color: var(--error-color);
     }
   `;
 }
