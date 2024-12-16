@@ -146,7 +146,6 @@ class MoreInfoUpdate extends LitElement {
                 </span>
                 <ha-switch
                   id="create-backup"
-                  checked
                   .disabled=${updateIsInstalling(this.stateObj)}
                 ></ha-switch>
               </ha-settings-row>
@@ -234,7 +233,7 @@ class MoreInfoUpdate extends LitElement {
     if (createBackupSwitch) {
       return createBackupSwitch.checked;
     }
-    return true;
+    return false;
   }
 
   private _handleInstall(): void {
