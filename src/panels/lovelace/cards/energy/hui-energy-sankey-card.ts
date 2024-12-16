@@ -277,9 +277,11 @@ class HuiEnergySankeyCard
         index: 4,
       };
 
-      const deviceArea = entity?.area_id;
-      if (deviceArea && deviceArea in this.hass.areas) {
-        const area = this.hass.areas[deviceArea];
+      const entityAreaId =
+        entity?.area_id ??
+        (entity.device_id && this.hass.devices[entity.device_id]?.area_id);
+      if (entityAreaId && entityAreaId in this.hass.areas) {
+        const area = this.hass.areas[entityAreaId];
 
         if (area.area_id in areas) {
           areas[area.area_id].value += deviceNode.value;
