@@ -147,7 +147,7 @@ export class HuiDialogEditSection
             slot="actionItems"
             fixed
             corner="BOTTOM_END"
-            menuCorner="END"
+            menu-corner="END"
             @closed=${stopPropagation}
             @action=${this._handleAction}
           >
