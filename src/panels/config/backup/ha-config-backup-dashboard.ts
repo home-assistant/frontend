@@ -72,10 +72,15 @@ import { showBackupOnboardingDialog } from "./dialogs/show-dialog-backup_onboard
 import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
 import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
+import { capitalizeFirstLetter } from "../../../common/string/capitalize-first-letter";
 
-export interface BackupRow extends BackupContent {
-  type: "custom" | "strategy";
+interface BackupRow extends BackupContent {
+  formatted_type: string;
 }
+
+type BackupType = "strategy" | "custom";
+
+const TYPE_ORDER: Array<BackupType> = ["strategy", "custom"];
 
 @customElement("ha-config-backup-dashboard")
 class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
@@ -96,7 +101,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   @state() private _config?: BackupConfig;
 
   @storage({ key: "backups-table-grouping", state: false, subscribe: false })
-  private _activeGrouping?: string;
+  private _activeGrouping?: string = "formatted_type";
 
   @storage({
     key: "backups-table-collapsed",
@@ -133,13 +138,11 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
         template: (backup) =>
           relativeTime(new Date(backup.date), this.hass.locale),
       },
-      type: {
+      formatted_type: {
         title: "Type",
         filterable: true,
         sortable: true,
         groupable: true,
-        template: (backup) =>
-          backup.type === "strategy" ? "Strategy" : "Custom",
       },
       locations: {
         title: "Locations",
@@ -215,6 +218,12 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
     })
   );
 
+  private _groupOrder = memoizeOne((activeGrouping: string | undefined) =>
+    activeGrouping === "formatted_type"
+      ? TYPE_ORDER.map((type) => this._formatBackupType(type))
+      : undefined
+  );
+
   private _handleGroupingChanged(ev: CustomEvent) {
     this._activeGrouping = ev.detail.value;
   }
@@ -229,10 +238,17 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
     this._selected = ev.detail.value;
   }
 
+  private _formatBackupType(type: BackupType): string {
+    // Todo translate
+    return capitalizeFirstLetter(type);
+  }
+
   private _data = memoizeOne((backups: BackupContent[]): BackupRow[] =>
     backups.map((backup) => ({
       ...backup,
-      type: backup.with_strategy_settings ? "strategy" : "custom",
+      formatted_type: this._formatBackupType(
+        backup.with_strategy_settings ? "strategy" : "custom"
+      ),
     }))
   );
 
@@ -258,6 +274,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
         .selected=${this._selected.length}
         .initialGroupColumn=${this._activeGrouping}
         .initialCollapsedGroups=${this._activeCollapsed}
+        .groupOrder=${this._groupOrder(this._activeGrouping)}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
         @selection-changed=${this._handleSelectionChanged}
