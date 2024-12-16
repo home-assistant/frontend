@@ -67,6 +67,8 @@ export class HaChartBase extends LitElement {
 
   @state() private _showZoomHint = false;
 
+  @state() private _isZoomed = false;
+
   private _paddingUpdateCount = 0;
 
   private _paddingUpdateLock = false;
@@ -268,7 +270,7 @@ export class HaChartBase extends LitElement {
         >
           <canvas
             class=${classMap({
-              "not-zoomed": !this.chart?.isZoomedOrPanned(),
+              "not-zoomed": !this._isZoomed,
             })}
           ></canvas>
           <div
@@ -400,6 +402,9 @@ export class HaChartBase extends LitElement {
               modifierKey,
             },
             mode: "x",
+            onZoomComplete: () => {
+              this._isZoomed = this.chart?.isZoomedOrPanned() ?? false;
+            },
           },
           limits: {
             x: {
@@ -521,7 +526,7 @@ export class HaChartBase extends LitElement {
         max-height: var(--chart-max-height, 400px);
       }
       canvas.not-zoomed {
-        // allow scrolling if the chart is not zoomed
+        /* allow scrolling if the chart is not zoomed */
         touch-action: pan-y !important;
       }
       .chartLegend {
