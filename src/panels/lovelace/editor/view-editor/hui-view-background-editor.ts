@@ -82,6 +82,10 @@ export class HuiViewBackgroundEditor extends LitElement {
                   },
                 },
               },
+              {
+                name: "fixed",
+                selector: { boolean: {} },
+              },
             ],
           },
         ] as const)
@@ -106,7 +110,8 @@ export class HuiViewBackgroundEditor extends LitElement {
       transparency: 100,
       alignment: "center",
       size: "auto",
-      repeat: "repeat",
+      repeat: "no-repeat",
+      fixed: false,
       ...background,
     };
 
@@ -153,6 +158,10 @@ export class HuiViewBackgroundEditor extends LitElement {
       case "repeat":
         return this.hass.localize(
           "ui.panel.lovelace.editor.edit_view.background.repeat.name"
+        );
+      case "fixed":
+        return this.hass.localize(
+          "ui.panel.lovelace.editor.edit_view.background.fixed.name"
         );
       default:
         return this.hass.localize(

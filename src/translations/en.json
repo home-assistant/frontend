@@ -5932,6 +5932,9 @@
                   "repeat": "Repeat (tile)",
                   "no-repeat": "No repeat"
                 }
+              },
+              "fixed": {
+                "name": "Fixed background"
               }
             },
             "edit": "Edit view",
