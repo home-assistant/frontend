@@ -120,7 +120,6 @@ export class HuiCreateDialogCard
               .label=${this.hass!.localize(
                 "ui.panel.lovelace.editor.cardpicker.by_card"
               )}
-              dialogInitialFocus
             ></mwc-tab>
             <mwc-tab
               .label=${this.hass!.localize(
@@ -133,6 +132,7 @@ export class HuiCreateDialogCard
           this._currTabIndex === 0
             ? html`
                 <hui-card-picker
+                  dialogInitialFocus
                   .suggestedCards=${this._params.suggestedCards}
                   .lovelace=${this._params.lovelaceConfig}
                   .hass=${this.hass}
@@ -143,7 +143,7 @@ export class HuiCreateDialogCard
                 <hui-entity-picker-table
                   no-label-float
                   .hass=${this.hass}
-                  .narrow=${true}
+                  narrow
                   .entities=${this._allEntities(this.hass.states)}
                   @selected-changed=${this._handleSelectedChanged}
                 ></hui-entity-picker-table>
