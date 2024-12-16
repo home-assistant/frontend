@@ -287,7 +287,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
           "ui.panel.config.backup.picker.search"
         )}
       >
-        <div slot="top_header" class="header">
+        <div slot="top-header" class="header">
           ${this._fetching
             ? html`
                 <ha-backup-summary-card
