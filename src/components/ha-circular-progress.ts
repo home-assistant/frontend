@@ -8,7 +8,7 @@ export class HaCircularProgress extends MdCircularProgress {
   @property({ attribute: "aria-label", type: String }) public ariaLabel =
     "Loading";
 
-  @property() public size: "tiny" | "small" | "medium" | "large" = "medium";
+  @property() public size?: "tiny" | "small" | "medium" | "large";
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
@@ -21,7 +21,6 @@ export class HaCircularProgress extends MdCircularProgress {
         case "small":
           this.style.setProperty("--md-circular-progress-size", "28px");
           break;
-        // medium is default size
         case "medium":
           this.style.setProperty("--md-circular-progress-size", "48px");
           break;

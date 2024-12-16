@@ -30,9 +30,10 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property() public identifier?: string;
 
-  @property({ type: Boolean }) public showNames = true;
+  @property({ attribute: "show-names", type: Boolean }) public showNames = true;
 
-  @property({ type: Boolean }) public clickForMoreInfo = true;
+  @property({ attribute: "click-for-more-info", type: Boolean })
+  public clickForMoreInfo = true;
 
   @property({ type: Boolean }) public chunked = false;
 
@@ -40,9 +41,9 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property({ attribute: false }) public endTime!: Date;
 
-  @property({ type: Number }) public paddingYAxis = 0;
+  @property({ attribute: false, type: Number }) public paddingYAxis = 0;
 
-  @property({ type: Number }) public chartIndex?;
+  @property({ attribute: false, type: Number }) public chartIndex?;
 
   @state() private _chartData?: ChartData<"timeline">;
 
@@ -105,7 +106,7 @@ export class StateHistoryChartTimeline extends LitElement {
       animation: false,
       scales: {
         x: {
-          type: "timeline",
+          type: "time",
           position: "bottom",
           adapters: {
             date: {

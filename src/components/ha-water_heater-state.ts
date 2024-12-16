@@ -51,10 +51,6 @@ export class HaWaterHeaterState extends LitElement {
     return "";
   }
 
-  _localizeState(stateObj) {
-    return this.hass.formatEntityState(stateObj);
-  }
-
   static get styles(): CSSResultGroup {
     return [
       haStyle,

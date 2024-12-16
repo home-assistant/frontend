@@ -35,7 +35,7 @@ export const dialogManagerMixin = <T extends Constructor<HassBaseEl>>(
       makeDialogManager(this, this.shadowRoot!);
     }
 
-    private registerDialog({
+    protected registerDialog({
       dialogShowEvent,
       dialogTag,
       dialogImport,
