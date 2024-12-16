@@ -38,15 +38,14 @@ class HaBackupSummaryCard extends LitElement {
   render() {
     return html`
       <ha-card outlined>
+        ${this.status === "loading"
+          ? html`<ha-circular-progress indeterminate></ha-circular-progress>`
+          : html`
+              <div class="icon ${this.status}">
+                <ha-svg-icon .path=${ICONS[this.status]}></ha-svg-icon>
+              </div>
+            `}
         <div class="summary">
-          ${this.status === "loading"
-            ? html`<ha-circular-progress indeterminate></ha-circular-progress>`
-            : html`
-                <div class="icon ${this.status}">
-                  <ha-svg-icon .path=${ICONS[this.status]}></ha-svg-icon>
-                </div>
-              `}
-
           <div class="content">
             <p class="heading">${this.heading}</p>
             <p class="description">${this.description}</p>
@@ -64,19 +63,25 @@ class HaBackupSummaryCard extends LitElement {
   }
 
   static styles = css`
+    ha-card {
+      display: flex;
+      align-items: center;
+      padding: 16px;
+      gap: 16px;
+    }
     .summary {
+      flex: 1;
       display: flex;
       flex-direction: row;
       column-gap: 16px;
       row-gap: 8px;
       align-items: center;
-      padding: 20px;
-      width: 100%;
-      box-sizing: border-box;
+      width: calc(100% - 72px);
     }
     .icon {
       position: relative;
       border-radius: 20px;
+      min-width: 40px;
       width: 40px;
       height: 40px;
       display: flex;
@@ -135,9 +140,7 @@ class HaBackupSummaryCard extends LitElement {
       letter-spacing: 0.25px;
       color: var(--secondary-text-color);
       margin: 0;
-      text-overflow: ellipsis;
       overflow: hidden;
-      white-space: nowrap;
     }
 
     @media all and (max-width: 550px) {
@@ -147,7 +150,6 @@ class HaBackupSummaryCard extends LitElement {
       .action {
         width: 100%;
         display: flex;
-        justify-content: flex-end;
         --mdc-button-horizontal-padding: 0;
       }
     }
