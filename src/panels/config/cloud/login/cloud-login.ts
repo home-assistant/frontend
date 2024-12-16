@@ -259,11 +259,17 @@ export class CloudLogin extends LitElement {
         const errCode = err && err.body && err.body.code;
         if (errCode === "mfarequired") {
           const totpCode = await showPromptDialog(this, {
-            title: "Two-factor Authentication",
-            inputLabel: "TOTP code",
+            title: this.hass.localize(
+              "ui.panel.config.cloud.login.totp_code_prompt_title"
+            ),
+            inputLabel: this.hass.localize(
+              "ui.panel.config.cloud.login.totp_code"
+            ),
             inputType: "text",
             defaultValue: "",
-            confirmText: "Submit",
+            confirmText: this.hass.localize(
+              "ui.panel.config.cloud.login.submit"
+            ),
           });
           if (totpCode !== null && totpCode !== "") {
             await doLogin(username, totpCode);
