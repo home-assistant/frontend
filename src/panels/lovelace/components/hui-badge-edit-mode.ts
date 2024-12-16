@@ -123,7 +123,7 @@ export class HuiBadgeEditMode extends LitElement {
         <ha-button-menu
           class="more"
           corner="BOTTOM_END"
-          menuCorner="END"
+          menu-corner="END"
           .path=${[this.path!]}
           @action=${this._handleAction}
           @opened=${this._handleOpened}

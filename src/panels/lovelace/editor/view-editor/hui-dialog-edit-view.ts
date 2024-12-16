@@ -216,7 +216,7 @@ export class HuiDialogEditView extends LitElement {
             slot="actionItems"
             fixed
             corner="BOTTOM_END"
-            menuCorner="END"
+            menu-corner="END"
             @action=${this._handleAction}
             @closed=${stopPropagation}
           >

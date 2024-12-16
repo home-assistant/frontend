@@ -114,7 +114,7 @@ export class HaCardConditionEditor extends LitElement {
             @closed=${stopPropagation}
             fixed
             .corner=${"BOTTOM_END"}
-            .menuCorner=${"END"}
+            menu-corner="END"
           >
             <ha-icon-button
               slot="trigger"
