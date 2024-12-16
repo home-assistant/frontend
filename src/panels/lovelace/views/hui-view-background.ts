@@ -42,6 +42,9 @@ export class HUIViewBackground extends LitElement {
     if (typeof background === "string") {
       return background.split(" ").includes("fixed");
     }
+    if (typeof background === "object" && background.fixed) {
+      return true;
+    }
     return false;
   }
 
@@ -51,7 +54,7 @@ export class HUIViewBackground extends LitElement {
     if (typeof background === "object" && background.image) {
       const size = background.size ?? "auto";
       const alignment = background.alignment ?? "center";
-      const repeat = background.repeat ?? "repeat";
+      const repeat = background.repeat ?? "no-repeat";
       return `${alignment} / ${size} ${repeat} url('${background.image}')`;
     }
     if (typeof background === "string") {
