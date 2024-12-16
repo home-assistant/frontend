@@ -137,16 +137,12 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
         }
 
         .content {
+          height: 100%;
           padding: 0 16px 16px;
         }
 
         .no-header .content {
           padding-top: 16px;
-        }
-
-        ha-logbook {
-          height: 385px;
-          display: block;
         }
       `,
     ];
