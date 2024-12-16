@@ -141,7 +141,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
                 slot="actionItems"
                 @action=${this._handleShowWakeWord}
                 @closed=${stopPropagation}
-                menuCorner="END"
+                menu-corner="END"
                 corner="BOTTOM_END"
               >
                 <ha-icon-button
