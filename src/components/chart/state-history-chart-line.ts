@@ -99,7 +99,6 @@ export class StateHistoryChartLine extends LitElement {
     ) {
       this._chartOptions = {
         parsing: false,
-        animation: false,
         interaction: {
           mode: "nearest",
           axis: "xy",

@@ -194,7 +194,6 @@ export class StatisticsChart extends LitElement {
   private _createOptions(unit?: string) {
     this._chartOptions = {
       parsing: false,
-      animation: false,
       interaction: {
         mode: "nearest",
         axis: "x",
