@@ -65,6 +65,8 @@ export class HuiCardPicker extends LitElement {
 
   @state() private _height?: number;
 
+  @state() private _narrow = false;
+
   private _unusedEntities?: string[];
 
   private _usedEntities?: string[];
@@ -132,6 +134,7 @@ export class HuiCardPicker extends LitElement {
     return html`
       <search-input
         .hass=${this.hass}
+        dialogInitialFocus
         .filter=${this._filter}
         @value-changed=${this._handleSearchChange}
         .label=${this.hass.localize(
