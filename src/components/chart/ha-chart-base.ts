@@ -266,7 +266,11 @@ export class HaChartBase extends LitElement {
           })}
           @wheel=${this._handleChartScroll}
         >
-          <canvas></canvas>
+          <canvas
+            class=${classMap({
+              "not-zoomed": !this.chart?.isZoomedOrPanned(),
+            })}
+          ></canvas>
           <div
             class="zoom-hint ${classMap({
               visible: this._showZoomHint,
@@ -400,7 +404,7 @@ export class HaChartBase extends LitElement {
           limits: {
             x: {
               min: "original",
-              max: "original",
+              max: (this.options?.scales?.x as any)?.max ?? "original",
             },
             y: {
               min: "original",
@@ -515,6 +519,10 @@ export class HaChartBase extends LitElement {
       }
       canvas {
         max-height: var(--chart-max-height, 400px);
+      }
+      canvas.not-zoomed {
+        // allow scrolling if the chart is not zoomed
+        touch-action: pan-y !important;
       }
       .chartLegend {
         text-align: center;

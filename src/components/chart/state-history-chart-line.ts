@@ -114,7 +114,7 @@ export class StateHistoryChartLine extends LitElement {
               },
             },
             min: this.startTime,
-            suggestedMax: this.endTime,
+            max: this.endTime,
             ticks: {
               maxRotation: 0,
               sampleSize: 5,
