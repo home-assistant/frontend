@@ -18,6 +18,7 @@ import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../../common/navigate";
+import { capitalizeFirstLetter } from "../../../common/string/capitalize-first-letter";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type {
   DataTableColumnContainer,
@@ -36,6 +37,7 @@ import "../../../components/ha-svg-icon";
 import { getSignedPath } from "../../../data/auth";
 import type { BackupConfig, BackupContent } from "../../../data/backup";
 import {
+  compareAgents,
   computeBackupAgentName,
   deleteBackup,
   fetchBackupConfig,
@@ -51,6 +53,7 @@ import {
   DEFAULT_MANAGER_STATE,
   subscribeBackupEvents,
 } from "../../../data/backup_manager";
+import type { CloudStatus } from "../../../data/cloud";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   showAlertDialog,
@@ -72,7 +75,6 @@ import { showBackupOnboardingDialog } from "./dialogs/show-dialog-backup_onboard
 import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
 import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
-import { capitalizeFirstLetter } from "../../../common/string/capitalize-first-letter";
 
 interface BackupRow extends BackupContent {
   formatted_type: string;
@@ -85,6 +87,8 @@ const TYPE_ORDER: Array<BackupType> = ["strategy", "custom"];
 @customElement("ha-config-backup-dashboard")
 class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public cloudStatus!: CloudStatus;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -331,7 +335,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
                         slot="action"
                         @click=${this._setupBackupStrategy}
                       >
-                        Setup backup strategy
+                        Set up backup strategy
                       </ha-button>
                     </ha-backup-summary-card>
                   `
@@ -401,16 +405,21 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
               </div>
             </div> `
           : nothing}
-
-        <ha-fab
-          slot="fab"
-          ?disabled=${backupInProgress}
-          .label=${this.hass.localize("ui.panel.config.backup.create_backup")}
-          extended
-          @click=${this._newBackup}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        ${!this._needsOnboarding
+          ? html`
+              <ha-fab
+                slot="fab"
+                ?disabled=${backupInProgress}
+                .label=${this.hass.localize(
+                  "ui.panel.config.backup.create_backup"
+                )}
+                extended
+                @click=${this._newBackup}
+              >
+                <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+              </ha-fab>
+            `
+          : nothing}
       </hass-tabs-subpage-data-table>
     `;
   }
@@ -480,7 +489,10 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
 
   private async _fetchBackupInfo() {
     const info = await fetchBackupInfo(this.hass);
-    this._backups = info.backups;
+    this._backups = info.backups.map((backup) => ({
+      ...backup,
+      agent_ids: backup.agent_ids?.sort(compareAgents),
+    }));
   }
 
   private async _fetchBackupConfig() {
@@ -489,7 +501,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   }
 
   private get _needsOnboarding() {
-    return this._config && !this._config.create_backup.password;
+    return !this._config?.create_backup.password;
   }
 
   private async _uploadBackup(ev) {
@@ -501,15 +513,6 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   }
 
   private async _newBackup(): Promise<void> {
-    if (this._needsOnboarding) {
-      const success = await showBackupOnboardingDialog(this, {});
-      if (!success) {
-        return;
-      }
-    }
-
-    await this._fetchBackupConfig();
-
     const config = this._config!;
 
     const type = await showNewBackupDialog(this, { config });
@@ -603,12 +606,16 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   }
 
   private async _setupBackupStrategy() {
-    const success = await showBackupOnboardingDialog(this, {});
+    const success = await showBackupOnboardingDialog(this, {
+      cloudStatus: this.cloudStatus,
+    });
     if (!success) {
       return;
     }
 
-    await this._fetchBackupConfig();
+    this._fetchBackupConfig();
+    await generateBackupWithStrategySettings(this.hass);
+    await this._fetchBackupInfo();
   }
 
   static get styles(): CSSResultGroup {
