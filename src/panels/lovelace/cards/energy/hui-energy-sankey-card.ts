@@ -1,4 +1,5 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../components/ha-card";
@@ -60,6 +61,10 @@ class HuiEnergySankeyCard
       rows: 6,
       min_rows: 2,
     };
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return changedProps.has("_config") || changedProps.has("_data");
   }
 
   protected render() {
@@ -218,8 +223,8 @@ class HuiEnergySankeyCard
         index: 1,
       });
       nodes.forEach((node) => {
-        // Link all sources to grid_return
-        if (node.index === 0) {
+        // Link all non-grid sources to grid_return
+        if (node.index === 0 && node.id !== "grid") {
           links.push({
             source: node.id,
             target: "grid_return",
@@ -273,7 +278,7 @@ class HuiEnergySankeyCard
       };
 
       const deviceArea = entity?.area_id;
-      if (deviceArea && this.hass.areas[deviceArea]) {
+      if (deviceArea && deviceArea in this.hass.areas) {
         const area = this.hass.areas[deviceArea];
 
         if (area.area_id in areas) {
@@ -286,7 +291,7 @@ class HuiEnergySankeyCard
           };
         }
         // see if the area has a floor
-        if (area.floor_id && this.hass.floors[area.floor_id]) {
+        if (area.floor_id && area.floor_id in this.hass.floors) {
           if (area.floor_id in floors) {
             floors[area.floor_id].value += deviceNode.value;
             if (!floors[area.floor_id].areas.includes(area.area_id)) {
@@ -318,7 +323,7 @@ class HuiEnergySankeyCard
       )
       .forEach((floorId) => {
         let floorNodeId = `floor_${floorId}`;
-        if (this.hass.floors[floorId]) {
+        if (floorId in this.hass.floors) {
           nodes.push({
             id: floorNodeId,
             label: this.hass.floors[floorId].name,
@@ -393,9 +398,11 @@ class HuiEnergySankeyCard
         <div class="card-content">
           ${hasData
             ? html`<sankey-chart
-                .hass=${this.hass}
                 .data=${{ nodes, links }}
                 .vertical=${this._config.layout === "vertical"}
+                .loadingText=${this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.loading"
+                )}
               ></sankey-chart>`
             : html`${this.hass.localize(
                 "ui.panel.lovelace.cards.energy.no_data_period"

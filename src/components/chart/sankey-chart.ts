@@ -1,5 +1,6 @@
 import { customElement, property, state } from "lit/decorators";
 import { LitElement, html, css, svg, nothing } from "lit";
+import memoizeOne from "memoize-one";
 import type { HomeAssistant } from "../../types";
 
 export type Node = {
@@ -58,9 +59,11 @@ export class SankeyChart extends LitElement {
 
   @property({ type: Boolean }) public vertical = false;
 
-  @state() private width = 0;
+  @property({ attribute: false }) public loadingText?: string;
 
-  @state() private height = 0;
+  @state() private _width = 0;
+
+  @state() private _height = 0;
 
   private _statePerPixel = 0;
 
@@ -73,10 +76,9 @@ export class SankeyChart extends LitElement {
     this._resizeObserver = new ResizeObserver(() => {
       const newWidth = this.clientWidth;
       const newHeight = this.clientHeight;
-      if (newWidth !== this.width || newHeight !== this.height) {
-        this.width = newWidth;
-        this.height = newHeight;
-        this.requestUpdate();
+      if (newWidth !== this._width || newHeight !== this._height) {
+        this._width = newWidth;
+        this._height = newHeight;
       }
     });
     this._resizeObserver?.observe(this);
@@ -94,23 +96,20 @@ export class SankeyChart extends LitElement {
   }
 
   render() {
-    if (!this.width || !this.height) {
-      return html`${this.hass.localize(
-        "ui.panel.lovelace.cards.energy.loading"
-      )}`;
+    if (!this._width || !this._height) {
+      return this.loadingText ?? nothing;
     }
 
-    const filteredNodes = this.data.nodes.filter((n) => n.value > 0);
-    const indexes = [...new Set(filteredNodes.map((n) => n.index))].sort();
-    const { links, passThroughNodes } = this._processLinks(indexes);
-    const nodes = this._processNodes([...filteredNodes, ...passThroughNodes]);
-    const paths = this._processPaths(nodes, links);
+    const { nodes, paths } = this._processNodesAndPaths(
+      this.data.nodes,
+      this.data.links
+    );
 
     return html`
       <svg
-        width=${this.width}
-        height=${this.height}
-        viewBox="0 0 ${this.width} ${this.height}"
+        width=${this._width}
+        height=${this._height}
+        viewBox="0 0 ${this._width} ${this._height}"
         preserveAspectRatio="none"
       >
         <defs>
@@ -191,14 +190,32 @@ export class SankeyChart extends LitElement {
     `;
   }
 
-  private _processLinks(indexes: number[]) {
+  private _processNodesAndPaths = memoizeOne(
+    (rawNodes: Node[], rawLinks: Link[]) => {
+      const filteredNodes = rawNodes.filter((n) => n.value > 0);
+      const indexes = [...new Set(filteredNodes.map((n) => n.index))].sort();
+      const { links, passThroughNodes } = this._processLinks(
+        filteredNodes,
+        indexes,
+        rawLinks
+      );
+      const nodes = this._processNodes(
+        [...filteredNodes, ...passThroughNodes],
+        indexes
+      );
+      const paths = this._processPaths(nodes, links);
+      return { nodes, paths };
+    }
+  );
+
+  private _processLinks(nodes: Node[], indexes: number[], rawLinks: Link[]) {
     const accountedIn = new Map<string, number>();
     const accountedOut = new Map<string, number>();
     const links: ProcessedLink[] = [];
     const passThroughNodes: Node[] = [];
-    this.data.links.forEach((link) => {
-      const sourceNode = this.data.nodes.find((n) => n.id === link.source);
-      const targetNode = this.data.nodes.find((n) => n.id === link.target);
+    rawLinks.forEach((link) => {
+      const sourceNode = nodes.find((n) => n.id === link.source);
+      const targetNode = nodes.find((n) => n.id === link.target);
       if (!sourceNode || !targetNode) {
         return;
       }
@@ -249,11 +266,11 @@ export class SankeyChart extends LitElement {
     return { links, passThroughNodes };
   }
 
-  private _processNodes(filteredNodes: Node[]) {
+  private _processNodes(filteredNodes: Node[], indexes: number[]) {
     // add MIN_DISTANCE as padding
     const sectionSize = this.vertical
-      ? this.width - MIN_DISTANCE * 2
-      : this.height - MIN_DISTANCE * 2;
+      ? this._width - MIN_DISTANCE * 2
+      : this._height - MIN_DISTANCE * 2;
 
     const nodesPerSection: Record<number, Node[]> = {};
     filteredNodes.forEach((node) => {
@@ -263,10 +280,6 @@ export class SankeyChart extends LitElement {
         nodesPerSection[node.index].push(node);
       }
     });
-
-    const indexes = Object.keys(nodesPerSection).sort(
-      (a, b) => parseInt(a) - parseInt(b)
-    );
 
     const sectionFlexSize = this._getSectionFlexSize(
       Object.values(nodesPerSection)
@@ -296,7 +309,7 @@ export class SankeyChart extends LitElement {
       return {
         nodes: sizedNodes,
         offset: sectionFlexSize * i,
-        index: parseInt(index),
+        index,
         totalValue,
         statePerPixel,
       };
@@ -454,7 +467,7 @@ export class SankeyChart extends LitElement {
   }
 
   private _getSectionFlexSize(nodesPerSection: Node[][]): number {
-    const fullSize = this.vertical ? this.height : this.width;
+    const fullSize = this.vertical ? this._height : this._width;
     if (nodesPerSection.length < 2) {
       return fullSize;
     }
