@@ -65,8 +65,6 @@ export class HuiCardPicker extends LitElement {
 
   @state() private _height?: number;
 
-  @state() private _narrow = false;
-
   private _unusedEntities?: string[];
 
   private _usedEntities?: string[];
