@@ -492,6 +492,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
     this._backups = info.backups.map((backup) => ({
       ...backup,
       agent_ids: backup.agent_ids?.sort(compareAgents),
+      failed_agent_ids: backup.failed_agent_ids?.sort(compareAgents),
     }));
   }
 

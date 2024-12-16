@@ -63,6 +63,7 @@ export interface BackupContent {
   protected: boolean;
   size: number;
   agent_ids?: string[];
+  failed_agent_ids?: string[];
   with_strategy_settings: boolean;
 }
 
