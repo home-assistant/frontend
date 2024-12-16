@@ -13,13 +13,14 @@ import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { relativeTime } from "../../../common/datetime/relative_time";
+import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type {
   DataTableColumnContainer,
-  DataTableRowData,
   RowClickedEvent,
   SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
@@ -71,7 +72,15 @@ import { showBackupOnboardingDialog } from "./dialogs/show-dialog-backup_onboard
 import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
 import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
-import { computeDomain } from "../../../common/entity/compute_domain";
+import { capitalizeFirstLetter } from "../../../common/string/capitalize-first-letter";
+
+interface BackupRow extends BackupContent {
+  formatted_type: string;
+}
+
+type BackupType = "strategy" | "custom";
+
+const TYPE_ORDER: Array<BackupType> = ["strategy", "custom"];
 
 @customElement("ha-config-backup-dashboard")
 class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
@@ -91,20 +100,29 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
 
   @state() private _config?: BackupConfig;
 
+  @storage({ key: "backups-table-grouping", state: false, subscribe: false })
+  private _activeGrouping?: string = "formatted_type";
+
+  @storage({
+    key: "backups-table-collapsed",
+    state: false,
+    subscribe: false,
+  })
+  private _activeCollapsed?: string;
+
   private _subscribed?: Promise<() => void>;
 
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
 
   private _columns = memoizeOne(
-    (localize: LocalizeFunc): DataTableColumnContainer<BackupContent> => ({
+    (localize: LocalizeFunc): DataTableColumnContainer<BackupRow> => ({
       name: {
         title: localize("ui.panel.config.backup.name"),
         main: true,
         sortable: true,
         filterable: true,
-        flex: 2,
-        template: (backup) => backup.name,
+        flex: 3,
       },
       size: {
         title: localize("ui.panel.config.backup.size"),
@@ -120,15 +138,17 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
         template: (backup) =>
           relativeTime(new Date(backup.date), this.hass.locale),
       },
-      with_strategy_settings: {
+      formatted_type: {
         title: "Type",
         filterable: true,
         sortable: true,
-        template: (backup) =>
-          backup.with_strategy_settings ? "Strategy" : "Custom",
+        groupable: true,
       },
       locations: {
         title: "Locations",
+        showNarrow: true,
+        minWidth: "60px",
+        maxWidth: "120px",
         template: (backup) => html`
           <div style="display: flex; gap: 4px;">
             ${(backup.agent_ids || []).map((agentId) => {
@@ -198,17 +218,43 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
     })
   );
 
+  private _groupOrder = memoizeOne((activeGrouping: string | undefined) =>
+    activeGrouping === "formatted_type"
+      ? TYPE_ORDER.map((type) => this._formatBackupType(type))
+      : undefined
+  );
+
+  private _handleGroupingChanged(ev: CustomEvent) {
+    this._activeGrouping = ev.detail.value;
+  }
+
+  private _handleCollapseChanged(ev: CustomEvent) {
+    this._activeCollapsed = ev.detail.value;
+  }
+
   private _handleSelectionChanged(
     ev: HASSDomEvent<SelectionChangedEvent>
   ): void {
     this._selected = ev.detail.value;
   }
 
+  private _formatBackupType(type: BackupType): string {
+    // Todo translate
+    return capitalizeFirstLetter(type);
+  }
+
+  private _data = memoizeOne((backups: BackupContent[]): BackupRow[] =>
+    backups.map((backup) => ({
+      ...backup,
+      formatted_type: this._formatBackupType(
+        backup.with_strategy_settings ? "strategy" : "custom"
+      ),
+    }))
+  );
+
   protected render(): TemplateResult {
     const backupInProgress =
       "state" in this._manager && this._manager.state === "in_progress";
-
-    const data: DataTableRowData[] = this._backups;
 
     return html`
       <hass-tabs-subpage-data-table
@@ -226,17 +272,22 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
         id="backup_id"
         selectable
         .selected=${this._selected.length}
+        .initialGroupColumn=${this._activeGrouping}
+        .initialCollapsedGroups=${this._activeCollapsed}
+        .groupOrder=${this._groupOrder(this._activeGrouping)}
+        @grouping-changed=${this._handleGroupingChanged}
+        @collapsed-changed=${this._handleCollapseChanged}
         @selection-changed=${this._handleSelectionChanged}
         .route=${this.route}
         @row-click=${this._showBackupDetails}
         .columns=${this._columns(this.hass.localize)}
-        .data=${data}
+        .data=${this._data(this._backups)}
         .noDataText=${this.hass.localize("ui.panel.config.backup.no_backups")}
         .searchLabel=${this.hass.localize(
           "ui.panel.config.backup.picker.search"
         )}
       >
-        <div slot="top_header" class="header">
+        <div slot="top-header" class="header">
           ${this._fetching
             ? html`
                 <ha-backup-summary-card
