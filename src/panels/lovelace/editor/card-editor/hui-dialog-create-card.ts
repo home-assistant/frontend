@@ -3,6 +3,7 @@ import "@material/mwc-tab/mwc-tab";
 import { mdiClose } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
+import { ifDefined } from "lit/directives/if-defined";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { classMap } from "lit/directives/class-map";
@@ -60,8 +61,14 @@ export class HuiCreateDialogCard
 
   @state() private _currTabIndex = 0;
 
+  @state() private _narrow = false;
+
   public async showDialog(params: CreateCardDialogParams): Promise<void> {
     this._params = params;
+
+    this._narrow = matchMedia(
+      "all and (max-width: 450px), all and (max-height: 500px)"
+    ).matches;
 
     const containerConfig = findLovelaceContainer(
       params.lovelaceConfig,
@@ -120,6 +127,7 @@ export class HuiCreateDialogCard
               .label=${this.hass!.localize(
                 "ui.panel.lovelace.editor.cardpicker.by_card"
               )}
+              dialogInitialFocus=${ifDefined(this._narrow ? "" : undefined)}
             ></mwc-tab>
             <mwc-tab
               .label=${this.hass!.localize(
@@ -132,7 +140,7 @@ export class HuiCreateDialogCard
           this._currTabIndex === 0
             ? html`
                 <hui-card-picker
-                  dialogInitialFocus
+                  dialogInitialFocus=${ifDefined(this._narrow ? undefined : "")}
                   .suggestedCards=${this._params.suggestedCards}
                   .lovelace=${this._params.lovelaceConfig}
                   .hass=${this.hass}
