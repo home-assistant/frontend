@@ -1,8 +1,10 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { CloudStatus } from "../../../../data/cloud";
 
 export interface BackupOnboardingDialogParams {
   submit?: (value: boolean) => void;
   cancel?: () => void;
+  cloudStatus: CloudStatus;
 }
 
 const loadDialog = () => import("./dialog-backup-onboarding");
