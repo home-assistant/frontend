@@ -7,10 +7,9 @@ import {
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-circular-progress";
-import "../../../../components/ha-icon";
+import "../../../../components/ha-svg-icon";
 
 type SummaryStatus = "success" | "error" | "info" | "warning" | "loading";
 
@@ -144,12 +143,12 @@ class HaBackupSummaryCard extends LitElement {
     @media all and (max-width: 550px) {
       .summary {
         flex-wrap: wrap;
-        padding: 8px;
       }
       .action {
         width: 100%;
         display: flex;
         justify-content: flex-end;
+        --mdc-button-horizontal-padding: 0;
       }
     }
   `;
