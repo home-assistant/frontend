@@ -1,5 +1,6 @@
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { LitElement, html, css, svg, nothing } from "lit";
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import memoizeOne from "memoize-one";
 import type { HomeAssistant } from "../../types";
 
@@ -61,33 +62,16 @@ export class SankeyChart extends LitElement {
 
   @property({ attribute: false }) public loadingText?: string;
 
-  @state() private _width = 0;
-
-  @state() private _height = 0;
-
   private _statePerPixel = 0;
-
-  private _resizeObserver?: ResizeObserver;
 
   private _textMeasureCanvas?: HTMLCanvasElement;
 
-  connectedCallback() {
-    super.connectedCallback();
-    this._resizeObserver = new ResizeObserver(() => {
-      const newWidth = this.clientWidth;
-      const newHeight = this.clientHeight;
-      if (newWidth !== this._width || newHeight !== this._height) {
-        this._width = newWidth;
-        this._height = newHeight;
-      }
-    });
-    this._resizeObserver?.observe(this);
-  }
+  private _sizeController = new ResizeController(this, {
+    callback: (entries) => entries[0]?.contentRect,
+  });
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    this._resizeObserver?.unobserve(this);
-    this._resizeObserver?.disconnect();
     this._textMeasureCanvas = undefined;
   }
 
@@ -96,10 +80,11 @@ export class SankeyChart extends LitElement {
   }
 
   render() {
-    if (!this._width || !this._height) {
+    if (!this._sizeController.value) {
       return this.loadingText ?? nothing;
     }
 
+    const { width, height } = this._sizeController.value;
     const { nodes, paths } = this._processNodesAndPaths(
       this.data.nodes,
       this.data.links
@@ -107,9 +92,9 @@ export class SankeyChart extends LitElement {
 
     return html`
       <svg
-        width=${this._width}
-        height=${this._height}
-        viewBox="0 0 ${this._width} ${this._height}"
+        width=${width}
+        height=${height}
+        viewBox="0 0 ${width} ${height}"
         preserveAspectRatio="none"
       >
         <defs>
@@ -269,8 +254,8 @@ export class SankeyChart extends LitElement {
   private _processNodes(filteredNodes: Node[], indexes: number[]) {
     // add MIN_DISTANCE as padding
     const sectionSize = this.vertical
-      ? this._width - MIN_DISTANCE * 2
-      : this._height - MIN_DISTANCE * 2;
+      ? this._sizeController.value!.width - MIN_DISTANCE * 2
+      : this._sizeController.value!.height - MIN_DISTANCE * 2;
 
     const nodesPerSection: Record<number, Node[]> = {};
     filteredNodes.forEach((node) => {
@@ -467,7 +452,9 @@ export class SankeyChart extends LitElement {
   }
 
   private _getSectionFlexSize(nodesPerSection: Node[][]): number {
-    const fullSize = this.vertical ? this._height : this._width;
+    const fullSize = this.vertical
+      ? this._sizeController.value!.height
+      : this._sizeController.value!.width;
     if (nodesPerSection.length < 2) {
       return fullSize;
     }
