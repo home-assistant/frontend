@@ -124,7 +124,6 @@ export class HaSelector extends LitElement {
 
   protected render() {
     return html`
-      ${this._type}
       ${dynamicElement(`ha-selector-${this._type}`, {
         hass: this.hass,
         name: this.name,
