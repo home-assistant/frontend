@@ -362,9 +362,6 @@ export class HaDateRangePicker extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      ha-icon-button-prev {
-        margin-right: 8px;
-      }
 
       ha-icon-button {
         direction: var(--direction);
@@ -373,6 +370,7 @@ export class HaDateRangePicker extends LitElement {
       .date-range-inputs {
         display: flex;
         align-items: center;
+        gap: 8px;
       }
 
       .date-range-ranges {
@@ -389,7 +387,6 @@ export class HaDateRangePicker extends LitElement {
       ha-textarea {
         display: inline-block;
         width: 340px;
-        margin-right: 8px;
       }
       @media only screen and (max-width: 460px) {
       ha-textarea {
