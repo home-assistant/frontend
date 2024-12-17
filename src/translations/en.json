@@ -5958,8 +5958,12 @@
                   "no-repeat": "No repeat"
                 }
               },
-              "fixed": {
-                "name": "Fixed background"
+              "attachment": {
+                "name": "Background attachment",
+                "options": {
+                  "scroll": "Scroll",
+                  "fixed": "Fixed"
+                }
               }
             },
             "edit": "Edit view",

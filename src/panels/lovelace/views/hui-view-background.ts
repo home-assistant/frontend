@@ -42,7 +42,7 @@ export class HUIViewBackground extends LitElement {
     if (typeof background === "string") {
       return background.split(" ").includes("fixed");
     }
-    if (typeof background === "object" && background.fixed) {
+    if (typeof background === "object" && background.attachment == "fixed") {
       return true;
     }
     return false;

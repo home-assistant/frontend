@@ -51,6 +51,7 @@ const LOAD_ELEMENTS = {
   icon: () => import("./ha-selector-icon"),
   media: () => import("./ha-selector-media"),
   theme: () => import("./ha-selector-theme"),
+  button_toggle: () => import("./ha-selector-button-toggle"),
   trigger: () => import("./ha-selector-trigger"),
   tts: () => import("./ha-selector-tts"),
   tts_voice: () => import("./ha-selector-tts-voice"),
@@ -123,6 +124,7 @@ export class HaSelector extends LitElement {
 
   protected render() {
     return html`
+      ${this._type}
       ${dynamicElement(`ha-selector-${this._type}`, {
         hass: this.hass,
         name: this.name,

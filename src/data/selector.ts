@@ -108,6 +108,14 @@ export interface BooleanSelector {
   boolean: {} | null;
 }
 
+export interface ButtonToggleSelector {
+  button_toggle: {
+    options: readonly string[] | readonly SelectOption[];
+    translation_key?: string;
+    sort?: boolean;
+  } | null;
+}
+
 export interface ColorRGBSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
   color_rgb: {} | null;

@@ -43,6 +43,16 @@ export class HuiViewBackgroundEditor extends LitElement {
                 },
               },
               {
+                name: "attachment",
+                selector: {
+                  button_toggle: {
+                    translation_key:
+                      "ui.panel.lovelace.editor.edit_view.background.attachment",
+                    options: ["scroll", "fixed"],
+                  },
+                },
+              },
+              {
                 name: "size",
                 selector: {
                   select: {
@@ -82,10 +92,6 @@ export class HuiViewBackgroundEditor extends LitElement {
                   },
                 },
               },
-              {
-                name: "fixed",
-                selector: { boolean: {} },
-              },
             ],
           },
         ] as const)
@@ -111,7 +117,7 @@ export class HuiViewBackgroundEditor extends LitElement {
       alignment: "center",
       size: "auto",
       repeat: "no-repeat",
-      fixed: false,
+      attachment: "scroll",
       ...background,
     };
 
@@ -159,9 +165,9 @@ export class HuiViewBackgroundEditor extends LitElement {
         return this.hass.localize(
           "ui.panel.lovelace.editor.edit_view.background.repeat.name"
         );
-      case "fixed":
+      case "attachment":
         return this.hass.localize(
-          "ui.panel.lovelace.editor.edit_view.background.fixed.name"
+          "ui.panel.lovelace.editor.edit_view.background.attachment.name"
         );
       default:
         return this.hass.localize(
