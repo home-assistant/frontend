@@ -52,8 +52,7 @@ export interface HaMapPaths {
 export interface HaMapEntity {
   entity_id: string;
   color: string;
-  label_mode?: "name" | "state";
-  display_mode?: "icon";
+  label_mode?: "name" | "state" | "icon";
   name?: string;
   focus?: boolean;
 }
@@ -526,7 +525,7 @@ export class HaMap extends ReactiveElement {
 
       const entityIcon =
         (typeof entity !== "string" &&
-          entity.display_mode === "icon" &&
+          entity.label_mode === "icon" &&
           stateObj.attributes.icon) ||
         "";
       // create marker with the icon
@@ -538,7 +537,10 @@ export class HaMap extends ReactiveElement {
                 entity-name="${entityName}"
                 entity-icon="${entityIcon}"
                 entity-picture="${
-                  entityPicture ? this.hass.hassUrl(entityPicture) : ""
+                  !(typeof entity !== "string" && entity.label_mode) &&
+                  entityPicture
+                    ? this.hass.hassUrl(entityPicture)
+                    : ""
                 }"
                 ${
                   typeof entity !== "string"

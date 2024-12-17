@@ -48,7 +48,7 @@ export const mapEntitiesConfigStruct = union([
 const geoSourcesConfigStruct = union([
   object({
     source: string(),
-    display_mode: optional(string()),
+    label_mode: optional(string()),
     focus: optional(boolean()),
   }),
   string(),
