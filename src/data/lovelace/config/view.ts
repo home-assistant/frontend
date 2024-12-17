@@ -22,7 +22,7 @@ export interface LovelaceViewBackgroundConfig {
     | "bottom center"
     | "bottom right";
   repeat?: "repeat" | "no-repeat";
-  fixed?: boolean;
+  attachment?: "scroll" | "fixed";
 }
 
 export interface LovelaceBaseViewConfig {
