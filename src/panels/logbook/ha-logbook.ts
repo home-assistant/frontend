@@ -65,7 +65,8 @@ export class HaLogbook extends LitElement {
   @property({ type: Boolean, attribute: "relative-time" })
   public relativeTime = false;
 
-  @property({ type: Boolean }) public showMoreLink = true;
+  @property({ attribute: "show-more-link", type: Boolean })
+  public showMoreLink = true;
 
   @state() private _logbookEntries?: LogbookEntry[];
 

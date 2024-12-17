@@ -91,7 +91,7 @@ export class HUIView extends ReactiveElement {
     return element;
   }
 
-  public _createBadgeElement(badgeConfig: LovelaceBadgeConfig) {
+  public createBadgeElement(badgeConfig: LovelaceBadgeConfig) {
     const element = document.createElement("hui-badge");
     element.hass = this.hass;
     element.preview = this.lovelace.editMode;
@@ -311,7 +311,7 @@ export class HUIView extends ReactiveElement {
 
     this._badges = config.badges.map((badge) => {
       const badgeConfig = ensureBadgeConfig(badge);
-      const element = this._createBadgeElement(badgeConfig);
+      const element = this.createBadgeElement(badgeConfig);
       return element;
     });
   }

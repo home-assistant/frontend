@@ -302,6 +302,7 @@ class HassioBackupDialog
         text: supervisor!.localize("backup.confirm_delete_text"),
         confirmText: supervisor!.localize("backup.delete"),
         dismissText: supervisor!.localize("backup.cancel"),
+        destructive: true,
       }))
     ) {
       return;

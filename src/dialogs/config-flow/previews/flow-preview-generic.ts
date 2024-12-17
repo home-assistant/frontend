@@ -14,17 +14,17 @@ import "../../../components/ha-alert";
 class FlowPreviewGeneric extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public flowType!: FlowType;
+  @property({ attribute: false }) public flowType!: FlowType;
 
   public handler!: string;
 
   @property() public domain!: string;
 
-  @property() public stepId!: string;
+  @property({ attribute: false }) public stepId!: string;
 
-  @property() public flowId!: string;
+  @property({ attribute: false }) public flowId!: string;
 
-  @property() public stepData!: Record<string, any>;
+  @property({ attribute: false }) public stepData!: Record<string, any>;
 
   @state() private _preview?: HassEntity;
 

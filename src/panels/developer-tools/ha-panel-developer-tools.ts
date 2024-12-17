@@ -55,7 +55,7 @@ class PanelDeveloperTools extends LitElement {
           scrollable
           attr-for-selected="page-name"
           .selected=${page}
-          @selected-changed=${this.handlePageSelected}
+          @selected-changed=${this._handlePageSelected}
         >
           <paper-tab page-name="yaml">
             ${this.hass.localize("ui.panel.developer-tools.tabs.yaml.title")}
@@ -90,7 +90,7 @@ class PanelDeveloperTools extends LitElement {
     `;
   }
 
-  private handlePageSelected(ev) {
+  private _handlePageSelected(ev) {
     const newPage = ev.detail.value;
     if (newPage !== this._page) {
       navigate(`/developer-tools/${newPage}`);

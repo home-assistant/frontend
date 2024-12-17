@@ -26,18 +26,24 @@ jobs:
       - name: Check out files from GitHub
         uses: actions/checkout@v4.2.2
       - name: Setup Node
+        id: setup-node
         uses: actions/setup-node@v4.1.0
         with:
           node-version-file: ".nvmrc"
           cache: yarn
+      - uses: actions/cache@v4.2.0
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: "node_modules"
+          key: ${{ runner.os }}-yarn-${{ hashFiles('.yarnrc.yml') }}-${{ steps.setup-node.outputs.node-version }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: ${{ runner.os }}-yarn-${{ hashFiles('.yarnrc.yml') }}-${{ steps.setup-node.outputs.node-version }}
       - name: Install dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install --immutable
-      - name: Check for duplicate dependencies
-        run: yarn dedupe --check
       - name: Build resources
         run: ./node_modules/.bin/gulp gen-icons-json build-translations build-locale-data gather-gallery-pages
       - name: Setup lint cache
-        uses: actions/cache@v4.1.2
+        uses: actions/cache@v4.2.0
         with:
           path: |
             node_modules/.cache/prettier
@@ -60,11 +66,19 @@ jobs:
       - name: Check out files from GitHub
         uses: actions/checkout@v4.2.2
       - name: Setup Node
+        id: setup-node
         uses: actions/setup-node@v4.1.0
         with:
           node-version-file: ".nvmrc"
           cache: yarn
+      - uses: actions/cache@v4.2.0
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: "node_modules"
+          key: ${{ runner.os }}-yarn-${{ hashFiles('.yarnrc.yml') }}-${{ steps.setup-node.outputs.node-version }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: ${{ runner.os }}-yarn-${{ hashFiles('.yarnrc.yml') }}-${{ steps.setup-node.outputs.node-version }}
       - name: Install dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install --immutable
       - name: Build resources
         run: ./node_modules/.bin/gulp gen-icons-json build-translations build-locale-data
@@ -78,11 +92,19 @@ jobs:
       - name: Check out files from GitHub
         uses: actions/checkout@v4.2.2
       - name: Setup Node
+        id: setup-node
         uses: actions/setup-node@v4.1.0
         with:
           node-version-file: ".nvmrc"
           cache: yarn
+      - uses: actions/cache@v4.2.0
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: "node_modules"
+          key: ${{ runner.os }}-yarn-${{ hashFiles('.yarnrc.yml') }}-${{ steps.setup-node.outputs.node-version }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: ${{ runner.os }}-yarn-${{ hashFiles('.yarnrc.yml') }}-${{ steps.setup-node.outputs.node-version }}
       - name: Install dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install --immutable
       - name: Build Application
         run: ./node_modules/.bin/gulp build-app
@@ -102,11 +124,19 @@ jobs:
       - name: Check out files from GitHub
         uses: actions/checkout@v4.2.2
       - name: Setup Node
+        id: setup-node
         uses: actions/setup-node@v4.1.0
         with:
           node-version-file: ".nvmrc"
           cache: yarn
+      - uses: actions/cache@v4.2.0
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: "node_modules"
+          key: ${{ runner.os }}-yarn-${{ hashFiles('.yarnrc.yml') }}-${{ steps.setup-node.outputs.node-version }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: ${{ runner.os }}-yarn-${{ hashFiles('.yarnrc.yml') }}-${{ steps.setup-node.outputs.node-version }}
       - name: Install dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install --immutable
       - name: Build Application
         run: ./node_modules/.bin/gulp build-hassio

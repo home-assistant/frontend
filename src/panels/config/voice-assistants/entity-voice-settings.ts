@@ -45,7 +45,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public entityId!: string;
+  @property({ attribute: false }) public entityId!: string;
 
   @property({ attribute: false }) public exposed!: ExposeEntitySettings;
 

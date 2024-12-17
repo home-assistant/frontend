@@ -99,8 +99,7 @@ class MoreInfoScript extends LitElement {
                 ${this.hass.localize("ui.card.script.run_script")}
               </div>
               <ha-service-control
-                hidePicker
-                hideDescription
+                hide-description
                 .hass=${this.hass}
                 .value=${this._scriptData}
                 .showAdvanced=${this.hass.userData?.showAdvanced}
