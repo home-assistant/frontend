@@ -338,7 +338,7 @@ export class MoreInfoDialog extends LitElement {
                       ></ha-icon-button>
                       <ha-button-menu
                         corner="BOTTOM_END"
-                        menuCorner="END"
+                        menu-corner="END"
                         slot="actionItems"
                         @closed=${stopPropagation}
                         fixed
@@ -426,7 +426,7 @@ export class MoreInfoDialog extends LitElement {
               ? html`
                   <ha-button-menu
                     corner="BOTTOM_END"
-                    menuCorner="END"
+                    menu-corner="END"
                     slot="actionItems"
                     @closed=${stopPropagation}
                     fixed

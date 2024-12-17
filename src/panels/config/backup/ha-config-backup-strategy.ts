@@ -12,6 +12,7 @@ import {
   fetchBackupConfig,
   updateBackupConfig,
 } from "../../../data/backup";
+import type { CloudStatus } from "../../../data/cloud";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import "./components/ha-backup-config-agents";
@@ -45,6 +46,8 @@ const INITIAL_BACKUP_CONFIG: BackupConfig = {
 @customElement("ha-config-backup-strategy")
 class HaConfigBackupStrategy extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public cloudStatus!: CloudStatus;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -111,6 +114,7 @@ class HaConfigBackupStrategy extends LitElement {
               <ha-backup-config-agents
                 .hass=${this.hass}
                 .value=${this._backupConfig.create_backup.agent_ids}
+                .cloudStatus=${this.cloudStatus}
                 @value-changed=${this._agentsConfigChanged}
               ></ha-backup-config-agents>
             </div>

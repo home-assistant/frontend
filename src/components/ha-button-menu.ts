@@ -14,7 +14,8 @@ export class HaButtonMenu extends LitElement {
 
   @property() public corner: Corner = "BOTTOM_START";
 
-  @property({ attribute: false }) public menuCorner: MenuCorner = "START";
+  @property({ attribute: "menu-corner" }) public menuCorner: MenuCorner =
+    "START";
 
   @property({ type: Number }) public x: number | null = null;
 

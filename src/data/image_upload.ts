@@ -9,6 +9,7 @@ interface Image {
 }
 
 export const URL_PREFIX = "/api/image/serve/";
+export const MEDIA_PREFIX = "media-source://image_upload/";
 
 export interface ImageMutableParams {
   name: string;
@@ -22,6 +23,8 @@ export const getIdFromUrl = (url: string): string | undefined => {
     if (idx >= 0) {
       id = id.substring(0, idx);
     }
+  } else if (url.startsWith(MEDIA_PREFIX)) {
+    id = url.substring(MEDIA_PREFIX.length);
   }
   return id;
 };

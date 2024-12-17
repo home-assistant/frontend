@@ -114,7 +114,7 @@ class DialogDashboardStrategyEditor extends LitElement {
           <span slot="title" .title=${title}>${title}</span>
           <ha-button-menu
             corner="BOTTOM_END"
-            menuCorner="END"
+            menu-corner="END"
             slot="actionItems"
             @closed=${stopPropagation}
             fixed

@@ -103,7 +103,6 @@ export class StateHistoryChartTimeline extends LitElement {
     this._chartOptions = {
       maintainAspectRatio: false,
       parsing: false,
-      animation: false,
       scales: {
         x: {
           type: "time",

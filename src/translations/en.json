@@ -3348,7 +3348,7 @@
                   "label": "Device",
                   "condition": "Condition",
                   "description": {
-                    "picker": "Set of conditions provided by your device. Great way to start."
+                    "picker": "Set of conditions provided by a device. Great way to start."
                   }
                 },
                 "not": {
@@ -4733,7 +4733,7 @@
           "description": "Manage the OAuth application credentials used by Integrations",
           "editor": {
             "caption": "Add credentials",
-            "description": "OAuth is used to grant Home Assistant access to information on other websites without giving a passwords. This mechanism is used by companies such as Spotify, Google, Withings, Microsoft, and Twitter.",
+            "description": "OAuth is used to grant Home Assistant access to information on other websites without giving a password. This mechanism is used by companies such as Spotify, Google, Withings, Microsoft, and Twitter.",
             "missing_credentials": "Setting up {integration} requires configuring application credentials.",
             "missing_credentials_domain_link": "View {integration} documentation",
             "view_documentation": "View application credentials documentation",
@@ -6027,8 +6027,8 @@
             "strategy_type": "strategy"
           },
           "select_dashboard": {
-            "header": "Choose a dasboard",
-            "cannot_move_to_strategy": "The view cannot be moved because the selected dashboard is auto generated.",
+            "header": "Choose a dashboard",
+            "cannot_move_to_strategy": "The view cannot be moved because the selected dashboard is auto-generated.",
             "get_config_failed": "Failed to load selected dashboard config.",
             "move_failed": "Failed to move the view to the new dashboard, please try again.",
             "revert_failed": "Failed to move the view to the new dashboard, your dashboards are in an unknown state. Please reload the page and check if everything is in place.",
