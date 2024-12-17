@@ -213,6 +213,8 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
 
     if (preferredPipeline) {
       if (
+        preferredPipeline.conversation_engine ===
+          "conversation.home_assistant" &&
         preferredPipeline.tts_engine === cloudTtsEntityId &&
         preferredPipeline.stt_engine === cloudSttEntityId
       ) {
@@ -229,6 +231,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
 
     let cloudPipeline = pipelines.pipelines.find(
       (pipeline) =>
+        pipeline.conversation_engine === "conversation.home_assistant" &&
         pipeline.tts_engine === cloudTtsEntityId &&
         pipeline.stt_engine === cloudSttEntityId
     );
