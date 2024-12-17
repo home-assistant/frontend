@@ -4771,7 +4771,7 @@
         "mqtt": {
           "title": "MQTT",
           "settings_title": "MQTT settings",
-          "reconfigure": "Re-configure MQTT",
+          "option_flow": "Configure MQTT options",
           "description_publish": "Publish a packet",
           "topic": "Topic",
           "payload": "Payload (template allowed)",
