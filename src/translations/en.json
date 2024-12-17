@@ -6036,8 +6036,8 @@
             "strategy_type": "strategy"
           },
           "select_dashboard": {
-            "header": "Choose a dasboard",
-            "cannot_move_to_strategy": "The view cannot be moved because the selected dashboard is auto generated.",
+            "header": "Choose a dashboard",
+            "cannot_move_to_strategy": "The view cannot be moved because the selected dashboard is auto-generated.",
             "get_config_failed": "Failed to load selected dashboard config.",
             "move_failed": "Failed to move the view to the new dashboard, please try again.",
             "revert_failed": "Failed to move the view to the new dashboard, your dashboards are in an unknown state. Please reload the page and check if everything is in place.",

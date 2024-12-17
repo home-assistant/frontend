@@ -238,7 +238,6 @@ export class CloudLogin extends LitElement {
           email: username,
           ...(code ? { code } : { password }),
         });
-        fireEvent(this, "ha-refresh-cloud-status");
         this.email = "";
         this._password = "";
         if (result.cloud_pipeline) {
@@ -255,6 +254,7 @@ export class CloudLogin extends LitElement {
             setAssistPipelinePreferred(this.hass, result.cloud_pipeline);
           }
         }
+        fireEvent(this, "ha-refresh-cloud-status");
       } catch (err: any) {
         const errCode = err && err.body && err.body.code;
         if (errCode === "mfarequired") {

@@ -1,5 +1,6 @@
 import type { PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
+import type { CloudStatus } from "../../../data/cloud";
 import type { RouterOptions } from "../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../layouts/hass-router-page";
 import "../../../layouts/hass-tabs-subpage-data-table";
@@ -9,6 +10,8 @@ import "./ha-config-backup-dashboard";
 @customElement("ha-config-backup")
 class HaConfigBackup extends HassRouterPage {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public cloudStatus!: CloudStatus;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -37,6 +40,8 @@ class HaConfigBackup extends HassRouterPage {
   protected updatePageEl(pageEl, changedProps: PropertyValues) {
     pageEl.hass = this.hass;
     pageEl.route = this.routeTail;
+    pageEl.narrow = this.narrow;
+    pageEl.cloudStatus = this.cloudStatus;
 
     if (
       (!changedProps || changedProps.has("route")) &&
