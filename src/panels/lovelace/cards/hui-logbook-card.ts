@@ -100,7 +100,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
   public setConfig(config: LogbookCardConfig): void {
     const target = this.validateTarget(config);
     if (!target) {
-      throw new Error("Entities must be specified");
+      throw new Error("The provided target in the logbook card has no entities. Targets can include entities, devices, labels, or areas, with devices, areas, and labels resolving to entities.");
     }
 
     this._config = {
