@@ -2,6 +2,7 @@ import { mdiClose } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-header";
@@ -278,10 +279,13 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
       include_homeassistant:
         data.include_homeassistant || data.include_database,
       include_database: data.include_database,
-      include_addons: data.include_addons,
-      include_folders: data.include_folders,
-      include_all_addons: data.include_all_addons,
     };
+
+    if (isComponentLoaded(this.hass, "hassio")) {
+      params.include_folders = data.include_folders;
+      params.include_all_addons = data.include_all_addons;
+      params.include_addons = data.include_addons;
+    }
 
     this._params!.submit?.(params);
     this.closeDialog();
