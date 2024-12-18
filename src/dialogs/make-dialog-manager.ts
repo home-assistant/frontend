@@ -87,7 +87,6 @@ export const showDialog = async (
     };
   }
 
-  // if the same dialog is already open, don't push state
   if (addHistory) {
     const { history } = mainWindow;
     if (history.state?.dialog && !OPEN_DIALOG_STACK.length) {
@@ -115,10 +114,10 @@ export const showDialog = async (
     });
     const newState = { dialog: dialogTag };
     if (history.state?.dialog) {
-      // if the dialog is already open, replace the name
+      // if a dialog is already open, replace the name
       history.replaceState(newState, "");
     } else {
-      // if the dialog is not open, push a new state so back() will close the dialog
+      // if a dialog is not open, push a new state so back() will close the dialog
       history.replaceState({ ...history.state, opensDialog: true }, "");
       history.pushState(newState, "");
     }
