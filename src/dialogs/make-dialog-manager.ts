@@ -87,15 +87,24 @@ export const showDialog = async (
     };
   }
 
-  // Get the focus targets after the dialog closes
-  LOADED[dialogTag].closedFocusTargets = ancestorsWithProperty(
-    deepActiveElement(),
-    FOCUS_TARGET
-  );
-
-  const { state } = mainWindow.history;
   // if the same dialog is already open, don't push state
   if (addHistory) {
+    const { history } = mainWindow;
+    if (history.state?.dialog && !OPEN_DIALOG_STACK.length) {
+      // theres is a dialog state in history, but no dialogs open
+      // wait for history.back() to update the state
+      await new Promise((resolve) => {
+        setTimeout(resolve);
+      });
+      return showDialog(
+        element,
+        root,
+        dialogTag,
+        dialogParams,
+        dialogImport,
+        addHistory
+      );
+    }
     OPEN_DIALOG_STACK.push({
       element,
       root,
@@ -105,15 +114,21 @@ export const showDialog = async (
       addHistory,
     });
     const newState = { dialog: dialogTag };
-    if (state?.dialog) {
+    if (history.state?.dialog) {
       // if the dialog is already open, replace the name
-      mainWindow.history.replaceState(newState, "");
+      history.replaceState(newState, "");
     } else {
       // if the dialog is not open, push a new state so back() will close the dialog
-      mainWindow.history.replaceState({ ...state, opensDialog: true }, "");
-      mainWindow.history.pushState(newState, "");
+      history.replaceState({ ...history.state, opensDialog: true }, "");
+      history.pushState(newState, "");
     }
   }
+
+  // Get the focus targets after the dialog closes
+  LOADED[dialogTag].closedFocusTargets = ancestorsWithProperty(
+    deepActiveElement(),
+    FOCUS_TARGET
+  );
 
   const dialogElement = await LOADED[dialogTag].element;
 
