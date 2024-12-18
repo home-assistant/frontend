@@ -24,7 +24,7 @@ const MAX_VALUE = 50;
 enum RetentionPreset {
   COPIES_3 = "copies_3",
   DAYS_7 = "days_7",
-  FOREOVER = "forever",
+  FOREVER = "forever",
   CUSTOM = "custom",
 }
 
@@ -191,7 +191,7 @@ class HaBackupConfigSchedule extends LitElement {
                   <ha-md-select-option .value=${RetentionPreset.DAYS_7}>
                     <div slot="headline">Keep 7 days</div>
                   </ha-md-select-option>
-                  <ha-md-select-option .value=${RetentionPreset.FOREOVER}>
+                  <ha-md-select-option .value=${RetentionPreset.FOREVER}>
                     <div slot="headline">Keep forever</div>
                   </ha-md-select-option>
                   <ha-md-select-option .value=${RetentionPreset.CUSTOM}>
@@ -270,7 +270,9 @@ class HaBackupConfigSchedule extends LitElement {
       const data = this._getData(this.value);
       const retention = RETENTION_PRESETS[value];
       // Ensure we have at least 1 in defaut value because user can't select 0
-      retention.value = Math.max(retention.value, 1);
+      if (value !== RetentionPreset.FOREVER) {
+        retention.value = Math.max(retention.value, 1);
+      }
       this._setData({
         ...data,
         retention: RETENTION_PRESETS[value],

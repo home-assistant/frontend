@@ -1,16 +1,8 @@
-import {
-  mdiCalendar,
-  mdiCog,
-  mdiDotsVertical,
-  mdiPlus,
-  mdiPuzzle,
-  mdiUpload,
-} from "@mdi/js";
+import { mdiDotsVertical, mdiPlus, mdiUpload } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
-import { navigate } from "../../../common/navigate";
 import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
@@ -19,8 +11,6 @@ import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-list-item";
-import "../../../components/ha-md-list";
-import "../../../components/ha-md-list-item";
 import "../../../components/ha-svg-icon";
 import {
   fetchBackupConfig,
@@ -40,7 +30,8 @@ import type { HomeAssistant, Route } from "../../../types";
 import "./components/ha-backup-summary-card";
 import "./components/ha-backup-summary-progress";
 import "./components/ha-backup-summary-status";
-import "./components/overview/ha-backup-backups-summary";
+import "./components/overview/ha-backup-overview-backups";
+import "./components/overview/ha-backup-overview-settings";
 import { showBackupOnboardingDialog } from "./dialogs/show-dialog-backup_onboarding";
 import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
@@ -74,6 +65,7 @@ class HaConfigBackupOverview extends LitElement {
     super.connectedCallback();
     if (this.hasUpdated) {
       this._fetchBackupInfo();
+      this._fetchBackupConfig();
     }
   }
 
@@ -83,10 +75,6 @@ class HaConfigBackupOverview extends LitElement {
     }
 
     await showUploadBackupDialog(this, {});
-  }
-
-  private _configureAutomaticBackups() {
-    navigate("/config/backup/settings");
   }
 
   private async _setupAutomaticBackup() {
@@ -148,10 +136,6 @@ class HaConfigBackupOverview extends LitElement {
 
   private get _needsOnboarding() {
     return !this._config?.create_backup.password;
-  }
-
-  private _showAll() {
-    navigate("/config/backup/backups");
   }
 
   protected render(): TemplateResult {
@@ -223,54 +207,19 @@ class HaConfigBackupOverview extends LitElement {
                     </ha-backup-summary-status>
                   `}
 
-          <ha-backup-backups-summary
+          <ha-backup-overview-backups
             .hass=${this.hass}
             .backups=${this._backups}
-          ></ha-backup-backups-summary>
+          ></ha-backup-overview-backups>
 
-          <ha-card class="my-backups">
-            <div class="card-header">Automatic backups</div>
-            <div class="card-content">
-              <ha-md-list>
-                <ha-md-list-item>
-                  <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
-                  <div slot="headline">
-                    Daily at 04:45 and keep the latest 3 copies
-                  </div>
-                  <div slot="supporting-text">
-                    Schedule and number of backups to keep
-                  </div>
-                </ha-md-list-item>
-                <ha-md-list-item>
-                  <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
-                  <div slot="headline">Settings and history</div>
-                  <div slot="supporting-text">
-                    Home Assistant data that is included
-                  </div>
-                </ha-md-list-item>
-                <ha-md-list-item>
-                  <ha-svg-icon slot="start" .path=${mdiPuzzle}></ha-svg-icon>
-                  <div slot="headline">All 4 add-ons, including new</div>
-                  <div slot="supporting-text">Add-ons that are included</div>
-                </ha-md-list-item>
-                <ha-md-list-item>
-                  <ha-svg-icon slot="start" .path=${mdiUpload}></ha-svg-icon>
-                  <div slot="headline">Upload to 2 off-site locations</div>
-                  <div slot="supporting-text">
-                    Locations where backup is uploaded to
-                  </div>
-                </ha-md-list-item>
-              </ha-md-list>
-            </div>
-            <div class="card-actions">
-              <ha-button
-                href="/config/backup/strategy"
-                @click=${this._configureAutomaticBackups}
-              >
-                Configure automatic backups
-              </ha-button>
-            </div>
-          </ha-card>
+          ${!this._needsOnboarding
+            ? html`
+                <ha-backup-overview-settings
+                  .hass=${this.hass}
+                  .config=${this._config!}
+                ></ha-backup-overview-settings>
+              `
+            : nothing}
         </div>
 
         <ha-fab

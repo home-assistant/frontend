@@ -3,6 +3,11 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { navigate } from "../../../../../common/navigate";
+import "../../../../../components/ha-button";
+import "../../../../../components/ha-card";
+import "../../../../../components/ha-icon-next";
+import "../../../../../components/ha-md-list";
+import "../../../../../components/ha-md-list-item";
 import type { BackupContent } from "../../../../../data/backup";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
@@ -23,8 +28,8 @@ const computeBackupStats = (backups: BackupContent[]): BackupStats =>
     { count: 0, size: 0 }
   );
 
-@customElement("ha-backup-backups-summary")
-class HaBackupBackupsSummary extends LitElement {
+@customElement("ha-backup-overview-backups")
+class HaBackupOverviewBackups extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public backups: BackupContent[] = [];
@@ -112,6 +117,6 @@ class HaBackupBackupsSummary extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-backup-backups-summary": HaBackupBackupsSummary;
+    "ha-backup-overview-backups": HaBackupOverviewBackups;
   }
 }

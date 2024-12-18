@@ -214,7 +214,7 @@ export const getPreferredAgentForDownload = (agents: string[]) => {
 };
 
 export const CORE_LOCAL_AGENT = "backup.local";
-export const HASSIO_LOCAL_AGENT = "backup.hassio";
+export const HASSIO_LOCAL_AGENT = "hassio.local";
 export const CLOUD_AGENT = "cloud.cloud";
 
 export const isLocalAgent = (agentId: string) =>
