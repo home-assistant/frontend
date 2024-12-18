@@ -15,8 +15,8 @@ export const enum BackupScheduleState {
 }
 
 export interface BackupConfig {
-  last_attempted_strategy_backup: string | null;
-  last_completed_strategy_backup: string | null;
+  last_attempted_automatic_backup: string | null;
+  last_completed_automatic_backup: string | null;
   create_backup: {
     agent_ids: string[];
     include_addons: string[] | null;
@@ -64,7 +64,7 @@ export interface BackupContent {
   size: number;
   agent_ids?: string[];
   failed_agent_ids?: string[];
-  with_strategy_settings: boolean;
+  with_automatic_settings: boolean;
 }
 
 export interface BackupData {
@@ -164,11 +164,11 @@ export const generateBackup = (
     ...params,
   });
 
-export const generateBackupWithStrategySettings = (
+export const generateBackupWithAutomaticSettings = (
   hass: HomeAssistant
 ): Promise<void> =>
   hass.callWS({
-    type: "backup/generate_with_strategy_settings",
+    type: "backup/generate_with_automatic_settings",
   });
 
 export const restoreBackup = (
