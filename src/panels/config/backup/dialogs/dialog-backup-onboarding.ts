@@ -367,8 +367,8 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
       case "locations":
         return html`
           <p>
-            Home Assistant will upload to these locations when this backup
-            settings are used. You can use all locations for custom backups.
+            Home Assistant will upload to these locations when an automatic
+            backup is made. You can use all locations for manual backups.
           </p>
           <ha-backup-config-agents
             .hass=${this.hass}

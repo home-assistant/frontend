@@ -19,9 +19,9 @@ import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-list-item";
-import "../../../components/ha-svg-icon";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
+import "../../../components/ha-svg-icon";
 import {
   fetchBackupConfig,
   fetchBackupInfo,
@@ -40,11 +40,11 @@ import type { HomeAssistant, Route } from "../../../types";
 import "./components/ha-backup-summary-card";
 import "./components/ha-backup-summary-progress";
 import "./components/ha-backup-summary-status";
+import "./components/overview/ha-backup-backups-summary";
 import { showBackupOnboardingDialog } from "./dialogs/show-dialog-backup_onboarding";
 import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
 import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
-import { bytesToString } from "../../../util/bytes-to-string";
 
 @customElement("ha-config-backup-overview")
 class HaConfigBackupOverview extends LitElement {
@@ -85,11 +85,11 @@ class HaConfigBackupOverview extends LitElement {
     await showUploadBackupDialog(this, {});
   }
 
-  private _configureBackupStrategy() {
-    navigate("/config/backup/strategy");
+  private _configureAutomaticBackups() {
+    navigate("/config/backup/settings");
   }
 
-  private async _setupBackupStrategy() {
+  private async _setupAutomaticBackup() {
     const success = await showBackupOnboardingDialog(this, {
       cloudStatus: this.cloudStatus,
     });
@@ -114,7 +114,7 @@ class HaConfigBackupOverview extends LitElement {
 
   private async _newBackup(): Promise<void> {
     if (this._needsOnboarding) {
-      await this._setupBackupStrategy();
+      await this._setupAutomaticBackup();
     }
 
     if (!this._config) {
@@ -129,7 +129,7 @@ class HaConfigBackupOverview extends LitElement {
       return;
     }
 
-    if (type === "custom") {
+    if (type === "manual") {
       const params = await showGenerateBackupDialog(this, {});
 
       if (!params) {
@@ -140,7 +140,7 @@ class HaConfigBackupOverview extends LitElement {
       await this._fetchBackupInfo();
       return;
     }
-    if (type === "strategy") {
+    if (type === "automatic") {
       await generateBackupWithStrategySettings(this.hass);
       await this._fetchBackupInfo();
     }
@@ -202,14 +202,14 @@ class HaConfigBackupOverview extends LitElement {
               : this._needsOnboarding
                 ? html`
                     <ha-backup-summary-card
-                      heading="Configure backup strategy"
+                      heading="Configure automatic backups"
                       description="Have a one-click backup automation with selected data and locations."
                       has-action
                       status="info"
                     >
                       <ha-button
                         slot="action"
-                        @click=${this._setupBackupStrategy}
+                        @click=${this._setupAutomaticBackup}
                       >
                         Set up backup strategy
                       </ha-button>
@@ -223,32 +223,10 @@ class HaConfigBackupOverview extends LitElement {
                     </ha-backup-summary-status>
                   `}
 
-          <ha-card class="my-backups">
-            <div class="card-header">My backups</div>
-            <div class="card-content">
-              <ha-md-list>
-                <ha-md-list-item type="link" href="/config/backup/backups">
-                  <div slot="headline">3 automatic backups</div>
-                  <div slot="supporting-text">
-                    ${bytesToString(5000000000, 1)} in total
-                  </div>
-                  <ha-icon-next slot="end"></ha-icon-next>
-                </ha-md-list-item>
-                <ha-md-list-item type="link" href="/config/backup/backups">
-                  <div slot="headline">2 manual backups</div>
-                  <div slot="supporting-text">
-                    ${bytesToString(1000000000, 1)} in total
-                  </div>
-                  <ha-icon-next slot="end"></ha-icon-next>
-                </ha-md-list-item>
-              </ha-md-list>
-            </div>
-            <div class="card-actions">
-              <ha-button href="/config/backup/backups" @click=${this._showAll}>
-                Show all backups
-              </ha-button>
-            </div>
-          </ha-card>
+          <ha-backup-backups-summary
+            .hass=${this.hass}
+            .backups=${this._backups}
+          ></ha-backup-backups-summary>
 
           <ha-card class="my-backups">
             <div class="card-header">Automatic backups</div>
@@ -287,7 +265,7 @@ class HaConfigBackupOverview extends LitElement {
             <div class="card-actions">
               <ha-button
                 href="/config/backup/strategy"
-                @click=${this._configureBackupStrategy}
+                @click=${this._configureAutomaticBackups}
               >
                 Configure automatic backups
               </ha-button>

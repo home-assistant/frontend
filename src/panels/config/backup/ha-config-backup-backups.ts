@@ -75,9 +75,9 @@ interface BackupRow extends DataTableRowData, BackupContent {
   formatted_type: string;
 }
 
-type BackupType = "automatic" | "manual";
+type BackupType = "automatic" | "manual" | "imported";
 
-const TYPE_ORDER: Array<BackupType> = ["automatic", "manual"];
+const TYPE_ORDER: Array<BackupType> = ["automatic", "manual", "imported"];
 
 @customElement("ha-config-backup-backups")
 class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
