@@ -31,6 +31,9 @@ export class HaPictureUpload extends LitElement {
 
   @property({ type: Boolean }) public crop = false;
 
+  @property({ type: Boolean, attribute: "select-media" }) public selectMedia =
+    false;
+
   @property({ attribute: false }) public cropOptions?: CropOptions;
 
   @property({ type: Boolean }) public original = false;
@@ -39,15 +42,35 @@ export class HaPictureUpload extends LitElement {
 
   @state() private _uploading = false;
 
+  constructor() {
+    super();
+    this._chooseMedia = this._chooseMedia.bind(this);
+  }
+
   public render(): TemplateResult {
     if (!this.value) {
+      const secondary =
+        this.secondary ||
+        (this.selectMedia
+          ? html`${this.hass.localize(
+              "ui.components.picture-upload.secondary",
+              {
+                select_media: html`<a href="#" @click=${this._chooseMedia}
+                  >${this.hass.localize(
+                    "ui.components.picture-upload.select_media"
+                  )}</a
+                >`,
+              }
+            )}`
+          : undefined);
+
       return html`
         <ha-file-upload
           .hass=${this.hass}
           .icon=${mdiImagePlus}
           .label=${this.label ||
           this.hass.localize("ui.components.picture-upload.label")}
-          .secondary=${this.secondary}
+          .secondary=${secondary}
           .supports=${this.supports ||
           this.hass.localize("ui.components.picture-upload.supported_formats")}
           .uploading=${this._uploading}
@@ -55,11 +78,6 @@ export class HaPictureUpload extends LitElement {
           @change=${this._handleFileCleared}
           accept="image/png, image/jpeg, image/gif"
         ></ha-file-upload>
-        <ha-button class="center" @click=${this._chooseMedia}
-          >${this.hass.localize(
-            "ui.components.picture-upload.select_previous_upload"
-          )}</ha-button
-        >
       `;
     }
     return html`<div class="center-vertical">
