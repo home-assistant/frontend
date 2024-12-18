@@ -102,7 +102,8 @@ class HaConfigBackupOverview extends LitElement {
 
   private async _newBackup(): Promise<void> {
     if (this._needsOnboarding) {
-      await this._setupAutomaticBackup();
+      this._setupAutomaticBackup();
+      return;
     }
 
     if (!this._config) {
