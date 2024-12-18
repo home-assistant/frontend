@@ -40,14 +40,14 @@ class HaBackupOverviewBackups extends LitElement {
 
   private _automaticStats = memoizeOne((backups: BackupContent[]) => {
     const automaticBackups = backups.filter(
-      (backup) => backup.with_strategy_settings
+      (backup) => backup.with_automatic_settings
     );
     return computeBackupStats(automaticBackups);
   });
 
   private _manualStats = memoizeOne((backups: BackupContent[]) => {
     const manualBackups = backups.filter(
-      (backup) => !backup.with_strategy_settings
+      (backup) => !backup.with_automatic_settings
     );
     return computeBackupStats(manualBackups);
   });

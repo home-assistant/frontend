@@ -16,7 +16,7 @@ import {
   fetchBackupConfig,
   fetchBackupInfo,
   generateBackup,
-  generateBackupWithStrategySettings,
+  generateBackupWithAutomaticSettings,
   type BackupConfig,
   type BackupContent,
 } from "../../../data/backup";
@@ -86,7 +86,7 @@ class HaConfigBackupOverview extends LitElement {
     }
 
     this._fetchBackupConfig();
-    await generateBackupWithStrategySettings(this.hass);
+    await generateBackupWithAutomaticSettings(this.hass);
     await this._fetchBackupInfo();
   }
 
@@ -129,7 +129,7 @@ class HaConfigBackupOverview extends LitElement {
       return;
     }
     if (type === "automatic") {
-      await generateBackupWithStrategySettings(this.hass);
+      await generateBackupWithAutomaticSettings(this.hass);
       await this._fetchBackupInfo();
     }
   }
@@ -195,7 +195,7 @@ class HaConfigBackupOverview extends LitElement {
                         slot="action"
                         @click=${this._setupAutomaticBackup}
                       >
-                        Set up backup strategy
+                        Set up automatic backups
                       </ha-button>
                     </ha-backup-summary-card>
                   `
