@@ -30,7 +30,7 @@ export type FormData = {
   database: boolean;
   media: boolean;
   share: boolean;
-  addons_mode: "all" | "custom";
+  addons_mode: "all" | "custom" | "none";
   addons: string[];
 };
 
@@ -65,10 +65,22 @@ class HaBackupConfigData extends LitElement {
 
   @state() private _addons: BackupAddonItem[] = [];
 
-  protected firstUpdated(_changedProperties: PropertyValues): void {
-    super.firstUpdated(_changedProperties);
+  @state() private _showAddons = false;
+
+  protected firstUpdated(changedProperties: PropertyValues): void {
+    super.firstUpdated(changedProperties);
     if (isComponentLoaded(this.hass, "hassio")) {
       this._fetchAddons();
+    }
+  }
+
+  protected updated(changedProperties: PropertyValues): void {
+    if (changedProperties.has("value")) {
+      if (isComponentLoaded(this.hass, "hassio")) {
+        if (this.value?.include_addons?.length) {
+          this._showAddons = true;
+        }
+      }
     }
   }
 
@@ -84,32 +96,38 @@ class HaBackupConfigData extends LitElement {
     ];
   }
 
-  private _getData = memoizeOne((value?: BackupConfigData): FormData => {
-    if (!value) {
-      return INITIAL_FORM_DATA;
+  private _getData = memoizeOne(
+    (value: BackupConfigData | undefined, showAddon: boolean): FormData => {
+      if (!value) {
+        return INITIAL_FORM_DATA;
+      }
+
+      const config = value;
+
+      const hasLocalAddonFolder = config.include_folders?.includes(
+        SELF_CREATED_ADDONS_FOLDER
+      );
+
+      const addons = config.include_addons?.slice() ?? [];
+
+      if (hasLocalAddonFolder && !value.include_all_addons) {
+        addons.push(SELF_CREATED_ADDONS_NAME);
+      }
+
+      return {
+        homeassistant: config.include_homeassistant || this.forceHomeAssistant,
+        database: config.include_database,
+        media: config.include_folders?.includes("media") || false,
+        share: config.include_folders?.includes("share") || false,
+        addons_mode: config.include_all_addons
+          ? "all"
+          : addons.length > 0 || showAddon
+            ? "custom"
+            : "none",
+        addons: addons,
+      };
     }
-
-    const config = value;
-
-    const hasLocalAddonFolder = config.include_folders?.includes(
-      SELF_CREATED_ADDONS_FOLDER
-    );
-
-    const addons = config.include_addons?.slice() ?? [];
-
-    if (hasLocalAddonFolder && !value.include_all_addons) {
-      addons.push(SELF_CREATED_ADDONS_NAME);
-    }
-
-    return {
-      homeassistant: config.include_homeassistant || this.forceHomeAssistant,
-      database: config.include_database,
-      media: config.include_folders?.includes("media") || false,
-      share: config.include_folders?.includes("share") || false,
-      addons_mode: config.include_all_addons ? "all" : "custom",
-      addons: addons,
-    };
-  });
+  );
 
   private _setData(data: FormData) {
     const hasSelfCreatedAddons = data.addons.includes(SELF_CREATED_ADDONS_NAME);
@@ -140,7 +158,7 @@ class HaBackupConfigData extends LitElement {
   }
 
   protected render() {
-    const data = this._getData(this.value);
+    const data = this._getData(this.value, this._showAddons);
 
     const isHassio = isComponentLoaded(this.hass, "hassio");
 
@@ -234,7 +252,10 @@ class HaBackupConfigData extends LitElement {
                         .value=${data.addons_mode}
                       >
                         <ha-md-select-option value="all">
-                          <div slot="headline">All</div>
+                          <div slot="headline">All, including new</div>
+                        </ha-md-select-option>
+                        <ha-md-select-option value="none">
+                          <div slot="headline">None</div>
                         </ha-md-select-option>
                         <ha-md-select-option value="custom">
                           <div slot="headline">Custom</div>
@@ -246,7 +267,7 @@ class HaBackupConfigData extends LitElement {
             `
           : nothing}
       </ha-md-list>
-      ${isHassio && data.addons_mode === "custom" && this._addons.length
+      ${isHassio && this._showAddons && this._addons.length
         ? html`
             <ha-expansion-panel .header=${"Add-ons"} outlined expanded>
               <ha-backup-addons-picker
@@ -263,7 +284,7 @@ class HaBackupConfigData extends LitElement {
 
   private _switchChanged(ev: Event) {
     const target = ev.currentTarget as HaSwitch;
-    const data = this._getData(this.value);
+    const data = this._getData(this.value, this._showAddons);
     this._setData({
       ...data,
       [target.id]: target.checked,
@@ -273,18 +294,21 @@ class HaBackupConfigData extends LitElement {
 
   private _selectChanged(ev: Event) {
     const target = ev.currentTarget as HaMdSelect;
-    const data = this._getData(this.value);
+    const data = this._getData(this.value, this._showAddons);
     this._setData({
       ...data,
       [target.id]: target.value,
     });
+    if (target.id === "addons_mode") {
+      this._showAddons = target.value === "custom";
+    }
     fireEvent(this, "value-changed", { value: this.value });
   }
 
   private _addonsChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const addons = ev.detail.value;
-    const data = this._getData(this.value);
+    const data = this._getData(this.value, this._showAddons);
     this._setData({
       ...data,
       addons,
