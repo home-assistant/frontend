@@ -29,8 +29,8 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "../components/ha-backup-agents-picker";
-import "../components/ha-backup-config-data";
-import type { BackupConfigData } from "../components/ha-backup-config-data";
+import "../components/config/ha-backup-config-data";
+import type { BackupConfigData } from "../components/config/ha-backup-config-data";
 import type { GenerateBackupDialogParams } from "./show-dialog-generate-backup";
 
 type FormData = {

@@ -15,12 +15,12 @@ import {
 import type { CloudStatus } from "../../../data/cloud";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
-import "./components/ha-backup-config-agents";
-import "./components/ha-backup-config-data";
-import type { BackupConfigData } from "./components/ha-backup-config-data";
-import "./components/ha-backup-config-encryption-key";
-import "./components/ha-backup-config-schedule";
-import type { BackupConfigSchedule } from "./components/ha-backup-config-schedule";
+import "./components/config/ha-backup-config-agents";
+import "./components/config/ha-backup-config-data";
+import type { BackupConfigData } from "./components/config/ha-backup-config-data";
+import "./components/config/ha-backup-config-encryption-key";
+import "./components/config/ha-backup-config-schedule";
+import type { BackupConfigSchedule } from "./components/config/ha-backup-config-schedule";
 
 const INITIAL_BACKUP_CONFIG: BackupConfig = {
   create_backup: {
