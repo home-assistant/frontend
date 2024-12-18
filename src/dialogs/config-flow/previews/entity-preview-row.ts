@@ -42,7 +42,7 @@ class EntityPreviewRow extends LitElement {
       <div class="name" .title=${computeStateName(stateObj)}>
         ${computeStateName(stateObj)}
       </div>
-      <div class="value">${this.renderEntityState(stateObj)}</div>`;
+      <div class="value">${this._renderEntityState(stateObj)}</div>`;
   }
 
   static get styles(): CSSResultGroup {
@@ -103,7 +103,7 @@ class EntityPreviewRow extends LitElement {
     `;
   }
 
-  private renderEntityState(stateObj: HassEntity): TemplateResult | string {
+  private _renderEntityState(stateObj: HassEntity): TemplateResult | string {
     const domain = stateObj.entity_id.split(".", 1)[0];
 
     if (domain === "button") {

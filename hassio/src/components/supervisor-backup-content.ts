@@ -73,23 +73,24 @@ export class SupervisorBackupContent extends LitElement {
 
   @property({ attribute: false }) public backup?: HassioBackupDetail;
 
-  @property() public backupType: HassioBackupDetail["type"] = "full";
+  @property({ attribute: false })
+  public backupType: HassioBackupDetail["type"] = "full";
 
   @property({ attribute: false }) public folders?: CheckboxItem[];
 
   @property({ attribute: false }) public addons?: AddonCheckboxItem[];
 
-  @property({ type: Boolean }) public homeAssistant = false;
+  @property({ attribute: false }) public homeAssistant = false;
 
-  @property({ type: Boolean }) public backupHasPassword = false;
+  @property({ attribute: false }) public backupHasPassword = false;
 
   @property({ type: Boolean }) public onboarding = false;
 
-  @property() public backupName = "";
+  @property({ attribute: false }) public backupName = "";
 
-  @property() public backupPassword = "";
+  @property({ attribute: false }) public backupPassword = "";
 
-  @property() public confirmBackupPassword = "";
+  @property({ attribute: false }) public confirmBackupPassword = "";
 
   @query("ha-textfield, ha-radio, ha-checkbox", true) private _focusTarget;
 
@@ -191,7 +192,7 @@ export class SupervisorBackupContent extends LitElement {
                 >
                   <ha-checkbox
                     .checked=${this.homeAssistant}
-                    @change=${this.toggleHomeAssistant}
+                    @change=${this._toggleHomeAssistant}
                   >
                   </ha-checkbox>
                 </ha-formfield>`
@@ -277,7 +278,7 @@ export class SupervisorBackupContent extends LitElement {
     `;
   }
 
-  private toggleHomeAssistant() {
+  private _toggleHomeAssistant() {
     this.homeAssistant = !this.homeAssistant;
   }
 

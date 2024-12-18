@@ -80,9 +80,7 @@ export class DialogEnergyBatterySettings
             .path=${mdiBatteryHigh}
             style="--mdc-icon-size: 32px;"
           ></ha-svg-icon>
-          ${this.hass.localize(
-            "ui.panel.config.energy.battery.dialog.header"
-          )}`}
+          ${this.hass.localize("ui.panel.config.energy.battery.dialog.header")}`}
         @closed=${this.closeDialog}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}

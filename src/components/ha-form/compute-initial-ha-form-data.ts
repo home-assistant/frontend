@@ -47,6 +47,8 @@ export const computeInitialHaFormData = (
         data[field.name] = selector.entity?.multiple ? [] : "";
       } else if ("area" in selector) {
         data[field.name] = selector.area?.multiple ? [] : "";
+      } else if ("label" in selector) {
+        data[field.name] = selector.label?.multiple ? [] : "";
       } else if ("boolean" in selector) {
         data[field.name] = false;
       } else if (

@@ -307,6 +307,18 @@ export class AssistPipelineDebug extends LitElement {
                                   </div>`
                                 : ""}`
                           : ""}
+                        <div class="row">
+                          <div>Prefer handling locally</div>
+                          <div>
+                            ${this.pipelineRun.intent.prefer_local_intents}
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div>Processed locally</div>
+                          <div>
+                            ${this.pipelineRun.intent.processed_locally}
+                          </div>
+                        </div>
                         ${dataMinusKeysRender(
                           this.pipelineRun.intent,
                           INTENT_DATA
@@ -353,8 +365,8 @@ export class AssistPipelineDebug extends LitElement {
         <ha-expansion-panel>
           <span slot="header">Raw</span>
           <ha-yaml-editor
-            readOnly
-            autoUpdate
+            read-only
+            auto-update
             .value=${this.pipelineRun}
           ></ha-yaml-editor>
         </ha-expansion-panel>

@@ -14,6 +14,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { clamp } from "../../common/number/clamp";
 import type { HomeAssistant } from "../../types";
 import { debounce } from "../../common/util/debounce";
+import { isMac } from "../../util/is_mac";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 
@@ -53,15 +54,20 @@ export class HaChartBase extends LitElement {
 
   @property({ type: Number }) public height?: number;
 
-  @property({ type: Number }) public paddingYAxis = 0;
+  @property({ attribute: false, type: Number }) public paddingYAxis = 0;
 
-  @property({ type: Boolean }) public externalHidden = false;
+  @property({ attribute: "external-hidden", type: Boolean })
+  public externalHidden = false;
 
   @state() private _chartHeight?: number;
 
   @state() private _tooltip?: Tooltip;
 
   @state() private _hiddenDatasets: Set<number> = new Set();
+
+  @state() private _showZoomHint = false;
+
+  @state() private _isZoomed = false;
 
   private _paddingUpdateCount = 0;
 
@@ -200,7 +206,9 @@ export class HaChartBase extends LitElement {
       }
       this.chart.data = this.data;
     }
-    if (changedProps.has("options")) {
+    if (changedProps.has("options") && !this.chart.isZoomedOrPanned()) {
+      // this resets the chart zoom because min/max scales changed
+      // so we only do it if the user is not zooming or panning
       this.chart.options = this._createOptions();
     }
     this.chart.update("none");
@@ -248,7 +256,7 @@ export class HaChartBase extends LitElement {
         })}
       >
         <div
-          class="chartContainer"
+          class="chart-container"
           style=${styleMap({
             height: `${
               this.height ?? this._chartHeight ?? this.clientWidth / 2
@@ -258,8 +266,26 @@ export class HaChartBase extends LitElement {
             "padding-inline-start": `${this._paddingYAxisInternal}px`,
             "padding-inline-end": 0,
           })}
+          @wheel=${this._handleChartScroll}
         >
-          <canvas></canvas>
+          <canvas
+            class=${classMap({
+              "not-zoomed": !this._isZoomed,
+            })}
+          ></canvas>
+          <div
+            class="zoom-hint ${classMap({
+              visible: this._showZoomHint,
+            })}"
+          >
+            <div>
+              ${isMac
+                ? this.hass.localize(
+                    "ui.components.history_charts.zoom_hint_mac"
+                  )
+                : this.hass.localize("ui.components.history_charts.zoom_hint")}
+            </div>
+          </div>
           ${this._tooltip
             ? html`<div
                 class="chartTooltip ${classMap({
@@ -316,6 +342,7 @@ export class HaChartBase extends LitElement {
       .getContext("2d")!;
     this._loading = true;
     try {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       const ChartConstructor = (await import("../../resources/chartjs")).Chart;
 
       const computedStyles = getComputedStyle(this);
@@ -341,7 +368,8 @@ export class HaChartBase extends LitElement {
     }
   }
 
-  private _createOptions() {
+  private _createOptions(): ChartOptions {
+    const modifierKey = isMac ? "meta" : "ctrl";
     return {
       maintainAspectRatio: false,
       ...this.options,
@@ -355,6 +383,39 @@ export class HaChartBase extends LitElement {
         legend: {
           ...this.options?.plugins?.legend,
           display: false,
+        },
+        zoom: {
+          ...this.options?.plugins?.zoom,
+          pan: {
+            enabled: true,
+          },
+          zoom: {
+            pinch: {
+              enabled: true,
+            },
+            drag: {
+              enabled: true,
+              modifierKey,
+            },
+            wheel: {
+              enabled: true,
+              modifierKey,
+            },
+            mode: "x",
+            onZoomComplete: () => {
+              this._isZoomed = this.chart?.isZoomedOrPanned() ?? false;
+            },
+          },
+          limits: {
+            x: {
+              min: "original",
+              max: (this.options?.scales?.x as any)?.max ?? "original",
+            },
+            y: {
+              min: "original",
+              max: "original",
+            },
+          },
         },
       },
     };
@@ -378,6 +439,16 @@ export class HaChartBase extends LitElement {
         },
       },
     ];
+  }
+
+  private _handleChartScroll(ev: MouseEvent) {
+    const modifier = isMac ? "metaKey" : "ctrlKey";
+    if (!ev[modifier] && !this._showZoomHint) {
+      this._showZoomHint = true;
+      setTimeout(() => {
+        this._showZoomHint = false;
+      }, 1000);
+    }
   }
 
   private _legendClick(ev) {
@@ -448,8 +519,15 @@ export class HaChartBase extends LitElement {
         height: 0;
         transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
       }
+      .chart-container {
+        position: relative;
+      }
       canvas {
         max-height: var(--chart-max-height, 400px);
+      }
+      canvas.not-zoomed {
+        /* allow scrolling if the chart is not zoomed */
+        touch-action: pan-y !important;
       }
       .chartLegend {
         text-align: center;
@@ -536,6 +614,31 @@ export class HaChartBase extends LitElement {
         text-align: center;
         font-weight: 300;
         word-break: break-all;
+      }
+      .zoom-hint {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 500ms cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
+      }
+      .zoom-hint.visible {
+        opacity: 1;
+      }
+      .zoom-hint > div {
+        color: white;
+        font-size: 1.5em;
+        font-weight: 500;
+        padding: 8px;
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.3);
+        box-shadow: 0 0 32px 32px rgba(0, 0, 0, 0.3);
       }
     `;
   }

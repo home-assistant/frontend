@@ -81,7 +81,7 @@ class PanelEnergy extends LitElement {
 
           <hui-energy-period-selector
             .hass=${this.hass}
-            collectionKey="energy_dashboard"
+            collection-key="energy_dashboard"
           >
             ${this.hass.user?.is_admin
               ? html` <ha-list-item
@@ -204,32 +204,43 @@ class PanelEnergy extends LitElement {
       type: string,
       statIds: string[],
       unit: string,
-      costType?: string
+      costType?: string,
+      costStatIds?: string[]
     ) {
       if (statIds.length) {
         statIds.forEach((stat) => processStat(stat, type, unit));
-        if (costType) {
-          statIds.forEach((stat) => {
-            const costStat = energyData.state.info.cost_sensors[stat];
-            if (energyData.state.info.cost_sensors[stat]) {
-              processStat(costStat, costType, currency);
-            }
-          });
+        if (costType && costStatIds) {
+          costStatIds.forEach((stat) => processStat(stat, costType, currency));
         }
       }
     };
 
     const grid_consumptions: string[] = [];
     const grid_productions: string[] = [];
+    const grid_consumptions_cost: string[] = [];
+    const grid_productions_cost: string[] = [];
     energy_sources
       .filter((s) => s.type === "grid")
       .forEach((source) => {
         source = source as GridSourceTypeEnergyPreference;
         source.flow_from.forEach((flowFrom) => {
-          grid_consumptions.push(flowFrom.stat_energy_from);
+          const statId = flowFrom.stat_energy_from;
+          grid_consumptions.push(statId);
+          const costId =
+            flowFrom.stat_cost || energyData.state.info.cost_sensors[statId];
+          if (costId) {
+            grid_consumptions_cost.push(costId);
+          }
         });
         source.flow_to.forEach((flowTo) => {
-          grid_productions.push(flowTo.stat_energy_to);
+          const statId = flowTo.stat_energy_to;
+          grid_productions.push(statId);
+          const costId =
+            flowTo.stat_compensation ||
+            energyData.state.info.cost_sensors[statId];
+          if (costId) {
+            grid_productions_cost.push(costId);
+          }
         });
       });
 
@@ -237,13 +248,15 @@ class PanelEnergy extends LitElement {
       "grid_consumption",
       grid_consumptions,
       electricUnit,
-      "grid_consumption_cost"
+      "grid_consumption_cost",
+      grid_consumptions_cost
     );
     printCategory(
       "grid_return",
       grid_productions,
       electricUnit,
-      "grid_return_compensation"
+      "grid_return_compensation",
+      grid_productions_cost
     );
 
     const battery_ins: string[] = [];
@@ -270,33 +283,49 @@ class PanelEnergy extends LitElement {
     printCategory("solar_production", solar_productions, electricUnit);
 
     const gas_consumptions: string[] = [];
+    const gas_consumptions_cost: string[] = [];
     energy_sources
       .filter((s) => s.type === "gas")
       .forEach((source) => {
         source = source as GasSourceTypeEnergyPreference;
-        gas_consumptions.push(source.stat_energy_from);
+        const statId = source.stat_energy_from;
+        gas_consumptions.push(statId);
+        const costId =
+          source.stat_cost || energyData.state.info.cost_sensors[statId];
+        if (costId) {
+          gas_consumptions_cost.push(costId);
+        }
       });
 
     printCategory(
       "gas_consumption",
       gas_consumptions,
       gasUnit,
-      "gas_consumption_cost"
+      "gas_consumption_cost",
+      gas_consumptions_cost
     );
 
     const water_consumptions: string[] = [];
+    const water_consumptions_cost: string[] = [];
     energy_sources
       .filter((s) => s.type === "water")
       .forEach((source) => {
         source = source as WaterSourceTypeEnergyPreference;
-        water_consumptions.push(source.stat_energy_from);
+        const statId = source.stat_energy_from;
+        water_consumptions.push(statId);
+        const costId =
+          source.stat_cost || energyData.state.info.cost_sensors[statId];
+        if (costId) {
+          water_consumptions_cost.push(costId);
+        }
       });
 
     printCategory(
       "water_consumption",
       water_consumptions,
       waterUnit,
-      "water_consumption_cost"
+      "water_consumption_cost",
+      water_consumptions_cost
     );
 
     const devices: string[] = [];

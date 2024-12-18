@@ -37,6 +37,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { hardwareBrandsUrl } from "../../../util/brands-url";
 import { showhardwareAvailableDialog } from "./show-dialog-hardware-available";
+import { extractApiErrorMessage } from "../../../data/hassio/common";
 
 const DATASAMPLES = 60;
 
@@ -55,7 +56,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @state() private _error?: { code: string; message: string };
+  @state() private _error?: string;
 
   @state() private _OSData?: HassioHassOSInfo;
 
@@ -144,7 +145,6 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
   protected willUpdate(): void {
     if (!this.hasUpdated) {
       this._chartOptions = {
-        animation: false,
         responsive: true,
         scales: {
           y: {
@@ -268,11 +268,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
             `
           : ""}
         ${this._error
-          ? html`
-              <ha-alert alert-type="error"
-                >${this._error.message || this._error.code}</ha-alert
-              >
-            `
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
           : ""}
         <div class="content">
           ${boardName || isComponentLoaded(this.hass, "hassio")
@@ -304,7 +300,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                         <mwc-list>
                           <ha-clickable-list-item
                             .href=${documentationURL}
-                            openNewTab
+                            open-new-tab
                             twoline
                             hasMeta
                           >
@@ -466,7 +462,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
         this._OSData = await fetchHassioHassOsInfo(this.hass);
       }
     } catch (err: any) {
-      this._error = err.message || err;
+      this._error = extractApiErrorMessage(err);
     }
   }
 

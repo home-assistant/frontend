@@ -15,7 +15,7 @@ export class HaAttributeIcon extends LitElement {
 
   @property() public attribute?: string;
 
-  @property() public attributeValue?: string;
+  @property({ attribute: false }) public attributeValue?: string;
 
   @property() public icon?: string;
 
