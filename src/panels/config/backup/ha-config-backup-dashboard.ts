@@ -43,7 +43,7 @@ import {
   fetchBackupConfig,
   fetchBackupInfo,
   generateBackup,
-  generateBackupWithStrategySettings,
+  generateBackupWithAutomaticSettings,
   getBackupDownloadUrl,
   getPreferredAgentForDownload,
   isLocalAgent,
@@ -80,9 +80,9 @@ interface BackupRow extends BackupContent {
   formatted_type: string;
 }
 
-type BackupType = "strategy" | "custom";
+type BackupType = "automatic" | "manual";
 
-const TYPE_ORDER: Array<BackupType> = ["strategy", "custom"];
+const TYPE_ORDER: Array<BackupType> = ["automatic", "manual"];
 
 @customElement("ha-config-backup-dashboard")
 class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
@@ -251,7 +251,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
     backups.map((backup) => ({
       ...backup,
       formatted_type: this._formatBackupType(
-        backup.with_strategy_settings ? "strategy" : "custom"
+        backup.with_automatic_settings ? "automatic" : "manual"
       ),
     }))
   );
@@ -302,7 +302,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
                 >
                   <ha-button
                     slot="action"
-                    @click=${this._configureBackupStrategy}
+                    @click=${this._configureAutomaticBackups}
                   >
                     Configure
                   </ha-button>
@@ -317,7 +317,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
                   >
                     <ha-button
                       slot="action"
-                      @click=${this._configureBackupStrategy}
+                      @click=${this._configureAutomaticBackups}
                     >
                       Configure
                     </ha-button>
@@ -326,16 +326,16 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
               : this._needsOnboarding
                 ? html`
                     <ha-backup-summary-card
-                      heading="Configure backup strategy"
+                      heading="Configure automatic backups"
                       description="Have a one-click backup automation with selected data and locations."
                       has-action
                       status="info"
                     >
                       <ha-button
                         slot="action"
-                        @click=${this._setupBackupStrategy}
+                        @click=${this._setupAutomaticBackups}
                       >
-                        Set up backup strategy
+                        Set up automatic backups
                       </ha-button>
                     </ha-backup-summary-card>
                   `
@@ -347,7 +347,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
                     >
                       <ha-button
                         slot="action"
-                        @click=${this._configureBackupStrategy}
+                        @click=${this._configureAutomaticBackups}
                       >
                         Configure
                       </ha-button>
@@ -522,7 +522,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
       return;
     }
 
-    if (type === "custom") {
+    if (type === "manual") {
       const params = await showGenerateBackupDialog(this, {});
 
       if (!params) {
@@ -539,8 +539,8 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
       await this._fetchBackupInfo();
       return;
     }
-    if (type === "strategy") {
-      await generateBackupWithStrategySettings(this.hass);
+    if (type === "automatic") {
+      await generateBackupWithAutomaticSettings(this.hass);
       await this._fetchBackupInfo();
     }
   }
@@ -602,11 +602,11 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
     this._dataTable.clearSelection();
   }
 
-  private _configureBackupStrategy() {
-    navigate("/config/backup/strategy");
+  private _configureAutomaticBackups() {
+    navigate("/config/backup/settings");
   }
 
-  private async _setupBackupStrategy() {
+  private async _setupAutomaticBackups() {
     const success = await showBackupOnboardingDialog(this, {
       cloudStatus: this.cloudStatus,
     });
@@ -615,7 +615,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
     }
 
     this._fetchBackupConfig();
-    await generateBackupWithStrategySettings(this.hass);
+    await generateBackupWithAutomaticSettings(this.hass);
     await this._fetchBackupInfo();
   }
 

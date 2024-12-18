@@ -76,7 +76,7 @@ class DialogNewBackup extends LitElement implements HassDialog {
               .disabled=${!this._params.config.create_backup.password}
             >
               <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
-              <span slot="headline">Use backup strategy</span>
+              <span slot="headline">Use automatic backups</span>
               <span slot="supporting-text">
                 Create a backup with the data and locations you have configured.
               </span>
@@ -97,12 +97,12 @@ class DialogNewBackup extends LitElement implements HassDialog {
   }
 
   private async _custom() {
-    this._params!.submit?.("custom");
+    this._params!.submit?.("manual");
     this.closeDialog();
   }
 
   private async _default() {
-    this._params!.submit?.("strategy");
+    this._params!.submit?.("automatic");
     this.closeDialog();
   }
 

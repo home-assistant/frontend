@@ -70,8 +70,8 @@ const RECOMMENDED_CONFIG: BackupConfig = {
   schedule: {
     state: BackupScheduleState.DAILY,
   },
-  last_attempted_strategy_backup: null,
-  last_completed_strategy_backup: null,
+  last_attempted_automatic_backup: null,
+  last_completed_automatic_backup: null,
 };
 
 @customElement("ha-dialog-backup-onboarding")
@@ -237,7 +237,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
       case "key":
         return "Encryption key";
       case "setup":
-        return "Set up your backup strategy";
+        return "Set up your automatic backups";
       case "schedule":
         return "Automatic backups";
       case "data":
@@ -279,7 +279,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
               src="/static/images/voice-assistant/hi.png"
               alt="Casita Home Assistant logo"
             />
-            <h1>Set up your backup strategy</h1>
+            <h1>Set up your automatic backups</h1>
             <p class="secondary">
               Backups are essential to a reliable smart home. They protect your
               setup against failures and allows you to quickly have a working
@@ -326,7 +326,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
             <ha-md-list-item type="button" @click=${this._done}>
               <span slot="headline">Recommended settings</span>
               <span slot="supporting-text">
-                Set the proven backup strategy of daily backup.
+                Set the proven settings of daily backup.
               </span>
               <ha-icon-next slot="end"> </ha-icon-next>
             </ha-md-list-item>
@@ -368,7 +368,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
         return html`
           <p>
             Home Assistant will upload to these locations when this backup
-            strategy is used. You can use all locations for custom backups.
+            settings are used. You can use all locations for custom backups.
           </p>
           <ha-backup-config-agents
             .hass=${this.hass}

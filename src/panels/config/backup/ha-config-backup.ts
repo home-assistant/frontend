@@ -30,9 +30,9 @@ class HaConfigBackup extends HassRouterPage {
         tag: "ha-config-backup-locations",
         load: () => import("./ha-config-backup-locations"),
       },
-      strategy: {
-        tag: "ha-config-backup-strategy",
-        load: () => import("./ha-config-backup-strategy"),
+      settings: {
+        tag: "ha-config-backup-settings",
+        load: () => import("./ha-config-backup-settings"),
       },
     },
   };

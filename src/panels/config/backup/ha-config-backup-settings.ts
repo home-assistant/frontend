@@ -39,12 +39,12 @@ const INITIAL_BACKUP_CONFIG: BackupConfig = {
   schedule: {
     state: BackupScheduleState.DAILY,
   },
-  last_attempted_strategy_backup: null,
-  last_completed_strategy_backup: null,
+  last_attempted_automatic_backup: null,
+  last_completed_automatic_backup: null,
 };
 
-@customElement("ha-config-backup-strategy")
-class HaConfigBackupStrategy extends LitElement {
+@customElement("ha-config-backup-settings")
+class HaConfigBackupSettings extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public cloudStatus!: CloudStatus;
@@ -75,15 +75,15 @@ class HaConfigBackupStrategy extends LitElement {
         back-path="/config/backup"
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .header=${"Backup strategy"}
+        .header=${"Automatic backups"}
       >
         <div class="content">
           <ha-card>
             <div class="card-header">Automatic backups</div>
             <div class="card-content">
               <p>
-                Let Home Assistant take care of your backup strategy by creating
-                a scheduled backup that also removes older copies.
+                Let Home Assistant take care of your backups by creating a
+                scheduled backup that also removes older copies.
               </p>
               <ha-backup-config-schedule
                 .hass=${this.hass}
@@ -249,6 +249,6 @@ class HaConfigBackupStrategy extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-config-backup-strategy": HaConfigBackupStrategy;
+    "ha-config-backup-settings": HaConfigBackupSettings;
   }
 }
