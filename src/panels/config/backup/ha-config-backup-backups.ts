@@ -339,9 +339,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
               <ha-fab
                 slot="fab"
                 ?disabled=${backupInProgress}
-                .label=${this.hass.localize(
-                  "ui.panel.config.backup.create_backup"
-                )}
+                .label=${"Backup now"}
                 extended
                 @click=${this._newBackup}
               >
