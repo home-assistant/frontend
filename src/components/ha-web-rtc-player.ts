@@ -42,6 +42,9 @@ class HaWebRtcPlayer extends LitElement {
   @property({ type: Boolean, attribute: "muted" })
   public muted = false;
 
+  @property({ type: Boolean, attribute: "twowayaudio" })
+  public twowayaudio = false;
+
   @property({ type: Boolean, attribute: "autoplay" })
   public autoPlay = false;
 
@@ -237,8 +240,7 @@ class HaWebRtcPlayer extends LitElement {
 
     // On most platforms mediaDevices will be undefined if not running in a secure context
     this._twoWayAudio =
-      this._clientConfig.audioDirection === "sendrecv" &&
-      navigator.mediaDevices !== undefined;
+      this.twowayaudio && navigator.mediaDevices !== undefined;
 
     this._peerConnection = new RTCPeerConnection(
       this._clientConfig.configuration
@@ -275,7 +277,7 @@ class HaWebRtcPlayer extends LitElement {
     this._peerConnection.ontrack = this._addTrack;
 
     if (this._twoWayAudio) {
-      const tracks = await this.getMediaTracks("user", {
+      const tracks = await this._getMediaTracks("user", {
         video: false,
         audio: true,
       });
@@ -482,7 +484,7 @@ class HaWebRtcPlayer extends LitElement {
     this._logEvent("end setRemoteDescription");
   }
 
-  private async getMediaTracks(media, constraints) {
+  private async _getMediaTracks(media, constraints) {
     try {
       const stream =
         media === "user"
