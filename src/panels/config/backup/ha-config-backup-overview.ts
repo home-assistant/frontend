@@ -187,15 +187,8 @@ class HaConfigBackupOverview extends LitElement {
                 <ha-backup-summary-card
                   heading="Loading backups"
                   description="Your backup information is being retrieved."
-                  has-action
                   status="loading"
                 >
-                  <ha-button
-                    slot="action"
-                    @click=${this._configureBackupStrategy}
-                  >
-                    Configure
-                  </ha-button>
                 </ha-backup-summary-card>
               `
             : backupInProgress
@@ -203,14 +196,7 @@ class HaConfigBackupOverview extends LitElement {
                   <ha-backup-summary-progress
                     .hass=${this.hass}
                     .manager=${this._manager}
-                    has-action
                   >
-                    <ha-button
-                      slot="action"
-                      @click=${this._configureBackupStrategy}
-                    >
-                      Configure
-                    </ha-button>
                   </ha-backup-summary-progress>
                 `
               : this._needsOnboarding
@@ -233,14 +219,7 @@ class HaConfigBackupOverview extends LitElement {
                     <ha-backup-summary-status
                       .hass=${this.hass}
                       .backups=${this._backups}
-                      has-action
                     >
-                      <ha-button
-                        slot="action"
-                        @click=${this._configureBackupStrategy}
-                      >
-                        Configure
-                      </ha-button>
                     </ha-backup-summary-status>
                   `}
 
@@ -341,6 +320,7 @@ class HaConfigBackupOverview extends LitElement {
           display: flex;
           flex-direction: column;
           margin-bottom: 24px;
+          margin-bottom: 72px;
         }
         .card-actions {
           display: flex;
