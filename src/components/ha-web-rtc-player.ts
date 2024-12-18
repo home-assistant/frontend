@@ -63,15 +63,42 @@ class HaWebRtcPlayer extends LitElement {
 
   private _remoteStream?: MediaStream;
 
+  private _localReturnTrackAdded: boolean = false;
+
   private _localReturnAudioTrack?: MediaStreamTrack;
 
   private _paused: boolean = false;
 
   private _twoWayAudio: boolean = false;
 
-  public toggleMic() {
-    this._localReturnAudioTrack!.enabled =
-      !this._localReturnAudioTrack!.enabled;
+  private async _addLocalReturnAudio() {
+    const tracks = await this._getMediaTracks("user", {
+      video: false,
+      audio: true,
+    });
+    if (tracks && tracks.length > 0) {
+      this._localReturnAudioTrack = tracks[0];
+
+      // Transceivers are in the order they were added
+      const audio_transceiver = this._peerConnection?.getTransceivers()[0];
+      audio_transceiver!.direction = "sendrecv";
+      audio_transceiver!.sender.replaceTrack(this._localReturnAudioTrack);
+
+      this._localReturnTrackAdded = true;
+    } else {
+      this._logEvent("unable to add audio send track");
+      this._twoWayAudio = false;
+      this.requestUpdate();
+    }
+  }
+
+  public async toggleMic() {
+    if (!this._localReturnTrackAdded) {
+      await this._addLocalReturnAudio();
+    } else {
+      this._localReturnAudioTrack!.enabled =
+        !this._localReturnAudioTrack!.enabled;
+    }
     this.requestUpdate();
   }
 
@@ -177,7 +204,8 @@ class HaWebRtcPlayer extends LitElement {
               class="video-controls-right"
             >
               <ha-svg-icon
-                .path=${this._localReturnAudioTrack!.enabled
+                .path=${this._localReturnAudioTrack &&
+                this._localReturnAudioTrack!.enabled
                   ? mdiMicrophone
                   : mdiMicrophoneOff}
               ></ha-svg-icon>
@@ -276,22 +304,7 @@ class HaWebRtcPlayer extends LitElement {
     this._remoteStream = new MediaStream();
     this._peerConnection.ontrack = this._addTrack;
 
-    if (this._twoWayAudio) {
-      const tracks = await this._getMediaTracks("user", {
-        video: false,
-        audio: true,
-      });
-      if (tracks && tracks.length > 0) {
-        this._localReturnAudioTrack = tracks[0];
-        // Start with mic off
-        this._localReturnAudioTrack.enabled = false;
-      }
-      this._peerConnection.addTransceiver(this._localReturnAudioTrack!, {
-        direction: "sendrecv",
-      });
-    } else {
-      this._peerConnection.addTransceiver("audio", { direction: "recvonly" });
-    }
+    this._peerConnection.addTransceiver("audio", { direction: "recvonly" });
     this._peerConnection.addTransceiver("video", { direction: "recvonly" });
   }
 
@@ -359,8 +372,12 @@ class HaWebRtcPlayer extends LitElement {
     this._logEvent("start webRtcOffer", offer_sdp);
 
     try {
-      this._unsub = webRtcOffer(this.hass, this.entityid, offer_sdp, (event) =>
-        this._handleOfferEvent(event)
+      this._unsub = webRtcOffer(
+        this.hass,
+        this.entityid,
+        offer_sdp,
+        (event) => this._handleOfferEvent(event),
+        this._sessionId
       );
     } catch (err: any) {
       this._error = "Failed to start WebRTC stream: " + err.message;
@@ -373,6 +390,9 @@ class HaWebRtcPlayer extends LitElement {
       "ice connection state change",
       this._peerConnection?.iceConnectionState
     );
+    if (this._peerConnection?.iceConnectionState === "connected") {
+      this.requestUpdate();
+    }
     if (this._peerConnection?.iceConnectionState === "failed") {
       this._peerConnection.restartIce();
     }
