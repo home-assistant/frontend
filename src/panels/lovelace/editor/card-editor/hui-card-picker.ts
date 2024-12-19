@@ -69,6 +69,16 @@ export class HuiCardPicker extends LitElement {
 
   private _usedEntities?: string[];
 
+  public async focus(): Promise<void> {
+    const searchInput = this.renderRoot.querySelector("search-input");
+    if (searchInput) {
+      searchInput.focus();
+    } else {
+      await this.updateComplete;
+      this.focus();
+    }
+  }
+
   private _filterCards = memoizeOne(
     (cardElements: CardElement[], filter?: string): CardElement[] => {
       if (!filter) {

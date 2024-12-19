@@ -71,22 +71,22 @@ class DialogNewBackup extends LitElement implements HassDialog {
             dialogInitialFocus
           >
             <ha-md-list-item
-              @click=${this._default}
+              @click=${this._automatic}
               type="button"
               .disabled=${!this._params.config.create_backup.password}
             >
               <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
-              <span slot="headline">Use backup strategy</span>
+              <span slot="headline">Automatic backup</span>
               <span slot="supporting-text">
                 Create a backup with the data and locations you have configured.
               </span>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
-            <ha-md-list-item @click=${this._custom} type="button">
+            <ha-md-list-item @click=${this._manual} type="button">
               <ha-svg-icon slot="start" .path=${mdiPencil}></ha-svg-icon>
-              <span slot="headline">Make custom backup</span>
+              <span slot="headline">Manual backup</span>
               <span slot="supporting-text">
-                Select specific data and locations for a custom backup.
+                Select data and locations for a manual backup.
               </span>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
@@ -96,13 +96,13 @@ class DialogNewBackup extends LitElement implements HassDialog {
     `;
   }
 
-  private async _custom() {
-    this._params!.submit?.("custom");
+  private async _manual() {
+    this._params!.submit?.("manual");
     this.closeDialog();
   }
 
-  private async _default() {
-    this._params!.submit?.("strategy");
+  private async _automatic() {
+    this._params!.submit?.("automatic");
     this.closeDialog();
   }
 

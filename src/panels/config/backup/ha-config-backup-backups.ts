@@ -11,11 +11,13 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { relativeTime } from "../../../common/datetime/relative_time";
+import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../../common/navigate";
+import { capitalizeFirstLetter } from "../../../common/string/capitalize-first-letter";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type {
   DataTableColumnContainer,
@@ -25,7 +27,6 @@ import type {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
-import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
@@ -35,12 +36,13 @@ import "../../../components/ha-svg-icon";
 import { getSignedPath } from "../../../data/auth";
 import type { BackupConfig, BackupContent } from "../../../data/backup";
 import {
+  compareAgents,
   computeBackupAgentName,
   deleteBackup,
   fetchBackupConfig,
   fetchBackupInfo,
   generateBackup,
-  generateBackupWithStrategySettings,
+  generateBackupWithAutomaticSettings,
   getBackupDownloadUrl,
   getPreferredAgentForDownload,
   isLocalAgent,
@@ -50,6 +52,7 @@ import {
   DEFAULT_MANAGER_STATE,
   subscribeBackupEvents,
 } from "../../../data/backup_manager";
+import type { CloudStatus } from "../../../data/cloud";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   showAlertDialog,
@@ -64,18 +67,23 @@ import { brandsUrl } from "../../../util/brands-url";
 import { bytesToString } from "../../../util/bytes-to-string";
 import { fileDownload } from "../../../util/file_download";
 import { showToast } from "../../../util/toast";
-import "./components/ha-backup-summary-card";
-import "./components/ha-backup-summary-progress";
-import "./components/ha-backup-summary-status";
-import { showBackupOnboardingDialog } from "./dialogs/show-dialog-backup_onboarding";
 import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
 import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
-import { computeDomain } from "../../../common/entity/compute_domain";
 
-@customElement("ha-config-backup-dashboard")
-class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
+interface BackupRow extends DataTableRowData, BackupContent {
+  formatted_type: string;
+}
+
+type BackupType = "automatic" | "manual" | "imported";
+
+const TYPE_ORDER: Array<BackupType> = ["automatic", "manual", "imported"];
+
+@customElement("ha-config-backup-backups")
+class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public cloudStatus!: CloudStatus;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -85,11 +93,19 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
 
   @state() private _backups: BackupContent[] = [];
 
-  @state() private _fetching = false;
-
   @state() private _selected: string[] = [];
 
   @state() private _config?: BackupConfig;
+
+  @storage({ key: "backups-table-grouping", state: false, subscribe: false })
+  private _activeGrouping?: string = "formatted_type";
+
+  @storage({
+    key: "backups-table-collapsed",
+    state: false,
+    subscribe: false,
+  })
+  private _activeCollapsed: string[] = [];
 
   private _subscribed?: Promise<() => void>;
 
@@ -97,14 +113,13 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   private _dataTable!: HaTabsSubpageDataTable;
 
   private _columns = memoizeOne(
-    (localize: LocalizeFunc): DataTableColumnContainer<BackupContent> => ({
+    (localize: LocalizeFunc): DataTableColumnContainer<BackupRow> => ({
       name: {
         title: localize("ui.panel.config.backup.name"),
         main: true,
         sortable: true,
         filterable: true,
-        flex: 2,
-        template: (backup) => backup.name,
+        flex: 3,
       },
       size: {
         title: localize("ui.panel.config.backup.size"),
@@ -120,15 +135,17 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
         template: (backup) =>
           relativeTime(new Date(backup.date), this.hass.locale),
       },
-      with_strategy_settings: {
+      formatted_type: {
         title: "Type",
         filterable: true,
         sortable: true,
-        template: (backup) =>
-          backup.with_strategy_settings ? "Strategy" : "Custom",
+        groupable: true,
       },
       locations: {
         title: "Locations",
+        showNarrow: true,
+        minWidth: "60px",
+        maxWidth: "120px",
         template: (backup) => html`
           <div style="display: flex; gap: 4px;">
             ${(backup.agent_ids || []).map((agentId) => {
@@ -198,17 +215,43 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
     })
   );
 
+  private _groupOrder = memoizeOne((activeGrouping: string | undefined) =>
+    activeGrouping === "formatted_type"
+      ? TYPE_ORDER.map((type) => this._formatBackupType(type))
+      : undefined
+  );
+
+  private _handleGroupingChanged(ev: CustomEvent) {
+    this._activeGrouping = ev.detail.value;
+  }
+
+  private _handleCollapseChanged(ev: CustomEvent) {
+    this._activeCollapsed = ev.detail.value;
+  }
+
   private _handleSelectionChanged(
     ev: HASSDomEvent<SelectionChangedEvent>
   ): void {
     this._selected = ev.detail.value;
   }
 
+  private _formatBackupType(type: BackupType): string {
+    // Todo translate
+    return capitalizeFirstLetter(type);
+  }
+
+  private _data = memoizeOne((backups: BackupContent[]): BackupRow[] =>
+    backups.map((backup) => ({
+      ...backup,
+      formatted_type: this._formatBackupType(
+        backup.with_automatic_settings ? "automatic" : "manual"
+      ),
+    }))
+  );
+
   protected render(): TemplateResult {
     const backupInProgress =
       "state" in this._manager && this._manager.state === "in_progress";
-
-    const data: DataTableRowData[] = this._backups;
 
     return html`
       <hass-tabs-subpage-data-table
@@ -221,85 +264,26 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
         ]}
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config/system"
+        back-path="/config/backup/overview"
         clickable
         id="backup_id"
         selectable
         .selected=${this._selected.length}
+        .initialGroupColumn=${this._activeGrouping}
+        .initialCollapsedGroups=${this._activeCollapsed}
+        .groupOrder=${this._groupOrder(this._activeGrouping)}
+        @grouping-changed=${this._handleGroupingChanged}
+        @collapsed-changed=${this._handleCollapseChanged}
         @selection-changed=${this._handleSelectionChanged}
         .route=${this.route}
         @row-click=${this._showBackupDetails}
         .columns=${this._columns(this.hass.localize)}
-        .data=${data}
+        .data=${this._data(this._backups)}
         .noDataText=${this.hass.localize("ui.panel.config.backup.no_backups")}
         .searchLabel=${this.hass.localize(
           "ui.panel.config.backup.picker.search"
         )}
       >
-        <div slot="top_header" class="header">
-          ${this._fetching
-            ? html`
-                <ha-backup-summary-card
-                  heading="Loading backups"
-                  description="Your backup information is being retrieved."
-                  has-action
-                  status="loading"
-                >
-                  <ha-button
-                    slot="action"
-                    @click=${this._configureBackupStrategy}
-                  >
-                    Configure
-                  </ha-button>
-                </ha-backup-summary-card>
-              `
-            : backupInProgress
-              ? html`
-                  <ha-backup-summary-progress
-                    .hass=${this.hass}
-                    .manager=${this._manager}
-                    has-action
-                  >
-                    <ha-button
-                      slot="action"
-                      @click=${this._configureBackupStrategy}
-                    >
-                      Configure
-                    </ha-button>
-                  </ha-backup-summary-progress>
-                `
-              : this._needsOnboarding
-                ? html`
-                    <ha-backup-summary-card
-                      heading="Configure backup strategy"
-                      description="Have a one-click backup automation with selected data and locations."
-                      has-action
-                      status="info"
-                    >
-                      <ha-button
-                        slot="action"
-                        @click=${this._setupBackupStrategy}
-                      >
-                        Setup backup strategy
-                      </ha-button>
-                    </ha-backup-summary-card>
-                  `
-                : html`
-                    <ha-backup-summary-status
-                      .hass=${this.hass}
-                      .backups=${this._backups}
-                      has-action
-                    >
-                      <ha-button
-                        slot="action"
-                        @click=${this._configureBackupStrategy}
-                      >
-                        Configure
-                      </ha-button>
-                    </ha-backup-summary-status>
-                  `}
-        </div>
-
         <div slot="toolbar-icon">
           <ha-button-menu>
             <ha-icon-button
@@ -350,16 +334,19 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
               </div>
             </div> `
           : nothing}
-
-        <ha-fab
-          slot="fab"
-          ?disabled=${backupInProgress}
-          .label=${this.hass.localize("ui.panel.config.backup.create_backup")}
-          extended
-          @click=${this._newBackup}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        ${!this._needsOnboarding
+          ? html`
+              <ha-fab
+                slot="fab"
+                ?disabled=${backupInProgress}
+                .label=${"Backup now"}
+                extended
+                @click=${this._newBackup}
+              >
+                <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+              </ha-fab>
+            `
+          : nothing}
       </hass-tabs-subpage-data-table>
     `;
   }
@@ -406,10 +393,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    this._fetching = true;
-    this._fetchBackupInfo().then(() => {
-      this._fetching = false;
-    });
+    this._fetchBackupInfo();
     this._subscribeEvents();
     this._fetchBackupConfig();
   }
@@ -429,7 +413,11 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
 
   private async _fetchBackupInfo() {
     const info = await fetchBackupInfo(this.hass);
-    this._backups = info.backups;
+    this._backups = info.backups.map((backup) => ({
+      ...backup,
+      agent_ids: backup.agent_ids?.sort(compareAgents),
+      failed_agent_ids: backup.failed_agent_ids?.sort(compareAgents),
+    }));
   }
 
   private async _fetchBackupConfig() {
@@ -438,7 +426,7 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   }
 
   private get _needsOnboarding() {
-    return this._config && !this._config.create_backup.password;
+    return !this._config?.create_backup.password;
   }
 
   private async _uploadBackup(ev) {
@@ -450,15 +438,6 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
   }
 
   private async _newBackup(): Promise<void> {
-    if (this._needsOnboarding) {
-      const success = await showBackupOnboardingDialog(this, {});
-      if (!success) {
-        return;
-      }
-    }
-
-    await this._fetchBackupConfig();
-
     const config = this._config!;
 
     const type = await showNewBackupDialog(this, { config });
@@ -467,25 +446,19 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
       return;
     }
 
-    if (type === "custom") {
+    if (type === "manual") {
       const params = await showGenerateBackupDialog(this, {});
 
       if (!params) {
         return;
       }
 
-      if (!isComponentLoaded(this.hass, "hassio")) {
-        delete params.include_folders;
-        delete params.include_all_addons;
-        delete params.include_addons;
-      }
-
       await generateBackup(this.hass, params);
       await this._fetchBackupInfo();
       return;
     }
-    if (type === "strategy") {
-      await generateBackupWithStrategySettings(this.hass);
+    if (type === "automatic") {
+      await generateBackupWithAutomaticSettings(this.hass);
       await this._fetchBackupInfo();
     }
   }
@@ -545,19 +518,6 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
     }
     await this._fetchBackupInfo();
     this._dataTable.clearSelection();
-  }
-
-  private _configureBackupStrategy() {
-    navigate("/config/backup/strategy");
-  }
-
-  private async _setupBackupStrategy() {
-    const success = await showBackupOnboardingDialog(this, {});
-    if (!success) {
-      return;
-    }
-
-    await this._fetchBackupConfig();
   }
 
   static get styles(): CSSResultGroup {
@@ -629,6 +589,6 @@ class HaConfigBackupDashboard extends SubscribeMixin(LitElement) {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-config-backup-dashboard": HaConfigBackupDashboard;
+    "ha-config-backup-backups": HaConfigBackupBackups;
   }
 }

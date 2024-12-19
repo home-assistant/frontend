@@ -15,8 +15,8 @@ export const enum BackupScheduleState {
 }
 
 export interface BackupConfig {
-  last_attempted_strategy_backup: string | null;
-  last_completed_strategy_backup: string | null;
+  last_attempted_automatic_backup: string | null;
+  last_completed_automatic_backup: string | null;
   create_backup: {
     agent_ids: string[];
     include_addons: string[] | null;
@@ -63,7 +63,8 @@ export interface BackupContent {
   protected: boolean;
   size: number;
   agent_ids?: string[];
-  with_strategy_settings: boolean;
+  failed_agent_ids?: string[];
+  with_automatic_settings: boolean;
 }
 
 export interface BackupData {
@@ -163,11 +164,11 @@ export const generateBackup = (
     ...params,
   });
 
-export const generateBackupWithStrategySettings = (
+export const generateBackupWithAutomaticSettings = (
   hass: HomeAssistant
 ): Promise<void> =>
   hass.callWS({
-    type: "backup/generate_with_strategy_settings",
+    type: "backup/generate_with_automatic_settings",
   });
 
 export const restoreBackup = (
@@ -212,8 +213,12 @@ export const getPreferredAgentForDownload = (agents: string[]) => {
   return localAgents[0] || agents[0];
 };
 
+export const CORE_LOCAL_AGENT = "backup.local";
+export const HASSIO_LOCAL_AGENT = "hassio.local";
+export const CLOUD_AGENT = "cloud.cloud";
+
 export const isLocalAgent = (agentId: string) =>
-  ["backup.local", "hassio.local"].includes(agentId);
+  [CORE_LOCAL_AGENT, HASSIO_LOCAL_AGENT].includes(agentId);
 
 export const computeBackupAgentName = (
   localize: LocalizeFunc,
@@ -232,6 +237,12 @@ export const computeBackupAgentName = (
     : true;
 
   return showName ? `${domainName}: ${name}` : domainName;
+};
+
+export const compareAgents = (a: string, b: string) => {
+  const isLocalA = isLocalAgent(a);
+  const isLocalB = isLocalAgent(b);
+  return isLocalA === isLocalB ? a.localeCompare(b) : isLocalA ? -1 : 1;
 };
 
 export const generateEncryptionKey = () => {
