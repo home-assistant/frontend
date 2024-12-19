@@ -33,7 +33,7 @@ class HaConfigBackupSettings extends LitElement {
 
   protected willUpdate(changedProperties: PropertyValues): void {
     super.willUpdate(changedProperties);
-    if (changedProperties.has("config")) {
+    if (changedProperties.has("config") && !this._config) {
       this._config = this.config;
     }
   }
