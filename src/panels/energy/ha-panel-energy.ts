@@ -357,7 +357,7 @@ class PanelEnergy extends LitElement {
       haStyle,
       css`
         :host hui-energy-period-selector {
-          width: 100%;
+          flex-grow: 1;
           padding-left: 32px;
           padding-inline-start: 32px;
           padding-inline-end: initial;
