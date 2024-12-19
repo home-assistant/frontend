@@ -5,7 +5,12 @@ import { customElement, property, state } from "lit/decorators";
 import type { MediaPickedEvent } from "../data/media-player";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyle } from "../resources/styles";
-import { createImage, generateImageThumbnailUrl } from "../data/image_upload";
+import {
+  MEDIA_PREFIX,
+  getIdFromUrl,
+  createImage,
+  generateImageThumbnailUrl,
+} from "../data/image_upload";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import type { CropOptions } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { showImageCropperDialog } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
@@ -42,20 +47,18 @@ export class HaPictureUpload extends LitElement {
 
   @state() private _uploading = false;
 
-  constructor() {
-    super();
-    this._chooseMedia = this._chooseMedia.bind(this);
-  }
-
   public render(): TemplateResult {
     if (!this.value) {
+      /* eslint-disable lit-a11y/anchor-is-valid */
       const secondary =
         this.secondary ||
         (this.selectMedia
           ? html`${this.hass.localize(
               "ui.components.picture-upload.secondary",
               {
-                select_media: html`<a href="#" @click=${this._chooseMedia}
+                select_media: html`<a
+                  href="javascript:"
+                  @click=${this._chooseMedia}
                   >${this.hass.localize(
                     "ui.components.picture-upload.select_media"
                   )}</a
@@ -63,6 +66,7 @@ export class HaPictureUpload extends LitElement {
               }
             )}`
           : undefined);
+      /* eslint-enable lit-a11y/anchor-is-valid */
 
       return html`
         <ha-file-upload
@@ -175,23 +179,21 @@ export class HaPictureUpload extends LitElement {
     }
   }
 
-  private _chooseMedia(): void {
+  private _chooseMedia = () => {
     showMediaBrowserDialog(this, {
       action: "pick",
       entityId: "browser",
       navigateIds: [
         { media_content_id: undefined, media_content_type: undefined },
         {
-          media_content_id: "media-source://image_upload",
+          media_content_id: MEDIA_PREFIX,
           media_content_type: "app",
         },
       ],
       minimumNavigateLevel: 2,
       mediaPickedCallback: async (pickedMedia: MediaPickedEvent) => {
-        const id = pickedMedia.item.media_content_id;
-        const stringToRemove = "media-source://image_upload/";
-        if (id.startsWith(stringToRemove)) {
-          const mediaId = id.substr(stringToRemove.length);
+        const mediaId = getIdFromUrl(pickedMedia.item.media_content_id);
+        if (mediaId) {
           if (this.crop) {
             const url = generateImageThumbnailUrl(mediaId, undefined, true);
             const response = await fetch(url);
@@ -212,7 +214,7 @@ export class HaPictureUpload extends LitElement {
         }
       },
     });
-  }
+  };
 
   static get styles() {
     return [

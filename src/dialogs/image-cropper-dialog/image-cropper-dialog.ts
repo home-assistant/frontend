@@ -96,7 +96,7 @@ export class HaImagecropperDialog extends LitElement {
         ${this.hass.localize("ui.common.cancel")}
       </mwc-button>
       ${this._isTargetAspectRatio
-        ? html` <mwc-button slot="primaryAction" @click=${this._useOriginal}>
+        ? html`<mwc-button slot="primaryAction" @click=${this._useOriginal}>
             ${this.hass.localize("ui.dialogs.image_cropper.use_original")}
           </mwc-button>`
         : nothing}
