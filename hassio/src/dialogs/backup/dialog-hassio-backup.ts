@@ -195,8 +195,16 @@ class HassioBackupDialog
     }
     if (
       !(await showConfirmationDialog(this, {
-        title: this._localize("confirm_restore_partial_backup_title"),
-        text: this._localize("confirm_restore_partial_backup_text"),
+        title: this._localize(
+          this._backupContent.backupType === "full"
+            ? "confirm_restore_full_backup_title"
+            : "confirm_restore_partial_backup_title"
+        ),
+        text: this._localize(
+          this._backupContent.backupType === "full"
+            ? "confirm_restore_full_backup_text"
+            : "confirm_restore_partial_backup_text"
+        ),
         confirmText: this._localize("restore"),
         dismissText: this._localize("cancel"),
       }))
@@ -217,10 +225,8 @@ class HassioBackupDialog
       this._dialogParams?.onRestoring?.();
       this.closeDialog();
     } catch (error: any) {
-      this._error = error?.body?.message;
-      if (!this._error) {
-        this._error = this._localize("restore_start_failed");
-      }
+      this._error =
+        error?.body?.message || this._localize("restore_start_failed");
     } finally {
       this._restoringBackup = false;
     }

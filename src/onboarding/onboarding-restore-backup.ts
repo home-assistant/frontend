@@ -25,46 +25,34 @@ class OnboardingRestoreBackup extends LitElement {
 
   @state() private _restoring = false;
 
-  @state() private _error?: string;
-
   @state() private _backupSlug?: string;
 
   protected render(): TemplateResult {
     return html`
-      ${this._error
+      ${this._restoring
         ? html`<h1>
-              ${this.localize("ui.panel.page-onboarding.restore.failed")}
+              ${this.localize("ui.panel.page-onboarding.restore.in_progress")}
             </h1>
-            <p>${this._error}</p>`
-        : this._restoring
-          ? html`<h1>
-                ${this.localize("ui.panel.page-onboarding.restore.in_progress")}
-              </h1>
-              <ha-alert alert-type="info">
-                ${this.localize("ui.panel.page-onboarding.restore.in_progress")}
-              </ha-alert>
-              <onboarding-loading></onboarding-loading>`
-          : html` <h1>
-                ${this.localize("ui.panel.page-onboarding.restore.header")}
-              </h1>
-              <hassio-upload-backup
-                @backup-uploaded=${this._backupUploaded}
-                @backup-cleared=${this._backupCleared}
-                .hass=${this.hass}
-                .localize=${this.localize}
-              ></hassio-upload-backup>`}
+            <ha-alert alert-type="info">
+              ${this.localize("ui.panel.page-onboarding.restore.in_progress")}
+            </ha-alert>
+            <onboarding-loading></onboarding-loading>`
+        : html` <h1>
+              ${this.localize("ui.panel.page-onboarding.restore.header")}
+            </h1>
+            <hassio-upload-backup
+              @backup-uploaded=${this._backupUploaded}
+              @backup-cleared=${this._backupCleared}
+              .hass=${this.hass}
+              .localize=${this.localize}
+            ></hassio-upload-backup>`}
       <div class="footer">
         <ha-button @click=${this._back} .disabled=${!!this._restoring}>
           ${this.localize("ui.panel.page-onboarding.back")}
         </ha-button>
-        ${!this._error && this._backupSlug
+        ${this._backupSlug
           ? html`<ha-button @click=${this._showBackupDialog}>
               ${this.localize("ui.panel.page-onboarding.restore.restore")}
-            </ha-button>`
-          : nothing}
-        ${this._error
-          ? html`<ha-button @click=${this._retry}>
-              ${this.localize("ui.panel.page-onboarding.restore.retry")}
             </ha-button>`
           : nothing}
       </div>
@@ -73,12 +61,6 @@ class OnboardingRestoreBackup extends LitElement {
 
   private _back(): void {
     navigate(`${location.pathname}?${removeSearchParam("page")}`);
-  }
-
-  private _retry(): void {
-    this._error = undefined;
-    this._restoring = false;
-    this._backupSlug = undefined;
   }
 
   private _backupUploaded(ev) {
