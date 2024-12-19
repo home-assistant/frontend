@@ -49,24 +49,23 @@ export class HaPictureUpload extends LitElement {
 
   public render(): TemplateResult {
     if (!this.value) {
-      /* eslint-disable lit-a11y/anchor-is-valid */
       const secondary =
         this.secondary ||
         (this.selectMedia
           ? html`${this.hass.localize(
               "ui.components.picture-upload.secondary",
               {
-                select_media: html`<a
-                  href="javascript:"
+                select_media: html`<button
+                  class="link"
                   @click=${this._chooseMedia}
-                  >${this.hass.localize(
+                >
+                  ${this.hass.localize(
                     "ui.components.picture-upload.select_media"
-                  )}</a
-                >`,
+                  )}
+                </button>`,
               }
             )}`
           : undefined);
-      /* eslint-enable lit-a11y/anchor-is-valid */
 
       return html`
         <ha-file-upload
