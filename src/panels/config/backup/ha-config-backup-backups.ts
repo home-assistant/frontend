@@ -81,11 +81,11 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property() public manager!: ManagerStateEvent;
+  @property({ attribute: false }) public manager!: ManagerStateEvent;
 
-  @property() public backups: BackupContent[] = [];
+  @property({ attribute: false }) public backups: BackupContent[] = [];
 
-  @property() public config?: BackupConfig;
+  @property({ attribute: false }) public config?: BackupConfig;
 
   @state() private _selected: string[] = [];
 

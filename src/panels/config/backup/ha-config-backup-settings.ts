@@ -38,11 +38,6 @@ class HaConfigBackupSettings extends LitElement {
     }
   }
 
-  protected firstUpdated(_changedProperties: PropertyValues): void {
-    super.firstUpdated(_changedProperties);
-    fireEvent(this, "ha-refresh-backup-config");
-  }
-
   protected render() {
     if (!this._config) {
       return nothing;
@@ -199,6 +194,7 @@ class HaConfigBackupSettings extends LitElement {
       retention: this._config!.retention,
       schedule: this._config!.schedule.state,
     });
+    fireEvent(this, "ha-refresh-backup-config");
   }
 
   static styles = css`
