@@ -2,22 +2,22 @@ import { mdiDatabase } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeDomain } from "../../../../common/entity/compute_domain";
-import "../../../../components/ha-md-list";
-import "../../../../components/ha-md-list-item";
-import "../../../../components/ha-svg-icon";
-import "../../../../components/ha-switch";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { computeDomain } from "../../../../../common/entity/compute_domain";
+import "../../../../../components/ha-md-list";
+import "../../../../../components/ha-md-list-item";
+import "../../../../../components/ha-svg-icon";
+import "../../../../../components/ha-switch";
 import {
   CLOUD_AGENT,
   compareAgents,
   computeBackupAgentName,
   fetchBackupAgentsInfo,
   isLocalAgent,
-} from "../../../../data/backup";
-import type { CloudStatus } from "../../../../data/cloud";
-import type { HomeAssistant } from "../../../../types";
-import { brandsUrl } from "../../../../util/brands-url";
+} from "../../../../../data/backup";
+import type { CloudStatus } from "../../../../../data/cloud";
+import type { HomeAssistant } from "../../../../../types";
+import { brandsUrl } from "../../../../../util/brands-url";
 
 const DEFAULT_AGENTS = [];
 

@@ -87,7 +87,7 @@ class HaConfigBackupDetails extends LitElement {
 
     return html`
       <hass-subpage
-        back-path="/config/backup"
+        back-path="/config/backup/backups"
         .hass=${this.hass}
         .narrow=${this.narrow}
         .header=${this._backup?.name || "Backup"}

@@ -33,11 +33,11 @@ import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { fileDownload } from "../../../../util/file_download";
 import { showToast } from "../../../../util/toast";
-import "../components/ha-backup-config-agents";
-import "../components/ha-backup-config-data";
-import type { BackupConfigData } from "../components/ha-backup-config-data";
-import "../components/ha-backup-config-schedule";
-import type { BackupConfigSchedule } from "../components/ha-backup-config-schedule";
+import "../components/config/ha-backup-config-agents";
+import "../components/config/ha-backup-config-data";
+import type { BackupConfigData } from "../components/config/ha-backup-config-data";
+import "../components/config/ha-backup-config-schedule";
+import type { BackupConfigSchedule } from "../components/config/ha-backup-config-schedule";
 import type { BackupOnboardingDialogParams } from "./show-dialog-backup_onboarding";
 
 const STEPS = [
@@ -367,8 +367,8 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
       case "locations":
         return html`
           <p>
-            Home Assistant will upload to these locations when this backup
-            settings are used. You can use all locations for custom backups.
+            Home Assistant will upload to these locations when an automatic
+            backup is made. You can use all locations for manual backups.
           </p>
           <ha-backup-config-agents
             .hass=${this.hass}
