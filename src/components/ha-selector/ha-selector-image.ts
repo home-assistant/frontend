@@ -96,6 +96,7 @@ export class HaImageSelector extends LitElement {
                 .value=${this.value?.startsWith(URL_PREFIX) ? this.value : null}
                 .original=${this.selector.image?.original}
                 .cropOptions=${this.selector.image?.crop}
+                select-media
                 @change=${this._pictureChanged}
               ></ha-picture-upload>
             `}

@@ -10,6 +10,7 @@ export interface MediaPlayerBrowseDialogParams {
   entityId: string;
   mediaPickedCallback: (pickedMedia: MediaPickedEvent) => void;
   navigateIds?: MediaPlayerItemId[];
+  minimumNavigateLevel?: number;
 }
 
 export const showMediaBrowserDialog = (

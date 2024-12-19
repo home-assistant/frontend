@@ -757,7 +757,9 @@
         "change_picture": "Change picture",
         "current_image_alt": "Current picture",
         "supported_formats": "Supports JPEG, PNG, or GIF image.",
-        "unsupported_format": "Unsupported format, please choose a JPEG, PNG, or GIF image."
+        "unsupported_format": "Unsupported format, please choose a JPEG, PNG, or GIF image.",
+        "secondary": "Drop your file here or {select_media}",
+        "select_media": "select from media"
       },
       "color-picker": {
         "default": "default",
@@ -1226,7 +1228,8 @@
       },
       "image_cropper": {
         "crop": "Crop",
-        "crop_image": "Picture to crop"
+        "crop_image": "Picture to crop",
+        "use_original": "Use original"
       },
       "date-picker": {
         "today": "Today",
