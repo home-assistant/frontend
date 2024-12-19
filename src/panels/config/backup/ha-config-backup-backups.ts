@@ -6,14 +6,14 @@ import {
   mdiPlus,
   mdiUpload,
 } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { storage } from "../../../common/decorators/storage";
-import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../../common/navigate";
@@ -36,11 +36,8 @@ import "../../../components/ha-svg-icon";
 import { getSignedPath } from "../../../data/auth";
 import type { BackupConfig, BackupContent } from "../../../data/backup";
 import {
-  compareAgents,
   computeBackupAgentName,
   deleteBackup,
-  fetchBackupConfig,
-  fetchBackupInfo,
   generateBackup,
   generateBackupWithAutomaticSettings,
   getBackupDownloadUrl,
@@ -48,10 +45,6 @@ import {
   isLocalAgent,
 } from "../../../data/backup";
 import type { ManagerStateEvent } from "../../../data/backup_manager";
-import {
-  DEFAULT_MANAGER_STATE,
-  subscribeBackupEvents,
-} from "../../../data/backup_manager";
 import type { CloudStatus } from "../../../data/cloud";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
@@ -66,7 +59,6 @@ import type { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { bytesToString } from "../../../util/bytes-to-string";
 import { fileDownload } from "../../../util/file_download";
-import { showToast } from "../../../util/toast";
 import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
 import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
@@ -89,13 +81,13 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public route!: Route;
 
-  @state() private _manager: ManagerStateEvent = DEFAULT_MANAGER_STATE;
+  @property() private manager!: ManagerStateEvent;
 
-  @state() private _backups: BackupContent[] = [];
+  @property() private backups: BackupContent[] = [];
+
+  @property() private config?: BackupConfig;
 
   @state() private _selected: string[] = [];
-
-  @state() private _config?: BackupConfig;
 
   @storage({ key: "backups-table-grouping", state: false, subscribe: false })
   private _activeGrouping?: string = "formatted_type";
@@ -106,8 +98,6 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     subscribe: false,
   })
   private _activeCollapsed: string[] = [];
-
-  private _subscribed?: Promise<() => void>;
 
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
@@ -251,7 +241,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
 
   protected render(): TemplateResult {
     const backupInProgress =
-      "state" in this._manager && this._manager.state === "in_progress";
+      "state" in this.manager && this.manager.state === "in_progress";
 
     return html`
       <hass-tabs-subpage-data-table
@@ -278,7 +268,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         .route=${this.route}
         @row-click=${this._showBackupDetails}
         .columns=${this._columns(this.hass.localize)}
-        .data=${this._data(this._backups)}
+        .data=${this._data(this.backups)}
         .noDataText=${this.hass.localize("ui.panel.config.backup.no_backups")}
         .searchLabel=${this.hass.localize(
           "ui.panel.config.backup.picker.search"
@@ -351,82 +341,8 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     `;
   }
 
-  private _unsubscribeEvents() {
-    if (this._subscribed) {
-      this._subscribed.then((unsub) => unsub());
-      this._subscribed = undefined;
-    }
-  }
-
-  private async _subscribeEvents() {
-    this._unsubscribeEvents();
-    if (!this.isConnected) {
-      return;
-    }
-
-    this._subscribed = subscribeBackupEvents(this.hass!, (event) => {
-      this._manager = event;
-      if ("state" in event) {
-        if (event.state === "completed" || event.state === "failed") {
-          this._fetchBackupInfo();
-        }
-        if (event.state === "failed") {
-          let message = "";
-          switch (this._manager.manager_state) {
-            case "create_backup":
-              message = "Failed to create backup";
-              break;
-            case "restore_backup":
-              message = "Failed to restore backup";
-              break;
-            case "receive_backup":
-              message = "Failed to upload backup";
-              break;
-          }
-          if (message) {
-            showToast(this, { message });
-          }
-        }
-      }
-    });
-  }
-
-  protected firstUpdated(changedProps: PropertyValues) {
-    super.firstUpdated(changedProps);
-    this._fetchBackupInfo();
-    this._subscribeEvents();
-    this._fetchBackupConfig();
-  }
-
-  public connectedCallback() {
-    super.connectedCallback();
-    if (this.hasUpdated) {
-      this._fetchBackupInfo();
-      this._subscribeEvents();
-    }
-  }
-
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this._unsubscribeEvents();
-  }
-
-  private async _fetchBackupInfo() {
-    const info = await fetchBackupInfo(this.hass);
-    this._backups = info.backups.map((backup) => ({
-      ...backup,
-      agent_ids: backup.agent_ids?.sort(compareAgents),
-      failed_agent_ids: backup.failed_agent_ids?.sort(compareAgents),
-    }));
-  }
-
-  private async _fetchBackupConfig() {
-    const { config } = await fetchBackupConfig(this.hass);
-    this._config = config;
-  }
-
   private get _needsOnboarding() {
-    return !this._config?.create_backup.password;
+    return !this.config?.create_backup.password;
   }
 
   private async _uploadBackup(ev) {
@@ -438,7 +354,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   }
 
   private async _newBackup(): Promise<void> {
-    const config = this._config!;
+    const config = this.config!;
 
     const type = await showNewBackupDialog(this, { config });
 
@@ -454,12 +370,12 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
       }
 
       await generateBackup(this.hass, params);
-      await this._fetchBackupInfo();
+      fireEvent(this, "ha-refresh-backup-info");
       return;
     }
     if (type === "automatic") {
       await generateBackupWithAutomaticSettings(this.hass);
-      await this._fetchBackupInfo();
+      fireEvent(this, "ha-refresh-backup-info");
     }
   }
 
@@ -490,7 +406,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     }
 
     await deleteBackup(this.hass, backup.backup_id);
-    this._fetchBackupInfo();
+    fireEvent(this, "ha-refresh-backup-info");
   }
 
   private async _deleteSelected() {
@@ -516,7 +432,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
       });
       return;
     }
-    await this._fetchBackupInfo();
+    fireEvent(this, "ha-refresh-backup-info");
     this._dataTable.clearSelection();
   }
 

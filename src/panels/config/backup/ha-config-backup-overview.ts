@@ -1,7 +1,8 @@
 import { mdiDotsVertical, mdiPlus, mdiUpload } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
@@ -13,8 +14,6 @@ import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import {
-  fetchBackupConfig,
-  fetchBackupInfo,
   generateBackup,
   generateBackupWithAutomaticSettings,
   type BackupConfig,
@@ -50,29 +49,11 @@ class HaConfigBackupOverview extends LitElement {
 
   @property({ attribute: false }) public manager!: ManagerStateEvent;
 
-  @state() private _backups: BackupContent[] = [];
+  @property({ attribute: false }) public backups: BackupContent[] = [];
 
-  @state() private _fetching = false;
+  @property({ attribute: false }) public fetching = false;
 
-  @state() private _config?: BackupConfig;
-
-  protected firstUpdated(changedProps: PropertyValues) {
-    super.firstUpdated(changedProps);
-    this._fetching = true;
-    Promise.all([this._fetchBackupInfo(), this._fetchBackupConfig()]).finally(
-      () => {
-        this._fetching = false;
-      }
-    );
-  }
-
-  public connectedCallback() {
-    super.connectedCallback();
-    if (this.hasUpdated) {
-      this._fetchBackupInfo();
-      this._fetchBackupConfig();
-    }
-  }
+  @property({ attribute: false }) public config?: BackupConfig;
 
   private async _uploadBackup(ev) {
     if (!shouldHandleRequestSelectedEvent(ev)) {
@@ -96,19 +77,9 @@ class HaConfigBackupOverview extends LitElement {
       return;
     }
 
-    this._fetchBackupConfig();
+    fireEvent(this, "ha-refresh-backup-config");
     await generateBackupWithAutomaticSettings(this.hass);
-    await this._fetchBackupInfo();
-  }
-
-  private async _fetchBackupInfo() {
-    const info = await fetchBackupInfo(this.hass);
-    this._backups = info.backups;
-  }
-
-  private async _fetchBackupConfig() {
-    const { config } = await fetchBackupConfig(this.hass);
-    this._config = config;
+    fireEvent(this, "ha-refresh-backup-info");
   }
 
   private async _newBackup(): Promise<void> {
@@ -117,11 +88,11 @@ class HaConfigBackupOverview extends LitElement {
       return;
     }
 
-    if (!this._config) {
+    if (!this.config) {
       return;
     }
 
-    const config = this._config;
+    const config = this.config;
 
     const type = await showNewBackupDialog(this, { config });
 
@@ -137,17 +108,17 @@ class HaConfigBackupOverview extends LitElement {
       }
 
       await generateBackup(this.hass, params);
-      await this._fetchBackupInfo();
+      fireEvent(this, "ha-refresh-backup-info");
       return;
     }
     if (type === "automatic") {
       await generateBackupWithAutomaticSettings(this.hass);
-      await this._fetchBackupInfo();
+      fireEvent(this, "ha-refresh-backup-info");
     }
   }
 
   private get _needsOnboarding() {
-    return !this._config?.create_backup.password;
+    return !this.config?.create_backup.password;
   }
 
   protected render(): TemplateResult {
@@ -186,7 +157,7 @@ class HaConfigBackupOverview extends LitElement {
                 >
                 </ha-backup-overview-progress>
               `
-            : this._fetching
+            : this.fetching
               ? html`
                   <ha-backup-summary-card
                     heading="Loading backups"
@@ -206,22 +177,22 @@ class HaConfigBackupOverview extends LitElement {
                 : html`
                     <ha-backup-overview-summary
                       .hass=${this.hass}
-                      .backups=${this._backups}
-                      .config=${this._config}
+                      .backups=${this.backups}
+                      .config=${this.config}
                     >
                     </ha-backup-overview-summary>
                   `}
 
           <ha-backup-overview-backups
             .hass=${this.hass}
-            .backups=${this._backups}
+            .backups=${this.backups}
           ></ha-backup-overview-backups>
 
           ${!this._needsOnboarding
             ? html`
                 <ha-backup-overview-settings
                   .hass=${this.hass}
-                  .config=${this._config!}
+                  .config=${this.config!}
                 ></ha-backup-overview-settings>
               `
             : nothing}
