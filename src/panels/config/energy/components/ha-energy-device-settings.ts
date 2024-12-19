@@ -42,16 +42,6 @@ export class EnergyDeviceSettings extends LitElement {
   @property({ attribute: false })
   public validationResult?: EnergyPreferencesValidation;
 
-  private _deviceKeys = new WeakMap<any, string>();
-
-  private _getKey(device) {
-    if (!this._deviceKeys.has(device)) {
-      this._deviceKeys.set(device, Math.random().toString());
-    }
-
-    return this._deviceKeys.get(device)!;
-  }
-
   protected render(): TemplateResult {
     return html`
       <ha-card outlined>
@@ -96,7 +86,7 @@ export class EnergyDeviceSettings extends LitElement {
             <div class="devices">
               ${repeat(
                 this.preferences.device_consumption,
-                (device) => this._getKey(device),
+                (device) => device.stat_consumption,
                 (device) => {
                   const entityState = this.hass.states[device.stat_consumption];
                   return html`
