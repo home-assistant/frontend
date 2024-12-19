@@ -47,11 +47,14 @@ class OnboardingRestoreBackup extends LitElement {
               .localize=${this.localize}
             ></hassio-upload-backup>`}
       <div class="footer">
-        <ha-button @click=${this._back} .disabled=${!!this._restoring}>
+        <ha-button @click=${this._back} .disabled=${this._restoring}>
           ${this.localize("ui.panel.page-onboarding.back")}
         </ha-button>
         ${this._backupSlug
-          ? html`<ha-button @click=${this._showBackupDialog}>
+          ? html`<ha-button
+              @click=${this._showBackupDialog}
+              .disabled=${this._restoring}
+            >
               ${this.localize("ui.panel.page-onboarding.restore.restore")}
             </ha-button>`
           : nothing}
@@ -102,6 +105,7 @@ class OnboardingRestoreBackup extends LitElement {
       onboarding: true,
       localize: this.localize,
       onRestoring: () => {
+        this._restoring = true;
         this._scheduleCheckRestoreStatus();
       },
     });
