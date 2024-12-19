@@ -5,7 +5,8 @@ import type { RouterOptions } from "../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../layouts/hass-router-page";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HomeAssistant } from "../../../types";
-import "./ha-config-backup-dashboard";
+import "./ha-config-backup-overview";
+import "./ha-config-backup-backups";
 
 @customElement("ha-config-backup")
 class HaConfigBackup extends HassRouterPage {
@@ -16,10 +17,14 @@ class HaConfigBackup extends HassRouterPage {
   @property({ type: Boolean }) public narrow = false;
 
   protected routerOptions: RouterOptions = {
-    defaultPage: "dashboard",
+    defaultPage: "overview",
     routes: {
-      dashboard: {
-        tag: "ha-config-backup-dashboard",
+      overview: {
+        tag: "ha-config-backup-overview",
+        cache: true,
+      },
+      backups: {
+        tag: "ha-config-backup-backups",
         cache: true,
       },
       details: {
