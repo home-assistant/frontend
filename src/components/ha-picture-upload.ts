@@ -195,8 +195,16 @@ export class HaPictureUpload extends LitElement {
         if (mediaId) {
           if (this.crop) {
             const url = generateImageThumbnailUrl(mediaId, undefined, true);
-            const response = await fetch(url);
-            const data = await response.blob();
+            let data;
+            try {
+              const response = await fetch(url);
+              data = await response.blob();
+            } catch (err: any) {
+              showAlertDialog(this, {
+                text: err.toString(),
+              });
+              return;
+            }
             const metadata = {
               type: pickedMedia.item.media_content_type,
             };
