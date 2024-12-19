@@ -67,12 +67,6 @@ function copyPolyfills(staticDir) {
   );
 }
 
-function copyLoaderJS(staticDir) {
-  const staticPath = genStaticPath(staticDir);
-  copyFileDir(npmPath("systemjs/dist/s.min.js"), staticPath("js"));
-  copyFileDir(npmPath("systemjs/dist/s.min.js.map"), staticPath("js"));
-}
-
 function copyFonts(staticDir) {
   const staticPath = genStaticPath(staticDir);
   // Local fonts
@@ -140,8 +134,6 @@ gulp.task("copy-static-app", async () => {
   const staticDir = paths.app_output_static;
   // Basic static files
   fs.copySync(polyPath("public"), paths.app_output_root);
-
-  copyLoaderJS(staticDir);
   copyPolyfills(staticDir);
   copyFonts(staticDir);
   copyTranslations(staticDir);
@@ -164,8 +156,6 @@ gulp.task("copy-static-demo", async () => {
   );
   // Copy demo static files
   fs.copySync(path.resolve(paths.demo_dir, "public"), paths.demo_output_root);
-
-  copyLoaderJS(paths.demo_output_static);
   copyPolyfills(paths.demo_output_static);
   copyMapPanel(paths.demo_output_static);
   copyFonts(paths.demo_output_static);
@@ -179,8 +169,6 @@ gulp.task("copy-static-cast", async () => {
   fs.copySync(polyPath("public/static"), paths.cast_output_static);
   // Copy cast static files
   fs.copySync(path.resolve(paths.cast_dir, "public"), paths.cast_output_root);
-
-  copyLoaderJS(paths.cast_output_static);
   copyPolyfills(paths.cast_output_static);
   copyMapPanel(paths.cast_output_static);
   copyFonts(paths.cast_output_static);
