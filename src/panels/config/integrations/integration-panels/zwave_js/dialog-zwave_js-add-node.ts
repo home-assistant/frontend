@@ -22,6 +22,7 @@ import type {
   RequestedGrant,
 } from "../../../../../data/zwave_js";
 import {
+  cancelSecureBootstrapS2,
   InclusionStrategy,
   MINIMUM_QR_STRING_LENGTH,
   provisionZwaveSmartStartNode,
@@ -104,11 +105,21 @@ class DialogZWaveJSAddNode extends LitElement {
   }
 
   public async showDialog(params: ZWaveJSAddNodeDialogParams): Promise<void> {
+    if (this._status) {
+      // already started
+      return;
+    }
     this._params = params;
     this._entryId = params.entry_id;
     this._status = "loading";
     this._checkSmartStartSupport();
-    this._startInclusion();
+    if (params.dsk) {
+      this._status = "validate_dsk_enter_pin";
+      this._dsk = params.dsk;
+      this._startInclusion(undefined, params.dsk);
+    } else {
+      this._startInclusion();
+    }
   }
 
   @query("#pin-input") private _pinInput?: HaTextField;
@@ -868,6 +879,16 @@ class DialogZWaveJSAddNode extends LitElement {
     }
     if (this._entryId) {
       stopZwaveInclusion(this.hass, this._entryId);
+      if (
+        this._status &&
+        [
+          "waiting_for_device",
+          "validate_dsk_enter_pin",
+          "grant_security_classes",
+        ].includes(this._status)
+      ) {
+        cancelSecureBootstrapS2(this.hass, this._entryId);
+      }
       if (this._params?.onStop) {
         this._params.onStop();
       }

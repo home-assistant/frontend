@@ -14,9 +14,9 @@ import { fetchCloudStatus } from "../../data/cloud";
 import { listSTTEngines } from "../../data/stt";
 import { listTTSEngines, listTTSVoices } from "../../data/tts";
 import type { HomeAssistant } from "../../types";
+import { documentationUrl } from "../../util/documentation-url";
 import { AssistantSetupStyles } from "./styles";
 import { STEP } from "./voice-assistant-setup-dialog";
-import { documentationUrl } from "../../util/documentation-url";
 
 @customElement("ha-voice-assistant-setup-step-pipeline")
 export class HaVoiceAssistantSetupStepPipeline extends LitElement {
@@ -25,9 +25,9 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
   @property({ attribute: false })
   public assistConfiguration?: AssistSatelliteConfiguration;
 
-  @property() public deviceId!: string;
+  @property({ attribute: false }) public deviceId!: string;
 
-  @property() public assistEntityId?: string;
+  @property({ attribute: false }) public assistEntityId?: string;
 
   @state() private _cloudChecked = false;
 
@@ -57,10 +57,10 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
     }, 600);
     setTimeout(() => {
       this._showThird = true;
-    }, 3000);
+    }, 2000);
     setTimeout(() => {
       this._showFourth = true;
-    }, 8000);
+    }, 3000);
   }
 
   protected override render() {
@@ -69,10 +69,15 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
     }
 
     return html`<div class="content">
-      <h1>What hardware do you want to use?</h1>
+      <h1>
+        ${this.hass.localize(
+          "ui.panel.config.voice_assistants.satellite_wizard.pipeline.title"
+        )}
+      </h1>
       <p class="secondary">
-        How quickly your assistant responds depends on the power of the
-        hardware.
+        ${this.hass.localize(
+          "ui.panel.config.voice_assistants.satellite_wizard.pipeline.secondary"
+        )}
       </p>
       <div class="container">
         <div class="messages-container cloud">
@@ -80,7 +85,12 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
             ${!this._showFirst ? "…" : "Turn on the lights in the bedroom"}
           </div>
           ${this._showFirst
-            ? html`<div class="timing user">0.2 seconds</div>`
+            ? html`<div class="timing user">
+                0.2
+                ${this.hass.localize(
+                  "ui.panel.config.voice_assistants.satellite_wizard.pipeline.seconds"
+                )}
+              </div>`
             : nothing}
           ${this._showFirst
             ? html` <div class="message hass ${this._showSecond ? "show" : ""}">
@@ -88,12 +98,23 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
               </div>`
             : nothing}
           ${this._showSecond
-            ? html`<div class="timing hass">0.4 seconds</div>`
+            ? html`<div class="timing hass">
+                0.4
+                ${this.hass.localize(
+                  "ui.panel.config.voice_assistants.satellite_wizard.pipeline.seconds"
+                )}
+              </div>`
             : nothing}
         </div>
         <h2>Home Assistant Cloud</h2>
-        <p>Ideal if you don't have a powerful system at home.</p>
-        <ha-button @click=${this._setupCloud} unelevated>Learn more</ha-button>
+        <p>
+          ${this.hass.localize(
+            "ui.panel.config.voice_assistants.satellite_wizard.pipeline.cloud.description"
+          )}
+        </p>
+        <ha-button @click=${this._setupCloud} unelevated
+          >${this.hass.localize("ui.panel.config.common.learn_more")}</ha-button
+        >
       </div>
       <div class="container">
         <div class="messages-container rpi">
@@ -101,7 +122,12 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
             ${!this._showThird ? "…" : "Turn on the lights in the bedroom"}
           </div>
           ${this._showThird
-            ? html`<div class="timing user">3 seconds</div>`
+            ? html`<div class="timing user">
+                2
+                ${this.hass.localize(
+                  "ui.panel.config.voice_assistants.satellite_wizard.pipeline.seconds"
+                )}
+              </div>`
             : nothing}
           ${this._showThird
             ? html`<div class="message hass ${this._showFourth ? "show" : ""}">
@@ -109,13 +135,23 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
               </div>`
             : nothing}
           ${this._showFourth
-            ? html`<div class="timing hass">5 seconds</div>`
+            ? html`<div class="timing hass">
+                1
+                ${this.hass.localize(
+                  "ui.panel.config.voice_assistants.satellite_wizard.pipeline.seconds"
+                )}
+              </div>`
             : nothing}
         </div>
-        <h2>Do-it-yourself</h2>
+        <h2>
+          ${this.hass.localize(
+            "ui.panel.config.voice_assistants.satellite_wizard.pipeline.local.title"
+          )}
+        </h2>
         <p>
-          Install add-ons or containers to run it on your own system. Powerful
-          hardware is needed for fast responses.
+          ${this.hass.localize(
+            "ui.panel.config.voice_assistants.satellite_wizard.pipeline.local.description"
+          )}
         </p>
         <div class="row">
           <a
@@ -128,11 +164,15 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
           >
             <ha-button>
               <ha-svg-icon .path=${mdiOpenInNew} slot="icon"></ha-svg-icon>
-              Learn more</ha-button
+              ${this.hass.localize(
+                "ui.panel.config.common.learn_more"
+              )}</ha-button
             >
           </a>
           <ha-button @click=${this._setupLocal} unelevated
-            >Setup with add-ons</ha-button
+            >${this.hass.localize(
+              "ui.panel.config.voice_assistants.satellite_wizard.pipeline.local.setup"
+            )}</ha-button
           >
         </div>
       </div>
@@ -173,6 +213,8 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
 
     if (preferredPipeline) {
       if (
+        preferredPipeline.conversation_engine ===
+          "conversation.home_assistant" &&
         preferredPipeline.tts_engine === cloudTtsEntityId &&
         preferredPipeline.stt_engine === cloudSttEntityId
       ) {
@@ -189,6 +231,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
 
     let cloudPipeline = pipelines.pipelines.find(
       (pipeline) =>
+        pipeline.conversation_engine === "conversation.home_assistant" &&
         pipeline.tts_engine === cloudTtsEntityId &&
         pipeline.stt_engine === cloudSttEntityId
     );

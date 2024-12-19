@@ -182,7 +182,7 @@ class HaGallery extends LitElement {
     }
   }
 
-  _menuTapped() {
+  private _menuTapped() {
     this._drawer.open = !this._drawer.open;
   }
 

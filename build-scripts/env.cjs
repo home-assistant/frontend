@@ -5,9 +5,6 @@ const paths = require("./paths.cjs");
 const isTrue = (value) => value === "1" || value?.toLowerCase() === "true";
 
 module.exports = {
-  useWDS() {
-    return isTrue(process.env.WDS);
-  },
   isProdBuild() {
     return (
       process.env.NODE_ENV === "production" || module.exports.isStatsBuild()

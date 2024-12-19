@@ -8,7 +8,6 @@ import "./gen-icons-json.js";
 import "./locale-data.js";
 import "./service-worker.js";
 import "./translations.js";
-import "./wds.js";
 import "./rspack.js";
 
 gulp.task(
@@ -26,7 +25,7 @@ gulp.task(
       "build-locale-data"
     ),
     "copy-static-app",
-    env.useWDS() ? "wds-watch-app" : "rspack-watch-app"
+    "rspack-watch-app"
   )
 );
 

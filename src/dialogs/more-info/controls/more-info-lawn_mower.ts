@@ -96,7 +96,7 @@ class MoreInfoLawnMower extends LitElement {
                       <ha-icon-button
                         .path=${item.icon}
                         .entry=${item}
-                        @click=${this.callService}
+                        @click=${this._callService}
                         .label=${this.hass!.localize(
                           `ui.dialogs.more_info_control.lawn_mower.${item.translationKey}`
                         )}
@@ -170,7 +170,7 @@ class MoreInfoLawnMower extends LitElement {
     return nothing;
   }
 
-  private callService(ev: CustomEvent) {
+  private _callService(ev: CustomEvent) {
     const entry = (ev.target! as any).entry as LawnMowerCommand;
     this.hass.callService("lawn_mower", entry.serviceName, {
       entity_id: this.stateObj!.entity_id,

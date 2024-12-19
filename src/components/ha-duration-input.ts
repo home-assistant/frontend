@@ -23,9 +23,11 @@ class HaDurationInput extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
-  @property({ type: Boolean }) public enableMillisecond = false;
+  @property({ attribute: "enable-millisecond", type: Boolean })
+  public enableMillisecond = false;
 
-  @property({ type: Boolean }) public enableDay = false;
+  @property({ attribute: "enable-day", type: Boolean })
+  public enableDay = false;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -47,7 +49,7 @@ class HaDurationInput extends LitElement {
         .autoValidate=${this.required}
         .disabled=${this.disabled}
         errorMessage="Required"
-        enableSecond
+        enable-second
         .enableMillisecond=${this.enableMillisecond}
         .enableDay=${this.enableDay}
         format="24"
@@ -57,7 +59,7 @@ class HaDurationInput extends LitElement {
         .seconds=${this._seconds}
         .milliseconds=${this._milliseconds}
         @value-changed=${this._durationChanged}
-        noHoursLimit
+        no-hours-limit
         dayLabel="dd"
         hourLabel="hh"
         minLabel="mm"

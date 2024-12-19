@@ -17,7 +17,6 @@ declare module "chart.js" {
       datasetOptions: BarControllerDatasetOptions;
       defaultDataPoint: TimeLineData;
       parsedDataType: any;
-      scales: "timeline";
     };
   }
 }

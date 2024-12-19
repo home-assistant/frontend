@@ -25,7 +25,7 @@ export class HaTraceTimeline extends LitElement {
         .trace=${this.trace}
         .logbookEntries=${this.logbookEntries}
         .selectedPath=${this.selected.path}
-        allowPick
+        allow-pick
       >
       </hat-trace-timeline>
       <hat-logbook-note
