@@ -52,7 +52,7 @@ export interface HaMapPaths {
 export interface HaMapEntity {
   entity_id: string;
   color: string;
-  label_mode?: "name" | "state";
+  label_mode?: "name" | "state" | "icon";
   name?: string;
   focus?: boolean;
 }
@@ -523,6 +523,11 @@ export class HaMap extends ReactiveElement {
               .join("")
               .substr(0, 3));
 
+      const entityIcon =
+        (typeof entity !== "string" &&
+          entity.label_mode === "icon" &&
+          stateObj.attributes.icon) ||
+        "";
       // create marker with the icon
       const marker = Leaflet.marker([latitude, longitude], {
         icon: Leaflet.divIcon({
@@ -530,8 +535,12 @@ export class HaMap extends ReactiveElement {
               <ha-entity-marker
                 entity-id="${getEntityId(entity)}"
                 entity-name="${entityName}"
+                entity-icon="${entityIcon}"
                 entity-picture="${
-                  entityPicture ? this.hass.hassUrl(entityPicture) : ""
+                  !(typeof entity !== "string" && entity.label_mode) &&
+                  entityPicture
+                    ? this.hass.hassUrl(entityPicture)
+                    : ""
                 }"
                 ${
                   typeof entity !== "string"
