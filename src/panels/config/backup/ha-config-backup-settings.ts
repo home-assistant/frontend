@@ -1,5 +1,7 @@
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
@@ -16,7 +18,6 @@ import type { BackupConfigData } from "./components/config/ha-backup-config-data
 import "./components/config/ha-backup-config-encryption-key";
 import "./components/config/ha-backup-config-schedule";
 import type { BackupConfigSchedule } from "./components/config/ha-backup-config-schedule";
-import { fireEvent } from "../../../common/dom/fire_event";
 
 @customElement("ha-config-backup-settings")
 class HaConfigBackupSettings extends LitElement {
@@ -28,8 +29,22 @@ class HaConfigBackupSettings extends LitElement {
 
   @property({ attribute: false }) public config?: BackupConfig;
 
+  @state() private _config?: BackupConfig;
+
+  protected willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has("config")) {
+      this._config = this.config;
+    }
+  }
+
+  protected firstUpdated(_changedProperties: PropertyValues): void {
+    super.firstUpdated(_changedProperties);
+    fireEvent(this, "ha-refresh-backup-config");
+  }
+
   protected render() {
-    if (!this.config) {
+    if (!this._config) {
       return nothing;
     }
 
@@ -50,7 +65,7 @@ class HaConfigBackupSettings extends LitElement {
               </p>
               <ha-backup-config-schedule
                 .hass=${this.hass}
-                .value=${this.config}
+                .value=${this._config}
                 @value-changed=${this._scheduleConfigChanged}
               ></ha-backup-config-schedule>
             </div>
@@ -76,7 +91,7 @@ class HaConfigBackupSettings extends LitElement {
               </p>
               <ha-backup-config-agents
                 .hass=${this.hass}
-                .value=${this.config.create_backup.agent_ids}
+                .value=${this._config.create_backup.agent_ids}
                 .cloudStatus=${this.cloudStatus}
                 @value-changed=${this._agentsConfigChanged}
               ></ha-backup-config-agents>
@@ -93,7 +108,7 @@ class HaConfigBackupSettings extends LitElement {
               </p>
               <ha-backup-config-encryption-key
                 .hass=${this.hass}
-                .value=${this.config.create_backup.password}
+                .value=${this._config.create_backup.password}
                 @value-changed=${this._encryptionKeyChanged}
               ></ha-backup-config-encryption-key>
             </div>
@@ -105,8 +120,8 @@ class HaConfigBackupSettings extends LitElement {
 
   private _scheduleConfigChanged(ev) {
     const value = ev.detail.value as BackupConfigSchedule;
-    this.config = {
-      ...this.config!,
+    this._config = {
+      ...this._config!,
       schedule: value.schedule,
       retention: value.retention,
     };
@@ -119,7 +134,7 @@ class HaConfigBackupSettings extends LitElement {
       include_all_addons,
       include_database,
       include_folders,
-    } = this.config!.create_backup;
+    } = this._config!.create_backup;
 
     return {
       include_homeassistant: true,
@@ -132,8 +147,8 @@ class HaConfigBackupSettings extends LitElement {
 
   private _dataConfigChanged(ev) {
     const data = ev.detail.value as BackupConfigData;
-    this.config = {
-      ...this.config!,
+    this._config = {
+      ...this._config!,
       create_backup: {
         ...this.config!.create_backup,
         include_database: data.include_database,
@@ -147,10 +162,10 @@ class HaConfigBackupSettings extends LitElement {
 
   private _agentsConfigChanged(ev) {
     const agents = ev.detail.value as string[];
-    this.config = {
-      ...this.config!,
+    this._config = {
+      ...this._config!,
       create_backup: {
-        ...this.config!.create_backup,
+        ...this._config!.create_backup,
         agent_ids: agents,
       },
     };
@@ -159,10 +174,10 @@ class HaConfigBackupSettings extends LitElement {
 
   private _encryptionKeyChanged(ev) {
     const password = ev.detail.value as string;
-    this.config = {
-      ...this.config!,
+    this._config = {
+      ...this._config!,
       create_backup: {
-        ...this.config!.create_backup,
+        ...this._config!.create_backup,
         password: password,
       },
     };
@@ -174,17 +189,16 @@ class HaConfigBackupSettings extends LitElement {
   private async _save() {
     await updateBackupConfig(this.hass, {
       create_backup: {
-        agent_ids: this.config!.create_backup.agent_ids,
-        include_folders: this.config!.create_backup.include_folders ?? [],
-        include_database: this.config!.create_backup.include_database,
-        include_addons: this.config!.create_backup.include_addons ?? [],
-        include_all_addons: this.config!.create_backup.include_all_addons,
-        password: this.config!.create_backup.password,
+        agent_ids: this._config!.create_backup.agent_ids,
+        include_folders: this._config!.create_backup.include_folders ?? [],
+        include_database: this._config!.create_backup.include_database,
+        include_addons: this._config!.create_backup.include_addons ?? [],
+        include_all_addons: this._config!.create_backup.include_all_addons,
+        password: this._config!.create_backup.password,
       },
-      retention: this.config!.retention,
-      schedule: this.config!.schedule.state,
+      retention: this._config!.retention,
+      schedule: this._config!.schedule.state,
     });
-    fireEvent(this, "ha-refresh-backup-config");
   }
 
   static styles = css`
