@@ -229,13 +229,10 @@ export class HaPictureUpload extends LitElement {
       css`
         :host {
           display: block;
-        }
-        ha-file-upload {
           height: 240px;
         }
-        ha-button.center {
-          display: flex;
-          align-items: center;
+        ha-file-upload {
+          height: 100%;
         }
         .center-vertical {
           display: flex;
