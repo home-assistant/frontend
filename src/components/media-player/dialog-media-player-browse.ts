@@ -85,7 +85,7 @@ class DialogMediaPlayerBrowse extends LitElement {
         @opened=${this._dialogOpened}
       >
         <ha-dialog-header show-border slot="heading">
-          ${this._navigateIds.length > 1
+          ${this._navigateIds.length > (this._params.minimumNavigateLevel ?? 1)
             ? html`
                 <ha-icon-button
                   slot="navigationIcon"
