@@ -175,6 +175,9 @@ class HaBackupOverviewBackups extends LitElement {
           line-height: 20px;
           letter-spacing: 0.25px;
         }
+        ha-svg-icon {
+          flex: none;
+        }
         .card-actions {
           display: flex;
           justify-content: flex-end;
