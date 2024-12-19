@@ -1,5 +1,6 @@
 import { atLeastVersion } from "../../common/config/version";
 import type { HomeAssistant } from "../../types";
+import { handleFetchPromise } from "../../util/hass-call-api";
 import type { HassioResponse } from "./common";
 import { hassioApiResultExtractor } from "./common";
 
@@ -105,11 +106,13 @@ export const fetchHassioBackupInfo = async (
     );
   }
   // When called from onboarding we don't have hass
-  const resp = await fetch(`/api/hassio/backups/${backup}/info`, {
-    method: "GET",
-  });
-  const data = (await resp.json()).data;
-  return data;
+  return hassioApiResultExtractor(
+    await handleFetchPromise(
+      fetch(`/api/hassio/backups/${backup}/info`, {
+        method: "GET",
+      })
+    )
+  );
 };
 
 export const reloadHassioBackups = async (hass: HomeAssistant) => {
@@ -235,4 +238,27 @@ export const uploadBackup = async (
     throw new Error(`${resp.status} ${resp.statusText}`);
   }
   return resp.json();
+};
+
+export const restoreBackup = async (
+  hass: HomeAssistant | undefined,
+  type: HassioBackupDetail["type"],
+  backupSlug: string,
+  backupDetails: HassioPartialBackupCreateParams | HassioFullBackupCreateParams,
+  useSnapshotUrl: boolean
+): Promise<void> => {
+  if (hass) {
+    await hass.callApi<HassioResponse<{ job_id: string }>>(
+      "POST",
+      `hassio/${useSnapshotUrl ? "snapshots" : "backups"}/${backupSlug}/restore/${type}`,
+      backupDetails
+    );
+  } else {
+    await handleFetchPromise(
+      fetch(`/api/hassio/backups/${backupSlug}/restore/${type}`, {
+        method: "POST",
+        body: JSON.stringify(backupDetails),
+      })
+    );
+  }
 };
