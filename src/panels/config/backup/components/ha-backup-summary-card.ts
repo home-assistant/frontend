@@ -1,5 +1,5 @@
 import {
-  mdiAlertCircleCheckOutline,
+  mdiAlertCircleOutline,
   mdiAlertOutline,
   mdiCheck,
   mdiInformationOutline,
@@ -16,7 +16,7 @@ type SummaryStatus = "success" | "error" | "info" | "warning" | "loading";
 
 const ICONS: Record<SummaryStatus, string> = {
   success: mdiCheck,
-  error: mdiAlertCircleCheckOutline,
+  error: mdiAlertCircleOutline,
   warning: mdiAlertOutline,
   info: mdiInformationOutline,
   loading: mdiSync,
@@ -60,6 +60,9 @@ class HaBackupSummaryCard extends LitElement {
               `
             : nothing}
         </div>
+        <div class="content">
+          <slot></slot>
+        </div>
       </ha-card>
     `;
   }
@@ -71,7 +74,7 @@ class HaBackupSummaryCard extends LitElement {
       column-gap: 16px;
       row-gap: 8px;
       align-items: center;
-      padding: 20px;
+      padding: 16px;
       width: 100%;
       box-sizing: border-box;
     }

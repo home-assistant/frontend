@@ -1,3 +1,4 @@
+import { mdiCalendarSync, mdiGestureTap } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -62,6 +63,7 @@ class HaBackupOverviewBackups extends LitElement {
         <div class="card-content">
           <ha-md-list>
             <ha-md-list-item type="link" href="/config/backup/backups">
+              <ha-svg-icon slot="start" .path=${mdiCalendarSync}></ha-svg-icon>
               <div slot="headline">
                 ${automaticStats.count} automatic backups
               </div>
@@ -71,6 +73,7 @@ class HaBackupOverviewBackups extends LitElement {
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
             <ha-md-list-item type="link" href="/config/backup/backups">
+              <ha-svg-icon slot="start" .path=${mdiGestureTap}></ha-svg-icon>
               <div slot="headline">${manualStats.count} manual backups</div>
               <div slot="supporting-text">
                 ${bytesToString(manualStats.size, 1)} in total

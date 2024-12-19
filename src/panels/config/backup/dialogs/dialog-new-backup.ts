@@ -1,4 +1,4 @@
-import { mdiClose, mdiCog, mdiPencil } from "@mdi/js";
+import { mdiCalendarSync, mdiClose, mdiGestureTap } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -7,6 +7,7 @@ import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-next";
 import "../../../../components/ha-md-dialog";
+import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-svg-icon";
@@ -14,7 +15,6 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { NewBackupDialogParams } from "./show-dialog-new-backup";
-import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 
 @customElement("ha-dialog-new-backup")
 class DialogNewBackup extends LitElement implements HassDialog {
@@ -75,7 +75,7 @@ class DialogNewBackup extends LitElement implements HassDialog {
               type="button"
               .disabled=${!this._params.config.create_backup.password}
             >
-              <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
+              <ha-svg-icon slot="start" .path=${mdiCalendarSync}></ha-svg-icon>
               <span slot="headline">Automatic backup</span>
               <span slot="supporting-text">
                 Create a backup with the data and locations you have configured.
@@ -83,7 +83,7 @@ class DialogNewBackup extends LitElement implements HassDialog {
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
             <ha-md-list-item @click=${this._manual} type="button">
-              <ha-svg-icon slot="start" .path=${mdiPencil}></ha-svg-icon>
+              <ha-svg-icon slot="start" .path=${mdiGestureTap}></ha-svg-icon>
               <span slot="headline">Manual backup</span>
               <span slot="supporting-text">
                 Select data and locations for a manual backup.

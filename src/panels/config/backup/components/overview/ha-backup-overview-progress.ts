@@ -1,17 +1,14 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { ManagerStateEvent } from "../../../../data/backup_manager";
-import type { HomeAssistant } from "../../../../types";
-import "./ha-backup-summary-card";
+import type { ManagerStateEvent } from "../../../../../data/backup_manager";
+import type { HomeAssistant } from "../../../../../types";
+import "../ha-backup-summary-card";
 
-@customElement("ha-backup-summary-progress")
-export class HaBackupSummaryProgress extends LitElement {
+@customElement("ha-backup-overview-progress")
+export class HaBackupOverviewProgress extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public manager!: ManagerStateEvent;
-
-  @property({ type: Boolean, attribute: "has-action" })
-  public hasAction = false;
 
   private get _heading() {
     switch (this.manager.manager_state) {
@@ -93,9 +90,7 @@ export class HaBackupSummaryProgress extends LitElement {
         .heading=${this._heading}
         .description=${this._description}
         status="loading"
-        .hasAction=${this.hasAction}
       >
-        <slot name="action" slot="action"></slot>
       </ha-backup-summary-card>
     `;
   }
@@ -103,6 +98,6 @@ export class HaBackupSummaryProgress extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-backup-summary-progress": HaBackupSummaryProgress;
+    "ha-backup-overview-progress": HaBackupOverviewProgress;
   }
 }
