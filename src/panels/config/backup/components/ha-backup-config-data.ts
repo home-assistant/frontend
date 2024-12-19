@@ -30,6 +30,7 @@ export type FormData = {
   database: boolean;
   media: boolean;
   share: boolean;
+  local_addons: boolean;
   addons_mode: "all" | "custom" | "none";
   addons: string[];
 };
@@ -39,6 +40,7 @@ const INITIAL_FORM_DATA: FormData = {
   database: false,
   media: false,
   share: false,
+  local_addons: false,
   addons_mode: "all",
   addons: [],
 };
@@ -50,9 +52,6 @@ export type BackupConfigData = {
   include_all_addons: boolean;
   include_addons?: string[];
 };
-
-const SELF_CREATED_ADDONS_FOLDER = "addons/local";
-const SELF_CREATED_ADDONS_NAME = "___LOCAL_ADDONS___";
 
 @customElement("ha-backup-config-data")
 class HaBackupConfigData extends LitElement {
@@ -86,14 +85,11 @@ class HaBackupConfigData extends LitElement {
 
   private async _fetchAddons() {
     const { addons } = await fetchHassioAddonsInfo(this.hass);
-    this._addons = [
-      ...addons,
-      {
-        name: "Self created add-ons",
-        slug: SELF_CREATED_ADDONS_NAME,
-        iconPath: mdiFolder,
-      },
-    ];
+    this._addons = addons;
+  }
+
+  private _hasLocalAddons(addons: BackupAddonItem[]): boolean {
+    return addons.some((addon) => addon.slug === "local");
   }
 
   private _getData = memoizeOne(
@@ -104,21 +100,14 @@ class HaBackupConfigData extends LitElement {
 
       const config = value;
 
-      const hasLocalAddonFolder = config.include_folders?.includes(
-        SELF_CREATED_ADDONS_FOLDER
-      );
-
       const addons = config.include_addons?.slice() ?? [];
-
-      if (hasLocalAddonFolder && !value.include_all_addons) {
-        addons.push(SELF_CREATED_ADDONS_NAME);
-      }
 
       return {
         homeassistant: config.include_homeassistant || this.forceHomeAssistant,
         database: config.include_database,
         media: config.include_folders?.includes("media") || false,
         share: config.include_folders?.includes("share") || false,
+        local_addons: config.include_folders?.includes("addons/local") || false,
         addons_mode: config.include_all_addons
           ? "all"
           : addons.length > 0 || showAddon
@@ -130,21 +119,13 @@ class HaBackupConfigData extends LitElement {
   );
 
   private _setData(data: FormData) {
-    const hasSelfCreatedAddons = data.addons.includes(SELF_CREATED_ADDONS_NAME);
-
     const include_folders = [
       ...(data.media ? ["media"] : []),
       ...(data.share ? ["share"] : []),
+      ...(data.local_addons ? ["addons/local"] : []),
     ];
 
-    let include_addons = data.addons_mode === "custom" ? data.addons : [];
-
-    if (hasSelfCreatedAddons || data.addons_mode === "all") {
-      include_folders.push(SELF_CREATED_ADDONS_FOLDER);
-      include_addons = include_addons.filter(
-        (addon) => addon !== SELF_CREATED_ADDONS_NAME
-      );
-    }
+    const include_addons = data.addons_mode === "custom" ? data.addons : [];
 
     this.value = {
       include_homeassistant: data.homeassistant || this.forceHomeAssistant,
@@ -234,6 +215,26 @@ class HaBackupConfigData extends LitElement {
                 ></ha-switch>
               </ha-md-list-item>
 
+              ${this._hasLocalAddons(this._addons)
+                ? html`
+                    <ha-md-list-item>
+                      <ha-svg-icon
+                        slot="start"
+                        .path=${mdiFolder}
+                      ></ha-svg-icon>
+                      <span slot="headline">Local addons folder</span>
+                      <span slot="supporting-text">
+                        Folder that contains the data of your local add-ons.
+                      </span>
+                      <ha-switch
+                        id="local_addons"
+                        slot="end"
+                        @change=${this._switchChanged}
+                        .checked=${data.local_addons}
+                      ></ha-switch>
+                    </ha-md-list-item>
+                  `
+                : nothing}
               ${this._addons.length
                 ? html`
                     <ha-md-list-item>
