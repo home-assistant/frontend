@@ -28,6 +28,7 @@ import type {
 import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-fab";
+import "../../../components/ha-filter-states";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-icon-overflow-menu";
@@ -46,6 +47,7 @@ import {
 } from "../../../data/backup";
 import type { ManagerStateEvent } from "../../../data/backup_manager";
 import type { CloudStatus } from "../../../data/cloud";
+import type { DataTableFiltersValues } from "../../../data/data_table_filters";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   showAlertDialog,
@@ -89,6 +91,14 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
 
   @state() private _selected: string[] = [];
 
+  @storage({
+    storage: "sessionStorage",
+    key: "backups-table-filters",
+    state: true,
+    subscribe: false,
+  })
+  private _filters: DataTableFiltersValues = {};
+
   @storage({ key: "backups-table-grouping", state: false, subscribe: false })
   private _activeGrouping?: string = "formatted_type";
 
@@ -99,8 +109,6 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   })
   private _activeCollapsed: string[] = [];
 
-  @state() private _searchParams = new URLSearchParams(window.location.search);
-
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
 
@@ -108,7 +116,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     super.connectedCallback();
     window.addEventListener("location-changed", this._locationChanged);
     window.addEventListener("popstate", this._popState);
-    this._searchParams = new URLSearchParams(window.location.search);
+    this._setFiltersFromUrl();
   }
 
   disconnectedCallback(): void {
@@ -118,15 +126,11 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   }
 
   private _locationChanged = () => {
-    if (window.location.search.substring(1) !== this._searchParams.toString()) {
-      this._searchParams = new URLSearchParams(window.location.search);
-    }
+    this._setFiltersFromUrl();
   };
 
   private _popState = () => {
-    if (window.location.search.substring(1) !== this._searchParams.toString()) {
-      this._searchParams = new URLSearchParams(window.location.search);
-    }
+    this._setFiltersFromUrl();
   };
 
   private _columns = memoizeOne(
@@ -258,14 +262,18 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   }
 
   private _data = memoizeOne(
-    (backups: BackupContent[], searchParams: URLSearchParams): BackupRow[] => {
-      const type = searchParams.get("type")?.toLowerCase();
+    (
+      backups: BackupContent[],
+      filters: DataTableFiltersValues
+    ): BackupRow[] => {
+      const typeFilter = filters["ha-filter-states"] as string[] | undefined;
       let filteredBackups = backups;
-      if (type) {
+      if (typeFilter?.length) {
         filteredBackups = filteredBackups.filter(
           (backup) =>
-            backup.with_automatic_settings === (type === "automatic") ||
-            (backup.with_automatic_settings === null && type === "manual")
+            (backup.with_automatic_settings &&
+              typeFilter.includes("automatic")) ||
+            (!backup.with_automatic_settings && typeFilter.includes("manual"))
         );
       }
       return filteredBackups.map((backup) => ({
@@ -295,6 +303,15 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         back-path="/config/backup/overview"
         clickable
         id="backup_id"
+        has-filters
+        .filters=${Object.values(this._filters).filter((filter) =>
+          Array.isArray(filter)
+            ? filter.length
+            : filter &&
+              Object.values(filter).some((val) =>
+                Array.isArray(val) ? val.length : val
+              )
+        ).length}
         selectable
         .selected=${this._selected.length}
         .initialGroupColumn=${this._activeGrouping}
@@ -306,7 +323,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         .route=${this.route}
         @row-click=${this._showBackupDetails}
         .columns=${this._columns(this.hass.localize)}
-        .data=${this._data(this.backups, this._searchParams)}
+        .data=${this._data(this.backups, this._filters)}
         .noDataText=${this.hass.localize("ui.panel.config.backup.no_backups")}
         .searchLabel=${this.hass.localize(
           "ui.panel.config.backup.picker.search"
@@ -362,6 +379,16 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
               </div>
             </div> `
           : nothing}
+        <ha-filter-states
+          .hass=${this.hass}
+          label="Type"
+          .value=${this._filters["ha-filter-states"]}
+          .states=${this._states(this.hass.localize)}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          expanded
+          .narrow=${this.narrow}
+        ></ha-filter-states>
         ${!this._needsOnboarding
           ? html`
               <ha-fab
@@ -377,6 +404,35 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
           : nothing}
       </hass-tabs-subpage-data-table>
     `;
+  }
+
+  private _states = memoizeOne((_localize: LocalizeFunc) => [
+    {
+      value: "automatic",
+      label: "Automatic",
+    },
+    {
+      value: "manual",
+      label: "Manual",
+    },
+  ]);
+
+  private _filterChanged(ev) {
+    const type = ev.target.localName;
+    this._filters = { ...this._filters, [type]: ev.detail.value };
+  }
+
+  private _setFiltersFromUrl() {
+    const searchParams = new URLSearchParams(window.location.search);
+    const type = searchParams.get("type");
+
+    if (!type) {
+      return;
+    }
+
+    this._filters = {
+      "ha-filter-states": [type],
+    };
   }
 
   private get _needsOnboarding() {
