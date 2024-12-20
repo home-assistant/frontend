@@ -1,7 +1,8 @@
-import { mdiDotsVertical, mdiPlus, mdiUpload } from "@mdi/js";
+import { mdiDotsVertical, mdiHarddisk, mdiPlus, mdiUpload } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import "../../../components/ha-button";
@@ -34,6 +35,7 @@ import "./components/overview/ha-backup-overview-settings";
 import "./components/overview/ha-backup-overview-summary";
 import { showBackupOnboardingDialog } from "./dialogs/show-dialog-backup_onboarding";
 import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
+import { showLocalBackupLocationDialog } from "./dialogs/show-dialog-local-backup-location";
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
 import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
 
@@ -61,6 +63,14 @@ class HaConfigBackupOverview extends LitElement {
     }
 
     await showUploadBackupDialog(this, {});
+  }
+
+  private async _changeLocalLocation(ev) {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+
+    showLocalBackupLocationDialog(this, {});
   }
 
   private _handleOnboardingButtonClick(ev) {
@@ -124,6 +134,8 @@ class HaConfigBackupOverview extends LitElement {
     const backupInProgress =
       "state" in this.manager && this.manager.state === "in_progress";
 
+    const isHassio = isComponentLoaded(this.hass, "hassio");
+
     return html`
       <hass-subpage
         back-path="/config/system"
@@ -138,6 +150,18 @@ class HaConfigBackupOverview extends LitElement {
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
+            ${isHassio
+              ? html`<ha-list-item
+                  graphic="icon"
+                  @request-selected=${this._changeLocalLocation}
+                >
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiHarddisk}
+                  ></ha-svg-icon>
+                  Change local location
+                </ha-list-item>`
+              : nothing}
             <ha-list-item
               graphic="icon"
               @request-selected=${this._uploadBackup}
