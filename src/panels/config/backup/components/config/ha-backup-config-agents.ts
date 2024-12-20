@@ -48,6 +48,13 @@ class HaBackupConfigAgents extends LitElement {
     return this.value ?? DEFAULT_AGENTS;
   }
 
+  private _description(agentId: string) {
+    if (agentId === CLOUD_AGENT) {
+      return "It stores one backup. The oldest backups are deleted.";
+    }
+    return "";
+  }
+
   protected render() {
     return html`
       ${this._agentIds.length > 0
@@ -60,6 +67,7 @@ class HaBackupConfigAgents extends LitElement {
                   agentId,
                   this._agentIds
                 );
+                const description = this._description(agentId);
                 return html`
                   <ha-md-list-item>
                     ${isLocalAgent(agentId)
@@ -82,13 +90,8 @@ class HaBackupConfigAgents extends LitElement {
                           />
                         `}
                     <div slot="headline">${name}</div>
-                    ${agentId === CLOUD_AGENT
-                      ? html`
-                          <div slot="supporting-text">
-                            It stores one backup. The oldest backups are
-                            deleted.
-                          </div>
-                        `
+                    ${description
+                      ? html`<div slot="supporting-text">${description}</div>`
                       : nothing}
                     <ha-switch
                       slot="end"
