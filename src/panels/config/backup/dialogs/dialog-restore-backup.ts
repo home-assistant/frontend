@@ -4,9 +4,11 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
+import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-dialog-header";
-import "../../../../components/ha-form/ha-form";
+import "../../../../components/ha-password-field";
 
+import "../../../../components/ha-alert";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-md-dialog";
 import type { HaMdDialog } from "../../../../components/ha-md-dialog";
@@ -47,6 +49,8 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
 
   @state() private _userPassword?: string;
 
+  @state() private _error?: string;
+
   @query("ha-md-dialog") private _dialog?: HaMdDialog;
 
   public async showDialog(params: RestoreBackupDialogParams) {
@@ -75,6 +79,7 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
     this._backupEncryptionKey = undefined;
     this._userPassword = undefined;
     this._step = undefined;
+    window.removeEventListener("connection-status", this._connectionStatus);
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -108,17 +113,19 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
           <span slot="title" .title=${dialogTitle}>${dialogTitle}</span>
         </ha-dialog-header>
         <div slot="content" class="content">
-          ${this._step === "confirm"
-            ? this._renderConfirm()
-            : this._step === "encryption"
-              ? this._renderEncryption()
-              : this._renderProgress()}
+          ${this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : this._step === "confirm"
+              ? this._renderConfirm()
+              : this._step === "encryption"
+                ? this._renderEncryption()
+                : this._renderProgress()}
         </div>
         <div slot="actions">
-          ${this._step === "confirm"
-            ? this._renderConfirmActions()
-            : this._step === "encryption"
-              ? this._renderEncryptionActions()
+          ${this._error
+            ? html`<ha-button @click=${this.closeDialog}>Close</ha-button>`
+            : this._step === "confirm" || this._step === "encryption"
+              ? this._renderConfirmActions()
               : nothing}
         </div>
       </ha-md-dialog>
@@ -132,33 +139,36 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
     </p>`;
   }
 
-  private _renderConfirmActions() {
-    return html`<ha-button @click=${this.closeDialog}>Cancel</ha-button
-      ><ha-button @click=${this._restoreBackup} class="destructive"
-        >Restore</ha-button
-      >`;
-  }
-
   private _renderEncryption() {
     return html`<p>
         ${this._userPassword
-          ? "The provided encryption key was incorrect, please try again"
+          ? "The provided encryption key was incorrect, please try again."
           : this._backupEncryptionKey
             ? "The backup is encrypted with a different key or password than that is saved on this system. Please enter the key for this backup."
             : "The backup is encrypted. Provide the encryption key to decrypt the backup."}
       </p>
       <ha-password-field
         @change=${this._passwordChanged}
-        .value=${this._userPassword}
+        .value=${this._userPassword || ""}
       ></ha-password-field>`;
   }
 
-  private _renderEncryptionActions() {
-    return html`<ha-button @click=${this._restoreBackup}>Restore</ha-button>`;
+  private _renderConfirmActions() {
+    return html`<ha-button @click=${this.closeDialog}>Cancel</ha-button>
+      <ha-button @click=${this._restoreBackup} class="destructive"
+        >Restore</ha-button
+      >`;
   }
 
   private _renderProgress() {
-    return html`<ha-circular-progress active></ha-circular-progress>`;
+    return html`<div class="centered">
+      <ha-circular-progress indeterminate></ha-circular-progress>
+      <p>
+        ${this.hass.connected
+          ? "Restoring backup"
+          : "Restarting Home Asssistant"}
+      </p>
+    </div>`;
   }
 
   private _passwordChanged(ev): void {
@@ -168,16 +178,31 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
   private async _restoreBackup() {
     try {
       this._step = "progress";
+      window.addEventListener("connection-status", this._connectionStatus);
       await this._doRestoreBackup(
         this._userPassword || this._backupEncryptionKey
       );
-      this.closeDialog();
-    } catch (e) {
-      this._step = "encryption";
+    } catch (e: any) {
+      window.removeEventListener("connection-status", this._connectionStatus);
+      if (e.code === "password_incorrect") {
+        this._step = "encryption";
+      } else {
+        this._error = e.message;
+      }
     }
   }
 
+  private _connectionStatus = (ev) => {
+    if (ev.detail === "connected") {
+      this.closeDialog();
+    }
+  };
+
   private async _doRestoreBackup(password?: string) {
+    if (!this._params) {
+      return;
+    }
+
     const preferedAgent = getPreferredAgentForDownload(
       this._params.backup.agent_ids!
     );
@@ -210,6 +235,14 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
         }
         .destructive {
           --mdc-theme-primary: var(--error-color);
+        }
+        .centered {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        ha-circular-progress {
+          margin-bottom: 16px;
         }
       `,
     ];
