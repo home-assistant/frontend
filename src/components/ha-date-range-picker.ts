@@ -4,11 +4,12 @@ import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiCalendar } from "@mdi/js";
 import {
-  addDays,
+  subHours,
   endOfDay,
   endOfMonth,
   endOfWeek,
   endOfYear,
+  subYears,
   startOfDay,
   startOfMonth,
   startOfWeek,
@@ -112,28 +113,8 @@ export class HaDateRangePicker extends LitElement {
             weekStartsOn,
           }),
         ],
-        [this.hass.localize(
-          "ui.components.date-range-picker.ranges.yesterday"
-        )]: [
-          calcDate(
-            addDays(today, -1),
-            startOfDay,
-            this.hass.locale,
-            this.hass.config,
-            {
-              weekStartsOn,
-            }
-          ),
-          calcDate(
-            addDays(today, -1),
-            endOfDay,
-            this.hass.locale,
-            this.hass.config,
-            {
-              weekStartsOn,
-            }
-          ),
-        ],
+        [this.hass.localize("ui.components.date-range-picker.ranges.now-24h")]:
+          [subHours(today, 24), today],
         [this.hass.localize(
           "ui.components.date-range-picker.ranges.this_week"
         )]: [weekStart, weekEnd],
@@ -162,6 +143,9 @@ export class HaDateRangePicker extends LitElement {
                 ),
               ],
               [this.hass.localize(
+                "ui.components.date-range-picker.ranges.now-30d"
+              )]: [subHours(today, 24 * 30), today],
+              [this.hass.localize(
                 "ui.components.date-range-picker.ranges.this_year"
               )]: [
                 calcDate(
@@ -177,6 +161,9 @@ export class HaDateRangePicker extends LitElement {
                   weekStartsOn,
                 }),
               ],
+              [this.hass.localize(
+                "ui.components.date-range-picker.ranges.now-1y"
+              )]: [subYears(today, 1), today],
             }
           : {}),
       };
@@ -397,6 +384,13 @@ export class HaDateRangePicker extends LitElement {
         .date-range-ranges {
           border-right: none;
           border-bottom: 1px solid var(--divider-color);
+        }
+      }
+
+      @media only screen and (max-height: 900px) and (max-width: 800px) {
+        .date-range-ranges {
+          overflow: scroll;
+          max-height: 270px;
         }
       }
     `;
