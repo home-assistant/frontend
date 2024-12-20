@@ -1,4 +1,4 @@
-import { mdiCalendar, mdiCog, mdiPuzzle, mdiUpload } from "@mdi/js";
+import { mdiCalendar, mdiDatabase, mdiPuzzle, mdiUpload } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -113,7 +113,7 @@ class HaBackupBackupsSummary extends LitElement {
               </div>
             </ha-md-list-item>
             <ha-md-list-item>
-              <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
+              <ha-svg-icon slot="start" .path=${mdiDatabase}></ha-svg-icon>
               <div slot="headline">
                 ${this.config.create_backup.include_database
                   ? "Settings and history"

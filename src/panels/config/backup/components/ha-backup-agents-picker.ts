@@ -1,4 +1,4 @@
-import { mdiDatabase } from "@mdi/js";
+import { mdiHarddisk } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -61,7 +61,7 @@ class HaBackupAgentsPicker extends LitElement {
         <span class="label" slot="label">
           ${isLocalAgent(agentId)
             ? html`
-                <ha-svg-icon .path=${mdiDatabase} slot="start"> </ha-svg-icon>
+                <ha-svg-icon .path=${mdiHarddisk} slot="start"> </ha-svg-icon>
               `
             : html`
                 <img

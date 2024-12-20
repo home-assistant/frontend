@@ -1,8 +1,8 @@
 import {
-  mdiDatabase,
   mdiDelete,
   mdiDotsVertical,
   mdiDownload,
+  mdiHarddisk,
   mdiPlus,
   mdiUpload,
 } from "@mdi/js";
@@ -147,7 +147,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
               if (isLocalAgent(agentId)) {
                 return html`
                   <ha-svg-icon
-                    .path=${mdiDatabase}
+                    .path=${mdiHarddisk}
                     title=${name}
                     slot="graphic"
                   ></ha-svg-icon>
