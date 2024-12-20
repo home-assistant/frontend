@@ -29,3 +29,11 @@ export const extractDomainFromBrandUrl = (url: string) => url.split("/")[4];
 
 export const isBrandUrl = (thumbnail: string | ""): boolean =>
   thumbnail.startsWith("https://brands.home-assistant.io/");
+
+export const convertDarkBrandUrl = (url: string): string => {
+  const idx = url.lastIndexOf("/");
+  if (idx < 0) {
+    return url;
+  }
+  return `${url.substring(0, idx + 1)}dark_${url.substring(idx + 1)}`;
+};
