@@ -5,6 +5,7 @@ import "@material/mwc-list/mwc-list-item";
 import { mdiCalendar, mdiMagnifyPlus, mdiMagnifyMinus } from "@mdi/js";
 import {
   addDays,
+  addHours,
   subHours,
   endOfDay,
   endOfMonth,
@@ -19,6 +20,7 @@ import {
   roundToNearestHours,
   subMilliseconds,
   addMilliseconds,
+  hoursToMilliseconds,
 } from "date-fns";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -337,7 +339,7 @@ export class HaDateRangePicker extends LitElement {
     let dateRange: [Date, Date];
     if (
       differenceInMilliseconds(this.endDate, this.startDate) <
-      24 * 60 * 60 * 1000 - 1
+      24 * hoursToMilliseconds(1) - 1
     ) {
       dateRange = [
         calcDate(
@@ -351,7 +353,7 @@ export class HaDateRangePicker extends LitElement {
           endOfDay,
           this.hass.locale,
           this.hass.config,
-          24 * 60 * 60 * 1000
+          24 * hoursToMilliseconds(1)
         ),
       ];
     } else {
@@ -380,7 +382,8 @@ export class HaDateRangePicker extends LitElement {
     if (ev && ev.stopPropagation) ev.stopPropagation();
     let dateRange: [Date, Date];
     const diff = differenceInMilliseconds(this.endDate, this.startDate);
-    if (diff > 24 * 60 * 60 * 1000 * 3) {
+
+    if (diff > 24 * hoursToMilliseconds(3)) {
       dateRange = [
         calcDate(
           this.startDate > new Date()
@@ -391,7 +394,7 @@ export class HaDateRangePicker extends LitElement {
           this.hass.config
         ),
         calcDate(
-          this.endDate > new Date()
+          this.startDate > new Date()
             ? new Date()
             : subMilliseconds(this.endDate, diff / 3),
           endOfDay,
@@ -412,7 +415,9 @@ export class HaDateRangePicker extends LitElement {
         calcDate(
           this.endDate > new Date()
             ? new Date()
-            : subMilliseconds(subMilliseconds(this.endDate, diff / 3), 1),
+            : diff < hoursToMilliseconds(1)
+              ? addHours(this.startDate, 1)
+              : subMilliseconds(subMilliseconds(this.endDate, diff / 3), 1),
           roundToNearestHours,
           this.hass.locale,
           this.hass.config
