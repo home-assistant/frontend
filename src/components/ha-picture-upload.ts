@@ -10,6 +10,7 @@ import {
   getIdFromUrl,
   createImage,
   generateImageThumbnailUrl,
+  getImageData,
 } from "../data/image_upload";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import type { CropOptions } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
@@ -197,8 +198,7 @@ export class HaPictureUpload extends LitElement {
             const url = generateImageThumbnailUrl(mediaId, undefined, true);
             let data;
             try {
-              const response = await fetch(url);
-              data = await response.blob();
+              data = await getImageData(url);
             } catch (err: any) {
               showAlertDialog(this, {
                 text: err.toString(),
