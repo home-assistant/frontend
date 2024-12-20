@@ -2,6 +2,7 @@ import { mdiClose } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-circular-progress";
@@ -22,6 +23,8 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { RestoreBackupDialogParams } from "./show-dialog-restore-backup";
+import type { RestoreBackupStage } from "../../../../data/backup_manager";
+import { subscribeBackupEvents } from "../../../../data/backup_manager";
 
 type FormData = {
   encryption_key_type: "config" | "custom";
@@ -51,6 +54,10 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
 
   @state() private _error?: string;
 
+  @state() private _stage?: RestoreBackupStage | null;
+
+  @state() private _unsub?: Promise<UnsubscribeFunc>;
+
   @query("ha-md-dialog") private _dialog?: HaMdDialog;
 
   public async showDialog(params: RestoreBackupDialogParams) {
@@ -78,7 +85,13 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
     this._params = undefined;
     this._backupEncryptionKey = undefined;
     this._userPassword = undefined;
+    this._error = undefined;
+    this._stage = undefined;
     this._step = undefined;
+    if (this._unsub) {
+      this._unsub.then((unsub) => unsub());
+      this._unsub = undefined;
+    }
     window.removeEventListener("connection-status", this._connectionStatus);
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -165,7 +178,7 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
       <ha-circular-progress indeterminate></ha-circular-progress>
       <p>
         ${this.hass.connected
-          ? "Restoring backup"
+          ? this._restoreState()
           : "Restarting Home Asssistant"}
       </p>
     </div>`;
@@ -182,6 +195,7 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
       await this._doRestoreBackup(
         this._userPassword || this._backupEncryptionKey
       );
+      this._subscribeBackupEvents();
     } catch (e: any) {
       window.removeEventListener("connection-status", this._connectionStatus);
       if (e.code === "password_incorrect") {
@@ -197,6 +211,49 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
       this.closeDialog();
     }
   };
+
+  private _subscribeBackupEvents() {
+    this._unsub = subscribeBackupEvents(this.hass!, (event) => {
+      if (event.manager_state !== "restore_backup") {
+        return;
+      }
+      if (event.state === "completed") {
+        this.closeDialog();
+      }
+      if (event.state === "failed") {
+        this._error = "Backup restore failed";
+      }
+      if (event.state === "in_progress") {
+        this._stage = event.stage;
+      }
+    });
+  }
+
+  private _restoreState() {
+    switch (this._stage) {
+      case "addon_repositories":
+        return "Restoring add-on repositories";
+      case "addons":
+        return "Restoring add-ons";
+      case "await_addon_restarts":
+        return "Waiting for add-ons to restart";
+      case "await_home_assistant_restart":
+        return "Waiting for Home Assistant to restart";
+      case "check_home_assistant":
+        return "Checking Home Assistant configuration";
+      case "docker_config":
+        return "Restoring Docker configuration";
+      case "download_from_agent":
+        return "Downloading backup";
+      case "folders":
+        return "Restoring folders";
+      case "home_assistant":
+        return "Restoring Home Assistant";
+      case "remove_delta_addons":
+        return "Removing add-ons that are no longer in the backup";
+    }
+    return "Restoring backup";
+  }
 
   private async _doRestoreBackup(password?: string) {
     if (!this._params) {
