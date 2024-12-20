@@ -284,7 +284,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
               Backups are essential to a reliable smart home. They protect your
               setup against failures and allows you to quickly have a working
               system again. It is recommended to create a daily backup and keep
-              copies of the last 3 days on two different locations. And one of
+              backups of the last 3 days on two different locations. And one of
               them is off-site.
             </p>
           </div>
@@ -319,7 +319,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
       case "setup":
         return html`
           <p>
-            It is recommended to create a daily backup and keep copies of the
+            It is recommended to create a daily backup and keep backups of the
             last 3 days on two different locations. And one of them is off-site.
           </p>
           <ha-md-list class="full">
@@ -343,7 +343,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
         return html`
           <p>
             Let Home Assistant take care of your backups by creating a scheduled
-            backup that also removes older copies.
+            backup that also removes older backups.
           </p>
           <ha-backup-config-schedule
             .hass=${this.hass}

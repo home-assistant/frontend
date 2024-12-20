@@ -56,7 +56,7 @@ class HaConfigBackupSettings extends LitElement {
             <div class="card-content">
               <p>
                 Let Home Assistant take care of your backups by creating a
-                scheduled backup that also removes older copies.
+                scheduled backup that also removes older backups.
               </p>
               <ha-backup-config-schedule
                 .hass=${this.hass}

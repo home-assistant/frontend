@@ -33,7 +33,7 @@ class HaBackupBackupsSummary extends LitElement {
 
     let copiesText = "and keep all backups";
     if (copies) {
-      copiesText = `and keep the latest ${copies} copie(s)`;
+      copiesText = `and keep the latest ${copies} backup(s)`;
     } else if (days) {
       copiesText = `and keep backups for ${days} day(s)`;
     }
