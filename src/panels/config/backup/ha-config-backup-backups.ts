@@ -99,8 +99,35 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   })
   private _activeCollapsed: string[] = [];
 
+  @state() private _searchParams = new URLSearchParams(window.location.search);
+
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener("location-changed", this._locationChanged);
+    window.addEventListener("popstate", this._popState);
+    this._searchParams = new URLSearchParams(window.location.search);
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.removeEventListener("location-changed", this._locationChanged);
+    window.removeEventListener("popstate", this._popState);
+  }
+
+  private _locationChanged = () => {
+    if (window.location.search.substring(1) !== this._searchParams.toString()) {
+      this._searchParams = new URLSearchParams(window.location.search);
+    }
+  };
+
+  private _popState = () => {
+    if (window.location.search.substring(1) !== this._searchParams.toString()) {
+      this._searchParams = new URLSearchParams(window.location.search);
+    }
+  };
 
   private _columns = memoizeOne(
     (localize: LocalizeFunc): DataTableColumnContainer<BackupRow> => ({
@@ -230,13 +257,24 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     return capitalizeFirstLetter(type);
   }
 
-  private _data = memoizeOne((backups: BackupContent[]): BackupRow[] =>
-    backups.map((backup) => ({
-      ...backup,
-      formatted_type: this._formatBackupType(
-        backup.with_automatic_settings ? "automatic" : "manual"
-      ),
-    }))
+  private _data = memoizeOne(
+    (backups: BackupContent[], searchParams: URLSearchParams): BackupRow[] => {
+      const type = searchParams.get("type")?.toLowerCase();
+      let filteredBackups = backups;
+      if (type) {
+        filteredBackups = filteredBackups.filter(
+          (backup) =>
+            backup.with_automatic_settings === (type === "automatic") ||
+            (backup.with_automatic_settings === null && type === "manual")
+        );
+      }
+      return filteredBackups.map((backup) => ({
+        ...backup,
+        formatted_type: this._formatBackupType(
+          backup.with_automatic_settings ? "automatic" : "manual"
+        ),
+      }));
+    }
   );
 
   protected render(): TemplateResult {
@@ -268,7 +306,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         .route=${this.route}
         @row-click=${this._showBackupDetails}
         .columns=${this._columns(this.hass.localize)}
-        .data=${this._data(this.backups)}
+        .data=${this._data(this.backups, this._searchParams)}
         .noDataText=${this.hass.localize("ui.panel.config.backup.no_backups")}
         .searchLabel=${this.hass.localize(
           "ui.panel.config.backup.picker.search"

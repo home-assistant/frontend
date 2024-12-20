@@ -62,7 +62,10 @@ class HaBackupOverviewBackups extends LitElement {
         <div class="card-header">My backups</div>
         <div class="card-content">
           <ha-md-list>
-            <ha-md-list-item type="link" href="/config/backup/backups">
+            <ha-md-list-item
+              type="link"
+              href="/config/backup/backups?type=automatic"
+            >
               <ha-svg-icon slot="start" .path=${mdiCalendarSync}></ha-svg-icon>
               <div slot="headline">
                 ${automaticStats.count} automatic backups
@@ -72,7 +75,10 @@ class HaBackupOverviewBackups extends LitElement {
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
-            <ha-md-list-item type="link" href="/config/backup/backups">
+            <ha-md-list-item
+              type="link"
+              href="/config/backup/backups?type=manual"
+            >
               <ha-svg-icon slot="start" .path=${mdiGestureTap}></ha-svg-icon>
               <div slot="headline">${manualStats.count} manual backups</div>
               <div slot="supporting-text">
