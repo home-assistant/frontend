@@ -1,8 +1,10 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
+import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
@@ -38,6 +40,47 @@ class HaConfigBackupSettings extends LitElement {
     }
   }
 
+  protected firstUpdated(_changedProperties: PropertyValues): void {
+    super.firstUpdated(_changedProperties);
+    this._scrollToSection();
+  }
+
+  private async _scrollToSection() {
+    const hash = window.location.hash.substring(1);
+    if (
+      hash === "locations" &&
+      isComponentLoaded(this.hass, "hassio") &&
+      !this._config?.create_backup.include_all_addons &&
+      this._config?.create_backup.include_addons?.length
+    ) {
+      // Wait for the addons to be loaded before scrolling because the height can change and location section is below addons.
+      this.addEventListener("backup-addons-fetched", async () => {
+        await nextRender();
+        this._scrolltoHash();
+      });
+      // Clear hash to cancel the scroll after 500ms if addons doesn't load
+      setTimeout(() => {
+        this._clearHash();
+      }, 500);
+      return;
+    }
+    await nextRender();
+    this._scrolltoHash();
+  }
+
+  private _scrolltoHash() {
+    const hash = window.location.hash.substring(1);
+    if (hash) {
+      const element = this.shadowRoot!.getElementById(hash);
+      element?.scrollIntoView();
+      this._clearHash();
+    }
+  }
+
+  private _clearHash() {
+    history.replaceState(null, "", window.location.pathname);
+  }
+
   protected render() {
     if (!this._config) {
       return nothing;
@@ -51,7 +94,7 @@ class HaConfigBackupSettings extends LitElement {
         .header=${"Automatic backups"}
       >
         <div class="content">
-          <ha-card>
+          <ha-card id="schedule">
             <div class="card-header">Automatic backups</div>
             <div class="card-content">
               <p>
@@ -65,7 +108,7 @@ class HaConfigBackupSettings extends LitElement {
               ></ha-backup-config-schedule>
             </div>
           </ha-card>
-          <ha-card>
+          <ha-card id="data">
             <div class="card-header">Backup data</div>
             <div class="card-content">
               <ha-backup-config-data
@@ -78,7 +121,7 @@ class HaConfigBackupSettings extends LitElement {
             </div>
           </ha-card>
 
-          <ha-card class="agents">
+          <ha-card class="agents" id="locations">
             <div class="card-header">Locations</div>
             <div class="card-content">
               <p>
@@ -199,6 +242,9 @@ class HaConfigBackupSettings extends LitElement {
   }
 
   static styles = css`
+    ha-card {
+      scroll-margin-top: 16px;
+    }
     .content {
       padding: 28px 20px 0;
       max-width: 690px;

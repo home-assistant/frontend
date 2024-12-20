@@ -5,6 +5,7 @@ import { customElement, property } from "lit/decorators";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
@@ -103,7 +104,10 @@ class HaBackupBackupsSummary extends LitElement {
         <div class="card-header">Automatic backups</div>
         <div class="card-content">
           <ha-md-list>
-            <ha-md-list-item>
+            <ha-md-list-item
+              type="link"
+              href="/config/backup/settings#schedule"
+            >
               <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
               <div slot="headline">
                 ${this._scheduleDescription(this.config)}
@@ -111,8 +115,9 @@ class HaBackupBackupsSummary extends LitElement {
               <div slot="supporting-text">
                 Schedule and number of backups to keep
               </div>
+              <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
-            <ha-md-list-item>
+            <ha-md-list-item type="link" href="/config/backup/settings#data">
               <ha-svg-icon slot="start" .path=${mdiDatabase}></ha-svg-icon>
               <div slot="headline">
                 ${this.config.create_backup.include_database
@@ -122,27 +127,34 @@ class HaBackupBackupsSummary extends LitElement {
               <div slot="supporting-text">
                 Home Assistant data that is included
               </div>
+              <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
             ${isHassio
               ? html`
-                  <ha-md-list-item>
+                  <ha-md-list-item
+                    type="link"
+                    href="/config/backup/settings#data"
+                  >
                     <ha-svg-icon slot="start" .path=${mdiPuzzle}></ha-svg-icon>
                     <div slot="headline">
                       ${this._addonsDescription(this.config)}
                     </div>
                     <div slot="supporting-text">Add-ons that are included</div>
-                  </ha-md-list-item>
-                  <ha-md-list-item>
-                    <ha-svg-icon slot="start" .path=${mdiUpload}></ha-svg-icon>
-                    <div slot="headline">
-                      ${this._agentsDescription(this.config)}
-                    </div>
-                    <div slot="supporting-text">
-                      Locations where backup is uploaded to
-                    </div>
+                    <ha-icon-next slot="end"></ha-icon-next>
                   </ha-md-list-item>
                 `
               : nothing}
+            <ha-md-list-item
+              type="link"
+              href="/config/backup/settings#locations"
+            >
+              <ha-svg-icon slot="start" .path=${mdiUpload}></ha-svg-icon>
+              <div slot="headline">${this._agentsDescription(this.config)}</div>
+              <div slot="supporting-text">
+                Locations where backup is uploaded to
+              </div>
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-md-list-item>
           </ha-md-list>
         </div>
         <div class="card-actions">
