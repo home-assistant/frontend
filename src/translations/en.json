@@ -802,13 +802,14 @@
         "select_date_range": "Select time period",
         "ranges": {
           "today": "Today",
+          "yesterday": "Yesterday",
           "now-24h": "Last 24 hours",
           "this_week": "This week",
           "this_quarter": "This quarter",
           "this_month": "This month",
           "now-30d": "Last 30 days",
           "this_year": "This year",
-          "now-1y": "Last 1 year"
+          "now-365d": "Last 365 days"
         }
       },
       "grid-size-picker": {

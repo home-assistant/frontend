@@ -9,7 +9,7 @@ import {
   endOfMonth,
   endOfWeek,
   endOfYear,
-  subYears,
+  subDays,
   startOfDay,
   startOfMonth,
   startOfWeek,
@@ -162,8 +162,8 @@ export class HaDateRangePicker extends LitElement {
                 }),
               ],
               [this.hass.localize(
-                "ui.components.date-range-picker.ranges.now-1y"
-              )]: [subYears(today, 1), today],
+                "ui.components.date-range-picker.ranges.now-365d"
+              )]: [subDays(today, 365), today],
             }
           : {}),
       };
