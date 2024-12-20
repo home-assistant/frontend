@@ -47,7 +47,12 @@ class HaConfigBackupSettings extends LitElement {
 
   private async _scrollToSection() {
     const hash = window.location.hash.substring(1);
-    if (hash === "locations" && isComponentLoaded(this.hass, "hassio")) {
+    if (
+      hash === "locations" &&
+      isComponentLoaded(this.hass, "hassio") &&
+      !this._config?.create_backup.include_all_addons &&
+      this._config?.create_backup.include_addons?.length
+    ) {
       // Wait for the addons to be loaded before scrolling because the height can change and location section is below addons.
       this.addEventListener("backup-addons-fetched", async () => {
         await nextRender();
