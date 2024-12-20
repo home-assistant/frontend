@@ -320,6 +320,15 @@ export class HaFileUpload extends LitElement {
       .progress {
         color: var(--secondary-text-color);
       }
+      button.link {
+        background: none;
+        border: none;
+        padding: 0;
+        font-size: 14px;
+        color: var(--primary-color);
+        text-decoration: underline;
+        cursor: pointer;
+      }
     `;
   }
 }
