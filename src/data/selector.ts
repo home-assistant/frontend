@@ -26,6 +26,7 @@ export type Selector =
   | AreaFilterSelector
   | AttributeSelector
   | BooleanSelector
+  | ButtonToggleSelector
   | ColorRGBSelector
   | ColorTempSelector
   | ConditionSelector
