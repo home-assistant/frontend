@@ -53,12 +53,6 @@ export type BackupConfigData = {
   include_addons?: string[];
 };
 
-declare global {
-  interface HASSDomEvents {
-    "backup-addons-fetched": void;
-  }
-}
-
 @customElement("ha-backup-config-data")
 class HaBackupConfigData extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -95,7 +89,6 @@ class HaBackupConfigData extends LitElement {
   private async _fetchAddons() {
     const { addons } = await fetchHassioAddonsInfo(this.hass);
     this._addons = addons;
-    fireEvent(this, "backup-addons-fetched");
   }
 
   private _hasLocalAddons(addons: BackupAddonItem[]): boolean {
