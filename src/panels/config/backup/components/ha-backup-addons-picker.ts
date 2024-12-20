@@ -26,6 +26,9 @@ export class HaBackupAddonsPicker extends LitElement {
 
   @property({ attribute: false }) public value?: string[];
 
+  @property({ attribute: "hide-version", type: Boolean })
+  public hideVersion = false;
+
   protected render() {
     return html`
       <div class="items">
@@ -35,7 +38,7 @@ export class HaBackupAddonsPicker extends LitElement {
               <ha-backup-formfield-label
                 slot="label"
                 .label=${item.name}
-                .version=${item.version}
+                .version=${this.hideVersion ? undefined : item.version}
                 .iconPath=${item.iconPath || mdiPuzzle}
                 .imageUrl=${this.addons?.find((a) => a.slug === item.slug)?.icon
                   ? `/api/hassio/addons/${item.slug}/icon`

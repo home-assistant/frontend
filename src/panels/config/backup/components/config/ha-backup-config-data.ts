@@ -60,6 +60,9 @@ class HaBackupConfigData extends LitElement {
   @property({ type: Boolean, attribute: "force-home-assistant" })
   public forceHomeAssistant = false;
 
+  @property({ attribute: "hide-addon-version", type: Boolean })
+  public hideAddonVersion = false;
+
   @state() private value?: BackupConfigData;
 
   @state() private _addons: BackupAddonItem[] = [];
@@ -156,7 +159,7 @@ class HaBackupConfigData extends LitElement {
             The bare minimum needed to restore your system.
           </span>
           ${this.forceHomeAssistant
-            ? html`<ha-button slot="end">Learn more</ha-button>`
+            ? nothing
             : html`
                 <ha-switch
                   id="homeassistant"
@@ -253,7 +256,7 @@ class HaBackupConfigData extends LitElement {
                         .value=${data.addons_mode}
                       >
                         <ha-md-select-option value="all">
-                          <div slot="headline">All, including new</div>
+                          <div slot="headline">All</div>
                         </ha-md-select-option>
                         <ha-md-select-option value="none">
                           <div slot="headline">None</div>
@@ -276,6 +279,7 @@ class HaBackupConfigData extends LitElement {
                 .value=${data.addons}
                 @value-changed=${this._addonsChanged}
                 .addons=${this._addons}
+                .hideVersion=${this.hideAddonVersion}
               ></ha-backup-addons-picker>
             </ha-expansion-panel>
           `
