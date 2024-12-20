@@ -1,9 +1,9 @@
 import "@material/mwc-list/mwc-list";
-import type { SelectedDetail } from "@material/mwc-list";
+import type { List, SelectedDetail } from "@material/mwc-list";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
@@ -31,6 +31,8 @@ export class HaFilterStates extends LitElement {
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
   @state() private _shouldRender = false;
+
+  @query("mwc-list") private _list!: List;
 
   protected render() {
     if (!this.states) {
@@ -84,12 +86,21 @@ export class HaFilterStates extends LitElement {
     `;
   }
 
-  protected updated(changed) {
+  protected willUpdate(changed) {
     if (changed.has("expanded") && this.expanded) {
-      setTimeout(() => {
+      this._shouldRender = true;
+    }
+  }
+
+  protected updated(changed) {
+    if ((changed.has("expanded") || changed.has("states")) && this.expanded) {
+      setTimeout(async () => {
         if (!this.expanded) return;
-        this.renderRoot.querySelector("mwc-list")!.style.height =
-          `${this.clientHeight - 49}px`;
+        const list = this._list;
+        if (!list) {
+          return;
+        }
+        list.style.height = `${this.clientHeight - 49}px`;
       }, 300);
     }
   }
