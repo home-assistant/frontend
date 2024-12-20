@@ -110,7 +110,9 @@ class HaConfigBackupOverview extends LitElement {
     }
 
     if (type === "manual") {
-      const params = await showGenerateBackupDialog(this, {});
+      const params = await showGenerateBackupDialog(this, {
+        cloudStatus: this.cloudStatus,
+      });
 
       if (!params) {
         return;
