@@ -96,18 +96,26 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
     this._step = this._steps[0];
     this._config = RECOMMENDED_CONFIG;
 
+    const agents: string[] = [];
     // Enable local location by default
     if (isComponentLoaded(this.hass, "hassio")) {
-      this._config.create_backup.agent_ids.push(HASSIO_LOCAL_AGENT);
+      agents.push(HASSIO_LOCAL_AGENT);
     } else {
-      this._config.create_backup.agent_ids.push(CORE_LOCAL_AGENT);
+      agents.push(CORE_LOCAL_AGENT);
     }
     // Enable cloud location if logged in
     if (this._params.cloudStatus.logged_in) {
-      this._config.create_backup.agent_ids.push(CLOUD_AGENT);
+      agents.push(CLOUD_AGENT);
     }
 
-    this._config.create_backup.password = generateEncryptionKey();
+    this._config = {
+      ...this._config,
+      create_backup: {
+        ...this._config.create_backup,
+        agent_ids: agents,
+        password: generateEncryptionKey(),
+      },
+    };
     this._opened = true;
   }
 
