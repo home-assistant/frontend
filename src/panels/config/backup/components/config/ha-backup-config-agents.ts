@@ -1,4 +1,4 @@
-import { mdiDatabase } from "@mdi/js";
+import { mdiHarddisk } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -64,7 +64,7 @@ class HaBackupConfigAgents extends LitElement {
                   <ha-md-list-item>
                     ${isLocalAgent(agentId)
                       ? html`
-                          <ha-svg-icon .path=${mdiDatabase} slot="start">
+                          <ha-svg-icon .path=${mdiHarddisk} slot="start">
                           </ha-svg-icon>
                         `
                       : html`

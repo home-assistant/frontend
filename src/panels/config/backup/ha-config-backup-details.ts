@@ -1,5 +1,5 @@
 import type { ActionDetail } from "@material/mwc-list";
-import { mdiDatabase, mdiDelete, mdiDotsVertical, mdiDownload } from "@mdi/js";
+import { mdiDelete, mdiDotsVertical, mdiDownload, mdiHarddisk } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
@@ -177,7 +177,7 @@ class HaConfigBackupDetails extends LitElement {
                               ${isLocalAgent(agentId)
                                 ? html`
                                     <ha-svg-icon
-                                      .path=${mdiDatabase}
+                                      .path=${mdiHarddisk}
                                       slot="start"
                                     >
                                     </ha-svg-icon>
