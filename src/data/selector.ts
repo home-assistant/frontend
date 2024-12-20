@@ -68,7 +68,8 @@ export type Selector =
   | TTSVoiceSelector
   | UiActionSelector
   | UiColorSelector
-  | UiStateContentSelector;
+  | UiStateContentSelector
+  | BackupLocationSelector;
 
 export interface ActionSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types

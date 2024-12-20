@@ -82,8 +82,6 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
 
   @state() private _step?: Step;
 
-  @state() private _steps: Step[] = [];
-
   @state() private _params?: BackupOnboardingDialogParams;
 
   @query("ha-md-dialog") private _dialog!: HaMdDialog;
@@ -92,8 +90,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
 
   public showDialog(params: BackupOnboardingDialogParams): void {
     this._params = params;
-    this._steps = params.showIntro ? STEPS.concat() : STEPS.slice(1);
-    this._step = this._steps[0];
+    this._step = STEPS[0];
     this._config = RECOMMENDED_CONFIG;
 
     const agents: string[] = [];
@@ -128,7 +125,6 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
     }
     this._opened = false;
     this._step = undefined;
-    this._steps = [];
     this._config = undefined;
     this._params = undefined;
   }
@@ -170,19 +166,19 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
   }
 
   private _previousStep() {
-    const index = this._steps.indexOf(this._step!);
+    const index = STEPS.indexOf(this._step!);
     if (index === 0) {
       return;
     }
-    this._step = this._steps[index - 1];
+    this._step = STEPS[index - 1];
   }
 
   private _nextStep() {
-    const index = this._steps.indexOf(this._step!);
-    if (index === this._steps.length - 1) {
+    const index = STEPS.indexOf(this._step!);
+    if (index === STEPS.length - 1) {
       return;
     }
-    this._step = this._steps[index + 1];
+    this._step = STEPS[index + 1];
   }
 
   protected render() {
@@ -190,8 +186,8 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
       return nothing;
     }
 
-    const isLastStep = this._step === this._steps[this._steps.length - 1];
-    const isFirstStep = this._step === this._steps[0];
+    const isLastStep = this._step === STEPS[STEPS.length - 1];
+    const isFirstStep = this._step === STEPS[0];
 
     return html`
       <ha-md-dialog disable-cancel-action open @closed=${this.closeDialog}>
@@ -224,7 +220,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
                         @click=${this._done}
                         .disabled=${!this._isStepValid()}
                       >
-                        Save
+                        Save and create backup
                       </ha-button>
                     `
                   : html`
@@ -296,7 +292,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
               Backups are essential to a reliable smart home. They protect your
               setup against failures and allows you to quickly have a working
               system again. It is recommended to create a daily backup and keep
-              copies of the last 3 days on two different locations. And one of
+              backups of the last 3 days on two different locations. And one of
               them is off-site.
             </p>
           </div>
@@ -331,7 +327,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
       case "setup":
         return html`
           <p>
-            It is recommended to create a daily backup and keep copies of the
+            It is recommended to create a daily backup and keep backups of the
             last 3 days on two different locations. And one of them is off-site.
           </p>
           <ha-md-list class="full">
@@ -355,7 +351,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
         return html`
           <p>
             Let Home Assistant take care of your backups by creating a scheduled
-            backup that also removes older copies.
+            backup that also removes older backups.
           </p>
           <ha-backup-config-schedule
             .hass=${this.hass}
@@ -374,6 +370,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
             .value=${this._dataConfig(this._config)}
             @value-changed=${this._dataChanged}
             force-home-assistant
+            hide-addon-version
           ></ha-backup-config-data>
         `;
       case "locations":
@@ -470,9 +467,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
         ha-md-dialog {
           width: 90vw;
           max-width: 560px;
-        }
-        div[slot="content"] {
-          margin-top: -16px;
+          --dialog-content-padding: 8px 24px;
         }
         ha-md-list {
           background: none;

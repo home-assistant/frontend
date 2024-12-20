@@ -119,26 +119,6 @@ class HaConfigBackupDetails extends LitElement {
             : !this._backup
               ? html`<ha-circular-progress active></ha-circular-progress>`
               : html`
-                  <ha-card header="Select what to restore">
-                    <div class="card-content">
-                      <ha-backup-data-picker
-                        .hass=${this.hass}
-                        .data=${this._backup}
-                        .value=${this._selectedBackup}
-                        @value-changed=${this._selectedBackupChanged}
-                        .addonsInfo=${this._addonsInfo}
-                      >
-                      </ha-backup-data-picker>
-                    </div>
-                    <div class="card-actions">
-                      <ha-button
-                        @click=${this._restore}
-                        .disabled=${this._isRestoreDisabled()}
-                      >
-                        Restore
-                      </ha-button>
-                    </div>
-                  </ha-card>
                   <ha-card header="Backup">
                     <div class="card-content">
                       <ha-md-list>
@@ -159,6 +139,27 @@ class HaConfigBackupDetails extends LitElement {
                       </ha-md-list>
                     </div>
                   </ha-card>
+                  <ha-card header="Select what to restore">
+                    <div class="card-content">
+                      <ha-backup-data-picker
+                        .hass=${this.hass}
+                        .data=${this._backup}
+                        .value=${this._selectedBackup}
+                        @value-changed=${this._selectedBackupChanged}
+                        .addonsInfo=${this._addonsInfo}
+                      >
+                      </ha-backup-data-picker>
+                    </div>
+                    <div class="card-actions">
+                      <ha-button
+                        @click=${this._restore}
+                        .disabled=${this._isRestoreDisabled()}
+                        class="danger"
+                      >
+                        Restore
+                      </ha-button>
+                    </div>
+                  </ha-card>
                   <ha-card header="Locations">
                     <div class="card-content">
                       <ha-md-list>
@@ -171,6 +172,8 @@ class HaConfigBackupDetails extends LitElement {
                             agentId,
                             this._backup!.agent_ids!
                           );
+
+                          const isLocal = isLocalAgent(agentId);
 
                           return html`
                             <ha-md-list-item>
@@ -204,7 +207,11 @@ class HaConfigBackupDetails extends LitElement {
                                 >
                                 </span>
                                 <span>
-                                  ${success ? "Backup synced" : "Backup failed"}
+                                  ${success
+                                    ? isLocal
+                                      ? "Backup created"
+                                      : "Backup uploaded"
+                                    : "Backup failed"}
                                 </span>
                               </div>
                               ${success
@@ -389,6 +396,9 @@ class HaConfigBackupDetails extends LitElement {
     }
     .warning ha-svg-icon {
       color: var(--error-color);
+    }
+    ha-button.danger {
+      --mdc-theme-primary: var(--error-color);
     }
     ha-backup-data-picker {
       display: block;

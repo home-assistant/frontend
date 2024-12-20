@@ -33,7 +33,7 @@ class HaBackupBackupsSummary extends LitElement {
 
     let copiesText = "and keep all backups";
     if (copies) {
-      copiesText = `and keep the latest ${copies} copie(s)`;
+      copiesText = `and keep the latest ${copies} backup(s)`;
     } else if (days) {
       copiesText = `and keep backups for ${days} day(s)`;
     }
@@ -69,7 +69,7 @@ class HaBackupBackupsSummary extends LitElement {
 
   private _addonsDescription(config: BackupConfig): string {
     if (config.create_backup.include_all_addons) {
-      return "All add-ons, including new";
+      return "All add-ons";
     }
     if (config.create_backup.include_addons?.length) {
       return `${config.create_backup.include_addons.length} add-ons`;

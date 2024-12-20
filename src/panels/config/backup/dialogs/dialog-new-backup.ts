@@ -115,9 +115,6 @@ class DialogNewBackup extends LitElement implements HassDialog {
           --dialog-content-padding: 0;
           max-width: 500px;
         }
-        div[slot="content"] {
-          margin-top: -16px;
-        }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           ha-md-dialog {
             max-width: none;

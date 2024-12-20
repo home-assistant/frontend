@@ -2209,6 +2209,17 @@
           },
           "picker": {
             "search": "Search backups"
+          },
+          "dialogs": {
+            "local_backup_location": {
+              "title": "Change local backup location",
+              "description": "Change the default location where local backups are stored on your Home Assistant instance.",
+              "options": {
+                "default_backup_mount": {
+                  "name": "Default location"
+                }
+              }
+            }
           }
         },
         "tag": {
