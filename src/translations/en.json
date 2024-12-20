@@ -2225,6 +2225,30 @@
                 }
               }
             }
+          },
+          "agents": {
+            "cloud_agent_description": "Note: It stores only one backup with a maximum size of 5 GB, regardless of your settings.",
+            "cloud_agent_no_subcription": "You currently do not have an active Home Assistant Cloud subscription.",
+            "network_mount_agent_description": "Network storage",
+            "no_agents": "No locations configured"
+          },
+          "data": {
+            "ha_settings": "Home Assistant settings",
+            "ha_settings_description": "The bare minimum needed to restore the system.",
+            "ha_settings_included_description": "The bare minimum needed to restore the system. It is always included in automatic backup data.",
+            "history": "History",
+            "history_description": "This can include large filesize camera recordings.",
+            "media": "Media",
+            "media_description": "For example, camera recordings.",
+            "share_folder": "Share folder",
+            "share_folder_description": "Folder that is often used by add-ons for advanced or older configurations.",
+            "local_addons": "Local addons folder",
+            "local_addons_description": "Folder that contains the data of your local add-ons.",
+            "addons": "Add-ons",
+            "addons_description": "Select what add-ons you want to include.",
+            "addons_all": "All",
+            "addons_none": "None",
+            "addons_custom": "Custom"
           }
         },
         "tag": {

@@ -158,11 +158,17 @@ class HaBackupConfigData extends LitElement {
       <ha-md-list>
         <ha-md-list-item>
           <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
-          <span slot="headline"> Home Assistant settings </span>
+          <span slot="headline">
+            ${this.hass.localize("ui.panel.config.backup.data.ha_settings")}
+          </span>
           <span slot="supporting-text">
             ${this.forceHomeAssistant
-              ? "The bare minimum needed to restore the system. It is always included in automatic backup data."
-              : "The bare minimum needed to restore your system."}
+              ? this.hass.localize(
+                  "ui.panel.config.backup.data.ha_settings_included_description"
+                )
+              : this.hass.localize(
+                  "ui.panel.config.backup.data.ha_settings_description"
+                )}
           </span>
           <ha-switch
             id="homeassistant"
@@ -175,9 +181,13 @@ class HaBackupConfigData extends LitElement {
 
         <ha-md-list-item>
           <ha-svg-icon slot="start" .path=${mdiChartBox}></ha-svg-icon>
-          <span slot="headline">History</span>
+          <span slot="headline">
+            ${this.hass.localize("ui.panel.config.backup.data.history")}
+          </span>
           <span slot="supporting-text">
-            Historical data of your sensors, including your energy dashboard.
+            ${this.hass.localize(
+              "ui.panel.config.backup.data.history_description"
+            )}
           </span>
           <ha-switch
             id="database"
@@ -194,9 +204,13 @@ class HaBackupConfigData extends LitElement {
                   slot="start"
                   .path=${mdiPlayBoxMultiple}
                 ></ha-svg-icon>
-                <span slot="headline">Media</span>
+                <span slot="headline">
+                  ${this.hass.localize("ui.panel.config.backup.data.media")}
+                </span>
                 <span slot="supporting-text">
-                  This can include large filesize camera recordings.
+                  ${this.hass.localize(
+                    "ui.panel.config.backup.data.history_description"
+                  )}
                 </span>
                 <ha-switch
                   id="media"
@@ -208,10 +222,15 @@ class HaBackupConfigData extends LitElement {
 
               <ha-md-list-item>
                 <ha-svg-icon slot="start" .path=${mdiFolder}></ha-svg-icon>
-                <span slot="headline">Share folder</span>
+                <span slot="headline">
+                  ${this.hass.localize(
+                    "ui.panel.config.backup.data.share_folder"
+                  )}
+                </span>
                 <span slot="supporting-text">
-                  Folder that is often used by add-ons for advanced or older
-                  configurations.
+                  ${this.hass.localize(
+                    "ui.panel.config.backup.data.share_folder_description"
+                  )}
                 </span>
                 <ha-switch
                   id="share"
@@ -228,9 +247,15 @@ class HaBackupConfigData extends LitElement {
                         slot="start"
                         .path=${mdiFolder}
                       ></ha-svg-icon>
-                      <span slot="headline">Local addons folder</span>
+                      <span slot="headline">
+                        ${this.hass.localize(
+                          "ui.panel.config.backup.data.local_addons"
+                        )}
+                      </span>
                       <span slot="supporting-text">
-                        Folder that contains the data of your local add-ons.
+                        ${this.hass.localize(
+                          "ui.panel.config.backup.data.local_addons_description"
+                        )}
                       </span>
                       <ha-switch
                         id="local_addons"
@@ -248,9 +273,15 @@ class HaBackupConfigData extends LitElement {
                         slot="start"
                         .path=${mdiPuzzle}
                       ></ha-svg-icon>
-                      <span slot="headline">Add-ons</span>
+                      <span slot="headline">
+                        ${this.hass.localize(
+                          "ui.panel.config.backup.data.addons"
+                        )}
+                      </span>
                       <span slot="supporting-text">
-                        Select what add-ons you want to include.
+                        ${this.hass.localize(
+                          "ui.panel.config.backup.data.addons_description"
+                        )}
                       </span>
                       <ha-md-select
                         slot="end"
@@ -259,13 +290,25 @@ class HaBackupConfigData extends LitElement {
                         .value=${data.addons_mode}
                       >
                         <ha-md-select-option value="all">
-                          <div slot="headline">All</div>
+                          <div slot="headline">
+                            ${this.hass.localize(
+                              "ui.panel.config.backup.data.addons_all"
+                            )}
+                          </div>
                         </ha-md-select-option>
                         <ha-md-select-option value="none">
-                          <div slot="headline">None</div>
+                          <div slot="headline">
+                            ${this.hass.localize(
+                              "ui.panel.config.backup.data.addons_none"
+                            )}
+                          </div>
                         </ha-md-select-option>
                         <ha-md-select-option value="custom">
-                          <div slot="headline">Custom</div>
+                          <div slot="headline">
+                            ${this.hass.localize(
+                              "ui.panel.config.backup.data.addons_custom"
+                            )}
+                          </div>
                         </ha-md-select-option>
                       </ha-md-select>
                     </ha-md-list-item>
