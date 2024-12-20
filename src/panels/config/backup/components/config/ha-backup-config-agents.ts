@@ -50,7 +50,9 @@ class HaBackupConfigAgents extends LitElement {
 
   private _description(agentId: string) {
     if (agentId === CLOUD_AGENT) {
-      return "It stores one backup. The oldest backups are deleted.";
+      return this.hass.localize(
+        "ui.panel.config.backup.agents.cloud_agent_description"
+      );
     }
     return "";
   }
@@ -104,7 +106,9 @@ class HaBackupConfigAgents extends LitElement {
               })}
             </ha-md-list>
           `
-        : html`<p>No sync agents configured</p>`}
+        : html`<p>
+            ${this.hass.localize("ui.panel.config.backup.agents.no_agents")}
+          </p>`}
     `;
   }
 

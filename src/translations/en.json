@@ -2220,6 +2220,28 @@
                 }
               }
             }
+          },
+          "agents": {
+            "cloud_agent_description": "It stores one backup. The oldest backups are deleted.",
+            "no_agents": "No sync agents configured"
+          },
+          "data": {
+            "ha_settings_included": "Home Assistant settings are always included",
+            "ha_settings": "Home Assistant settings",
+            "ha_settings_description": "The bare minimum needed to restore your system.",
+            "history": "History",
+            "history_description": "Historical data of your sensors, including your energy dashboard.",
+            "media": "Media",
+            "media_description": "For example, camera recordings.",
+            "share_folder": "Share folder",
+            "share_folder_description": "Folder that is often used for advanced or older configurations.",
+            "local_addons": "Local addons folder",
+            "local_addons_description": "Folder that contains the data of your local add-ons.",
+            "addons": "Add-ons",
+            "addons_description": "Select what add-ons you want to include.",
+            "addons_all": "All",
+            "addons_none": "None",
+            "addons_custom": "Custom"
           }
         },
         "tag": {
