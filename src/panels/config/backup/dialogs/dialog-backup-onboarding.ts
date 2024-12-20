@@ -212,7 +212,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
                         @click=${this._done}
                         .disabled=${!this._isStepValid()}
                       >
-                        Save
+                        Save and create backup
                       </ha-button>
                     `
                   : html`

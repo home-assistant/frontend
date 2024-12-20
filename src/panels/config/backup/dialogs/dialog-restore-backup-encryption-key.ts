@@ -157,7 +157,11 @@ class DialogRestoreBackupEncryptionKey
         </div>
         <div slot="actions">
           <ha-button @click=${this.closeDialog}>Cancel</ha-button>
-          <ha-button @click=${this._submit} .disabled=${!this._getKey()}>
+          <ha-button
+            @click=${this._submit}
+            class="danger"
+            .disabled=${!this._getKey()}
+          >
             Restore
           </ha-button>
         </div>
@@ -221,9 +225,13 @@ class DialogRestoreBackupEncryptionKey
         ha-md-dialog {
           max-width: 500px;
           width: 100%;
+          --dialog-content-padding: 8px 24px;
         }
         .content p {
           margin: 0 0 16px;
+        }
+        ha-button.danger {
+          --mdc-theme-primary: var(--error-color);
         }
       `,
     ];
