@@ -141,6 +141,13 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
             have access to all your current backups. All next backups will use
             the new encryption key.
           </p>
+          <div class="encryption-key">
+            <p>${this._params?.currentKey}</p>
+            <ha-icon-button
+              .path=${mdiContentCopy}
+              @click=${this._copyOldKeyToClipboard}
+            ></ha-icon-button>
+          </div>
           <ha-md-list>
             <ha-md-list-item>
               <span slot="headline">Download old emergency kit</span>
@@ -197,6 +204,16 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
 
   private _copyKeyToClipboard() {
     copyToClipboard(this._newEncryptionKey);
+    showToast(this, {
+      message: this.hass.localize("ui.common.copied_clipboard"),
+    });
+  }
+
+  private _copyOldKeyToClipboard() {
+    if (!this._params?.currentKey) {
+      return;
+    }
+    copyToClipboard(this._params.currentKey);
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
     });
