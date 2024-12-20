@@ -18,13 +18,13 @@ const testTruthyData = [
   { version: "0.114.0", major: 0, minor: 113, patch: 0 },
   { version: "0.114.0", major: 0, minor: 113 },
 
-  { version: "2021.2.0dev.2323", major: 2021, minor: 2, patch: 0 },
+  { version: "2021.2.0dev.2323", major: 2021, minor: 1, patch: 0 },
   { version: "2021.2.0dev.2323", major: 2021, minor: 2 },
 ];
 
 const testFalsyData = [
   { version: "0.114.0", major: 0, minor: 115 },
-  { version: "2021.2.0dev.2323", major: 2021, minor: 2, patch: 1 },
+  { version: "2021.2.0dev.2323", major: 2021, minor: 2, patch: 0 },
 ];
 
 describe("atLeastVersion - Truthy", () => {

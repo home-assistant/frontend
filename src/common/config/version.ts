@@ -10,11 +10,6 @@ export const atLeastVersion = (
 
   const [haMajor, haMinor, haPatch] = version.split(".", 3);
 
-  const cleanHaPatch =
-    haPatch.indexOf("dev") === -1
-      ? haPatch
-      : haPatch.substring(0, haPatch.indexOf("dev"));
-
   return (
     Number(haMajor) > major ||
     (Number(haMajor) === major &&
@@ -24,7 +19,7 @@ export const atLeastVersion = (
     (patch !== undefined &&
       Number(haMajor) === major &&
       Number(haMinor) === minor &&
-      Number(cleanHaPatch) >= patch)
+      Number(haPatch) >= patch)
   );
 };
 
