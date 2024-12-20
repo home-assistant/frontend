@@ -3,6 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
+import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
@@ -38,6 +39,30 @@ class HaConfigBackupSettings extends LitElement {
     }
   }
 
+  protected firstUpdated(_changedProperties: PropertyValues): void {
+    super.firstUpdated(_changedProperties);
+    this._scrollTo();
+  }
+
+  private async _scrollTo() {
+    const hash = window.location.hash.substring(1);
+    if (hash === "locations") {
+      // Wait for the addons to be loaded before scrolling because the height can change
+      this.addEventListener("backup-addons-fetched", async () => {
+        await nextRender();
+        this._scrolltoHash(hash);
+      });
+      return;
+    }
+    this._scrolltoHash(hash);
+  }
+
+  private _scrolltoHash(hash: string) {
+    const element = this.shadowRoot!.getElementById(hash);
+    element?.scrollIntoView();
+    history.replaceState(null, "", window.location.pathname);
+  }
+
   protected render() {
     if (!this._config) {
       return nothing;
@@ -51,7 +76,7 @@ class HaConfigBackupSettings extends LitElement {
         .header=${"Automatic backups"}
       >
         <div class="content">
-          <ha-card>
+          <ha-card id="schedule">
             <div class="card-header">Automatic backups</div>
             <div class="card-content">
               <p>
@@ -65,7 +90,7 @@ class HaConfigBackupSettings extends LitElement {
               ></ha-backup-config-schedule>
             </div>
           </ha-card>
-          <ha-card>
+          <ha-card id="data">
             <div class="card-header">Backup data</div>
             <div class="card-content">
               <ha-backup-config-data
@@ -78,7 +103,7 @@ class HaConfigBackupSettings extends LitElement {
             </div>
           </ha-card>
 
-          <ha-card class="agents">
+          <ha-card class="agents" id="locations">
             <div class="card-header">Locations</div>
             <div class="card-content">
               <p>
@@ -199,6 +224,9 @@ class HaConfigBackupSettings extends LitElement {
   }
 
   static styles = css`
+    ha-card {
+      scroll-margin-top: 16px;
+    }
     .content {
       padding: 28px 20px 0;
       max-width: 690px;
