@@ -65,13 +65,12 @@ class HaConfigBackupOverview extends LitElement {
 
   private _handleOnboardingButtonClick(ev) {
     ev.stopPropagation();
-    this._setupAutomaticBackup(false);
+    this._setupAutomaticBackup();
   }
 
-  private async _setupAutomaticBackup(showIntro: boolean) {
+  private async _setupAutomaticBackup() {
     const success = await showBackupOnboardingDialog(this, {
       cloudStatus: this.cloudStatus,
-      showIntro: showIntro,
     });
     if (!success) {
       return;
@@ -84,7 +83,7 @@ class HaConfigBackupOverview extends LitElement {
 
   private async _newBackup(): Promise<void> {
     if (this._needsOnboarding) {
-      this._setupAutomaticBackup(true);
+      this._setupAutomaticBackup();
       return;
     }
 

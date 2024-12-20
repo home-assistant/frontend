@@ -82,8 +82,6 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
 
   @state() private _step?: Step;
 
-  @state() private _steps: Step[] = [];
-
   @state() private _params?: BackupOnboardingDialogParams;
 
   @query("ha-md-dialog") private _dialog!: HaMdDialog;
@@ -92,8 +90,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
 
   public showDialog(params: BackupOnboardingDialogParams): void {
     this._params = params;
-    this._steps = params.showIntro ? STEPS.concat() : STEPS.slice(1);
-    this._step = this._steps[0];
+    this._step = STEPS[0];
     this._config = RECOMMENDED_CONFIG;
 
     // Enable local location by default
@@ -120,7 +117,6 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
     }
     this._opened = false;
     this._step = undefined;
-    this._steps = [];
     this._config = undefined;
     this._params = undefined;
   }
@@ -162,19 +158,19 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
   }
 
   private _previousStep() {
-    const index = this._steps.indexOf(this._step!);
+    const index = STEPS.indexOf(this._step!);
     if (index === 0) {
       return;
     }
-    this._step = this._steps[index - 1];
+    this._step = STEPS[index - 1];
   }
 
   private _nextStep() {
-    const index = this._steps.indexOf(this._step!);
-    if (index === this._steps.length - 1) {
+    const index = STEPS.indexOf(this._step!);
+    if (index === STEPS.length - 1) {
       return;
     }
-    this._step = this._steps[index + 1];
+    this._step = STEPS[index + 1];
   }
 
   protected render() {
@@ -182,8 +178,8 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
       return nothing;
     }
 
-    const isLastStep = this._step === this._steps[this._steps.length - 1];
-    const isFirstStep = this._step === this._steps[0];
+    const isLastStep = this._step === STEPS[STEPS.length - 1];
+    const isFirstStep = this._step === STEPS[0];
 
     return html`
       <ha-md-dialog disable-cancel-action open @closed=${this.closeDialog}>
