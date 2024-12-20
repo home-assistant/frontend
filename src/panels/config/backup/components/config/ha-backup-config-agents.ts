@@ -116,10 +116,11 @@ class HaBackupConfigAgents extends LitElement {
       this.value = this._value.filter((agent) => agent !== agentId);
     }
 
-    // Ensure agents exist in the list
-    this.value = this.value
+    // Ensure we don't have duplicates, agents exist in the list and cloud is logged in
+    this.value = [...new Set(this.value)]
       .filter((agent) => this._agentIds.some((id) => id === agent))
-      .filter((id) => id !== CLOUD_AGENT || this.cloudStatus);
+      .filter((id) => id !== CLOUD_AGENT || this.cloudStatus.logged_in);
+
     fireEvent(this, "value-changed", { value: this.value });
   }
 
