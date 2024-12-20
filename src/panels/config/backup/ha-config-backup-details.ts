@@ -15,7 +15,7 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import { getSignedPath } from "../../../data/auth";
-import type { BackupContentExtended } from "../../../data/backup";
+import type { BackupContentExtended, BackupData } from "../../../data/backup";
 import {
   compareAgents,
   computeBackupAgentName,
@@ -24,7 +24,6 @@ import {
   getBackupDownloadUrl,
   getPreferredAgentForDownload,
   isLocalAgent,
-  restoreBackup,
 } from "../../../data/backup";
 import type { HassioAddonInfo } from "../../../data/hassio/addon";
 import "../../../layouts/hass-subpage";
@@ -34,7 +33,7 @@ import { bytesToString } from "../../../util/bytes-to-string";
 import { fileDownload } from "../../../util/file_download";
 import { showConfirmationDialog } from "../../lovelace/custom-card-helpers";
 import "./components/ha-backup-data-picker";
-import { showRestoreBackupEncryptionKeyDialog } from "./dialogs/show-dialog-restore-backup-encryption-key";
+import { showRestoreBackupDialog } from "./dialogs/show-dialog-restore-backup";
 
 type Agent = {
   id: string;
@@ -66,7 +65,7 @@ class HaConfigBackupDetails extends LitElement {
 
   @state() private _error?: string;
 
-  @state() private _selectedBackup?: BackupContentExtended;
+  @state() private _selectedData?: BackupData;
 
   @state() private _addonsInfo?: HassioAddonInfo[];
 
@@ -144,7 +143,7 @@ class HaConfigBackupDetails extends LitElement {
                       <ha-backup-data-picker
                         .hass=${this.hass}
                         .data=${this._backup}
-                        .value=${this._selectedBackup}
+                        .value=${this._selectedData}
                         @value-changed=${this._selectedBackupChanged}
                         .addonsInfo=${this._addonsInfo}
                       >
@@ -251,57 +250,28 @@ class HaConfigBackupDetails extends LitElement {
 
   private _selectedBackupChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    this._selectedBackup = ev.detail.value;
+    this._selectedData = ev.detail.value;
   }
 
   private _isRestoreDisabled() {
     return (
-      !this._selectedBackup ||
+      !this._selectedData ||
       !(
-        this._selectedBackup?.database_included ||
-        this._selectedBackup?.homeassistant_included ||
-        this._selectedBackup.addons.length ||
-        this._selectedBackup.folders.length
+        this._selectedData?.database_included ||
+        this._selectedData?.homeassistant_included ||
+        this._selectedData.addons.length ||
+        this._selectedData.folders.length
       )
     );
   }
 
-  private async _restore() {
-    let password: string | undefined;
-    if (this._backup?.protected) {
-      const response = await showRestoreBackupEncryptionKeyDialog(this, {});
-      if (!response) {
-        return;
-      }
-      password = response;
-    } else {
-      const response = await showConfirmationDialog(this, {
-        title: "Restore backup",
-        text: "The backup will be restored to your instance.",
-        confirmText: "Restore",
-        dismissText: "Cancel",
-        destructive: true,
-      });
-      if (!response) {
-        return;
-      }
+  private _restore() {
+    if (!this._backup || !this._selectedData) {
+      return;
     }
-
-    const preferedAgent = getPreferredAgentForDownload(
-      this._backup!.agent_ids!
-    );
-
-    const { addons, database_included, homeassistant_included, folders } =
-      this._selectedBackup!;
-
-    await restoreBackup(this.hass, {
-      backup_id: this._backup!.backup_id,
-      agent_id: preferedAgent,
-      password: password,
-      restore_addons: addons.map((addon) => addon.slug),
-      restore_database: database_included,
-      restore_folders: folders,
-      restore_homeassistant: homeassistant_included,
+    showRestoreBackupDialog(this, {
+      backup: this._backup,
+      selectedData: this._selectedData,
     });
   }
 
