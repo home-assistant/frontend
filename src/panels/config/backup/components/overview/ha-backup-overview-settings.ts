@@ -69,7 +69,7 @@ class HaBackupBackupsSummary extends LitElement {
 
   private _addonsDescription(config: BackupConfig): string {
     if (config.create_backup.include_all_addons) {
-      return "All add-ons, including new";
+      return "All add-ons";
     }
     if (config.create_backup.include_addons?.length) {
       return `${config.create_backup.include_addons.length} add-ons`;

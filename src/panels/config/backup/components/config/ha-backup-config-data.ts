@@ -156,7 +156,7 @@ class HaBackupConfigData extends LitElement {
             The bare minimum needed to restore your system.
           </span>
           ${this.forceHomeAssistant
-            ? html`<ha-button slot="end">Learn more</ha-button>`
+            ? nothing
             : html`
                 <ha-switch
                   id="homeassistant"
@@ -253,7 +253,7 @@ class HaBackupConfigData extends LitElement {
                         .value=${data.addons_mode}
                       >
                         <ha-md-select-option value="all">
-                          <div slot="headline">All, including new</div>
+                          <div slot="headline">All</div>
                         </ha-md-select-option>
                         <ha-md-select-option value="none">
                           <div slot="headline">None</div>
