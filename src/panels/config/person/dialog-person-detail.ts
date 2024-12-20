@@ -153,6 +153,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
               .hass=${this.hass}
               .value=${this._picture}
               crop
+              select-media
               .cropOptions=${cropOptions}
               @change=${this._pictureChanged}
             ></ha-picture-upload>

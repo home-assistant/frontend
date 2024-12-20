@@ -2,9 +2,15 @@ import { mdiImagePlus } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { MediaPickedEvent } from "../data/media-player";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyle } from "../resources/styles";
-import { createImage, generateImageThumbnailUrl } from "../data/image_upload";
+import {
+  MEDIA_PREFIX,
+  getIdFromUrl,
+  createImage,
+  generateImageThumbnailUrl,
+} from "../data/image_upload";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import type { CropOptions } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { showImageCropperDialog } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
@@ -12,6 +18,7 @@ import type { HomeAssistant } from "../types";
 import "./ha-button";
 import "./ha-circular-progress";
 import "./ha-file-upload";
+import { showMediaBrowserDialog } from "./media-player/show-media-browser-dialog";
 
 @customElement("ha-picture-upload")
 export class HaPictureUpload extends LitElement {
@@ -29,6 +36,9 @@ export class HaPictureUpload extends LitElement {
 
   @property({ type: Boolean }) public crop = false;
 
+  @property({ type: Boolean, attribute: "select-media" }) public selectMedia =
+    false;
+
   @property({ attribute: false }) public cropOptions?: CropOptions;
 
   @property({ type: Boolean }) public original = false;
@@ -39,13 +49,31 @@ export class HaPictureUpload extends LitElement {
 
   public render(): TemplateResult {
     if (!this.value) {
+      const secondary =
+        this.secondary ||
+        (this.selectMedia
+          ? html`${this.hass.localize(
+              "ui.components.picture-upload.secondary",
+              {
+                select_media: html`<button
+                  class="link"
+                  @click=${this._chooseMedia}
+                >
+                  ${this.hass.localize(
+                    "ui.components.picture-upload.select_media"
+                  )}
+                </button>`,
+              }
+            )}`
+          : undefined);
+
       return html`
         <ha-file-upload
           .hass=${this.hass}
           .icon=${mdiImagePlus}
           .label=${this.label ||
           this.hass.localize("ui.components.picture-upload.label")}
-          .secondary=${this.secondary}
+          .secondary=${secondary}
           .supports=${this.supports ||
           this.hass.localize("ui.components.picture-upload.supported_formats")}
           .uploading=${this._uploading}
@@ -93,7 +121,7 @@ export class HaPictureUpload extends LitElement {
     this.value = null;
   }
 
-  private async _cropFile(file: File) {
+  private async _cropFile(file: File, mediaId?: string) {
     if (!["image/png", "image/jpeg", "image/gif"].includes(file.type)) {
       showAlertDialog(this, {
         text: this.hass.localize(
@@ -109,7 +137,16 @@ export class HaPictureUpload extends LitElement {
         aspectRatio: NaN,
       },
       croppedCallback: (croppedFile) => {
-        this._uploadFile(croppedFile);
+        if (mediaId && croppedFile === file) {
+          this.value = generateImageThumbnailUrl(
+            mediaId,
+            this.size,
+            this.original
+          );
+          fireEvent(this, "change");
+        } else {
+          this._uploadFile(croppedFile);
+        }
       },
     });
   }
@@ -140,6 +177,51 @@ export class HaPictureUpload extends LitElement {
       this._uploading = false;
     }
   }
+
+  private _chooseMedia = () => {
+    showMediaBrowserDialog(this, {
+      action: "pick",
+      entityId: "browser",
+      navigateIds: [
+        { media_content_id: undefined, media_content_type: undefined },
+        {
+          media_content_id: MEDIA_PREFIX,
+          media_content_type: "app",
+        },
+      ],
+      minimumNavigateLevel: 2,
+      mediaPickedCallback: async (pickedMedia: MediaPickedEvent) => {
+        const mediaId = getIdFromUrl(pickedMedia.item.media_content_id);
+        if (mediaId) {
+          if (this.crop) {
+            const url = generateImageThumbnailUrl(mediaId, undefined, true);
+            let data;
+            try {
+              const response = await fetch(url);
+              data = await response.blob();
+            } catch (err: any) {
+              showAlertDialog(this, {
+                text: err.toString(),
+              });
+              return;
+            }
+            const metadata = {
+              type: pickedMedia.item.media_content_type,
+            };
+            const file = new File([data], pickedMedia.item.title, metadata);
+            this._cropFile(file, mediaId);
+          } else {
+            this.value = generateImageThumbnailUrl(
+              mediaId,
+              this.size,
+              this.original
+            );
+            fireEvent(this, "change");
+          }
+        }
+      },
+    });
+  };
 
   static get styles() {
     return [
