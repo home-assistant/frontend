@@ -293,6 +293,8 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
 
     if (preferredPipeline) {
       if (
+        preferredPipeline.conversation_engine ===
+          "conversation.home_assistant" &&
         preferredPipeline.tts_engine &&
         ttsEntityIds.includes(preferredPipeline.tts_engine) &&
         preferredPipeline.stt_engine &&
@@ -311,6 +313,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
 
     let localPipeline = pipelines.pipelines.find(
       (pipeline) =>
+        pipeline.conversation_engine === "conversation.home_assistant" &&
         pipeline.tts_engine &&
         ttsEntityIds.includes(pipeline.tts_engine) &&
         pipeline.stt_engine &&
