@@ -1,6 +1,7 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
 import { nextRender } from "../../../common/util/render-status";
@@ -41,25 +42,37 @@ class HaConfigBackupSettings extends LitElement {
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
     super.firstUpdated(_changedProperties);
-    this._scrollTo();
+    this._scrollToSection();
   }
 
-  private async _scrollTo() {
+  private async _scrollToSection() {
     const hash = window.location.hash.substring(1);
-    if (hash === "locations") {
-      // Wait for the addons to be loaded before scrolling because the height can change
+    if (hash === "locations" && isComponentLoaded(this.hass, "hassio")) {
+      // Wait for the addons to be loaded before scrolling because the height can change and location section is below addons.
       this.addEventListener("backup-addons-fetched", async () => {
         await nextRender();
-        this._scrolltoHash(hash);
+        this._scrolltoHash();
       });
+      // Clear hash to cancel the scroll after 500ms if addons doesn't load
+      setTimeout(() => {
+        this._clearHash();
+      }, 500);
       return;
     }
-    this._scrolltoHash(hash);
+    await nextRender();
+    this._scrolltoHash();
   }
 
-  private _scrolltoHash(hash: string) {
-    const element = this.shadowRoot!.getElementById(hash);
-    element?.scrollIntoView();
+  private _scrolltoHash() {
+    const hash = window.location.hash.substring(1);
+    if (hash) {
+      const element = this.shadowRoot!.getElementById(hash);
+      element?.scrollIntoView();
+      this._clearHash();
+    }
+  }
+
+  private _clearHash() {
     history.replaceState(null, "", window.location.pathname);
   }
 
