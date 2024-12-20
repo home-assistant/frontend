@@ -458,9 +458,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
         ha-md-dialog {
           width: 90vw;
           max-width: 560px;
-        }
-        div[slot="content"] {
-          margin-top: -16px;
+          --dialog-content-padding: 8px 24px;
         }
         ha-md-list {
           background: none;
