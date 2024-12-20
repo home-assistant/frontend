@@ -73,6 +73,7 @@ class HaConfigBackupSettings extends LitElement {
                 .value=${this._dataConfig}
                 @value-changed=${this._dataConfigChanged}
                 force-home-assistant
+                hide-addon-version
               ></ha-backup-config-data>
             </div>
           </ha-card>

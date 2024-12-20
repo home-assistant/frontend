@@ -362,6 +362,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
             .value=${this._dataConfig(this._config)}
             @value-changed=${this._dataChanged}
             force-home-assistant
+            hide-addon-version
           ></ha-backup-config-data>
         `;
       case "locations":
