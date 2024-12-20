@@ -431,7 +431,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     }
 
     this._filters = {
-      "ha-filter-states": [type],
+      "ha-filter-states": type === "all" ? [] : [type],
     };
   }
 

@@ -89,7 +89,10 @@ class HaBackupOverviewBackups extends LitElement {
           </ha-md-list>
         </div>
         <div class="card-actions">
-          <ha-button href="/config/backup/backups" @click=${this._showAll}>
+          <ha-button
+            href="/config/backup/backups?type=all"
+            @click=${this._showAll}
+          >
             Show all backups
           </ha-button>
         </div>
