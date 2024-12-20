@@ -7587,7 +7587,10 @@
         "restore": {
           "header": "Restore a backup",
           "in_progress": "Restore in progress",
+          "failed": "Restore failed",
           "upload_backup": "[%key:supervisor::backup::upload_backup%]",
+          "upload_supports": "Supports .TAR files",
+          "upload_drop": "[%key:ui::components::file-upload::secondary%]",
           "show_log": "Show full log",
           "hide_log": "Hide full log",
           "full_backup": "[%key:supervisor::backup::full_backup%]",
@@ -7601,12 +7604,17 @@
           "password": "[%key:supervisor::backup::password%]",
           "confirm_password": "[%key:supervisor::backup::confirm_password%]",
           "confirm_restore_partial_backup_title": "[%key:supervisor::backup::confirm_restore_partial_backup_title%]",
-          "confirm_restore_partial_backup_text": "[%key:supervisor::backup::confirm_restore_partial_backup_text%]",
+          "confirm_restore_partial_backup_text": "The backup will be restored. Depending on the size of the backup, this can take up to 45 min. Home Assistant needs to shutdown and the restore progress is running in the background. If it succeeds, Home Assistant will automatically start again and you see the login screen. If it fails it will bring you back to the onboarding.",
           "confirm_restore_full_backup_title": "[%key:supervisor::backup::confirm_restore_full_backup_title%]",
-          "confirm_restore_full_backup_text": "[%key:supervisor::backup::confirm_restore_full_backup_text%]",
+          "confirm_restore_full_backup_text": "Your entire system will be wiped and the backup will be restored. Depending on the size of the backup, this can take up to 45 min. Home Assistant needs to shutdown and the restore progress is running in the background. If it succeeds, Home Assistant will automatically start again and you see the login screen. If it fails it will bring you back to the onboarding.",
           "restore": "[%key:supervisor::backup::restore%]",
           "close": "[%key:ui::common::close%]",
-          "cancel": "[%key:ui::common::cancel%]"
+          "cancel": "[%key:ui::common::cancel%]",
+          "retry": "Retry",
+          "restore_start_failed": "[%key:supervisor::backup::restore_start_failed%]",
+          "no_backup_found": "[%key:supervisor::backup::no_backup_found%]",
+          "restore_no_home_assistant": "[%key:supervisor::backup::restore_no_home_assistant%]",
+          "unnamed_backup": "[%key:supervisor::backup::unnamed_backup%]"
         }
       },
       "custom": {
@@ -8092,16 +8100,16 @@
       "addons": "Add-ons",
       "folders": "Folders",
       "size": "Size",
-      "password": "Backup password",
-      "confirm_password": "Confirm backup password",
+      "password": "Backup encryption key",
+      "confirm_password": "Confirm encryption key",
       "password_protection": "Password protection",
       "enter_password": "Please enter a password.",
       "passwords_not_matching": "The passwords does not match",
       "backup_already_running": "A backup or restore is already running. Creating a new backup is currently not possible, try again later.",
       "confirm_restore_partial_backup_title": "Restore partial backup",
-      "confirm_restore_partial_backup_text": "The backup will be restored. Depending on the size of the backup, this can take up to 45 min.",
+      "confirm_restore_partial_backup_text": "The backup will be restored. Depending on the size of the backup, this can take up to 45 min. Home Assistant needs to shutdown and the restore progress is running in the background. If it succeeds, Home Assistant will automatically start again.",
       "confirm_restore_full_backup_title": "Restore full backup",
-      "confirm_restore_full_backup_text": "Your entire system will be wiped and the backup will be restored. Depending on the size of the backup, this can take up to 45 min.",
+      "confirm_restore_full_backup_text": "Your entire system will be wiped and the backup will be restored. Depending on the size of the backup, this can take up to 45 min. Home Assistant needs to shutdown and the restore progress is running in the background. If it succeeds, Home Assistant will automatically start again.",
       "confirm_delete_title": "Delete backup",
       "confirm_delete_text": "This backup will be permanently deleted and cannot be restored later.",
       "restore": "Restore",
@@ -8111,7 +8119,11 @@
       "download": "Download",
       "more_actions": "More actions",
       "remote_download_title": "Potentially slow download",
-      "remote_download_text": "You are accessing Home Assistant via remote access. Downloading backups over the Nabu Casa URL will take some time. If you are at home, cancel this dialog and enter your local URL, such as 'http://homeassistant.local:8123'"
+      "remote_download_text": "You are accessing Home Assistant via remote access. Downloading backups over the Nabu Casa URL will take some time. If you are at home, cancel this dialog and enter your local URL, such as 'http://homeassistant.local:8123'",
+      "restore_start_failed": "Failed to start restore. Unknown error.",
+      "no_backup_found": "No backup found.",
+      "restore_no_home_assistant": "Backup does not contain Home Assistant data. To restore Home Assistant you need a backup of Home Assistant core.",
+      "unnamed_backup": "Unnamed backup"
     },
     "dialog": {
       "network": {
