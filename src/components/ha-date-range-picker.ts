@@ -2,9 +2,10 @@ import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list";
 import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
-import { mdiCalendar } from "@mdi/js";
+import { mdiCalendar, mdiMagnifyPlus, mdiMagnifyMinus } from "@mdi/js";
 import {
   addDays,
+  subHours,
   endOfDay,
   endOfMonth,
   endOfWeek,
@@ -14,6 +15,10 @@ import {
   startOfWeek,
   startOfYear,
   isThisYear,
+  differenceInMilliseconds,
+  roundToNearestHours,
+  subMilliseconds,
+  addMilliseconds,
 } from "date-fns";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -246,6 +251,20 @@ export class HaDateRangePicker extends LitElement {
                   @click=${this._handleInputClick}
                   readonly
                 ></ha-textarea>
+                <ha-icon-button
+                  @click=${this._handleZoomOut}
+                  .label=${this.hass.localize(
+                    "ui.components.date-range-picker.zoom_out"
+                  )}
+                  .path=${mdiMagnifyMinus}
+                ></ha-icon-button>
+                <ha-icon-button
+                  @click=${this._handleZoomIn}
+                  .label=${this.hass.localize(
+                    "ui.components.date-range-picker.zoom_in"
+                  )}
+                  .path=${mdiMagnifyPlus}
+                ></ha-icon-button>
                 <ha-icon-button-prev
                   .label=${this.hass.localize("ui.common.previous")}
                   @click=${this._handlePrev}
@@ -313,6 +332,98 @@ export class HaDateRangePicker extends LitElement {
     dateRangePicker.clickedApply();
   }
 
+  private _handleZoomOut(ev: MouseEvent): void {
+    if (ev && ev.stopPropagation) ev.stopPropagation();
+    let dateRange: [Date, Date];
+    if (
+      differenceInMilliseconds(this.endDate, this.startDate) <
+      24 * 60 * 60 * 1000 - 1
+    ) {
+      dateRange = [
+        calcDate(
+          this.startDate,
+          startOfDay,
+          this.hass.locale,
+          this.hass.config
+        ),
+        calcDate(
+          this.startDate,
+          endOfDay,
+          this.hass.locale,
+          this.hass.config,
+          24 * 60 * 60 * 1000
+        ),
+      ];
+    } else {
+      const diff = differenceInMilliseconds(this.endDate, this.startDate);
+      dateRange = [
+        calcDate(
+          subMilliseconds(this.startDate, diff),
+          startOfDay,
+          this.hass.locale,
+          this.hass.config
+        ),
+        calcDate(
+          addMilliseconds(this.endDate, diff - 1),
+          endOfDay,
+          this.hass.locale,
+          this.hass.config
+        ),
+      ];
+    }
+    const dateRangePicker = this._dateRangePicker;
+    dateRangePicker.clickRange(dateRange);
+    dateRangePicker.clickedApply();
+  }
+
+  private _handleZoomIn(ev: MouseEvent): void {
+    if (ev && ev.stopPropagation) ev.stopPropagation();
+    let dateRange: [Date, Date];
+    const diff = differenceInMilliseconds(this.endDate, this.startDate);
+    if (diff > 24 * 60 * 60 * 1000 * 3) {
+      dateRange = [
+        calcDate(
+          this.startDate > new Date()
+            ? subHours(new Date(), 1)
+            : addMilliseconds(this.startDate, diff / 3 + 1),
+          startOfDay,
+          this.hass.locale,
+          this.hass.config
+        ),
+        calcDate(
+          this.endDate > new Date()
+            ? new Date()
+            : subMilliseconds(this.endDate, diff / 3),
+          endOfDay,
+          this.hass.locale,
+          this.hass.config
+        ),
+      ];
+    } else {
+      dateRange = [
+        calcDate(
+          this.startDate > new Date()
+            ? subHours(new Date(), 1)
+            : addMilliseconds(this.startDate, diff / 3),
+          roundToNearestHours,
+          this.hass.locale,
+          this.hass.config
+        ),
+        calcDate(
+          this.endDate > new Date()
+            ? new Date()
+            : subMilliseconds(subMilliseconds(this.endDate, diff / 3), 1),
+          roundToNearestHours,
+          this.hass.locale,
+          this.hass.config
+        ),
+      ];
+    }
+    const dateRangePicker = this._dateRangePicker;
+    dateRangePicker.clickRange(dateRange);
+    dateRangePicker.clickedApply();
+  }
+
   private _setDateRange(ev: CustomEvent<ActionDetail>) {
     const dateRange = Object.values(this.ranges || this._ranges!)[
       ev.detail.index
@@ -362,7 +473,6 @@ export class HaDateRangePicker extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-
       ha-icon-button {
         direction: var(--direction);
       }
@@ -389,10 +499,13 @@ export class HaDateRangePicker extends LitElement {
         width: 340px;
       }
       @media only screen and (max-width: 460px) {
-      ha-textarea {
-        width: 100%
+        ha-textarea {
+          width: 100%;
+        }
+        .date-range-inputs {
+          gap: 0px;
+        }
       }
-
       @media only screen and (max-width: 800px) {
         .date-range-ranges {
           border-right: none;

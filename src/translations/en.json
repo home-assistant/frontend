@@ -798,6 +798,8 @@
         "end_date": "End date",
         "select": "Select",
         "select_date_range": "Select time period",
+        "zoom_in": "Zoom In: Reduce time period",
+        "zoom_out": "Zoom Out: Increase time period",
         "ranges": {
           "today": "Today",
           "yesterday": "Yesterday",
