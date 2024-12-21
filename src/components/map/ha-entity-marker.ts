@@ -3,7 +3,7 @@ import { property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import type { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../ha-icon";
+import "../ha-state-icon";
 
 class HaEntityMarker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -16,7 +16,7 @@ class HaEntityMarker extends LitElement {
 
   @property({ attribute: "entity-color" }) public entityColor?: string;
 
-  @property({ attribute: "show-icon" }) public showIcon = false;
+  @property({ attribute: "show-icon", type: Boolean }) public showIcon = false;
 
   protected render() {
     return html`
