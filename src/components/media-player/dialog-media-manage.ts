@@ -214,7 +214,7 @@ class DialogMediaManage extends LitElement {
                       .localize(
                         "ui.components.media-browser.file_management.tip_storage_panel"
                       )
-                      .toLowerCase()}
+                    }
                   </a>`,
                 }
               )}
