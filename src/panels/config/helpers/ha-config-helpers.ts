@@ -121,6 +121,7 @@ type HelperItem = {
   entity?: HassEntity;
   category: string | undefined;
   label_entries: LabelRegistryEntry[];
+  disabled?: boolean;
 };
 
 // This groups items by a key but only returns last entry per key.
@@ -191,6 +192,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   @state() private _stateItems: HassEntity[] = [];
 
+  @state() private _disabledEntries?: EntityRegistryEntry[];
+
   @state() private _entityEntries?: Record<string, EntityRegistryEntry>;
 
   @state() private _configEntries?: Record<string, ConfigEntry>;
@@ -201,7 +204,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   @state() private _activeFilters?: string[];
 
-  private _helperManifests: { [domain: string]: IntegrationManifest } = {};
+  @state() private _helperManifests?: { [domain: string]: IntegrationManifest };
 
   @storage({
     storage: "sessionStorage",
@@ -429,6 +432,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     (
       localize: LocalizeFunc,
       stateItems: HassEntity[],
+      disabledEntries: EntityRegistryEntry[],
       entityEntries: Record<string, EntityRegistryEntry>,
       configEntries: Record<string, ConfigEntry>,
       entityReg: EntityRegistryEntry[],
@@ -468,48 +472,42 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         };
       });
 
-      const entries = Object.values(configEntriesCopy).map((configEntry) => {
-        const entityEntry = Object.values(entityEntries).find(
-          (entry) => entry.config_entry_id === configEntry.entry_id
-        );
-        const entityIsDisabled = !!entityEntry?.disabled_by;
-        return {
-          id: entityIsDisabled ? entityEntry.entity_id : configEntry.entry_id,
-          entity_id: entityIsDisabled ? entityEntry.entity_id : "",
-          icon: entityIsDisabled
-            ? mdiCancel
-            : configEntry.state === "setup_in_progress"
-              ? mdiProgressHelper
-              : mdiAlertCircle,
-          name: configEntry.title || "",
-          editable: true,
-          type: configEntry.domain,
-          configEntry,
-          entity: undefined,
-          selectable: entityIsDisabled,
-        };
-      });
+      const entries = Object.values(configEntriesCopy)
+        .map((configEntry) => {
+          const entityEntry = Object.values(entityEntries).find(
+            (entry) => entry.config_entry_id === configEntry.entry_id
+          );
+          return {
+            id: configEntry.entry_id,
+            entity_id: "",
+            icon:
+              configEntry.state === "setup_in_progress"
+                ? mdiProgressHelper
+                : mdiAlertCircle,
+            name: configEntry.title || "",
+            editable: true,
+            type: configEntry.domain,
+            configEntry,
+            entity: undefined,
+            selectable: false,
+            disabled: !!entityEntry?.disabled_by,
+          };
+        })
+        .filter((e) => !e.disabled);
 
-      const otherDisabledEntities = entityReg
-        .filter(
-          (e) =>
-            e.config_entry_id == null &&
-            e.platform in this._helperManifests &&
-            e.disabled_by
-        )
-        .map((e) => ({
-          id: e.entity_id,
-          entity_id: e.entity_id,
-          icon: mdiCancel,
-          name: e.original_name || e.entity_id,
-          editable: true,
-          type: e.platform,
-          configEntry: undefined,
-          entity: undefined,
-          selectable: true,
-        }));
+      const disabledItems = (disabledEntries || []).map((e) => ({
+        id: e.entity_id,
+        entity_id: e.entity_id,
+        icon: mdiCancel,
+        name: e.original_name || e.entity_id,
+        editable: true,
+        type: e.platform,
+        configEntry: undefined,
+        entity: undefined,
+        selectable: true,
+      }));
 
-      return [...states, ...entries, ...otherDisabledEntities]
+      return [...states, ...entries, ...disabledItems]
         .filter((item) =>
           filteredStateItems
             ? filteredStateItems?.includes(item.entity_id)
@@ -624,6 +622,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     const helpers = this._getItems(
       this.hass.localize,
       this._stateItems,
+      this._disabledEntries || [],
       this._entityEntries,
       this._configEntries,
       this._entityReg,
@@ -883,6 +882,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
               ?.labels.some((lbl) => filter.includes(lbl))
           )
           .forEach((stateItem) => labelItems.add(stateItem.entity_id));
+        (this._disabledEntries || [])
+          .filter((entry) => entry.labels.some((lbl) => filter.includes(lbl)))
+          .forEach((entry) => labelItems.add(entry.entity_id));
         if (!items) {
           items = labelItems;
           continue;
@@ -908,6 +910,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
               )?.categories.helpers
           )
           .forEach((stateItem) => categoryItems.add(stateItem.entity_id));
+        (this._disabledEntries || [])
+          .filter((entry) => filter[0] === entry.categories.helpers)
+          .forEach((entry) => categoryItems.add(entry.entity_id));
         if (!items) {
           items = categoryItems;
           continue;
@@ -1128,6 +1133,20 @@ ${rejected
 
     if (!this._entityEntries || !this._configEntries) {
       return;
+    }
+
+    if (
+      (changedProps.has("_helperManifests") ||
+        changedProps.has("_entityEntries") ||
+        changedProps.has("_configEntries")) &&
+      this._helperManifests
+    ) {
+      this._disabledEntries = Object.values(this._entityEntries).filter(
+        (e) =>
+          e.disabled_by &&
+          (e.platform in this._helperManifests! ||
+            (e.config_entry_id && e.config_entry_id in this._configEntries!))
+      );
     }
 
     let changed =
