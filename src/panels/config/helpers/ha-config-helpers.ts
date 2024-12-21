@@ -201,6 +201,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   @state() private _activeFilters?: string[];
 
+  private _helperManifests: { [domain: string]: IntegrationManifest } = {};
+
   @storage({
     storage: "sessionStorage",
     key: "helpers-table-filters",
@@ -488,7 +490,26 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         };
       });
 
-      return [...states, ...entries]
+      const otherDisabledEntities = entityReg
+        .filter(
+          (e) =>
+            e.config_entry_id == null &&
+            e.platform in this._helperManifests &&
+            e.disabled_by
+        )
+        .map((e) => ({
+          id: e.entity_id,
+          entity_id: e.entity_id,
+          icon: mdiCancel,
+          name: e.original_name || e.entity_id,
+          editable: true,
+          type: e.platform,
+          configEntry: undefined,
+          entity: undefined,
+          selectable: true,
+        }));
+
+      return [...states, ...entries, ...otherDisabledEntities]
         .filter((item) =>
           filteredStateItems
             ? filteredStateItems?.includes(item.entity_id)
@@ -518,6 +539,14 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         });
     }
   );
+
+  private _labelsForEntity(entityId: string): string[] {
+    return (
+      this.hass.entities[entityId]?.labels ||
+      this._entityReg.find((e) => e.entity_id === entityId)?.labels ||
+      []
+    );
+  }
 
   protected render(): TemplateResult {
     if (
@@ -557,12 +586,12 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     const labelItems = html`${this._labels?.map((label) => {
         const color = label.color ? computeCssColor(label.color) : undefined;
         const selected = this._selected.every((entityId) =>
-          this.hass.entities[entityId]?.labels.includes(label.label_id)
+          this._labelsForEntity(entityId).includes(label.label_id)
         );
         const partial =
           !selected &&
           this._selected.some((entityId) =>
-            this.hass.entities[entityId]?.labels.includes(label.label_id)
+            this._labelsForEntity(entityId).includes(label.label_id)
           );
         return html`<ha-md-menu-item
           .value=${label.label_id}
@@ -960,14 +989,13 @@ ${rejected
   private async _bulkLabel(label: string, action: "add" | "remove") {
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
     this._selected.forEach((entityId) => {
+      const labels = this._labelsForEntity(entityId);
       promises.push(
         updateEntityRegistryEntry(this.hass, entityId, {
           labels:
             action === "add"
-              ? this.hass.entities[entityId].labels.concat(label)
-              : this.hass.entities[entityId].labels.filter(
-                  (lbl) => lbl !== label
-                ),
+              ? labels.concat(label)
+              : labels.filter((lbl) => lbl !== label),
         })
       );
     });
@@ -1012,18 +1040,19 @@ ${rejected
     const manifests: { [domain: string]: IntegrationManifest } = {};
 
     for (const manifest of fetchedManifests) {
-      manifests[manifest.domain] = manifest;
+      if (manifest.integration_type === "helper") {
+        manifests[manifest.domain] = manifest;
+      }
     }
+
+    this._helperManifests = manifests;
 
     const entityDomains = {};
     const domains = new Set<string>();
 
     for (const [entity, source] of Object.entries(entitySources)) {
       const domain = source.domain;
-      if (
-        !(domain in manifests) ||
-        manifests[domain].integration_type !== "helper"
-      ) {
+      if (!(domain in manifests)) {
         continue;
       }
       entityDomains[entity] = domain;
