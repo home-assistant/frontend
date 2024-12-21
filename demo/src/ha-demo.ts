@@ -65,6 +65,7 @@ export class HaDemo extends HomeAssistantAppEl {
     mockEntityRegistry(hass, [
       {
         config_entry_id: "co2signal",
+        config_subentry_id: null,
         device_id: "co2signal",
         area_id: null,
         disabled_by: null,
@@ -85,6 +86,7 @@ export class HaDemo extends HomeAssistantAppEl {
       },
       {
         config_entry_id: "co2signal",
+        config_subentry_id: null,
         device_id: "co2signal",
         area_id: null,
         disabled_by: null,
