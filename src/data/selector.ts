@@ -26,6 +26,7 @@ export type Selector =
   | AreaFilterSelector
   | AttributeSelector
   | BooleanSelector
+  | ButtonToggleSelector
   | ColorRGBSelector
   | ColorTempSelector
   | ConditionSelector
@@ -106,6 +107,14 @@ export interface AttributeSelector {
 export interface BooleanSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
   boolean: {} | null;
+}
+
+export interface ButtonToggleSelector {
+  button_toggle: {
+    options: readonly string[] | readonly SelectOption[];
+    translation_key?: string;
+    sort?: boolean;
+  } | null;
 }
 
 export interface ColorRGBSelector {
