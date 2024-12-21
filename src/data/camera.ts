@@ -127,12 +127,14 @@ export const webRtcOffer = (
   hass: HomeAssistant,
   entity_id: string,
   offer: string,
-  callback: (event: WebRtcOfferEvent) => void
+  callback: (event: WebRtcOfferEvent) => void,
+  session_id?: string
 ) =>
   hass.connection.subscribeMessage<WebRtcOfferEvent>(callback, {
     type: "camera/webrtc/offer",
     entity_id,
     offer,
+    session_id,
   });
 
 export const addWebRtcCandidate = (
@@ -179,6 +181,7 @@ export const getEntityIdFromCameraMediaSource = (mediaContentId: string) =>
 
 export interface CameraCapabilities {
   frontend_stream_types: StreamType[];
+  two_way_audio: boolean;
 }
 
 export const fetchCameraCapabilities = async (
