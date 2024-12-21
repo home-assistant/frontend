@@ -68,7 +68,8 @@ export type Selector =
   | TTSVoiceSelector
   | UiActionSelector
   | UiColorSelector
-  | UiStateContentSelector;
+  | UiStateContentSelector
+  | BackupLocationSelector;
 
 export interface ActionSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -262,7 +263,6 @@ export interface IconSelector {
 }
 
 export interface ImageSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   image: { original?: boolean; crop?: CropOptions } | null;
 }
 
@@ -334,7 +334,6 @@ export interface ObjectSelector {
 }
 
 export interface AssistPipelineSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   assist_pipeline: {
     include_last_used?: boolean;
   } | null;
@@ -453,7 +452,6 @@ export interface UiActionSelector {
 }
 
 export interface UiColorSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   ui_color: {
     default_color?: string;
     include_none?: boolean;
@@ -462,7 +460,6 @@ export interface UiColorSelector {
 }
 
 export interface UiStateContentSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   ui_state_content: {
     entity_id?: string;
     allow_name?: boolean;

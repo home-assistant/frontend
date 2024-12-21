@@ -31,7 +31,7 @@ class HaConfigVoiceAssistants extends HassRouterPage {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @state()
   @consume({ context: entitiesContext, subscribe: true })

@@ -398,6 +398,11 @@ export interface ZWaveJSRemovedNode {
   label: string;
 }
 
+export interface ZWaveJSS2InclusionValidateDskAndEnterPinMessage {
+  event: "validate dsk and enter pin";
+  dsk: string;
+}
+
 export const enum NodeStatus {
   Unknown,
   Asleep,
@@ -710,11 +715,13 @@ export const getZwaveNodeRawConfigParameter = (
   device_id: string,
   property: number
 ): Promise<number> =>
-  hass.callWS({
-    type: "zwave_js/get_raw_config_parameter",
-    device_id,
-    property,
-  });
+  hass
+    .callWS<{ value: number }>({
+      type: "zwave_js/get_raw_config_parameter",
+      device_id,
+      property,
+    })
+    .then((res) => res.value);
 
 export const reinterviewZwaveNode = (
   hass: HomeAssistant,
@@ -805,6 +812,21 @@ export const subscribeZwaveNodeStatistics = (
     {
       type: "zwave_js/subscribe_node_statistics",
       device_id,
+    }
+  );
+
+export const subscribeS2Inclusion = (
+  hass: HomeAssistant,
+  entry_id: string,
+  callbackFunction: (
+    message: ZWaveJSS2InclusionValidateDskAndEnterPinMessage
+  ) => void
+): Promise<UnsubscribeFunc> =>
+  hass.connection.subscribeMessage(
+    (message: any) => callbackFunction(message),
+    {
+      type: "zwave_js/subscribe_s2_inclusion",
+      entry_id,
     }
   );
 
@@ -961,4 +983,13 @@ export const fetchZwaveIntegrationSettings = (
 ): Promise<ZWaveJSIntegrationSettings> =>
   hass.callWS({
     type: "zwave_js/get_integration_settings",
+  });
+
+export const cancelSecureBootstrapS2 = (
+  hass: HomeAssistant,
+  entry_id: string
+): Promise<void> =>
+  hass.callWS({
+    type: "zwave_js/cancel_secure_bootstrap_s2",
+    entry_id,
   });

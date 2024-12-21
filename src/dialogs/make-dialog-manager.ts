@@ -37,10 +37,12 @@ export interface DialogClosedParams {
 }
 
 export interface DialogState {
-  dialog: string;
-  open: boolean;
-  oldState: null | DialogState;
-  dialogParams?: unknown;
+  element: HTMLElement & ProvideHassElement;
+  root: ShadowRoot | HTMLElement;
+  dialogTag: string;
+  dialogParams: unknown;
+  dialogImport?: () => Promise<unknown>;
+  addHistory?: boolean;
 }
 
 interface LoadedDialogInfo {
@@ -53,6 +55,7 @@ interface LoadedDialogsDict {
 }
 
 const LOADED: LoadedDialogsDict = {};
+const OPEN_DIALOG_STACK: DialogState[] = [];
 export const FOCUS_TARGET = Symbol.for("HA focus target");
 
 export const showDialog = async (
@@ -77,52 +80,56 @@ export const showDialog = async (
       element: dialogImport().then(() => {
         const dialogEl = document.createElement(dialogTag) as HassDialog;
         element.provideHass(dialogEl);
+        dialogEl.addEventListener("dialog-closed", _handleClosed);
+        dialogEl.addEventListener("dialog-closed", _handleClosedFocus);
         return dialogEl;
       }),
     };
   }
 
-  // Get the focus targets after the dialog closes, but keep the original if dialog is being replaced
-  if (mainWindow.history.state?.replaced) {
-    LOADED[dialogTag].closedFocusTargets =
-      LOADED[mainWindow.history.state.dialog].closedFocusTargets;
-    delete LOADED[mainWindow.history.state.dialog].closedFocusTargets;
-  } else {
-    LOADED[dialogTag].closedFocusTargets = ancestorsWithProperty(
-      deepActiveElement(),
-      FOCUS_TARGET
-    );
-  }
-
   if (addHistory) {
-    mainWindow.history.replaceState(
-      {
-        dialog: dialogTag,
-        open: false,
-        oldState:
-          mainWindow.history.state?.open &&
-          mainWindow.history.state?.dialog !== dialogTag
-            ? mainWindow.history.state
-            : null,
-      },
-      ""
-    );
-    try {
-      mainWindow.history.pushState(
-        { dialog: dialogTag, dialogParams: dialogParams, open: true },
-        ""
+    const { history } = mainWindow;
+    if (history.state?.dialog && !OPEN_DIALOG_STACK.length) {
+      // theres is a dialog state in history, but no dialogs open
+      // wait for history.back() to update the state
+      await new Promise((resolve) => {
+        setTimeout(resolve);
+      });
+      return showDialog(
+        element,
+        root,
+        dialogTag,
+        dialogParams,
+        dialogImport,
+        addHistory
       );
-    } catch (err: any) {
-      // dialogParams could not be cloned, probably contains callback
-      mainWindow.history.pushState(
-        { dialog: dialogTag, dialogParams: null, open: true },
-        ""
-      );
+    }
+    OPEN_DIALOG_STACK.push({
+      element,
+      root,
+      dialogTag,
+      dialogParams,
+      dialogImport,
+      addHistory,
+    });
+    const newState = { dialog: dialogTag };
+    if (history.state?.dialog) {
+      // if a dialog is already open, replace the name
+      history.replaceState(newState, "");
+    } else {
+      // if a dialog is not open, push a new state so back() will close the dialog
+      history.replaceState({ ...history.state, opensDialog: true }, "");
+      history.pushState(newState, "");
     }
   }
 
+  // Get the focus targets after the dialog closes
+  LOADED[dialogTag].closedFocusTargets = ancestorsWithProperty(
+    deepActiveElement(),
+    FOCUS_TARGET
+  );
+
   const dialogElement = await LOADED[dialogTag].element;
-  dialogElement.addEventListener("dialog-closed", _handleClosedFocus);
 
   // Append it again so it's the last element in the root,
   // so it's guaranteed to be on top of the other elements
@@ -130,14 +137,6 @@ export const showDialog = async (
   dialogElement.showDialog(dialogParams);
 
   return true;
-};
-
-export const replaceDialog = (dialogElement: HassDialog) => {
-  mainWindow.history.replaceState(
-    { ...mainWindow.history.state, replaced: true },
-    ""
-  );
-  dialogElement.removeEventListener("dialog-closed", _handleClosedFocus);
 };
 
 export const closeDialog = async (dialogTag: string): Promise<boolean> => {
@@ -149,6 +148,60 @@ export const closeDialog = async (dialogTag: string): Promise<boolean> => {
     return dialogElement.closeDialog() !== false;
   }
   return true;
+};
+
+// called on back()
+export const closeLastDialog = async () => {
+  if (OPEN_DIALOG_STACK.length) {
+    const lastDialog = OPEN_DIALOG_STACK.pop();
+    const closed = await closeDialog(lastDialog!.dialogTag);
+    if (!closed) {
+      // if the dialog was not closed, put it back on the stack
+      OPEN_DIALOG_STACK.push(lastDialog!);
+    }
+    if (OPEN_DIALOG_STACK.length && mainWindow.history.state?.opensDialog) {
+      // if there are more dialogs open, push a new state so back() will close the next top dialog
+      mainWindow.history.pushState(
+        { dialog: OPEN_DIALOG_STACK[OPEN_DIALOG_STACK.length - 1].dialogTag },
+        ""
+      );
+    }
+    return closed;
+  }
+  return true;
+};
+
+export const closeAllDialogs = async () => {
+  for (let i = OPEN_DIALOG_STACK.length - 1; i >= 0; i--) {
+    // eslint-disable-next-line no-await-in-loop
+    const closed = await closeDialog(OPEN_DIALOG_STACK[i].dialogTag);
+    if (!closed) {
+      return false;
+    }
+  }
+  return true;
+};
+
+const _handleClosed = (ev: HASSDomEvent<DialogClosedParams>) => {
+  // If not closed by navigating back, remove the open state from history
+  const dialogIndex = OPEN_DIALOG_STACK.findIndex(
+    (state) => state.dialogTag === ev.detail.dialog
+  );
+  if (dialogIndex !== -1) {
+    OPEN_DIALOG_STACK.splice(dialogIndex, 1);
+  }
+  if (mainWindow.history.state?.dialog === ev.detail.dialog) {
+    if (OPEN_DIALOG_STACK.length) {
+      // if there are more dialogs open, set the top one in history
+      mainWindow.history.replaceState(
+        { dialog: OPEN_DIALOG_STACK[OPEN_DIALOG_STACK.length - 1].dialogTag },
+        ""
+      );
+    } else if (dialogIndex !== -1) {
+      // if the dialog is the last one and it was indeed open, go back
+      mainWindow.history.back();
+    }
+  }
 };
 
 export const makeDialogManager = (

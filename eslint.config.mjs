@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import unusedImports from "eslint-plugin-unused-imports";
 import globals from "globals";
 import tsParser from "@typescript-eslint/parser";
@@ -6,10 +7,10 @@ import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
 import { FlatCompat } from "@eslint/eslintrc";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = path.dirname(_filename);
 const compat = new FlatCompat({
-  baseDirectory: __dirname,
+  baseDirectory: _dirname,
   recommendedConfig: js.configs.recommended,
   allConfig: js.configs.all,
 });
@@ -57,7 +58,7 @@ export default [
     settings: {
       "import/resolver": {
         webpack: {
-          config: "./webpack.config.cjs",
+          config: "./rspack.config.cjs",
         },
       },
     },
@@ -113,12 +114,10 @@ export default [
       "@typescript-eslint/no-shadow": ["error"],
 
       "@typescript-eslint/naming-convention": [
-        "off",
+        "error",
         {
-          selector: "default",
-          format: ["camelCase", "snake_case"],
-          leadingUnderscore: "allow",
-          trailingUnderscore: "allow",
+          selector: ["objectLiteralProperty", "objectLiteralMethod"],
+          format: null,
         },
         {
           selector: ["variable"],
@@ -127,8 +126,25 @@ export default [
           trailingUnderscore: "allow",
         },
         {
+          selector: ["variable"],
+          modifiers: ["exported"],
+          format: ["camelCase", "PascalCase", "UPPER_CASE"],
+        },
+        {
           selector: "typeLike",
           format: ["PascalCase"],
+        },
+        {
+          selector: "method",
+          modifiers: ["public"],
+          format: ["camelCase"],
+          leadingUnderscore: "forbid",
+        },
+        {
+          selector: "method",
+          modifiers: ["private"],
+          format: ["camelCase"],
+          leadingUnderscore: "require",
         },
       ],
 
@@ -146,16 +162,16 @@ export default [
       ],
 
       "unused-imports/no-unused-imports": "error",
-      "lit/attribute-names": "warn",
+      "lit/attribute-names": "error",
       "lit/attribute-value-entities": "off",
       "lit/no-template-map": "off",
-      "lit/no-native-attributes": "warn",
-      "lit/no-this-assign-in-render": "warn",
+      "lit/no-native-attributes": "error",
+      "lit/no-this-assign-in-render": "error",
       "lit-a11y/click-events-have-key-events": ["off"],
       "lit-a11y/no-autofocus": "off",
-      "lit-a11y/alt-text": "warn",
-      "lit-a11y/anchor-is-valid": "warn",
-      "lit-a11y/role-has-required-aria-attrs": "warn",
+      "lit-a11y/alt-text": "error",
+      "lit-a11y/anchor-is-valid": "error",
+      "lit-a11y/role-has-required-aria-attrs": "error",
       "@typescript-eslint/consistent-type-imports": "error",
       "@typescript-eslint/no-import-type-side-effects": "error",
     },

@@ -40,14 +40,18 @@ export class CloudStepSignup extends LitElement {
           src=${`/static/images/logo_nabu_casa${this.hass.themes?.darkMode ? "_dark" : ""}.png`}
           alt="Nabu Casa logo"
         />
-        <h1>Sign up</h1>
+        <h1>
+          ${this.hass.localize("ui.panel.config.cloud.register.create_account")}
+        </h1>
         ${this._error
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
           : ""}
         ${this._state === "VERIFY"
           ? html`<p>
-              Check the email we just sent to ${this._email} and click the
-              confirmation link to continue.
+              ${this.hass.localize(
+                "ui.panel.config.cloud.register.confirm_email",
+                { email: this._email }
+              )}
             </p>`
           : html`<ha-textfield
                 autofocus
@@ -86,23 +90,29 @@ export class CloudStepSignup extends LitElement {
           ? html`<ha-button
                 @click=${this._handleResendVerifyEmail}
                 .disabled=${this._requestInProgress}
-                >Send the email again</ha-button
+                >${this.hass.localize(
+                  "ui.panel.config.cloud.register.resend_confirm_email"
+                )}</ha-button
               ><ha-button
                 unelevated
                 @click=${this._login}
                 .disabled=${this._requestInProgress}
-                >I clicked the link</ha-button
+                >${this.hass.localize(
+                  "ui.panel.config.cloud.register.clicked_confirm"
+                )}</ha-button
               >`
           : html`<ha-button
                 @click=${this._signIn}
                 .disabled=${this._requestInProgress}
-                >Sign in</ha-button
+                >${this.hass.localize(
+                  "ui.panel.config.cloud.login.sign_in"
+                )}</ha-button
               >
               <ha-button
                 unelevated
                 @click=${this._handleRegister}
                 .disabled=${this._requestInProgress}
-                >Next</ha-button
+                >${this.hass.localize("ui.common.next")}</ha-button
               >`}
       </div>`;
   }
@@ -180,7 +190,11 @@ export class CloudStepSignup extends LitElement {
     }
 
     try {
-      await cloudLogin(this.hass, this._email, this._password);
+      await cloudLogin({
+        hass: this.hass,
+        email: this._email,
+        password: this._password,
+      });
       fireEvent(this, "cloud-step", { step: "DONE" });
     } catch (e: any) {
       if (e?.body?.code === "usernotconfirmed") {

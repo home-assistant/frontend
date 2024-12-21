@@ -104,7 +104,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ attribute: false }) public entries!: ConfigEntry[];
 
@@ -709,7 +709,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}
         .filter=${this._filter}
-        hasFilters
+        has-filters
         .filters=${Object.values(this._filters).filter((filter) =>
           Array.isArray(filter.value)
             ? filter.value.length
@@ -731,7 +731,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         @collapsed-changed=${this._handleCollapseChanged}
         @row-click=${this._handleRowClicked}
         clickable
-        hasFab
+        has-fab
         class=${this.narrow ? "narrow" : ""}
       >
         <ha-integration-overflow-menu

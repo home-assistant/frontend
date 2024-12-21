@@ -25,9 +25,9 @@ class HcLovelace extends LitElement {
   @property({ attribute: false })
   public lovelaceConfig!: LovelaceConfig;
 
-  @property() public viewPath?: string | number | null;
+  @property({ attribute: false }) public viewPath?: string | number | null;
 
-  @property() public urlPath: string | null = null;
+  @property({ attribute: false }) public urlPath: string | null = null;
 
   protected render(): TemplateResult {
     const index = this._viewIndex;

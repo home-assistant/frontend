@@ -99,7 +99,7 @@ export class HaPanelLogbook extends LitElement {
             .hass=${this.hass}
             .entityFilter=${filterLogbookCompatibleEntities}
             .value=${this._targetPickerValue}
-            addOnTop
+            add-on-top
             @value-changed=${this._targetsChanged}
           ></ha-target-picker>
         </div>
@@ -305,6 +305,12 @@ export class HaPanelLogbook extends LitElement {
           direction: var(--direction);
         }
 
+        @media all and (max-width: 870px) {
+          ha-date-range-picker {
+            width: 100%;
+          }
+        }
+
         :host([narrow]) ha-date-range-picker {
           margin-right: 0;
           margin-inline-end: 0;
@@ -315,7 +321,7 @@ export class HaPanelLogbook extends LitElement {
 
         .filters {
           display: flex;
-          padding: 8px 16px 0;
+          padding: 16px 16px 0;
         }
 
         :host([narrow]) .filters {

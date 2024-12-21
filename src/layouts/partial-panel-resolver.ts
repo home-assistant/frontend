@@ -112,7 +112,7 @@ class PartialPanelResolver extends HassRouterPage {
     }
   }
 
-  private getRoutes(panels: Panels): RouterOptions {
+  private _getRoutes(panels: Panels): RouterOptions {
     const routes: RouterOptions["routes"] = {};
     Object.values(panels).forEach((panel) => {
       const data: RouteOptions = {
@@ -184,7 +184,7 @@ class PartialPanelResolver extends HassRouterPage {
   }
 
   private async _updateRoutes(oldPanels?: HomeAssistant["panels"]) {
-    this.routerOptions = this.getRoutes(this.hass.panels);
+    this.routerOptions = this._getRoutes(this.hass.panels);
 
     if (
       !this._waitForStart &&

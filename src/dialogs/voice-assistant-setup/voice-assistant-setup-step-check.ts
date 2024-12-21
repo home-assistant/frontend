@@ -12,7 +12,7 @@ import { documentationUrl } from "../../util/documentation-url";
 export class HaVoiceAssistantSetupStepCheck extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public assistEntityId?: string;
+  @property({ attribute: false }) public assistEntityId?: string;
 
   @state() private _status?: "success" | "timeout";
 
@@ -36,12 +36,19 @@ export class HaVoiceAssistantSetupStepCheck extends LitElement {
   protected override render() {
     return html`<div class="content">
       ${this._status === "timeout"
-        ? html`<img src="/static/images/voice-assistant/error.png" />
-            <h1>The voice assistant is unable to connect to Home Assistant</h1>
+        ? html`<img
+              src="/static/images/voice-assistant/error.png"
+              alt="Casita Home Assistant error logo"
+            />
+            <h1>
+              ${this.hass.localize(
+                "ui.panel.config.voice_assistants.satellite_wizard.check.failed_title"
+              )}
+            </h1>
             <p class="secondary">
-              To play audio, the voice assistant device has to connect to Home
-              Assistant to fetch the files. Our test shows that the device is
-              unable to reach the Home Assistant server.
+              ${this.hass.localize(
+                "ui.panel.config.voice_assistants.satellite_wizard.check.failed_secondary"
+              )}
             </p>
             <div class="footer">
               <a
@@ -49,15 +56,31 @@ export class HaVoiceAssistantSetupStepCheck extends LitElement {
                   this.hass,
                   "/voice_control/troubleshooting/#i-dont-get-a-voice-response"
                 )}
-                ><ha-button>Help me</ha-button></a
+                ><ha-button
+                  >${this.hass.localize(
+                    "ui.panel.config.voice_assistants.satellite_wizard.check.help"
+                  )}</ha-button
+                ></a
               >
-              <ha-button @click=${this._testConnection}>Retry</ha-button>
+              <ha-button @click=${this._testConnection}
+                >${this.hass.localize(
+                  "ui.panel.config.voice_assistants.satellite_wizard.check.retry"
+                )}</ha-button
+              >
             </div>`
-        : html`<img src="/static/images/voice-assistant/hi.png" />
-            <h1>Hi</h1>
+        : html`<img
+              src="/static/images/voice-assistant/hi.png"
+              alt="Casita Home Assistant hi logo"
+            />
+            <h1>
+              ${this.hass.localize(
+                "ui.panel.config.voice_assistants.satellite_wizard.check.title"
+              )}
+            </h1>
             <p class="secondary">
-              Over the next couple steps we're going to personalize your voice
-              assistant.
+              ${this.hass.localize(
+                "ui.panel.config.voice_assistants.satellite_wizard.check.secondary"
+              )}
             </p>
 
             ${this._showLoader

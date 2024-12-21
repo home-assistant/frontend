@@ -59,7 +59,7 @@ export class VoiceAssistantsExpose extends LitElement {
 
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -576,7 +576,7 @@ export class VoiceAssistantsExpose extends LitElement {
         @search-changed=${this._handleSearchChange}
         @row-click=${this._openEditEntry}
         id="entity_id"
-        hasFab
+        has-fab
       >
         ${this._selectedEntities.length
           ? html`

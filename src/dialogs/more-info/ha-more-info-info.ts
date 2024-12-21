@@ -72,7 +72,7 @@ export class MoreInfoInfo extends LitElement {
             ? ""
             : html`
                 <state-card-content
-                  inDialog
+                  in-dialog
                   .stateObj=${stateObj}
                   .hass=${this.hass}
                 ></state-card-content>

@@ -141,7 +141,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
                 slot="actionItems"
                 @action=${this._handleShowWakeWord}
                 @closed=${stopPropagation}
-                menuCorner="END"
+                menu-corner="END"
                 corner="BOTTOM_END"
               >
                 <ha-icon-button
@@ -181,11 +181,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
                   ${this.hass.localize(
                     "ui.panel.config.voice_assistants.assistants.pipeline.detail.no_cloud_message"
                   )}
-                  <a
-                    href="/config/cloud"
-                    slot="action"
-                    @click=${this.closeDialog}
-                  >
+                  <a href="/config/cloud" slot="action">
                     <ha-button>
                       ${this.hass.localize(
                         "ui.panel.config.voice_assistants.assistants.pipeline.detail.no_cloud_action"

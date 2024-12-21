@@ -58,10 +58,10 @@ const SUPERVISOR_UPDATE_NAMES = {
   supervisor: "Home Assistant Supervisor",
 };
 
-type updateType = "os" | "supervisor" | "core" | "addon";
+type UpdateType = "os" | "supervisor" | "core" | "addon";
 
 const changelogUrl = (
-  entry: updateType,
+  entry: UpdateType,
   version: string
 ): string | undefined => {
   if (entry === "addon") {
@@ -99,7 +99,7 @@ class UpdateAvailableCard extends LitElement {
 
   @property({ attribute: false }) public addonSlug?: string;
 
-  @state() private _updateType?: updateType;
+  @state() private _updateType?: UpdateType;
 
   @state() private _changelogContent?: string;
 
@@ -222,7 +222,7 @@ class UpdateAvailableCard extends LitElement {
     const updateType = ["core", "os", "supervisor"].includes(pathPart)
       ? pathPart
       : "addon";
-    this._updateType = updateType as updateType;
+    this._updateType = updateType as UpdateType;
 
     switch (updateType) {
       case "addon":

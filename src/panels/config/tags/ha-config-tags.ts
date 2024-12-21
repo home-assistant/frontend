@@ -1,7 +1,7 @@
 import {
-  mdiCog,
-  mdiContentDuplicate,
+  mdiDelete,
   mdiHelpCircle,
+  mdiMemoryArrowDown,
   mdiPlus,
   mdiRobot,
 } from "@mdi/js";
@@ -9,9 +9,15 @@ import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import type { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
+import { storage } from "../../../common/decorators/storage";
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import type {
+  DataTableColumnContainer,
+  RowClickedEvent,
+} from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-relative-time";
 import type { TagTrigger } from "../../../data/automation";
 import { showAutomationEditor } from "../../../data/automation";
@@ -30,12 +36,10 @@ import {
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../../../types";
-import type { LocalizeFunc } from "../../../common/translations/localize";
 import { documentationUrl } from "../../../util/documentation-url";
 import { configSections } from "../ha-panel-config";
 import { showTagDetailDialog } from "./show-dialog-tag-detail";
 import "./tag-image";
-import { storage } from "../../../common/decorators/storage";
 
 export interface TagRowData extends Tag {
   display_name: string;
@@ -46,7 +50,7 @@ export interface TagRowData extends Tag {
 export class HaConfigTags extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -109,35 +113,39 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
             .tag=${tag}
             @click=${this._handleWriteClick}
             .label=${this.hass.localize("ui.panel.config.tag.write")}
-            .path=${mdiContentDuplicate}
+            .path=${mdiMemoryArrowDown}
           ></ha-icon-button>`,
       };
     }
-    columns.automation = {
+    columns.actions = {
       title: "",
-      type: "icon-button",
+      label: localize("ui.panel.config.generic.headers.actions"),
       showNarrow: true,
-      template: (tag) =>
-        html`<ha-icon-button
-          .tag=${tag}
-          @click=${this._handleAutomationClick}
-          .label=${this.hass.localize("ui.panel.config.tag.create_automation")}
-          .path=${mdiRobot}
-        ></ha-icon-button>`,
-    };
-    columns.edit = {
-      title: "",
-      type: "icon-button",
-      showNarrow: true,
-      hideable: false,
       moveable: false,
-      template: (tag) =>
-        html`<ha-icon-button
-          .tag=${tag}
-          @click=${this._handleEditClick}
-          .label=${this.hass.localize("ui.panel.config.tag.edit")}
-          .path=${mdiCog}
-        ></ha-icon-button>`,
+      hideable: false,
+      type: "overflow-menu",
+      template: (tag) => html`
+        <ha-icon-overflow-menu
+          .hass=${this.hass}
+          narrow
+          .items=${[
+            {
+              label: this.hass.localize(
+                "ui.panel.config.tag.create_automation"
+              ),
+              path: mdiRobot,
+              action: () => this._createAutomation(tag),
+            },
+            {
+              label: this.hass.localize("ui.common.delete"),
+              path: mdiDelete,
+              action: () => this._removeTag(tag),
+              warning: true,
+            },
+          ]}
+        >
+        </ha-icon-overflow-menu>
+      `,
     };
     return columns;
   });
@@ -184,7 +192,10 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         .noDataText=${this.hass.localize("ui.panel.config.tag.no_tags")}
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
-        hasFab
+        has-fab
+        clickable
+        @row-click=${this._editTag}
+        id="id"
       >
         <ha-icon-button
           slot="toolbar-icon"
@@ -207,8 +218,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
   private _handleWriteClick = (ev: Event) =>
     this._openWrite((ev.currentTarget as any).tag);
 
-  private _handleAutomationClick = (ev: Event) => {
-    const tag = (ev.currentTarget as any).tag;
+  private _createAutomation = (tag: Tag) => {
     const data = {
       alias: this.hass.localize("ui.panel.config.tag.automation_title", {
         name: tag.name || tag.id,
@@ -218,8 +228,10 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
     showAutomationEditor(data);
   };
 
-  private _handleEditClick = (ev: Event) =>
-    this._openDialog((ev.currentTarget as any).tag);
+  private _editTag = (ev: CustomEvent<RowClickedEvent>) => {
+    const tag = this._tags.find((t) => t.id === ev.detail.id);
+    this._openDialog(tag);
+  };
 
   private _showHelp() {
     showAlertDialog(this, {
