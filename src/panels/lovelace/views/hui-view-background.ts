@@ -102,7 +102,7 @@ export class HUIViewBackground extends LitElement {
         position: fixed;
         background-attachment: scroll !important;
       }
-      :host(:not(fixed-background)) {
+      :host(:not([fixed-background])) {
         z-index: -1;
         position: absolute;
       }
