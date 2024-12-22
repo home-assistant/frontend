@@ -36,14 +36,13 @@ class FlowPreviewGenericCamera extends FlowPreviewGeneric {
             playsinline
             .hass=${this.hass}
             .url=${streamUrl}
+            @load=${this._videoLoaded}
           ></ha-hls-player>`
       : ""}`;
   }
 
-  protected firstUpdated() {
-    this.addEventListener("load", () => {
+  private _videoLoaded() {
       this.shadowRoot!.getElementById("hls-load-spinner")?.remove();
-    });
   }
 }
 
