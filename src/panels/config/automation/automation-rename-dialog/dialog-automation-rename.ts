@@ -62,8 +62,8 @@ class DialogAutomationRename extends LitElement implements HassDialog {
     };
 
     this._visibleOptionals = [
-      this._newDescription! ? "description" : "",
-      this._newIcon! ? "icon" : "",
+      this._newDescription ? "description" : "",
+      this._newIcon ? "icon" : "",
       this._entryUpdates.category ? "category" : "",
       this._entryUpdates.labels.length > 0 ? "labels" : "",
     ];
@@ -100,7 +100,11 @@ class DialogAutomationRename extends LitElement implements HassDialog {
         open
         scrimClickAction
         @closed=${this.closeDialog}
-        .heading=${true}
+        .heading=${this.hass.localize(
+              this._params.config.alias
+                ? "ui.panel.config.automation.editor.rename"
+                : "ui.panel.config.automation.editor.save"
+            )}
       >
         <ha-dialog-header slot="heading">
           <ha-icon-button
