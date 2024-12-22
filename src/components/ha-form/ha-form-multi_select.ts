@@ -10,8 +10,8 @@ import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-formfield";
 import "../ha-icon-button";
 import "../ha-textfield";
-import "../ha-button-menu-new";
-import "../ha-menu-item";
+import "../ha-md-button-menu";
+import "../ha-md-menu-item";
 
 import type {
   HaFormElement,
@@ -75,7 +75,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
     }
 
     return html`
-      <ha-button-menu-new
+      <ha-md-button-menu
         .disabled=${this.disabled}
         @opening=${this._handleOpen}
         @closing=${this._handleClose}
@@ -101,7 +101,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
         ${options.map((item: string | [string, string]) => {
           const value = optionValue(item);
           const selected = data.includes(value);
-          return html`<ha-menu-item
+          return html`<ha-md-menu-item
             type="option"
             aria-checked=${selected}
             .value=${value}
@@ -117,9 +117,9 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
               .checked=${selected}
             ></ha-checkbox>
             ${optionLabel(item)}
-          </ha-menu-item>`;
+          </ha-md-menu-item>`;
         })}
-      </ha-button-menu-new>
+      </ha-md-button-menu>
     `;
   }
 
@@ -211,7 +211,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
       :host([own-margin]) {
         margin-bottom: 5px;
       }
-      ha-button-menu-new {
+      ha-md-button-menu {
         display: block;
         cursor: pointer;
       }
@@ -240,7 +240,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
       :host([opened]) ha-icon-button {
         color: var(--primary-color);
       }
-      :host([opened]) ha-button-menu-new {
+      :host([opened]) ha-md-button-menu {
         --mdc-text-field-idle-line-color: var(--input-hover-line-color);
         --mdc-text-field-label-ink-color: var(--primary-color);
       }

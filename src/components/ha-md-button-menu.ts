@@ -50,11 +50,11 @@ export class HaMdButtonMenu extends LitElement {
   }
 
   private _handleOpening(): void {
-    fireEvent(this, "opening", undefined, { bubbles: false });
+    fireEvent(this, "opening", undefined, { composed: false });
   }
 
   private _handleClosing(): void {
-    fireEvent(this, "closing", undefined, { bubbles: false });
+    fireEvent(this, "closing", undefined, { composed: false });
   }
 
   private _handleClick(): void {
