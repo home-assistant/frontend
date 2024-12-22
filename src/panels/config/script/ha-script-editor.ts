@@ -916,7 +916,7 @@ export class HaScriptEditor extends SubscribeMixin(
 
         await updateEntityRegistryEntry(this.hass, entityId, {
           categories: {
-            script: this._entityRegistryUpdate.category || "",
+            script: this._entityRegistryUpdate.category || null,
           },
           labels: this._entityRegistryUpdate.labels || [],
         });

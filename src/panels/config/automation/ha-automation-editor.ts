@@ -107,8 +107,6 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
   @property({ attribute: false }) public automations!: AutomationEntity[];
 
-  @property({ attribute: false }) public entityRegistry!: EntityRegistryEntry[];
-
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
@@ -144,6 +142,10 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
   @state() private _saving = false;
 
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  _entityRegistry!: EntityRegistryEntry[];
+
   private _configSubscriptions: Record<
     string,
     (config?: AutomationConfig) => void
@@ -167,7 +169,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       this._newAutomationId &&
       changedProps.has("entityRegistry")
     ) {
-      const automation = this.entityRegistry.find(
+      const automation = this._entityRegistry.find(
         (entity: EntityRegistryEntry) =>
           entity.unique_id === this._newAutomationId
       );
@@ -614,7 +616,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       this._config = normalizeAutomationConfig(config);
       this._checkValidation();
     } catch (err: any) {
-      const entity = this.entityRegistry.find(
+      const entity = this._entityRegistry.find(
         (ent) =>
           ent.platform === "automation" && ent.unique_id === this.automationId
       );
@@ -945,7 +947,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
         if (entityId) {
           await updateEntityRegistryEntry(this.hass, entityId, {
             categories: {
-              automation: this._entityRegistryUpdate.category || "",
+              automation: this._entityRegistryUpdate.category || null,
             },
             labels: this._entityRegistryUpdate.labels || [],
           });

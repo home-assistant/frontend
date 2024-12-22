@@ -101,10 +101,10 @@ class DialogAutomationRename extends LitElement implements HassDialog {
         scrimClickAction
         @closed=${this.closeDialog}
         .heading=${this.hass.localize(
-              this._params.config.alias
-                ? "ui.panel.config.automation.editor.rename"
-                : "ui.panel.config.automation.editor.save"
-            )}
+          this._params.config.alias
+            ? "ui.panel.config.automation.editor.rename"
+            : "ui.panel.config.automation.editor.save"
+        )}
       >
         <ha-dialog-header slot="heading">
           <ha-icon-button
