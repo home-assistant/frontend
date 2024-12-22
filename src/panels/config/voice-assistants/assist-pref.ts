@@ -124,23 +124,6 @@ export class AssistPref extends LitElement {
             ></ha-icon-button>
           </a>
         </div>
-        <ha-settings-row>
-          <span slot="heading">
-            ${this.hass!.localize(
-              "ui.panel.config.voice_assistants.expose.expose_new_entities"
-            )}
-          </span>
-          <span slot="description">
-            ${this.hass!.localize(
-              "ui.panel.config.voice_assistants.expose.expose_new_entities_info"
-            )}
-          </span>
-          <ha-switch
-            .checked=${this._exposeNew}
-            .disabled=${this._exposeNew === undefined}
-            @change=${this._exposeNewToggleChanged}
-          ></ha-switch>
-        </ha-settings-row>
         <mwc-list>
           ${this._pipelines.map(
             (pipeline) => html`
@@ -225,6 +208,23 @@ export class AssistPref extends LitElement {
           )}
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </ha-button>
+        <ha-settings-row>
+          <span slot="heading">
+            ${this.hass!.localize(
+              "ui.panel.config.voice_assistants.expose.expose_new_entities"
+            )}
+          </span>
+          <span slot="description">
+            ${this.hass!.localize(
+              "ui.panel.config.voice_assistants.expose.expose_new_entities_info"
+            )}
+          </span>
+          <ha-switch
+            .checked=${this._exposeNew}
+            .disabled=${this._exposeNew === undefined}
+            @change=${this._exposeNewToggleChanged}
+          ></ha-switch>
+        </ha-settings-row>
         <div class="card-actions">
           <a
             href="/config/voice-assistants/expose?assistants=conversation&historyBack"
@@ -376,6 +376,7 @@ export class AssistPref extends LitElement {
         --mdc-list-item-meta-size: auto;
         --mdc-list-item-meta-display: flex;
         --mdc-list-side-padding-right: 8px;
+        --mdc-list-side-padding-left: 16px;
       }
 
       ha-list-item.danger {
