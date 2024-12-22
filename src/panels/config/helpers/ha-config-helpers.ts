@@ -192,7 +192,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   @state() private _stateItems: HassEntity[] = [];
 
-  @state() private _disabledEntries?: EntityRegistryEntry[];
+  @state() private _disabledEntityEntries?: EntityRegistryEntry[];
 
   @state() private _entityEntries?: Record<string, EntityRegistryEntry>;
 
@@ -505,6 +505,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         configEntry: undefined,
         entity: undefined,
         selectable: true,
+        disabled: true,
       }));
 
       return [...states, ...entries, ...disabledItems]
@@ -622,7 +623,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     const helpers = this._getItems(
       this.hass.localize,
       this._stateItems,
-      this._disabledEntries || [],
+      this._disabledEntityEntries || [],
       this._entityEntries,
       this._configEntries,
       this._entityReg,
@@ -882,7 +883,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
               ?.labels.some((lbl) => filter.includes(lbl))
           )
           .forEach((stateItem) => labelItems.add(stateItem.entity_id));
-        (this._disabledEntries || [])
+        (this._disabledEntityEntries || [])
           .filter((entry) => entry.labels.some((lbl) => filter.includes(lbl)))
           .forEach((entry) => labelItems.add(entry.entity_id));
         if (!items) {
@@ -910,7 +911,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
               )?.categories.helpers
           )
           .forEach((stateItem) => categoryItems.add(stateItem.entity_id));
-        (this._disabledEntries || [])
+        (this._disabledEntityEntries || [])
           .filter((entry) => filter[0] === entry.categories.helpers)
           .forEach((entry) => categoryItems.add(entry.entity_id));
         if (!items) {
@@ -1141,7 +1142,7 @@ ${rejected
         changedProps.has("_configEntries")) &&
       this._helperManifests
     ) {
-      this._disabledEntries = Object.values(this._entityEntries).filter(
+      this._disabledEntityEntries = Object.values(this._entityEntries).filter(
         (e) =>
           e.disabled_by &&
           (e.platform in this._helperManifests! ||
