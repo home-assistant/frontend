@@ -7,8 +7,22 @@ export interface ShowViewConfig {
   user?: string;
 }
 
-interface LovelaceViewBackgroundConfig {
+export interface LovelaceViewBackgroundConfig {
   image?: string;
+  transparency?: number;
+  size?: "auto" | "cover" | "contain";
+  alignment?:
+    | "top left"
+    | "top center"
+    | "top right"
+    | "center left"
+    | "center"
+    | "center right"
+    | "bottom left"
+    | "bottom center"
+    | "bottom right";
+  repeat?: "repeat" | "no-repeat";
+  attachment?: "scroll" | "fixed";
 }
 
 export interface LovelaceBaseViewConfig {
