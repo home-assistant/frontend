@@ -5926,7 +5926,45 @@
             "header_name": "{name} View Configuration",
             "add": "Add view",
             "background": {
-              "title": "Add a background to the view"
+              "settings": "Background settings",
+              "image": "Background image",
+              "size": {
+                "name": "Background size",
+                "options": {
+                  "auto": "Original",
+                  "cover": "Fill view",
+                  "contain": "Fit view"
+                }
+              },
+              "alignment": {
+                "name": "Background alignment",
+                "options": {
+                  "top left": "Top left",
+                  "top center": "Top center",
+                  "top right": "Top right",
+                  "center left": "Center left",
+                  "center": "Center",
+                  "center right": "Center right",
+                  "bottom left": "Bottom left",
+                  "bottom center": "Bottom center",
+                  "bottom right": "Bottom right"
+                }
+              },
+              "transparency": "Background transparency",
+              "repeat": {
+                "name": "Background repeat",
+                "options": {
+                  "repeat": "Repeat (tile)",
+                  "no-repeat": "No repeat"
+                }
+              },
+              "attachment": {
+                "name": "Background attachment",
+                "options": {
+                  "scroll": "Scroll",
+                  "fixed": "Fixed"
+                }
+              }
             },
             "edit": "Edit view",
             "delete": "Delete view",
