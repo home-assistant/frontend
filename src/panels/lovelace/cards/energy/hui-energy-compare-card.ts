@@ -1,17 +1,21 @@
 import { differenceInDays, endOfDay } from "date-fns";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDate } from "../../../../common/datetime/format_date";
-import type { EnergyData } from "../../../../data/energy";
-import { getEnergyDataCollection } from "../../../../data/energy";
+import { EnergyData, getEnergyDataCollection } from "../../../../data/energy";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../../types";
-import type { LovelaceCard } from "../../types";
-import type { EnergyCardBaseConfig } from "../types";
+import { HomeAssistant } from "../../../../types";
+import { LovelaceCard } from "../../types";
+import { EnergyCardBaseConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
-import "../../../../components/ha-alert";
 
 @customElement("hui-energy-compare-card")
 export class HuiEnergyCompareCard
@@ -30,7 +34,6 @@ export class HuiEnergyCompareCard
 
   @state() private _endCompare?: Date;
 
-  // eslint-disable-next-line lit/no-native-attributes
   @property({ type: Boolean, reflect: true }) hidden = true;
 
   public getCardSize(): Promise<number> | number {

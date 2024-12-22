@@ -1,6 +1,5 @@
 import { mdiClose, mdiPencil, mdiPlus } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
+import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-button";
@@ -17,7 +16,7 @@ export class HuiHeaderFooterEditor extends LitElement {
 
   @property({ attribute: false }) public config?: LovelaceHeaderFooterConfig;
 
-  @property({ attribute: false }) public configValue!: "header" | "footer";
+  @property() public configValue!: "header" | "footer";
 
   protected render(): TemplateResult {
     return html`

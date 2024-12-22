@@ -1,7 +1,12 @@
-import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { mdiDotsVertical } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -10,30 +15,17 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
-import type { HumidifierEntity } from "../../../data/humidifier";
+import { HumidifierEntity } from "../../../data/humidifier";
 import "../../../state-control/humidifier/ha-state-control-humidifier-humidity";
-import type { HomeAssistant } from "../../../types";
+import { HomeAssistant } from "../../../types";
 import "../card-features/hui-card-features";
 import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type {
-  LovelaceCard,
-  LovelaceCardEditor,
-  LovelaceGridOptions,
-} from "../types";
-import type { HumidifierCardConfig } from "./types";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
+import { HumidifierCardConfig } from "./types";
 
 @customElement("hui-humidifier-card")
 export class HuiHumidifierCard extends LitElement implements LovelaceCard {
-  private _resizeController = new ResizeController(this, {
-    callback: (entries) => {
-      const container = entries[0]?.target.shadowRoot?.querySelector(
-        ".container"
-      ) as HTMLElement | undefined;
-      return container?.clientHeight;
-    },
-  });
-
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("../editor/config-elements/hui-humidifier-card-editor");
     return document.createElement("hui-humidifier-card-editor");
@@ -131,25 +123,16 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
 
     const color = stateColorCss(stateObj);
 
-    const controlMaxWidth = this._resizeController.value
-      ? `${this._resizeController.value}px`
-      : undefined;
-
     return html`
       <ha-card>
         <p class="title">${name}</p>
-        <div class="container">
-          <ha-state-control-humidifier-humidity
-            style=${styleMap({
-              maxWidth: controlMaxWidth,
-            })}
-            prevent-interaction-on-scroll
-            .showCurrentAsPrimary=${this._config.show_current_as_primary}
-            show-secondary
-            .hass=${this.hass}
-            .stateObj=${stateObj}
-          ></ha-state-control-humidifier-humidity>
-        </div>
+        <ha-state-control-humidifier-humidity
+          prevent-interaction-on-scroll
+          .showCurrentAsPrimary=${this._config.show_current_as_primary}
+          show-secondary
+          .hass=${this.hass}
+          .stateObj=${stateObj}
+        ></ha-state-control-humidifier-humidity>
         <ha-icon-button
           class="more-info"
           .label=${this.hass!.localize(
@@ -171,35 +154,12 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  public getGridOptions(): LovelaceGridOptions {
-    const columns = 12;
-    let rows = 5;
-    let min_rows = 2;
-    const min_columns = 6;
-    if (this._config?.features?.length) {
-      const featureHeight = Math.ceil((this._config.features.length * 2) / 3);
-      rows += featureHeight;
-      min_rows += featureHeight;
-    }
-    return {
-      columns,
-      rows,
-      min_columns,
-      min_rows,
-    };
-  }
-
   static get styles(): CSSResultGroup {
     return css`
-      :host {
-        position: relative;
-        display: block;
-        height: 100%;
-      }
       ha-card {
-        position: relative;
         height: 100%;
-        width: 100%;
+        position: relative;
+        overflow: hidden;
         padding: 0;
         display: flex;
         flex-direction: column;
@@ -218,28 +178,13 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        flex: none;
       }
 
-      .container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        overflow: hidden;
-        max-width: 100%;
+      ha-state-control-humidifier-humidity {
+        width: 100%;
+        max-width: 344px; /* 12px + 12px + 320px */
+        padding: 0 12px 12px 12px;
         box-sizing: border-box;
-        flex: 1;
-      }
-
-      .container:before {
-        content: "";
-        display: block;
-        padding-top: 100%;
-      }
-
-      .container > * {
-        padding: 8px;
       }
 
       .more-info {
@@ -256,7 +201,6 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
 
       hui-card-features {
         width: 100%;
-        flex: none;
       }
     `;
   }

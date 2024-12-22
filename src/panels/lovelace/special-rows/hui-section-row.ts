@@ -1,8 +1,7 @@
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
-import type { HomeAssistant } from "../../../types";
-import type { LovelaceRow, SectionConfig } from "../entity-rows/types";
+import { HomeAssistant } from "../../../types";
+import { LovelaceRow, SectionConfig } from "../entity-rows/types";
 
 @customElement("hui-section-row")
 class HuiSectionRow extends LitElement implements LovelaceRow {

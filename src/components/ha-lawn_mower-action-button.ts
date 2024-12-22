@@ -1,11 +1,13 @@
 import "@material/mwc-button";
-import type { CSSResultGroup } from "lit";
-import { LitElement, css, html } from "lit";
+import { CSSResultGroup, LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { supportsFeature } from "../common/entity/supports-feature";
-import type { LawnMowerEntity, LawnMowerEntityState } from "../data/lawn_mower";
-import { LawnMowerEntityFeature } from "../data/lawn_mower";
-import type { HomeAssistant } from "../types";
+import {
+  LawnMowerEntity,
+  LawnMowerEntityFeature,
+  LawnMowerEntityState,
+} from "../data/lawn_mower";
+import { HomeAssistant } from "../types";
 
 type LawnMowerAction = {
   action: string;
@@ -25,11 +27,6 @@ const LAWN_MOWER_ACTIONS: Partial<
     action: "start_mowing",
     service: "start_mowing",
     feature: LawnMowerEntityFeature.START_MOWING,
-  },
-  returning: {
-    action: "pause",
-    service: "pause",
-    feature: LawnMowerEntityFeature.PAUSE,
   },
   paused: {
     action: "resume_mowing",

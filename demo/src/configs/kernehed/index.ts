@@ -1,4 +1,4 @@
-import type { DemoConfig } from "../types";
+import { DemoConfig } from "../types";
 import { demoEntitiesKernehed } from "./entities";
 import { demoLovelaceKernehed } from "./lovelace";
 import { demoThemeKernehed } from "./theme";

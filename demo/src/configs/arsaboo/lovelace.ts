@@ -1,4 +1,4 @@
-import type { DemoConfig } from "../types";
+import { DemoConfig } from "../types";
 
 export const demoLovelaceArsaboo: DemoConfig["lovelace"] = (localize) => ({
   title: "Home Assistant",

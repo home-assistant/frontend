@@ -1,5 +1,4 @@
-import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../components/ha-card";
 import "../../../../components/ha-alert";
@@ -307,18 +306,6 @@ export class AssistPipelineDebug extends LitElement {
                                   </div>`
                                 : ""}`
                           : ""}
-                        <div class="row">
-                          <div>Prefer handling locally</div>
-                          <div>
-                            ${this.pipelineRun.intent.prefer_local_intents}
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div>Processed locally</div>
-                          <div>
-                            ${this.pipelineRun.intent.processed_locally}
-                          </div>
-                        </div>
                         ${dataMinusKeysRender(
                           this.pipelineRun.intent,
                           INTENT_DATA
@@ -365,8 +352,8 @@ export class AssistPipelineDebug extends LitElement {
         <ha-expansion-panel>
           <span slot="header">Raw</span>
           <ha-yaml-editor
-            read-only
-            auto-update
+            readOnly
+            autoUpdate
             .value=${this.pipelineRun}
           ></ha-yaml-editor>
         </ha-expansion-panel>

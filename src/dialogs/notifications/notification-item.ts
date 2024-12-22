@@ -1,9 +1,8 @@
-import type { HassEntity } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
-import { html, LitElement, nothing } from "lit";
+import { HassEntity } from "home-assistant-js-websocket";
+import { html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { PersistentNotification } from "../../data/persistent_notification";
-import type { HomeAssistant } from "../../types";
+import { PersistentNotification } from "../../data/persistent_notification";
+import { HomeAssistant } from "../../types";
 import "./configurator-notification-item";
 import "./persistent-notification-item";
 

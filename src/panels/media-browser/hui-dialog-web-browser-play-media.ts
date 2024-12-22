@@ -1,12 +1,11 @@
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-hls-player";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import type { WebBrowserPlayMediaDialogParams } from "./show-media-player-dialog";
+import { WebBrowserPlayMediaDialogParams } from "./show-media-player-dialog";
 
 @customElement("hui-dialog-web-browser-play-media")
 export class HuiDialogWebBrowserPlayMedia extends LitElement {

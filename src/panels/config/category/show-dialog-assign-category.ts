@@ -1,5 +1,5 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
+import { EntityRegistryEntry } from "../../../data/entity_registry";
 
 export interface AssignCategoryDialogParams {
   entityReg: EntityRegistryEntry;

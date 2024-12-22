@@ -1,4 +1,3 @@
-import { stripDiacritics } from "../strip-diacritics";
 import { fuzzyScore } from "./filter";
 
 /**
@@ -20,10 +19,10 @@ export const fuzzySequentialMatch = (
   for (const word of item.strings) {
     const scores = fuzzyScore(
       filter,
-      stripDiacritics(filter.toLowerCase()),
+      filter.toLowerCase(),
       0,
       word,
-      stripDiacritics(word.toLowerCase()),
+      word.toLowerCase(),
       0,
       true
     );

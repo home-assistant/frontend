@@ -1,6 +1,5 @@
 import { indentLess, indentMore } from "@codemirror/commands";
 import {
-  foldService,
   HighlightStyle,
   StreamLanguage,
   syntaxHighlighting,
@@ -8,13 +7,12 @@ import {
 import { jinja2 } from "@codemirror/legacy-modes/mode/jinja2";
 import { yaml } from "@codemirror/legacy-modes/mode/yaml";
 import { Compartment } from "@codemirror/state";
-import type { KeyBinding } from "@codemirror/view";
-import { EditorView } from "@codemirror/view";
+import { EditorView, KeyBinding } from "@codemirror/view";
 import { tags } from "@lezer/highlight";
 
 export { autocompletion } from "@codemirror/autocomplete";
 export { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
-export { highlightingFor, foldGutter } from "@codemirror/language";
+export { highlightingFor } from "@codemirror/language";
 export { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
 export { EditorState } from "@codemirror/state";
 export {
@@ -26,7 +24,6 @@ export {
   lineNumbers,
   rectangularSelection,
 } from "@codemirror/view";
-export { indentationMarkers } from "@replit/codemirror-indentation-markers";
 export { tags } from "@lezer/highlight";
 
 export const langs = {
@@ -36,8 +33,6 @@ export const langs = {
 
 export const langCompartment = new Compartment();
 export const readonlyCompartment = new Compartment();
-export const linewrapCompartment = new Compartment();
-export const foldingCompartment = new Compartment();
 
 export const tabKeyBindings: KeyBinding[] = [
   { key: "Tab", run: indentMore },
@@ -274,62 +269,3 @@ const haHighlightStyle = HighlightStyle.define([
 ]);
 
 export const haSyntaxHighlighting = syntaxHighlighting(haHighlightStyle);
-
-// A folding service for indent-based languages such as YAML.
-export const foldingOnIndent = foldService.of((state, from, to) => {
-  const line = state.doc.lineAt(from);
-
-  // empty lines continue their indentation from surrounding lines
-  if (!line.length || !line.text.trim().length) {
-    return null;
-  }
-
-  let onlyEmptyNext = true;
-
-  const lineCount = state.doc.lines;
-  const indent = line.text.search(/\S|$/); // Indent level of the first line
-
-  let foldStart = from; // Start of the fold
-  let foldEnd = to; // End of the fold
-
-  // Check if the next line is on a deeper indent level
-  // If so, continue subsequent lines
-  // If not, go on with the foldEnd
-  let nextLine = line;
-  while (nextLine.number < lineCount) {
-    nextLine = state.doc.line(nextLine.number + 1); // Next line
-    const nextIndent = nextLine.text.search(/\S|$/); // Indent level of the next line
-
-    // If the next line is on a deeper indent level, add it to the fold
-    // empty lines continue their indentation from surrounding lines
-    if (
-      !nextLine.length ||
-      !nextLine.text.trim().length ||
-      nextIndent > indent
-    ) {
-      if (onlyEmptyNext) {
-        onlyEmptyNext = nextLine.text.trim().length === 0;
-      }
-      // include this line in the fold and continue
-      foldEnd = nextLine.to;
-    } else {
-      // If the next line is not on a deeper indent level, we found the end of the region
-      break;
-    }
-  }
-
-  // Don't create fold if it's a single line
-  if (
-    onlyEmptyNext ||
-    state.doc.lineAt(foldStart).number === state.doc.lineAt(foldEnd).number
-  ) {
-    return null;
-  }
-
-  // Set the fold start to the end of the first line
-  // With this, the fold will not include the first line
-  foldStart = line.to;
-
-  // Return a fold that covers the entire indent level
-  return { from: foldStart, to: foldEnd };
-});

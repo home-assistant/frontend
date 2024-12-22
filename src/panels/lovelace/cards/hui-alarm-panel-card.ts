@@ -1,6 +1,12 @@
-import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
@@ -13,9 +19,9 @@ import "../../../components/ha-card";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
-import type { AlarmMode } from "../../../data/alarm_control_panel";
 import {
   ALARM_MODES,
+  AlarmMode,
   FORMAT_NUMBER,
   callAlarmAction,
 } from "../../../data/alarm_control_panel";
@@ -24,12 +30,12 @@ import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard } from "../types";
-import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
 import {
+  ExtEntityRegistryEntry,
   getExtendedEntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
-import type { AlarmPanelCardConfig, AlarmPanelCardConfigState } from "./types";
+import { AlarmPanelCardConfig, AlarmPanelCardConfigState } from "./types";
 
 const BUTTONS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "clear"];
 

@@ -4,8 +4,14 @@ import type {
   ChartOptions,
   ChartType,
 } from "chart.js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { getGraphColorByIndex } from "../../common/color/colors";
@@ -16,17 +22,15 @@ import {
   numberFormatToLocale,
   getNumberFormatOptions,
 } from "../../common/number/format_number";
-import type {
-  Statistics,
-  StatisticsMetaData,
-  StatisticType,
-} from "../../data/recorder";
 import {
   getDisplayUnit,
   getStatisticLabel,
   getStatisticMetadata,
   isExternalStatistic,
+  Statistics,
   statisticsHaveType,
+  StatisticsMetaData,
+  StatisticType,
 } from "../../data/recorder";
 import type { HomeAssistant } from "../../types";
 import "./ha-chart-base";
@@ -35,7 +39,6 @@ import type {
   ChartDatasetExtra,
   HaChartBase,
 } from "./ha-chart-base";
-import { clickIsTouch } from "./click_is_touch";
 
 export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
   mean: "mean",
@@ -63,28 +66,22 @@ export class StatisticsChart extends LitElement {
 
   @property({ attribute: false }) public endTime?: Date;
 
-  @property({ attribute: false, type: Array })
-  public statTypes: Array<StatisticType> = ["sum", "min", "mean", "max"];
+  @property({ type: Array }) public statTypes: Array<StatisticType> = [
+    "sum",
+    "min",
+    "mean",
+    "max",
+  ];
 
-  @property({ attribute: false }) public chartType: ChartType = "line";
+  @property() public chartType: ChartType = "line";
 
-  @property({ attribute: false, type: Number }) public minYAxis?: number;
+  @property({ type: Boolean }) public hideLegend = false;
 
-  @property({ attribute: false, type: Number }) public maxYAxis?: number;
+  @property({ type: Boolean }) public logarithmicScale = false;
 
-  @property({ attribute: "fit-y-data", type: Boolean }) public fitYData = false;
+  @property({ type: Boolean }) public isLoadingData = false;
 
-  @property({ attribute: "hide-legend", type: Boolean }) public hideLegend =
-    false;
-
-  @property({ attribute: "logarithmic-scale", type: Boolean })
-  public logarithmicScale = false;
-
-  @property({ attribute: "is-loading-data", type: Boolean })
-  public isLoadingData = false;
-
-  @property({ attribute: "click-for-more-info", type: Boolean })
-  public clickForMoreInfo = true;
+  @property({ type: Boolean }) public clickForMoreInfo = true;
 
   @property() public period?: string;
 
@@ -119,9 +116,6 @@ export class StatisticsChart extends LitElement {
       changedProps.has("unit") ||
       changedProps.has("period") ||
       changedProps.has("chartType") ||
-      changedProps.has("minYAxis") ||
-      changedProps.has("maxYAxis") ||
-      changedProps.has("fitYData") ||
       changedProps.has("logarithmicScale") ||
       changedProps.has("hideLegend")
     ) {
@@ -167,7 +161,7 @@ export class StatisticsChart extends LitElement {
 
     return html`
       <ha-chart-base
-        external-hidden
+        externalHidden
         .hass=${this.hass}
         .data=${this._chartData}
         .extraData=${this._chartDatasetExtra}
@@ -194,6 +188,7 @@ export class StatisticsChart extends LitElement {
   private _createOptions(unit?: string) {
     this._chartOptions = {
       parsing: false,
+      animation: false,
       interaction: {
         mode: "nearest",
         axis: "x",
@@ -240,8 +235,6 @@ export class StatisticsChart extends LitElement {
             text: unit || this.unit,
           },
           type: this.logarithmicScale ? "logarithmic" : "linear",
-          min: this.fitYData ? null : this.minYAxis,
-          max: this.fitYData ? null : this.maxYAxis,
         },
       },
       plugins: {
@@ -285,7 +278,11 @@ export class StatisticsChart extends LitElement {
       // @ts-expect-error
       locale: numberFormatToLocale(this.hass.locale),
       onClick: (e: any) => {
-        if (!this.clickForMoreInfo || clickIsTouch(e)) {
+        if (
+          !this.clickForMoreInfo ||
+          !(e.native instanceof MouseEvent) ||
+          (e.native instanceof PointerEvent && e.native.pointerType !== "mouse")
+        ) {
           return;
         }
 

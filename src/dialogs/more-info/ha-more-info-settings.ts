@@ -1,9 +1,15 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import "../../components/ha-alert";
-import type {
+import {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
 } from "../../data/entity_registry";

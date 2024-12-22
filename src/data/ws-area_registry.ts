@@ -1,9 +1,8 @@
-import type { Connection } from "home-assistant-js-websocket";
-import { createCollection } from "home-assistant-js-websocket";
-import type { Store } from "home-assistant-js-websocket/dist/store";
+import { Connection, createCollection } from "home-assistant-js-websocket";
+import { Store } from "home-assistant-js-websocket/dist/store";
 import { stringCompare } from "../common/string/compare";
 import { debounce } from "../common/util/debounce";
-import type { AreaRegistryEntry } from "./area_registry";
+import { AreaRegistryEntry } from "./area_registry";
 
 const fetchAreaRegistry = (conn: Connection) =>
   conn

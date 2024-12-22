@@ -1,7 +1,7 @@
-import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
-import type { Lovelace } from "../../../src/panels/lovelace/types";
+import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
+import { Lovelace } from "../../../src/panels/lovelace/types";
 import { energyEntities } from "../stubs/entities";
-import type { DemoConfig } from "./types";
+import { DemoConfig } from "./types";
 
 export const demoConfigs: Array<() => Promise<DemoConfig>> = [
   () => import("./sections").then((mod) => mod.demoSections),

@@ -1,16 +1,10 @@
-import type { HomeAssistant } from "../types";
-import { isIosApp } from "./is_ios";
-
 export const fileDownload = (href: string, filename = ""): void => {
-  const element = document.createElement("a");
-  element.target = "_blank";
-  element.href = href;
-  element.download = filename;
-  element.style.display = "none";
-  document.body.appendChild(element);
-  element.dispatchEvent(new MouseEvent("click"));
-  document.body.removeChild(element);
-};
+  const a = document.createElement("a");
+  a.target = "_blank";
+  a.href = href;
+  a.download = filename;
 
-export const downloadFileSupported = (hass: HomeAssistant): boolean =>
-  !isIosApp(hass) || !!hass.auth.external?.config.downloadFileSupported;
+  document.body.appendChild(a);
+  a.dispatchEvent(new MouseEvent("click"));
+  document.body.removeChild(a);
+};

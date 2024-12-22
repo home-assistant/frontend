@@ -1,5 +1,4 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/ha-svg-icon";
 import { brandsUrl } from "../util/brands-url";
@@ -8,14 +7,11 @@ import { brandsUrl } from "../util/brands-url";
 class IntegrationBadge extends LitElement {
   @property() public domain!: string;
 
-  // eslint-disable-next-line lit/no-native-attributes
-  @property({ attribute: false }) public title!: string;
+  @property() public title!: string;
 
-  @property({ attribute: "dark-optimized-icon", type: Boolean })
-  public darkOptimizedIcon = false;
+  @property({ type: Boolean }) public darkOptimizedIcon = false;
 
-  @property({ attribute: false, type: Boolean, reflect: true })
-  public clickable = false;
+  @property({ type: Boolean, reflect: true }) public clickable = false;
 
   protected render(): TemplateResult {
     return html`

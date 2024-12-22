@@ -1,12 +1,10 @@
 import { mdiClose } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { guard } from "lit/directives/guard";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { User } from "../../data/user";
-import { fetchUsers } from "../../data/user";
+import { fetchUsers, User } from "../../data/user";
 import type { ValueChangedEvent, HomeAssistant } from "../../types";
 import "../ha-icon-button";
 import "./ha-user-picker";

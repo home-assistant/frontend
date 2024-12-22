@@ -1,5 +1,4 @@
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
@@ -13,7 +12,7 @@ import { luminosity } from "../../../../common/color/rgb";
 import type { HaOutlinedIconButton } from "../../../../components/ha-outlined-icon-button";
 import "../../../../components/ha-outlined-icon-button";
 import "../../../../components/ha-svg-icon";
-import type { LightColor, LightEntity } from "../../../../data/light";
+import { LightColor, LightEntity } from "../../../../data/light";
 
 @customElement("ha-favorite-color-button")
 class MoreInfoViewLightColorPicker extends LitElement {

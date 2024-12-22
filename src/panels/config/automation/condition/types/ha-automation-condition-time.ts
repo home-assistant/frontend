@@ -7,7 +7,7 @@ import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { TimeCondition } from "../../../../../data/automation";
-import type { FrontendLocaleData } from "../../../../../data/translation";
+import { FrontendLocaleData } from "../../../../../data/translation";
 import type { HomeAssistant } from "../../../../../types";
 import type { ConditionElement } from "../ha-automation-condition-row";
 
@@ -25,8 +25,8 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  public static get defaultConfig(): TimeCondition {
-    return { condition: "time" };
+  public static get defaultConfig() {
+    return {};
   }
 
   private _schema = memoizeOne(
@@ -67,7 +67,6 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
                 entity: {
                   filter: [
                     { domain: "input_datetime" },
-                    { domain: "time" },
                     { domain: "sensor", device_class: "timestamp" },
                   ],
                 },
@@ -100,7 +99,6 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
                 entity: {
                   filter: [
                     { domain: "input_datetime" },
-                    { domain: "time" },
                     { domain: "sensor", device_class: "timestamp" },
                   ],
                 },
@@ -128,12 +126,10 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
     const inputModeBefore =
       this._inputModeBefore ??
       (this.condition.before?.startsWith("input_datetime.") ||
-        this.condition.before?.startsWith("time.") ||
         this.condition.before?.startsWith("sensor."));
     const inputModeAfter =
       this._inputModeAfter ??
       (this.condition.after?.startsWith("input_datetime.") ||
-        this.condition.after?.startsWith("time.") ||
         this.condition.after?.startsWith("sensor."));
 
     const schema = this._schema(

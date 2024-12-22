@@ -1,5 +1,5 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import type { Lovelace } from "../types";
+import { Lovelace } from "../types";
 
 declare global {
   // for fire event

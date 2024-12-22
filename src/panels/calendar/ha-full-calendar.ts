@@ -13,15 +13,21 @@ import {
   mdiViewModule,
   mdiViewWeek,
 } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
 import { useAmPm } from "../../common/datetime/use_am_pm";
 import { fireEvent } from "../../common/dom/fire_event";
 import { supportsFeature } from "../../common/entity/supports-feature";
-import type { LocalizeFunc } from "../../common/translations/localize";
+import { LocalizeFunc } from "../../common/translations/localize";
 import "../../components/ha-button-toggle-group";
 import "../../components/ha-fab";
 import "../../components/ha-icon-button-next";
@@ -84,10 +90,9 @@ export class HAFullCalendar extends LitElement {
     "listWeek",
   ];
 
-  @property({ attribute: false }) public initialView: FullCalendarView =
-    "dayGridMonth";
+  @property() public initialView: FullCalendarView = "dayGridMonth";
 
-  @property({ attribute: false }) public eventDisplay = "auto";
+  @property() public eventDisplay = "auto";
 
   @property({ attribute: false }) public error?: string = undefined;
 

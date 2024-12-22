@@ -1,13 +1,14 @@
 import "@material/mwc-list/mwc-list-item";
-import type { PropertyValues, TemplateResult } from "lit";
-import { html, LitElement } from "lit";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
-import type { LovelaceDashboard } from "../../data/lovelace/dashboard";
-import { fetchDashboards } from "../../data/lovelace/dashboard";
+import {
+  fetchDashboards,
+  LovelaceDashboard,
+} from "../../data/lovelace/dashboard";
 import { setDefaultPanel } from "../../data/panel";
-import type { HomeAssistant } from "../../types";
+import { HomeAssistant } from "../../types";
 
 @customElement("ha-pick-dashboard-row")
 class HaPickDashboardRow extends LitElement {

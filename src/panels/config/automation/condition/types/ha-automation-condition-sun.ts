@@ -17,8 +17,8 @@ export class HaSunCondition extends LitElement implements ConditionElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  public static get defaultConfig(): SunCondition {
-    return { condition: "sun" };
+  public static get defaultConfig() {
+    return {};
   }
 
   private _schema = memoizeOne(

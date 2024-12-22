@@ -1,7 +1,6 @@
 import { atLeastVersion } from "../../common/config/version";
-import type { HomeAssistant, TranslationDict } from "../../types";
-import type { HassioResponse } from "./common";
-import { hassioApiResultExtractor } from "./common";
+import { HomeAssistant, TranslationDict } from "../../types";
+import { hassioApiResultExtractor, HassioResponse } from "./common";
 
 export interface HassioResolution {
   unsupported: (keyof TranslationDict["supervisor"]["system"]["supervisor"]["unsupported_reason"])[];

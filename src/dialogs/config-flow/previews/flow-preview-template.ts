@@ -1,29 +1,28 @@
-import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { debounce } from "../../../common/util/debounce";
-import type { FlowType } from "../../../data/data_entry_flow";
-import type {
+import { FlowType } from "../../../data/data_entry_flow";
+import {
   TemplateListeners,
   TemplatePreview,
+  subscribePreviewTemplate,
 } from "../../../data/ws-templates";
-import { subscribePreviewTemplate } from "../../../data/ws-templates";
-import type { HomeAssistant } from "../../../types";
+import { HomeAssistant } from "../../../types";
 import "./entity-preview-row";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-alert";
 
 @customElement("flow-preview-template")
 class FlowPreviewTemplate extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public flowType!: FlowType;
+  @property() public flowType!: FlowType;
 
   public handler!: string;
 
-  @property({ attribute: false }) public stepId!: string;
+  @property() public stepId!: string;
 
-  @property({ attribute: false }) public flowId!: string;
+  @property() public flowId!: string;
 
   @property({ attribute: false }) public stepData!: Record<string, any>;
 

@@ -1,12 +1,18 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { HomeAssistant } from "../../../types";
-import type { EntitiesCardEntityConfig } from "../cards/types";
+import { HomeAssistant } from "../../../types";
+import { EntitiesCardEntityConfig } from "../cards/types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { LovelaceRow } from "./types";
+import { LovelaceRow } from "./types";
 
 @customElement("hui-simple-entity-row")
 class HuiSimpleEntityRow extends LitElement implements LovelaceRow {
@@ -51,6 +57,9 @@ class HuiSimpleEntityRow extends LitElement implements LovelaceRow {
     return css`
       div {
         text-align: right;
+      }
+      .pointer {
+        cursor: pointer;
       }
     `;
   }

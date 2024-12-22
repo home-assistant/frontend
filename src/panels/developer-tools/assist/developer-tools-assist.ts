@@ -1,7 +1,6 @@
 import { mdiDownload } from "@mdi/js";
 import { dump } from "js-yaml";
-import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { storage } from "../../../common/decorators/storage";
 import { formatLanguageCode } from "../../../common/language/format_language";
@@ -12,11 +11,14 @@ import "../../../components/ha-code-editor";
 import "../../../components/ha-language-picker";
 import "../../../components/ha-textarea";
 import type { HaTextArea } from "../../../components/ha-textarea";
-import type { AssitDebugResult } from "../../../data/conversation";
-import { debugAgent, listAgents } from "../../../data/conversation";
+import {
+  AssitDebugResult,
+  debugAgent,
+  listAgents,
+} from "../../../data/conversation";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
+import { HomeAssistant } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
 
 type SentenceParsingResult = {

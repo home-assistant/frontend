@@ -1,6 +1,5 @@
 import { DIRECTION_ALL, Manager, Pan, Tap } from "@egjs/hammerjs";
-import type { PropertyValues } from "lit";
-import { css, html, LitElement, svg } from "lit";
+import { css, html, LitElement, PropertyValues, svg } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
@@ -119,7 +118,7 @@ class HaHsColorPicker extends LitElement {
   @property({ type: Array })
   public value?: [number, number];
 
-  @property({ attribute: false, type: Number })
+  @property({ type: Number })
   public colorBrightness?: number;
 
   @property({ type: Number })
@@ -131,10 +130,10 @@ class HaHsColorPicker extends LitElement {
   @property({ type: Number })
   public ww?: number;
 
-  @property({ attribute: false, type: Number })
+  @property({ type: Number })
   public minKelvin?: number;
 
-  @property({ attribute: false, type: Number })
+  @property({ type: Number })
   public maxKelvin?: number;
 
   @query("#canvas") private _canvas!: HTMLCanvasElement;
@@ -201,7 +200,7 @@ class HaHsColorPicker extends LitElement {
     }
   }
 
-  private _setupListeners() {
+  _setupListeners() {
     if (this._canvas && !this._mc) {
       this._mc = new Manager(this._canvas);
       this._mc.add(
@@ -292,11 +291,11 @@ class HaHsColorPicker extends LitElement {
     const _y = (2 * (y - offsetY)) / maxY - 1;
 
     const [r, phi] = xy2polar(_x, _y);
-    const [xx, yy] = polar2xy(Math.min(1, r), phi);
-    return [xx, yy];
+    const [__x, __y] = polar2xy(Math.min(1, r), phi);
+    return [__x, __y];
   };
 
-  private _destroyListeners() {
+  _destroyListeners() {
     if (this._mc) {
       this._mc.destroy();
       this._mc = undefined;

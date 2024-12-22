@@ -1,21 +1,24 @@
 import "@material/mwc-list/mwc-list-item";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
-import type { HaSwitch } from "../../../../components/ha-switch";
+import { HaSwitch } from "../../../../components/ha-switch";
 import "../../../../components/user/ha-user-badge";
-import "../../../../components/ha-list-item";
-import "../../../../components/ha-switch";
-import type {
+import {
   LovelaceViewConfig,
   ShowViewConfig,
 } from "../../../../data/lovelace/config/view";
-import type { User } from "../../../../data/user";
-import { fetchUsers } from "../../../../data/user";
-import type { HomeAssistant } from "../../../../types";
+import { User, fetchUsers } from "../../../../data/user";
+import { HomeAssistant } from "../../../../types";
 
 declare global {
   interface HASSDomEvents {
@@ -68,7 +71,7 @@ export class HuiViewVisibilityEditor extends LitElement {
       </p>
       ${this._sortedUsers(this._users).map(
         (user) => html`
-          <ha-list-item graphic="avatar" hasMeta>
+          <mwc-list-item graphic="avatar" hasMeta>
             <ha-user-badge
               slot="graphic"
               .hass=${this.hass}
@@ -78,10 +81,10 @@ export class HuiViewVisibilityEditor extends LitElement {
             <ha-switch
               slot="meta"
               .userId=${user.id}
-              @change=${this._valChange}
+              @change=${this.valChange}
               .checked=${this.checkUser(user.id)}
             ></ha-switch>
-          </ha-list-item>
+          </mwc-list-item>
         `
       )}
     `;
@@ -97,7 +100,7 @@ export class HuiViewVisibilityEditor extends LitElement {
     return (this._visible as ShowViewConfig[]).some((u) => u.user === userId);
   }
 
-  private _valChange(ev: Event): void {
+  private valChange(ev: Event): void {
     const userId = (ev.currentTarget as any).userId;
     const checked = (ev.currentTarget as HaSwitch).checked;
 

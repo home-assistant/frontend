@@ -2,6 +2,8 @@ import "@material/mwc-button/mwc-button";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import {
+  addDays,
+  addMonths,
   differenceInDays,
   differenceInMonths,
   endOfDay,
@@ -19,16 +21,21 @@ import {
   startOfYear,
   subDays,
 } from "date-fns";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import {
   calcDate,
   calcDateProperty,
   calcDateDifferenceProperty,
-  shiftDateRange,
 } from "../../../common/datetime/calc_date";
 import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
 import {
@@ -45,16 +52,15 @@ import "../../../components/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../../components/ha-date-range-picker";
 import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-button-prev";
-import type { EnergyData } from "../../../data/energy";
-import { getEnergyDataCollection } from "../../../data/energy";
+import { EnergyData, getEnergyDataCollection } from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../types";
+import { HomeAssistant } from "../../../types";
 
 @customElement("hui-energy-period-selector")
 export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: "collection-key" }) public collectionKey?: string;
+  @property() public collectionKey?: string;
 
   @property({ type: Boolean, reflect: true }) public narrow?;
 
@@ -247,7 +253,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
             .endDate=${this._endDate || new Date()}
             .ranges=${this._ranges}
             @change=${this._dateRangeChanged}
-            time-picker
+            .timePicker=${false}
             minimal
           ></ha-date-range-picker>
         </div>
@@ -511,15 +517,84 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   private _shift(forward: boolean) {
     if (!this._startDate) return;
-    const { start, end } = shiftDateRange(
-      this._startDate,
-      this._endDate!,
-      forward,
-      this.hass.locale,
-      this.hass.config
-    );
+
+    let start: Date;
+    let end: Date;
+    if (
+      (calcDateProperty(
+        this._startDate,
+        isFirstDayOfMonth,
+        this.hass.locale,
+        this.hass.config
+      ) as boolean) &&
+      (calcDateProperty(
+        this._endDate!,
+        isLastDayOfMonth,
+        this.hass.locale,
+        this.hass.config
+      ) as boolean)
+    ) {
+      // Shift date range with respect to month/year selection
+      const difference =
+        ((calcDateDifferenceProperty(
+          this._endDate!,
+          this._startDate,
+          differenceInMonths,
+          this.hass.locale,
+          this.hass.config
+        ) as number) +
+          1) *
+        (forward ? 1 : -1);
+      start = calcDate(
+        this._startDate,
+        addMonths,
+        this.hass.locale,
+        this.hass.config,
+        difference
+      );
+      end = calcDate(
+        calcDate(
+          this._endDate!,
+          addMonths,
+          this.hass.locale,
+          this.hass.config,
+          difference
+        ),
+        endOfMonth,
+        this.hass.locale,
+        this.hass.config
+      );
+    } else {
+      // Shift date range by period length
+      const difference =
+        ((calcDateDifferenceProperty(
+          this._endDate!,
+          this._startDate,
+          differenceInDays,
+          this.hass.locale,
+          this.hass.config
+        ) as number) +
+          1) *
+        (forward ? 1 : -1);
+      start = calcDate(
+        this._startDate,
+        addDays,
+        this.hass.locale,
+        this.hass.config,
+        difference
+      );
+      end = calcDate(
+        this._endDate!,
+        addDays,
+        this.hass.locale,
+        this.hass.config,
+        difference
+      );
+    }
+
     this._startDate = start;
     this._endDate = end;
+
     this._updateCollectionPeriod();
   }
 

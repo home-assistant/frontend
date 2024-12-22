@@ -1,6 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement } from "lit/decorators";
 import { applyThemesOnElement } from "../../../../src/common/dom/apply_themes_on_element";
 import "../../../../src/components/ha-alert";

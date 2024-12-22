@@ -1,17 +1,16 @@
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import "../../../../../components/ha-card";
-import type { ZHADevice } from "../../../../../data/zha";
 import {
   CONFIGURED,
   INCOMPLETE_PAIRING_STATUSES,
   INITIALIZED,
   INTERVIEW_COMPLETE,
+  ZHADevice,
 } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
+import { HomeAssistant } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
 import "./zha-device-card";
 

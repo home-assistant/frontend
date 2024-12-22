@@ -1,7 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import { mdiFire } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
@@ -11,9 +10,9 @@ import "../../../../components/ha-formfield";
 import "../../../../components/ha-radio";
 import type { HaRadio } from "../../../../components/ha-radio";
 import "../../../../components/ha-textfield";
-import type { GasSourceTypeEnergyPreference } from "../../../../data/energy";
 import {
   emptyGasEnergyPreference,
+  GasSourceTypeEnergyPreference,
   energyStatisticHelpUrl,
 } from "../../../../data/energy";
 import {
@@ -22,10 +21,10 @@ import {
   isExternalStatistic,
 } from "../../../../data/recorder";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
-import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
-import type { EnergySettingsGasDialogParams } from "./show-dialogs-energy";
+import { HomeAssistant } from "../../../../types";
+import { EnergySettingsGasDialogParams } from "./show-dialogs-energy";
 
 const gasDeviceClasses = ["gas", "energy"];
 const gasUnitClasses = ["volume", "energy"];

@@ -10,8 +10,11 @@ import "../../../components/ha-markdown";
 import "../../../components/ha-alert";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
-import type { BlueprintImportResult } from "../../../data/blueprint";
-import { importBlueprint, saveBlueprint } from "../../../data/blueprint";
+import {
+  BlueprintImportResult,
+  importBlueprint,
+  saveBlueprint,
+} from "../../../data/blueprint";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 

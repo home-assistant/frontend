@@ -2,10 +2,9 @@ import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../../common/dom/fire_event";
 import "../../../../../../components/ha-icon-next";
-import "../../../../../../components/ha-md-list-item";
-import "../../../../../../components/ha-md-list";
-import "../../../../../../components/ha-textfield";
-import type { HomeAssistant } from "../../../../../../types";
+import "../../../../../../components/ha-list-item-new";
+import "../../../../../../components/ha-list-new";
+import { HomeAssistant } from "../../../../../../types";
 import { sharedStyles } from "./matter-add-device-shared-styles";
 
 @customElement("matter-add-device-generic")

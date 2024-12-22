@@ -1,6 +1,6 @@
 import { customElement } from "lit/decorators";
-import type { DeviceTrigger } from "../../data/device_automation";
 import {
+  DeviceTrigger,
   fetchDeviceTriggers,
   localizeDeviceAutomationTrigger,
 } from "../../data/device_automation";
@@ -26,7 +26,7 @@ class HaDeviceTriggerPicker extends HaDeviceAutomationPicker<DeviceTrigger> {
       fetchDeviceTriggers,
       (deviceId?: string) => ({
         device_id: deviceId || "",
-        trigger: "device",
+        platform: "device",
         domain: "",
         entity_id: "",
       })

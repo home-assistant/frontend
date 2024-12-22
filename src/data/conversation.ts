@@ -1,9 +1,5 @@
 import { ensureArray } from "../common/array/ensure-array";
-import type { HomeAssistant } from "../types";
-
-export const enum ConversationEntityFeature {
-  CONTROL = 1,
-}
+import { HomeAssistant } from "../types";
 
 interface IntentTarget {
   type: "area" | "device" | "entity" | "domain" | "device_class" | "custom";

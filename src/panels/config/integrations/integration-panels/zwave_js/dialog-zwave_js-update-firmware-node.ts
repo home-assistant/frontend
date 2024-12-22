@@ -1,25 +1,19 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-linear-progress/mwc-linear-progress";
 import { mdiCheckCircle, mdiCloseCircle, mdiFileUpload } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-file-upload";
 import "../../../../../components/ha-form/ha-form";
-import type { HaFormSchema } from "../../../../../components/ha-form/types";
+import { HaFormSchema } from "../../../../../components/ha-form/types";
 import "../../../../../components/ha-svg-icon";
-import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
-import { computeDeviceName } from "../../../../../data/device_registry";
-import type {
-  ZWaveJSControllerFirmwareUpdateFinishedMessage,
-  ZWaveJSFirmwareUpdateProgressMessage,
-  ZWaveJSNodeFirmwareUpdateFinishedMessage,
-  ZWaveJSNodeStatus,
-  ZWaveJSNodeStatusUpdatedMessage,
-} from "../../../../../data/zwave_js";
+import {
+  computeDeviceName,
+  DeviceRegistryEntry,
+} from "../../../../../data/device_registry";
 import {
   abortZwaveNodeFirmwareUpdate,
   ControllerFirmwareUpdateStatus,
@@ -30,14 +24,19 @@ import {
   subscribeZwaveNodeFirmwareUpdate,
   subscribeZwaveNodeStatus,
   uploadFirmwareAndBeginUpdate,
+  ZWaveJSControllerFirmwareUpdateFinishedMessage,
+  ZWaveJSFirmwareUpdateProgressMessage,
+  ZWaveJSNodeFirmwareUpdateFinishedMessage,
+  ZWaveJSNodeStatus,
+  ZWaveJSNodeStatusUpdatedMessage,
 } from "../../../../../data/zwave_js";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
-import type { ZWaveJSUpdateFirmwareNodeDialogParams } from "./show-dialog-zwave_js-update-firmware-node";
+import { HomeAssistant } from "../../../../../types";
+import { ZWaveJSUpdateFirmwareNodeDialogParams } from "./show-dialog-zwave_js-update-firmware-node";
 
 const firmwareTargetSchema: HaFormSchema[] = [
   {

@@ -1,15 +1,13 @@
 import "@material/mwc-list/mwc-list-item";
-import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../../../../../common/string/compare";
 import "../../../../../components/ha-select";
-import type { TagTrigger } from "../../../../../data/automation";
-import type { Tag } from "../../../../../data/tag";
-import { fetchTags } from "../../../../../data/tag";
-import type { HomeAssistant } from "../../../../../types";
-import type { TriggerElement } from "../ha-automation-trigger-row";
+import { TagTrigger } from "../../../../../data/automation";
+import { fetchTags, Tag } from "../../../../../data/tag";
+import { HomeAssistant } from "../../../../../types";
+import { TriggerElement } from "../ha-automation-trigger-row";
 
 @customElement("ha-automation-trigger-tag")
 export class HaTagTrigger extends LitElement implements TriggerElement {
@@ -21,8 +19,8 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
 
   @state() private _tags?: Tag[];
 
-  public static get defaultConfig(): TagTrigger {
-    return { trigger: "tag", tag_id: "" };
+  public static get defaultConfig() {
+    return { tag_id: "" };
   }
 
   protected firstUpdated(changedProperties: PropertyValues) {

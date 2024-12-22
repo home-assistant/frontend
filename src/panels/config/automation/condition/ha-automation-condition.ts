@@ -1,13 +1,19 @@
 import { mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { listenMediaQuery } from "../../../../common/dom/media_query";
-import { nextRender } from "../../../../common/util/render-status";
+import { nestedArrayMove } from "../../../../common/util/array-move";
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-sortable";
@@ -16,7 +22,7 @@ import type {
   AutomationClipboard,
   Condition,
 } from "../../../../data/automation";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ItemPath } from "../../../../types";
 import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
@@ -31,6 +37,8 @@ export default class HaAutomationCondition extends LitElement {
   @property({ attribute: false }) public conditions!: Condition[];
 
   @property({ type: Boolean }) public disabled = false;
+
+  @property({ type: Array }) public path?: ItemPath;
 
   @state() private _showReorder: boolean = false;
 
@@ -98,13 +106,8 @@ export default class HaAutomationCondition extends LitElement {
     }
   }
 
-  public expandAll() {
-    const rows = this.shadowRoot!.querySelectorAll<HaAutomationConditionRow>(
-      "ha-automation-condition-row"
-    )!;
-    rows.forEach((row) => {
-      row.expand();
-    });
+  private get nested() {
+    return this.path !== undefined;
   }
 
   protected render() {
@@ -116,11 +119,10 @@ export default class HaAutomationCondition extends LitElement {
         handle-selector=".handle"
         draggable-selector="ha-automation-condition-row"
         .disabled=${!this._showReorder || this.disabled}
-        group="conditions"
-        invert-swap
         @item-moved=${this._conditionMoved}
-        @item-added=${this._conditionAdded}
-        @item-removed=${this._conditionRemoved}
+        group="conditions"
+        .path=${this.path}
+        invert-swap
       >
         <div class="conditions">
           ${repeat(
@@ -128,7 +130,7 @@ export default class HaAutomationCondition extends LitElement {
             (condition) => this._getKey(condition),
             (cond, idx) => html`
               <ha-automation-condition-row
-                .sortableData=${cond}
+                .path=${[...(this.path ?? []), idx]}
                 .index=${idx}
                 .first=${idx === 0}
                 .last=${idx === this.conditions.length - 1}
@@ -205,9 +207,10 @@ export default class HaAutomationCondition extends LitElement {
       const elClass = customElements.get(
         `ha-automation-condition-${condition}`
       ) as CustomElementConstructor & {
-        defaultConfig: Condition;
+        defaultConfig: Omit<Condition, "condition">;
       };
       conditions = this.conditions.concat({
+        condition: condition as any,
         ...elClass.defaultConfig,
       });
     }
@@ -237,44 +240,28 @@ export default class HaAutomationCondition extends LitElement {
     this._move(index, newIndex);
   }
 
-  private _move(oldIndex: number, newIndex: number) {
-    const conditions = this.conditions.concat();
-    const item = conditions.splice(oldIndex, 1)[0];
-    conditions.splice(newIndex, 0, item);
-    this.conditions = conditions;
+  private _move(
+    oldIndex: number,
+    newIndex: number,
+    oldPath?: ItemPath,
+    newPath?: ItemPath
+  ) {
+    const conditions = nestedArrayMove(
+      this.conditions,
+      oldIndex,
+      newIndex,
+      oldPath,
+      newPath
+    );
+
     fireEvent(this, "value-changed", { value: conditions });
   }
 
   private _conditionMoved(ev: CustomEvent): void {
+    if (this.nested) return;
     ev.stopPropagation();
-    const { oldIndex, newIndex } = ev.detail;
-    this._move(oldIndex, newIndex);
-  }
-
-  private async _conditionAdded(ev: CustomEvent): Promise<void> {
-    ev.stopPropagation();
-    const { index, data } = ev.detail;
-    const conditions = [
-      ...this.conditions.slice(0, index),
-      data,
-      ...this.conditions.slice(index),
-    ];
-    // Add condition locally to avoid UI jump
-    this.conditions = conditions;
-    await nextRender();
-    fireEvent(this, "value-changed", { value: this.conditions });
-  }
-
-  private async _conditionRemoved(ev: CustomEvent): Promise<void> {
-    ev.stopPropagation();
-    const { index } = ev.detail;
-    const condition = this.conditions[index];
-    // Remove condition locally to avoid UI jump
-    this.conditions = this.conditions.filter((c) => c !== condition);
-    await nextRender();
-    // Ensure condition is removed even after update
-    const conditions = this.conditions.filter((c) => c !== condition);
-    fireEvent(this, "value-changed", { value: conditions });
+    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
+    this._move(oldIndex, newIndex, oldPath, newPath);
   }
 
   private _conditionChanged(ev: CustomEvent) {

@@ -9,8 +9,7 @@ import {
 import "@polymer/paper-tabs";
 import "@polymer/paper-tabs/paper-tab";
 import deepClone from "deep-clone-simple";
-import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import {
   any,
@@ -21,27 +20,22 @@ import {
   optional,
   string,
 } from "superstruct";
-import type {
-  HaFormSchema,
-  SchemaUnion,
-} from "../../../../components/ha-form/types";
 import { storage } from "../../../../common/decorators/storage";
-import type { HASSDomEvent } from "../../../../common/dom/fire_event";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-button-arrow-prev";
 import "../../../../components/ha-icon-button-arrow-next";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
-import type { HomeAssistant } from "../../../../types";
-import type { StackCardConfig } from "../../cards/types";
-import type { LovelaceCardEditor } from "../../types";
+import { HomeAssistant } from "../../../../types";
+import { StackCardConfig } from "../../cards/types";
+import { LovelaceCardEditor } from "../../types";
 import "../card-editor/hui-card-element-editor";
 import type { HuiCardElementEditor } from "../card-editor/hui-card-element-editor";
 import "../card-editor/hui-card-picker";
 import type { ConfigChangedEvent } from "../hui-element-editor";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import type { GUIModeChangedEvent } from "../types";
+import { GUIModeChangedEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = assign(
@@ -51,13 +45,6 @@ const cardConfigStruct = assign(
     title: optional(string()),
   })
 );
-
-const SCHEMA = [
-  {
-    name: "title",
-    selector: { text: {} },
-  },
-] as const;
 
 @customElement("hui-stack-card-editor")
 export class HuiStackCardEditor
@@ -69,7 +56,7 @@ export class HuiStackCardEditor
   @property({ attribute: false }) public lovelace?: LovelaceConfig;
 
   @storage({
-    key: "dashboardCardClipboard",
+    key: "lovelaceClipboard",
     state: false,
     subscribe: false,
     storage: "sessionStorage",
@@ -84,8 +71,6 @@ export class HuiStackCardEditor
 
   @state() protected _guiModeAvailable? = true;
 
-  protected _schema: readonly HaFormSchema[] = SCHEMA;
-
   @query("hui-card-element-editor")
   protected _cardEditorEl?: HuiCardElementEditor;
 
@@ -98,10 +83,6 @@ export class HuiStackCardEditor
     this._cardEditorEl?.focusYamlEditor();
   }
 
-  protected formData(): object {
-    return this._config!;
-  }
-
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
@@ -112,13 +93,6 @@ export class HuiStackCardEditor
     const isGuiMode = !this._cardEditorEl || this._GUImode;
 
     return html`
-      <ha-form
-        .hass=${this.hass}
-        .data=${this.formData()}
-        .schema=${this._schema}
-        .computeLabel=${this._computeLabelCallback}
-        @value-changed=${this._valueChanged}
-      ></ha-form>
       <div class="card-config">
         <div class="toolbar">
           <paper-tabs
@@ -310,15 +284,6 @@ export class HuiStackCardEditor
       this._cardEditorEl!.GUImode = value;
     }
   }
-
-  protected _valueChanged(ev: CustomEvent): void {
-    fireEvent(this, "config-changed", { config: ev.detail.value });
-  }
-
-  protected _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) =>
-    this.hass!.localize(
-      `ui.panel.lovelace.editor.card.${this._config!.type}.${schema.name}`
-    );
 
   static get styles(): CSSResultGroup {
     return [

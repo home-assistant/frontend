@@ -1,6 +1,6 @@
-import type { LogbookEntry } from "../../../../src/data/logbook";
-import type { AutomationTraceExtended } from "../../../../src/data/trace";
-import type { DemoTrace } from "./types";
+import { LogbookEntry } from "../../../../src/data/logbook";
+import { AutomationTraceExtended } from "../../../../src/data/trace";
+import { DemoTrace } from "./types";
 
 export const mockDemoTrace = (
   tracePartial: Partial<AutomationTraceExtended>,
@@ -31,8 +31,8 @@ export const mockDemoTrace = (
       ],
     },
     config: {
-      triggers: [],
-      actions: [],
+      trigger: [],
+      action: [],
     },
     context: {
       id: "abcd",

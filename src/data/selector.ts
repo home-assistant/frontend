@@ -1,23 +1,20 @@
-import type {
-  HassEntity,
-  HassServiceTarget,
-} from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
-import type { CropOptions } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
-import { isHelperDomain } from "../panels/config/helpers/const";
-import type { UiAction } from "../panels/lovelace/components/hui-action-editor";
-import type { HomeAssistant } from "../types";
+import { UiAction } from "../panels/lovelace/components/hui-action-editor";
+import { HomeAssistant, ItemPath } from "../types";
 import {
-  type DeviceRegistryEntry,
+  DeviceRegistryEntry,
   getDeviceIntegrationLookup,
 } from "./device_registry";
-import type {
+import {
   EntityRegistryDisplayEntry,
   EntityRegistryEntry,
 } from "./entity_registry";
-import type { EntitySources } from "./entity_sources";
+import { EntitySources } from "./entity_sources";
+import { isHelperDomain } from "../panels/config/helpers/const";
+import type { CropOptions } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 
 export type Selector =
   | ActionSelector
@@ -26,7 +23,6 @@ export type Selector =
   | AreaFilterSelector
   | AttributeSelector
   | BooleanSelector
-  | ButtonToggleSelector
   | ColorRGBSelector
   | ColorTempSelector
   | ConditionSelector
@@ -68,13 +64,12 @@ export type Selector =
   | TTSSelector
   | TTSVoiceSelector
   | UiActionSelector
-  | UiColorSelector
-  | UiStateContentSelector
-  | BackupLocationSelector;
+  | UiColorSelector;
 
 export interface ActionSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  action: {} | null;
+  action: {
+    path?: ItemPath;
+  } | null;
 }
 
 export interface AddonSelector {
@@ -109,14 +104,6 @@ export interface BooleanSelector {
   boolean: {} | null;
 }
 
-export interface ButtonToggleSelector {
-  button_toggle: {
-    options: readonly string[] | readonly SelectOption[];
-    translation_key?: string;
-    sort?: boolean;
-  } | null;
-}
-
 export interface ColorRGBSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
   color_rgb: {} | null;
@@ -133,8 +120,9 @@ export interface ColorTempSelector {
 }
 
 export interface ConditionSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  condition: {} | null;
+  condition: {
+    path?: ItemPath;
+  } | null;
 }
 
 export interface ConversationAgentSelector {
@@ -214,7 +202,6 @@ export interface LegacyDeviceSelector {
 export interface DurationSelector {
   duration: {
     enable_day?: boolean;
-    enable_millisecond?: boolean;
   } | null;
 }
 
@@ -272,6 +259,7 @@ export interface IconSelector {
 }
 
 export interface ImageSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
   image: { original?: boolean; crop?: CropOptions } | null;
 }
 
@@ -333,7 +321,6 @@ export interface NumberSelector {
     step?: number | "any";
     mode?: "box" | "slider";
     unit_of_measurement?: string;
-    slider_ticks?: boolean;
   } | null;
 }
 
@@ -343,6 +330,7 @@ export interface ObjectSelector {
 }
 
 export interface AssistPipelineSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
   assist_pipeline: {
     include_last_used?: boolean;
   } | null;
@@ -437,12 +425,14 @@ export interface ThemeSelector {
   theme: { include_default?: boolean } | null;
 }
 export interface TimeSelector {
-  time: { no_second?: boolean } | null;
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  time: {} | null;
 }
 
 export interface TriggerSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  trigger: {} | null;
+  trigger: {
+    path?: ItemPath;
+  } | null;
 }
 
 export interface TTSSelector {
@@ -461,18 +451,8 @@ export interface UiActionSelector {
 }
 
 export interface UiColorSelector {
-  ui_color: {
-    default_color?: string;
-    include_none?: boolean;
-    include_state?: boolean;
-  } | null;
-}
-
-export interface UiStateContentSelector {
-  ui_state_content: {
-    entity_id?: string;
-    allow_name?: boolean;
-  } | null;
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  ui_color: { default_color?: boolean } | null;
 }
 
 export const expandLabelTarget = (
@@ -716,7 +696,7 @@ export const entityMeetsTargetSelector = (
 export const filterSelectorDevices = (
   filterDevice: DeviceSelectorFilter,
   device: DeviceRegistryEntry,
-  deviceIntegrationLookup?: Record<string, Set<string>> | undefined
+  deviceIntegrationLookup?: Record<string, string[]> | undefined
 ): boolean => {
   const {
     manufacturer: filterManufacturer,
@@ -733,7 +713,7 @@ export const filterSelectorDevices = (
   }
 
   if (filterIntegration && deviceIntegrationLookup) {
-    if (!deviceIntegrationLookup?.[device.id]?.has(filterIntegration)) {
+    if (!deviceIntegrationLookup?.[device.id]?.includes(filterIntegration)) {
       return false;
     }
   }
@@ -879,66 +859,4 @@ export const computeCreateDomains = (
   );
 
   return [...new Set(createDomains)];
-};
-
-export const resolveEntityIDs = (
-  hass: HomeAssistant,
-  targetPickerValue: HassServiceTarget,
-  entities: HomeAssistant["entities"],
-  devices: HomeAssistant["devices"],
-  areas: HomeAssistant["areas"]
-): string[] => {
-  if (!targetPickerValue) {
-    return [];
-  }
-
-  const targetSelector = { target: {} };
-  const targetEntities = new Set(ensureArray(targetPickerValue.entity_id));
-  const targetDevices = new Set(ensureArray(targetPickerValue.device_id));
-  const targetAreas = new Set(ensureArray(targetPickerValue.area_id));
-  const targetFloors = new Set(ensureArray(targetPickerValue.floor_id));
-  const targetLabels = new Set(ensureArray(targetPickerValue.label_id));
-
-  targetLabels.forEach((labelId) => {
-    const expanded = expandLabelTarget(
-      hass,
-      labelId,
-      areas,
-      devices,
-      entities,
-      targetSelector
-    );
-    expanded.devices.forEach((id) => targetDevices.add(id));
-    expanded.entities.forEach((id) => targetEntities.add(id));
-    expanded.areas.forEach((id) => targetAreas.add(id));
-  });
-
-  targetFloors.forEach((floorId) => {
-    const expanded = expandFloorTarget(hass, floorId, areas, targetSelector);
-    expanded.areas.forEach((id) => targetAreas.add(id));
-  });
-
-  targetAreas.forEach((areaId) => {
-    const expanded = expandAreaTarget(
-      hass,
-      areaId,
-      devices,
-      entities,
-      targetSelector
-    );
-    expanded.devices.forEach((id) => targetDevices.add(id));
-    expanded.entities.forEach((id) => targetEntities.add(id));
-  });
-
-  targetDevices.forEach((deviceId) => {
-    const expanded = expandDeviceTarget(
-      hass,
-      deviceId,
-      entities,
-      targetSelector
-    );
-    expanded.entities.forEach((id) => targetEntities.add(id));
-  });
-
-  return Array.from(targetEntities);
 };

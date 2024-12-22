@@ -1,5 +1,4 @@
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import {
@@ -68,7 +67,7 @@ export class HuiHistoryGraphCardEditor
             {
               name: "hours_to_show",
               default: DEFAULT_HOURS_TO_SHOW,
-              selector: { number: { min: 0, step: "any", mode: "box" } },
+              selector: { number: { min: 1, mode: "box" } },
             },
           ],
         },

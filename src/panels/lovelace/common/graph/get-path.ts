@@ -4,9 +4,9 @@ const midPoint = (
   _Bx: number,
   _By: number
 ): number[] => {
-  const zX = (_Ax - _Bx) / 2 + _Bx;
-  const zY = (_Ay - _By) / 2 + _By;
-  return [zX, zY];
+  const _Zx = (_Ax - _Bx) / 2 + _Bx;
+  const _Zy = (_Ay - _By) / 2 + _By;
+  return [_Zx, _Zy];
 };
 
 export const getPath = (coords: number[][]): string => {

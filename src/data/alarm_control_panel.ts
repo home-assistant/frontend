@@ -6,13 +6,13 @@ import {
   mdiShield,
   mdiShieldOff,
 } from "@mdi/js";
-import type {
+import {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
 import { supportsFeature } from "../common/entity/supports-feature";
 import { showEnterCodeDialog } from "../dialogs/enter-code/show-enter-code-dialog";
-import type { HomeAssistant } from "../types";
+import { HomeAssistant } from "../types";
 import { getExtendedEntityRegistryEntry } from "./entity_registry";
 
 export const FORMAT_TEXT = "text";

@@ -1,8 +1,7 @@
 import "@material/mwc-button";
 import deepFreeze from "deep-freeze";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { PropertyValues, TemplateResult } from "lit";
-import { html, LitElement } from "lit";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
@@ -11,30 +10,30 @@ import {
 } from "../../common/url/search-params";
 import { domainToName } from "../../data/integration";
 import { subscribeLovelaceUpdates } from "../../data/lovelace";
-import type {
-  LovelaceConfig,
-  LovelaceDashboardStrategyConfig,
-  LovelaceRawConfig,
-} from "../../data/lovelace/config/types";
 import {
   deleteConfig,
   fetchConfig,
   isStrategyDashboard,
+  LovelaceConfig,
+  LovelaceDashboardStrategyConfig,
+  LovelaceRawConfig,
   saveConfig,
 } from "../../data/lovelace/config/types";
+import {
+  isStrategyView,
+  LovelaceViewConfig,
+} from "../../data/lovelace/config/view";
 import { fetchResources } from "../../data/lovelace/resource";
-import type { WindowWithPreloads } from "../../data/preloads";
+import { WindowWithPreloads } from "../../data/preloads";
 import "../../layouts/hass-error-screen";
 import "../../layouts/hass-loading-screen";
-import type { ShowToastParams } from "../../managers/notification-manager";
-import type { HomeAssistant, PanelInfo, Route } from "../../types";
+import { HomeAssistant, PanelInfo, Route } from "../../types";
 import { showToast } from "../../util/toast";
-import { checkLovelaceConfig } from "./common/check-lovelace-config";
 import { loadLovelaceResources } from "./common/load-resources";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import "./hui-root";
 import { generateLovelaceDashboardStrategy } from "./strategies/get-strategy";
-import type { Lovelace } from "./types";
+import { Lovelace } from "./types";
 
 (window as any).loadCardHelpers = () => import("./custom-card-helpers");
 
@@ -322,8 +321,26 @@ export class LovelacePanel extends LitElement {
   }
 
   private _checkLovelaceConfig(config: LovelaceRawConfig) {
-    const checkedConfig = checkLovelaceConfig(config);
-    return deepFreeze(checkedConfig);
+    // Somehow there can be badges with value null, we remove those
+    if (isStrategyDashboard(config)) {
+      return config;
+    }
+    let checkedConfig = !Object.isFrozen(config) ? config : undefined;
+    config.views.forEach((view, index) => {
+      if (isStrategyView(view)) {
+        return;
+      }
+      if (view.badges && !view.badges.every(Boolean)) {
+        checkedConfig = checkedConfig || {
+          ...config,
+          views: [...config.views],
+        };
+        const updatedView = { ...view } as LovelaceViewConfig;
+        updatedView.badges = view.badges.filter(Boolean);
+        checkedConfig.views[index] = updatedView;
+      }
+    });
+    return checkedConfig ? deepFreeze(checkedConfig) : config;
   }
 
   private _setLovelaceConfig(
@@ -438,7 +455,6 @@ export class LovelacePanel extends LitElement {
           throw err;
         }
       },
-      showToast: (params: ShowToastParams) => showToast(this, params),
     };
   }
 

@@ -1,4 +1,4 @@
-import type { HomeAssistant } from "../types";
+import { HomeAssistant } from "../types";
 
 export interface RelatedResult {
   area?: string[];
@@ -8,7 +8,6 @@ export interface RelatedResult {
   device?: string[];
   entity?: string[];
   group?: string[];
-  integration?: string[];
   scene?: string[];
   script?: string[];
   script_blueprint?: string[];

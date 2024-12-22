@@ -6,45 +6,50 @@ import {
   mdiCloseCircle,
   mdiProgressClock,
 } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { groupBy } from "../../../../../common/util/group-by";
+import memoizeOne from "memoize-one";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-settings-row";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/ha-switch";
 import "../../../../../components/ha-textfield";
-import "../../../../../components/ha-selector/ha-selector-boolean";
-import "../../../../../components/buttons/ha-progress-button";
-import type { HaProgressButton } from "../../../../../components/buttons/ha-progress-button";
-import { computeDeviceName } from "../../../../../data/device_registry";
-import type {
-  ZWaveJSNodeCapabilities,
-  ZWaveJSNodeConfigParam,
-  ZWaveJSNodeConfigParams,
-  ZWaveJSSetConfigParamResult,
-  ZwaveJSNodeMetadata,
-} from "../../../../../data/zwave_js";
+import { groupBy } from "../../../../../common/util/group-by";
 import {
-  fetchZwaveNodeCapabilities,
+  computeDeviceName,
+  DeviceRegistryEntry,
+  subscribeDeviceRegistry,
+} from "../../../../../data/device_registry";
+import {
   fetchZwaveNodeConfigParameters,
   fetchZwaveNodeMetadata,
-  invokeZWaveCCApi,
   setZwaveNodeConfigParameter,
+  ZWaveJSNodeConfigParam,
+  ZWaveJSNodeConfigParams,
+  ZwaveJSNodeMetadata,
+  ZWaveJSSetConfigParamResult,
 } from "../../../../../data/zwave_js";
 import "../../../../../layouts/hass-error-screen";
 import "../../../../../layouts/hass-loading-screen";
 import "../../../../../layouts/hass-tabs-subpage";
+import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
 import { configTabs } from "./zwave_js-config-router";
-import "./zwave_js-custom-param";
-import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
-import { fireEvent } from "../../../../../common/dom/fire_event";
 
 const icons = {
   accepted: mdiCheckCircle,
@@ -52,39 +57,56 @@ const icons = {
   error: mdiCloseCircle,
 };
 
+const getDevice = memoizeOne(
+  (
+    deviceId: string,
+    entries?: DeviceRegistryEntry[]
+  ): DeviceRegistryEntry | undefined =>
+    entries?.find((device) => device.id === deviceId)
+);
+
 @customElement("zwave_js-node-config")
-class ZWaveJSNodeConfig extends LitElement {
+class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public route!: Route;
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property({ attribute: false }) public configEntryId?: string;
+  @property() public configEntryId?: string;
 
-  @property({ attribute: false }) public deviceId!: string;
+  @property() public deviceId!: string;
+
+  @state() private _deviceRegistryEntries?: DeviceRegistryEntry[];
 
   @state() private _nodeMetadata?: ZwaveJSNodeMetadata;
 
   @state() private _config?: ZWaveJSNodeConfigParams;
 
-  @state() private _canResetAll = false;
-
   @state() private _results: Record<string, ZWaveJSSetConfigParamResult> = {};
 
   @state() private _error?: string;
-
-  @state() private _resetDialogProgress = false;
 
   public connectedCallback(): void {
     super.connectedCallback();
     this.deviceId = this.route.path.substr(1);
   }
 
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeDeviceRegistry(this.hass.connection, (entries) => {
+        this._deviceRegistryEntries = entries;
+      }),
+    ];
+  }
+
   protected updated(changedProps: PropertyValues): void {
-    if (!this._config || changedProps.has("deviceId")) {
+    if (
+      (!this._config || changedProps.has("deviceId")) &&
+      changedProps.has("_deviceRegistryEntries")
+    ) {
       this._fetchData();
     }
   }
@@ -103,9 +125,7 @@ class ZWaveJSNodeConfig extends LitElement {
       return html`<hass-loading-screen></hass-loading-screen>`;
     }
 
-    const device = this.hass.devices[this.deviceId];
-
-    const deviceName = device ? computeDeviceName(device, this.hass) : "";
+    const device = this._device!;
 
     return html`
       <hass-tabs-subpage
@@ -127,7 +147,7 @@ class ZWaveJSNodeConfig extends LitElement {
             ${device
               ? html`
                   <div class="device-info">
-                    <h2>${deviceName}</h2>
+                    <h2>${computeDeviceName(device, this.hass)}</h2>
                     <p>${device.manufacturer} ${device.model}</p>
                   </div>
                 `
@@ -187,36 +207,6 @@ class ZWaveJSNodeConfig extends LitElement {
                 </ha-card>
               </div>`
           )}
-          ${this._canResetAll
-            ? html`<div class="reset">
-                <ha-progress-button
-                  .disabled=${this._resetDialogProgress}
-                  .progress=${this._resetDialogProgress}
-                  @click=${this._openResetDialog}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.zwave_js.node_config.reset_to_default.button_label"
-                  )}
-                </ha-progress-button>
-              </div>`
-            : nothing}
-          <h3>
-            ${this.hass.localize(
-              "ui.panel.config.zwave_js.node_config.custom_config"
-            )}
-          </h3>
-          <span class="secondary">
-            ${this.hass.localize(
-              "ui.panel.config.zwave_js.node_config.custom_config_description"
-            )}
-          </span>
-          <ha-card class="custom-config">
-            <zwave_js-custom-param
-              .hass=${this.hass}
-              .deviceId=${this.deviceId}
-              @new-value=${this._handleNewValue}
-            ></zwave_js-custom-param>
-          </ha-card>
         </ha-config-section>
       </hass-tabs-subpage>
     `;
@@ -227,11 +217,6 @@ class ZWaveJSNodeConfig extends LitElement {
     item: ZWaveJSNodeConfigParam
   ): TemplateResult {
     const result = this._results[id];
-
-    const isTypeBoolean =
-      item.configuration_value_type === "boolean" ||
-      this._isEnumeratedBool(item);
-
     const labelAndDescription = html`
       <span slot="prefix" class="prefix">
         ${this.hass.localize("ui.panel.config.zwave_js.node_config.parameter")}
@@ -283,36 +268,23 @@ class ZWaveJSNodeConfig extends LitElement {
       </span>
     `;
 
-    const defaultLabel =
-      item.metadata.writeable && item.metadata.default !== undefined
-        ? `${this.hass.localize("ui.panel.config.zwave_js.node_config.default")}:
-          ${
-            isTypeBoolean
-              ? this.hass.localize(
-                  item.metadata.default === 1 ? "ui.common.yes" : "ui.common.no"
-                )
-              : item.configuration_value_type === "enumerated"
-                ? item.metadata.states[item.metadata.default] ||
-                  item.metadata.default
-                : item.metadata.default
-          }`
-        : "";
-
     // Numeric entries with a min value of 0 and max of 1 are considered boolean
-    if (isTypeBoolean) {
+    if (
+      item.configuration_value_type === "boolean" ||
+      this._isEnumeratedBool(item)
+    ) {
       return html`
         ${labelAndDescription}
         <div class="switch">
-          <ha-selector-boolean
+          <ha-switch
             .property=${item.property}
             .endpoint=${item.endpoint}
             .propertyKey=${item.property_key}
-            .value=${item.value === 1}
+            .checked=${item.value === 1}
             .key=${id}
-            @value-changed=${this._switchToggled}
+            @change=${this._switchToggled}
             .disabled=${!item.metadata.writeable}
-            .helper=${defaultLabel}
-          ></ha-selector-boolean>
+          ></ha-switch>
         </div>
       `;
     }
@@ -331,8 +303,6 @@ class ZWaveJSNodeConfig extends LitElement {
           .disabled=${!item.metadata.writeable}
           @change=${this._numericInputChanged}
           .suffix=${item.metadata.unit}
-          .helper=${`${this.hass.localize("ui.panel.config.zwave_js.node_config.between_min_max", { min: item.metadata.min, max: item.metadata.max })}${defaultLabel ? `, ${defaultLabel}` : ""}`}
-          helperPersistent
         >
         </ha-textfield>`;
     }
@@ -348,7 +318,6 @@ class ZWaveJSNodeConfig extends LitElement {
           .endpoint=${item.endpoint}
           .propertyKey=${item.property_key}
           @selected=${this._dropdownSelected}
-          .helper=${defaultLabel}
         >
           ${Object.entries(item.metadata.states).map(
             ([key, entityState]) => html`
@@ -390,13 +359,9 @@ class ZWaveJSNodeConfig extends LitElement {
     return false;
   }
 
-  private _handleNewValue() {
-    this._fetchData();
-  }
-
   private _switchToggled(ev) {
-    this._setResult(ev.target.key, undefined);
-    this._updateConfigParameter(ev.target, ev.detail.value ? 1 : 0);
+    this.setResult(ev.target.key, undefined);
+    this._updateConfigParameter(ev.target, ev.target.checked ? 1 : 0);
   }
 
   private _dropdownSelected(ev) {
@@ -406,7 +371,7 @@ class ZWaveJSNodeConfig extends LitElement {
     if (this._config![ev.target.key].value?.toString() === ev.target.value) {
       return;
     }
-    this._setResult(ev.target.key, undefined);
+    this.setResult(ev.target.key, undefined);
 
     this._updateConfigParameter(ev.target, Number(ev.target.value));
   }
@@ -419,20 +384,7 @@ class ZWaveJSNodeConfig extends LitElement {
     if (Number(this._config![ev.target.key].value) === value) {
       return;
     }
-    if (
-      (ev.target.min !== undefined && value < ev.target.min) ||
-      (ev.target.max !== undefined && value > ev.target.max)
-    ) {
-      this._setError(
-        ev.target.key,
-        this.hass.localize(
-          "ui.panel.config.zwave_js.node_config.error_not_in_range",
-          { min: ev.target.min, max: ev.target.max }
-        )
-      );
-      return;
-    }
-    this._setResult(ev.target.key, undefined);
+    this.setResult(ev.target.key, undefined);
     this._updateConfigParameter(ev.target, value);
   }
 
@@ -440,7 +392,7 @@ class ZWaveJSNodeConfig extends LitElement {
     try {
       const result = await setZwaveNodeConfigParameter(
         this.hass,
-        this.deviceId,
+        this._device!.id,
         target.property,
         target.endpoint,
         value,
@@ -448,13 +400,13 @@ class ZWaveJSNodeConfig extends LitElement {
       );
       this._config![target.key].value = value;
 
-      this._setResult(target.key, result.status);
+      this.setResult(target.key, result.status);
     } catch (err: any) {
-      this._setError(target.key, err.message);
+      this.setError(target.key, err.message);
     }
   }
 
-  private _setResult(key: string, value: string | undefined) {
+  private setResult(key: string, value: string | undefined) {
     if (value === undefined) {
       delete this._results[key];
       this.requestUpdate();
@@ -463,95 +415,30 @@ class ZWaveJSNodeConfig extends LitElement {
     }
   }
 
-  private _setError(key: string, message: string) {
+  private setError(key: string, message: string) {
     const errorParam = { status: "error", error: message };
     this._results = { ...this._results, [key]: errorParam };
   }
 
+  private get _device(): DeviceRegistryEntry | undefined {
+    return getDevice(this.deviceId, this._deviceRegistryEntries);
+  }
+
   private async _fetchData() {
-    if (!this.configEntryId) {
+    if (!this.configEntryId || !this._deviceRegistryEntries) {
       return;
     }
 
-    const device = this.hass.devices[this.deviceId];
+    const device = this._device;
     if (!device) {
       this._error = "device_not_found";
       return;
     }
 
-    let capabilities: ZWaveJSNodeCapabilities | undefined;
-    [this._nodeMetadata, this._config, capabilities] = await Promise.all([
+    [this._nodeMetadata, this._config] = await Promise.all([
       fetchZwaveNodeMetadata(this.hass, device.id),
       fetchZwaveNodeConfigParameters(this.hass, device.id),
-      fetchZwaveNodeCapabilities(this.hass, device.id),
     ]);
-    this._canResetAll =
-      capabilities &&
-      Object.values(capabilities).some((endpoint) =>
-        endpoint.some(
-          (capability) => capability.id === 0x70 && capability.version >= 4
-        )
-      );
-  }
-
-  private async _openResetDialog(event: Event) {
-    const progressButton = event.currentTarget as HaProgressButton;
-
-    await showConfirmationDialog(this, {
-      destructive: true,
-      title: this.hass.localize(
-        "ui.panel.config.zwave_js.node_config.reset_to_default.dialog.title"
-      ),
-      text: this.hass.localize(
-        "ui.panel.config.zwave_js.node_config.reset_to_default.dialog.text"
-      ),
-      confirmText: this.hass.localize(
-        "ui.panel.config.zwave_js.node_config.reset_to_default.dialog.reset"
-      ),
-      confirm: () => this._resetAllConfigParameters(progressButton),
-    });
-  }
-
-  private async _resetAllConfigParameters(progressButton: HaProgressButton) {
-    this._resetDialogProgress = true;
-    fireEvent(this, "hass-notification", {
-      message: this.hass.localize(
-        "ui.panel.config.zwave_js.node_config.reset_to_default.dialog.text_loading"
-      ),
-    });
-
-    try {
-      const device = this.hass.devices[this.deviceId];
-      if (!device) {
-        throw new Error("device_not_found");
-      }
-      await invokeZWaveCCApi(
-        this.hass,
-        device.id,
-        0x70, // 0x70 is the command class for Configuration
-        undefined,
-        "resetAll",
-        [],
-        true
-      );
-
-      fireEvent(this, "hass-notification", {
-        message: this.hass.localize(
-          "ui.panel.config.zwave_js.node_config.reset_to_default.dialog.text_success"
-        ),
-      });
-
-      await this._fetchData();
-      progressButton.actionSuccess();
-    } catch (err: any) {
-      fireEvent(this, "hass-notification", {
-        message: this.hass.localize(
-          "ui.panel.config.zwave_js.node_config.reset_to_default.dialog.text_error"
-        ),
-      });
-      progressButton.actionError();
-    }
-    this._resetDialogProgress = false;
   }
 
   static get styles(): CSSResultGroup {
@@ -635,16 +522,6 @@ class ZWaveJSNodeConfig extends LitElement {
 
         .switch {
           text-align: right;
-        }
-
-        .custom-config {
-          padding: 16px;
-        }
-
-        .reset {
-          display: flex;
-          justify-content: flex-end;
-          margin-bottom: 24px;
         }
       `,
     ];

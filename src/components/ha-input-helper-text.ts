@@ -1,5 +1,4 @@
-import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement } from "lit/decorators";
 
 @customElement("ha-input-helper-text")

@@ -1,6 +1,12 @@
 import { mdiPlus } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -8,10 +14,10 @@ import { computeRTL } from "../../../common/util/compute_rtl";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
-import type { HuiCard } from "../cards/hui-card";
-import type { HuiCardOptions } from "../components/hui-card-options";
-import type { HuiWarning } from "../components/hui-warning";
-import type { Lovelace } from "../types";
+import { HuiCard } from "../cards/hui-card";
+import { HuiCardOptions } from "../components/hui-card-options";
+import { HuiWarning } from "../components/hui-warning";
+import type { Lovelace, LovelaceCard } from "../types";
 
 let editCodeLoaded = false;
 
@@ -22,11 +28,11 @@ export class PanelView extends LitElement implements LovelaceViewElement {
 
   @property({ type: Number }) public index?: number;
 
-  @property({ attribute: false }) public isStrategy = false;
+  @property({ type: Boolean }) public isStrategy = false;
 
   @property({ attribute: false }) public cards: HuiCard[] = [];
 
-  @state() private _card?: HuiCard | HuiWarning | HuiCardOptions;
+  @state() private _card?: LovelaceCard | HuiWarning | HuiCardOptions;
 
   public setConfig(_config: LovelaceViewConfig): void {}
 
@@ -98,11 +104,11 @@ export class PanelView extends LitElement implements LovelaceViewElement {
       return;
     }
 
-    const card: HuiCard = this.cards[0];
-    card.layout = "panel";
+    const card: LovelaceCard = this.cards[0];
+    card.isPanel = true;
 
     if (this.isStrategy || !this.lovelace?.editMode) {
-      card.preview = false;
+      card.editMode = false;
       this._card = card;
       return;
     }
@@ -112,7 +118,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
     wrapper.lovelace = this.lovelace;
     wrapper.path = [this.index!, 0];
     wrapper.hidePosition = true;
-    card.preview = true;
+    card.editMode = true;
     wrapper.appendChild(card);
     this._card = wrapper;
   }

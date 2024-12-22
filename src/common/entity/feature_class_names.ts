@@ -1,4 +1,4 @@
-import type { HassEntity } from "home-assistant-js-websocket";
+import { HassEntity } from "home-assistant-js-websocket";
 import { supportsFeature } from "./supports-feature";
 
 export type FeatureClassNames<T extends number = number> = Partial<

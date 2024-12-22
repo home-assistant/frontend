@@ -1,8 +1,7 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { isUnavailableState, OFF } from "../data/entity";
-import type { HumidifierEntity } from "../data/humidifier";
+import { HumidifierEntity } from "../data/humidifier";
 import type { HomeAssistant } from "../types";
 
 @customElement("ha-humidifier-state")

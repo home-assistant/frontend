@@ -1,26 +1,27 @@
 import { mdiTag } from "@mdi/js";
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
-import { html, LitElement, nothing } from "lit";
+import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
-import type { ScorableTextItem } from "../../../common/string/filter/sequence-matching";
-import { fuzzyFilterSort } from "../../../common/string/filter/sequence-matching";
+import {
+  fuzzyFilterSort,
+  ScorableTextItem,
+} from "../../../common/string/filter/sequence-matching";
 import "../../../components/ha-combo-box";
 import type { HaComboBox } from "../../../components/ha-combo-box";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
-import type { CategoryRegistryEntry } from "../../../data/category_registry";
 import {
+  CategoryRegistryEntry,
   createCategoryRegistryEntry,
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import type { HomeAssistant, ValueChangedEvent } from "../../../types";
+import { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { showCategoryRegistryDetailDialog } from "./show-dialog-category-registry-detail";
 
 type ScorableCategoryRegistryEntry = ScorableTextItem & CategoryRegistryEntry;

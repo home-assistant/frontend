@@ -1,4 +1,4 @@
-import type { HomeAssistant, ServiceCallResponse } from "../types";
+import { HomeAssistant, ServiceCallResponse } from "../types";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { isUnavailableState } from "./entity";

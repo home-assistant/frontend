@@ -9,8 +9,7 @@ import {
   mdiStop,
   mdiTargetVariant,
 } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
@@ -22,14 +21,13 @@ import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-select";
 import { UNAVAILABLE } from "../../../data/entity";
-import type { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
 import {
+  EntityRegistryDisplayEntry,
   findBatteryChargingEntity,
   findBatteryEntity,
 } from "../../../data/entity_registry";
-import type { VacuumEntity } from "../../../data/vacuum";
-import { VacuumEntityFeature } from "../../../data/vacuum";
-import type { HomeAssistant } from "../../../types";
+import { VacuumEntity, VacuumEntityFeature } from "../../../data/vacuum";
+import { HomeAssistant } from "../../../types";
 
 interface VacuumCommand {
   translationKey: string;
@@ -153,7 +151,7 @@ class MoreInfoVacuum extends LitElement {
                       <ha-icon-button
                         .path=${item.icon}
                         .entry=${item}
-                        @click=${this._callService}
+                        @click=${this.callService}
                         .label=${this.hass!.localize(
                           `ui.dialogs.more_info_control.vacuum.${item.translationKey}`
                         )}
@@ -176,7 +174,7 @@ class MoreInfoVacuum extends LitElement {
                   )}
                   .disabled=${stateObj.state === UNAVAILABLE}
                   .value=${stateObj.attributes.fan_speed}
-                  @selected=${this._handleFanSpeedChanged}
+                  @selected=${this.handleFanSpeedChanged}
                   fixedMenuPosition
                   naturalMenuWidth
                   @closed=${stopPropagation}
@@ -295,14 +293,14 @@ class MoreInfoVacuum extends LitElement {
     return nothing;
   }
 
-  private _callService(ev: CustomEvent) {
+  private callService(ev: CustomEvent) {
     const entry = (ev.target! as any).entry as VacuumCommand;
     this.hass.callService("vacuum", entry.serviceName, {
       entity_id: this.stateObj!.entity_id,
     });
   }
 
-  private _handleFanSpeedChanged(ev) {
+  private handleFanSpeedChanged(ev) {
     const oldVal = this.stateObj!.attributes.fan_speed;
     const newVal = ev.target.value;
 

@@ -1,14 +1,8 @@
 import { fireEvent } from "../../common/dom/fire_event";
 
-export const enum QuickBarMode {
-  Command = "command",
-  Device = "device",
-  Entity = "entity",
-}
-
 export interface QuickBarParams {
   entityFilter?: string;
-  mode?: QuickBarMode;
+  commandMode?: boolean;
   hint?: string;
 }
 

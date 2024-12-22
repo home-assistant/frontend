@@ -1,25 +1,26 @@
 import deepFreeze from "deep-freeze";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-yaml-editor";
 
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
-import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
-import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
+import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
+import { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import { isStrategyView } from "../../../../data/lovelace/config/view";
 import { haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import "../../sections/hui-section";
 import { addCards, addSection } from "../config-util";
-import type { LovelaceContainerPath } from "../lovelace-path";
-import { parseLovelaceContainerPath } from "../lovelace-path";
-import "../../cards/hui-card";
+import {
+  LovelaceContainerPath,
+  parseLovelaceContainerPath,
+} from "../lovelace-path";
+import "./hui-card-preview";
 import { showCreateCardDialog } from "./show-create-card-dialog";
-import type { SuggestCardDialogParams } from "./show-suggest-card-dialog";
+import { SuggestCardDialogParams } from "./show-suggest-card-dialog";
 
 @customElement("hui-dialog-suggest-card")
 export class HuiDialogSuggestCard extends LitElement {
@@ -74,7 +75,6 @@ export class HuiDialogSuggestCard extends LitElement {
           <hui-section
             .hass=${this.hass}
             .config=${this._sectionConfig}
-            preview
           ></hui-section>
         </div>
       `;
@@ -84,11 +84,10 @@ export class HuiDialogSuggestCard extends LitElement {
         <div class="element-preview">
           ${this._cardConfig.map(
             (cardConfig) => html`
-              <hui-card
+              <hui-card-preview
                 .hass=${this.hass}
                 .config=${cardConfig}
-                preview
-              ></hui-card>
+              ></hui-card-preview>
             `
           )}
         </div>
@@ -192,7 +191,7 @@ export class HuiDialogSuggestCard extends LitElement {
         .element-preview {
           position: relative;
         }
-        hui-card,
+        hui-card-preview,
         hui-section {
           padding-top: 8px;
           margin: 4px auto;

@@ -1,7 +1,6 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-alert";
@@ -10,10 +9,10 @@ import "../../../src/components/ha-card";
 import "../../../src/components/ha-select";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import { fetchHassioLogs } from "../../../src/data/hassio/supervisor";
-import type { Supervisor } from "../../../src/data/supervisor/supervisor";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import "../../../src/layouts/hass-loading-screen";
 import { haStyle } from "../../../src/resources/styles";
-import type { HomeAssistant } from "../../../src/types";
+import { HomeAssistant } from "../../../src/types";
 import { hassioStyle } from "../resources/hassio-style";
 
 interface LogProvider {
@@ -121,12 +120,10 @@ class HassioSupervisorLog extends LitElement {
     this._error = undefined;
 
     try {
-      const response = await fetchHassioLogs(
+      this._content = await fetchHassioLogs(
         this.hass,
         this._selectedLogProvider
       );
-
-      this._content = await response.text();
     } catch (err: any) {
       this._error = this.supervisor.localize("system.log.get_logs", {
         provider: this._selectedLogProvider,

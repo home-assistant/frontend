@@ -1,11 +1,10 @@
-import type { CSSResultGroup } from "lit";
-import { html, LitElement } from "lit";
+import { CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-textfield";
-import type { Action, ParallelAction } from "../../../../../data/script";
+import { Action, ParallelAction } from "../../../../../data/script";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant, ItemPath } from "../../../../../types";
 import "../ha-automation-action";
 import type { ActionElement } from "../ha-automation-action-row";
 
@@ -15,9 +14,11 @@ export class HaParallelAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ attribute: false }) public path?: ItemPath;
+
   @property({ attribute: false }) public action!: ParallelAction;
 
-  public static get defaultConfig(): ParallelAction {
+  public static get defaultConfig() {
     return {
       parallel: [],
     };
@@ -28,6 +29,7 @@ export class HaParallelAction extends LitElement implements ActionElement {
 
     return html`
       <ha-automation-action
+        .path=${[...(this.path ?? []), "parallel"]}
         .actions=${action.parallel}
         .disabled=${this.disabled}
         @value-changed=${this._actionsChanged}

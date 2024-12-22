@@ -1,5 +1,4 @@
-import type { PropertyValues } from "lit";
-import { html } from "lit";
+import { html, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import { atLeastVersion } from "../../src/common/config/version";
 import { applyThemesOnElement } from "../../src/common/dom/apply_themes_on_element";
@@ -7,10 +6,10 @@ import { fireEvent } from "../../src/common/dom/fire_event";
 import { mainWindow } from "../../src/common/dom/get_main_window";
 import { isNavigationClick } from "../../src/common/dom/is-navigation-click";
 import { navigate } from "../../src/common/navigate";
-import type { HassioPanelInfo } from "../../src/data/hassio/supervisor";
-import type { Supervisor } from "../../src/data/supervisor/supervisor";
+import { HassioPanelInfo } from "../../src/data/hassio/supervisor";
+import { Supervisor } from "../../src/data/supervisor/supervisor";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
-import type { HomeAssistant } from "../../src/types";
+import { HomeAssistant } from "../../src/types";
 import "./hassio-router";
 import { SupervisorBaseElement } from "./supervisor-base-element";
 

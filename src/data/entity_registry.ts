@@ -1,14 +1,14 @@
-import type { Connection } from "home-assistant-js-websocket";
-import { createCollection } from "home-assistant-js-websocket";
-import type { Store } from "home-assistant-js-websocket/dist/store";
+import { Connection, createCollection } from "home-assistant-js-websocket";
+import { Store } from "home-assistant-js-websocket/dist/store";
 import memoizeOne from "memoize-one";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { debounce } from "../common/util/debounce";
-import type { HomeAssistant } from "../types";
-import type { LightColor } from "./light";
+import { HomeAssistant } from "../types";
+import { LightColor } from "./light";
 import { computeDomain } from "../common/entity/compute_domain";
-import type { RegistryEntry } from "./registry";
+
+export { subscribeEntityRegistryDisplay } from "./ws-entity_registry_display";
 
 type EntityCategory = "config" | "diagnostic";
 
@@ -43,7 +43,7 @@ export interface EntityRegistryDisplayEntryResponse {
   entity_categories: Record<number, EntityCategory>;
 }
 
-export interface EntityRegistryEntry extends RegistryEntry {
+export interface EntityRegistryEntry {
   id: string;
   entity_id: string;
   name: string | null;

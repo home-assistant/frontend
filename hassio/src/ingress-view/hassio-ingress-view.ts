@@ -1,15 +1,21 @@
 import { mdiMenu } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import { navigate } from "../../../src/common/navigate";
 import { extractSearchParam } from "../../../src/common/url/search-params";
 import { nextRender } from "../../../src/common/util/render-status";
 import "../../../src/components/ha-icon-button";
-import type { HassioAddonDetails } from "../../../src/data/hassio/addon";
 import {
   fetchHassioAddonInfo,
+  HassioAddonDetails,
   startHassioAddon,
 } from "../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
@@ -17,14 +23,14 @@ import {
   createHassioSession,
   validateHassioSession,
 } from "../../../src/data/hassio/ingress";
-import type { Supervisor } from "../../../src/data/supervisor/supervisor";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../src/dialogs/generic/show-dialog-box";
 import "../../../src/layouts/hass-loading-screen";
 import "../../../src/layouts/hass-subpage";
-import type { HomeAssistant, Route } from "../../../src/types";
+import { HomeAssistant, Route } from "../../../src/types";
 
 @customElement("hassio-ingress-view")
 class HassioIngressView extends LitElement {
@@ -34,7 +40,7 @@ class HassioIngressView extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ attribute: false }) public ingressPanel = false;
+  @property({ type: Boolean }) public ingressPanel = false;
 
   @property({ type: Boolean }) public narrow = false;
 

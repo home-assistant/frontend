@@ -1,7 +1,7 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
-import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
-import type { IframeCardConfig } from "../../cards/types";
+import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import { IframeCardConfig } from "../../cards/types";
 
 export type IframeViewStrategyConfig = {
   type: "iframe";

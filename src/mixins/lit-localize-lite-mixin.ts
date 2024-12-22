@@ -1,8 +1,7 @@
-import type { LitElement, PropertyValues } from "lit";
+import { LitElement, PropertyValues } from "lit";
 import { property, state } from "lit/decorators";
-import type { LocalizeFunc } from "../common/translations/localize";
-import { computeLocalize } from "../common/translations/localize";
-import type { Constructor, Resources } from "../types";
+import { computeLocalize, LocalizeFunc } from "../common/translations/localize";
+import { Constructor, Resources } from "../types";
 import { getLocalLanguage, getTranslation } from "../util/common-translation";
 import { translationMetadata } from "../resources/translations-metadata";
 import { computeDirectionStyles } from "../common/util/compute_rtl";

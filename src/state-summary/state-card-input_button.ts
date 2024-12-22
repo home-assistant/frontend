@@ -1,13 +1,12 @@
 import "@material/mwc-button";
-import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
-import { html, LitElement } from "lit";
+import { HassEntity } from "home-assistant-js-websocket";
+import { CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/entity/ha-entity-toggle";
 import "../components/entity/state-info";
 import { UNAVAILABLE } from "../data/entity";
 import { haStyle } from "../resources/styles";
-import type { HomeAssistant } from "../types";
+import { HomeAssistant } from "../types";
 
 @customElement("state-card-input_button")
 class StateCardInputButton extends LitElement {
@@ -15,7 +14,7 @@ class StateCardInputButton extends LitElement {
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
-  @property({ attribute: "in-dialog", type: Boolean }) public inDialog = false;
+  @property({ type: Boolean }) public inDialog = false;
 
   protected render() {
     const stateObj = this.stateObj;

@@ -1,6 +1,5 @@
 import "@material/mwc-list/mwc-list-item";
-import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -8,14 +7,16 @@ import "../../../components/ha-select";
 import type { HaSelect } from "../../../components/ha-select";
 import { UNAVAILABLE } from "../../../data/entity";
 import { forwardHaptic } from "../../../data/haptics";
-import type { InputSelectEntity } from "../../../data/input_select";
-import { setInputSelectOption } from "../../../data/input_select";
-import type { HomeAssistant } from "../../../types";
-import type { EntitiesCardEntityConfig } from "../cards/types";
+import {
+  InputSelectEntity,
+  setInputSelectOption,
+} from "../../../data/input_select";
+import { HomeAssistant } from "../../../types";
+import { EntitiesCardEntityConfig } from "../cards/types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { LovelaceRow } from "./types";
+import { LovelaceRow } from "./types";
 
 @customElement("hui-input-select-entity-row")
 class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
@@ -80,7 +81,7 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
       <hui-generic-entity-row
         .hass=${this.hass}
         .config=${this._config}
-        hide-name
+        hideName
       >
         <ha-select
           .label=${this._config.name || computeStateName(stateObj)}

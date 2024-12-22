@@ -5,12 +5,10 @@ import {
   mdiHospitalBox,
   mdiInformation,
   mdiUpload,
-  mdiWrench,
 } from "@mdi/js";
 import { getConfigEntries } from "../../../../../../data/config_entries";
-import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import {
-  fetchZwaveIntegrationSettings,
   fetchZwaveIsAnyOTAFirmwareUpdateInProgress,
   fetchZwaveIsNodeFirmwareUpdateInProgress,
   fetchZwaveNodeStatus,
@@ -102,18 +100,6 @@ export const getZwaveDeviceActions = async (
           }),
       }
     );
-  }
-
-  const integrationSettings = await fetchZwaveIntegrationSettings(hass);
-
-  if (integrationSettings.installer_mode) {
-    actions.push({
-      label: hass.localize(
-        "ui.panel.config.zwave_js.device_info.installer_settings"
-      ),
-      icon: mdiWrench,
-      href: `/config/zwave_js/node_installer/${device.id}?config_entry=${entryId}`,
-    });
   }
 
   if (

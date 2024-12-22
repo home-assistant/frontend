@@ -1,23 +1,21 @@
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { mdiCog, mdiContentCopy } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { slugify } from "../../../../../common/string/slugify";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
-import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/ha-button-menu";
 import "../../../../../components/ha-check-list-item";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../../components/ha-textfield";
-import type {
+import {
   AutomationConfig,
   WebhookTrigger,
 } from "../../../../../data/automation";
-import type { HomeAssistant } from "../../../../../types";
+import { HomeAssistant } from "../../../../../types";
 import { showToast } from "../../../../../util/toast";
 import { handleChangeEvent } from "../ha-automation-trigger-row";
 
@@ -37,9 +35,8 @@ export class HaWebhookTrigger extends LitElement {
 
   private _unsub?: UnsubscribeFunc;
 
-  public static get defaultConfig(): WebhookTrigger {
+  public static get defaultConfig() {
     return {
-      trigger: "webhook",
       allowed_methods: [...DEFAULT_METHODS],
       local_only: true,
       webhook_id: DEFAULT_WEBHOOK_ID,
@@ -125,7 +122,7 @@ export class HaWebhookTrigger extends LitElement {
             .path=${mdiContentCopy}
           ></ha-icon-button>
         </ha-textfield>
-        <ha-button-menu multi @closed=${stopPropagation}>
+        <ha-button-menu multi>
           <ha-icon-button
             slot="trigger"
             .label=${this.hass!.localize(
@@ -219,7 +216,6 @@ export class HaWebhookTrigger extends LitElement {
     ha-textfield > ha-icon-button {
       --mdc-icon-button-size: 24px;
       --mdc-icon-size: 18px;
-      color: var(--secondary-text-color);
     }
 
     ha-button-menu {

@@ -1,26 +1,18 @@
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
-import type { ImageEntity } from "../../../data/image";
-import { computeImageUrl } from "../../../data/image";
-import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import type { HomeAssistant } from "../../../types";
+import { computeImageUrl, ImageEntity } from "../../../data/image";
+import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import { HomeAssistant } from "../../../types";
 import { computeTooltip } from "../common/compute-tooltip";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import "../components/hui-image";
-import type { ImageElementConfig, LovelaceElement } from "./types";
-import type { LovelacePictureElementEditor } from "../types";
+import { ImageElementConfig, LovelaceElement } from "./types";
 
 @customElement("hui-image-element")
 export class HuiImageElement extends LitElement implements LovelaceElement {
-  public static async getConfigElement(): Promise<LovelacePictureElementEditor> {
-    await import("../editor/config-elements/elements/hui-image-element-editor");
-    return document.createElement("hui-image-element-editor");
-  }
-
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: ImageElementConfig;
@@ -32,6 +24,7 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
 
     this._config = { hold_action: { action: "more-info" }, ...config };
 
+    // eslint-disable-next-line wc/no-self-class
     this.classList.toggle(
       "clickable",
       this._config.tap_action && this._config.tap_action.action !== "none"

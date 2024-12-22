@@ -1,8 +1,7 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
@@ -12,13 +11,15 @@ import "../../../components/ha-alert";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list-item";
-import type { DeviceRegistryEntry } from "../../../data/device_registry";
 import {
   computeDeviceName,
+  DeviceRegistryEntry,
   subscribeDeviceRegistry,
 } from "../../../data/device_registry";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
-import { subscribeEntityRegistry } from "../../../data/entity_registry";
+import {
+  EntityRegistryEntry,
+  subscribeEntityRegistry,
+} from "../../../data/entity_registry";
 import type { UpdateEntity } from "../../../data/update";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";

@@ -1,11 +1,17 @@
 import { consume } from "@lit-labs/context";
-import type {
+import {
   HassConfig,
   HassEntities,
   HassEntity,
 } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
@@ -22,7 +28,7 @@ import {
 } from "../../../common/entity/state_color";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
-import type { LocalizeFunc } from "../../../common/translations/localize";
+import { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-card";
 import "../../../components/ha-ripple";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../../data/climate";
@@ -34,21 +40,21 @@ import {
   statesContext,
   themesContext,
 } from "../../../data/context";
-import type { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
-import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import type { FrontendLocaleData } from "../../../data/translation";
-import type { Themes } from "../../../data/ws-themes";
-import type { HomeAssistant } from "../../../types";
+import { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
+import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import { FrontendLocaleData } from "../../../data/translation";
+import { Themes } from "../../../data/ws-themes";
+import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { hasAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type {
+import {
   LovelaceCard,
   LovelaceCardEditor,
-  LovelaceGridOptions,
+  LovelaceLayoutOptions,
 } from "../types";
-import type { ButtonCardConfig } from "./types";
+import { ButtonCardConfig } from "./types";
 
 export const getEntityDefaultButtonAction = (entityId?: string) =>
   entityId && DOMAINS_TOGGLE.has(computeDomain(entityId))
@@ -123,7 +129,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   })
   _entity?: EntityRegistryDisplayEntry;
 
-  private _getStateColor(stateObj: HassEntity, config: ButtonCardConfig) {
+  private getStateColor(stateObj: HassEntity, config: ButtonCardConfig) {
     const domain = stateObj ? computeStateDomain(stateObj) : undefined;
     return config && (config.state_color ?? domain === "light");
   }
@@ -134,24 +140,14 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     );
   }
 
-  public getGridOptions(): LovelaceGridOptions {
+  public getLayoutOptions(): LovelaceLayoutOptions {
     if (
       this._config?.show_icon &&
       (this._config?.show_name || this._config?.show_state)
     ) {
-      return {
-        rows: 2,
-        columns: 6,
-        min_columns: 2,
-        min_rows: 2,
-      };
+      return { grid_rows: 2, grid_columns: 2 };
     }
-    return {
-      rows: 1,
-      columns: 3,
-      min_columns: 2,
-      min_rows: 1,
-    };
+    return { grid_rows: 1, grid_columns: 1 };
   }
 
   public setConfig(config: ButtonCardConfig): void {
@@ -189,7 +185,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
       ? this._config.name || (stateObj ? computeStateName(stateObj) : "")
       : "";
 
-    const colored = stateObj && this._getStateColor(stateObj, this._config);
+    const colored = stateObj && this.getStateColor(stateObj, this._config);
 
     return html`
       <ha-card

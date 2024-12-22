@@ -1,4 +1,4 @@
-import type { HomeAssistant } from "../types";
+import { HomeAssistant } from "../types";
 
 export interface InputButton {
   id: string;

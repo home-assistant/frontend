@@ -1,8 +1,7 @@
 import { TextAreaBase } from "@material/mwc-textarea/mwc-textarea-base";
 import { styles as textfieldStyles } from "@material/mwc-textfield/mwc-textfield.css";
 import { styles as textareaStyles } from "@material/mwc-textarea/mwc-textarea.css";
-import type { PropertyValues } from "lit";
-import { css } from "lit";
+import { css, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 
 @customElement("ha-textarea")
@@ -52,12 +51,6 @@ export class HaTextArea extends TextAreaBase {
         inset-inline-start: 16px !important;
         inset-inline-end: initial !important;
         transform-origin: var(--float-start) top;
-      }
-      @media only screen and (min-width: 459px) {
-        :host([mobile-multiline]) .mdc-text-field__input {
-          white-space: nowrap;
-          max-height: 16px;
-        }
       }
     `,
   ];

@@ -1,7 +1,14 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import "@material/mwc-button";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -18,7 +25,6 @@ import type { HomeAssistant } from "../../types";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
 import { haStyle } from "../../resources/styles";
-import { previewModule } from "../../data/preview";
 
 @customElement("step-flow-form")
 class StepFlowForm extends LitElement {
@@ -70,9 +76,8 @@ class StepFlowForm extends LitElement {
                 "ui.panel.config.integrations.config_flow.preview"
               )}:
             </h3>
-            ${dynamicElement(`flow-preview-${previewModule(step.preview)}`, {
+            ${dynamicElement(`flow-preview-${this.step.preview}`, {
               hass: this.hass,
-              domain: step.preview,
               flowType: this.flowConfig.flowType,
               handler: step.handler,
               stepId: step.step_id,
@@ -115,7 +120,7 @@ class StepFlowForm extends LitElement {
   protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
     if (changedProps.has("step") && this.step?.preview) {
-      import(`./previews/flow-preview-${previewModule(this.step.preview)}`);
+      import(`./previews/flow-preview-${this.step.preview}`);
     }
   }
 
@@ -218,24 +223,11 @@ class StepFlowForm extends LitElement {
     this._stepData = ev.detail.value;
   }
 
-  private _labelCallback = (field: HaFormSchema, _data, options): string =>
-    this.flowConfig.renderShowFormStepFieldLabel(
-      this.hass,
-      this.step,
-      field,
-      options
-    );
+  private _labelCallback = (field: HaFormSchema): string =>
+    this.flowConfig.renderShowFormStepFieldLabel(this.hass, this.step, field);
 
-  private _helperCallback = (
-    field: HaFormSchema,
-    options
-  ): string | TemplateResult =>
-    this.flowConfig.renderShowFormStepFieldHelper(
-      this.hass,
-      this.step,
-      field,
-      options
-    );
+  private _helperCallback = (field: HaFormSchema): string | TemplateResult =>
+    this.flowConfig.renderShowFormStepFieldHelper(this.hass, this.step, field);
 
   private _errorCallback = (error: string) =>
     this.flowConfig.renderShowFormStepFieldError(this.hass, this.step, error);

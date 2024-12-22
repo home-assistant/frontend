@@ -1,22 +1,21 @@
-import type { HassEntity } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
-import { html, LitElement, nothing } from "lit";
+import { HassEntity } from "home-assistant-js-websocket";
+import { html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import type { DeviceRegistryEntry } from "../../data/device_registry";
 import { getDeviceIntegrationLookup } from "../../data/device_registry";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { EntitySources } from "../../data/entity_sources";
-import { fetchEntitySourcesWithCache } from "../../data/entity_sources";
+import {
+  EntitySources,
+  fetchEntitySourcesWithCache,
+} from "../../data/entity_sources";
 import type { AreaSelector } from "../../data/selector";
-import type { ConfigEntry } from "../../data/config_entries";
-import { getConfigEntries } from "../../data/config_entries";
 import {
   filterSelectorDevices,
   filterSelectorEntities,
 } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
+import { HomeAssistant } from "../../types";
 import "../ha-area-picker";
 import "../ha-areas-picker";
 
@@ -37,8 +36,6 @@ export class HaAreaSelector extends LitElement {
   @property({ type: Boolean }) public required = true;
 
   @state() private _entitySources?: EntitySources;
-
-  @state() private _configEntries?: ConfigEntry[];
 
   private _deviceIntegrationLookup = memoizeOne(getDeviceIntegrationLookup);
 
@@ -73,12 +70,6 @@ export class HaAreaSelector extends LitElement {
     ) {
       fetchEntitySourcesWithCache(this.hass).then((sources) => {
         this._entitySources = sources;
-      });
-    }
-    if (!this._configEntries && this._hasIntegration(this.selector)) {
-      this._configEntries = [];
-      getConfigEntries(this.hass).then((entries) => {
-        this._configEntries = entries;
       });
     }
   }
@@ -145,9 +136,7 @@ export class HaAreaSelector extends LitElement {
     const deviceIntegrations = this._entitySources
       ? this._deviceIntegrationLookup(
           this._entitySources,
-          Object.values(this.hass.entities),
-          Object.values(this.hass.devices),
-          this._configEntries
+          Object.values(this.hass.entities)
         )
       : undefined;
 

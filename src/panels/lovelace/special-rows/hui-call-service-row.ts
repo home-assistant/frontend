@@ -1,5 +1,5 @@
 import { customElement } from "lit/decorators";
-import type { CallServiceConfig } from "../entity-rows/types";
+import { CallServiceConfig } from "../entity-rows/types";
 import { HuiButtonRow } from "./hui-button-row";
 
 @customElement("hui-call-service-row")
@@ -15,16 +15,15 @@ export class HuiCallServiceRow extends HuiButtonRow {
       throw new Error("No name specified");
     }
 
-    if (!callServiceConfig.action && !callServiceConfig.service) {
-      throw new Error("No action specified");
+    if (!callServiceConfig.service) {
+      throw new Error("No service specified");
     }
 
     super.setConfig({
       tap_action: {
-        action: "perform-action",
-        perform_action: (callServiceConfig.action ||
-          callServiceConfig.service)!,
-        data: callServiceConfig.data || callServiceConfig.service_data,
+        action: "call-service",
+        service: callServiceConfig.service,
+        data: callServiceConfig.service_data,
       },
       ...callServiceConfig,
       type: "button",

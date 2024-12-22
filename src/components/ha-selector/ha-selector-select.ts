@@ -383,13 +383,8 @@ export class HaSelectSelector extends LitElement {
       return label.toLowerCase().includes(this._filter?.toLowerCase());
     });
 
-    if (
-      this._filter &&
-      this.selector.select?.custom_value &&
-      filteredItems &&
-      !filteredItems.some((item) => (item.label || item.value) === this._filter)
-    ) {
-      filteredItems.unshift({ label: this._filter, value: this._filter });
+    if (this._filter && this.selector.select?.custom_value) {
+      filteredItems?.unshift({ label: this._filter, value: this._filter });
     }
 
     this.comboBox.filteredItems = filteredItems;

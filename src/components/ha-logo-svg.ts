@@ -1,5 +1,4 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, LitElement, html } from "lit";
+import { css, CSSResultGroup, LitElement, html, TemplateResult } from "lit";
 import { customElement } from "lit/decorators";
 
 @customElement("ha-logo-svg")

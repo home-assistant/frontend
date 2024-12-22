@@ -1,6 +1,12 @@
 import "@material/mwc-button/mwc-button";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  TemplateResult,
+  nothing,
+} from "lit";
 import { customElement, state } from "lit/decorators";
 import { computeStateName } from "../../../../../../common/entity/compute_state_name";
 import "../../../../../../components/ha-dialog";
@@ -8,13 +14,15 @@ import "../../../../../../components/ha-formfield";
 import "../../../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../../../components/ha-switch";
 import { computeDeviceName } from "../../../../../../data/device_registry";
-import type { MQTTDeviceDebugInfo } from "../../../../../../data/mqtt";
-import { fetchMQTTDebugInfo } from "../../../../../../data/mqtt";
+import {
+  fetchMQTTDebugInfo,
+  MQTTDeviceDebugInfo,
+} from "../../../../../../data/mqtt";
 import { haStyleDialog } from "../../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../../types";
+import { HomeAssistant } from "../../../../../../types";
 import "./mqtt-discovery-payload";
 import "./mqtt-messages";
-import type { MQTTDeviceDebugInfoDialogParams } from "./show-dialog-mqtt-device-debug-info";
+import { MQTTDeviceDebugInfoDialogParams } from "./show-dialog-mqtt-device-debug-info";
 
 @customElement("dialog-mqtt-device-debug-info")
 class DialogMQTTDeviceDebugInfo extends LitElement {

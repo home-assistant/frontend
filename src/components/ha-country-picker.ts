@@ -1,5 +1,4 @@
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
@@ -277,7 +276,7 @@ export class HaCountryPicker extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
-  @property({ attribute: "no-sort", type: Boolean }) public noSort = false;
+  @property({ type: Boolean }) public noSort = false;
 
   private _getOptions = memoizeOne(
     (language?: string, countries?: string[]) => {

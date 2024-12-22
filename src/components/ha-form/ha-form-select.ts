@@ -1,6 +1,5 @@
 import memoizeOne from "memoize-one";
-import type { TemplateResult } from "lit";
-import { html, LitElement } from "lit";
+import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HomeAssistant } from "../../types";

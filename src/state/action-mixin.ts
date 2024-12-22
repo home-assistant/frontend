@@ -1,7 +1,9 @@
 import type { PropertyValues } from "lit";
 import type { HASSDomEvent } from "../common/dom/fire_event";
-import type { ActionConfigParams } from "../panels/lovelace/common/handle-action";
-import { handleAction } from "../panels/lovelace/common/handle-action";
+import {
+  ActionConfigParams,
+  handleAction,
+} from "../panels/lovelace/common/handle-action";
 import type { Constructor } from "../types";
 import type { HassBaseEl } from "./hass-base-mixin";
 

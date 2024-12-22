@@ -1,22 +1,21 @@
 import { mdiChevronDown } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { navigate } from "../../../common/navigate";
 import { extractSearchParam } from "../../../common/url/search-params";
-import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-button";
 import "../../../components/search-input";
-import type { LogProvider } from "../../../data/error_log";
+import { LogProvider } from "../../../data/error_log";
 import { fetchHassioAddonsInfo } from "../../../data/hassio/addon";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../types";
+import { HomeAssistant, Route } from "../../../types";
 import "./error-log-card";
 import "./system-log-card";
 import type { SystemLogCard } from "./system-log-card";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import { navigate } from "../../../common/navigate";
 
 const logProviders: LogProvider[] = [
   {
@@ -51,13 +50,11 @@ export class HaConfigLogs extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+  @property({ type: Boolean }) public isWide = false;
 
   @property({ attribute: false }) public route!: Route;
 
   @state() private _filter = extractSearchParam("filter") || "";
-
-  @state() private _detail = false;
 
   @query("system-log-card") private systemLog?: SystemLogCard;
 
@@ -143,7 +140,7 @@ export class HaConfigLogs extends LitElement {
           : ""}
         ${search}
         <div class="content">
-          ${this._selectedLogProvider === "core" && !this._detail
+          ${this._selectedLogProvider === "core"
             ? html`
                 <system-log-card
                   .hass=${this.hass}
@@ -151,31 +148,25 @@ export class HaConfigLogs extends LitElement {
                     (p) => p.key === this._selectedLogProvider
                   )!.name}
                   .filter=${this._filter}
-                  @switch-log-view=${this._showDetail}
                 ></system-log-card>
               `
-            : html`<error-log-card
-                .hass=${this.hass}
-                .header=${this._logProviders.find(
-                  (p) => p.key === this._selectedLogProvider
-                )!.name}
-                .filter=${this._filter}
-                .provider=${this._selectedLogProvider}
-                @switch-log-view=${this._showDetail}
-                allow-switch
-              ></error-log-card>`}
+            : ""}
+          <error-log-card
+            .hass=${this.hass}
+            .header=${this._logProviders.find(
+              (p) => p.key === this._selectedLogProvider
+            )!.name}
+            .filter=${this._filter}
+            .provider=${this._selectedLogProvider}
+            .show=${this._selectedLogProvider !== "core"}
+          ></error-log-card>
         </div>
       </hass-subpage>
     `;
   }
 
-  private _showDetail() {
-    this._detail = !this._detail;
-  }
-
   private _selectProvider(ev) {
     this._selectedLogProvider = (ev.currentTarget as any).provider;
-    this._filter = "";
     navigate(`/config/logs?provider=${this._selectedLogProvider}`);
   }
 
@@ -259,7 +250,7 @@ export class HaConfigLogs extends LitElement {
           --mdc-theme-primary: var(--primary-text-color);
           --mdc-icon-size: 36px;
         }
-        ha-button-menu > ha-button > ha-svg-icon {
+        ha-button-menu > mwc-button > ha-svg-icon {
           margin-inline-end: 0px;
           margin-inline-start: 8px;
         }

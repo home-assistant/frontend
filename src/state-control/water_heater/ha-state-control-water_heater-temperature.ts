@@ -1,6 +1,5 @@
 import { mdiMinus, mdiPlus } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, html } from "lit";
+import { CSSResultGroup, LitElement, PropertyValues, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { UNIT_F } from "../../common/const";
@@ -14,9 +13,11 @@ import "../../components/ha-control-circular-slider";
 import "../../components/ha-outlined-icon-button";
 import "../../components/ha-svg-icon";
 import { UNAVAILABLE } from "../../data/entity";
-import type { WaterHeaterEntity } from "../../data/water_heater";
-import { WaterHeaterEntityFeature } from "../../data/water_heater";
-import type { HomeAssistant } from "../../types";
+import {
+  WaterHeaterEntity,
+  WaterHeaterEntityFeature,
+} from "../../data/water_heater";
+import { HomeAssistant } from "../../types";
 import {
   createStateControlCircularSliderController,
   stateControlCircularSliderStyle,

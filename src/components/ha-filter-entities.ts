@@ -1,21 +1,24 @@
-import "@material/mwc-list/mwc-list";
 import { mdiFilterVariantRemove } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { stringCompare } from "../common/string/compare";
-import type { RelatedResult } from "../data/search";
-import { findRelated } from "../data/search";
+import { findRelated, RelatedResult } from "../data/search";
 import { haStyleScrollbar } from "../resources/styles";
 import { loadVirtualizer } from "../resources/virtualizer";
 import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
 import "./ha-state-icon";
-import "./ha-expansion-panel";
 import "./search-input-outlined";
 
 @customElement("ha-filter-entities")

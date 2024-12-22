@@ -23,7 +23,7 @@ import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { caseInsensitiveStringCompare } from "../../../../common/string/compare";
-import type { SelectOption } from "../../../../data/selector";
+import { SelectOption } from "../../../../data/selector";
 import { getSensorNumericDeviceClasses } from "../../../../data/sensor";
 
 const cardConfigStruct = assign(

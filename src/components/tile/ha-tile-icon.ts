@@ -1,5 +1,4 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
+import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
 import { customElement } from "lit/decorators";
 import "../ha-icon";
 import "../ha-svg-icon";
@@ -18,7 +17,7 @@ export class HaTileIcon extends LitElement {
     return css`
       :host {
         --tile-icon-color: var(--disabled-color);
-        --mdc-icon-size: 22px;
+        --mdc-icon-size: 24px;
       }
       .shape::before {
         content: "";
@@ -33,9 +32,9 @@ export class HaTileIcon extends LitElement {
       }
       .shape {
         position: relative;
-        width: 36px;
-        height: 36px;
-        border-radius: 18px;
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
         display: flex;
         align-items: center;
         justify-content: center;

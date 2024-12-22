@@ -1,8 +1,10 @@
 import { consume } from "@lit-labs/context";
-import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import "@material/mwc-list/mwc-list-item";
 import {
   mdiArrowDown,
   mdiArrowUp,
+  mdiCheck,
   mdiContentCopy,
   mdiContentCut,
   mdiContentDuplicate,
@@ -10,20 +12,23 @@ import {
   mdiDotsVertical,
   mdiIdentifier,
   mdiPlayCircleOutline,
-  mdiPlaylistEdit,
   mdiRenameBox,
   mdiStopCircleOutline,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { storage } from "../../../../common/decorators/storage";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { preventDefault } from "../../../../common/dom/prevent_default";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import { debounce } from "../../../../common/util/debounce";
@@ -33,32 +38,27 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-textfield";
-import "../../../../components/ha-list-item";
-import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import type { AutomationClipboard, Trigger } from "../../../../data/automation";
-import {
-  migrateAutomationTrigger,
-  subscribeTrigger,
-} from "../../../../data/automation";
+import { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import type { AutomationClipboard } from "../../../../data/automation";
+import { Trigger, subscribeTrigger } from "../../../../data/automation";
 import { describeTrigger } from "../../../../data/automation_i18n";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
-import type { EntityRegistryEntry } from "../../../../data/entity_registry";
-import { TRIGGER_ICONS, isTriggerList } from "../../../../data/trigger";
+import { EntityRegistryEntry } from "../../../../data/entity_registry";
+import { TRIGGER_ICONS } from "../../../../data/trigger";
 import {
   showAlertDialog,
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ItemPath } from "../../../../types";
 import "./types/ha-automation-trigger-calendar";
 import "./types/ha-automation-trigger-conversation";
 import "./types/ha-automation-trigger-device";
 import "./types/ha-automation-trigger-event";
 import "./types/ha-automation-trigger-geo_location";
 import "./types/ha-automation-trigger-homeassistant";
-import "./types/ha-automation-trigger-list";
 import "./types/ha-automation-trigger-mqtt";
 import "./types/ha-automation-trigger-numeric_state";
 import "./types/ha-automation-trigger-persistent_notification";
@@ -81,7 +81,7 @@ export const handleChangeEvent = (element: TriggerElement, ev: CustomEvent) => {
   if (!name) {
     return;
   }
-  const newVal = ev.detail?.value || (ev.currentTarget as any)?.value;
+  const newVal = (ev.target as any)?.value;
 
   if ((element.trigger[name] || "") === newVal) {
     return;
@@ -97,6 +97,8 @@ export const handleChangeEvent = (element: TriggerElement, ev: CustomEvent) => {
   fireEvent(element, "value-changed", { value: newTrigger });
 };
 
+const preventDefault = (ev) => ev.preventDefault();
+
 @customElement("ha-automation-trigger-row")
 export default class HaAutomationTriggerRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -104,6 +106,8 @@ export default class HaAutomationTriggerRow extends LitElement {
   @property({ attribute: false }) public trigger!: Trigger;
 
   @property({ type: Boolean }) public disabled = false;
+
+  @property({ type: Array }) public path?: ItemPath;
 
   @property({ type: Boolean }) public first?: boolean;
 
@@ -138,17 +142,15 @@ export default class HaAutomationTriggerRow extends LitElement {
   protected render() {
     if (!this.trigger) return nothing;
 
-    const type = isTriggerList(this.trigger) ? "list" : this.trigger.trigger;
-
     const supported =
-      customElements.get(`ha-automation-trigger-${type}`) !== undefined;
-
+      customElements.get(`ha-automation-trigger-${this.trigger.platform}`) !==
+      undefined;
     const yamlMode = this._yamlMode || !supported;
     const showId = "id" in this.trigger || this._requestShowId;
 
     return html`
       <ha-card outlined>
-        ${"enabled" in this.trigger && this.trigger.enabled === false
+        ${this.trigger.enabled === false
           ? html`
               <div class="disabled-bar">
                 ${this.hass.localize(
@@ -162,7 +164,7 @@ export default class HaAutomationTriggerRow extends LitElement {
           <h3 slot="header">
             <ha-svg-icon
               class="trigger-icon"
-              .path=${TRIGGER_ICONS[type]}
+              .path=${TRIGGER_ICONS[this.trigger.platform]}
             ></ha-svg-icon>
             ${describeTrigger(this.trigger, this.hass, this._entityReg)}
           </h3>
@@ -173,7 +175,6 @@ export default class HaAutomationTriggerRow extends LitElement {
             slot="icons"
             @action=${this._handleAction}
             @click=${preventDefault}
-            @closed=${stopPropagation}
             fixed
           >
             <ha-icon-button
@@ -182,29 +183,23 @@ export default class HaAutomationTriggerRow extends LitElement {
               .path=${mdiDotsVertical}
             ></ha-icon-button>
 
-            <ha-list-item
-              graphic="icon"
-              .disabled=${this.disabled || type === "list"}
-            >
+            <mwc-list-item graphic="icon" .disabled=${this.disabled}>
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.triggers.rename"
               )}
               <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
-            </ha-list-item>
+            </mwc-list-item>
 
-            <ha-list-item
-              graphic="icon"
-              .disabled=${this.disabled || type === "list"}
-            >
+            <mwc-list-item graphic="icon" .disabled=${this.disabled}>
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.triggers.edit_id"
               )}
               <ha-svg-icon slot="graphic" .path=${mdiIdentifier}></ha-svg-icon>
-            </ha-list-item>
+            </mwc-list-item>
 
             <li divider role="separator"></li>
 
-            <ha-list-item graphic="icon" .disabled=${this.disabled}>
+            <mwc-list-item graphic="icon" .disabled=${this.disabled}>
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.triggers.duplicate"
               )}
@@ -212,31 +207,31 @@ export default class HaAutomationTriggerRow extends LitElement {
                 slot="graphic"
                 .path=${mdiContentDuplicate}
               ></ha-svg-icon>
-            </ha-list-item>
+            </mwc-list-item>
 
-            <ha-list-item graphic="icon" .disabled=${this.disabled}>
+            <mwc-list-item graphic="icon" .disabled=${this.disabled}>
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.triggers.copy"
               )}
               <ha-svg-icon slot="graphic" .path=${mdiContentCopy}></ha-svg-icon>
-            </ha-list-item>
+            </mwc-list-item>
 
-            <ha-list-item graphic="icon" .disabled=${this.disabled}>
+            <mwc-list-item graphic="icon" .disabled=${this.disabled}>
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.triggers.cut"
               )}
               <ha-svg-icon slot="graphic" .path=${mdiContentCut}></ha-svg-icon>
-            </ha-list-item>
+            </mwc-list-item>
 
-            <ha-list-item
+            <mwc-list-item
               graphic="icon"
               .disabled=${this.disabled || this.first}
             >
               ${this.hass.localize("ui.panel.config.automation.editor.move_up")}
               <ha-svg-icon slot="graphic" .path=${mdiArrowUp}></ha-svg-icon
-            ></ha-list-item>
+            ></mwc-list-item>
 
-            <ha-list-item
+            <mwc-list-item
               graphic="icon"
               .disabled=${this.disabled || this.last}
             >
@@ -244,25 +239,38 @@ export default class HaAutomationTriggerRow extends LitElement {
                 "ui.panel.config.automation.editor.move_down"
               )}
               <ha-svg-icon slot="graphic" .path=${mdiArrowDown}></ha-svg-icon
-            ></ha-list-item>
-
-            <ha-list-item graphic="icon" .disabled=${!supported}>
-              ${this.hass.localize(
-                `ui.panel.config.automation.editor.edit_${!yamlMode ? "yaml" : "ui"}`
-              )}
-              <ha-svg-icon
-                slot="graphic"
-                .path=${mdiPlaylistEdit}
-              ></ha-svg-icon>
-            </ha-list-item>
+            ></mwc-list-item>
 
             <li divider role="separator"></li>
 
-            <ha-list-item
-              graphic="icon"
-              .disabled=${this.disabled || type === "list"}
-            >
-              ${"enabled" in this.trigger && this.trigger.enabled === false
+            <mwc-list-item .disabled=${!supported} graphic="icon">
+              ${this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
+              ${!yamlMode
+                ? html`<ha-svg-icon
+                    class="selected_menu_item"
+                    slot="graphic"
+                    .path=${mdiCheck}
+                  ></ha-svg-icon>`
+                : ``}
+            </mwc-list-item>
+
+            <mwc-list-item .disabled=${!supported} graphic="icon">
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.edit_yaml"
+              )}
+              ${yamlMode
+                ? html`<ha-svg-icon
+                    class="selected_menu_item"
+                    slot="graphic"
+                    .path=${mdiCheck}
+                  ></ha-svg-icon>`
+                : ``}
+            </mwc-list-item>
+
+            <li divider role="separator"></li>
+
+            <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+              ${this.trigger.enabled === false
                 ? this.hass.localize(
                     "ui.panel.config.automation.editor.actions.enable"
                   )
@@ -271,13 +279,12 @@ export default class HaAutomationTriggerRow extends LitElement {
                   )}
               <ha-svg-icon
                 slot="graphic"
-                .path=${"enabled" in this.trigger &&
-                this.trigger.enabled === false
+                .path=${this.trigger.enabled === false
                   ? mdiPlayCircleOutline
                   : mdiStopCircleOutline}
               ></ha-svg-icon>
-            </ha-list-item>
-            <ha-list-item
+            </mwc-list-item>
+            <mwc-list-item
               class="warning"
               graphic="icon"
               .disabled=${this.disabled}
@@ -290,14 +297,13 @@ export default class HaAutomationTriggerRow extends LitElement {
                 slot="graphic"
                 .path=${mdiDelete}
               ></ha-svg-icon>
-            </ha-list-item>
+            </mwc-list-item>
           </ha-button-menu>
 
           <div
             class=${classMap({
               "card-content": true,
-              disabled:
-                "enabled" in this.trigger && this.trigger.enabled === false,
+              disabled: this.trigger.enabled === false,
             })}
           >
             ${this._warnings
@@ -325,7 +331,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                     ? html`
                         ${this.hass.localize(
                           "ui.panel.config.automation.editor.triggers.unsupported_platform",
-                          { platform: type }
+                          { platform: this.trigger.platform }
                         )}
                       `
                     : ""}
@@ -337,7 +343,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                   ></ha-yaml-editor>
                 `
               : html`
-                  ${showId && !isTriggerList(this.trigger)
+                  ${showId
                     ? html`
                         <ha-textfield
                           .label=${this.hass.localize(
@@ -354,11 +360,15 @@ export default class HaAutomationTriggerRow extends LitElement {
                     @ui-mode-not-available=${this._handleUiModeNotAvailable}
                     @value-changed=${this._onUiChanged}
                   >
-                    ${dynamicElement(`ha-automation-trigger-${type}`, {
-                      hass: this.hass,
-                      trigger: this.trigger,
-                      disabled: this.disabled,
-                    })}
+                    ${dynamicElement(
+                      `ha-automation-trigger-${this.trigger.platform}`,
+                      {
+                        hass: this.hass,
+                        trigger: this.trigger,
+                        disabled: this.disabled,
+                        path: this.path,
+                      }
+                    )}
                   </div>
                 `}
           </div>
@@ -424,11 +434,11 @@ export default class HaAutomationTriggerRow extends LitElement {
     }
 
     const validateResult = await validateConfig(this.hass, {
-      triggers: trigger,
+      trigger,
     });
 
     // Don't do anything if trigger not valid or if trigger changed.
-    if (!validateResult.triggers.valid || this.trigger !== trigger) {
+    if (!validateResult.trigger.valid || this.trigger !== trigger) {
       return;
     }
 
@@ -490,17 +500,17 @@ export default class HaAutomationTriggerRow extends LitElement {
         fireEvent(this, "move-down");
         break;
       case 7:
-        if (this._yamlMode) {
-          this._switchUiMode();
-        } else {
-          this._switchYamlMode();
-        }
+        this._switchUiMode();
         this.expand();
         break;
       case 8:
-        this._onDisable();
+        this._switchYamlMode();
+        this.expand();
         break;
       case 9:
+        this._onDisable();
+        break;
+      case 10:
         this._onDelete();
         break;
     }
@@ -531,7 +541,6 @@ export default class HaAutomationTriggerRow extends LitElement {
   }
 
   private _onDisable() {
-    if (isTriggerList(this.trigger)) return;
     const enabled = !(this.trigger.enabled ?? true);
     const value = { ...this.trigger, enabled };
     fireEvent(this, "value-changed", { value });
@@ -541,9 +550,7 @@ export default class HaAutomationTriggerRow extends LitElement {
   }
 
   private _idChanged(ev: CustomEvent) {
-    if (isTriggerList(this.trigger)) return;
     const newId = (ev.target as any).value;
-
     if (newId === (this.trigger.id ?? "")) {
       return;
     }
@@ -565,13 +572,10 @@ export default class HaAutomationTriggerRow extends LitElement {
       return;
     }
     this._warnings = undefined;
-    fireEvent(this, "value-changed", {
-      value: migrateAutomationTrigger(ev.detail.value),
-    });
+    fireEvent(this, "value-changed", { value: ev.detail.value });
   }
 
   private _onUiChanged(ev: CustomEvent) {
-    if (isTriggerList(this.trigger)) return;
     ev.stopPropagation();
     const value = {
       ...(this.trigger.alias ? { alias: this.trigger.alias } : {}),
@@ -592,12 +596,9 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   private _showTriggeredInfo() {
     showAlertDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.automation.editor.triggers.triggering_event_detail"
-      ),
       text: html`
         <ha-yaml-editor
-          read-only
+          readOnly
           .hass=${this.hass}
           .defaultValue=${this._triggered}
         ></ha-yaml-editor>
@@ -606,7 +607,6 @@ export default class HaAutomationTriggerRow extends LitElement {
   }
 
   private async _renameTrigger(): Promise<void> {
-    if (isTriggerList(this.trigger)) return;
     const alias = await showPromptDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.automation.editor.triggers.change_alias"
@@ -651,9 +651,6 @@ export default class HaAutomationTriggerRow extends LitElement {
         ha-button-menu {
           --mdc-theme-text-primary-on-background: var(--primary-text-color);
         }
-        ha-card {
-          overflow: hidden;
-        }
         .disabled {
           opacity: 0.5;
           pointer-events: none;
@@ -686,6 +683,8 @@ export default class HaAutomationTriggerRow extends LitElement {
         .disabled-bar {
           background: var(--divider-color, #e0e0e0);
           text-align: center;
+          border-top-right-radius: var(--ha-card-border-radius);
+          border-top-left-radius: var(--ha-card-border-radius);
         }
         .triggered {
           cursor: pointer;
@@ -702,6 +701,8 @@ export default class HaAutomationTriggerRow extends LitElement {
           overflow: hidden;
           transition: max-height 0.3s;
           text-align: center;
+          border-top-right-radius: var(--ha-card-border-radius, 12px);
+          border-top-left-radius: var(--ha-card-border-radius, 12px);
         }
         .triggered.active {
           max-height: 100px;
@@ -713,15 +714,18 @@ export default class HaAutomationTriggerRow extends LitElement {
           background-color: var(--accent-color);
           color: var(--text-accent-color, var(--text-primary-color));
         }
-        ha-list-item[disabled] {
+        mwc-list-item[disabled] {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
         }
-        ha-list-item.hidden {
+        mwc-list-item.hidden {
           display: none;
         }
         ha-textfield {
           display: block;
           margin-bottom: 24px;
+        }
+        .selected_menu_item {
+          color: var(--primary-color);
         }
         li[role="separator"] {
           border-bottom-color: var(--divider-color);

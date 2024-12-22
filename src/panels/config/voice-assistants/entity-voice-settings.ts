@@ -1,51 +1,58 @@
 import { mdiAlertCircle } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
-import type {
+import {
   EntityFilter,
   FilterFunc,
-} from "../../../common/entity/entity_filter";
-import {
   generateFilter,
   isEmptyFilter,
 } from "../../../common/entity/entity_filter";
 import "../../../components/ha-aliases-editor";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-switch";
-import "../../../components/ha-formfield";
-import "../../../components/ha-checkbox";
-import "../../../components/ha-alert";
 import { fetchCloudAlexaEntity } from "../../../data/alexa";
-import type { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
 import {
+  CloudStatus,
+  CloudStatusLoggedIn,
   fetchCloudStatus,
   updateCloudGoogleEntityConfig,
 } from "../../../data/cloud";
-import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
 import {
+  ExtEntityRegistryEntry,
   getExtendedEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
-import type { GoogleEntity } from "../../../data/google_assistant";
-import { fetchCloudGoogleEntity } from "../../../data/google_assistant";
-import type { ExposeEntitySettings } from "../../../data/expose";
-import { exposeEntities, voiceAssistants } from "../../../data/expose";
+import {
+  fetchCloudGoogleEntity,
+  GoogleEntity,
+} from "../../../data/google_assistant";
+import {
+  exposeEntities,
+  ExposeEntitySettings,
+  voiceAssistants,
+} from "../../../data/expose";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import type { EntityRegistrySettings } from "../entities/entity-registry-settings";
+import { EntityRegistrySettings } from "../entities/entity-registry-settings";
 import { documentationUrl } from "../../../util/documentation-url";
 
 @customElement("entity-voice-settings")
 export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public entityId!: string;
+  @property() public entityId!: string;
 
   @property({ attribute: false }) public exposed!: ExposeEntitySettings;
 
@@ -298,15 +305,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
   }
 
   private _aliasesChanged(ev) {
-    const currentLength =
-      this._aliases?.length ?? this.entry?.aliases?.length ?? 0;
-
     this._aliases = ev.detail.value;
-
-    // if an entry was deleted, then save changes
-    if (currentLength > ev.detail.value.length) {
-      this._saveAliases();
-    }
   }
 
   private async _2faChanged(ev) {

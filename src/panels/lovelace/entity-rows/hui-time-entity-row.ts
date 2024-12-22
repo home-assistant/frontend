@@ -1,5 +1,4 @@
-import type { PropertyValues, TemplateResult } from "lit";
-import { html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-date-input";
 import { isUnavailableState, UNAVAILABLE } from "../../../data/entity";

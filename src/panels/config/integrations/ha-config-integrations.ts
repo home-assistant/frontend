@@ -1,18 +1,22 @@
-import type { PropertyValues } from "lit";
+import { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { navigate } from "../../../common/navigate";
-import type { LocalizeFunc } from "../../../common/translations/localize";
-import type { ConfigEntry } from "../../../data/config_entries";
-import { subscribeConfigEntries } from "../../../data/config_entries";
+import { LocalizeFunc } from "../../../common/translations/localize";
+import {
+  ConfigEntry,
+  subscribeConfigEntries,
+} from "../../../data/config_entries";
 import {
   localizeConfigFlowTitle,
   subscribeConfigFlowInProgress,
 } from "../../../data/config_flow";
-import type { DataEntryFlowProgress } from "../../../data/data_entry_flow";
+import { DataEntryFlowProgress } from "../../../data/data_entry_flow";
 import { domainToName } from "../../../data/integration";
 import "../../../layouts/hass-loading-screen";
-import type { RouterOptions } from "../../../layouts/hass-router-page";
-import { HassRouterPage } from "../../../layouts/hass-router-page";
+import {
+  HassRouterPage,
+  RouterOptions,
+} from "../../../layouts/hass-router-page";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 
@@ -49,9 +53,9 @@ class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property({ attribute: false }) public showAdvanced = false;
+  @property({ type: Boolean }) public showAdvanced = false;
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",
@@ -147,10 +151,7 @@ class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
     if (this.hasUpdated) {
       return;
     }
-    this._loadTranslationsPromise = this.hass.loadBackendTranslation(
-      "title",
-      this.hass.config.components.map((comp) => comp.split(".")[0])
-    );
+    this._loadTranslationsPromise = this.hass.loadBackendTranslation("title");
   }
 
   protected updatePageEl(pageEl) {

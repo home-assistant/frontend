@@ -1,4 +1,4 @@
-import type {
+import {
   HassConfig,
   HassEntities,
   HassEntity,
@@ -7,9 +7,9 @@ import type {
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDisplayFromEntityAttributes } from "../common/entity/compute_state_display";
 import { computeStateNameFromEntityAttributes } from "../common/entity/compute_state_name";
-import type { LocalizeFunc } from "../common/translations/localize";
-import type { HomeAssistant } from "../types";
-import type { FrontendLocaleData } from "./translation";
+import { LocalizeFunc } from "../common/translations/localize";
+import { HomeAssistant } from "../types";
+import { FrontendLocaleData } from "./translation";
 
 const DOMAINS_USE_LAST_UPDATED = ["climate", "humidifier", "water_heater"];
 const NEED_ATTRIBUTE_DOMAINS = [

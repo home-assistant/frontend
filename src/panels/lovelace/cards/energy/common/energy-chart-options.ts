@@ -1,12 +1,12 @@
-import type { ChartOptions } from "chart.js";
-import type { HassConfig } from "home-assistant-js-websocket";
+import { ChartOptions } from "chart.js";
+import { HassConfig } from "home-assistant-js-websocket";
 import {
   addHours,
   subHours,
   differenceInDays,
   differenceInHours,
 } from "date-fns";
-import type { FrontendLocaleData } from "../../../../../data/translation";
+import { FrontendLocaleData } from "../../../../../data/translation";
 import {
   formatNumber,
   numberFormatToLocale,
@@ -57,6 +57,7 @@ export function getCommonOptions(
 
   const options: ChartOptions = {
     parsing: false,
+    animation: false,
     interaction: {
       mode: "x",
     },

@@ -43,9 +43,8 @@ export class HaGeolocationTrigger extends LitElement {
       ] as const
   );
 
-  public static get defaultConfig(): GeoLocationTrigger {
+  public static get defaultConfig() {
     return {
-      trigger: "geo_location",
       source: "",
       zone: "",
       event: "enter" as GeoLocationTrigger["event"],

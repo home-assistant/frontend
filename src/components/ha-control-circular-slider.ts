@@ -6,8 +6,16 @@ import {
   Tap,
   TouchMouseInput,
 } from "@egjs/hammerjs";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing, svg } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+  css,
+  html,
+  nothing,
+  svg,
+} from "lit";
 import {
   customElement,
   property,
@@ -435,7 +443,7 @@ export class HaControlCircularSlider extends LitElement {
     this._activeSlider = undefined;
   }
 
-  private _handleKeyUp(e: KeyboardEvent) {
+  _handleKeyUp(e: KeyboardEvent) {
     if (!A11Y_KEY_CODES.has(e.code)) return;
     this._activeSlider = (e.currentTarget as any).id as ActiveSlider;
     e.preventDefault();

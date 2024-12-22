@@ -1,14 +1,13 @@
-import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
+import { HassConfig, HassEntity } from "home-assistant-js-websocket";
 import {
   DOMAIN_ATTRIBUTES_FORMATERS,
   DOMAIN_ATTRIBUTES_UNITS,
   TEMPERATURE_ATTRIBUTES,
 } from "../../data/entity_attributes";
-import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
-import type { FrontendLocaleData } from "../../data/translation";
-import type { WeatherEntity } from "../../data/weather";
-import { getWeatherUnit } from "../../data/weather";
-import type { HomeAssistant } from "../../types";
+import { EntityRegistryDisplayEntry } from "../../data/entity_registry";
+import { FrontendLocaleData } from "../../data/translation";
+import { WeatherEntity, getWeatherUnit } from "../../data/weather";
+import { HomeAssistant } from "../../types";
 import checkValidDate from "../datetime/check_valid_date";
 import { formatDate } from "../datetime/format_date";
 import { formatDateTimeWithSeconds } from "../datetime/format_date_time";
@@ -17,7 +16,7 @@ import { capitalizeFirstLetter } from "../string/capitalize-first-letter";
 import { isDate } from "../string/is_date";
 import { isTimestamp } from "../string/is_timestamp";
 import { blankBeforeUnit } from "../translations/blank_before_unit";
-import type { LocalizeFunc } from "../translations/localize";
+import { LocalizeFunc } from "../translations/localize";
 import { computeDomain } from "./compute_domain";
 import { computeStateDomain } from "./compute_state_domain";
 

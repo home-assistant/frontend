@@ -1,27 +1,32 @@
 import "@material/mwc-list/mwc-list";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { until } from "lit/directives/until";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { stripPrefixFromEntityName } from "../../../../common/entity/strip_prefix_from_entity_name";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-list-item";
-import type { ExtEntityRegistryEntry } from "../../../../data/entity_registry";
-import { getExtendedEntityRegistryEntry } from "../../../../data/entity_registry";
+import {
+  ExtEntityRegistryEntry,
+  getExtendedEntityRegistryEntry,
+} from "../../../../data/entity_registry";
 import { entryIcon } from "../../../../data/icons";
 import { showMoreInfoDialog } from "../../../../dialogs/more-info/show-ha-more-info-dialog";
 import type { HomeAssistant } from "../../../../types";
 import type { HuiErrorCard } from "../../../lovelace/cards/hui-error-card";
 import { createRowElement } from "../../../lovelace/create-element/create-row-element";
 import { addEntitiesToLovelaceView } from "../../../lovelace/editor/add-entities-to-view";
-import type {
-  LovelaceRowConfig,
-  LovelaceRow,
-} from "../../../lovelace/entity-rows/types";
-import type { EntityRegistryStateEntry } from "../ha-config-device-page";
+import type { LovelaceRowConfig } from "../../../lovelace/entity-rows/types";
+import { LovelaceRow } from "../../../lovelace/entity-rows/types";
+import { EntityRegistryStateEntry } from "../ha-config-device-page";
 import {
   computeCards,
   computeSection,
@@ -31,14 +36,13 @@ import {
 export class HaDeviceEntitiesCard extends LitElement {
   @property() public header!: string;
 
-  @property({ attribute: false }) public deviceName!: string;
+  @property() public deviceName!: string;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public entities!: EntityRegistryStateEntry[];
 
-  @property({ attribute: "show-hidden", type: Boolean })
-  public showHidden = false;
+  @property({ type: Boolean }) public showHidden = false;
 
   @state() private _extDisabledEntityEntries?: Record<
     string,
@@ -54,7 +58,6 @@ export class HaDeviceEntitiesCard extends LitElement {
       });
       return false;
     }
-    this._entityRows = [];
     return true;
   }
 
@@ -71,6 +74,7 @@ export class HaDeviceEntitiesCard extends LitElement {
 
     const shownEntities: EntityRegistryStateEntry[] = [];
     const hiddenEntities: EntityRegistryStateEntry[] = [];
+    this._entityRows = [];
 
     this.entities.forEach((entry) => {
       if (entry.disabled_by) {
@@ -88,42 +92,36 @@ export class HaDeviceEntitiesCard extends LitElement {
 
     return html`
       <ha-card outlined .header=${this.header}>
-        ${shownEntities.length
-          ? html`
-              <div id="entities" class="move-up">
-                <mwc-list>
-                  ${shownEntities.map((entry) =>
-                    this.hass.states[entry.entity_id]
-                      ? this._renderEntity(entry)
-                      : this._renderEntry(entry)
-                  )}
-                </mwc-list>
-              </div>
-            `
-          : nothing}
+        <div id="entities">
+          <mwc-list>
+            ${shownEntities.map((entry) =>
+              this.hass.states[entry.entity_id]
+                ? this._renderEntity(entry)
+                : this._renderEntry(entry)
+            )}
+          </mwc-list>
+        </div>
         ${hiddenEntities.length
-          ? html`<div class=${classMap({ "move-up": !shownEntities.length })}>
-              ${!this.showHidden
-                ? html`
-                    <button class="show-more" @click=${this._toggleShowHidden}>
-                      ${this.hass.localize(
-                        "ui.panel.config.devices.entities.hidden_entities",
-                        { count: hiddenEntities.length }
-                      )}
-                    </button>
-                  `
-                : html`
-                    <mwc-list>
-                      ${hiddenEntities.map((entry) => this._renderEntry(entry))}
-                    </mwc-list>
-                    <button class="show-more" @click=${this._toggleShowHidden}>
-                      ${this.hass.localize(
-                        "ui.panel.config.devices.entities.show_less"
-                      )}
-                    </button>
-                  `}
-            </div>`
-          : nothing}
+          ? !this.showHidden
+            ? html`
+                <button class="show-more" @click=${this._toggleShowHidden}>
+                  ${this.hass.localize(
+                    "ui.panel.config.devices.entities.hidden_entities",
+                    { count: hiddenEntities.length }
+                  )}
+                </button>
+              `
+            : html`
+                <mwc-list>
+                  ${hiddenEntities.map((entry) => this._renderEntry(entry))}
+                </mwc-list>
+                <button class="show-more" @click=${this._toggleShowHidden}>
+                  ${this.hass.localize(
+                    "ui.panel.config.devices.entities.show_less"
+                  )}
+                </button>
+              `
+          : ""}
         <div class="card-actions">
           <mwc-button @click=${this._addToLovelaceView}>
             ${this.hass.localize(
@@ -253,7 +251,9 @@ export class HaDeviceEntitiesCard extends LitElement {
         display: block;
       }
       ha-icon {
-        margin-left: -8px;
+        margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: initial;
       }
       .entity-id {
         color: var(--secondary-text-color);
@@ -265,21 +265,11 @@ export class HaDeviceEntitiesCard extends LitElement {
       .disabled-entry {
         color: var(--secondary-text-color);
       }
-      .move-up {
-        margin-top: -13px;
+      #entities {
+        margin-top: -24px; /* match the spacing between card title and content of the device info card above it */
       }
-      .move-up:has(> mwc-list) {
-        margin-top: -24px;
-      }
-      :not(.move-up) > mwc-list {
-        margin-top: -24px;
-      }
-      mwc-list + button.show-more,
-      .move-up + :not(:has(mwc-list)) > button.show-more {
-        margin-top: -12px;
-      }
-      #entities > mwc-list {
-        margin: 0 16px 0 8px;
+      #entities > * {
+        margin: 8px 16px 8px 8px;
       }
       #entities > paper-icon-item {
         margin: 0;
@@ -292,9 +282,6 @@ export class HaDeviceEntitiesCard extends LitElement {
       }
       .name {
         font-size: 14px;
-      }
-      .name:dir(rtl) {
-        margin-inline-start: 8px;
       }
       .empty {
         text-align: center;
@@ -314,13 +301,6 @@ export class HaDeviceEntitiesCard extends LitElement {
       button.show-more:focus {
         outline: none;
         text-decoration: underline;
-      }
-      mwc-list > * {
-        margin: 8px 0px;
-      }
-      ha-list-item {
-        height: 40px;
-        --mdc-ripple-color: transparent;
       }
     `;
   }

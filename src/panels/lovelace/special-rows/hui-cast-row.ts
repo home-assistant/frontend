@@ -1,16 +1,22 @@
 import "@material/mwc-button/mwc-button";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import type { CastManager } from "../../../cast/cast_manager";
+import { CastManager } from "../../../cast/cast_manager";
 import {
   castSendShowLovelaceView,
   ensureConnectedCastSession,
 } from "../../../cast/receiver_messages";
 import "../../../components/ha-icon";
-import type { HomeAssistant } from "../../../types";
-import type { CastConfig, LovelaceRow } from "../entity-rows/types";
+import { HomeAssistant } from "../../../types";
+import { CastConfig, LovelaceRow } from "../entity-rows/types";
 
 @customElement("hui-cast-row")
 class HuiCastRow extends LitElement implements LovelaceRow {

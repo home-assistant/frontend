@@ -1,6 +1,5 @@
 import memoizeOne from "memoize-one";
-import type { FrontendLocaleData } from "../../data/translation";
-import { TimeFormat } from "../../data/translation";
+import { FrontendLocaleData, TimeFormat } from "../../data/translation";
 
 export const useAmPm = memoizeOne((locale: FrontendLocaleData): boolean => {
   if (

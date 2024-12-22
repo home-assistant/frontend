@@ -1,28 +1,17 @@
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import "../../../components/ha-icon";
-import type { HomeAssistant } from "../../../types";
+import { HomeAssistant } from "../../../types";
 import { computeTooltip } from "../common/compute-tooltip";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
-import type { IconElementConfig, LovelaceElement } from "./types";
-import type { LovelacePictureElementEditor } from "../types";
-import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import { IconElementConfig, LovelaceElement } from "./types";
+import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 
 @customElement("hui-icon-element")
 export class HuiIconElement extends LitElement implements LovelaceElement {
-  public static async getConfigElement(): Promise<LovelacePictureElementEditor> {
-    await import("../editor/config-elements/elements/hui-icon-element-editor");
-    return document.createElement("hui-icon-element-editor");
-  }
-
-  public static getStubConfig(): IconElementConfig {
-    return { type: "icon", icon: "mdi:alert-circle" };
-  }
-
   public hass?: HomeAssistant;
 
   @state() private _config?: IconElementConfig;

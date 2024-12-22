@@ -3,19 +3,17 @@ import "@material/mwc-tab/mwc-tab";
 import type { MDCTabBarActivatedEvent } from "@material/tab-bar";
 import { mdiCodeBraces, mdiContentCopy, mdiListBoxOutline } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { any, array, assert, assign, object, optional } from "superstruct";
 import { storage } from "../../../../common/decorators/storage";
-import type { HASSDomEvent } from "../../../../common/dom/fire_event";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-svg-icon";
-import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
-import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
+import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { HomeAssistant } from "../../../../types";
 import type { ConditionalCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
@@ -47,7 +45,7 @@ export class HuiConditionalCardEditor
   @property({ attribute: false }) public lovelace?: LovelaceConfig;
 
   @storage({
-    key: "dashboardCardClipboard",
+    key: "lovelaceClipboard",
     state: false,
     subscribe: false,
     storage: "sessionStorage",

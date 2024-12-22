@@ -16,7 +16,7 @@ import { formatDate } from "../../common/datetime/format_date";
 import { capitalizeFirstLetter } from "../../common/string/capitalize-first-letter";
 import { dayNames } from "../../common/translations/day_names";
 import { monthNames } from "../../common/translations/month_names";
-import type { HomeAssistant } from "../../types";
+import { HomeAssistant } from "../../types";
 
 export type RepeatFrequency =
   | "none"

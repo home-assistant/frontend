@@ -1,4 +1,4 @@
-import type { HassioSupervisorInfo } from "../../../src/data/hassio/supervisor";
+import { HassioSupervisorInfo } from "../../../src/data/hassio/supervisor";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 
 export const mockHassioSupervisor = (hass: MockHomeAssistant) => {

@@ -1,27 +1,30 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import "../../../components/ha-assist-pipeline-picker";
-import type {
-  HaFormSchema,
-  SchemaUnion,
-} from "../../../components/ha-form/types";
+import { HaFormSchema, SchemaUnion } from "../../../components/ha-form/types";
 import "../../../components/ha-help-tooltip";
 import "../../../components/ha-navigation-picker";
 import "../../../components/ha-service-control";
-import type {
+import {
   ActionConfig,
   CallServiceActionConfig,
   NavigateActionConfig,
   UrlActionConfig,
 } from "../../../data/lovelace/config/action";
-import type { ServiceAction } from "../../../data/script";
-import type { HomeAssistant } from "../../../types";
-import type { EditorTarget } from "../editor/types";
-import type { HaSelect } from "../../../components/ha-select";
+import { ServiceAction } from "../../../data/script";
+import { HomeAssistant } from "../../../types";
+import { EditorTarget } from "../editor/types";
+import { HaSelect } from "../../../components/ha-select";
 
 export type UiAction = Exclude<ActionConfig["action"], "fire-dom-event">;
 
@@ -30,7 +33,7 @@ const DEFAULT_ACTIONS: UiAction[] = [
   "toggle",
   "navigate",
   "url",
-  "perform-action",
+  "call-service",
   "assist",
   "none",
 ];
@@ -71,13 +74,13 @@ const ASSIST_SCHEMA = [
 export class HuiActionEditor extends LitElement {
   @property({ attribute: false }) public config?: ActionConfig;
 
-  @property({ attribute: false }) public label?: string;
+  @property() public label?: string;
 
   @property({ attribute: false }) public actions?: UiAction[];
 
   @property({ attribute: false }) public defaultAction?: UiAction;
 
-  @property({ attribute: false }) public tooltipText?: string;
+  @property() public tooltipText?: string;
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
@@ -95,12 +98,12 @@ export class HuiActionEditor extends LitElement {
 
   get _service(): string {
     const config = this.config as CallServiceActionConfig;
-    return config?.perform_action || config?.service || "";
+    return config?.service || "";
   }
 
   private _serviceAction = memoizeOne(
     (config: CallServiceActionConfig): ServiceAction => ({
-      action: this._service,
+      service: this._service,
       ...(config.data || config.service_data
         ? { data: config.data ?? config.service_data }
         : null),
@@ -124,19 +127,13 @@ export class HuiActionEditor extends LitElement {
 
     const actions = this.actions ?? DEFAULT_ACTIONS;
 
-    let action = this.config?.action || "default";
-
-    if (action === "call-service") {
-      action = "perform-action";
-    }
-
     return html`
       <div class="dropdown">
         <ha-select
           .label=${this.label}
           .configValue=${"action"}
           @selected=${this._actionPicked}
-          .value=${action}
+          .value=${this.config?.action ?? "default"}
           @closed=${stopPropagation}
           fixedMenuPosition
           naturalMenuWidt
@@ -152,10 +149,10 @@ export class HuiActionEditor extends LitElement {
               : nothing}
           </mwc-list-item>
           ${actions.map(
-            (actn) => html`
-              <mwc-list-item .value=${actn}>
+            (action) => html`
+              <mwc-list-item .value=${action}>
                 ${this.hass!.localize(
-                  `ui.panel.lovelace.editor.action-editor.actions.${actn}`
+                  `ui.panel.lovelace.editor.action-editor.actions.${action}`
                 )}
               </mwc-list-item>
             `
@@ -191,8 +188,7 @@ export class HuiActionEditor extends LitElement {
             ></ha-textfield>
           `
         : nothing}
-      ${this.config?.action === "call-service" ||
-      this.config?.action === "perform-action"
+      ${this.config?.action === "call-service"
         ? html`
             <ha-service-control
               .hass=${this.hass}
@@ -223,15 +219,8 @@ export class HuiActionEditor extends LitElement {
     if (!this.hass) {
       return;
     }
-    let action = this.config?.action;
-
-    if (action === "call-service") {
-      action = "perform-action";
-    }
-
     const value = ev.target.value;
-
-    if (action === value) {
+    if (this.config?.action === value) {
       return;
     }
     if (value === "default") {
@@ -245,8 +234,8 @@ export class HuiActionEditor extends LitElement {
         data = { url_path: this._url_path };
         break;
       }
-      case "perform-action": {
-        data = { perform_action: this._service };
+      case "call-service": {
+        data = { service: this._service };
         break;
       }
       case "navigate": {
@@ -296,8 +285,7 @@ export class HuiActionEditor extends LitElement {
     ev.stopPropagation();
     const value = {
       ...this.config!,
-      action: "perform-action",
-      perform_action: ev.detail.value.action || "",
+      service: ev.detail.value.service || "",
       data: ev.detail.value.data,
       target: ev.detail.value.target || {},
     };
@@ -307,9 +295,6 @@ export class HuiActionEditor extends LitElement {
     // "service_data" is allowed for backwards compatibility but replaced with "data" on write
     if ("service_data" in value) {
       delete value.service_data;
-    }
-    if ("service" in value) {
-      delete value.service;
     }
 
     fireEvent(this, "value-changed", { value });

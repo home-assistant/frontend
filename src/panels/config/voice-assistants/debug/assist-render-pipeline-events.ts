@@ -1,12 +1,11 @@
-import type { TemplateResult } from "lit";
-import { html, LitElement } from "lit";
+import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import type {
+import {
   PipelineRun,
   PipelineRunEvent,
+  processEvent,
 } from "../../../../data/assist_pipeline";
-import { processEvent } from "../../../../data/assist_pipeline";
 import type { HomeAssistant } from "../../../../types";
 import "./assist-render-pipeline-run";
 
@@ -39,7 +38,7 @@ export class AssistPipelineEvents extends LitElement {
           </ha-card>`;
       }
       return html`<ha-alert alert-type="warning"
-        >There were no events in this run.</ha-alert
+        >There where no events in this run.</ha-alert
       >`;
     }
     return html`

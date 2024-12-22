@@ -1,10 +1,9 @@
-import type {
+import {
   HassEntity,
   HassEntityAttributeBase,
 } from "home-assistant-js-websocket";
-import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
-import type { FrontendLocaleData } from "../../data/translation";
-import { NumberFormat } from "../../data/translation";
+import { EntityRegistryDisplayEntry } from "../../data/entity_registry";
+import { FrontendLocaleData, NumberFormat } from "../../data/translation";
 import { round } from "./round";
 
 /**

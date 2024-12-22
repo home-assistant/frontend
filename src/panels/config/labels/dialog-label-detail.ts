@@ -1,6 +1,5 @@
 import "@material/mwc-button";
-import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
@@ -11,11 +10,11 @@ import "../../../components/ha-textfield";
 import "../../../components/ha-textarea";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-color-picker";
-import type { HassDialog } from "../../../dialogs/make-dialog-manager";
+import { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
-import type { LabelDetailDialogParams } from "./show-dialog-label-detail";
-import type {
+import { HomeAssistant } from "../../../types";
+import { LabelDetailDialogParams } from "./show-dialog-label-detail";
+import {
   LabelRegistryEntry,
   LabelRegistryEntryMutableParams,
 } from "../../../data/label_registry";

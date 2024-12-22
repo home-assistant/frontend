@@ -1,7 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import { mdiDelete } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { relativeTime } from "../../common/datetime/relative_time";
@@ -9,14 +8,14 @@ import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
 import "../../components/ha-settings-row";
 import "../../components/ha-icon-button";
-import type { RefreshToken } from "../../data/refresh_token";
+import { RefreshToken } from "../../data/refresh_token";
 import {
   showAlertDialog,
   showConfirmationDialog,
   showPromptDialog,
 } from "../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
+import { HomeAssistant } from "../../types";
 import { showLongLivedAccessTokenDialog } from "./show-long-lived-access-token-dialog";
 
 @customElement("ha-long-lived-access-tokens-card")

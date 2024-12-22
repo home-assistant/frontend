@@ -2,17 +2,16 @@ import { mdiCheckCircle, mdiCloseCircleOutline, mdiDelete } from "@mdi/js";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import type { DataTableColumnContainer } from "../../../../../components/data-table/ha-data-table";
-import type { ZwaveJSProvisioningEntry } from "../../../../../data/zwave_js";
+import { DataTableColumnContainer } from "../../../../../components/data-table/ha-data-table";
 import {
+  ZwaveJSProvisioningEntry,
   fetchZwaveProvisioningEntries,
   SecurityClass,
   unprovisionZwaveSmartStartNode,
 } from "../../../../../data/zwave_js";
-import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
-import type { HomeAssistant, Route } from "../../../../../types";
+import { HomeAssistant, Route } from "../../../../../types";
 import { configTabs } from "./zwave_js-config-router";
 
 @customElement("zwave_js-provisioned")
@@ -23,7 +22,7 @@ class ZWaveJSProvisioned extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: false }) public configEntryId!: string;
+  @property() public configEntryId!: string;
 
   @state() private _provisioningEntries: ZwaveJSProvisioningEntry[] = [];
 
@@ -34,7 +33,7 @@ class ZWaveJSProvisioned extends LitElement {
         .narrow=${this.narrow}
         .route=${this.route}
         .tabs=${configTabs}
-        .columns=${this._columns(this.hass.localize)}
+        .columns=${this._columns(this.narrow)}
         .data=${this._provisioningEntries}
       >
       </hass-tabs-subpage-data-table>
@@ -42,13 +41,13 @@ class ZWaveJSProvisioned extends LitElement {
   }
 
   private _columns = memoizeOne(
-    (
-      localize: LocalizeFunc
-    ): DataTableColumnContainer<ZwaveJSProvisioningEntry> => ({
+    (narrow: boolean): DataTableColumnContainer<ZwaveJSProvisioningEntry> => ({
       included: {
-        showNarrow: true,
-        title: localize("ui.panel.config.zwave_js.provisioned.included"),
+        title: this.hass.localize(
+          "ui.panel.config.zwave_js.provisioned.included"
+        ),
         type: "icon",
+        width: "100px",
         template: (entry) =>
           entry.nodeId
             ? html`
@@ -69,16 +68,17 @@ class ZWaveJSProvisioned extends LitElement {
               `,
       },
       dsk: {
-        main: true,
-        title: localize("ui.panel.config.zwave_js.provisioned.dsk"),
+        title: this.hass.localize("ui.panel.config.zwave_js.provisioned.dsk"),
         sortable: true,
         filterable: true,
-        flex: 2,
+        grows: true,
       },
       security_classes: {
-        title: localize(
+        title: this.hass.localize(
           "ui.panel.config.zwave_js.provisioned.security_classes"
         ),
+        width: "30%",
+        hidden: narrow,
         filterable: true,
         sortable: true,
         template: (entry) => {
@@ -93,9 +93,11 @@ class ZWaveJSProvisioned extends LitElement {
         },
       },
       unprovision: {
-        showNarrow: true,
-        title: localize("ui.panel.config.zwave_js.provisioned.unprovison"),
+        title: this.hass.localize(
+          "ui.panel.config.zwave_js.provisioned.unprovison"
+        ),
         type: "icon-button",
+        width: "100px",
         template: (entry) => html`
           <ha-icon-button
             .label=${this.hass.localize(

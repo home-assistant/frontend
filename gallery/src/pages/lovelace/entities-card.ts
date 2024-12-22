@@ -1,5 +1,4 @@
-import type { PropertyValues, TemplateResult } from "lit";
-import { html, LitElement } from "lit";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, query } from "lit/decorators";
 import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
@@ -288,11 +287,11 @@ const CONFIGS = [
     config: `
 - type: entities
   entities:
-    - type: perform-action
+    - type: call-service
       icon: mdi:power
       name: Bed light
       action_name: Toggle light
-      action: light.toggle
+      service: light.toggle
       data:
         entity_id: light.bed_light
     - type: section

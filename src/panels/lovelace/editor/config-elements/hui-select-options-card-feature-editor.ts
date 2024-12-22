@@ -1,16 +1,16 @@
-import type { HassEntity } from "home-assistant-js-websocket";
+import { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { FormatEntityStateFunc } from "../../../../common/translations/entity-state";
+import { FormatEntityStateFunc } from "../../../../common/translations/entity-state";
 import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
-import type {
+import {
   LovelaceCardFeatureContext,
   SelectOptionsCardFeatureConfig,
 } from "../../card-features/types";

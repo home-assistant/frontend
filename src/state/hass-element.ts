@@ -1,4 +1,4 @@
-import type { Constructor } from "../types";
+import { Constructor } from "../types";
 import AuthMixin from "./auth-mixin";
 import { connectionMixin } from "./connection-mixin";
 import { dialogManagerMixin } from "./dialog-manager-mixin";

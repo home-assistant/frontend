@@ -1,8 +1,10 @@
 import { mdiViewDashboard } from "@mdi/js";
 import { customElement, property } from "lit/decorators";
-import type { RouterOptions } from "../../../layouts/hass-router-page";
-import { HassRouterPage } from "../../../layouts/hass-router-page";
-import type { HomeAssistant } from "../../../types";
+import {
+  HassRouterPage,
+  RouterOptions,
+} from "../../../layouts/hass-router-page";
+import { HomeAssistant } from "../../../types";
 
 export const lovelaceTabs = [
   {
@@ -26,7 +28,7 @@ class HaConfigLovelace extends HassRouterPage {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+  @property({ type: Boolean }) public isWide = false;
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboards",

@@ -1,7 +1,7 @@
 import { addMonths, startOfYear } from "date-fns";
-import type { HassConfig } from "home-assistant-js-websocket";
+import { HassConfig } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
-import type { FrontendLocaleData } from "../../data/translation";
+import { FrontendLocaleData } from "../../data/translation";
 import { formatDateMonth } from "../datetime/format_date";
 
 export const monthNames = memoizeOne(

@@ -1,22 +1,20 @@
 import { mdiArrowBottomLeft, mdiArrowTopRight, mdiStop } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
-import { LitElement, html, nothing } from "lit";
+import { HassEntity } from "home-assistant-js-websocket";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-button";
-import "../../../components/ha-svg-icon";
 import "../../../components/ha-control-button-group";
 import {
-  CoverEntityFeature,
   canCloseTilt,
   canOpenTilt,
   canStopTilt,
+  CoverEntityFeature,
 } from "../../../data/cover";
-import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeature } from "../types";
-import { cardFeatureStyles } from "./common/card-feature-styles";
-import type { CoverTiltCardFeatureConfig } from "./types";
+import { HomeAssistant } from "../../../types";
+import { LovelaceCardFeature } from "../types";
+import { CoverTiltCardFeatureConfig } from "./types";
 
 export const supportsCoverTiltCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -122,7 +120,12 @@ class HuiCoverTiltCardFeature
   }
 
   static get styles() {
-    return cardFeatureStyles;
+    return css`
+      ha-control-button-group {
+        margin: 0 12px 12px 12px;
+        --control-button-group-spacing: 12px;
+      }
+    `;
   }
 }
 

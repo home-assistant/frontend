@@ -1,16 +1,17 @@
 import "../ha-list-item";
-import type { HassEntity } from "home-assistant-js-websocket";
-import type { PropertyValues, TemplateResult } from "lit";
-import { html, LitElement } from "lit";
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import { HassEntity } from "home-assistant-js-websocket";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import type { ScorableTextItem } from "../../common/string/filter/sequence-matching";
-import { fuzzyFilterSort } from "../../common/string/filter/sequence-matching";
-import type { ValueChangedEvent, HomeAssistant } from "../../types";
+import {
+  fuzzyFilterSort,
+  ScorableTextItem,
+} from "../../common/string/filter/sequence-matching";
+import { ValueChangedEvent, HomeAssistant } from "../../types";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
 import "../ha-icon-button";
@@ -19,8 +20,10 @@ import "./state-badge";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { showHelperDetailDialog } from "../../panels/config/helpers/show-dialog-helper-detail";
 import { domainToName } from "../../data/integration";
-import type { HelperDomain } from "../../panels/config/helpers/const";
-import { isHelperDomain } from "../../panels/config/helpers/const";
+import {
+  isHelperDomain,
+  HelperDomain,
+} from "../../panels/config/helpers/const";
 
 interface HassEntityWithCachedName extends HassEntity, ScorableTextItem {
   friendly_name: string;
@@ -34,7 +37,6 @@ const CREATE_ID = "___create-new-entity___";
 export class HaEntityPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  // eslint-disable-next-line lit/no-native-attributes
   @property({ type: Boolean }) public autofocus = false;
 
   @property({ type: Boolean }) public disabled = false;
@@ -50,7 +52,7 @@ export class HaEntityPicker extends LitElement {
 
   @property() public helper?: string;
 
-  @property({ attribute: false, type: Array }) public createDomains?: string[];
+  @property({ type: Array }) public createDomains?: string[];
 
   /**
    * Show entities from specific domains.
@@ -85,7 +87,7 @@ export class HaEntityPicker extends LitElement {
   public includeUnitOfMeasurement?: string[];
 
   /**
-   * List of allowed entities to show.
+   * List of allowed entities to show. Will ignore all other filters.
    * @type {Array}
    * @attr include-entities
    */
@@ -103,8 +105,7 @@ export class HaEntityPicker extends LitElement {
   @property({ attribute: false })
   public entityFilter?: HaEntityPickerEntityFilterFunc;
 
-  @property({ attribute: "hide-clear-icon", type: Boolean })
-  public hideClearIcon = false;
+  @property({ type: Boolean }) public hideClearIcon = false;
 
   @property({ attribute: "item-label-path" }) public itemLabelPath =
     "friendly_name";
@@ -219,13 +220,30 @@ export class HaEntityPicker extends LitElement {
 
       if (includeEntities) {
         entityIds = entityIds.filter((entityId) =>
-          includeEntities.includes(entityId)
+          this.includeEntities!.includes(entityId)
         );
+
+        return entityIds
+          .map((key) => {
+            const friendly_name = computeStateName(hass!.states[key]) || key;
+            return {
+              ...hass!.states[key],
+              friendly_name,
+              strings: [key, friendly_name],
+            };
+          })
+          .sort((entityA, entityB) =>
+            caseInsensitiveStringCompare(
+              entityA.friendly_name,
+              entityB.friendly_name,
+              this.hass.locale.language
+            )
+          );
       }
 
       if (excludeEntities) {
         entityIds = entityIds.filter(
-          (entityId) => !excludeEntities.includes(entityId)
+          (entityId) => !excludeEntities!.includes(entityId)
         );
       }
 

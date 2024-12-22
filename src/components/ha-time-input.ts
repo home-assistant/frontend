@@ -2,7 +2,7 @@ import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { useAmPm } from "../common/datetime/use_am_pm";
 import { fireEvent } from "../common/dom/fire_event";
-import type { FrontendLocaleData } from "../data/translation";
+import { FrontendLocaleData } from "../data/translation";
 import "./ha-base-time-input";
 import type { TimeChangedEvent } from "./ha-base-time-input";
 
@@ -22,8 +22,6 @@ export class HaTimeInput extends LitElement {
 
   @property({ type: Boolean, attribute: "enable-second" })
   public enableSecond = false;
-
-  @property({ type: Boolean, reflect: true }) public clearable?: boolean;
 
   protected render() {
     const useAMPM = useAmPm(this.locale);
@@ -50,26 +48,22 @@ export class HaTimeInput extends LitElement {
         @value-changed=${this._timeChanged}
         .enableSecond=${this.enableSecond}
         .required=${this.required}
-        .clearable=${this.clearable && this.value !== undefined}
         .helper=${this.helper}
       ></ha-base-time-input>
     `;
   }
 
-  private _timeChanged(ev: CustomEvent<{ value?: TimeChangedEvent }>) {
+  private _timeChanged(ev: CustomEvent<{ value: TimeChangedEvent }>) {
     ev.stopPropagation();
     const eventValue = ev.detail.value;
 
     const useAMPM = useAmPm(this.locale);
-    let value: string | undefined;
+    let value;
 
-    // An undefined eventValue means the time selector is being cleared,
-    // the `value` variable will (intentionally) be left undefined.
     if (
-      eventValue !== undefined &&
-      (!isNaN(eventValue.hours) ||
-        !isNaN(eventValue.minutes) ||
-        !isNaN(eventValue.seconds))
+      !isNaN(eventValue.hours) ||
+      !isNaN(eventValue.minutes) ||
+      !isNaN(eventValue.seconds)
     ) {
       let hours = eventValue.hours || 0;
       if (eventValue && useAMPM) {

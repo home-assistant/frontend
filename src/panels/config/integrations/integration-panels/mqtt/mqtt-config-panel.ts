@@ -1,6 +1,5 @@
 import "@material/mwc-button";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { storage } from "../../../../../common/decorators/storage";
 import "../../../../../components/ha-card";
@@ -11,7 +10,7 @@ import { getConfigEntries } from "../../../../../data/config_entries";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
+import { HomeAssistant } from "../../../../../types";
 import "./mqtt-subscribe-card";
 
 const qosLevel = ["0", "1", "2"];

@@ -1,34 +1,12 @@
-import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import {
-  assert,
-  boolean,
-  literal,
-  number,
-  object,
-  optional,
-  string,
-  union,
-} from "superstruct";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
-import type { NumericStateCondition } from "../../../../../data/automation";
+import { NumericStateCondition } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
-
-const numericStateConditionStruct = object({
-  alias: optional(string()),
-  condition: literal("numeric_state"),
-  entity_id: optional(string()),
-  attribute: optional(string()),
-  above: optional(union([number(), string()])),
-  below: optional(union([number(), string()])),
-  value_template: optional(string()),
-  enabled: optional(boolean()),
-});
 
 @customElement("ha-automation-condition-numeric_state")
 export default class HaNumericStateCondition extends LitElement {
@@ -42,36 +20,11 @@ export default class HaNumericStateCondition extends LitElement {
 
   @state() private _inputBelowIsEntity?: boolean;
 
-  public static get defaultConfig(): NumericStateCondition {
+  public static get defaultConfig() {
     return {
-      condition: "numeric_state",
       entity_id: "",
     };
   }
-
-  public shouldUpdate(changedProperties: PropertyValues) {
-    if (changedProperties.has("condition")) {
-      try {
-        assert(this.condition, numericStateConditionStruct);
-      } catch (e: any) {
-        fireEvent(this, "ui-mode-not-available", e);
-        return false;
-      }
-    }
-    return true;
-  }
-
-  private _data = memoizeOne(
-    (
-      inputAboveIsEntity: boolean,
-      inputBelowIsEntity: boolean,
-      condition: NumericStateCondition
-    ) => ({
-      lower_limit: inputAboveIsEntity ? "input" : "value",
-      upper_limit: inputBelowIsEntity ? "input" : "value",
-      ...condition,
-    })
-  );
 
   private _schema = memoizeOne(
     (
@@ -158,7 +111,7 @@ export default class HaNumericStateCondition extends LitElement {
           },
         },
         {
-          name: "lower_limit",
+          name: "mode_above",
           type: "select",
           required: true,
           options: [
@@ -199,7 +152,7 @@ export default class HaNumericStateCondition extends LitElement {
               },
             ] as const)),
         {
-          name: "upper_limit",
+          name: "mode_below",
           type: "select",
           required: true,
           options: [
@@ -246,33 +199,31 @@ export default class HaNumericStateCondition extends LitElement {
       ] as const
   );
 
-  public willUpdate() {
-    this._inputAboveIsEntity =
+  public render() {
+    const inputAboveIsEntity =
       this._inputAboveIsEntity ??
       (typeof this.condition.above === "string" &&
         ((this.condition.above as string).startsWith("input_number.") ||
           (this.condition.above as string).startsWith("number.") ||
           (this.condition.above as string).startsWith("sensor.")));
-    this._inputBelowIsEntity =
+    const inputBelowIsEntity =
       this._inputBelowIsEntity ??
       (typeof this.condition.below === "string" &&
         ((this.condition.below as string).startsWith("input_number.") ||
           (this.condition.below as string).startsWith("number.") ||
           (this.condition.below as string).startsWith("sensor.")));
-  }
 
-  public render() {
     const schema = this._schema(
       this.hass.localize,
-      this._inputAboveIsEntity,
-      this._inputBelowIsEntity
+      inputAboveIsEntity,
+      inputBelowIsEntity
     );
 
-    const data = this._data(
-      this._inputAboveIsEntity!,
-      this._inputBelowIsEntity!,
-      this.condition
-    );
+    const data = {
+      mode_above: inputAboveIsEntity ? "input" : "value",
+      mode_below: inputBelowIsEntity ? "input" : "value",
+      ...this.condition,
+    };
 
     return html`
       <ha-form
@@ -288,13 +239,13 @@ export default class HaNumericStateCondition extends LitElement {
 
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    const newCondition = { ...ev.detail.value };
+    const newCondition = ev.detail.value;
 
-    this._inputAboveIsEntity = newCondition.lower_limit === "input";
-    this._inputBelowIsEntity = newCondition.upper_limit === "input";
+    this._inputAboveIsEntity = newCondition.mode_above === "input";
+    this._inputBelowIsEntity = newCondition.mode_below === "input";
 
-    delete newCondition.lower_limit;
-    delete newCondition.upper_limit;
+    delete newCondition.mode_above;
+    delete newCondition.mode_below;
 
     if (newCondition.value_template === "") {
       delete newCondition.value_template;

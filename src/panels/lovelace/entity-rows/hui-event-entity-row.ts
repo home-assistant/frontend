@@ -1,10 +1,16 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isUnavailableState } from "../../../data/entity";
-import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import type { HomeAssistant } from "../../../types";
-import type { EntitiesCardEntityConfig } from "../cards/types";
+import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import { HomeAssistant } from "../../../types";
+import { EntitiesCardEntityConfig } from "../cards/types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
@@ -12,8 +18,8 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import "../components/hui-timestamp-display";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { TimestampRenderingFormat } from "../components/types";
-import type { LovelaceRow } from "./types";
+import { TimestampRenderingFormat } from "../components/types";
+import { LovelaceRow } from "./types";
 
 interface EventEntityConfig extends EntitiesCardEntityConfig {
   format?: TimestampRenderingFormat;

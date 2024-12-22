@@ -1,7 +1,6 @@
 import { mdiPower, mdiWaterPercent } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
-import type { PropertyValues, TemplateResult } from "lit";
-import { LitElement, html } from "lit";
+import { HassEntity } from "home-assistant-js-websocket";
+import { LitElement, PropertyValues, TemplateResult, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -9,14 +8,10 @@ import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../components/ha-control-select";
 import { UNAVAILABLE } from "../../../data/entity";
-import type {
-  HumidifierEntity,
-  HumidifierState,
-} from "../../../data/humidifier";
-import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeature } from "../types";
-import { cardFeatureStyles } from "./common/card-feature-styles";
-import type { HumidifierToggleCardFeatureConfig } from "./types";
+import { HumidifierEntity, HumidifierState } from "../../../data/humidifier";
+import { HomeAssistant } from "../../../types";
+import { LovelaceCardFeature } from "../types";
+import { HumidifierToggleCardFeatureConfig } from "./types";
 
 export const supportsHumidifierToggleCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -100,23 +95,37 @@ class HuiHumidifierToggleCardFeature
     }));
 
     return html`
-      <ha-control-select
-        .options=${options}
-        .value=${this._currentState}
-        @value-changed=${this._valueChanged}
-        hide-label
-        .ariaLabel=${this.hass.localize("ui.card.humidifier.state")}
-        style=${styleMap({
-          "--control-select-color": color,
-        })}
-        .disabled=${this.stateObj!.state === UNAVAILABLE}
-      >
-      </ha-control-select>
+      <div class="container">
+        <ha-control-select
+          .options=${options}
+          .value=${this._currentState}
+          @value-changed=${this._valueChanged}
+          hide-label
+          .ariaLabel=${this.hass.localize("ui.card.humidifier.state")}
+          style=${styleMap({
+            "--control-select-color": color,
+          })}
+          .disabled=${this.stateObj!.state === UNAVAILABLE}
+        >
+        </ha-control-select>
+      </div>
     `;
   }
 
   static get styles() {
-    return cardFeatureStyles;
+    return css`
+      ha-control-select {
+        --control-select-color: var(--feature-color);
+        --control-select-padding: 0;
+        --control-select-thickness: 40px;
+        --control-select-border-radius: 10px;
+        --control-select-button-border-radius: 10px;
+      }
+      .container {
+        padding: 0 12px 12px 12px;
+        width: auto;
+      }
+    `;
   }
 }
 

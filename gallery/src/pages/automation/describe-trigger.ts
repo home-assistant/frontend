@@ -3,11 +3,11 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-yaml-editor";
-import type { Trigger } from "../../../../src/data/automation";
+import { Trigger } from "../../../../src/data/automation";
 import { describeTrigger } from "../../../../src/data/automation_i18n";
 import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
-import type { HomeAssistant } from "../../../../src/types";
+import { HomeAssistant } from "../../../../src/types";
 
 const ENTITIES = [
   getEntity("light", "kitchen", "on", {
@@ -22,52 +22,46 @@ const ENTITIES = [
 ];
 
 const triggers = [
-  { trigger: "state", entity_id: "light.kitchen", from: "off", to: "on" },
-  { trigger: "mqtt" },
+  { platform: "state", entity_id: "light.kitchen", from: "off", to: "on" },
+  { platform: "mqtt" },
   {
-    trigger: "geo_location",
+    platform: "geo_location",
     source: "test_source",
     zone: "zone.home",
     event: "enter",
   },
-  { trigger: "homeassistant", event: "start" },
+  { platform: "homeassistant", event: "start" },
   {
-    trigger: "numeric_state",
+    platform: "numeric_state",
     entity_id: "light.kitchen",
     attribute: "brightness",
     below: 80,
     above: 20,
   },
-  { trigger: "sun", event: "sunset" },
-  { trigger: "time_pattern" },
-  { trigger: "time_pattern", hours: "*", minutes: "/5", seconds: "10" },
-  { trigger: "webhook" },
-  { trigger: "persistent_notification" },
+  { platform: "sun", event: "sunset" },
+  { platform: "time_pattern" },
+  { platform: "time_pattern", hours: "*", minutes: "/5", seconds: "10" },
+  { platform: "webhook" },
+  { platform: "persistent_notification" },
   {
-    trigger: "zone",
+    platform: "zone",
     entity_id: "person.person",
     zone: "zone.home",
     event: "enter",
   },
-  { trigger: "tag" },
-  { trigger: "time", at: "15:32" },
-  { trigger: "template" },
-  { trigger: "conversation", command: "Turn on the lights" },
+  { platform: "tag" },
+  { platform: "time", at: "15:32" },
+  { platform: "template" },
+  { platform: "conversation", command: "Turn on the lights" },
   {
-    trigger: "conversation",
+    platform: "conversation",
     command: ["Turn on the lights", "Turn the lights on"],
   },
-  { trigger: "event", event_type: "homeassistant_started" },
-  {
-    triggers: [
-      { trigger: "state", entity_id: "light.kitchen", to: "on" },
-      { trigger: "state", entity_id: "light.kitchen", to: "off" },
-    ],
-  },
+  { platform: "event", event_type: "homeassistant_started" },
 ];
 
 const initialTrigger: Trigger = {
-  trigger: "state",
+  platform: "state",
   entity_id: "light.kitchen",
 };
 

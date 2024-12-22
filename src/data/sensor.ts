@@ -1,4 +1,4 @@
-import type { HomeAssistant } from "../types";
+import { HomeAssistant } from "../types";
 
 export const SENSOR_DEVICE_CLASS_BATTERY = "battery";
 export const SENSOR_DEVICE_CLASS_TIMESTAMP = "timestamp";

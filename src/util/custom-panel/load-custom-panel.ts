@@ -1,5 +1,5 @@
 import { loadJS, loadModule } from "../../common/dom/load_resource";
-import type { CustomPanelConfig } from "../../data/panel_custom";
+import { CustomPanelConfig } from "../../data/panel_custom";
 
 // Make sure we only import every JS-based panel once (HTML import has this built-in)
 const JS_CACHE = {};
@@ -16,7 +16,7 @@ export const getUrl = (
 
   // if both module and JS provided, base url on frontend build
   if (panelConfig.module_url && panelConfig.js_url) {
-    if (__BUILD__ === "modern") {
+    if (__BUILD__ === "latest") {
       return {
         type: "module",
         url: panelConfig.module_url,

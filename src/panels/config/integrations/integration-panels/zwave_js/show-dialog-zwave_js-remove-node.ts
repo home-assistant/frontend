@@ -2,8 +2,6 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 
 export interface ZWaveJSRemoveNodeDialogParams {
   entry_id: string;
-  skipConfirmation?: boolean;
-  removedCallback?: () => void;
 }
 
 export const loadRemoveNodeDialog = () =>

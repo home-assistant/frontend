@@ -1,5 +1,4 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import "./ha-ripple";
@@ -46,7 +45,7 @@ export class HaControlButton extends LitElement {
         position: relative;
         cursor: pointer;
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
         text-align: center;

@@ -1,4 +1,4 @@
-import { assert, describe, it } from "vitest";
+import { assert } from "chai";
 
 import { hasLocation } from "../../../src/common/entity/has_location";
 

@@ -1,7 +1,6 @@
 import { mdiClose } from "@mdi/js";
 import { dump } from "js-yaml";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -11,8 +10,10 @@ import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-next";
 import "../../../components/search-input";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
-import type { HassioHardwareInfo } from "../../../data/hassio/hardware";
-import { fetchHassioHardwareInfo } from "../../../data/hassio/hardware";
+import {
+  fetchHassioHardwareInfo,
+  HassioHardwareInfo,
+} from "../../../data/hassio/hardware";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../resources/styles";

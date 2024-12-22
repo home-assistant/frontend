@@ -37,12 +37,19 @@
     {
       "description": "Group tsparticles engine and presets",
       "groupName": "tsparticles",
-      "matchPackageNames": ["tsparticles-engine", "tsparticles-preset-{/,}**"]
+      "matchPackageNames": ["tsparticles-engine"],
+      "matchPackagePrefixes": ["tsparticles-preset-"]
     },
     {
       "description": "Group date-fns with dependent timezone package",
       "groupName": "date-fns",
       "matchPackageNames": ["date-fns", "date-fns-tz"]
+    },
+    {
+      "description": "Group and temporarily disable WDS packages",
+      "groupName": "Web Dev Server",
+      "matchPackagePrefixes": ["@web/dev-server"],
+      "enabled": false
     }
   ]
 }

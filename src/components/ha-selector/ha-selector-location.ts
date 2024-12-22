@@ -79,7 +79,6 @@ export class HaLocationSelector extends LitElement {
         .locations=${this._location(this.selector, this.value)}
         @location-updated=${this._locationChanged}
         @radius-updated=${this._radiusChanged}
-        pin-on-click
       ></ha-locations-editor>
       <ha-form
         .hass=${this.hass}
@@ -163,14 +162,8 @@ export class HaLocationSelector extends LitElement {
 
   private _computeLabel = (
     entry: SchemaUnion<ReturnType<typeof this._schema>>
-  ): string => {
-    if (entry.name) {
-      return this.hass.localize(
-        `ui.components.selectors.location.${entry.name}`
-      );
-    }
-    return "";
-  };
+  ): string =>
+    this.hass.localize(`ui.components.selectors.location.${entry.name}`);
 
   static styles = css`
     ha-locations-editor {

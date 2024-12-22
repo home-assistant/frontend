@@ -1,12 +1,11 @@
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-textfield";
-import type { RepeatAction } from "../../../../../data/script";
+import { RepeatAction } from "../../../../../data/script";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant, ItemPath } from "../../../../../types";
 import "../ha-automation-action";
 import type { ActionElement } from "../ha-automation-action-row";
 
@@ -30,12 +29,19 @@ export class HaRepeatAction extends LitElement implements ActionElement {
 
   @property({ attribute: false }) public action!: RepeatAction;
 
-  public static get defaultConfig(): RepeatAction {
+  @property({ type: Array }) public path?: ItemPath;
+
+  public static get defaultConfig() {
     return { repeat: { count: 2, sequence: [] } };
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, type: string, template: boolean) =>
+    (
+      localize: LocalizeFunc,
+      type: string,
+      template: boolean,
+      path?: ItemPath
+    ) =>
       [
         {
           name: "type",
@@ -67,7 +73,9 @@ export class HaRepeatAction extends LitElement implements ActionElement {
               {
                 name: type,
                 selector: {
-                  condition: {},
+                  condition: {
+                    path: [...(path ?? []), "repeat", type],
+                  },
                 },
               },
             ] as const satisfies readonly HaFormSchema[])
@@ -84,7 +92,9 @@ export class HaRepeatAction extends LitElement implements ActionElement {
         {
           name: "sequence",
           selector: {
-            action: {},
+            action: {
+              path: [...(path ?? []), "repeat", "sequence"],
+            },
           },
         },
       ] as const satisfies readonly HaFormSchema[]
@@ -98,7 +108,8 @@ export class HaRepeatAction extends LitElement implements ActionElement {
       type ?? "count",
       "count" in action && typeof action.count === "string"
         ? isTemplate(action.count)
-        : false
+        : false,
+      this.path
     );
 
     const data = { ...action, type };

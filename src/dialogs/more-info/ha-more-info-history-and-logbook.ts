@@ -1,8 +1,7 @@
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
-import type { ChartResizeOptions } from "../../components/chart/ha-chart-base";
-import type { HomeAssistant } from "../../types";
+import { ChartResizeOptions } from "../../components/chart/ha-chart-base";
+import { HomeAssistant } from "../../types";
 import {
   computeShowHistoryComponent,
   computeShowLogBookComponent,
@@ -15,7 +14,7 @@ import "./ha-more-info-logbook";
 export class MoreInfoHistoryAndLogbook extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public entityId!: string;
+  @property() public entityId!: string;
 
   @query("ha-more-info-history")
   private _history?: MoreInfoHistory;

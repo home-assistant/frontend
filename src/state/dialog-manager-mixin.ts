@@ -1,8 +1,8 @@
-import type { PropertyValues } from "lit";
-import type { HASSDomEvent } from "../common/dom/fire_event";
+import { PropertyValues } from "lit";
+import { HASSDomEvent } from "../common/dom/fire_event";
 import { makeDialogManager, showDialog } from "../dialogs/make-dialog-manager";
-import type { Constructor } from "../types";
-import type { HassBaseEl } from "./hass-base-mixin";
+import { Constructor } from "../types";
+import { HassBaseEl } from "./hass-base-mixin";
 
 interface RegisterDialogParams {
   dialogShowEvent: keyof HASSDomEvents;
@@ -35,7 +35,7 @@ export const dialogManagerMixin = <T extends Constructor<HassBaseEl>>(
       makeDialogManager(this, this.shadowRoot!);
     }
 
-    protected registerDialog({
+    private registerDialog({
       dialogShowEvent,
       dialogTag,
       dialogImport,

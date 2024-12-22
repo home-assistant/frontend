@@ -1,5 +1,5 @@
-import type { TemplateResult } from "lit";
-import { LitElement, html, css } from "lit";
+/* eslint-disable lit/no-template-arrow */
+import { LitElement, TemplateResult, html, css } from "lit";
 import { customElement, state } from "lit/decorators";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import type { HomeAssistant } from "../../../../src/types";
@@ -11,6 +11,7 @@ import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervis
 import type { ConditionWithShorthand } from "../../../../src/data/automation";
 import "../../../../src/panels/config/automation/condition/ha-automation-condition";
 import { HaDeviceCondition } from "../../../../src/panels/config/automation/condition/types/ha-automation-condition-device";
+import { HaLogicalCondition } from "../../../../src/panels/config/automation/condition/types/ha-automation-condition-logical";
 import HaNumericStateCondition from "../../../../src/panels/config/automation/condition/types/ha-automation-condition-numeric_state";
 import { HaStateCondition } from "../../../../src/panels/config/automation/condition/types/ha-automation-condition-state";
 import { HaSunCondition } from "../../../../src/panels/config/automation/condition/types/ha-automation-condition-sun";
@@ -18,67 +19,62 @@ import { HaTemplateCondition } from "../../../../src/panels/config/automation/co
 import { HaTimeCondition } from "../../../../src/panels/config/automation/condition/types/ha-automation-condition-time";
 import { HaTriggerCondition } from "../../../../src/panels/config/automation/condition/types/ha-automation-condition-trigger";
 import { HaZoneCondition } from "../../../../src/panels/config/automation/condition/types/ha-automation-condition-zone";
-import { HaAndCondition } from "../../../../src/panels/config/automation/condition/types/ha-automation-condition-and";
-import { HaOrCondition } from "../../../../src/panels/config/automation/condition/types/ha-automation-condition-or";
-import { HaNotCondition } from "../../../../src/panels/config/automation/condition/types/ha-automation-condition-not";
 
 const SCHEMAS: { name: string; conditions: ConditionWithShorthand[] }[] = [
   {
     name: "State",
-    conditions: [{ ...HaStateCondition.defaultConfig }],
+    conditions: [{ condition: "state", ...HaStateCondition.defaultConfig }],
   },
   {
     name: "Numeric State",
-    conditions: [{ ...HaNumericStateCondition.defaultConfig }],
+    conditions: [
+      { condition: "numeric_state", ...HaNumericStateCondition.defaultConfig },
+    ],
   },
   {
     name: "Sun",
-    conditions: [{ ...HaSunCondition.defaultConfig }],
+    conditions: [{ condition: "sun", ...HaSunCondition.defaultConfig }],
   },
   {
     name: "Zone",
-    conditions: [{ ...HaZoneCondition.defaultConfig }],
+    conditions: [{ condition: "zone", ...HaZoneCondition.defaultConfig }],
   },
   {
     name: "Time",
-    conditions: [{ ...HaTimeCondition.defaultConfig }],
+    conditions: [{ condition: "time", ...HaTimeCondition.defaultConfig }],
   },
   {
     name: "Template",
-    conditions: [{ ...HaTemplateCondition.defaultConfig }],
+    conditions: [
+      { condition: "template", ...HaTemplateCondition.defaultConfig },
+    ],
   },
   {
     name: "Device",
-    conditions: [{ ...HaDeviceCondition.defaultConfig }],
+    conditions: [{ condition: "device", ...HaDeviceCondition.defaultConfig }],
   },
   {
     name: "And",
-    conditions: [{ ...HaAndCondition.defaultConfig }],
+    conditions: [{ condition: "and", ...HaLogicalCondition.defaultConfig }],
   },
   {
     name: "Or",
-    conditions: [{ ...HaOrCondition.defaultConfig }],
+    conditions: [{ condition: "or", ...HaLogicalCondition.defaultConfig }],
   },
   {
     name: "Not",
-    conditions: [{ ...HaNotCondition.defaultConfig }],
+    conditions: [{ condition: "not", ...HaLogicalCondition.defaultConfig }],
   },
   {
     name: "Trigger",
-    conditions: [{ ...HaTriggerCondition.defaultConfig }],
+    conditions: [{ condition: "trigger", ...HaTriggerCondition.defaultConfig }],
   },
   {
     name: "Shorthand",
     conditions: [
-      {
-        ...HaAndCondition.defaultConfig,
-      },
-      {
-        ...HaOrCondition.defaultConfig,
-      },
-      {
-        ...HaNotCondition.defaultConfig,
-      },
+      { and: HaLogicalCondition.defaultConfig.conditions },
+      { or: HaLogicalCondition.defaultConfig.conditions },
+      { not: HaLogicalCondition.defaultConfig.conditions },
     ],
   },
 ];
@@ -103,6 +99,11 @@ export class DemoAutomationEditorCondition extends LitElement {
   }
 
   protected render(): TemplateResult {
+    const valueChanged = (ev) => {
+      const sampleIdx = ev.target.sampleIdx;
+      this.data[sampleIdx] = ev.detail.value;
+      this.requestUpdate();
+    };
     return html`
       <div class="options">
         <ha-formfield label="Disabled">
@@ -127,7 +128,7 @@ export class DemoAutomationEditorCondition extends LitElement {
                   .conditions=${this.data[sampleIdx]}
                   .sampleIdx=${sampleIdx}
                   .disabled=${this._disabled}
-                  @value-changed=${this._handleValueChange}
+                  @value-changed=${valueChanged}
                 ></ha-automation-condition>
               `
             )}
@@ -135,12 +136,6 @@ export class DemoAutomationEditorCondition extends LitElement {
         `
       )}
     `;
-  }
-
-  private _handleValueChange(ev) {
-    const sampleIdx = ev.target.sampleIdx;
-    this.data[sampleIdx] = ev.detail.value;
-    this.requestUpdate();
   }
 
   private _handleOptionChange(ev) {

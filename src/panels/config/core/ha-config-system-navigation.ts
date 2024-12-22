@@ -1,6 +1,5 @@
 import { mdiPower } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { canShowPage } from "../../../common/config/can_show_page";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -9,21 +8,15 @@ import { blankBeforePercent } from "../../../common/translations/blank_before_pe
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-navigation-list";
-import type { BackupContent } from "../../../data/backup";
-import { fetchBackupInfo } from "../../../data/backup";
-import type { CloudStatus } from "../../../data/cloud";
-import { fetchCloudStatus } from "../../../data/cloud";
-import type { HardwareInfo } from "../../../data/hardware";
-import { BOARD_NAMES } from "../../../data/hardware";
-import type { HassioBackup } from "../../../data/hassio/backup";
-import { fetchHassioBackups } from "../../../data/hassio/backup";
-import type {
-  HassioHassOSInfo,
-  HassioHostInfo,
-} from "../../../data/hassio/host";
+import { BackupContent, fetchBackupInfo } from "../../../data/backup";
+import { CloudStatus, fetchCloudStatus } from "../../../data/cloud";
+import { BOARD_NAMES, HardwareInfo } from "../../../data/hardware";
+import { fetchHassioBackups, HassioBackup } from "../../../data/hassio/backup";
 import {
   fetchHassioHassOsInfo,
   fetchHassioHostInfo,
+  HassioHassOSInfo,
+  HassioHostInfo,
 } from "../../../data/hassio/host";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import "../../../layouts/hass-subpage";
@@ -38,11 +31,11 @@ class HaConfigSystemNavigation extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+  @property({ type: Boolean }) public isWide = false;
 
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
-  @property({ attribute: false }) public showAdvanced = false;
+  @property({ type: Boolean }) public showAdvanced = false;
 
   @state() private _latestBackupDate?: string;
 
@@ -139,7 +132,7 @@ class HaConfigSystemNavigation extends LitElement {
               .hass=${this.hass}
               .narrow=${this.narrow}
               .pages=${pages}
-              has-secondary
+              hasSecondary
               .label=${this.hass.localize(
                 "ui.panel.config.dashboard.system.main"
               )}

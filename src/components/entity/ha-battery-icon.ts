@@ -1,4 +1,4 @@
-import type { HassEntity } from "home-assistant-js-websocket";
+import { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { batteryLevelIcon } from "../../common/entity/battery_icon";

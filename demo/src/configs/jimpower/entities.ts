@@ -1,5 +1,5 @@
 import { convertEntities } from "../../../../src/fake_data/entity";
-import type { DemoConfig } from "../types";
+import { DemoConfig } from "../types";
 
 export const demoEntitiesJimpower: DemoConfig["entities"] = () =>
   convertEntities({

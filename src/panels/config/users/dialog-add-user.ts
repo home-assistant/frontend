@@ -1,29 +1,31 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import "@material/mwc-button";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-alert";
-import "../../../components/ha-button";
 import "../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-settings-row";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
-import "../../../components/ha-textfield";
-import type { HaTextField } from "../../../components/ha-textfield";
 import { createAuthForUser } from "../../../data/auth";
-import type { User } from "../../../data/user";
 import {
-  SYSTEM_GROUP_ID_ADMIN,
-  SYSTEM_GROUP_ID_USER,
   createUser,
   deleteUser,
+  SYSTEM_GROUP_ID_ADMIN,
+  SYSTEM_GROUP_ID_USER,
+  User,
 } from "../../../data/user";
+import { ValueChangedEvent, HomeAssistant } from "../../../types";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant, ValueChangedEvent } from "../../../types";
-import type { AddUserDialogParams } from "./show-dialog-add-user";
-import "../../../components/ha-password-field";
+import { AddUserDialogParams } from "./show-dialog-add-user";
+import "../../../components/ha-textfield";
+import type { HaTextField } from "../../../components/ha-textfield";
 
 @customElement("dialog-add-user")
 export class DialogAddUser extends LitElement {
@@ -82,7 +84,6 @@ export class DialogAddUser extends LitElement {
     if (!this._params) {
       return nothing;
     }
-
     return html`
       <ha-dialog
         open
@@ -126,70 +127,66 @@ export class DialogAddUser extends LitElement {
             dialogInitialFocus
           ></ha-textfield>
 
-          <ha-password-field
+          <ha-textfield
             .label=${this.hass.localize(
               "ui.panel.config.users.add_user.password"
             )}
+            type="password"
             name="password"
             .value=${this._password}
             required
             @input=${this._handleValueChanged}
             .validationMessage=${this.hass.localize("ui.common.error_required")}
-          ></ha-password-field>
+          ></ha-textfield>
 
-          <ha-password-field
-            .label=${this.hass.localize(
+          <ha-textfield
+            label=${this.hass.localize(
               "ui.panel.config.users.add_user.password_confirm"
             )}
             name="passwordConfirm"
             .value=${this._passwordConfirm}
             @input=${this._handleValueChanged}
             required
+            type="password"
             .invalid=${this._password !== "" &&
             this._passwordConfirm !== "" &&
             this._passwordConfirm !== this._password}
-            .errorMessage=${this.hass.localize(
+            .validationMessage=${this.hass.localize(
               "ui.panel.config.users.add_user.password_not_match"
             )}
-          ></ha-password-field>
-          <ha-settings-row>
-            <span slot="heading">
-              ${this.hass.localize(
-                "ui.panel.config.users.editor.local_access_only"
+          ></ha-textfield>
+          <div class="row">
+            <ha-formfield
+              .label=${this.hass.localize(
+                "ui.panel.config.users.editor.local_only"
               )}
-            </span>
-            <span slot="description">
-              ${this.hass.localize(
-                "ui.panel.config.users.editor.local_access_only_description"
-              )}
-            </span>
-            <ha-switch
-              .checked=${this._localOnly}
-              @change=${this._localOnlyChanged}
             >
-            </ha-switch>
-          </ha-settings-row>
-          <ha-settings-row>
-            <span slot="heading">
-              ${this.hass.localize("ui.panel.config.users.editor.admin")}
-            </span>
-            <span slot="description">
-              ${this.hass.localize(
-                "ui.panel.config.users.editor.admin_description"
-              )}
-            </span>
-            <ha-switch .checked=${this._isAdmin} @change=${this._adminChanged}>
-            </ha-switch>
-          </ha-settings-row>
+              <ha-switch
+                .checked=${this._localOnly}
+                @change=${this._localOnlyChanged}
+              >
+              </ha-switch>
+            </ha-formfield>
+          </div>
+          <div class="row">
+            <ha-formfield
+              .label=${this.hass.localize("ui.panel.config.users.editor.admin")}
+            >
+              <ha-switch
+                .checked=${this._isAdmin}
+                @change=${this._adminChanged}
+              >
+              </ha-switch>
+            </ha-formfield>
+          </div>
           ${!this._isAdmin
             ? html`
-                <ha-alert alert-type="info">
-                  ${this.hass.localize(
-                    "ui.panel.config.users.users_privileges_note"
-                  )}
-                </ha-alert>
+                <br />
+                ${this.hass.localize(
+                  "ui.panel.config.users.users_privileges_note"
+                )}
               `
-            : nothing}
+            : ""}
         </div>
         ${this._loading
           ? html`
@@ -198,7 +195,7 @@ export class DialogAddUser extends LitElement {
               </div>
             `
           : html`
-              <ha-button
+              <mwc-button
                 slot="primaryAction"
                 .disabled=${!this._name ||
                 !this._username ||
@@ -207,7 +204,7 @@ export class DialogAddUser extends LitElement {
                 @click=${this._createUser}
               >
                 ${this.hass.localize("ui.panel.config.users.add_user.create")}
-              </ha-button>
+              </mwc-button>
             `}
       </ha-dialog>
     `;
@@ -284,11 +281,6 @@ export class DialogAddUser extends LitElement {
     }
 
     user.username = this._username;
-    user.credentials = [
-      {
-        type: "homeassistant",
-      },
-    ];
     this._params!.userAddedCallback(user);
     this._close();
   }
@@ -305,13 +297,9 @@ export class DialogAddUser extends LitElement {
           display: flex;
           padding: 8px 0;
         }
-        ha-textfield,
-        ha-password-field {
+        ha-textfield {
           display: block;
-          margin-bottom: 8px;
-        }
-        ha-settings-row {
-          padding: 0;
+          margin-bottom: 16px;
         }
       `,
     ];

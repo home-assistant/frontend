@@ -1,25 +1,24 @@
 import { mdiBackupRestore, mdiFolder, mdiHarddisk, mdiPlayBox } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
-import type { SupervisorMounts } from "../data/supervisor/mounts";
 import {
   fetchSupervisorMounts,
+  SupervisorMounts,
   SupervisorMountType,
   SupervisorMountUsage,
 } from "../data/supervisor/mounts";
-import type { HomeAssistant } from "../types";
+import { HomeAssistant } from "../types";
 import "./ha-alert";
 import "./ha-list-item";
 import "./ha-select";
 import type { HaSelect } from "./ha-select";
 
-const _BACKUP_DATA_DISK_ = "/backup";
+const __BACKUP_DATA_DISK__ = "/backup";
 
 @customElement("ha-mount-picker")
 class HaMountPicker extends LitElement {
@@ -54,7 +53,7 @@ class HaMountPicker extends LitElement {
     }
     const dataDiskOption = html`<ha-list-item
       graphic="icon"
-      .value=${_BACKUP_DATA_DISK_}
+      .value=${__BACKUP_DATA_DISK__}
     >
       <span>
         ${this.hass.localize("ui.components.mount-picker.use_datadisk") ||
@@ -78,7 +77,7 @@ class HaMountPicker extends LitElement {
       >
         ${this.usage === SupervisorMountUsage.BACKUP &&
         (!this._mounts.default_backup_mount ||
-          this._mounts.default_backup_mount === _BACKUP_DATA_DISK_)
+          this._mounts.default_backup_mount === __BACKUP_DATA_DISK__)
           ? dataDiskOption
           : nothing}
         ${this._filterMounts(this._mounts, this.usage).map(
@@ -139,7 +138,8 @@ class HaMountPicker extends LitElement {
       if (isComponentLoaded(this.hass, "hassio")) {
         this._mounts = await fetchSupervisorMounts(this.hass);
         if (this.usage === SupervisorMountUsage.BACKUP && !this.value) {
-          this.value = this._mounts.default_backup_mount || _BACKUP_DATA_DISK_;
+          this.value =
+            this._mounts.default_backup_mount || __BACKUP_DATA_DISK__;
         }
       } else {
         this._error = this.hass.localize(
@@ -173,16 +173,6 @@ class HaMountPicker extends LitElement {
       fireEvent(this, "value-changed", { value });
       fireEvent(this, "change");
     }, 0);
-  }
-
-  static get styles(): CSSResultGroup {
-    return [
-      css`
-        ha-select {
-          width: 100%;
-        }
-      `,
-    ];
   }
 }
 

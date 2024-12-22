@@ -1,7 +1,6 @@
 import { mdiHelpCircle } from "@mdi/js";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "./ha-svg-icon";
 

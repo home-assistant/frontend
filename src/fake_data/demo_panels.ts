@@ -1,4 +1,4 @@
-import type { Panels } from "../types";
+import { Panels } from "../types";
 
 export const demoPanels: Panels = {
   lovelace: {
@@ -66,10 +66,10 @@ export const demoPanels: Panels = {
   //   url_path: "history",
   // },
   map: {
-    component_name: "lovelace",
+    component_name: "map",
     icon: "hass:tooltip-account",
     title: "map",
-    config: { mode: "storage" },
+    config: null,
     url_path: "map",
   },
   energy: {

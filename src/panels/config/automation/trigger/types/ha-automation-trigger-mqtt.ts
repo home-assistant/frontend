@@ -3,8 +3,8 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
-import type { MqttTrigger } from "../../../../../data/automation";
-import type { HomeAssistant } from "../../../../../types";
+import { MqttTrigger } from "../../../../../data/automation";
+import { HomeAssistant } from "../../../../../types";
 import type { TriggerElement } from "../ha-automation-trigger-row";
 
 const SCHEMA = [
@@ -20,8 +20,8 @@ export class HaMQTTTrigger extends LitElement implements TriggerElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  public static get defaultConfig(): MqttTrigger {
-    return { trigger: "mqtt", topic: "" };
+  public static get defaultConfig() {
+    return { topic: "" };
   }
 
   protected render() {

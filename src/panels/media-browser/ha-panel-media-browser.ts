@@ -5,14 +5,19 @@ import {
   mdiAlphaABoxOutline,
   mdiDotsVertical,
 } from "@mdi/js";
-import type { ActionDetail } from "@material/mwc-list";
+import { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-button";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { storage } from "../../common/decorators/storage";
-import type { HASSDomEvent } from "../../common/dom/fire_event";
-import { fireEvent } from "../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-menu-button";
 import "../../components/ha-icon-button";
@@ -23,14 +28,17 @@ import type {
   HaMediaPlayerBrowse,
   MediaPlayerItemId,
 } from "../../components/media-player/ha-media-player-browse";
-import type {
+import {
+  BROWSER_PLAYER,
   MediaPickedEvent,
   MediaPlayerItem,
+  mediaPlayerPlayMedia,
   MediaPlayerLayoutType,
 } from "../../data/media-player";
-import { BROWSER_PLAYER, mediaPlayerPlayMedia } from "../../data/media-player";
-import type { ResolvedMediaSource } from "../../data/media_source";
-import { resolveMediaSource } from "../../data/media_source";
+import {
+  ResolvedMediaSource,
+  resolveMediaSource,
+} from "../../data/media_source";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
 import "./ha-bar-media-player";
@@ -63,12 +71,7 @@ class PanelMediaBrowser extends LitElement {
 
   @state() _currentItem?: MediaPlayerItem;
 
-  @storage({
-    key: "mediaBrowserPreferredLayout",
-    state: true,
-    subscribe: false,
-  })
-  private _preferredLayout: MediaPlayerLayoutType = "auto";
+  @state() _preferredLayout: MediaPlayerLayoutType = "auto";
 
   private _navigateIds: MediaPlayerItemId[] = [
     {

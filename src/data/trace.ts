@@ -1,11 +1,10 @@
 import { strStartsWith } from "../common/string/starts-with";
-import type { Context, HomeAssistant } from "../types";
-import type {
+import { Context, HomeAssistant } from "../types";
+import {
   BlueprintAutomationConfig,
   ManualAutomationConfig,
 } from "./automation";
-import { flattenTriggers } from "./automation";
-import type { BlueprintScriptConfig, ScriptConfig } from "./script";
+import { BlueprintScriptConfig, ScriptConfig } from "./script";
 
 interface BaseTraceStep {
   path: string;
@@ -187,26 +186,11 @@ export const getDataFromPath = (
     const asNumber = Number(raw);
 
     if (isNaN(asNumber)) {
-      let tempResult = result[raw];
+      const tempResult = result[raw];
       if (!tempResult && raw === "sequence") {
         continue;
       }
-
-      if (!tempResult && raw === "trigger") {
-        tempResult = result.triggers;
-      }
-      if (!tempResult && raw === "condition") {
-        tempResult = result.conditions;
-      }
-      if (!tempResult && raw === "action") {
-        tempResult = result.actions;
-      }
-
-      if (raw === "trigger") {
-        result = flattenTriggers(tempResult);
-      } else {
-        result = tempResult;
-      }
+      result = tempResult;
       continue;
     }
 

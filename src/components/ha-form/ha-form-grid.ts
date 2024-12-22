@@ -1,6 +1,12 @@
 import "./ha-form";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property } from "lit/decorators";
 import type {
   HaFormGridSchema,
@@ -27,10 +33,6 @@ export class HaFormGrid extends LitElement implements HaFormElement {
 
   @property({ attribute: false }) public computeHelper?: (
     schema: HaFormSchema
-  ) => string;
-
-  @property({ attribute: false }) public localizeValue?: (
-    key: string
   ) => string;
 
   public async focus() {
@@ -63,7 +65,6 @@ export class HaFormGrid extends LitElement implements HaFormElement {
             .disabled=${this.disabled}
             .computeLabel=${this.computeLabel}
             .computeHelper=${this.computeHelper}
-            .localizeValue=${this.localizeValue}
           ></ha-form>
         `
       )}

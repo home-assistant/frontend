@@ -1,7 +1,7 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { ConversationAgentSelector } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
+import { ConversationAgentSelector } from "../../data/selector";
+import { HomeAssistant } from "../../types";
 import "../ha-conversation-agent-picker";
 
 @customElement("ha-selector-conversation_agent")

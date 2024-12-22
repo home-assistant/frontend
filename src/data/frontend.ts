@@ -1,4 +1,4 @@
-import type { Connection } from "home-assistant-js-websocket";
+import { Connection } from "home-assistant-js-websocket";
 import { getOptimisticCollection } from "./collection";
 
 export interface CoreFrontendUserData {

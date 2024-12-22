@@ -1,7 +1,13 @@
 import "@material/mwc-button";
 import { mdiAlertOctagram, mdiCheckBold } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../ha-circular-progress";
 import "../ha-svg-icon";
@@ -22,6 +28,7 @@ export class HaProgressButton extends LitElement {
       <mwc-button
         ?raised=${this.raised}
         .disabled=${this.disabled || this.progress}
+        @click=${this._buttonTapped}
         class=${this._result || ""}
       >
         <slot></slot>
@@ -62,18 +69,22 @@ export class HaProgressButton extends LitElement {
     }, 2000);
   }
 
+  private _buttonTapped(ev: Event): void {
+    if (this.progress) {
+      ev.stopPropagation();
+    }
+  }
+
   static get styles(): CSSResultGroup {
     return css`
       :host {
         outline: none;
         display: inline-block;
         position: relative;
-        pointer-events: none;
       }
 
       mwc-button {
         transition: all 1s;
-        pointer-events: initial;
       }
 
       mwc-button.success {

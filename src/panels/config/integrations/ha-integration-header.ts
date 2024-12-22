@@ -1,12 +1,10 @@
 import { mdiAlertCircleOutline, mdiAlertOutline } from "@mdi/js";
-import type { TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, TemplateResult, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
-import type { IntegrationManifest } from "../../../data/integration";
-import { domainToName } from "../../../data/integration";
-import type { HomeAssistant } from "../../../types";
+import { IntegrationManifest, domainToName } from "../../../data/integration";
+import { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 
 @customElement("ha-integration-header")
@@ -17,7 +15,7 @@ export class HaIntegrationHeader extends LitElement {
 
   @property() public warning?: string;
 
-  @property({ attribute: false }) public localizedDomainName?: string;
+  @property() public localizedDomainName?: string;
 
   @property() public domain!: string;
 

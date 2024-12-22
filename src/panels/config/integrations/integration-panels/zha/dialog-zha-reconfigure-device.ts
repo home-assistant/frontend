@@ -1,21 +1,18 @@
 import "@material/mwc-button/mwc-button";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-svg-icon";
-import type {
+import {
   AttributeConfigurationStatus,
   Cluster,
   ClusterConfigurationEvent,
   ClusterConfigurationStatus,
-} from "../../../../../data/zha";
-import {
   fetchClustersForZhaDevice,
   reconfigureNode,
   ZHA_CHANNEL_CFG_DONE,
@@ -23,8 +20,8 @@ import {
   ZHA_CHANNEL_MSG_CFG_RPT,
 } from "../../../../../data/zha";
 import { haStyleDialog } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
-import type { ZHAReconfigureDeviceDialogParams } from "./show-dialog-zha-reconfigure-device";
+import { HomeAssistant } from "../../../../../types";
+import { ZHAReconfigureDeviceDialogParams } from "./show-dialog-zha-reconfigure-device";
 
 @customElement("dialog-zha-reconfigure-device")
 class DialogZHAReconfigureDevice extends LitElement {

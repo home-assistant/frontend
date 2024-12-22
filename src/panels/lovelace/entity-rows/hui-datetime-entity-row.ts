@@ -1,5 +1,12 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-date-input";
 import { format } from "date-fns";
@@ -57,7 +64,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
       <hui-generic-entity-row
         .hass=${this.hass}
         .config=${this._config}
-        hide-name
+        hideName
       >
         <div>
           <ha-date-input

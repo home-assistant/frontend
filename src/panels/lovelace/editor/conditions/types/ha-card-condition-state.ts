@@ -1,17 +1,14 @@
-import type { PropertyValues } from "lit";
-import { html, LitElement } from "lit";
+import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { assert, literal, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import type { LocalizeFunc } from "../../../../../common/translations/localize";
+import { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-form/ha-form";
-import type {
-  SchemaUnion,
-  HaFormSchema,
-} from "../../../../../components/ha-form/types";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
+import { HaFormSchema } from "../../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../../types";
-import type { StateCondition } from "../../../common/validate-condition";
+import { StateCondition } from "../../../common/validate-condition";
 
 const stateConditionStruct = object({
   condition: literal("state"),
@@ -105,7 +102,7 @@ export class HaCardConditionState extends LitElement {
     const data: StateConditionData = {
       ...content,
       entity: this.condition.entity,
-      invert: this.condition.state_not !== undefined ? "true" : "false",
+      invert: this.condition.state_not ? "true" : "false",
       state: this.condition.state_not ?? this.condition.state,
     };
 
@@ -130,8 +127,8 @@ export class HaCardConditionState extends LitElement {
     const condition: StateCondition = {
       condition: "state",
       ...content,
-      state: invert === "false" ? (state ?? "") : undefined,
-      state_not: invert === "true" ? (state ?? "") : undefined,
+      state: invert === "false" ? state ?? "" : undefined,
+      state_not: invert === "true" ? state ?? "" : undefined,
     };
 
     fireEvent(this, "value-changed", { value: condition });
@@ -140,13 +137,24 @@ export class HaCardConditionState extends LitElement {
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ): string => {
+    const entity = this.condition.entity
+      ? this.hass.states[this.condition.entity]
+      : undefined;
     switch (schema.name) {
       case "entity":
         return this.hass.localize("ui.components.entity.entity-picker.entity");
       case "state":
-        return this.hass.localize(
+        if (entity) {
+          return `${this.hass.localize(
+            "ui.components.entity.entity-state-picker.state"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.condition-editor.condition.state.current_state"
+          )}: ${this.hass.formatEntityState(entity)})`;
+        }
+        return `${this.hass.localize(
           "ui.components.entity.entity-state-picker.state"
-        );
+        )}`;
+
       default:
         return "";
     }

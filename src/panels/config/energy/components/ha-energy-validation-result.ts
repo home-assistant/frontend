@@ -1,8 +1,8 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../components/ha-alert";
-import type { EnergyValidationIssue } from "../../../../data/energy";
-import type { HomeAssistant } from "../../../../types";
+import { EnergyValidationIssue } from "../../../../data/energy";
+import { HomeAssistant } from "../../../../types";
 
 @customElement("ha-energy-validation-result")
 class EnergyValidationMessage extends LitElement {

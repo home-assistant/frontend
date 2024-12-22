@@ -1,6 +1,4 @@
-import { parseISO } from "date-fns";
-import type { PropertyValues } from "lit";
-import { ReactiveElement } from "lit";
+import { PropertyValues, ReactiveElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { relativeTime } from "../common/datetime/relative_time";
 import { capitalizeFirstLetter } from "../common/string/capitalize-first-letter";
@@ -60,12 +58,7 @@ class HaRelativeTime extends ReactiveElement {
     if (!this.datetime) {
       this.innerHTML = this.hass.localize("ui.components.relative_time.never");
     } else {
-      const date =
-        typeof this.datetime === "string"
-          ? parseISO(this.datetime)
-          : this.datetime;
-
-      const relTime = relativeTime(date, this.hass.locale);
+      const relTime = relativeTime(new Date(this.datetime), this.hass.locale);
       this.innerHTML = this.capitalize
         ? capitalizeFirstLetter(relTime)
         : relTime;

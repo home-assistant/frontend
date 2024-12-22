@@ -2,22 +2,26 @@ const fs = require("fs");
 const path = require("path");
 const paths = require("./paths.cjs");
 
-const isTrue = (value) => value === "1" || value?.toLowerCase() === "true";
-
 module.exports = {
+  useRollup() {
+    return process.env.ROLLUP === "1";
+  },
+  useWDS() {
+    return process.env.WDS === "1";
+  },
   isProdBuild() {
     return (
       process.env.NODE_ENV === "production" || module.exports.isStatsBuild()
     );
   },
   isStatsBuild() {
-    return isTrue(process.env.STATS);
+    return process.env.STATS === "1";
   },
   isTestBuild() {
-    return isTrue(process.env.IS_TEST);
+    return process.env.IS_TEST === "true";
   },
   isNetlify() {
-    return isTrue(process.env.NETLIFY);
+    return process.env.NETLIFY === "true";
   },
   version() {
     const version = fs
@@ -27,8 +31,5 @@ module.exports = {
       throw Error("Version not found");
     }
     return version[1];
-  },
-  isDevContainer() {
-    return isTrue(process.env.DEV_CONTAINER);
   },
 };

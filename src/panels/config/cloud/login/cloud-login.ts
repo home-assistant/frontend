@@ -1,9 +1,8 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list";
-import { mdiDeleteForever, mdiDotsVertical } from "@mdi/js";
-import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { mdiDeleteForever, mdiDotsVertical } from "@mdi/js";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { navigate } from "../../../../common/navigate";
 import "../../../../components/buttons/ha-progress-button";
@@ -11,34 +10,30 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-next";
 import "../../../../components/ha-list-item";
-import "../../../../components/ha-password-field";
-import "../../../../components/ha-button-menu";
-import type { HaPasswordField } from "../../../../components/ha-password-field";
-import "../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../components/ha-textfield";
-import { setAssistPipelinePreferred } from "../../../../data/assist_pipeline";
+import "../../../../components/ha-textfield";
 import { cloudLogin, removeCloudData } from "../../../../data/cloud";
 import {
   showAlertDialog,
   showConfirmationDialog,
-  showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import { HomeAssistant } from "../../../../types";
 import "../../ha-config-section";
+import { setAssistPipelinePreferred } from "../../../../data/assist_pipeline";
 
 @customElement("cloud-login")
 export class CloudLogin extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+  @property({ type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
   @property() public email?: string;
 
-  @property({ attribute: false }) public flashMessage?: string;
+  @property() public flashMessage?: string;
 
   @state() private _password?: string;
 
@@ -48,7 +43,7 @@ export class CloudLogin extends LitElement {
 
   @query("#email", true) private _emailField!: HaTextField;
 
-  @query("#password", true) private _passwordField!: HaPasswordField;
+  @query("#password", true) private _passwordField!: HaTextField;
 
   protected render(): TemplateResult {
     return html`
@@ -147,13 +142,14 @@ export class CloudLogin extends LitElement {
                     "ui.panel.config.cloud.login.email_error_msg"
                   )}
                 ></ha-textfield>
-                <ha-password-field
+                <ha-textfield
                   id="password"
                   name="password"
                   .label=${this.hass.localize(
                     "ui.panel.config.cloud.login.password"
                   )}
                   .value=${this._password || ""}
+                  type="password"
                   autocomplete="current-password"
                   required
                   minlength="8"
@@ -162,7 +158,7 @@ export class CloudLogin extends LitElement {
                   .validationMessage=${this.hass.localize(
                     "ui.panel.config.cloud.login.password_error_msg"
                   )}
-                ></ha-password-field>
+                ></ha-textfield>
               </div>
               <div class="card-actions">
                 <ha-progress-button
@@ -231,102 +227,53 @@ export class CloudLogin extends LitElement {
 
     this._requestInProgress = true;
 
-    const doLogin = async (username: string, code?: string) => {
-      try {
-        const result = await cloudLogin({
-          hass: this.hass,
-          email: username,
-          ...(code ? { code } : { password }),
-        });
-        this.email = "";
-        this._password = "";
-        if (result.cloud_pipeline) {
-          if (
-            await showConfirmationDialog(this, {
-              title: this.hass.localize(
-                "ui.panel.config.cloud.login.cloud_pipeline_title"
-              ),
-              text: this.hass.localize(
-                "ui.panel.config.cloud.login.cloud_pipeline_text"
-              ),
-            })
-          ) {
-            setAssistPipelinePreferred(this.hass, result.cloud_pipeline);
-          }
-        }
-        fireEvent(this, "ha-refresh-cloud-status");
-      } catch (err: any) {
-        const errCode = err && err.body && err.body.code;
-        if (errCode === "mfarequired") {
-          const totpCode = await showPromptDialog(this, {
+    try {
+      const result = await cloudLogin(this.hass, email, password);
+      fireEvent(this, "ha-refresh-cloud-status");
+      this.email = "";
+      this._password = "";
+      if (result.cloud_pipeline) {
+        if (
+          await showConfirmationDialog(this, {
             title: this.hass.localize(
-              "ui.panel.config.cloud.login.totp_code_prompt_title"
+              "ui.panel.config.cloud.login.cloud_pipeline_title"
             ),
-            inputLabel: this.hass.localize(
-              "ui.panel.config.cloud.login.totp_code"
+            text: this.hass.localize(
+              "ui.panel.config.cloud.login.cloud_pipeline_text"
             ),
-            inputType: "text",
-            defaultValue: "",
-            confirmText: this.hass.localize(
-              "ui.panel.config.cloud.login.submit"
-            ),
-          });
-          if (totpCode !== null && totpCode !== "") {
-            await doLogin(username, totpCode);
-            return;
-          }
+          })
+        ) {
+          setAssistPipelinePreferred(this.hass, result.cloud_pipeline);
         }
-        if (errCode === "PasswordChangeRequired") {
-          showAlertDialog(this, {
-            title: this.hass.localize(
-              "ui.panel.config.cloud.login.alert_password_change_required"
-            ),
-          });
-          navigate("/config/cloud/forgot-password");
-          return;
-        }
-        if (errCode === "usernotfound" && username !== username.toLowerCase()) {
-          await doLogin(username.toLowerCase());
-          return;
-        }
-
-        this._password = "";
-        this._requestInProgress = false;
-
-        switch (errCode) {
-          case "UserNotConfirmed":
-            this._error = this.hass.localize(
-              "ui.panel.config.cloud.login.alert_email_confirm_necessary"
-            );
-            break;
-          case "mfarequired":
-            this._error = this.hass.localize(
-              "ui.panel.config.cloud.login.alert_mfa_code_required"
-            );
-            break;
-          case "mfaexpiredornotstarted":
-            this._error = this.hass.localize(
-              "ui.panel.config.cloud.login.alert_mfa_expired_or_not_started"
-            );
-            break;
-          case "invalidtotpcode":
-            this._error = this.hass.localize(
-              "ui.panel.config.cloud.login.alert_totp_code_invalid"
-            );
-            break;
-          default:
-            this._error =
-              err && err.body && err.body.message
-                ? err.body.message
-                : "Unknown error";
-            break;
-        }
-
-        emailField.focus();
       }
-    };
+    } catch (err: any) {
+      const errCode = err && err.body && err.body.code;
+      if (errCode === "PasswordChangeRequired") {
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.cloud.login.alert_password_change_required"
+          ),
+        });
+        navigate("/config/cloud/forgot-password");
+        return;
+      }
 
-    await doLogin(email);
+      this._password = "";
+      this._requestInProgress = false;
+
+      if (errCode === "UserNotConfirmed") {
+        this._error = this.hass.localize(
+          "ui.panel.config.cloud.login.alert_email_confirm_necessary"
+        );
+      } else {
+        this._error =
+          err && err.body && err.body.message
+            ? err.body.message
+            : "Unknown error";
+      }
+
+      emailField.focus();
+    }
   }
 
   private _handleRegister() {

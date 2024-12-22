@@ -1,6 +1,14 @@
+/* eslint-disable lit/prefer-static-styles */
 import { mdiEye, mdiEyeOff } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-icon-button";
@@ -11,10 +19,7 @@ import type {
   HaFormStringData,
   HaFormStringSchema,
 } from "./types";
-import type {
-  LocalizeFunc,
-  LocalizeKeys,
-} from "../../common/translations/localize";
+import { LocalizeFunc, LocalizeKeys } from "../../common/translations/localize";
 
 const MASKED_FIELDS = ["password", "secret", "token"];
 
@@ -22,8 +27,7 @@ const MASKED_FIELDS = ["password", "secret", "token"];
 export class HaFormString extends LitElement implements HaFormElement {
   @property({ attribute: false }) public localize?: LocalizeFunc;
 
-  @property({ attribute: false }) public localizeBaseKey =
-    "ui.components.selectors.text";
+  @property() public localizeBaseKey = "ui.components.selectors.text";
 
   @property({ attribute: false }) public schema!: HaFormStringSchema;
 

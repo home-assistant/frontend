@@ -1,19 +1,14 @@
-import "@material/mwc-list/mwc-list";
 import "@material/mwc-button/mwc-button";
 import { mdiDelete } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-circular-progress";
-import "../../../../../components/ha-list-item";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-qr-code";
-import type {
+import {
   MatterFabricData,
   MatterNodeDiagnostics,
-} from "../../../../../data/matter";
-import {
   getMatterNodeDiagnostics,
   removeMatterFabric,
 } from "../../../../../data/matter";
@@ -22,8 +17,8 @@ import {
   showConfirmationDialog,
 } from "../../../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
-import type { MatterManageFabricsDialogParams } from "./show-dialog-matter-manage-fabrics";
+import { HomeAssistant } from "../../../../../types";
+import { MatterManageFabricsDialogParams } from "./show-dialog-matter-manage-fabrics";
 
 @customElement("dialog-matter-manage-fabrics")
 class DialogMatterManageFabrics extends LitElement {

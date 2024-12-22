@@ -1,6 +1,12 @@
 import { mdiPower, mdiTuneVariant } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -8,10 +14,12 @@ import "../../../components/ha-control-select-menu";
 import "../../../components/ha-list-item";
 import "../../../components/ha-attribute-icon";
 import { UNAVAILABLE } from "../../../data/entity";
-import type { HumidifierEntity } from "../../../data/humidifier";
-import { HumidifierEntityFeature } from "../../../data/humidifier";
+import {
+  HumidifierEntity,
+  HumidifierEntityFeature,
+} from "../../../data/humidifier";
 import "../../../state-control/humidifier/ha-state-control-humidifier-humidity";
-import type { HomeAssistant } from "../../../types";
+import { HomeAssistant } from "../../../types";
 import "../components/ha-more-info-control-select-container";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 

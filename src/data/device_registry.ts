@@ -1,27 +1,24 @@
 import { computeStateName } from "../common/entity/compute_state_name";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import type { HomeAssistant } from "../types";
-import type { ConfigEntry } from "./config_entries";
 import type {
   EntityRegistryDisplayEntry,
   EntityRegistryEntry,
 } from "./entity_registry";
 import type { EntitySources } from "./entity_sources";
-import type { RegistryEntry } from "./registry";
 
 export {
   fetchDeviceRegistry,
   subscribeDeviceRegistry,
 } from "./ws-device_registry";
 
-export interface DeviceRegistryEntry extends RegistryEntry {
+export interface DeviceRegistryEntry {
   id: string;
   config_entries: string[];
   connections: Array<[string, string]>;
   identifiers: Array<[string, string]>;
   manufacturer: string | null;
   model: string | null;
-  model_id: string | null;
   name: string | null;
   labels: string[];
   sw_version: string | null;
@@ -33,7 +30,6 @@ export interface DeviceRegistryEntry extends RegistryEntry {
   entry_type: "service" | null;
   disabled_by: "user" | "integration" | "config_entry" | null;
   configuration_url: string | null;
-  primary_config_entry: string | null;
 }
 
 export interface DeviceEntityDisplayLookup {
@@ -146,11 +142,9 @@ export const getDeviceEntityDisplayLookup = (
 
 export const getDeviceIntegrationLookup = (
   entitySources: EntitySources,
-  entities: EntityRegistryDisplayEntry[] | EntityRegistryEntry[],
-  devices?: DeviceRegistryEntry[],
-  configEntries?: ConfigEntry[]
-): Record<string, Set<string>> => {
-  const deviceIntegrations: Record<string, Set<string>> = {};
+  entities: EntityRegistryDisplayEntry[] | EntityRegistryEntry[]
+): Record<string, string[]> => {
+  const deviceIntegrations: Record<string, string[]> = {};
 
   for (const entity of entities) {
     const source = entitySources[entity.entity_id];
@@ -158,22 +152,10 @@ export const getDeviceIntegrationLookup = (
       continue;
     }
 
-    deviceIntegrations[entity.device_id!] =
-      deviceIntegrations[entity.device_id!] || new Set<string>();
-    deviceIntegrations[entity.device_id!].add(source.domain);
-  }
-  // Lookup devices that have no entities
-  if (devices && configEntries) {
-    for (const device of devices) {
-      for (const config_entry_id of device.config_entries) {
-        const entry = configEntries.find((e) => e.entry_id === config_entry_id);
-        if (entry?.domain) {
-          deviceIntegrations[device.id] =
-            deviceIntegrations[device.id] || new Set<string>();
-          deviceIntegrations[device.id].add(entry.domain);
-        }
-      }
+    if (!deviceIntegrations[entity.device_id!]) {
+      deviceIntegrations[entity.device_id!] = [];
     }
+    deviceIntegrations[entity.device_id!].push(source.domain);
   }
   return deviceIntegrations;
 };

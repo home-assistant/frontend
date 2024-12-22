@@ -1,5 +1,4 @@
-import type { Entity } from "../../../../src/fake_data/entity";
-import { convertEntities } from "../../../../src/fake_data/entity";
+import { convertEntities, Entity } from "../../../../src/fake_data/entity";
 
 export const castDemoEntities: () => Entity[] = () =>
   convertEntities({

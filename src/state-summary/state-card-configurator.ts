@@ -1,10 +1,16 @@
 import "@material/mwc-button";
-import type { HassEntity } from "home-assistant-js-websocket";
+import { HassEntity } from "home-assistant-js-websocket";
 import "../components/entity/state-info";
 import { customElement, property } from "lit/decorators";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import type { HomeAssistant } from "../types";
+import {
+  CSSResultGroup,
+  LitElement,
+  TemplateResult,
+  css,
+  html,
+  nothing,
+} from "lit";
+import { HomeAssistant } from "../types";
 import { haStyle } from "../resources/styles";
 
 @customElement("state-card-configurator")
@@ -13,7 +19,7 @@ class StateCardConfigurator extends LitElement {
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
-  @property({ attribute: "in-dialog", type: Boolean }) public inDialog = false;
+  @property({ type: Boolean }) public inDialog = false;
 
   protected render(): TemplateResult {
     return html`

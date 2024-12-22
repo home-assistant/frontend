@@ -1,16 +1,14 @@
 import { mdiClose } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../../components/ha-textfield";
-import "../../../../../components/ha-icon-button";
-import type { ConversationTrigger } from "../../../../../data/automation";
+import { ConversationTrigger } from "../../../../../data/automation";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
-import type { HomeAssistant } from "../../../../../types";
-import type { TriggerElement } from "../ha-automation-trigger-row";
+import { HomeAssistant } from "../../../../../types";
+import { TriggerElement } from "../ha-automation-trigger-row";
 
 const PATTERN = "^[^.。,，?¿？؟!！;；:：]+$";
 
@@ -27,8 +25,8 @@ export class HaConversationTrigger
 
   @query("#option_input", true) private _optionInput?: HaTextField;
 
-  public static get defaultConfig(): ConversationTrigger {
-    return { trigger: "conversation", command: "" };
+  public static get defaultConfig(): Omit<ConversationTrigger, "platform"> {
+    return { command: "" };
   }
 
   protected render() {

@@ -1,7 +1,9 @@
 import { customElement, property } from "lit/decorators";
-import type { RouterOptions } from "../../../layouts/hass-router-page";
-import { HassRouterPage } from "../../../layouts/hass-router-page";
-import type { HomeAssistant } from "../../../types";
+import {
+  HassRouterPage,
+  RouterOptions,
+} from "../../../layouts/hass-router-page";
+import { HomeAssistant } from "../../../types";
 import "./ha-config-area-page";
 import "./ha-config-areas-dashboard";
 
@@ -11,9 +13,9 @@ class HaConfigAreas extends HassRouterPage {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property({ attribute: false }) public showAdvanced = false;
+  @property({ type: Boolean }) public showAdvanced = false;
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",

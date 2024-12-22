@@ -1,7 +1,6 @@
 import "@material/mwc-list/mwc-list";
 import { mdiDrag, mdiEye, mdiEyeOff } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
@@ -14,9 +13,9 @@ import "../../components/ha-list-item";
 import "../../components/ha-sortable";
 import { areaCompare } from "../../data/area_registry";
 import { haStyleDialog } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
-import type { HassDialog } from "../make-dialog-manager";
-import type { AreaFilterDialogParams } from "./show-area-filter-dialog";
+import { HomeAssistant } from "../../types";
+import { HassDialog } from "../make-dialog-manager";
+import { AreaFilterDialogParams } from "./show-area-filter-dialog";
 
 @customElement("dialog-area-filter")
 export class DialogAreaFilter
@@ -147,7 +146,7 @@ export class DialogAreaFilter
     `;
   }
 
-  private _toggle(ev) {
+  _toggle(ev) {
     const area = ev.target.area;
     const hidden = [...(this._hidden ?? [])];
     if (hidden.includes(area)) {

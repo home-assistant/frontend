@@ -1,5 +1,11 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
@@ -14,9 +20,12 @@ import { stateColorCss } from "../../../../common/entity/state_color";
 import { throttle } from "../../../../common/util/throttle";
 import "../../../../components/ha-control-slider";
 import { UNAVAILABLE } from "../../../../data/entity";
-import type { LightColor, LightEntity } from "../../../../data/light";
-import { LightColorMode } from "../../../../data/light";
-import type { HomeAssistant } from "../../../../types";
+import {
+  LightColor,
+  LightColorMode,
+  LightEntity,
+} from "../../../../data/light";
+import { HomeAssistant } from "../../../../types";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../../../data/entity_attributes";
 
 declare global {
@@ -97,7 +106,7 @@ class LightColorTempPicker extends LitElement {
     (min: number, max: number) => generateColorTemperatureGradient(min, max)
   );
 
-  private _updateSliderValues() {
+  public _updateSliderValues() {
     const stateObj = this.stateObj;
 
     if (stateObj.state === "on") {

@@ -1,23 +1,23 @@
 import { ensureArray } from "../common/array/ensure-array";
-import { formatNumericDuration } from "../common/datetime/format_duration";
+import { formatDuration } from "../common/datetime/format_duration";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { formatListWithAnds } from "../common/string/format-list";
 import { isTemplate } from "../common/string/has-template";
-import type { HomeAssistant } from "../types";
-import type { Condition } from "./automation";
+import { HomeAssistant } from "../types";
+import { Condition } from "./automation";
 import { describeCondition } from "./automation_i18n";
 import { localizeDeviceAutomationAction } from "./device_automation";
 import { computeDeviceName } from "./device_registry";
-import type { EntityRegistryEntry } from "./entity_registry";
 import {
+  EntityRegistryEntry,
   computeEntityRegistryName,
   entityRegistryById,
 } from "./entity_registry";
-import type { FloorRegistryEntry } from "./floor_registry";
+import { FloorRegistryEntry } from "./floor_registry";
 import { domainToName } from "./integration";
-import type { LabelRegistryEntry } from "./label_registry";
-import type {
+import { LabelRegistryEntry } from "./label_registry";
+import {
   ActionType,
   ActionTypes,
   ChooseAction,
@@ -28,13 +28,14 @@ import type {
   ParallelAction,
   PlayMediaAction,
   RepeatAction,
+  SceneAction,
   SequenceAction,
   SetConversationResponseAction,
   StopAction,
   VariablesAction,
   WaitForTriggerAction,
+  getActionType,
 } from "./script";
-import { getActionType } from "./script";
 
 const actionTranslationBaseKey =
   "ui.panel.config.automation.editor.actions.type";
@@ -43,13 +44,13 @@ export const describeAction = <T extends ActionType>(
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],
   labelRegistry: LabelRegistryEntry[],
-  floorRegistry: { [id: string]: FloorRegistryEntry },
+  floorRegistry: FloorRegistryEntry[],
   action: ActionTypes[T],
   actionType?: T,
   ignoreAlias = false
 ): string => {
   try {
-    const description = tryDescribeAction(
+    return tryDescribeAction(
       hass,
       entityRegistry,
       labelRegistry,
@@ -58,10 +59,6 @@ export const describeAction = <T extends ActionType>(
       actionType,
       ignoreAlias
     );
-    if (typeof description !== "string") {
-      throw new Error(String(description));
-    }
-    return description;
   } catch (error: any) {
     // eslint-disable-next-line no-console
     console.error(error);
@@ -77,7 +74,7 @@ const tryDescribeAction = <T extends ActionType>(
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],
   labelRegistry: LabelRegistryEntry[],
-  floorRegistry: { [id: string]: FloorRegistryEntry },
+  floorRegistry: FloorRegistryEntry[],
   action: ActionTypes[T],
   actionType?: T,
   ignoreAlias = false
@@ -130,12 +127,6 @@ const tryDescribeAction = <T extends ActionType>(
                 targets.push(
                   computeEntityRegistryName(hass, entityReg) || targetThing
                 );
-              } else if (targetThing === "all") {
-                targets.push(
-                  hass.localize(
-                    `${actionTranslationBaseKey}.service.description.target_every_entity`
-                  )
-                );
               } else {
                 targets.push(
                   hass.localize(
@@ -167,7 +158,9 @@ const tryDescribeAction = <T extends ActionType>(
               );
             }
           } else if (key === "floor_id") {
-            const floor = floorRegistry[targetThing] ?? undefined;
+            const floor = floorRegistry.find(
+              (flr) => flr.floor_id === targetThing
+            );
             if (floor?.name) {
               targets.push(floor.name);
             } else {
@@ -199,7 +192,7 @@ const tryDescribeAction = <T extends ActionType>(
 
     if (
       config.service_template ||
-      (config.action && isTemplate(config.action))
+      (config.service && isTemplate(config.service))
     ) {
       return hass.localize(
         targets.length
@@ -211,8 +204,8 @@ const tryDescribeAction = <T extends ActionType>(
       );
     }
 
-    if (config.action) {
-      const [domain, serviceName] = config.action.split(".", 2);
+    if (config.service) {
+      const [domain, serviceName] = config.service.split(".", 2);
       const service =
         hass.localize(`component.${domain}.services.${serviceName}.name`) ||
         hass.services[domain][serviceName]?.name;
@@ -224,7 +217,7 @@ const tryDescribeAction = <T extends ActionType>(
             : `${actionTranslationBaseKey}.service.description.service_name_no_targets`,
           {
             domain: domainToName(hass.localize, domain),
-            name: service || config.action,
+            name: service || config.service,
             targets: formatListWithAnds(hass.locale, targets),
           }
         );
@@ -237,7 +230,7 @@ const tryDescribeAction = <T extends ActionType>(
         {
           name: service
             ? `${domainToName(hass.localize, domain)}: ${service}`
-            : config.action,
+            : config.service,
           targets: formatListWithAnds(hass.locale, targets),
         }
       );
@@ -277,7 +270,7 @@ const tryDescribeAction = <T extends ActionType>(
       duration = hass.localize(
         `${actionTranslationBaseKey}.delay.description.duration_string`,
         {
-          string: formatNumericDuration(hass.locale, config.delay),
+          string: formatDuration(hass.locale, config.delay),
         }
       );
     } else {
@@ -294,6 +287,26 @@ const tryDescribeAction = <T extends ActionType>(
     return hass.localize(`${actionTranslationBaseKey}.delay.description.full`, {
       duration: duration,
     });
+  }
+
+  if (actionType === "activate_scene") {
+    const config = action as SceneAction;
+    let entityId: string | undefined;
+    if ("scene" in config) {
+      entityId = config.scene;
+    } else {
+      entityId = config.target?.entity_id || config.entity_id;
+    }
+    if (!entityId) {
+      return hass.localize(
+        `${actionTranslationBaseKey}.activate_scene.description.activate_scene`
+      );
+    }
+    const sceneStateObj = entityId ? hass.states[entityId] : undefined;
+    return hass.localize(
+      `${actionTranslationBaseKey}.activate_scene.description.activate_scene_with_name`,
+      { name: sceneStateObj ? computeStateName(sceneStateObj) : entityId }
+    );
   }
 
   if (actionType === "play_media") {
@@ -486,11 +499,6 @@ const tryDescribeAction = <T extends ActionType>(
 
   if (actionType === "set_conversation_response") {
     const config = action as SetConversationResponseAction;
-    if (isTemplate(config.set_conversation_response)) {
-      return hass.localize(
-        `${actionTranslationBaseKey}.set_conversation_response.description.template`
-      );
-    }
     return hass.localize(
       `${actionTranslationBaseKey}.set_conversation_response.description.full`,
       { response: config.set_conversation_response }

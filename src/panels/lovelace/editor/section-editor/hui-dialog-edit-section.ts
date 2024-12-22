@@ -1,20 +1,30 @@
-import type { ActionDetail } from "@material/mwc-list";
-import { mdiClose, mdiDotsVertical, mdiPlaylistEdit } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { ActionDetail } from "@material/mwc-list";
+import { mdiCheck, mdiClose, mdiDotsVertical } from "@mdi/js";
+import "@polymer/paper-tabs/paper-tab";
+import "@polymer/paper-tabs/paper-tabs";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
+import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
+import { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -25,9 +35,6 @@ import {
 import "./hui-section-settings-editor";
 import "./hui-section-visibility-editor";
 import type { EditSectionDialogParams } from "./show-edit-section-dialog";
-import "@material/mwc-tab-bar/mwc-tab-bar";
-import "@material/mwc-tab/mwc-tab";
-import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 
 const TABS = ["tab-settings", "tab-visibility"] as const;
 
@@ -42,20 +49,18 @@ export class HuiDialogEditSection
 
   @state() private _config?: LovelaceSectionRawConfig;
 
-  @state() private _viewConfig?: LovelaceViewConfig;
-
   @state() private _yamlMode = false;
 
-  @state() private _currTab: (typeof TABS)[number] = TABS[0];
+  @state() private _curTab: (typeof TABS)[number] = TABS[0];
 
   @query("ha-yaml-editor") private _editor?: HaYamlEditor;
 
   protected updated(changedProperties: PropertyValues) {
     if (this._yamlMode && changedProperties.has("_yamlMode")) {
-      const sectionConfig = {
+      const viewConfig = {
         ...this._config,
       };
-      this._editor?.setValue(sectionConfig);
+      this._editor?.setValue(viewConfig);
     }
   }
 
@@ -66,16 +71,13 @@ export class HuiDialogEditSection
       this._params.viewIndex,
       this._params.sectionIndex,
     ]);
-    this._viewConfig = findLovelaceContainer(this._params.lovelaceConfig, [
-      this._params.viewIndex,
-    ]);
   }
 
   public closeDialog() {
     this._params = undefined;
     this._yamlMode = false;
     this._config = undefined;
-    this._currTab = TABS[0];
+    this._curTab = TABS[0];
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -99,13 +101,12 @@ export class HuiDialogEditSection
         ></ha-yaml-editor>
       `;
     } else {
-      switch (this._currTab) {
+      switch (this._curTab) {
         case "tab-settings":
           content = html`
             <hui-section-settings-editor
               .hass=${this.hass}
               .config=${this._config}
-              .viewConfig=${this._viewConfig}
               @value-changed=${this._configChanged}
             >
             </hui-section-settings-editor>
@@ -147,7 +148,7 @@ export class HuiDialogEditSection
             slot="actionItems"
             fixed
             corner="BOTTOM_END"
-            menu-corner="END"
+            menuCorner="END"
             @closed=${stopPropagation}
             @action=${this._handleAction}
           >
@@ -157,37 +158,54 @@ export class HuiDialogEditSection
               .path=${mdiDotsVertical}
             ></ha-icon-button>
             <ha-list-item graphic="icon">
-              ${this.hass.localize(
-                `ui.panel.lovelace.editor.edit_view.edit_${!this._yamlMode ? "yaml" : "ui"}`
+              ${this.hass!.localize(
+                "ui.panel.lovelace.editor.edit_section.edit_ui"
               )}
-              <ha-svg-icon
-                slot="graphic"
-                .path=${mdiPlaylistEdit}
-              ></ha-svg-icon>
+              ${!this._yamlMode
+                ? html`<ha-svg-icon
+                    class="selected_menu_item"
+                    slot="graphic"
+                    .path=${mdiCheck}
+                  ></ha-svg-icon>`
+                : ``}
+            </ha-list-item>
+
+            <ha-list-item graphic="icon">
+              ${this.hass!.localize(
+                "ui.panel.lovelace.editor.edit_section.edit_yaml"
+              )}
+              ${this._yamlMode
+                ? html`<ha-svg-icon
+                    class="selected_menu_item"
+                    slot="graphic"
+                    .path=${mdiCheck}
+                  ></ha-svg-icon>`
+                : ``}
             </ha-list-item>
           </ha-button-menu>
           ${!this._yamlMode
             ? html`
-                <mwc-tab-bar
-                  .activeIndex=${TABS.indexOf(this._currTab)}
-                  @MDCTabBar:activated=${this._handleTabChanged}
+                <paper-tabs
+                  scrollable
+                  hide-scroll-buttons
+                  .selected=${TABS.indexOf(this._curTab)}
+                  @selected-item-changed=${this._handleTabSelected}
                 >
                   ${TABS.map(
-                    (tab) => html`
-                      <mwc-tab
-                        .label=${this.hass!.localize(
+                    (tab, index) => html`
+                      <paper-tab id=${tab} .dialogInitialFocus=${index === 0}>
+                        ${this.hass!.localize(
                           `ui.panel.lovelace.editor.edit_section.${tab.replace("-", "_")}`
                         )}
-                      >
-                      </mwc-tab>
+                      </paper-tab>
                     `
                   )}
-                </mwc-tab-bar>
+                </paper-tabs>
               `
             : nothing}
         </ha-dialog-header>
         ${content}
-        <ha-button slot="secondaryAction" @click=${this._cancel}>
+        <ha-button slot="secondaryAction">
           ${this.hass!.localize("ui.common.cancel")}
         </ha-button>
 
@@ -203,12 +221,11 @@ export class HuiDialogEditSection
     this._config = ev.detail.value;
   }
 
-  private _handleTabChanged(ev: CustomEvent): void {
-    const newTab = TABS[ev.detail.index];
-    if (newTab === this._currTab) {
+  private _handleTabSelected(ev: CustomEvent): void {
+    if (!ev.detail.value) {
       return;
     }
-    this._currTab = newTab;
+    this._curTab = ev.detail.value.id;
   }
 
   private async _handleAction(ev: CustomEvent<ActionDetail>) {
@@ -216,7 +233,10 @@ export class HuiDialogEditSection
     ev.preventDefault();
     switch (ev.detail.index) {
       case 0:
-        this._yamlMode = !this._yamlMode;
+        this._yamlMode = false;
+        break;
+      case 1:
+        this._yamlMode = true;
         break;
     }
   }
@@ -273,10 +293,14 @@ export class HuiDialogEditSection
         ha-dialog.yaml-mode {
           --dialog-content-padding: 0;
         }
-        mwc-tab-bar {
+        paper-tabs {
+          --paper-tabs-selection-bar-color: var(--primary-color);
           color: var(--primary-text-color);
           text-transform: uppercase;
           padding: 0 20px;
+        }
+        .selected_menu_item {
+          color: var(--primary-color);
         }
         @media all and (min-width: 600px) {
           ha-dialog {

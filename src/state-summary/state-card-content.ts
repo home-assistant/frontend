@@ -1,7 +1,7 @@
 import { LitElement, nothing } from "lit";
-import type { HassEntity } from "home-assistant-js-websocket";
+import { HassEntity } from "home-assistant-js-websocket";
 import { customElement, property } from "lit/decorators";
-import type { HomeAssistant } from "../types";
+import { HomeAssistant } from "../types";
 import { dynamicElement } from "../common/dom/dynamic-element-directive";
 import { stateCardType } from "../common/entity/state_card_type";
 import "./state-card-alert";
@@ -36,7 +36,7 @@ class StateCardContent extends LitElement {
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
-  @property({ attribute: "in-dialog", type: Boolean }) public inDialog = false;
+  @property({ type: Boolean }) public inDialog = false;
 
   protected render() {
     let stateCard: string;

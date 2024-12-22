@@ -1,7 +1,6 @@
-import type { BarElement } from "chart.js";
-import { BarController } from "chart.js";
-import type { TimeLineData } from "./const";
-import type { TextBarProps } from "./textbar-element";
+import { BarController, BarElement } from "chart.js";
+import { TimeLineData } from "./const";
+import { TextBarProps } from "./textbar-element";
 
 function borderProps(properties) {
   let reverse;

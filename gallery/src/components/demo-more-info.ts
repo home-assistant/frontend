@@ -4,16 +4,15 @@ import "../../../src/components/ha-card";
 import "../../../src/dialogs/more-info/more-info-content";
 import "../../../src/state-summary/state-card-content";
 import "../ha-demo-options";
-import type { HomeAssistant } from "../../../src/types";
+import { HomeAssistant } from "../../../src/types";
 
 @customElement("demo-more-info")
 class DemoMoreInfo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public entityId!: string;
+  @property() public entityId!: string;
 
-  @property({ attribute: "show-config", type: Boolean })
-  public showConfig = false;
+  @property({ type: Boolean }) public showConfig = false;
 
   render() {
     const state = this._getState(this.entityId, this.hass.states);
@@ -24,7 +23,7 @@ class DemoMoreInfo extends LitElement {
             <state-card-content
               .stateObj=${state}
               .hass=${this.hass}
-              in-dialog
+              inDialog
             ></state-card-content>
 
             <more-info-content

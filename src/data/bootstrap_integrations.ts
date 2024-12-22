@@ -1,4 +1,4 @@
-import type { HomeAssistant } from "../types";
+import { HomeAssistant } from "../types";
 
 export type BootstrapIntegrationsTimings = { [key: string]: number };
 

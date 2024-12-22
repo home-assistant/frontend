@@ -1,5 +1,6 @@
 import { fireEvent } from "../../common/dom/fire_event";
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface RestartDialogParams {}
 
 export const loadRestartDialog = () => import("./dialog-restart");

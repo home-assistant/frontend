@@ -1,17 +1,14 @@
 import { dump } from "js-yaml";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import { customElement, state } from "lit/decorators";
 import "../../../components/ha-alert";
-import type { HomeAssistant } from "../../../types";
-import type { LovelaceCard } from "../types";
-import type { ErrorCardConfig } from "./types";
+import { HomeAssistant } from "../../../types";
+import { LovelaceCard } from "../types";
+import { ErrorCardConfig } from "./types";
 
 @customElement("hui-error-card")
 export class HuiErrorCard extends LitElement implements LovelaceCard {
   public hass?: HomeAssistant;
-
-  @property({ attribute: false }) public preview = false;
 
   @state() private _config?: ErrorCardConfig;
 

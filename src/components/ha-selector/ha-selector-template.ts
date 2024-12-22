@@ -1,13 +1,9 @@
-import { css, html, nothing, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { HomeAssistant } from "../../types";
-import { documentationUrl } from "../../util/documentation-url";
+import { HomeAssistant } from "../../types";
 import "../ha-code-editor";
 import "../ha-input-helper-text";
-import "../ha-alert";
-
-const WARNING_STRINGS = ["template:", "sensor:", "state:", "trigger: template"];
 
 @customElement("ha-selector-template")
 export class HaTemplateSelector extends LitElement {
@@ -23,33 +19,9 @@ export class HaTemplateSelector extends LitElement {
 
   @property({ type: Boolean }) public required = true;
 
-  @state() private warn: string | undefined = undefined;
-
   protected render() {
     return html`
-      ${this.warn
-        ? html`<ha-alert alert-type="warning"
-            >${this.hass.localize(
-              "ui.components.selectors.template.yaml_warning",
-              { string: this.warn }
-            )}
-            <br />
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              href=${documentationUrl(
-                this.hass,
-                "/docs/configuration/templating/"
-              )}
-              >${this.hass.localize(
-                "ui.components.selectors.template.learn_more"
-              )}</a
-            ></ha-alert
-          >`
-        : nothing}
-      ${this.label
-        ? html`<p>${this.label}${this.required ? "*" : ""}</p>`
-        : nothing}
+      ${this.label ? html`<p>${this.label}${this.required ? "*" : ""}</p>` : ""}
       <ha-code-editor
         mode="jinja2"
         .hass=${this.hass}
@@ -60,11 +32,10 @@ export class HaTemplateSelector extends LitElement {
         autocomplete-icons
         @value-changed=${this._handleChange}
         dir="ltr"
-        linewrap
       ></ha-code-editor>
       ${this.helper
         ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
-        : nothing}
+        : ""}
     `;
   }
 
@@ -73,7 +44,6 @@ export class HaTemplateSelector extends LitElement {
     if (this.value === value) {
       return;
     }
-    this.warn = WARNING_STRINGS.find((str) => value.includes(str));
     fireEvent(this, "value-changed", { value });
   }
 

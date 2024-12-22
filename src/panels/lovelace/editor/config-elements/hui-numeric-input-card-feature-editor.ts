@@ -5,12 +5,12 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
-import type {
+import {
   NumericInputCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
+import { LocalizeFunc } from "../../../../common/translations/localize";
 
 @customElement("hui-numeric-input-card-feature-editor")
 export class HuiNumericInputCardFeatureEditor

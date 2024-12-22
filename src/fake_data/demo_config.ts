@@ -1,12 +1,10 @@
-import type { HassConfig } from "home-assistant-js-websocket";
-import { STATE_RUNNING } from "home-assistant-js-websocket";
+import { HassConfig, STATE_RUNNING } from "home-assistant-js-websocket";
 
 export const demoConfig: HassConfig = {
   location_name: "Home",
   elevation: 300,
   latitude: 52.3731339,
   longitude: 4.8903147,
-  radius: 100,
   unit_system: {
     length: "km",
     mass: "kg",

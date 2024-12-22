@@ -1,6 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-card";
@@ -32,6 +31,8 @@ class DialogIntegrationStartup extends LitElement {
     return html`
       <ha-dialog
         open
+        scrimClickAction
+        escapeKeyAction
         hideActions
         .heading=${createCloseHeading(
           this.hass,

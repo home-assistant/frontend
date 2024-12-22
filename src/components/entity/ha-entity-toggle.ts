@@ -1,14 +1,20 @@
 import { mdiFlash, mdiFlashOff } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
+import { HassEntity } from "home-assistant-js-websocket";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+  css,
+  html,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { STATES_OFF } from "../../common/const";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { UNAVAILABLE, UNKNOWN, isUnavailableState } from "../../data/entity";
 import { forwardHaptic } from "../../data/haptics";
-import type { HomeAssistant } from "../../types";
+import { HomeAssistant } from "../../types";
 import "../ha-formfield";
 import "../ha-icon-button";
 import "../ha-switch";

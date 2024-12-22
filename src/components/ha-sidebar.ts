@@ -21,9 +21,16 @@ import "@polymer/paper-item/paper-icon-item";
 import type { PaperIconItemElement } from "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResult, CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import {
+  CSSResult,
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, eventOptions, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -32,12 +39,13 @@ import { fireEvent } from "../common/dom/fire_event";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { stringCompare } from "../common/string/compare";
 import { throttle } from "../common/util/throttle";
-import type { ActionHandlerDetail } from "../data/lovelace/action_handler";
-import type { PersistentNotification } from "../data/persistent_notification";
-import { subscribeNotifications } from "../data/persistent_notification";
+import { ActionHandlerDetail } from "../data/lovelace/action_handler";
+import {
+  PersistentNotification,
+  subscribeNotifications,
+} from "../data/persistent_notification";
 import { subscribeRepairsIssueRegistry } from "../data/repairs";
-import type { UpdateEntity } from "../data/update";
-import { updateCanInstall } from "../data/update";
+import { UpdateEntity, updateCanInstall } from "../data/update";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
 import { haStyleScrollbar } from "../resources/styles";
@@ -48,7 +56,6 @@ import "./ha-menu-button";
 import "./ha-sortable";
 import "./ha-svg-icon";
 import "./user/ha-user-badge";
-import { preventDefault } from "../common/dom/prevent_default";
 
 const SHOW_AFTER_SPACER = ["config", "developer-tools"];
 
@@ -185,11 +192,9 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ attribute: "always-expand", type: Boolean })
-  public alwaysExpand = false;
+  @property({ type: Boolean }) public alwaysExpand = false;
 
-  @property({ attribute: "edit-mode", type: Boolean })
-  public editMode = false;
+  @property({ type: Boolean }) public editMode = false;
 
   @state() private _notifications?: PersistentNotification[];
 
@@ -204,8 +209,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   private _recentKeydownActiveUntil = 0;
 
   private _editStyleLoaded = false;
-
-  private _unsubPersistentNotifications: UnsubscribeFunc | undefined;
 
   @storage({
     key: "sidebarPanelOrder",
@@ -280,26 +283,15 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       hass.localize !== oldHass.localize ||
       hass.locale !== oldHass.locale ||
       hass.states !== oldHass.states ||
-      hass.defaultPanel !== oldHass.defaultPanel ||
-      hass.connected !== oldHass.connected
+      hass.defaultPanel !== oldHass.defaultPanel
     );
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    this._subscribePersistentNotifications();
-  }
-
-  private _subscribePersistentNotifications(): void {
-    if (this._unsubPersistentNotifications) {
-      this._unsubPersistentNotifications();
-    }
-    this._unsubPersistentNotifications = subscribeNotifications(
-      this.hass.connection,
-      (notifications) => {
-        this._notifications = notifications;
-      }
-    );
+    subscribeNotifications(this.hass.connection, (notifications) => {
+      this._notifications = notifications;
+    });
   }
 
   protected updated(changedProps) {
@@ -312,14 +304,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     }
     if (!changedProps.has("hass")) {
       return;
-    }
-
-    if (
-      this.hass &&
-      changedProps.get("hass")?.connected === false &&
-      this.hass.connected === true
-    ) {
-      this._subscribePersistentNotifications();
     }
 
     this._calculateCounts();
@@ -343,7 +327,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     for (const entityId of Object.keys(this.hass.states)) {
       if (
         entityId.startsWith("update.") &&
-        !this.hass.entities[entityId]?.hidden &&
         updateCanInstall(this.hass.states[entityId] as UpdateEntity)
       ) {
         updateCount++;
@@ -405,7 +388,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         @focusout=${this._listboxFocusOut}
         @scroll=${this._listboxScroll}
         @keydown=${this._listboxKeydown}
-        @iron-activate=${preventDefault}
       >
         ${this.editMode
           ? this._renderPanelsEdit(beforeSpacer)
@@ -445,7 +427,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       : html`
           <a
             role="option"
-            aria-selected=${urlPath === this.hass.panelUrl}
             href=${`/${urlPath}`}
             data-panel=${urlPath}
             tabindex="-1"
@@ -561,18 +542,13 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     return html`<a
       class="configuration-container"
       role="option"
-      aria-selected=${this.hass.panelUrl === "config"}
       href="/config"
       data-panel="config"
       tabindex="-1"
       @mouseenter=${this._itemMouseEnter}
       @mouseleave=${this._itemMouseLeave}
     >
-      <paper-icon-item
-        class="configuration"
-        role="option"
-        aria-selected=${this.hass.panelUrl === "config"}
-      >
+      <paper-icon-item class="configuration" role="option">
         <ha-svg-icon slot="item-icon" .path=${mdiCog}></ha-svg-icon>
         ${!this.alwaysExpand &&
         (this._updatesCount > 0 || this._issuesCount > 0)
@@ -607,7 +583,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       <paper-icon-item
         class="notifications"
         role="option"
-        aria-selected="false"
         @click=${this._handleShowNotificationDrawer}
       >
         <ha-svg-icon slot="item-icon" .path=${mdiBell}></ha-svg-icon>
@@ -639,7 +614,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       data-panel="panel"
       tabindex="-1"
       role="option"
-      aria-selected=${this.hass.panelUrl === "profile"}
       aria-label=${this.hass.localize("panel.profile")}
       @mouseenter=${this._itemMouseEnter}
       @mouseleave=${this._itemMouseLeave}
@@ -669,7 +643,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
             )}
             href="#external-app-configuration"
             tabindex="-1"
-            aria-selected="false"
             @click=${this._handleExternalAppConfiguration}
             @mouseenter=${this._itemMouseEnter}
             @mouseleave=${this._itemMouseLeave}
@@ -864,14 +837,11 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           border-bottom: 1px solid transparent;
           white-space: nowrap;
           font-weight: 400;
-          color: var(
-            --sidebar-menu-button-text-color,
-            var(--primary-text-color)
-          );
+          color: var(--sidebar-menu-button-text-color, --primary-text-color);
           border-bottom: 1px solid var(--divider-color);
           background-color: var(
             --sidebar-menu-button-background-color,
-            var(--primary-background-color)
+            --primary-background-color
           );
           font-size: 20px;
           align-items: center;

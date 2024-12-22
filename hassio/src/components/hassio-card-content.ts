@@ -1,32 +1,30 @@
 import { mdiHelpCircle } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../src/components/ha-svg-icon";
-import type { HomeAssistant } from "../../../src/types";
+import { HomeAssistant } from "../../../src/types";
 
 @customElement("hassio-card-content")
 class HassioCardContent extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  // eslint-disable-next-line lit/no-native-attributes
   @property() public title!: string;
 
   @property() public description?: string;
 
   @property({ type: Boolean }) public available = true;
 
-  @property({ attribute: false }) public showTopbar = false;
+  @property({ type: Boolean }) public showTopbar = false;
 
-  @property({ attribute: false }) public topbarClass?: string;
+  @property() public topbarClass?: string;
 
-  @property({ attribute: false }) public iconTitle?: string;
+  @property() public iconTitle?: string;
 
-  @property({ attribute: false }) public iconClass?: string;
+  @property() public iconClass?: string;
 
   @property() public icon = mdiHelpCircle;
 
-  @property({ attribute: false }) public iconImage?: string;
+  @property() public iconImage?: string;
 
   protected render(): TemplateResult {
     return html`
@@ -36,11 +34,7 @@ class HassioCardContent extends LitElement {
       ${this.iconImage
         ? html`
             <div class="icon_image ${this.iconClass}">
-              <img
-                src=${this.iconImage}
-                .title=${this.iconTitle}
-                alt=${this.iconTitle ?? ""}
-              />
+              <img src=${this.iconImage} .title=${this.iconTitle} />
               <div></div>
             </div>
           `

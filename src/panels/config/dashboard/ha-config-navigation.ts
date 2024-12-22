@@ -1,7 +1,6 @@
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { canShowPage } from "../../../common/config/can_show_page";
 import "../../../components/ha-card";
@@ -57,7 +56,7 @@ class HaConfigNavigation extends LitElement {
       }));
     return html`
       <ha-navigation-list
-        has-secondary
+        hasSecondary
         .hass=${this.hass}
         .narrow=${this.narrow}
         .pages=${pages}

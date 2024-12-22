@@ -1,5 +1,5 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import type { StatisticsMetaData } from "../../../data/recorder";
+import { StatisticsMetaData } from "../../../data/recorder";
 
 export const loadAdjustSumDialog = () =>
   import("./dialog-statistics-adjust-sum");

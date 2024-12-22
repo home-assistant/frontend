@@ -41,9 +41,8 @@ export class HaHassTrigger extends LitElement {
       ] as const
   );
 
-  public static get defaultConfig(): HassTrigger {
+  public static get defaultConfig() {
     return {
-      trigger: "homeassistant",
       event: "start" as HassTrigger["event"],
     };
   }

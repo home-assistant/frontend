@@ -6,15 +6,14 @@ import {
   mdiOpenInNew,
   mdiPlus,
 } from "@mdi/js";
-import type { PropertyValues } from "lit";
-import { LitElement, html, nothing } from "lit";
+import { LitElement, PropertyValues, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoize from "memoize-one";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { navigate } from "../../../../common/navigate";
 import { stringCompare } from "../../../../common/string/compare";
-import type {
+import {
   DataTableColumnContainer,
   RowClickedEvent,
   SortingChangedEvent,
@@ -24,17 +23,15 @@ import "../../../../components/ha-fab";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-svg-icon";
-import type { LovelacePanelConfig } from "../../../../data/lovelace";
-import type { LovelaceRawConfig } from "../../../../data/lovelace/config/types";
+import { LovelacePanelConfig } from "../../../../data/lovelace";
 import {
+  LovelaceRawConfig,
   isStrategyDashboard,
   saveConfig,
 } from "../../../../data/lovelace/config/types";
-import type {
+import {
   LovelaceDashboard,
   LovelaceDashboardCreateParams,
-} from "../../../../data/lovelace/dashboard";
-import {
   createDashboard,
   deleteDashboard,
   fetchDashboards,
@@ -43,8 +40,8 @@ import {
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-tabs-subpage-data-table";
-import type { HomeAssistant, Route } from "../../../../types";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
+import { HomeAssistant, Route } from "../../../../types";
+import { LocalizeFunc } from "../../../../common/translations/localize";
 import { getLovelaceStrategy } from "../../../lovelace/strategies/get-strategy";
 import { showNewDashboardDialog } from "../../dashboard/show-dialog-new-dashboard";
 import { lovelaceTabs } from "../ha-config-lovelace";
@@ -65,7 +62,7 @@ type DataTableItem = Pick<
 export class HaConfigLovelaceDashboards extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+  @property({ type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -88,20 +85,6 @@ export class HaConfigLovelaceDashboards extends LitElement {
   })
   private _activeSorting?: SortingChangedEvent;
 
-  @storage({
-    key: "lovelace-dashboards-table-column-order",
-    state: false,
-    subscribe: false,
-  })
-  private _activeColumnOrder?: string[];
-
-  @storage({
-    key: "lovelace-dashboards-table-hidden-columns",
-    state: false,
-    subscribe: false,
-  })
-  private _activeHiddenColumns?: string[];
-
   public willUpdate() {
     if (!this.hasUpdated) {
       this.hass.loadFragmentTranslation("lovelace");
@@ -118,8 +101,6 @@ export class HaConfigLovelaceDashboards extends LitElement {
       const columns: DataTableColumnContainer<DataTableItem> = {
         icon: {
           title: "",
-          moveable: false,
-          showNarrow: true,
           label: localize(
             "ui.panel.config.lovelace.dashboards.picker.headers.icon"
           ),
@@ -146,72 +127,88 @@ export class HaConfigLovelaceDashboards extends LitElement {
           main: true,
           sortable: true,
           filterable: true,
-          flex: 2,
-          template: narrow
-            ? undefined
-            : (dashboard) => html`
-                ${dashboard.title}
-                ${dashboard.default
-                  ? html`
-                      <ha-svg-icon
-                        style="padding-left: 10px; padding-inline-start: 10px; direction: var(--direction);"
-                        .path=${mdiCheckCircleOutline}
-                      ></ha-svg-icon>
-                      <simple-tooltip animation-delay="0">
-                        ${this.hass.localize(
-                          `ui.panel.config.lovelace.dashboards.default_dashboard`
-                        )}
-                      </simple-tooltip>
-                    `
-                  : ""}
-              `,
+          grows: true,
+          template: (dashboard) => {
+            const titleTemplate = html`
+              ${dashboard.title}
+              ${dashboard.default
+                ? html`
+                    <ha-svg-icon
+                      style="padding-left: 10px; padding-inline-start: 10px; direction: var(--direction);"
+                      .path=${mdiCheckCircleOutline}
+                    ></ha-svg-icon>
+                    <simple-tooltip animation-delay="0">
+                      ${this.hass.localize(
+                        `ui.panel.config.lovelace.dashboards.default_dashboard`
+                      )}
+                    </simple-tooltip>
+                  `
+                : ""}
+            `;
+            return narrow
+              ? html`
+                  ${titleTemplate}
+                  <div class="secondary">
+                    ${this.hass.localize(
+                      `ui.panel.config.lovelace.dashboards.conf_mode.${dashboard.mode}`
+                    )}${dashboard.filename
+                      ? html` – ${dashboard.filename} `
+                      : ""}
+                  </div>
+                `
+              : titleTemplate;
+          },
         },
       };
 
-      columns.mode = {
-        title: localize(
-          "ui.panel.config.lovelace.dashboards.picker.headers.conf_mode"
-        ),
-        sortable: true,
-        filterable: true,
-        template: (dashboard) => html`
-          ${this.hass.localize(
-            `ui.panel.config.lovelace.dashboards.conf_mode.${dashboard.mode}`
-          ) || dashboard.mode}
-        `,
-      };
-      if (dashboards.some((dashboard) => dashboard.filename)) {
-        columns.filename = {
+      if (!narrow) {
+        columns.mode = {
           title: localize(
-            "ui.panel.config.lovelace.dashboards.picker.headers.filename"
+            "ui.panel.config.lovelace.dashboards.picker.headers.conf_mode"
           ),
           sortable: true,
           filterable: true,
+          width: "20%",
+          template: (dashboard) => html`
+            ${this.hass.localize(
+              `ui.panel.config.lovelace.dashboards.conf_mode.${dashboard.mode}`
+            ) || dashboard.mode}
+          `,
+        };
+        if (dashboards.some((dashboard) => dashboard.filename)) {
+          columns.filename = {
+            title: localize(
+              "ui.panel.config.lovelace.dashboards.picker.headers.filename"
+            ),
+            width: "15%",
+            sortable: true,
+            filterable: true,
+          };
+        }
+        columns.require_admin = {
+          title: localize(
+            "ui.panel.config.lovelace.dashboards.picker.headers.require_admin"
+          ),
+          sortable: true,
+          type: "icon",
+          width: "100px",
+          template: (dashboard) =>
+            dashboard.require_admin
+              ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
+              : html`—`,
+        };
+        columns.show_in_sidebar = {
+          title: localize(
+            "ui.panel.config.lovelace.dashboards.picker.headers.sidebar"
+          ),
+          type: "icon",
+          width: "121px",
+          template: (dashboard) =>
+            dashboard.show_in_sidebar
+              ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
+              : html`—`,
         };
       }
-      columns.require_admin = {
-        title: localize(
-          "ui.panel.config.lovelace.dashboards.picker.headers.require_admin"
-        ),
-        sortable: true,
-        type: "icon",
-        hidden: narrow,
-        template: (dashboard) =>
-          dashboard.require_admin
-            ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
-            : html`—`,
-      };
-      columns.show_in_sidebar = {
-        title: localize(
-          "ui.panel.config.lovelace.dashboards.picker.headers.sidebar"
-        ),
-        type: "icon",
-        hidden: narrow,
-        template: (dashboard) =>
-          dashboard.show_in_sidebar
-            ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
-            : html`—`,
-      };
 
       columns.url_path = {
         title: "",
@@ -219,7 +216,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           "ui.panel.config.lovelace.dashboards.picker.headers.url"
         ),
         filterable: true,
-        showNarrow: true,
+        width: "100px",
         template: (dashboard) =>
           narrow
             ? html`
@@ -314,27 +311,30 @@ export class HaConfigLovelaceDashboards extends LitElement {
         )}
         .data=${this._getItems(this._dashboards)}
         .initialSorting=${this._activeSorting}
-        .columnOrder=${this._activeColumnOrder}
-        .hiddenColumns=${this._activeHiddenColumns}
-        @columns-changed=${this._handleColumnsChanged}
         @sorting-changed=${this._handleSortingChanged}
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
         @row-click=${this._editDashboard}
         id="url_path"
-        has-fab
+        hasFab
         clickable
       >
-        <ha-button-menu slot="toolbar-icon" activatable>
-          <ha-icon-button
-            slot="trigger"
-            .label=${this.hass.localize("ui.common.menu")}
-            .path=${mdiDotsVertical}
-          ></ha-icon-button>
-          <ha-clickable-list-item href="/config/lovelace/resources">
-            ${this.hass.localize("ui.panel.config.lovelace.resources.caption")}
-          </ha-clickable-list-item>
-        </ha-button-menu>
+        ${this.hass.userData?.showAdvanced
+          ? html`
+              <ha-button-menu slot="toolbar-icon" activatable>
+                <ha-icon-button
+                  slot="trigger"
+                  .label=${this.hass.localize("ui.common.menu")}
+                  .path=${mdiDotsVertical}
+                ></ha-icon-button>
+                <ha-clickable-list-item href="/config/lovelace/resources">
+                  ${this.hass.localize(
+                    "ui.panel.config.lovelace.resources.caption"
+                  )}
+                </ha-clickable-list-item>
+              </ha-button-menu>
+            `
+          : ""}
         <ha-fab
           slot="fab"
           .label=${this.hass.localize(
@@ -466,11 +466,6 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   private _handleSearchChange(ev: CustomEvent) {
     this._filter = ev.detail.value;
-  }
-
-  private _handleColumnsChanged(ev: CustomEvent) {
-    this._activeColumnOrder = ev.detail.columnOrder;
-    this._activeHiddenColumns = ev.detail.hiddenColumns;
   }
 }
 

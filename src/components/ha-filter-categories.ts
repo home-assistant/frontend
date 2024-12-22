@@ -1,6 +1,4 @@
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
-import type { ActionDetail, SelectedDetail } from "@material/mwc-list";
+import { ActionDetail, SelectedDetail } from "@material/mwc-list";
 import {
   mdiDelete,
   mdiDotsVertical,
@@ -9,13 +7,12 @@ import {
   mdiPlus,
   mdiTag,
 } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import type { CategoryRegistryEntry } from "../data/category_registry";
 import {
+  CategoryRegistryEntry,
   createCategoryRegistryEntry,
   deleteCategoryRegistryEntry,
   subscribeCategoryRegistry,
@@ -28,7 +25,6 @@ import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-expansion-panel";
 import "./ha-icon";
-import "./ha-button-menu";
 import "./ha-list-item";
 import { stopPropagation } from "../common/dom/stop_propagation";
 

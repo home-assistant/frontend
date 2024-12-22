@@ -1,8 +1,7 @@
 import { clear, get, set, createStore, promisifyRequest } from "idb-keyval";
-import memoizeOne from "memoize-one";
 import { promiseTimeout } from "../common/util/promise-timeout";
 import { iconMetadata } from "../resources/icon-metadata";
-import type { IconMeta } from "../types";
+import { IconMeta } from "../types";
 
 export interface Icons {
   [key: string]: string;
@@ -12,23 +11,7 @@ export interface Chunks {
   [key: string]: Promise<Icons>;
 }
 
-const getStore = memoizeOne(async () => {
-  const iconStore = createStore("hass-icon-db", "mdi-icon-store");
-
-  // Supervisor doesn't use icons, and should not update/downgrade the icon DB.
-  if (!__SUPERVISOR__) {
-    const version = await get("_version", iconStore);
-
-    if (!version) {
-      set("_version", iconMetadata.version, iconStore);
-    } else if (version !== iconMetadata.version) {
-      await clear(iconStore);
-      set("_version", iconMetadata.version, iconStore);
-    }
-  }
-
-  return iconStore;
-});
+export const iconStore = createStore("hass-icon-db", "mdi-icon-store");
 
 export const MDI_PREFIXES = ["mdi", "hass", "hassio", "hademo"];
 
@@ -45,10 +28,7 @@ export const getIcon = (iconName: string) =>
       return;
     }
 
-    // Start initializing the store, so it's ready when we need it
-    const iconStoreProm = getStore();
-    const readIcons = async () => {
-      const iconStore = await iconStoreProm;
+    const readIcons = () =>
       iconStore("readonly", (store) => {
         for (const [iconName_, resolve_, reject_] of toRead) {
           promisifyRequest<string | undefined>(store.get(iconName_))
@@ -57,7 +37,6 @@ export const getIcon = (iconName: string) =>
         }
         toRead = [];
       });
-    };
 
     promiseTimeout(1000, readIcons()).catch((e) => {
       // Firefox in private mode doesn't support IDB
@@ -83,7 +62,6 @@ export const findIconChunk = (icon: string): string => {
 export const writeCache = async (chunks: Chunks) => {
   const keys = Object.keys(chunks);
   const iconsSets: Icons[] = await Promise.all(Object.values(chunks));
-  const iconStore = await getStore();
   // We do a batch opening the store just once, for (considerable) performance
   iconStore("readwrite", (store) => {
     iconsSets.forEach((icons, idx) => {
@@ -93,4 +71,15 @@ export const writeCache = async (chunks: Chunks) => {
       delete chunks[keys[idx]];
     });
   });
+};
+
+export const checkCacheVersion = async () => {
+  const version = await get("_version", iconStore);
+
+  if (!version) {
+    set("_version", iconMetadata.version, iconStore);
+  } else if (version !== iconMetadata.version) {
+    await clear(iconStore);
+    set("_version", iconMetadata.version, iconStore);
+  }
 };

@@ -1,13 +1,22 @@
 import "@material/mwc-button";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-circular-progress";
-import type { ZHADevice } from "../../../../../data/zha";
-import { DEVICE_MESSAGE_TYPES, LOG_OUTPUT } from "../../../../../data/zha";
+import {
+  DEVICE_MESSAGE_TYPES,
+  LOG_OUTPUT,
+  ZHADevice,
+} from "../../../../../data/zha";
 import "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../../../types";
+import { HomeAssistant, Route } from "../../../../../types";
 import { documentationUrl } from "../../../../../util/documentation-url";
 import { zhaTabs } from "./zha-config-dashboard";
 import "./zha-device-pairing-status-card";
@@ -19,7 +28,7 @@ class ZHAAddDevicesPage extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+  @property({ type: Boolean }) public isWide = false;
 
   @property({ attribute: false }) public route?: Route;
 

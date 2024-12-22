@@ -1,18 +1,19 @@
 import "@material/mwc-button/mwc-button";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-dialog";
 import "../../components/ha-formfield";
 import "../../components/ha-switch";
 import type { HaSwitch } from "../../components/ha-switch";
-import type { ConfigEntryMutableParams } from "../../data/config_entries";
-import { updateConfigEntry } from "../../data/config_entries";
+import {
+  ConfigEntryMutableParams,
+  updateConfigEntry,
+} from "../../data/config_entries";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { showAlertDialog } from "../generic/show-dialog-box";
-import type { ConfigEntrySystemOptionsDialogParams } from "./show-dialog-config-entry-system-options";
+import { ConfigEntrySystemOptionsDialogParams } from "./show-dialog-config-entry-system-options";
 
 @customElement("dialog-config-entry-system-options")
 class DialogConfigEntrySystemOptions extends LitElement {

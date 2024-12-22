@@ -3,9 +3,8 @@ import type { PaperTabElement } from "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
 import type { PaperTabsElement } from "@polymer/paper-tabs/paper-tabs";
 import { customElement } from "lit/decorators";
-import type { Constructor } from "../types";
+import { Constructor } from "../types";
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 const PaperTabs = customElements.get(
   "paper-tabs"
 ) as Constructor<PaperTabsElement>;
@@ -54,7 +53,6 @@ export class HaTabs extends PaperTabs {
   }
 
   // Get first and last tab's width for _affectScroll
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   public _tabChanged(tab: PaperTabElement, old: PaperTabElement): void {
     super._tabChanged(tab, old);
     const tabs = this.querySelectorAll("paper-tab:not(.hide-tab)");
@@ -76,7 +74,6 @@ export class HaTabs extends PaperTabs {
    * while scrolling and the tab container shrinks we can counteract
    * the jump in tab position so that the scroll still appears smooth.
    */
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   public _affectScroll(dx: number): void {
     if (this._firstTabWidth === 0 || this._lastTabWidth === 0) {
       return;

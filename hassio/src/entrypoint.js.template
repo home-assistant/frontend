@@ -4,7 +4,11 @@
     el.src = src;
     document.body.appendChild(el);
   }
-  if (<%= modernRegex %>.test(navigator.userAgent)) {
+  if (/.*Version\/(?:11|12)(?:\.\d+)*.*Safari\//.test(navigator.userAgent)) {
+    <% for (const entry of es5EntryJS) { %>
+      loadES5("<%= entry %>");
+    <% } %>
+  } else {
     try {
         <% for (const entry of latestEntryJS) { %>
           new Function("import('<%= entry %>')")();
@@ -13,11 +17,6 @@
       <% for (const entry of es5EntryJS) { %>
         loadES5("<%= entry %>");
       <% } %>
-    }
-  } else {
-    <% for (const entry of es5EntryJS) { %>
-      loadES5("<%= entry %>");
-    <% } %>
+  }
   }
 })();
- 

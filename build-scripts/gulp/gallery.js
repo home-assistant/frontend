@@ -4,14 +4,16 @@ import gulp from "gulp";
 import yaml from "js-yaml";
 import { marked } from "marked";
 import path from "path";
+import env from "../env.cjs";
 import paths from "../paths.cjs";
 import "./clean.js";
 import "./entry-html.js";
 import "./gather-static.js";
 import "./gen-icons-json.js";
+import "./rollup.js";
 import "./service-worker.js";
 import "./translations.js";
-import "./rspack.js";
+import "./webpack.js";
 
 gulp.task("gather-gallery-pages", async function gatherPages() {
   const pageDir = path.resolve(paths.gallery_dir, "src/pages");
@@ -156,7 +158,9 @@ gulp.task(
     "copy-static-gallery",
     "gen-pages-gallery-dev",
     gulp.parallel(
-      "rspack-dev-server-gallery",
+      env.useRollup()
+        ? "rollup-dev-server-gallery"
+        : "webpack-dev-server-gallery",
       async function watchMarkdownFiles() {
         gulp.watch(
           [
@@ -185,7 +189,7 @@ gulp.task(
       "gather-gallery-pages"
     ),
     "copy-static-gallery",
-    "rspack-prod-gallery",
+    env.useRollup() ? "rollup-prod-gallery" : "webpack-prod-gallery",
     "gen-pages-gallery-prod"
   )
 );

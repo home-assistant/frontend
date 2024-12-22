@@ -5,7 +5,7 @@ import "../elements/hui-service-button-element";
 import "../elements/hui-state-badge-element";
 import "../elements/hui-state-icon-element";
 import "../elements/hui-state-label-element";
-import type { LovelaceElementConfig } from "../elements/types";
+import { LovelaceElementConfig } from "../elements/types";
 import { createLovelaceElement } from "./create-element-base";
 
 const ALWAYS_LOADED_TYPES = new Set([
@@ -18,9 +18,5 @@ const ALWAYS_LOADED_TYPES = new Set([
   "state-label",
 ]);
 
-export const createHuiElement = (config: LovelaceElementConfig) => {
-  if (config.type === "action-button") {
-    config = { ...config, type: "service-button" };
-  }
-  return createLovelaceElement("element", config, ALWAYS_LOADED_TYPES);
-};
+export const createHuiElement = (config: LovelaceElementConfig) =>
+  createLovelaceElement("element", config, ALWAYS_LOADED_TYPES);

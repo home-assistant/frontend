@@ -1,9 +1,14 @@
 import { mdiClose, mdiHelpCircle } from "@mdi/js";
 import deepFreeze from "deep-freeze";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
@@ -11,9 +16,9 @@ import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
-import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
-import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
-import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
+import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import {
   getCustomCardEntry,
   isCustomType,
@@ -24,15 +29,14 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
-import "../../cards/hui-card";
-import "../../sections/hui-section";
 import { addCard, replaceCard } from "../config-util";
-import { getCardDocumentationURL } from "../get-dashboard-documentation-url";
+import { getCardDocumentationURL } from "../get-card-documentation-url";
 import type { ConfigChangedEvent } from "../hui-element-editor";
 import { findLovelaceContainer } from "../lovelace-path";
 import type { GUIModeChangedEvent } from "../types";
 import "./hui-card-element-editor";
 import type { HuiCardElementEditor } from "./hui-card-element-editor";
+import "./hui-card-preview";
 import type { EditCardDialogParams } from "./show-edit-card-dialog";
 
 declare global {
@@ -231,9 +235,6 @@ export class HuiDialogEditCard
           <div class="element-editor">
             <hui-card-element-editor
               .showVisibilityTab=${this._cardConfig?.type !== "conditional"}
-              .sectionConfig=${this._isInSection
-                ? this._containerConfig
-                : undefined}
               .hass=${this.hass}
               .lovelace=${this._params.lovelaceConfig}
               .value=${this._cardConfig}
@@ -244,23 +245,11 @@ export class HuiDialogEditCard
             ></hui-card-element-editor>
           </div>
           <div class="element-preview">
-            ${this._isInSection
-              ? html`
-                  <hui-section
-                    .hass=${this.hass}
-                    .config=${this._cardConfigInSection(this._cardConfig)}
-                    preview
-                    class=${this._error ? "blur" : ""}
-                  ></hui-section>
-                `
-              : html`
-                  <hui-card
-                    .hass=${this.hass}
-                    .config=${this._cardConfig}
-                    preview
-                    class=${this._error ? "blur" : ""}
-                  ></hui-card>
-                `}
+            <hui-card-preview
+              .hass=${this.hass}
+              .config=${this._cardConfig}
+              class=${this._error ? "blur" : ""}
+            ></hui-card-preview>
             ${this._error
               ? html`
                   <ha-circular-progress
@@ -345,22 +334,6 @@ export class HuiDialogEditCard
     this._cardEditorEl?.focusYamlEditor();
   }
 
-  private get _isInSection() {
-    return this._params!.path.length === 2;
-  }
-
-  private _cardConfigInSection = memoizeOne(
-    (cardConfig?: LovelaceCardConfig) => {
-      const { cards, title, ...containerConfig } = this
-        ._containerConfig as LovelaceSectionConfig;
-
-      return {
-        ...containerConfig,
-        cards: cardConfig ? [cardConfig] : [],
-      };
-    }
-  );
-
   private get _canSave(): boolean {
     if (this._saving) {
       return false;
@@ -444,11 +417,6 @@ export class HuiDialogEditCard
           --dialog-content-padding: 24px 12px;
         }
 
-        .content {
-          width: calc(90vw - 48px);
-          max-width: 1000px;
-        }
-
         @media all and (max-width: 450px), all and (max-height: 500px) {
           /* overrule the ha-style-dialog max-height on small screens */
           ha-dialog {
@@ -457,15 +425,16 @@ export class HuiDialogEditCard
             --dialog-surface-top: 0px;
             --mdc-dialog-max-width: 100vw;
           }
-          .content {
-            width: 100%;
-            max-width: 100%;
-          }
+        }
+
+        .content {
+          width: 1000px;
+          max-width: calc(90vw - 48px);
         }
 
         @media all and (min-width: 451px) and (min-height: 501px) {
           :host([large]) .content {
-            max-width: none;
+            width: calc(90vw - 48px);
           }
         }
 
@@ -479,17 +448,9 @@ export class HuiDialogEditCard
           flex-direction: column;
         }
 
-        .content hui-card {
-          display: block;
-          padding: 4px;
-          margin: 0 auto;
+        .content hui-card-preview {
+          margin: 4px auto;
           max-width: 390px;
-        }
-        .content hui-section {
-          display: block;
-          padding: 4px;
-          margin: 0 auto;
-          max-width: var(--ha-view-sections-column-max-width, 500px);
         }
         .content .element-editor {
           margin: 0 10px;
@@ -505,15 +466,10 @@ export class HuiDialogEditCard
             flex-shrink: 1;
             min-width: 0;
           }
-          .content hui-card {
+          .content hui-card-preview {
             padding: 8px 10px;
             margin: auto 0px;
             max-width: 500px;
-          }
-          .content hui-section {
-            padding: 8px 10px;
-            margin: auto 0px;
-            max-width: var(--ha-view-sections-column-max-width, 500px);
           }
         }
         .hidden {
@@ -538,7 +494,7 @@ export class HuiDialogEditCard
           position: absolute;
           z-index: 10;
         }
-        hui-card {
+        hui-card-preview {
           padding-top: 8px;
           margin-bottom: 4px;
           display: block;

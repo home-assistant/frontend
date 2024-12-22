@@ -7,7 +7,7 @@ import { customElement } from "lit/decorators";
 export class HaRipple extends MdRipple {
   private readonly attachableTouchController = new AttachableController(
     this,
-    this._onTouchControlChange.bind(this)
+    this.onTouchControlChange.bind(this)
   );
 
   attach(control: HTMLElement) {
@@ -27,7 +27,7 @@ export class HaRipple extends MdRipple {
     }
   };
 
-  private _onTouchControlChange(
+  private onTouchControlChange(
     prev: HTMLElement | null,
     next: HTMLElement | null
   ) {

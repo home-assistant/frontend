@@ -1,4 +1,4 @@
-import type { ActionDetail } from "@material/mwc-list";
+import { ActionDetail } from "@material/mwc-list";
 import {
   mdiDelete,
   mdiDotsVertical,
@@ -6,11 +6,11 @@ import {
   mdiPencil,
   mdiPlus,
 } from "@mdi/js";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
-  type CSSResultGroup,
+  CSSResultGroup,
   LitElement,
-  type PropertyValues,
-  type TemplateResult,
+  TemplateResult,
   css,
   html,
   nothing,
@@ -22,18 +22,19 @@ import { formatListWithAnds } from "../../../common/string/format-list";
 import "../../../components/ha-fab";
 import "../../../components/ha-floor-icon";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
-import type { AreaRegistryEntry } from "../../../data/area_registry";
+import "../../../components/ha-sortable";
 import {
+  AreaRegistryEntry,
   createAreaRegistryEntry,
   updateAreaRegistryEntry,
 } from "../../../data/area_registry";
-import type { FloorRegistryEntry } from "../../../data/floor_registry";
 import {
+  FloorRegistryEntry,
   createFloorRegistryEntry,
   deleteFloorRegistryEntry,
   getFloorAreaLookup,
+  subscribeFloorRegistry,
   updateFloorRegistryEntry,
 } from "../../../data/floor_registry";
 import {
@@ -41,7 +42,8 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage";
-import type { HomeAssistant, Route } from "../../../types";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import {
@@ -50,28 +52,28 @@ import {
 } from "./show-dialog-area-registry-detail";
 import { showFloorRegistryDetailDialog } from "./show-dialog-floor-registry-detail";
 
-const UNASSIGNED_FLOOR = "__unassigned__";
+const UNASSIGNED_PATH = ["__unassigned__"];
 
 const SORT_OPTIONS = { sort: false, delay: 500, delayOnTouchOnly: true };
 
 @customElement("ha-config-areas-dashboard")
-export class HaConfigAreasDashboard extends LitElement {
+export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+  @property({ type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
 
-  @state() private _areas: AreaRegistryEntry[] = [];
+  @state() private _floors?: FloorRegistryEntry[];
 
   private _processAreas = memoizeOne(
     (
-      areas: AreaRegistryEntry[],
+      areas: HomeAssistant["areas"],
       devices: HomeAssistant["devices"],
       entities: HomeAssistant["entities"],
-      floors: HomeAssistant["floors"]
+      floors: FloorRegistryEntry[]
     ) => {
       const processArea = (area: AreaRegistryEntry) => {
         let noDevicesInArea = 0;
@@ -102,28 +104,26 @@ export class HaConfigAreasDashboard extends LitElement {
         };
       };
 
-      const floorAreaLookup = getFloorAreaLookup(areas);
-      const unassignedAreas = areas.filter(
+      const floorAreaLookup = getFloorAreaLookup(Object.values(areas));
+      const unassisgnedAreas = Object.values(areas).filter(
         (area) => !area.floor_id || !floorAreaLookup[area.floor_id]
       );
       return {
-        floors: Object.values(floors).map((floor) => ({
+        floors: floors.map((floor) => ({
           ...floor,
           areas: (floorAreaLookup[floor.floor_id] || []).map(processArea),
         })),
-        unassignedAreas: unassignedAreas.map(processArea),
+        unassisgnedAreas: unassisgnedAreas.map(processArea),
       };
     }
   );
 
-  protected willUpdate(changedProperties: PropertyValues<this>): void {
-    super.willUpdate(changedProperties);
-    if (changedProperties.has("hass")) {
-      const oldHass = changedProperties.get("hass");
-      if (this.hass.areas !== oldHass?.areas) {
-        this._areas = Object.values(this.hass.areas);
-      }
-    }
+  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
+    return [
+      subscribeFloorRegistry(this.hass.connection, (floors) => {
+        this._floors = floors;
+      }),
+    ];
   }
 
   protected render(): TemplateResult {
@@ -131,13 +131,13 @@ export class HaConfigAreasDashboard extends LitElement {
       !this.hass.areas ||
       !this.hass.devices ||
       !this.hass.entities ||
-      !this.hass.floors
+      !this._floors
         ? undefined
         : this._processAreas(
-            this._areas,
+            this.hass.areas,
             this.hass.devices,
             this.hass.entities,
-            this.hass.floors
+            this._floors
           );
 
     return html`
@@ -196,10 +196,10 @@ export class HaConfigAreasDashboard extends LitElement {
                 <ha-sortable
                   handle-selector="a"
                   draggable-selector="a"
-                  @item-added=${this._areaAdded}
+                  @item-moved=${this._areaMoved}
                   group="floor"
                   .options=${SORT_OPTIONS}
-                  .floor=${floor.floor_id}
+                  .path=${[floor.floor_id]}
                 >
                   <div class="areas">
                     ${floor.areas.map((area) => this._renderArea(area))}
@@ -207,7 +207,7 @@ export class HaConfigAreasDashboard extends LitElement {
                 </ha-sortable>
               </div>`
           )}
-          ${areasAndFloors?.unassignedAreas.length
+          ${areasAndFloors?.unassisgnedAreas.length
             ? html`<div class="floor">
                 <div class="header">
                   <h2>
@@ -219,13 +219,13 @@ export class HaConfigAreasDashboard extends LitElement {
                 <ha-sortable
                   handle-selector="a"
                   draggable-selector="a"
-                  @item-added=${this._areaAdded}
+                  @item-moved=${this._areaMoved}
                   group="floor"
                   .options=${SORT_OPTIONS}
-                  .floor=${UNASSIGNED_FLOOR}
+                  .path=${UNASSIGNED_PATH}
                 >
                   <div class="areas">
-                    ${areasAndFloors?.unassignedAreas.map((area) =>
+                    ${areasAndFloors?.unassisgnedAreas.map((area) =>
                       this._renderArea(area)
                     )}
                   </div>
@@ -259,10 +259,7 @@ export class HaConfigAreasDashboard extends LitElement {
   }
 
   private _renderArea(area) {
-    return html`<a
-      href=${`/config/areas/area/${area.area_id}`}
-      .sortableData=${area}
-    >
+    return html`<a href=${`/config/areas/area/${area.area_id}`}>
       <ha-card outlined>
         <div
           style=${styleMap({
@@ -325,23 +322,26 @@ export class HaConfigAreasDashboard extends LitElement {
     });
   }
 
-  private async _areaAdded(ev) {
-    ev.stopPropagation();
-    const { floor } = ev.currentTarget;
-
-    const newFloorId = floor === UNASSIGNED_FLOOR ? null : floor;
-
-    const { data: area } = ev.detail;
-
-    this._areas = this._areas.map<AreaRegistryEntry>((a) => {
-      if (a.area_id === area.area_id) {
-        return { ...a, floor_id: newFloorId };
-      }
-      return a;
-    });
+  private async _areaMoved(ev) {
+    const areasAndFloors = this._processAreas(
+      this.hass.areas,
+      this.hass.devices,
+      this.hass.entities,
+      this._floors!
+    );
+    let area: AreaRegistryEntry;
+    if (ev.detail.oldPath === UNASSIGNED_PATH) {
+      area = areasAndFloors.unassisgnedAreas[ev.detail.oldIndex];
+    } else {
+      const oldFloor = areasAndFloors.floors!.find(
+        (floor) => floor.floor_id === ev.detail.oldPath[0]
+      );
+      area = oldFloor!.areas[ev.detail.oldIndex];
+    }
 
     await updateAreaRegistryEntry(this.hass, area.area_id, {
-      floor_id: newFloorId,
+      floor_id:
+        ev.detail.newPath === UNASSIGNED_PATH ? null : ev.detail.newPath[0],
     });
   }
 

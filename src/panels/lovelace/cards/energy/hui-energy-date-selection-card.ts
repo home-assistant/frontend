@@ -1,12 +1,17 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import {
+  html,
+  LitElement,
+  nothing,
+  css,
+  CSSResultGroup,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../../components/ha-card";
-import type { HomeAssistant } from "../../../../types";
-import { hasConfigChanged } from "../../common/has-changed";
+import { HomeAssistant } from "../../../../types";
 import "../../components/hui-energy-period-selector";
-import type { LovelaceCard, LovelaceGridOptions } from "../../types";
-import type { EnergyCardBaseConfig } from "../types";
+import { LovelaceCard } from "../../types";
+import { EnergyCardBaseConfig } from "../types";
+import { hasConfigChanged } from "../../common/has-changed";
 
 @customElement("hui-energy-date-selection-card")
 export class HuiEnergyDateSelectionCard
@@ -19,13 +24,6 @@ export class HuiEnergyDateSelectionCard
 
   public getCardSize(): Promise<number> | number {
     return 1;
-  }
-
-  public getGridOptions(): LovelaceGridOptions {
-    return {
-      rows: 1,
-      columns: 12,
-    };
   }
 
   public setConfig(config: EnergyCardBaseConfig): void {
@@ -59,11 +57,10 @@ export class HuiEnergyDateSelectionCard
 
   static get styles(): CSSResultGroup {
     return css`
-      ha-card {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
+      .padded {
+        padding-left: 16px !important;
+        padding-inline-start: 16px !important;
+        padding-inline-end: initial !important;
       }
     `;
   }

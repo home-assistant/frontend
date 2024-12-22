@@ -1,15 +1,21 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-card";
-import type { ImageEntity } from "../../../data/image";
-import { computeImageUrl } from "../../../data/image";
-import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import type { HomeAssistant } from "../../../types";
+import { ImageEntity, computeImageUrl } from "../../../data/image";
+import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
@@ -17,10 +23,8 @@ import { hasAction } from "../common/has-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-image";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { LovelaceCard, LovelaceCardEditor } from "../types";
-import type { PictureEntityCardConfig } from "./types";
-import type { CameraEntity } from "../../../data/camera";
-import type { PersonEntity } from "../../../data/person";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
+import { PictureEntityCardConfig } from "./types";
 
 @customElement("hui-picture-entity-card")
 class HuiPictureEntityCard extends LitElement implements LovelaceCard {
@@ -64,7 +68,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     }
 
     if (
-      !["camera", "image", "person"].includes(computeDomain(config.entity)) &&
+      !["camera", "image"].includes(computeDomain(config.entity)) &&
       !config.image &&
       !config.state_image &&
       !config.camera_image
@@ -104,8 +108,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
-    const stateObj: CameraEntity | ImageEntity | PersonEntity | undefined =
-      this.hass.states[this._config.entity];
+    const stateObj = this.hass.states[this._config.entity];
 
     if (!stateObj) {
       return html`
@@ -132,24 +135,15 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       footer = html`<div class="footer single">${entityState}</div>`;
     }
 
-    const domain: string = computeDomain(this._config.entity);
-    let image: string | undefined = this._config.image;
-    switch (domain) {
-      case "image":
-        image = computeImageUrl(stateObj as ImageEntity);
-        break;
-      case "person":
-        if ((stateObj as PersonEntity).attributes.entity_picture) {
-          image = (stateObj as PersonEntity).attributes.entity_picture;
-        }
-        break;
-    }
+    const domain = computeDomain(this._config.entity);
 
     return html`
       <ha-card>
         <hui-image
           .hass=${this.hass}
-          .image=${image}
+          .image=${domain === "image"
+            ? computeImageUrl(stateObj as ImageEntity)
+            : this._config.image}
           .stateImage=${this._config.state_image}
           .stateFilter=${this._config.state_filter}
           .cameraImage=${domain === "camera"

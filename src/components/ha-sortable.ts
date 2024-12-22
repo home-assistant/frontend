@@ -1,23 +1,18 @@
 /* eslint-disable lit/prefer-static-styles */
-import type { PropertyValues } from "lit";
-import { html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { SortableEvent } from "sortablejs";
 import { fireEvent } from "../common/dom/fire_event";
 import type { SortableInstance } from "../resources/sortable";
+import { ItemPath } from "../types";
 
 declare global {
   interface HASSDomEvents {
     "item-moved": {
       oldIndex: number;
       newIndex: number;
-    };
-    "item-added": {
-      index: number;
-      data: any;
-    };
-    "item-removed": {
-      index: number;
+      oldPath?: ItemPath;
+      newPath?: ItemPath;
     };
     "drag-start": undefined;
     "drag-end": undefined;
@@ -26,7 +21,7 @@ declare global {
 
 export type HaSortableOptions = Omit<
   SortableInstance.SortableOptions,
-  "onStart" | "onChoose" | "onEnd" | "onUpdate" | "onAdd" | "onRemove"
+  "onStart" | "onChoose" | "onEnd"
 >;
 
 @customElement("ha-sortable")
@@ -36,6 +31,9 @@ export class HaSortable extends LitElement {
   @property({ type: Boolean })
   public disabled = false;
 
+  @property({ type: Array })
+  public path?: ItemPath;
+
   @property({ type: Boolean, attribute: "no-style" })
   public noStyle: boolean = false;
 
@@ -44,13 +42,6 @@ export class HaSortable extends LitElement {
 
   @property({ type: String, attribute: "handle-selector" })
   public handleSelector?: string;
-
-  /**
-   * Selectors that do not lead to dragging (String or Function)
-   * https://github.com/SortableJS/Sortable?tab=readme-ov-file#filter-option
-   * */
-  @property({ type: String, attribute: "filter" })
-  public filter?: string;
 
   @property({ type: String })
   public group?: string | SortableInstance.GroupOptions;
@@ -132,22 +123,14 @@ export class HaSortable extends LitElement {
 
     if (!container) return;
 
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     const Sortable = (await import("../resources/sortable")).default;
 
     const options: SortableInstance.Options = {
-      scroll: true,
-      // Force the autoscroll fallback because it works better than the native one
-      forceAutoScrollFallback: true,
-      scrollSpeed: 20,
       animation: 150,
       ...this.options,
       onChoose: this._handleChoose,
       onStart: this._handleStart,
       onEnd: this._handleEnd,
-      onUpdate: this._handleUpdate,
-      onAdd: this._handleAdd,
-      onRemove: this._handleRemove,
     };
 
     if (this.draggableSelector) {
@@ -162,38 +145,37 @@ export class HaSortable extends LitElement {
     if (this.group) {
       options.group = this.group;
     }
-    if (this.filter) {
-      options.filter = this.filter;
-    }
 
     this._sortable = new Sortable(container, options);
   }
 
-  private _handleUpdate = (evt) => {
-    fireEvent(this, "item-moved", {
-      newIndex: evt.newIndex,
-      oldIndex: evt.oldIndex,
-    });
-  };
-
-  private _handleAdd = (evt) => {
-    fireEvent(this, "item-added", {
-      index: evt.newIndex,
-      data: evt.item.sortableData,
-    });
-  };
-
-  private _handleRemove = (evt) => {
-    fireEvent(this, "item-removed", { index: evt.oldIndex });
-  };
-
-  private _handleEnd = async (evt) => {
+  private _handleEnd = async (evt: SortableEvent) => {
     fireEvent(this, "drag-end");
     // put back in original location
     if (this.rollback && (evt.item as any).placeholder) {
       (evt.item as any).placeholder.replaceWith(evt.item);
       delete (evt.item as any).placeholder;
     }
+
+    const oldIndex = evt.oldIndex;
+    const oldPath = (evt.from.parentElement as HaSortable).path;
+    const newIndex = evt.newIndex;
+    const newPath = (evt.to.parentElement as HaSortable).path;
+
+    if (
+      oldIndex === undefined ||
+      newIndex === undefined ||
+      (oldIndex === newIndex && oldPath?.join(".") === newPath?.join("."))
+    ) {
+      return;
+    }
+
+    fireEvent(this, "item-moved", {
+      oldIndex,
+      newIndex,
+      oldPath,
+      newPath,
+    });
   };
 
   private _handleStart = () => {

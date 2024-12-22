@@ -1,6 +1,6 @@
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { LocalizeFunc } from "../../common/translations/localize";
+import { LocalizeFunc } from "../../common/translations/localize";
 import { fireEvent } from "../../common/dom/fire_event";
 import { createCloseHeading } from "../../components/ha-dialog";
 
@@ -77,16 +77,18 @@ class DialogApp extends LitElement {
       --mdc-dialog-min-width: min(500px, 90vw);
     }
     .app-qr {
+      margin: 24px auto 0 auto;
       display: flex;
       justify-content: space-between;
+      padding: 0 24px;
       box-sizing: border-box;
-      gap: 32px;
+      gap: 16px;
       width: 100%;
+      max-width: 400px;
     }
     .app-qr a,
     .app-qr img {
       flex: 1;
-      max-width: 180px;
     }
   `;
 }

@@ -1,7 +1,7 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { TimeSelector } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
+import { TimeSelector } from "../../data/selector";
+import { HomeAssistant } from "../../types";
 import "../ha-time-input";
 
 @customElement("ha-selector-time")
@@ -27,10 +27,9 @@ export class HaTimeSelector extends LitElement {
         .locale=${this.hass.locale}
         .disabled=${this.disabled}
         .required=${this.required}
-        clearable
         .helper=${this.helper}
         .label=${this.label}
-        .enableSecond=${!this.selector.time?.no_second}
+        enable-second
       ></ha-time-input>
     `;
   }

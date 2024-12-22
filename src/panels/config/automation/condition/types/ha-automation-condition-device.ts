@@ -1,5 +1,4 @@
 import { consume } from "@lit-labs/context";
-import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -8,17 +7,13 @@ import "../../../../../components/device/ha-device-condition-picker";
 import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/ha-form/ha-form";
 import { fullEntitiesContext } from "../../../../../data/context";
-import type {
-  DeviceCapabilities,
-  DeviceCondition,
-} from "../../../../../data/device_automation";
 import {
   deviceAutomationsEqual,
+  DeviceCapabilities,
+  DeviceCondition,
   fetchDeviceConditionCapabilities,
-  localizeExtraFieldsComputeLabelCallback,
-  localizeExtraFieldsComputeHelperCallback,
 } from "../../../../../data/device_automation";
-import type { EntityRegistryEntry } from "../../../../../data/entity_registry";
+import { EntityRegistryEntry } from "../../../../../data/entity_registry";
 import type { HomeAssistant } from "../../../../../types";
 
 @customElement("ha-automation-condition-device")
@@ -39,9 +34,8 @@ export class HaDeviceCondition extends LitElement {
 
   private _origCondition?: DeviceCondition;
 
-  public static get defaultConfig(): DeviceCondition {
+  public static get defaultConfig() {
     return {
-      condition: "device",
       device_id: "",
       domain: "",
       entity_id: "",
@@ -59,28 +53,6 @@ export class HaDeviceCondition extends LitElement {
       return extraFieldsData;
     }
   );
-
-  public shouldUpdate(changedProperties: PropertyValues) {
-    if (!changedProperties.has("condition")) {
-      return true;
-    }
-    if (
-      this.condition.device_id &&
-      !(this.condition.device_id in this.hass.devices)
-    ) {
-      fireEvent(
-        this,
-        "ui-mode-not-available",
-        Error(
-          this.hass.localize(
-            "ui.panel.config.automation.editor.edit_unknown_device"
-          )
-        )
-      );
-      return false;
-    }
-    return true;
-  }
 
   protected render() {
     const deviceId = this._deviceId || this.condition.device_id;
@@ -112,13 +84,8 @@ export class HaDeviceCondition extends LitElement {
               .data=${this._extraFieldsData(this.condition, this._capabilities)}
               .schema=${this._capabilities.extra_fields}
               .disabled=${this.disabled}
-              .computeLabel=${localizeExtraFieldsComputeLabelCallback(
-                this.hass,
-                this.condition
-              )}
-              .computeHelper=${localizeExtraFieldsComputeHelperCallback(
-                this.hass,
-                this.condition
+              .computeLabel=${this._extraFieldsComputeLabelCallback(
+                this.hass.localize
               )}
               @value-changed=${this._extraFieldsChanged}
             ></ha-form>
@@ -184,6 +151,14 @@ export class HaDeviceCondition extends LitElement {
         ...ev.detail.value,
       },
     });
+  }
+
+  private _extraFieldsComputeLabelCallback(localize) {
+    // Returns a callback for ha-form to calculate labels per schema object
+    return (schema) =>
+      localize(
+        `ui.panel.config.automation.editor.conditions.type.device.extra_fields.${schema.name}`
+      ) || schema.name;
   }
 
   static styles = css`

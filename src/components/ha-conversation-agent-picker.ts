@@ -1,17 +1,21 @@
 import { mdiCog } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { debounce } from "../common/util/debounce";
-import type { ConfigEntry } from "../data/config_entries";
-import { getConfigEntry } from "../data/config_entries";
-import type { Agent } from "../data/conversation";
-import { listAgents } from "../data/conversation";
+import { ConfigEntry, getConfigEntry } from "../data/config_entries";
+import { Agent, listAgents } from "../data/conversation";
 import { fetchIntegrationManifest } from "../data/integration";
 import { showOptionsFlowDialog } from "../dialogs/config-flow/show-dialog-options-flow";
-import type { HomeAssistant } from "../types";
+import { HomeAssistant } from "../types";
 import "./ha-list-item";
 import "./ha-select";
 import type { HaSelect } from "./ha-select";
@@ -41,35 +45,15 @@ export class HaConversationAgentPicker extends LitElement {
     if (!this._agents) {
       return nothing;
     }
-    let value = this.value;
-    if (!value && this.required) {
-      // Select Home Assistant conversation agent if it supports the language
-      for (const agent of this._agents) {
-        if (
-          agent.id === "conversation.home_assistant" &&
-          agent.supported_languages.includes(this.language!)
-        ) {
-          value = agent.id;
-          break;
-        }
-      }
-      if (!value) {
-        // Select the first agent that supports the language
-        for (const agent of this._agents) {
-          if (
-            agent.supported_languages === "*" &&
-            agent.supported_languages.includes(this.language!)
-          ) {
-            value = agent.id;
-            break;
-          }
-        }
-      }
-    }
-    if (!value) {
-      value = NONE;
-    }
-
+    const value =
+      this.value ??
+      (this.required &&
+      (!this.language ||
+        this._agents
+          .find((agent) => agent.id === "homeassistant")
+          ?.supported_languages.includes(this.language))
+        ? "homeassistant"
+        : NONE);
     return html`
       <ha-select
         .label=${this.label ||

@@ -1,22 +1,22 @@
 import "@material/mwc-button";
 import { genClientId } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { html, LitElement } from "lit";
+import {
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import type { LocalizeFunc } from "../common/translations/localize";
+import { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-form/ha-form";
 import type { HaForm } from "../components/ha-form/ha-form";
-import type {
-  HaFormDataContainer,
-  HaFormSchema,
-} from "../components/ha-form/types";
+import { HaFormDataContainer, HaFormSchema } from "../components/ha-form/types";
 import { onboardUserStep } from "../data/onboarding";
-import type { ValueChangedEvent } from "../types";
+import { ValueChangedEvent } from "../types";
 import { onBoardingStyles } from "./styles";
 import { debounce } from "../common/util/debounce";
-
-const CHECK_USERNAME_REGEX = /\s|[A-Z]/;
 
 const CREATE_USER_SCHEMA: HaFormSchema[] = [
   {
@@ -123,7 +123,6 @@ class OnboardingCreateUser extends LitElement {
     ev: ValueChangedEvent<HaFormDataContainer>
   ): void {
     const nameChanged = ev.detail.value.name !== this._newUser.name;
-    const usernameChanged = ev.detail.value.username !== this._newUser.username;
     const passwordChanged =
       ev.detail.value.password !== this._newUser.password ||
       ev.detail.value.password_confirm !== this._newUser.password_confirm;
@@ -137,9 +136,6 @@ class OnboardingCreateUser extends LitElement {
       } else {
         this._debouncedCheckPasswordMatch();
       }
-    }
-    if (usernameChanged) {
-      this._checkUsername();
     }
   }
 
@@ -170,21 +166,6 @@ class OnboardingCreateUser extends LitElement {
     const parts = String(this._newUser.name).split(" ");
     if (parts.length) {
       this._newUser.username = parts[0].toLowerCase();
-      this._checkUsername();
-    }
-  }
-
-  private _checkUsername(): void {
-    const old = this._formError.username;
-    if (CHECK_USERNAME_REGEX.test(this._newUser.username as string)) {
-      this._formError.username = this.localize(
-        "ui.panel.page-onboarding.user.error.username_not_normalized"
-      );
-    } else {
-      this._formError.username = "";
-    }
-    if (old !== this._formError.username) {
-      this.requestUpdate("_formError");
     }
   }
 

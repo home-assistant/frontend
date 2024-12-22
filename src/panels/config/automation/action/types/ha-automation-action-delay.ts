@@ -1,13 +1,12 @@
-import type { PropertyValues } from "lit";
-import { html, LitElement } from "lit";
+import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { hasTemplate } from "../../../../../common/string/has-template";
 import type { HaDurationData } from "../../../../../components/ha-duration-input";
 import "../../../../../components/ha-duration-input";
-import type { DelayAction } from "../../../../../data/script";
-import type { HomeAssistant } from "../../../../../types";
-import type { ActionElement } from "../ha-automation-action-row";
+import { DelayAction } from "../../../../../data/script";
+import { HomeAssistant } from "../../../../../types";
+import { ActionElement } from "../ha-automation-action-row";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 
 @customElement("ha-automation-action-delay")
@@ -20,7 +19,7 @@ export class HaDelayAction extends LitElement implements ActionElement {
 
   @state() private _timeData?: HaDurationData;
 
-  public static get defaultConfig(): DelayAction {
+  public static get defaultConfig() {
     return { delay: "" };
   }
 
@@ -49,7 +48,6 @@ export class HaDelayAction extends LitElement implements ActionElement {
       .disabled=${this.disabled}
       .data=${this._timeData}
       enableMillisecond
-      required
       @value-changed=${this._valueChanged}
     ></ha-duration-input>`;
   }

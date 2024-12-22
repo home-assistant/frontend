@@ -1,8 +1,6 @@
-import type { EntityConfig } from "../entity-rows/types";
+import { EntityConfig } from "../entity-rows/types";
 
-export function processEditorEntities(
-  entities: (any | string)[]
-): EntityConfig[] {
+export function processEditorEntities(entities): EntityConfig[] {
   return entities.map((entityConf) => {
     if (typeof entityConf === "string") {
       return { entity: entityConf };

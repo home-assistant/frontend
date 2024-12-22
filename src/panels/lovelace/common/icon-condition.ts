@@ -6,7 +6,7 @@ import {
   mdiResponsive,
   mdiStateMachine,
 } from "@mdi/js";
-import type { Condition } from "./validate-condition";
+import { Condition } from "./validate-condition";
 
 export const ICON_CONDITION: Record<Condition["condition"], string> = {
   numeric_state: mdiNumeric,

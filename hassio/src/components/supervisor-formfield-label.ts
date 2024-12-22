@@ -1,5 +1,4 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../src/components/ha-svg-icon";
 
@@ -7,9 +6,9 @@ import "../../../src/components/ha-svg-icon";
 class SupervisorFormfieldLabel extends LitElement {
   @property({ type: String }) public label!: string;
 
-  @property({ attribute: false }) public imageUrl?: string;
+  @property({ type: String }) public imageUrl?: string;
 
-  @property({ attribute: false }) public iconPath?: string;
+  @property({ type: String }) public iconPath?: string;
 
   @property({ type: String }) public version?: string;
 

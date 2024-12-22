@@ -1,8 +1,13 @@
 import "@material/mwc-button/mwc-button";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { mdiContentCopy, mdiEyeOff, mdiEye } from "@mdi/js";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { isIPAddress } from "../../../common/string/is_ip_address";
 import "../../../components/ha-alert";
@@ -10,18 +15,10 @@ import "../../../components/ha-card";
 import "../../../components/ha-formfield";
 import "../../../components/ha-switch";
 import "../../../components/ha-textfield";
-import "../../../components/ha-settings-row";
-import "../../../components/ha-button";
 import type { HaTextField } from "../../../components/ha-textfield";
-import type { CloudStatus } from "../../../data/cloud";
-import { fetchCloudStatus } from "../../../data/cloud";
+import { CloudStatus, fetchCloudStatus } from "../../../data/cloud";
 import { saveCoreConfig } from "../../../data/core";
-import { getNetworkUrls, type NetworkUrls } from "../../../data/network";
 import type { ValueChangedEvent, HomeAssistant } from "../../../types";
-import { copyToClipboard } from "../../../common/util/copy-clipboard";
-import { showToast } from "../../../util/toast";
-import type { HaSwitch } from "../../../components/ha-switch";
-import { obfuscateUrl } from "../../../util/url";
 
 @customElement("ha-config-url-form")
 class ConfigUrlForm extends LitElement {
@@ -31,11 +28,9 @@ class ConfigUrlForm extends LitElement {
 
   @state() private _working = false;
 
-  @state() private _urls?: NetworkUrls;
+  @state() private _external_url?: string;
 
-  @state() private _external_url: string = "";
-
-  @state() private _internal_url: string = "";
+  @state() private _internal_url?: string;
 
   @state() private _cloudStatus?: CloudStatus | null;
 
@@ -43,29 +38,18 @@ class ConfigUrlForm extends LitElement {
 
   @state() private _showCustomInternalUrl = false;
 
-  @state() private _unmaskedExternalUrl = false;
-
-  @state() private _unmaskedInternalUrl = false;
-
-  @state() private _cloudChecked = false;
-
   protected render() {
     const canEdit = ["storage", "default"].includes(
       this.hass.config.config_source
     );
     const disabled = this._working || !canEdit;
 
-    if (this._cloudStatus === undefined || this._urls === undefined) {
+    if (!this.hass.userData?.showAdvanced || this._cloudStatus === undefined) {
       return nothing;
     }
 
-    const internalUrl = this._showCustomInternalUrl
-      ? this._internal_url
-      : this._urls?.internal || "";
-    const externalUrl = this._showCustomExternalUrl
-      ? this._external_url
-      : (this._cloudChecked ? this._urls?.cloud : this._urls?.external) || "";
-
+    const internalUrl = this._internalUrlValue;
+    const externalUrl = this._externalUrlValue;
     let hasCloud: boolean;
     let remoteEnabled: boolean;
     let httpUseHttps: boolean;
@@ -96,16 +80,14 @@ class ConfigUrlForm extends LitElement {
         <div class="card-content">
           ${!canEdit
             ? html`
-                <ha-alert>
+                <p>
                   ${this.hass.localize(
                     "ui.panel.config.core.section.core.core_config.edit_requires_storage"
                   )}
-                </ha-alert>
+                </p>
               `
             : ""}
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : ""}
+          ${this._error ? html`<div class="error">${this._error}</div>` : ""}
 
           <div class="description">
             ${this.hass.localize("ui.panel.config.url.description")}
@@ -113,61 +95,49 @@ class ConfigUrlForm extends LitElement {
 
           ${hasCloud
             ? html`
-                <h4>
-                  ${this.hass.localize(
-                    "ui.panel.config.url.external_url_label"
-                  )}
-                </h4>
-                <ha-settings-row slim>
-                  <span slot="heading">
+                <div class="row">
+                  <div class="flex">
                     ${this.hass.localize(
+                      "ui.panel.config.url.external_url_label"
+                    )}
+                  </div>
+                  <ha-formfield
+                    .label=${this.hass.localize(
                       "ui.panel.config.url.external_use_ha_cloud"
                     )}
-                  </span>
-                  <ha-switch
-                    .disabled=${disabled}
-                    .checked=${this._cloudChecked}
-                    @change=${this._toggleCloud}
-                  ></ha-switch>
-                </ha-settings-row>
+                  >
+                    <ha-switch
+                      .disabled=${disabled}
+                      .checked=${externalUrl === null}
+                      @change=${this._toggleCloud}
+                    ></ha-switch>
+                  </ha-formfield>
+                </div>
               `
             : ""}
-          <div class="url-container">
-            <div class="textfield-container">
-              <ha-textfield
-                name="external_url"
-                type="url"
-                placeholder="https://example.duckdns.org:8123"
-                .value=${this._unmaskedExternalUrl ||
-                (this._showCustomExternalUrl && canEdit)
-                  ? externalUrl
-                  : obfuscateUrl(externalUrl)}
-                @change=${this._handleChange}
-                .disabled=${disabled || !this._showCustomExternalUrl}
-                .suffix=${
-                  // reserve some space for the icon.
-                  html`<div style="width: 24px"></div>`
-                }
-              ></ha-textfield>
-              ${!this._showCustomExternalUrl || !canEdit
-                ? html`
-                    <ha-icon-button
-                      class="toggle-unmasked-url"
-                      toggles
-                      .label=${this.hass.localize(
-                        `ui.panel.config.common.${this._unmaskedExternalUrl ? "hide" : "show"}_url`
-                      )}
-                      @click=${this._toggleUnmaskedExternalUrl}
-                      .path=${this._unmaskedExternalUrl ? mdiEyeOff : mdiEye}
-                    ></ha-icon-button>
-                  `
-                : nothing}
-            </div>
-            <ha-button .url=${externalUrl} @click=${this._copyURL}>
-              <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
-              ${this.hass.localize("ui.panel.config.common.copy_link")}
-            </ha-button>
-          </div>
+          ${!this._showCustomExternalUrl
+            ? ""
+            : html`
+                <div class="row">
+                  <div class="flex">
+                    ${hasCloud
+                      ? ""
+                      : this.hass.localize(
+                          "ui.panel.config.url.external_url_label"
+                        )}
+                  </div>
+                  <ha-textfield
+                    class="flex"
+                    name="external_url"
+                    type="url"
+                    .disabled=${disabled}
+                    .value=${externalUrl || ""}
+                    @change=${this._handleChange}
+                    placeholder="https://example.duckdns.org:8123"
+                  >
+                  </ha-textfield>
+                </div>
+              `}
           ${hasCloud || !isComponentLoaded(this.hass, "cloud")
             ? ""
             : html`
@@ -210,65 +180,40 @@ class ConfigUrlForm extends LitElement {
               `
             : ""}
 
-          <h4>
-            ${this.hass.localize("ui.panel.config.url.internal_url_label")}
-          </h4>
-          <ha-settings-row slim>
-            <span slot="heading">
-              ${this.hass.localize(
+          <div class="row">
+            <div class="flex">
+              ${this.hass.localize("ui.panel.config.url.internal_url_label")}
+            </div>
+
+            <ha-formfield
+              .label=${this.hass.localize(
                 "ui.panel.config.url.internal_url_automatic"
               )}
-            </span>
-            <span slot="description">
-              ${this.hass.localize(
-                "ui.panel.config.url.internal_url_automatic_description"
-              )}
-            </span>
-            <ha-switch
-              .disabled=${disabled}
-              .checked=${!this._showCustomInternalUrl}
-              @change=${this._toggleInternalAutomatic}
-            ></ha-switch>
-          </ha-settings-row>
-
-          <div class="url-container">
-            <div class="textfield-container">
-              <ha-textfield
-                name="internal_url"
-                type="url"
-                placeholder=${this.hass.localize(
-                  "ui.panel.config.url.internal_url_placeholder"
-                )}
-                .value=${this._unmaskedInternalUrl ||
-                (this._showCustomInternalUrl && canEdit)
-                  ? internalUrl
-                  : obfuscateUrl(internalUrl)}
-                @change=${this._handleChange}
-                .disabled=${disabled || !this._showCustomInternalUrl}
-                .suffix=${
-                  // reserve some space for the icon.
-                  html`<div style="width: 24px"></div>`
-                }
-              ></ha-textfield>
-              ${!this._showCustomInternalUrl || !canEdit
-                ? html`
-                    <ha-icon-button
-                      class="toggle-unmasked-url"
-                      toggles
-                      .label=${this.hass.localize(
-                        `ui.panel.config.common.${this._unmaskedInternalUrl ? "hide" : "show"}_url`
-                      )}
-                      @click=${this._toggleUnmaskedInternalUrl}
-                      .path=${this._unmaskedInternalUrl ? mdiEyeOff : mdiEye}
-                    ></ha-icon-button>
-                  `
-                : nothing}
-            </div>
-            <ha-button .url=${internalUrl} @click=${this._copyURL}>
-              <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
-              ${this.hass.localize("ui.panel.config.common.copy_link")}
-            </ha-button>
+            >
+              <ha-switch
+                .checked=${internalUrl === null}
+                @change=${this._toggleInternalAutomatic}
+              ></ha-switch>
+            </ha-formfield>
           </div>
+
+          ${!this._showCustomInternalUrl
+            ? ""
+            : html`
+                <div class="row">
+                  <div class="flex"></div>
+                  <ha-textfield
+                    class="flex"
+                    name="internal_url"
+                    type="url"
+                    placeholder="http://<some IP address>:8123"
+                    .disabled=${disabled}
+                    .value=${internalUrl || ""}
+                    @change=${this._handleChange}
+                  >
+                  </ha-textfield>
+                </div>
+              `}
           ${
             // If the user has configured a cert, show an error if
             httpUseHttps && // there is no internal url configured
@@ -308,47 +253,46 @@ class ConfigUrlForm extends LitElement {
   protected override firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
 
+    this._showCustomInternalUrl = this._internalUrlValue !== null;
+
     if (isComponentLoaded(this.hass, "cloud")) {
       fetchCloudStatus(this.hass).then((cloudStatus) => {
         this._cloudStatus = cloudStatus;
-        this._showCustomExternalUrl = !(
-          this._cloudStatus.logged_in && !this.hass.config.external_url
-        );
+        if (cloudStatus.logged_in) {
+          this._showCustomExternalUrl = this._externalUrlValue !== null;
+        } else {
+          this._showCustomExternalUrl = true;
+        }
       });
     } else {
       this._cloudStatus = null;
+      this._showCustomExternalUrl = true;
     }
-    this._fetchUrls();
   }
 
-  private _toggleCloud(ev: Event) {
-    this._cloudChecked = (ev.currentTarget as HaSwitch).checked;
-    this._showCustomExternalUrl = !this._cloudChecked;
+  private get _internalUrlValue() {
+    return this._internal_url !== undefined
+      ? this._internal_url
+      : this.hass.config.internal_url;
   }
 
-  private _toggleInternalAutomatic(ev: Event) {
-    this._showCustomInternalUrl = !(ev.currentTarget as HaSwitch).checked;
+  private get _externalUrlValue() {
+    return this._external_url !== undefined
+      ? this._external_url
+      : this.hass.config.external_url;
   }
 
-  private _toggleUnmaskedInternalUrl() {
-    this._unmaskedInternalUrl = !this._unmaskedInternalUrl;
+  private _toggleCloud(ev) {
+    this._showCustomExternalUrl = !ev.currentTarget.checked;
   }
 
-  private _toggleUnmaskedExternalUrl() {
-    this._unmaskedExternalUrl = !this._unmaskedExternalUrl;
-  }
-
-  private async _copyURL(ev) {
-    const url = ev.currentTarget.url;
-    await copyToClipboard(url);
-    showToast(this, {
-      message: this.hass.localize("ui.common.copied_clipboard"),
-    });
+  private _toggleInternalAutomatic(ev) {
+    this._showCustomInternalUrl = !ev.currentTarget.checked;
   }
 
   private _handleChange(ev: ValueChangedEvent<string>) {
     const target = ev.currentTarget as HaTextField;
-    this[`_${target.name}`] = target.value || "";
+    this[`_${target.name}`] = target.value || null;
   }
 
   private async _save() {
@@ -363,25 +307,11 @@ class ConfigUrlForm extends LitElement {
           ? this._internal_url || null
           : null,
       });
-      await this._fetchUrls();
     } catch (err: any) {
       this._error = err.message || err;
     } finally {
       this._working = false;
     }
-  }
-
-  private async _fetchUrls() {
-    this._urls = await getNetworkUrls(this.hass);
-    this._cloudChecked =
-      this._urls?.cloud === this._urls?.external &&
-      !this.hass.config.external_url;
-    this._showCustomInternalUrl = !!this.hass.config.internal_url;
-    this._showCustomExternalUrl = !(
-      this._cloudStatus?.logged_in && !this.hass.config.external_url
-    );
-    this._internal_url = this._urls?.internal ?? "";
-    this._external_url = this._urls?.external ?? "";
   }
 
   static get styles(): CSSResultGroup {
@@ -408,10 +338,8 @@ class ConfigUrlForm extends LitElement {
       .row > * {
         margin: 0 8px;
       }
-
-      ha-alert {
-        display: block;
-        margin: 16px 0;
+      .error {
+        color: var(--error-color);
       }
 
       .card-actions {
@@ -422,31 +350,6 @@ class ConfigUrlForm extends LitElement {
       a {
         color: var(--primary-color);
         text-decoration: none;
-      }
-
-      .url-container {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-top: 8px;
-      }
-      .textfield-container {
-        position: relative;
-        flex: 1;
-      }
-      .textfield-container ha-textfield {
-        display: block;
-      }
-      .toggle-unmasked-url {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        inset-inline-start: initial;
-        inset-inline-end: 8px;
-        --mdc-icon-button-size: 40px;
-        --mdc-icon-size: 20px;
-        color: var(--secondary-text-color);
-        direction: var(--direction);
       }
     `;
   }

@@ -1,14 +1,20 @@
 import "@material/mwc-button";
 import { mdiPlus } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-svg-icon";
-import type { Fields } from "../../../data/script";
-import type { HomeAssistant } from "../../../types";
+import { Fields } from "../../../data/script";
+import { HomeAssistant } from "../../../types";
 import "./ha-script-field-row";
 import type HaScriptFieldRow from "./ha-script-field-row";
 

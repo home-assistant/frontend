@@ -1,16 +1,21 @@
 import "@material/mwc-list/mwc-list-item";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
-import type { ZHADevice } from "../../../../../data/zha";
-import { bindDevices, unbindDevices } from "../../../../../data/zha";
+import { bindDevices, unbindDevices, ZHADevice } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
-import type { ItemSelectedEvent } from "./types";
+import { HomeAssistant } from "../../../../../types";
+import { ItemSelectedEvent } from "./types";
 
 @customElement("zha-device-binding-control")
 export class ZHADeviceBindingControl extends LitElement {

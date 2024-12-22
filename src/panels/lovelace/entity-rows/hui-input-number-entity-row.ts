@@ -1,16 +1,22 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-slider";
 import "../../../components/ha-textfield";
 import { isUnavailableState } from "../../../data/entity";
 import { setValue } from "../../../data/input_text";
-import type { HomeAssistant } from "../../../types";
+import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { EntityConfig, LovelaceRow } from "./types";
+import { EntityConfig, LovelaceRow } from "./types";
 
 @customElement("hui-input-number-entity-row")
 class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {

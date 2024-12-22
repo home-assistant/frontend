@@ -1,13 +1,19 @@
-import type {
+import {
   ChartData,
   ChartDataset,
   ChartOptions,
   ScatterDataPoint,
 } from "chart.js";
 import { endOfToday, isToday, startOfToday } from "date-fns";
-import type { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -15,21 +21,22 @@ import { getEnergyColor } from "./common/color";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
-import type {
+import {
   EnergyData,
+  getEnergyDataCollection,
+  getEnergyWaterUnit,
   WaterSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import {
-  getEnergyDataCollection,
-  getEnergyWaterUnit,
-} from "../../../../data/energy";
-import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
-import { getStatisticLabel } from "../../../../data/recorder";
-import type { FrontendLocaleData } from "../../../../data/translation";
+  getStatisticLabel,
+  Statistics,
+  StatisticsMetaData,
+} from "../../../../data/recorder";
+import { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../../types";
-import type { LovelaceCard } from "../../types";
-import type { EnergyWaterGraphCardConfig } from "../types";
+import { HomeAssistant } from "../../../../types";
+import { LovelaceCard } from "../../types";
+import { EnergyWaterGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import { getCommonOptions } from "./common/energy-chart-options";
 

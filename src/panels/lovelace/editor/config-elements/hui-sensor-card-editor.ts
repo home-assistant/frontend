@@ -1,5 +1,4 @@
-import type { CSSResultGroup } from "lit";
-import { html, LitElement, nothing } from "lit";
+import { CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
   assert,

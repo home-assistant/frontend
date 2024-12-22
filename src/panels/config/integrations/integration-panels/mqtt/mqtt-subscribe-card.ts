@@ -1,14 +1,12 @@
 import "@material/mwc-button";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-textfield";
 import { formatTime } from "../../../../../common/datetime/format_time";
-import type { MQTTMessage } from "../../../../../data/mqtt";
-import { subscribeMQTTTopic } from "../../../../../data/mqtt";
-import type { HomeAssistant } from "../../../../../types";
+import { MQTTMessage, subscribeMQTTTopic } from "../../../../../data/mqtt";
+import { HomeAssistant } from "../../../../../types";
 import "@material/mwc-list/mwc-list-item";
 import { storage } from "../../../../../common/decorators/storage";
 import "../../../../../components/ha-formfield";

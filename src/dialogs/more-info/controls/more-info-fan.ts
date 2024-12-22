@@ -6,8 +6,7 @@ import {
   mdiPower,
   mdiTuneVariant,
 } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, html, nothing } from "lit";
+import { CSSResultGroup, LitElement, PropertyValues, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { stateActive } from "../../../common/entity/state_active";
@@ -17,9 +16,9 @@ import "../../../components/ha-control-select-menu";
 import "../../../components/ha-list-item";
 import "../../../components/ha-outlined-icon-button";
 import { UNAVAILABLE } from "../../../data/entity";
-import type { FanEntity } from "../../../data/fan";
 import {
   FAN_SPEED_COUNT_MAX_FOR_BUTTONS,
+  FanEntity,
   FanEntityFeature,
   computeFanSpeedCount,
   computeFanSpeedStateDisplay,
@@ -48,7 +47,7 @@ class MoreInfoFan extends LitElement {
     });
   };
 
-  private _handleDirection(ev) {
+  _handleDirection(ev) {
     const newVal = ev.target.value;
     const oldVal = this.stateObj?.attributes.direction;
 
@@ -60,7 +59,7 @@ class MoreInfoFan extends LitElement {
     });
   }
 
-  private _handlePresetMode(ev) {
+  _handlePresetMode(ev) {
     const newVal = ev.target.value;
     const oldVal = this._presetMode;
 
@@ -73,7 +72,7 @@ class MoreInfoFan extends LitElement {
     });
   }
 
-  private _handleOscillating(ev) {
+  _handleOscillating(ev) {
     const newVal = ev.target.value === "true";
     const oldVal = this.stateObj?.attributes.oscillating;
 

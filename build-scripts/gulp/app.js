@@ -6,9 +6,11 @@ import "./entry-html.js";
 import "./gather-static.js";
 import "./gen-icons-json.js";
 import "./locale-data.js";
+import "./rollup.js";
 import "./service-worker.js";
 import "./translations.js";
-import "./rspack.js";
+import "./wds.js";
+import "./webpack.js";
 
 gulp.task(
   "develop-app",
@@ -25,7 +27,11 @@ gulp.task(
       "build-locale-data"
     ),
     "copy-static-app",
-    "rspack-watch-app"
+    env.useWDS()
+      ? "wds-watch-app"
+      : env.useRollup()
+        ? "rollup-watch-app"
+        : "webpack-watch-app"
   )
 );
 
@@ -38,20 +44,9 @@ gulp.task(
     "clean",
     gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
     "copy-static-app",
-    "rspack-prod-app",
+    env.useRollup() ? "rollup-prod-app" : "webpack-prod-app",
     gulp.parallel("gen-pages-app-prod", "gen-service-worker-app-prod"),
     // Don't compress running tests
-    ...(env.isTestBuild() || env.isStatsBuild() ? [] : ["compress-app"])
-  )
-);
-
-gulp.task(
-  "analyze-app",
-  gulp.series(
-    async function setEnv() {
-      process.env.STATS = "1";
-    },
-    "clean",
-    "rspack-prod-app"
+    ...(env.isTestBuild() ? [] : ["compress-app"])
   )
 );

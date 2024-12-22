@@ -1,63 +1,13 @@
 // Tasks to generate entry HTML
 
-import {
-  applyVersionsToRegexes,
-  compileRegex,
-  getPreUserAgentRegexes,
-} from "browserslist-useragent-regexp";
 import fs from "fs-extra";
 import gulp from "gulp";
 import { minify } from "html-minifier-terser";
 import template from "lodash.template";
-import { dirname, extname, resolve } from "node:path";
+import path from "path";
 import { htmlMinifierOptions, terserOptions } from "../bundle.cjs";
+import env from "../env.cjs";
 import paths from "../paths.cjs";
-
-// macOS companion app has no way to obtain the Safari version used by WKWebView,
-// and it is not in the default user agent string. So we add an additional regex
-// to serve modern based on a minimum macOS version. We take the minimum Safari
-// major version from browserslist and manually map that to a supported macOS
-// version. Note this assumes the user has kept Safari updated.
-const HA_MACOS_REGEX =
-  /Home Assistant\/[\d.]+ \(.+; macOS (\d+)\.(\d+)(?:\.(\d+))?\)/;
-const SAFARI_TO_MACOS = {
-  15: [10, 15, 0],
-  16: [11, 0, 0],
-  17: [12, 0, 0],
-  18: [13, 0, 0],
-};
-
-const getCommonTemplateVars = () => {
-  const browserRegexes = getPreUserAgentRegexes({
-    env: "modern",
-    allowHigherVersions: true,
-    mobileToDesktop: true,
-    throwOnMissing: true,
-  });
-  const minSafariVersion = browserRegexes.find(
-    (regex) => regex.family === "safari"
-  )?.matchedVersions[0][0];
-  const minMacOSVersion = SAFARI_TO_MACOS[minSafariVersion];
-  if (!minMacOSVersion) {
-    throw Error(
-      `Could not find minimum MacOS version for Safari ${minSafariVersion}.`
-    );
-  }
-  const haMacOSRegex = applyVersionsToRegexes(
-    [
-      {
-        family: "ha_macos",
-        regex: HA_MACOS_REGEX,
-        matchedVersions: [minMacOSVersion],
-        requestVersions: [minMacOSVersion],
-      },
-    ],
-    { ignorePatch: true, allowHigherVersions: true }
-  );
-  return {
-    modernRegex: compileRegex(browserRegexes.concat(haMacOSRegex)).toString(),
-  };
-};
 
 const renderTemplate = (templateFile, data = {}) => {
   const compiled = template(
@@ -65,9 +15,14 @@ const renderTemplate = (templateFile, data = {}) => {
   );
   return compiled({
     ...data,
+    useRollup: env.useRollup(),
+    useWDS: env.useWDS(),
     // Resolve any child/nested templates relative to the parent and pass the same data
     renderTemplate: (childTemplate) =>
-      renderTemplate(resolve(dirname(templateFile), childTemplate), data),
+      renderTemplate(
+        path.resolve(path.dirname(templateFile), childTemplate),
+        data
+      ),
   });
 };
 
@@ -90,32 +45,36 @@ const minifyHtml = (content, ext) => {
 };
 
 // Function to generate a dev task for each project's configuration
+// Note Currently WDS paths are hard-coded to only work for app
 const genPagesDevTask =
   (
     pageEntries,
     inputRoot,
     outputRoot,
+    useWDS = false,
     inputSub = "src/html",
     publicRoot = ""
   ) =>
   async () => {
-    const commonVars = getCommonTemplateVars();
     for (const [page, entries] of Object.entries(pageEntries)) {
       const content = renderTemplate(
-        resolve(inputRoot, inputSub, `${page}.template`),
+        path.resolve(inputRoot, inputSub, `${page}.template`),
         {
-          ...commonVars,
-          latestEntryJS: entries.map(
-            (entry) => `${publicRoot}/frontend_latest/${entry}.js`
+          latestEntryJS: entries.map((entry) =>
+            useWDS
+              ? `http://localhost:8000/src/entrypoints/${entry}.ts`
+              : `${publicRoot}/frontend_latest/${entry}.js`
           ),
           es5EntryJS: entries.map(
             (entry) => `${publicRoot}/frontend_es5/${entry}.js`
           ),
-          latestCustomPanelJS: `${publicRoot}/frontend_latest/custom-panel.js`,
+          latestCustomPanelJS: useWDS
+            ? "http://localhost:8000/src/entrypoints/custom-panel.ts"
+            : `${publicRoot}/frontend_latest/custom-panel.js`,
           es5CustomPanelJS: `${publicRoot}/frontend_es5/custom-panel.js`,
         }
       );
-      fs.outputFileSync(resolve(outputRoot, page), content);
+      fs.outputFileSync(path.resolve(outputRoot, page), content);
     }
   };
 
@@ -132,18 +91,16 @@ const genPagesProdTask =
   ) =>
   async () => {
     const latestManifest = fs.readJsonSync(
-      resolve(outputLatest, "manifest.json")
+      path.resolve(outputLatest, "manifest.json")
     );
     const es5Manifest = outputES5
-      ? fs.readJsonSync(resolve(outputES5, "manifest.json"))
+      ? fs.readJsonSync(path.resolve(outputES5, "manifest.json"))
       : {};
-    const commonVars = getCommonTemplateVars();
     const minifiedHTML = [];
     for (const [page, entries] of Object.entries(pageEntries)) {
       const content = renderTemplate(
-        resolve(inputRoot, inputSub, `${page}.template`),
+        path.resolve(inputRoot, inputSub, `${page}.template`),
         {
-          ...commonVars,
           latestEntryJS: entries.map((entry) => latestManifest[`${entry}.js`]),
           es5EntryJS: entries.map((entry) => es5Manifest[`${entry}.js`]),
           latestCustomPanelJS: latestManifest["custom-panel.js"],
@@ -151,8 +108,8 @@ const genPagesProdTask =
         }
       );
       minifiedHTML.push(
-        minifyHtml(content, extname(page)).then((minified) =>
-          fs.outputFileSync(resolve(outputRoot, page), minified)
+        minifyHtml(content, path.extname(page)).then((minified) =>
+          fs.outputFileSync(path.resolve(outputRoot, page), minified)
         )
       );
     }
@@ -168,7 +125,12 @@ const APP_PAGE_ENTRIES = {
 
 gulp.task(
   "gen-pages-app-dev",
-  genPagesDevTask(APP_PAGE_ENTRIES, paths.polymer_dir, paths.app_output_root)
+  genPagesDevTask(
+    APP_PAGE_ENTRIES,
+    paths.polymer_dir,
+    paths.app_output_root,
+    env.useWDS()
+  )
 );
 
 gulp.task(
@@ -244,28 +206,6 @@ gulp.task(
   )
 );
 
-const LANDING_PAGE_PAGE_ENTRIES = { "index.html": ["entrypoint"] };
-
-gulp.task(
-  "gen-pages-landing-page-dev",
-  genPagesDevTask(
-    LANDING_PAGE_PAGE_ENTRIES,
-    paths.landingPage_dir,
-    paths.landingPage_output_root
-  )
-);
-
-gulp.task(
-  "gen-pages-landing-page-prod",
-  genPagesProdTask(
-    LANDING_PAGE_PAGE_ENTRIES,
-    paths.landingPage_dir,
-    paths.landingPage_output_root,
-    paths.landingPage_output_latest,
-    paths.landingPage_output_es5
-  )
-);
-
 const HASSIO_PAGE_ENTRIES = { "entrypoint.js": ["entrypoint"] };
 
 gulp.task(
@@ -274,6 +214,7 @@ gulp.task(
     HASSIO_PAGE_ENTRIES,
     paths.hassio_dir,
     paths.hassio_output_root,
+    undefined,
     "src",
     paths.hassio_publicPath
   )

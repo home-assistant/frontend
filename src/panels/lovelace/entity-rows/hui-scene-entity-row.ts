@@ -1,16 +1,21 @@
 import "@material/mwc-button/mwc-button";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/entity/ha-entity-toggle";
 import { UNAVAILABLE } from "../../../data/entity";
 import { activateScene } from "../../../data/scene";
-import type { HomeAssistant } from "../../../types";
+import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { ActionRowConfig, LovelaceRow } from "./types";
-import { confirmAction } from "../common/confirm-action";
+import { ActionRowConfig, LovelaceRow } from "./types";
 
 @customElement("hui-scene-entity-row")
 class HuiSceneEntityRow extends LitElement implements LovelaceRow {
@@ -65,22 +70,15 @@ class HuiSceneEntityRow extends LitElement implements LovelaceRow {
         margin-inline-end: -0.57em;
         margin-inline-start: initial;
       }
+      :host {
+        cursor: pointer;
+      }
     `;
   }
 
-  private async _callService(ev: Event): Promise<void> {
+  private _callService(ev: Event): void {
     ev.stopPropagation();
-    if (
-      !this._config?.confirmation ||
-      (await confirmAction(
-        this,
-        this.hass,
-        this._config.confirmation,
-        this._config.action_name || this.hass.localize("ui.card.scene.activate")
-      ))
-    ) {
-      activateScene(this.hass, this._config!.entity);
-    }
+    activateScene(this.hass, this._config!.entity);
   }
 }
 

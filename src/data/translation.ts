@@ -1,4 +1,4 @@
-import type { HomeAssistant } from "../types";
+import { HomeAssistant } from "../types";
 import { fetchFrontendUserData, saveFrontendUserData } from "./frontend";
 
 export enum NumberFormat {

@@ -1,12 +1,13 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { titleCase } from "../../../../common/string/title-case";
 import "../../../../components/ha-card";
-import type { DeviceRegistryEntry } from "../../../../data/device_registry";
-import { computeDeviceName } from "../../../../data/device_registry";
+import {
+  computeDeviceName,
+  DeviceRegistryEntry,
+} from "../../../../data/device_registry";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import { HomeAssistant } from "../../../../types";
 
 @customElement("ha-device-info-card")
 export class HaDeviceCard extends LitElement {
@@ -30,13 +31,8 @@ export class HaDeviceCard extends LitElement {
       >
         <div class="card-content">
           ${this.device.model
-            ? html`<div class="model">
-                ${this.device.model}
-                ${this.device.model_id ? html`(${this.device.model_id})` : ""}
-              </div>`
-            : this.device.model_id
-              ? html`<div class="model">${this.device.model_id}</div>`
-              : ""}
+            ? html`<div class="model">${this.device.model}</div>`
+            : ""}
           ${this.device.manufacturer
             ? html`
                 <div class="manuf">

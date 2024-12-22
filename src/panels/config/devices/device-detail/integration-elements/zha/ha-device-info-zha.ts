@@ -1,12 +1,17 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../../components/ha-expansion-panel";
-import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
-import type { ZHADevice } from "../../../../../../data/zha";
-import { fetchZHADevice } from "../../../../../../data/zha";
+import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import { fetchZHADevice, ZHADevice } from "../../../../../../data/zha";
 import { haStyle } from "../../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../../types";
+import { HomeAssistant } from "../../../../../../types";
 import { formatAsPaddedHex } from "../../../../integrations/integration-panels/zha/functions";
 
 @customElement("ha-device-info-zha")

@@ -57,13 +57,12 @@ export class HaControlSelectMenu extends SelectBase {
           aria-labelledby=${ifDefined(labelledby)}
           aria-label=${ifDefined(labelAttribute)}
           aria-required=${this.required}
-          aria-controls="listbox"
           @focus=${this.onFocus}
           @blur=${this.onBlur}
           @click=${this.onClick}
           @keydown=${this.onKeydown}
         >
-          ${this._renderIcon()}
+          ${this.renderIcon()}
           <div class="content">
             ${this.hideLabel
               ? nothing
@@ -72,7 +71,7 @@ export class HaControlSelectMenu extends SelectBase {
               ? html`<p class="value">${this.selectedText}</p>`
               : nothing}
           </div>
-          ${this._renderArrow()}
+          ${this.renderArrow()}
           <ha-ripple .disabled=${this.disabled}></ha-ripple>
         </div>
         ${this.renderMenu()}
@@ -80,7 +79,7 @@ export class HaControlSelectMenu extends SelectBase {
     `;
   }
 
-  private _renderArrow() {
+  private renderArrow() {
     if (!this.showArrow) return nothing;
 
     return html`
@@ -90,7 +89,7 @@ export class HaControlSelectMenu extends SelectBase {
     `;
   }
 
-  private _renderIcon() {
+  private renderIcon() {
     const index = this.mdcFoundation?.getSelectedIndex();
     const items = this.menuElement?.items ?? [];
     const item = index != null ? items[index] : undefined;

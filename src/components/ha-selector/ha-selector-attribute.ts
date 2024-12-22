@@ -1,9 +1,8 @@
-import type { PropertyValues } from "lit";
-import { html, LitElement } from "lit";
+import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { AttributeSelector } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
+import { AttributeSelector } from "../../data/selector";
+import { HomeAssistant } from "../../types";
 import "../entity/ha-entity-attribute-picker";
 
 @customElement("ha-selector-attribute")

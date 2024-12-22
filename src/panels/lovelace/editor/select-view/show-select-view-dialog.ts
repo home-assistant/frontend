@@ -1,6 +1,6 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
-import type { LovelaceDashboard } from "../../../../data/lovelace/dashboard";
+import { LovelaceConfig } from "../../../../data/lovelace/config/types";
+import { LovelaceDashboard } from "../../../../data/lovelace/dashboard";
 
 export interface SelectViewDialogParams {
   lovelaceConfig: LovelaceConfig;

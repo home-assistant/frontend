@@ -1,4 +1,4 @@
-import type { PanelInfo } from "../types";
+import { PanelInfo } from "../types";
 
 export interface CustomPanelConfig {
   name: string;

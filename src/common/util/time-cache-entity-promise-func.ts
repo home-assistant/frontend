@@ -1,4 +1,4 @@
-import type { HomeAssistant } from "../../types";
+import { HomeAssistant } from "../../types";
 
 interface ResultCache<T> {
   [entityId: string]: Promise<T> | undefined;

@@ -1,13 +1,15 @@
 /* eslint-disable lit/prefer-static-styles */
-import type { PropertyValues } from "lit";
-import { html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import punycode from "punycode";
 import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 import { extractSearchParamsObject } from "../common/url/search-params";
 import "../components/ha-alert";
-import type { AuthProvider, AuthUrlSearchParams } from "../data/auth";
-import { fetchAuthProviders } from "../data/auth";
+import {
+  AuthProvider,
+  AuthUrlSearchParams,
+  fetchAuthProviders,
+} from "../data/auth";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import { registerServiceWorker } from "../util/register-service-worker";
 import "./ha-auth-flow";
@@ -21,13 +23,13 @@ const appNames = {
 
 @customElement("ha-authorize")
 export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
-  @property({ attribute: false }) public clientId?: string;
+  @property() public clientId?: string;
 
-  @property({ attribute: false }) public redirectUri?: string;
+  @property() public redirectUri?: string;
 
-  @property({ attribute: false }) public oauth2State?: string;
+  @property() public oauth2State?: string;
 
-  @property({ attribute: false }) public translationFragment = "page-authorize";
+  @property() public translationFragment = "page-authorize";
 
   @state() private _authProvider?: AuthProvider;
 
@@ -202,9 +204,8 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
         <ha-language-picker
           .value=${this.language}
           .label=${""}
-          native-name
+          nativeName
           @value-changed=${this._languageChanged}
-          inline-arrow
         ></ha-language-picker>
         <a
           href="https://www.home-assistant.io/docs/authentication/"
@@ -327,7 +328,7 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     this.language = language;
 
     try {
-      window.localStorage.setItem("selectedLanguage", JSON.stringify(language));
+      localStorage.setItem("selectedLanguage", JSON.stringify(language));
     } catch (err: any) {
       // Ignore
     }

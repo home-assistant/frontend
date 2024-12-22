@@ -11,6 +11,7 @@ import {
   mdiFormatListNumbered,
   mdiGestureDoubleTap,
   mdiHandBackRight,
+  mdiPalette,
   mdiPlay,
   mdiRefresh,
   mdiRoomService,
@@ -19,13 +20,14 @@ import {
   mdiTools,
   mdiTrafficLight,
 } from "@mdi/js";
-import type { AutomationElementGroup } from "./automation";
+import { AutomationElementGroup } from "./automation";
 
 export const ACTION_ICONS = {
   condition: mdiAbTesting,
   delay: mdiTimerOutline,
   event: mdiGestureDoubleTap,
   play_media: mdiPlay,
+  activate_scene: mdiPalette,
   service: mdiRoomService,
   wait_template: mdiCodeBraces,
   wait_for_trigger: mdiTrafficLight,

@@ -1,7 +1,6 @@
 import "@material/mwc-icon-button";
 import type { IconButton } from "@material/mwc-icon-button";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import "./ha-svg-icon";
@@ -21,7 +20,7 @@ export class HaIconButton extends LitElement {
   @property({ type: String, attribute: "aria-haspopup" })
   override ariaHasPopup!: IconButton["ariaHasPopup"];
 
-  @property({ attribute: "hide-title", type: Boolean }) hideTitle = false;
+  @property({ type: Boolean }) hideTitle = false;
 
   @query("mwc-icon-button", true) private _button?: IconButton;
 

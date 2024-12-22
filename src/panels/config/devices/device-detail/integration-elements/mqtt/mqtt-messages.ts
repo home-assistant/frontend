@@ -1,11 +1,10 @@
 import { dump } from "js-yaml";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { formatTimeWithSeconds } from "../../../../../../common/datetime/format_time";
-import type { MQTTMessage } from "../../../../../../data/mqtt";
-import type { HomeAssistant } from "../../../../../../types";
+import { MQTTMessage } from "../../../../../../data/mqtt";
+import { HomeAssistant } from "../../../../../../types";
 
 @customElement("mqtt-messages")
 class MQTTMessages extends LitElement {
@@ -15,13 +14,11 @@ class MQTTMessages extends LitElement {
 
   @property() public direction!: string;
 
-  @property({ attribute: "show-as-yaml", type: Boolean })
-  public showAsYaml = false;
+  @property({ type: Boolean }) public showAsYaml = false;
 
-  @property({ attribute: "show-deserialized", type: Boolean })
-  public showDeserialized = false;
+  @property({ type: Boolean }) public showDeserialized = false;
 
-  @property({ attribute: false }) public subscribedTopic!: string;
+  @property() public subscribedTopic!: string;
 
   @property() public summary!: string;
 

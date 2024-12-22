@@ -1,4 +1,4 @@
-import type { HomeAssistant } from "../types";
+import { HomeAssistant } from "../types";
 import { showToast } from "./toast";
 
 export const showSaveSuccessToast = (el: HTMLElement, hass: HomeAssistant) =>

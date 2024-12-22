@@ -2,21 +2,19 @@ import { animate } from "@lit-labs/motion";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiClose, mdiDelete } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
-import type { MediaPlayerItem } from "../../data/media-player";
-import { MediaClassBrowserSettings } from "../../data/media-player";
+import {
+  MediaClassBrowserSettings,
+  MediaPlayerItem,
+} from "../../data/media-player";
 import {
   browseLocalMediaPlayer,
   removeLocalMedia,
-  isLocalMediaSourceContentId,
-  isImageUploadMediaSourceContentId,
 } from "../../data/media_source";
-import { deleteImage, getIdFromUrl } from "../../data/image_upload";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
@@ -273,14 +271,7 @@ class DialogMediaManage extends LitElement {
     try {
       await Promise.all(
         toDelete.map(async (item) => {
-          if (isLocalMediaSourceContentId(item.media_content_id)) {
-            await removeLocalMedia(this.hass, item.media_content_id);
-          } else if (isImageUploadMediaSourceContentId(item.media_content_id)) {
-            const media_id = getIdFromUrl(item.media_content_id);
-            if (media_id) {
-              await deleteImage(this.hass, media_id);
-            }
-          }
+          await removeLocalMedia(this.hass, item.media_content_id);
           this._currentItem = {
             ...this._currentItem!,
             children: this._currentItem!.children!.filter((i) => i !== item),

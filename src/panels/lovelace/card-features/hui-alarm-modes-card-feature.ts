@@ -1,32 +1,29 @@
 import { mdiShieldOff } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
-import type { PropertyValues, TemplateResult } from "lit";
-import { html, LitElement } from "lit";
+import { HassEntity } from "home-assistant-js-websocket";
+import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateColorCss } from "../../../common/entity/state_color";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../components/ha-control-select";
 import "../../../components/ha-control-slider";
-import type {
-  AlarmControlPanelEntity,
-  AlarmMode,
-} from "../../../data/alarm_control_panel";
 import {
   ALARM_MODES,
+  AlarmControlPanelEntity,
+  AlarmMode,
   setProtectedAlarmControlPanelMode,
   supportedAlarmModes,
 } from "../../../data/alarm_control_panel";
 import { UNAVAILABLE } from "../../../data/entity";
-import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
-import { cardFeatureStyles } from "./common/card-feature-styles";
+import { HomeAssistant } from "../../../types";
+import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { filterModes } from "./common/filter-modes";
-import type { AlarmModesCardFeatureConfig } from "./types";
+import { AlarmModesCardFeatureConfig } from "./types";
 
 export const supportsAlarmModesCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -73,18 +70,37 @@ class HuiAlarmModeCardFeature
     }
   }
 
-  private _getCurrentMode = memoizeOne((stateObj: AlarmControlPanelEntity) => {
-    const supportedModes = supportedAlarmModes(stateObj);
-    return supportedModes.find((mode) => mode === stateObj.state);
-  });
+  private _modes = memoizeOne(
+    (
+      stateObj: AlarmControlPanelEntity,
+      selectedModes: AlarmMode[] | undefined
+    ) => {
+      if (!selectedModes) {
+        return [];
+      }
+
+      return (Object.keys(ALARM_MODES) as AlarmMode[]).filter((mode) => {
+        const feature = ALARM_MODES[mode].feature;
+        return (
+          (!feature || supportsFeature(stateObj, feature)) &&
+          selectedModes.includes(mode)
+        );
+      });
+    }
+  );
+
+  private _getCurrentMode(stateObj: AlarmControlPanelEntity) {
+    return this._modes(stateObj, this._config?.modes).find(
+      (mode) => mode === stateObj.state
+    );
+  }
 
   private async _valueChanged(ev: CustomEvent) {
-    if (!this.stateObj) return;
     const mode = (ev.detail as any).value as AlarmMode;
 
-    if (mode === this.stateObj.state) return;
+    if (mode === this.stateObj!.state) return;
 
-    const oldMode = this._getCurrentMode(this.stateObj);
+    const oldMode = this._getCurrentMode(this.stateObj!);
     this._currentMode = mode;
 
     try {
@@ -99,12 +115,7 @@ class HuiAlarmModeCardFeature
   }
 
   private async _setMode(mode: AlarmMode) {
-    await setProtectedAlarmControlPanelMode(
-      this,
-      this.hass!,
-      this.stateObj!,
-      mode
-    );
+    setProtectedAlarmControlPanelMode(this, this.hass!, this.stateObj!, mode);
   }
 
   protected render(): TemplateResult | null {
@@ -142,28 +153,45 @@ class HuiAlarmModeCardFeature
         </ha-control-button-group>
       `;
     }
-
     return html`
-      <ha-control-select
-        .options=${options}
-        .value=${this._currentMode}
-        @value-changed=${this._valueChanged}
-        hide-label
-        .ariaLabel=${this.hass.localize(
-          "ui.card.alarm_control_panel.modes_label"
-        )}
-        style=${styleMap({
-          "--control-select-color": color,
-          "--modes-count": options.length.toString(),
-        })}
-        .disabled=${this.stateObj!.state === UNAVAILABLE}
-      >
-      </ha-control-select>
+      <div class="container">
+        <ha-control-select
+          .options=${options}
+          .value=${this._currentMode}
+          @value-changed=${this._valueChanged}
+          hide-label
+          .ariaLabel=${this.hass.localize(
+            "ui.card.alarm_control_panel.modes_label"
+          )}
+          style=${styleMap({
+            "--control-select-color": color,
+            "--modes-count": options.length.toString(),
+          })}
+          .disabled=${this.stateObj!.state === UNAVAILABLE}
+        >
+        </ha-control-select>
+      </div>
     `;
   }
 
   static get styles() {
-    return cardFeatureStyles;
+    return css`
+      ha-control-select {
+        --control-select-color: var(--feature-color);
+        --control-select-padding: 0;
+        --control-select-thickness: 40px;
+        --control-select-border-radius: 10px;
+        --control-select-button-border-radius: 10px;
+      }
+      ha-control-button-group {
+        margin: 0 12px 12px 12px;
+        --control-button-group-spacing: 12px;
+      }
+      .container {
+        padding: 0 12px 12px 12px;
+        width: auto;
+      }
+    `;
   }
 }
 

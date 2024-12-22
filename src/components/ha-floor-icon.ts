@@ -8,7 +8,7 @@ import {
 } from "@mdi/js";
 import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { FloorRegistryEntry } from "../data/floor_registry";
+import { FloorRegistryEntry } from "../data/floor_registry";
 import "./ha-icon";
 import "./ha-svg-icon";
 

@@ -1,5 +1,4 @@
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeAttributeNameDisplay } from "../../common/entity/compute_attribute_display";
@@ -10,16 +9,17 @@ import type { ControlSelectOption } from "../../components/ha-control-select";
 import "../../components/ha-control-slider";
 import { UNAVAILABLE } from "../../data/entity";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../data/entity_attributes";
-import type { FanEntity, FanSpeed } from "../../data/fan";
 import {
   computeFanSpeedCount,
   computeFanSpeedIcon,
   FAN_SPEED_COUNT_MAX_FOR_BUTTONS,
   FAN_SPEEDS,
+  FanEntity,
   fanPercentageToSpeed,
+  FanSpeed,
   fanSpeedToPercentage,
 } from "../../data/fan";
-import type { HomeAssistant } from "../../types";
+import { HomeAssistant } from "../../types";
 
 @customElement("ha-state-control-fan-speed")
 export class HaStateControlFanSpeed extends LitElement {
@@ -34,7 +34,7 @@ export class HaStateControlFanSpeed extends LitElement {
   protected updated(changedProp: Map<string | number | symbol, unknown>): void {
     if (changedProp.has("stateObj")) {
       const percentage = stateActive(this.stateObj)
-        ? (this.stateObj.attributes.percentage ?? 0)
+        ? this.stateObj.attributes.percentage ?? 0
         : 0;
       this.sliderValue = Math.max(Math.round(percentage), 0);
       this.speedValue = fanPercentageToSpeed(this.stateObj, percentage);

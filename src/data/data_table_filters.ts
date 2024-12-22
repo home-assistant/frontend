@@ -1,18 +1,8 @@
 export interface DataTableFilters {
   [key: string]: {
-    value: DataTableFiltersValue;
+    value: string[] | { key: string[] } | undefined;
     items: Set<string> | undefined;
   };
-}
-
-export type DataTableFiltersValue = string[] | { key: string[] } | undefined;
-
-export interface DataTableFiltersValues {
-  [key: string]: DataTableFiltersValue;
-}
-
-export interface DataTableFiltersItems {
-  [key: string]: Set<string> | undefined;
 }
 
 export const serializeFilters = (value: DataTableFilters) => {

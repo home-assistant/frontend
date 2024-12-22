@@ -1,35 +1,26 @@
-import type { LitElement } from "lit";
-import type { Constructor } from "../types";
-
-declare global {
-  interface SupportedShortcuts {
-    [key: string]: () => void;
-  }
-}
+import { LitElement } from "lit";
+import { Constructor } from "../types";
 
 export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
   superClass: T
 ) =>
   class extends superClass {
     private _keydownEvent = (event: KeyboardEvent) => {
-      const supportedShortcuts = this.supportedShortcuts();
-      if ((event.ctrlKey || event.metaKey) && event.key in supportedShortcuts) {
+      if ((event.ctrlKey || event.metaKey) && event.key === "s") {
         event.preventDefault();
-        supportedShortcuts[event.key]();
+        this.handleKeyboardSave();
       }
     };
 
     public connectedCallback() {
       super.connectedCallback();
-      window.addEventListener("keydown", this._keydownEvent);
+      this.addEventListener("keydown", this._keydownEvent);
     }
 
     public disconnectedCallback() {
-      window.removeEventListener("keydown", this._keydownEvent);
+      this.removeEventListener("keydown", this._keydownEvent);
       super.disconnectedCallback();
     }
 
-    protected supportedShortcuts(): SupportedShortcuts {
-      return {};
-    }
+    protected handleKeyboardSave() {}
   };

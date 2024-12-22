@@ -1,5 +1,4 @@
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
@@ -8,12 +7,8 @@ import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import type { HomeAssistant } from "../../../types";
 import { IFRAME_SANDBOX } from "../../../util/iframe";
-import type {
-  LovelaceCard,
-  LovelaceCardEditor,
-  LovelaceGridOptions,
-} from "../types";
-import type { IframeCardConfig } from "./types";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
+import { IframeCardConfig } from "./types";
 
 @customElement("hui-iframe-card")
 export class HuiIframeCard extends LitElement implements LovelaceCard {
@@ -30,8 +25,8 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
     };
   }
 
-  @property({ attribute: false })
-  public layout?: string;
+  @property({ type: Boolean, reflect: true })
+  public isPanel = false;
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
@@ -61,16 +56,13 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
     }
 
     let padding = "";
-    const ignoreAspectRatio = this.layout === "panel" || this.layout === "grid";
-    if (!ignoreAspectRatio) {
-      if (this._config.aspect_ratio) {
-        const ratio = parseAspectRatio(this._config.aspect_ratio);
-        if (ratio && ratio.w > 0 && ratio.h > 0) {
-          padding = `${((100 * ratio.h) / ratio.w).toFixed(2)}%`;
-        }
-      } else {
-        padding = "50%";
+    if (!this.isPanel && this._config.aspect_ratio) {
+      const ratio = parseAspectRatio(this._config.aspect_ratio);
+      if (ratio && ratio.w > 0 && ratio.h > 0) {
+        padding = `${((100 * ratio.h) / ratio.w).toFixed(2)}%`;
       }
+    } else if (!this.isPanel) {
+      padding = "50%";
     }
 
     const target_protocol = new URL(this._config.url, location.toString())
@@ -113,29 +105,24 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  public getGridOptions(): LovelaceGridOptions {
-    return {
-      columns: "full",
-      rows: 4,
-      min_columns: 3,
-      min_rows: 2,
-    };
-  }
-
   static get styles(): CSSResultGroup {
     return css`
-      ha-card {
-        overflow: hidden;
+      :host([ispanel]) ha-card {
         width: 100%;
         height: 100%;
-        display: flex;
-        flex-direction: column;
+      }
+
+      ha-card {
+        overflow: hidden;
       }
 
       #root {
         width: 100%;
-        height: 100%;
         position: relative;
+      }
+
+      :host([ispanel]) #root {
+        height: 100%;
       }
 
       iframe {

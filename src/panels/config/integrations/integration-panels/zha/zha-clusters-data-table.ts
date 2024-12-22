@@ -1,5 +1,4 @@
-import type { TemplateResult } from "lit";
-import { html, LitElement } from "lit";
+import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import "../../../../../components/data-table/ha-data-table";
@@ -45,7 +44,7 @@ export class ZHAClustersDataTable extends LitElement {
               title: "Name",
               sortable: true,
               direction: "asc",
-              flex: 2,
+              grows: true,
             },
           }
         : {
@@ -53,16 +52,18 @@ export class ZHAClustersDataTable extends LitElement {
               title: "Name",
               sortable: true,
               direction: "asc",
-              flex: 2,
+              grows: true,
             },
             id: {
               title: "ID",
               template: (cluster) => html` ${formatAsPaddedHex(cluster.id)} `,
               sortable: true,
+              width: "25%",
             },
             endpoint_id: {
               title: "Endpoint ID",
               sortable: true,
+              width: "15%",
             },
           }
   );

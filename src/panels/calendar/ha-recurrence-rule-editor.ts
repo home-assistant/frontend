@@ -1,13 +1,12 @@
 import type { SelectedDetail } from "@material/mwc-list";
 import { formatInTimeZone, toDate } from "date-fns-tz";
-import type { PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import type { Options, WeekdayStr, ByWeekday } from "rrule";
-import { RRule, Weekday } from "rrule";
+import type { Options, WeekdayStr } from "rrule";
+import { ByWeekday, RRule, Weekday } from "rrule";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
 import { stopPropagation } from "../../common/dom/stop_propagation";
-import type { LocalizeKeys } from "../../common/translations/localize";
+import { LocalizeKeys } from "../../common/translations/localize";
 import "../../components/chips/ha-chip-set";
 import "../../components/chips/ha-filter-chip";
 import "../../components/ha-date-input";
@@ -15,14 +14,12 @@ import "../../components/ha-list-item";
 import "../../components/ha-select";
 import type { HaSelect } from "../../components/ha-select";
 import "../../components/ha-textfield";
-import type { HomeAssistant } from "../../types";
-import type {
+import { HomeAssistant } from "../../types";
+import {
+  DEFAULT_COUNT,
   MonthlyRepeatItem,
   RepeatEnd,
   RepeatFrequency,
-} from "./recurrence";
-import {
-  DEFAULT_COUNT,
   convertFrequency,
   convertRepeatFrequency,
   getMonthdayRepeatFromRule,
@@ -44,7 +41,7 @@ export class RecurrenceRuleEditor extends LitElement {
 
   @property({ attribute: false }) public dtstart?: Date;
 
-  @property({ attribute: "all-day", type: Boolean }) public allDay = false;
+  @property({ type: Boolean }) public allDay = false;
 
   @property({ attribute: false }) public locale!: HomeAssistant["locale"];
 

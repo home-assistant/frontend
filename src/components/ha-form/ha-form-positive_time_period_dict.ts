@@ -1,8 +1,7 @@
-import type { TemplateResult } from "lit";
-import { html, LitElement } from "lit";
+import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import "../ha-duration-input";
-import type { HaFormElement, HaFormTimeData, HaFormTimeSchema } from "./types";
+import { HaFormElement, HaFormTimeData, HaFormTimeSchema } from "./types";
 
 @customElement("ha-form-positive_time_period_dict")
 export class HaFormTimePeriod extends LitElement implements HaFormElement {

@@ -1,6 +1,13 @@
 import "@material/mwc-list/mwc-list-item";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/buttons/ha-call-service-button";
@@ -9,20 +16,18 @@ import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-textfield";
 import { forwardHaptic } from "../../../../../data/haptics";
-import type {
+import {
   Attribute,
   Cluster,
+  fetchAttributesForCluster,
   ReadAttributeServiceData,
+  readAttributeValue,
   ZHADevice,
 } from "../../../../../data/zha";
-import {
-  fetchAttributesForCluster,
-  readAttributeValue,
-} from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
+import { HomeAssistant } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
-import type { ItemSelectedEvent, SetAttributeServiceData } from "./types";
+import { ItemSelectedEvent, SetAttributeServiceData } from "./types";
 
 @customElement("zha-cluster-attributes")
 export class ZHAClusterAttributes extends LitElement {
@@ -30,8 +35,7 @@ export class ZHAClusterAttributes extends LitElement {
 
   @property({ attribute: false }) public device?: ZHADevice;
 
-  @property({ attribute: false, type: Object })
-  public selectedCluster?: Cluster;
+  @property({ type: Object }) public selectedCluster?: Cluster;
 
   @state() private _attributes: Attribute[] | undefined;
 
@@ -130,7 +134,7 @@ export class ZHAClusterAttributes extends LitElement {
           .hass=${this.hass}
           domain="zha"
           service="set_zigbee_cluster_attribute"
-          .data=${this._setAttributeServiceData}
+          .serviceData=${this._setAttributeServiceData}
         >
           ${this.hass!.localize(
             "ui.panel.config.zha.cluster_attributes.write_zigbee_attribute"

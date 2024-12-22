@@ -1,20 +1,26 @@
 import { mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { listenMediaQuery } from "../../../../common/dom/media_query";
-import { nextRender } from "../../../../common/util/render-status";
+import { nestedArrayMove } from "../../../../common/util/array-move";
 import "../../../../components/ha-button";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import { getService, isService } from "../../../../data/action";
 import type { AutomationClipboard } from "../../../../data/automation";
-import type { Action } from "../../../../data/script";
-import type { HomeAssistant } from "../../../../types";
+import { Action } from "../../../../data/script";
+import { HomeAssistant, ItemPath } from "../../../../types";
 import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
@@ -29,6 +35,8 @@ export default class HaAutomationAction extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Boolean }) public disabled = false;
+
+  @property({ type: Array }) public path?: ItemPath;
 
   @property({ attribute: false }) public actions!: Action[];
 
@@ -61,17 +69,20 @@ export default class HaAutomationAction extends LitElement {
     this._unsubMql = undefined;
   }
 
+  private get nested() {
+    return this.path !== undefined;
+  }
+
   protected render() {
     return html`
       <ha-sortable
         handle-selector=".handle"
         draggable-selector="ha-automation-action-row"
         .disabled=${!this._showReorder || this.disabled}
-        group="actions"
-        invert-swap
         @item-moved=${this._actionMoved}
-        @item-added=${this._actionAdded}
-        @item-removed=${this._actionRemoved}
+        group="actions"
+        .path=${this.path}
+        invert-swap
       >
         <div class="actions">
           ${repeat(
@@ -79,7 +90,7 @@ export default class HaAutomationAction extends LitElement {
             (action) => this._getKey(action),
             (action, idx) => html`
               <ha-automation-action-row
-                .sortableData=${action}
+                .path=${[...(this.path ?? []), idx]}
                 .index=${idx}
                 .first=${idx === 0}
                 .last=${idx === this.actions.length - 1}
@@ -145,15 +156,6 @@ export default class HaAutomationAction extends LitElement {
     }
   }
 
-  public expandAll() {
-    const rows = this.shadowRoot!.querySelectorAll<HaAutomationActionRow>(
-      "ha-automation-action-row"
-    )!;
-    rows.forEach((row) => {
-      row.expand();
-    });
-  }
-
   private _addActionDialog() {
     showAddAutomationElementDialog(this, {
       type: "action",
@@ -177,7 +179,7 @@ export default class HaAutomationAction extends LitElement {
       actions = this.actions.concat(deepClone(this._clipboard!.action));
     } else if (isService(action)) {
       actions = this.actions.concat({
-        action: getService(action),
+        service: getService(action),
         metadata: {},
       });
     } else {
@@ -214,44 +216,28 @@ export default class HaAutomationAction extends LitElement {
     this._move(index, newIndex);
   }
 
-  private _move(oldIndex: number, newIndex: number) {
-    const actions = this.actions.concat();
-    const item = actions.splice(oldIndex, 1)[0];
-    actions.splice(newIndex, 0, item);
-    this.actions = actions;
+  private _move(
+    oldIndex: number,
+    newIndex: number,
+    oldPath?: ItemPath,
+    newPath?: ItemPath
+  ) {
+    const actions = nestedArrayMove(
+      this.actions,
+      oldIndex,
+      newIndex,
+      oldPath,
+      newPath
+    );
+
     fireEvent(this, "value-changed", { value: actions });
   }
 
   private _actionMoved(ev: CustomEvent): void {
+    if (this.nested) return;
     ev.stopPropagation();
-    const { oldIndex, newIndex } = ev.detail;
-    this._move(oldIndex, newIndex);
-  }
-
-  private async _actionAdded(ev: CustomEvent): Promise<void> {
-    ev.stopPropagation();
-    const { index, data } = ev.detail;
-    const actions = [
-      ...this.actions.slice(0, index),
-      data,
-      ...this.actions.slice(index),
-    ];
-    // Add action locally to avoid UI jump
-    this.actions = actions;
-    await nextRender();
-    fireEvent(this, "value-changed", { value: this.actions });
-  }
-
-  private async _actionRemoved(ev: CustomEvent): Promise<void> {
-    ev.stopPropagation();
-    const { index } = ev.detail;
-    const action = this.actions[index];
-    // Remove action locally to avoid UI jump
-    this.actions = this.actions.filter((a) => a !== action);
-    await nextRender();
-    // Ensure action is removed even after update
-    const actions = this.actions.filter((a) => a !== action);
-    fireEvent(this, "value-changed", { value: actions });
+    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
+    this._move(oldIndex, newIndex, oldPath, newPath);
   }
 
   private _actionChanged(ev: CustomEvent) {

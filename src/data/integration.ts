@@ -1,7 +1,6 @@
-import type { Connection } from "home-assistant-js-websocket";
-import { createCollection } from "home-assistant-js-websocket";
-import type { LocalizeFunc } from "../common/translations/localize";
-import type { HomeAssistant } from "../types";
+import { Connection, createCollection } from "home-assistant-js-websocket";
+import { LocalizeFunc } from "../common/translations/localize";
+import { HomeAssistant } from "../types";
 import { debounce } from "../common/util/debounce";
 
 export const integrationsWithPanel = {
@@ -23,7 +22,6 @@ export type IntegrationType =
 
 export interface IntegrationManifest {
   is_built_in: boolean;
-  overwrites_built_in?: boolean;
   domain: string;
   name: string;
   config_flow: boolean;
@@ -38,15 +36,7 @@ export interface IntegrationManifest {
   homekit?: { models: string[] };
   integration_type?: IntegrationType;
   loggers?: string[];
-  quality_scale?:
-    | "bronze"
-    | "silver"
-    | "gold"
-    | "platinum"
-    | "no_score"
-    | "internal"
-    | "legacy"
-    | "custom";
+  quality_scale?: "gold" | "internal" | "platinum" | "silver";
   iot_class:
     | "assumed_state"
     | "cloud_polling"

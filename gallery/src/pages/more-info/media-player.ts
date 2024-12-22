@@ -1,10 +1,11 @@
-import type { PropertyValues, TemplateResult } from "lit";
-import { html, LitElement } from "lit";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import "../../../../src/components/ha-card";
 import "../../../../src/dialogs/more-info/more-info-content";
-import type { MockHomeAssistant } from "../../../../src/fake_data/provide_hass";
-import { provideHass } from "../../../../src/fake_data/provide_hass";
+import {
+  MockHomeAssistant,
+  provideHass,
+} from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-more-infos";
 import { createMediaPlayerEntities } from "../../data/media_players";
 

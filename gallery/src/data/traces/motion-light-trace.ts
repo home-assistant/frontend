@@ -1,4 +1,4 @@
-import type { DemoTrace } from "./types";
+import { DemoTrace } from "./types";
 
 export const motionLightTrace: DemoTrace = {
   trace: {
@@ -133,17 +133,17 @@ export const motionLightTrace: DemoTrace = {
     config: {
       mode: "restart",
       max_exceeded: "silent",
-      triggers: [
+      trigger: [
         {
-          trigger: "state",
+          platform: "state",
           entity_id: "binary_sensor.pauluss_macbook_pro_camera_in_use",
           from: "off",
           to: "on",
         },
       ],
-      actions: [
+      action: [
         {
-          action: "light.turn_on",
+          service: "light.turn_on",
           target: {
             entity_id: "light.elgato_key_light_air",
           },
@@ -162,7 +162,7 @@ export const motionLightTrace: DemoTrace = {
           delay: 0,
         },
         {
-          action: "light.turn_off",
+          service: "light.turn_off",
           target: {
             entity_id: "light.elgato_key_light_air",
           },

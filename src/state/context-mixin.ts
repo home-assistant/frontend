@@ -5,7 +5,6 @@ import {
   connectionContext,
   devicesContext,
   entitiesContext,
-  floorsContext,
   localeContext,
   localizeContext,
   panelsContext,
@@ -15,8 +14,8 @@ import {
   userContext,
   userDataContext,
 } from "../data/context";
-import type { Constructor, HomeAssistant } from "../types";
-import type { HassBaseEl } from "./hass-base-mixin";
+import { Constructor, HomeAssistant } from "../types";
+import { HassBaseEl } from "./hass-base-mixin";
 
 export const contextMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
@@ -87,10 +86,6 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
       panels: new ContextProvider(this, {
         context: panelsContext,
         initialValue: this.hass ? this.hass.panels : this._pendingHass.panels,
-      }),
-      floors: new ContextProvider(this, {
-        context: floorsContext,
-        initialValue: this.hass ? this.hass.floors : this._pendingHass.floors,
       }),
     };
 

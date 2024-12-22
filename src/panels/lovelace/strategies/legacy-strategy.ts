@@ -1,13 +1,13 @@
-import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
-import type {
+import { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
+import {
   LovelaceConfig,
   LovelaceRawConfig,
 } from "../../../data/lovelace/config/types";
-import type {
+import {
   LovelaceViewConfig,
   LovelaceViewRawConfig,
 } from "../../../data/lovelace/config/view";
-import type { HomeAssistant } from "../../../types";
+import { HomeAssistant } from "../../../types";
 
 export const isLegacyStrategy = (
   strategy: any

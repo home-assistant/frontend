@@ -1,5 +1,4 @@
-import type { PropertyValues, TemplateResult } from "lit";
-import { html, LitElement } from "lit";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, query } from "lit/decorators";
 import { mockHistory } from "../../../../demo/src/stubs/history";
 import { getEntity } from "../../../../src/fake_data/entity";

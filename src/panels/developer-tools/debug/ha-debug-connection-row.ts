@@ -1,5 +1,4 @@
-import type { TemplateResult } from "lit";
-import { html, LitElement } from "lit";
+import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-switch";

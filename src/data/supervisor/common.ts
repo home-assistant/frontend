@@ -1,7 +1,6 @@
 import { atLeastVersion } from "../../common/config/version";
-import type { HomeAssistant } from "../../types";
-import type { HassioResponse } from "../hassio/common";
-import { hassioApiResultExtractor } from "../hassio/common";
+import { HomeAssistant } from "../../types";
+import { hassioApiResultExtractor, HassioResponse } from "../hassio/common";
 
 export interface SupervisorApiCallOptions {
   method?: "get" | "post" | "delete";

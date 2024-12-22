@@ -18,14 +18,12 @@ import {
   mdiRoomService,
   mdiShuffleDisabled,
 } from "@mdi/js";
-import type { PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, PropertyValues, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { Condition, Trigger } from "../../data/automation";
-import { flattenTriggers } from "../../data/automation";
-import type {
+import { Condition, Trigger } from "../../data/automation";
+import {
   Action,
   ChooseAction,
   IfAction,
@@ -36,15 +34,15 @@ import type {
   ServiceAction,
   WaitAction,
   WaitForTriggerAction,
+  getActionType,
 } from "../../data/script";
-import { getActionType } from "../../data/script";
-import type {
+import {
   ChooseActionTraceStep,
   ConditionTraceStep,
   IfActionTraceStep,
   TraceExtended,
 } from "../../data/trace";
-import type { HomeAssistant } from "../../types";
+import { HomeAssistant } from "../../types";
 import "../ha-icon-button";
 import "../ha-service-icon";
 import "./hat-graph-branch";
@@ -76,13 +74,13 @@ export class HatScriptGraph extends LitElement {
 
   public trackedNodes: Record<string, NodeInfo> = {};
 
-  private _selectNode(config, path) {
+  private selectNode(config, path) {
     return () => {
       fireEvent(this, "graph-node-selected", { config, path });
     };
   }
 
-  private _renderTrigger(config: Trigger, i: number) {
+  private render_trigger(config: Trigger, i: number) {
     const path = `trigger/${i}`;
     const track = this.trace && path in this.trace.trace;
     this.renderedNodes[path] = { config, path };
@@ -93,54 +91,54 @@ export class HatScriptGraph extends LitElement {
       <hat-graph-node
         graphStart
         ?track=${track}
-        @focus=${this._selectNode(config, path)}
+        @focus=${this.selectNode(config, path)}
         ?active=${this.selected === path}
         .iconPath=${mdiAsterisk}
-        .notEnabled=${"enabled" in config && config.enabled === false}
+        .notEnabled=${config.enabled === false}
         .error=${this.trace.trace[path]?.some((tr) => tr.error)}
         tabindex=${track ? "0" : "-1"}
       ></hat-graph-node>
     `;
   }
 
-  private _renderCondition(config: Condition, i: number) {
+  private render_condition(config: Condition, i: number) {
     const path = `condition/${i}`;
     this.renderedNodes[path] = { config, path };
     if (this.trace && path in this.trace.trace) {
       this.trackedNodes[path] = this.renderedNodes[path];
     }
-    return this._renderConditionNode(config, path);
+    return this.render_condition_node(config, path);
   }
 
-  private _typeRenderers = {
-    condition: this._renderConditionNode,
-    and: this._renderConditionNode,
-    or: this._renderConditionNode,
-    not: this._renderConditionNode,
-    service: this._renderServiceNode,
-    wait_template: this._renderWaitNode,
-    wait_for_trigger: this._renderWaitNode,
-    repeat: this._renderRepeatNode,
-    choose: this._renderChooseNode,
-    if: this._renderIfNode,
-    sequence: this._renderSequenceNode,
-    parallel: this._renderParallelNode,
-    other: this._renderOtherNode,
+  private typeRenderers = {
+    condition: this.render_condition_node,
+    and: this.render_condition_node,
+    or: this.render_condition_node,
+    not: this.render_condition_node,
+    service: this.render_service_node,
+    wait_template: this.render_wait_node,
+    wait_for_trigger: this.render_wait_node,
+    repeat: this.render_repeat_node,
+    choose: this.render_choose_node,
+    if: this.render_if_node,
+    sequence: this.render_sequence_node,
+    parallel: this.render_parallel_node,
+    other: this.render_other_node,
   };
 
-  private _renderActionNode(
+  private render_action_node(
     node: Action,
     path: string,
     graphStart = false,
     disabled = false
   ) {
     const type =
-      Object.keys(this._typeRenderers).find((key) => key in node) || "other";
+      Object.keys(this.typeRenderers).find((key) => key in node) || "other";
     this.renderedNodes[path] = { config: node, path };
     if (this.trace && path in this.trace.trace) {
       this.trackedNodes[path] = this.renderedNodes[path];
     }
-    return this._typeRenderers[type].bind(this)(
+    return this.typeRenderers[type].bind(this)(
       node,
       path,
       graphStart,
@@ -148,25 +146,25 @@ export class HatScriptGraph extends LitElement {
     );
   }
 
-  private _renderChooseNode(
+  private render_choose_node(
     config: ChooseAction,
     path: string,
     graphStart = false,
     disabled = false
   ) {
     const trace = this.trace.trace[path] as ChooseActionTraceStep[] | undefined;
-    const tracePath = trace
+    const trace_path = trace
       ? trace.map((trc) =>
           trc.result === undefined || trc.result.choice === "default"
             ? "default"
             : trc.result.choice
         )
       : [];
-    const trackDefault = tracePath.includes("default");
+    const track_default = trace_path.includes("default");
     return html`
       <hat-graph-branch
         tabindex=${trace === undefined ? "-1" : "0"}
-        @focus=${this._selectNode(config, path)}
+        @focus=${this.selectNode(config, path)}
         ?track=${trace !== undefined}
         ?active=${this.selected === path}
         .notEnabled=${disabled || config.enabled === false}
@@ -184,28 +182,29 @@ export class HatScriptGraph extends LitElement {
 
         ${config.choose
           ? ensureArray(config.choose)?.map((branch, i) => {
-              const branchPath = `${path}/choose/${i}`;
-              const trackThis = tracePath.includes(i);
-              this.renderedNodes[branchPath] = { config, path: branchPath };
-              if (trackThis) {
-                this.trackedNodes[branchPath] = this.renderedNodes[branchPath];
+              const branch_path = `${path}/choose/${i}`;
+              const track_this = trace_path.includes(i);
+              this.renderedNodes[branch_path] = { config, path: branch_path };
+              if (track_this) {
+                this.trackedNodes[branch_path] =
+                  this.renderedNodes[branch_path];
               }
               return html`
-                <div class="graph-container" ?track=${trackThis}>
+                <div class="graph-container" ?track=${track_this}>
                   <hat-graph-node
-                    .iconPath=${!trace || trackThis
+                    .iconPath=${!trace || track_this
                       ? mdiCheckboxMarkedOutline
                       : mdiCheckboxBlankOutline}
-                    @focus=${this._selectNode(config, branchPath)}
-                    ?track=${trackThis}
-                    ?active=${this.selected === branchPath}
+                    @focus=${this.selectNode(config, branch_path)}
+                    ?track=${track_this}
+                    ?active=${this.selected === branch_path}
                     .notEnabled=${disabled || config.enabled === false}
                   ></hat-graph-node>
                   ${branch.sequence !== null
                     ? ensureArray(branch.sequence).map((action, j) =>
-                        this._renderActionNode(
+                        this.render_action_node(
                           action,
-                          `${branchPath}/sequence/${j}`,
+                          `${branch_path}/sequence/${j}`,
                           false,
                           disabled || config.enabled === false
                         )
@@ -215,11 +214,11 @@ export class HatScriptGraph extends LitElement {
               `;
             })
           : ""}
-        <div ?track=${trackDefault}>
-          <hat-graph-spacer ?track=${trackDefault}></hat-graph-spacer>
+        <div ?track=${track_default}>
+          <hat-graph-spacer ?track=${track_default}></hat-graph-spacer>
           ${config.default !== null
             ? ensureArray(config.default)?.map((action, i) =>
-                this._renderActionNode(
+                this.render_action_node(
                   action,
                   `${path}/default/${i}`,
                   false,
@@ -232,7 +231,7 @@ export class HatScriptGraph extends LitElement {
     `;
   }
 
-  private _renderIfNode(
+  private render_if_node(
     config: IfAction,
     path: string,
     graphStart = false,
@@ -255,7 +254,7 @@ export class HatScriptGraph extends LitElement {
     return html`
       <hat-graph-branch
         tabindex=${trace === undefined ? "-1" : "0"}
-        @focus=${this._selectNode(config, path)}
+        @focus=${this.selectNode(config, path)}
         ?track=${trace !== undefined}
         ?active=${this.selected === path}
         .notEnabled=${disabled || config.enabled === false}
@@ -279,7 +278,7 @@ export class HatScriptGraph extends LitElement {
                 nofocus
               ></hat-graph-node
               >${ensureArray(config.else).map((action, j) =>
-                this._renderActionNode(
+                this.render_action_node(
                   action,
                   `${path}/else/${j}`,
                   false,
@@ -297,7 +296,7 @@ export class HatScriptGraph extends LitElement {
             nofocus
           ></hat-graph-node>
           ${ensureArray(config.then ?? []).map((action, j) =>
-            this._renderActionNode(
+            this.render_action_node(
               action,
               `${path}/then/${j}`,
               false,
@@ -309,7 +308,7 @@ export class HatScriptGraph extends LitElement {
     `;
   }
 
-  private _renderConditionNode(
+  private render_condition_node(
     node: Condition,
     path: string,
     graphStart = false,
@@ -336,7 +335,7 @@ export class HatScriptGraph extends LitElement {
     }
     return html`
       <hat-graph-branch
-        @focus=${this._selectNode(node, path)}
+        @focus=${this.selectNode(node, path)}
         ?track=${track}
         ?active=${this.selected === path}
         .notEnabled=${disabled || node.enabled === false}
@@ -369,7 +368,7 @@ export class HatScriptGraph extends LitElement {
     `;
   }
 
-  private _renderRepeatNode(
+  private render_repeat_node(
     node: RepeatAction,
     path: string,
     graphStart = false,
@@ -380,7 +379,7 @@ export class HatScriptGraph extends LitElement {
     return html`
       <hat-graph-branch
         tabindex=${trace === undefined ? "-1" : "0"}
-        @focus=${this._selectNode(node, path)}
+        @focus=${this.selectNode(node, path)}
         ?track=${path in this.trace.trace}
         ?active=${this.selected === path}
         .notEnabled=${disabled || node.enabled === false}
@@ -404,7 +403,7 @@ export class HatScriptGraph extends LitElement {
         ></hat-graph-node>
         <div ?track=${trace}>
           ${ensureArray(node.repeat.sequence).map((action, i) =>
-            this._renderActionNode(
+            this.render_action_node(
               action,
               `${path}/repeat/sequence/${i}`,
               false,
@@ -416,7 +415,7 @@ export class HatScriptGraph extends LitElement {
     `;
   }
 
-  private _renderServiceNode(
+  private render_service_node(
     node: ServiceAction,
     path: string,
     graphStart = false,
@@ -425,26 +424,26 @@ export class HatScriptGraph extends LitElement {
     return html`
       <hat-graph-node
         .graphStart=${graphStart}
-        .iconPath=${node.action ? undefined : mdiRoomService}
-        @focus=${this._selectNode(node, path)}
+        .iconPath=${node.service ? undefined : mdiRoomService}
+        @focus=${this.selectNode(node, path)}
         ?track=${path in this.trace.trace}
         ?active=${this.selected === path}
         .notEnabled=${disabled || node.enabled === false}
         .error=${this.trace.trace[path]?.some((tr) => tr.error)}
         tabindex=${this.trace && path in this.trace.trace ? "0" : "-1"}
       >
-        ${node.action
+        ${node.service
           ? html`<ha-service-icon
               slot="icon"
               .hass=${this.hass}
-              .service=${node.action}
+              .service=${node.service}
             ></ha-service-icon>`
           : nothing}
       </hat-graph-node>
     `;
   }
 
-  private _renderWaitNode(
+  private render_wait_node(
     node: WaitAction | WaitForTriggerAction,
     path: string,
     graphStart = false,
@@ -454,7 +453,7 @@ export class HatScriptGraph extends LitElement {
       <hat-graph-node
         .graphStart=${graphStart}
         .iconPath=${mdiCodeBraces}
-        @focus=${this._selectNode(node, path)}
+        @focus=${this.selectNode(node, path)}
         ?track=${path in this.trace.trace}
         ?active=${this.selected === path}
         .notEnabled=${disabled || node.enabled === false}
@@ -464,7 +463,7 @@ export class HatScriptGraph extends LitElement {
     `;
   }
 
-  private _renderSequenceNode(
+  private render_sequence_node(
     node: SequenceAction,
     path: string,
     graphStart = false,
@@ -474,7 +473,7 @@ export class HatScriptGraph extends LitElement {
     return html`
       <hat-graph-branch
         tabindex=${trace === undefined ? "-1" : "0"}
-        @focus=${this._selectNode(node, path)}
+        @focus=${this.selectNode(node, path)}
         ?track=${path in this.trace.trace}
         ?active=${this.selected === path}
         .notEnabled=${disabled || node.enabled === false}
@@ -490,7 +489,7 @@ export class HatScriptGraph extends LitElement {
             nofocus
           ></hat-graph-node>
           ${ensureArray(node.sequence).map((action, i) =>
-            this._renderActionNode(
+            this.render_action_node(
               action,
               `${path}/sequence/${i}`,
               false,
@@ -502,7 +501,7 @@ export class HatScriptGraph extends LitElement {
     `;
   }
 
-  private _renderParallelNode(
+  private render_parallel_node(
     node: ParallelAction,
     path: string,
     graphStart = false,
@@ -512,7 +511,7 @@ export class HatScriptGraph extends LitElement {
     return html`
       <hat-graph-branch
         tabindex=${trace === undefined ? "-1" : "0"}
-        @focus=${this._selectNode(node, path)}
+        @focus=${this.selectNode(node, path)}
         ?track=${path in this.trace.trace}
         ?active=${this.selected === path}
         .notEnabled=${disabled || node.enabled === false}
@@ -531,7 +530,7 @@ export class HatScriptGraph extends LitElement {
             ? html`<div ?track=${path in this.trace.trace}>
                 ${ensureArray((action as ManualScriptConfig).sequence).map(
                   (sAction, j) =>
-                    this._renderActionNode(
+                    this.render_action_node(
                       sAction,
                       `${path}/parallel/${i}/sequence/${j}`,
                       false,
@@ -539,7 +538,7 @@ export class HatScriptGraph extends LitElement {
                     )
                 )}
               </div>`
-            : this._renderActionNode(
+            : this.render_action_node(
                 action,
                 `${path}/parallel/${i}/sequence/0`,
                 false,
@@ -550,7 +549,7 @@ export class HatScriptGraph extends LitElement {
     `;
   }
 
-  private _renderOtherNode(
+  private render_other_node(
     node: Action,
     path: string,
     graphStart = false,
@@ -560,7 +559,7 @@ export class HatScriptGraph extends LitElement {
       <hat-graph-node
         .graphStart=${graphStart}
         .iconPath=${ACTION_ICONS[getActionType(node)] || mdiCodeBrackets}
-        @focus=${this._selectNode(node, path)}
+        @focus=${this.selectNode(node, path)}
         ?track=${path in this.trace.trace}
         ?active=${this.selected === path}
         .error=${this.trace.trace[path]?.some((tr) => tr.error)}
@@ -570,39 +569,34 @@ export class HatScriptGraph extends LitElement {
   }
 
   protected render() {
-    const triggerKey = "triggers" in this.trace.config ? "triggers" : "trigger";
-    const conditionKey =
-      "conditions" in this.trace.config ? "conditions" : "condition";
-    const actionKey = "actions" in this.trace.config ? "actions" : "action";
-
     const paths = Object.keys(this.trackedNodes);
-    const triggerNodes =
-      triggerKey in this.trace.config
-        ? flattenTriggers(ensureArray(this.trace.config[triggerKey])).map(
-            (trigger, i) => this._renderTrigger(trigger, i)
+    const trigger_nodes =
+      "trigger" in this.trace.config
+        ? ensureArray(this.trace.config.trigger).map((trigger, i) =>
+            this.render_trigger(trigger, i)
           )
         : undefined;
     try {
       return html`
         <div class="parent graph-container">
-          ${triggerNodes
-            ? html`<hat-graph-branch start .short=${triggerNodes.length < 2}>
-                ${triggerNodes}
+          ${trigger_nodes
+            ? html`<hat-graph-branch start .short=${trigger_nodes.length < 2}>
+                ${trigger_nodes}
               </hat-graph-branch>`
             : ""}
-          ${conditionKey in this.trace.config
-            ? html`${ensureArray(this.trace.config[conditionKey])?.map(
-                (condition, i) => this._renderCondition(condition, i)
+          ${"condition" in this.trace.config
+            ? html`${ensureArray(this.trace.config.condition)?.map(
+                (condition, i) => this.render_condition(condition, i)
               )}`
             : ""}
-          ${actionKey in this.trace.config
-            ? html`${ensureArray(this.trace.config[actionKey]).map(
-                (action, i) => this._renderActionNode(action, `action/${i}`)
+          ${"action" in this.trace.config
+            ? html`${ensureArray(this.trace.config.action).map((action, i) =>
+                this.render_action_node(action, `action/${i}`)
               )}`
             : ""}
           ${"sequence" in this.trace.config
             ? html`${ensureArray(this.trace.config.sequence).map((action, i) =>
-                this._renderActionNode(action, `sequence/${i}`, i === 0)
+                this.render_action_node(action, `sequence/${i}`, i === 0)
               )}`
             : ""}
         </div>

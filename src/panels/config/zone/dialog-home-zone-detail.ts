@@ -1,21 +1,20 @@
 import "@material/mwc-button";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-form/ha-form";
-import type { HomeZoneMutableParams } from "../../../data/zone";
+import { HomeZoneMutableParams } from "../../../data/zone";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
-import type { HomeZoneDetailDialogParams } from "./show-dialog-home-zone-detail";
+import { HomeAssistant } from "../../../types";
+import { HomeZoneDetailDialogParams } from "./show-dialog-home-zone-detail";
 
 const SCHEMA = [
   {
     name: "location",
     required: true,
-    selector: { location: { radius: true } },
+    selector: { location: { radius: true, radius_readonly: true } },
   },
 ];
 
@@ -36,7 +35,6 @@ class DialogHomeZoneDetail extends LitElement {
     this._data = {
       latitude: this.hass.config.latitude,
       longitude: this.hass.config.longitude,
-      radius: this.hass.config.radius,
     };
   }
 
@@ -75,6 +73,11 @@ class DialogHomeZoneDetail extends LitElement {
             .computeLabel=${this._computeLabel}
             @value-changed=${this._valueChanged}
           ></ha-form>
+          <p>
+            ${this.hass!.localize(
+              "ui.panel.config.zone.detail.no_edit_home_zone_radius"
+            )}
+          </p>
         </div>
         <mwc-button
           slot="primaryAction"
@@ -92,7 +95,7 @@ class DialogHomeZoneDetail extends LitElement {
     location: {
       latitude: data.latitude,
       longitude: data.longitude,
-      radius: data.radius || 100,
+      radius: this.hass.states["zone.home"]?.attributes?.radius || 100,
     },
   }));
 
@@ -101,7 +104,6 @@ class DialogHomeZoneDetail extends LitElement {
     const value = { ...ev.detail.value };
     value.latitude = value.location.latitude;
     value.longitude = value.location.longitude;
-    value.radius = value.location.radius;
     delete value.location;
     this._data = value;
   }

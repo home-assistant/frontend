@@ -1,8 +1,14 @@
 import { mdiImageFilterCenterFocus } from "@mdi/js";
-import type { HassEntities } from "home-assistant-js-websocket";
-import type { LatLngTuple } from "leaflet";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { HassEntities } from "home-assistant-js-websocket";
+import { LatLngTuple } from "leaflet";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  nothing,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { getColorByIndex } from "../../../common/color/colors";
@@ -11,8 +17,8 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { deepEqual } from "../../../common/util/deep-equal";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
-import "../../../components/ha-alert";
 import "../../../components/ha-card";
+import "../../../components/ha-alert";
 import "../../../components/ha-icon-button";
 import "../../../components/map/ha-map";
 import type {
@@ -21,18 +27,20 @@ import type {
   HaMapPathPoint,
   HaMapPaths,
 } from "../../../components/map/ha-map";
-import type { HistoryStates } from "../../../data/history";
-import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
-import type { HomeAssistant } from "../../../types";
-import { findEntities } from "../common/find-entities";
+import {
+  HistoryStates,
+  subscribeHistoryStatesTimeWindow,
+} from "../../../data/history";
 import {
   hasConfigChanged,
   hasConfigOrEntitiesChanged,
 } from "../common/has-changed";
+import { HomeAssistant } from "../../../types";
+import { findEntities } from "../common/find-entities";
 import { processConfigEntities } from "../common/process-config-entities";
-import type { EntityConfig } from "../entity-rows/types";
-import type { LovelaceCard, LovelaceGridOptions } from "../types";
-import type { MapCardConfig } from "./types";
+import { EntityConfig } from "../entity-rows/types";
+import { LovelaceCard } from "../types";
+import { MapCardConfig } from "./types";
 
 export const DEFAULT_HOURS_TO_SHOW = 0;
 export const DEFAULT_ZOOM = 14;
@@ -42,17 +50,12 @@ interface MapEntityConfig extends EntityConfig {
   focus?: boolean;
 }
 
-interface GeoEntity {
-  entity_id: string;
-  label_mode?: "state" | "name" | "icon";
-  focus: boolean;
-}
-
 @customElement("hui-map-card")
 class HuiMapCard extends LitElement implements LovelaceCard {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public layout?: string;
+  @property({ type: Boolean, reflect: true })
+  public isPanel = false;
 
   @state() private _stateHistory?: HistoryStates;
 
@@ -170,8 +173,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             .autoFit=${this._config.auto_fit || false}
             .fitZones=${this._config.fit_zones}
             .themeMode=${themeMode}
-            interactive-zones
-            render-passive
+            interactiveZones
+            renderPassive
           ></ha-map>
           <ha-icon-button
             .label=${this.hass!.localize(
@@ -294,9 +297,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _computePadding(): void {
     const root = this.shadowRoot!.getElementById("root");
-
-    const ignoreAspectRatio = this.layout === "panel" || this.layout === "grid";
-    if (!this._config || ignoreAspectRatio || !root) {
+    if (!this._config || this.isPanel || !root) {
       return;
     }
 
@@ -330,33 +331,23 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     return color;
   }
 
-  private _getSourceEntities(states?: HassEntities): GeoEntity[] {
+  private _getSourceEntities(states?: HassEntities): string[] {
     if (!states || !this._config?.geo_location_sources) {
       return [];
     }
 
-    const sourceObjs = this._config.geo_location_sources.map((source) =>
-      typeof source === "string" ? { source } : source
-    );
-
-    const geoEntities: GeoEntity[] = [];
+    const geoEntities: string[] = [];
     // Calculate visible geo location sources
-    const allSource = sourceObjs.find((s) => s.source === "all");
+    const includesAll = this._config.geo_location_sources.includes("all");
     for (const stateObj of Object.values(states)) {
-      const sourceObj = sourceObjs.find(
-        (s) => s.source === stateObj.attributes.source
-      );
       if (
         computeDomain(stateObj.entity_id) === "geo_location" &&
-        (allSource || sourceObj)
+        (includesAll ||
+          this._config.geo_location_sources.includes(
+            stateObj.attributes.source
+          ))
       ) {
-        geoEntities.push({
-          entity_id: stateObj.entity_id,
-          label_mode: sourceObj?.label_mode ?? allSource?.label_mode,
-          focus: sourceObj
-            ? (sourceObj.focus ?? true)
-            : (allSource?.focus ?? true),
-        });
+        geoEntities.push(stateObj.entity_id);
       }
     }
     return geoEntities;
@@ -372,8 +363,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         name: entityConf.name,
       })),
       ...this._getSourceEntities(this.hass?.states).map((entity) => ({
-        ...entity,
-        color: this._getColor(entity.entity_id),
+        entity_id: entity,
+        color: this._getColor(entity),
       })),
     ];
   }
@@ -431,15 +422,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       return paths;
     }
   );
-
-  public getGridOptions(): LovelaceGridOptions {
-    return {
-      columns: "full",
-      rows: 4,
-      min_columns: 6,
-      min_rows: 2,
-    };
-  }
 
   static get styles(): CSSResultGroup {
     return css`

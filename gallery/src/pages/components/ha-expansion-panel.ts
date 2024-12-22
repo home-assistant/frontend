@@ -1,6 +1,5 @@
 import { mdiPacMan } from "@mdi/js";
-import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement } from "lit/decorators";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-expansion-panel";

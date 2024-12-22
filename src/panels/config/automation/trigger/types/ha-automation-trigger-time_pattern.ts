@@ -21,8 +21,8 @@ export class HaTimePatternTrigger extends LitElement implements TriggerElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  public static get defaultConfig(): TimePatternTrigger {
-    return { trigger: "time_pattern" };
+  public static get defaultConfig() {
+    return {};
   }
 
   protected render() {

@@ -32,11 +32,7 @@ export const fetchRepairsIssues = (conn: Connection) =>
     type: "repairs/list_issues",
   });
 
-export const fetchRepairsIssueData = (
-  conn: Connection,
-  domain: string,
-  issue_id: string
-) =>
+export const fetchRepairsIssueData = (conn: Connection, domain, issue_id) =>
   conn.sendMessagePromise<{ issue_data: { string: any } }>({
     type: "repairs/get_issue_data",
     domain,

@@ -3,7 +3,7 @@ import { customElement, property } from "lit/decorators";
 import "../../../components/ha-card";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
+import { HomeAssistant } from "../../../types";
 import "./ha-debug-connection-row";
 
 @customElement("developer-tools-debug")

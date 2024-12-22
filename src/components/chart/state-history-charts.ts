@@ -1,5 +1,11 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import {
   customElement,
   eventOptions,
@@ -7,10 +13,9 @@ import {
   queryAll,
   state,
 } from "lit/decorators";
-import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
-import type {
+import {
   HistoryResult,
   LineChartUnit,
   TimelineEntity,
@@ -21,7 +26,7 @@ import "./state-history-chart-line";
 import "./state-history-chart-timeline";
 import type { StateHistoryChartLine } from "./state-history-chart-line";
 import type { StateHistoryChartTimeline } from "./state-history-chart-timeline";
-import type { ChartResizeOptions } from "./ha-chart-base";
+import { ChartResizeOptions } from "./ha-chart-base";
 
 const CANVAS_TIMELINE_ROWS_CHUNK = 10; // Split up the canvases to avoid hitting the render limit
 
@@ -59,24 +64,21 @@ export class StateHistoryCharts extends LitElement {
 
   @property({ type: Boolean, attribute: "up-to-now" }) public upToNow = false;
 
-  @property({ attribute: false, type: Number }) public hoursToShow?: number;
+  @property({ type: Number }) public hoursToShow?: number;
 
-  @property({ attribute: "show-names", type: Boolean }) public showNames = true;
+  @property({ type: Boolean }) public showNames = true;
 
-  @property({ attribute: "click-for-more-info", type: Boolean })
-  public clickForMoreInfo = true;
+  @property({ type: Boolean }) public clickForMoreInfo = true;
 
-  @property({ attribute: "is-loading-data", type: Boolean })
-  public isLoadingData = false;
+  @property({ type: Boolean }) public isLoadingData = false;
 
-  @property({ attribute: "logarithmic-scale", type: Boolean })
-  public logarithmicScale = false;
+  @property({ type: Boolean }) public logarithmicScale = false;
 
-  @property({ attribute: false, type: Number }) public minYAxis?: number;
+  @property({ type: Number }) public minYAxis?: number;
 
-  @property({ attribute: false, type: Number }) public maxYAxis?: number;
+  @property({ type: Number }) public maxYAxis?: number;
 
-  @property({ attribute: "fit-y-data", type: Boolean }) public fitYData = false;
+  @property({ type: Boolean }) public fitYData = false;
 
   private _computedStartTime!: Date;
 
@@ -126,7 +128,6 @@ export class StateHistoryCharts extends LitElement {
         ).concat(this.historyData.line)
       : this.historyData.line;
 
-    // eslint-disable-next-line lit/no-this-assign-in-render
     this._chartCount = combinedItems.length;
 
     return this.virtualize
@@ -144,12 +145,12 @@ export class StateHistoryCharts extends LitElement {
         )}`;
   }
 
-  private _renderHistoryItem: RenderItemFunction<
-    TimelineEntity[] | LineChartUnit
-  > = (item, index) => {
+  private _renderHistoryItem = (
+    item: TimelineEntity[] | LineChartUnit,
+    index: number
+  ) => {
     if (!item || index === undefined) {
-      // eslint-disable-next-line lit/prefer-nothing
-      return html``;
+      return nothing;
     }
     if (!Array.isArray(item)) {
       return html`<div class="entry-container">

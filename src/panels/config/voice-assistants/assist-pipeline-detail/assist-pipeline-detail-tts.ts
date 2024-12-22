@@ -1,13 +1,12 @@
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import type { LocalizeKeys } from "../../../../common/translations/localize";
+import { LocalizeKeys } from "../../../../common/translations/localize";
 import "../../../../components/ha-button";
 import "../../../../components/ha-form/ha-form";
-import type { AssistPipeline } from "../../../../data/assist_pipeline";
+import { AssistPipeline } from "../../../../data/assist_pipeline";
 import { showTTSTryDialog } from "../../../../dialogs/tts-try/show-dialog-tts-try";
-import type { HomeAssistant } from "../../../../types";
+import { HomeAssistant } from "../../../../types";
 
 @customElement("assist-pipeline-detail-tts")
 export class AssistPipelineDetailTTS extends LitElement {

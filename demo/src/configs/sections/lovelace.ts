@@ -1,64 +1,39 @@
-import { isFrontpageEmbed } from "../../util/is_frontpage";
-import type { DemoConfig } from "../types";
+import { DemoConfig } from "../types";
 
-export const demoLovelaceSections: DemoConfig["lovelace"] = (localize) => ({
+export const demoLovelaceSections: DemoConfig["lovelace"] = () => ({
   title: "Home Assistant Demo",
   views: [
     {
       type: "sections",
-      title: isFrontpageEmbed ? "Home Assistant" : "Demo",
+      title: "Demo",
       path: "home",
       icon: "mdi:home-assistant",
-      badges: [
-        {
-          type: "entity",
-          entity: "sensor.outdoor_temperature",
-          color: "red",
-        },
-        {
-          type: "entity",
-          entity: "sensor.outdoor_humidity",
-          color: "indigo",
-        },
-        {
-          type: "entity",
-          entity: "device_tracker.car",
-        },
-      ],
       sections: [
-        ...(isFrontpageEmbed
-          ? []
-          : [
-              {
-                cards: [
-                  {
-                    type: "heading",
-                    heading: `${localize("ui.panel.page-demo.config.sections.titles.welcome")} 👋`,
-                  },
-                  { type: "custom:ha-demo-card" },
-                ],
-              },
-            ]),
+        {
+          title: "Welcome 👋",
+          cards: [{ type: "custom:ha-demo-card" }],
+        },
         {
           cards: [
             {
-              type: "heading",
-              heading: localize(
-                "ui.panel.page-demo.config.sections.titles.living_room"
-              ),
-              icon: "mdi:sofa",
-              badges: [
-                {
-                  type: "entity",
-                  entity: "sensor.living_room_temperature",
-                  color: "red",
-                },
-                {
-                  type: "entity",
-                  entity: "sensor.living_room_humidity",
-                  color: "indigo",
-                },
-              ],
+              type: "tile",
+              entity: "cover.living_room_garden_shutter",
+              name: "Garden",
+            },
+            {
+              type: "tile",
+              entity: "cover.living_room_graveyard_shutter",
+              name: "Rear",
+            },
+            {
+              type: "tile",
+              entity: "cover.living_room_left_shutter",
+              name: "Left",
+            },
+            {
+              type: "tile",
+              entity: "cover.living_room_right_shutter",
+              name: "Right",
             },
             {
               type: "tile",
@@ -79,34 +54,23 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = (localize) => ({
               entity: "light.bar_lamp",
             },
             {
-              type: "tile",
-              entity: "cover.living_room_garden_shutter",
-              name: "Blinds",
+              graph: "line",
+              type: "sensor",
+              entity: "sensor.living_room_temperature",
+              detail: 1,
+              name: "Temperature",
             },
             {
               type: "tile",
               entity: "media_player.living_room_nest_mini",
+              name: "Nest Mini",
             },
           ],
+          title: "🛋️ Living room ",
         },
         {
           type: "grid",
           cards: [
-            {
-              type: "heading",
-              heading: localize(
-                "ui.panel.page-demo.config.sections.titles.kitchen"
-              ),
-              icon: "mdi:fridge",
-              badges: [
-                {
-                  type: "entity",
-                  entity: "binary_sensor.kitchen_motion",
-                  show_state: false,
-                  color: "blue",
-                },
-              ],
-            },
             {
               type: "tile",
               entity: "cover.kitchen_shutter",
@@ -135,19 +99,14 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = (localize) => ({
             {
               type: "tile",
               entity: "media_player.kitchen_nest_audio",
+              name: "Nest Audio",
             },
           ],
+          title: "👩‍🍳 Kitchen",
         },
         {
           type: "grid",
           cards: [
-            {
-              type: "heading",
-              heading: localize(
-                "ui.panel.page-demo.config.sections.titles.energy"
-              ),
-              icon: "mdi:transmission-tower",
-            },
             {
               type: "tile",
               entity: "binary_sensor.tesla_wall_connector_vehicle_connected",
@@ -185,17 +144,11 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = (localize) => ({
               color: "dark-grey",
             },
           ],
+          title: "⚡️ Energy",
         },
         {
           type: "grid",
           cards: [
-            {
-              type: "heading",
-              heading: localize(
-                "ui.panel.page-demo.config.sections.titles.climate"
-              ),
-              icon: "mdi:thermometer",
-            },
             {
               type: "tile",
               entity: "sun.sun",
@@ -228,38 +181,16 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = (localize) => ({
               state_content: ["preset_mode", "current_temperature"],
             },
           ],
+          title: "🌤️ Climate",
         },
         {
           type: "grid",
           cards: [
             {
-              type: "heading",
-              heading: localize(
-                "ui.panel.page-demo.config.sections.titles.study"
-              ),
-              icon: "mdi:desk-lamp",
-              badges: [
-                {
-                  type: "entity",
-                  entity: "switch.in_meeting",
-                  state: "on",
-                  state_content: "name",
-                  visibility: [
-                    {
-                      condition: "state",
-                      state: "on",
-                      entity: "switch.in_meeting",
-                    },
-                  ],
-                },
-              ],
-            },
-            {
               type: "tile",
               entity: "cover.study_shutter",
               name: "Shutter",
             },
-
             {
               type: "tile",
               entity: "light.study_spotlights",
@@ -268,6 +199,7 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = (localize) => ({
             {
               type: "tile",
               entity: "media_player.study_nest_hub",
+              name: "Nest Hub",
             },
             {
               type: "tile",
@@ -276,23 +208,12 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = (localize) => ({
               color: "brown",
               icon: "mdi:desk",
             },
-            {
-              type: "tile",
-              entity: "switch.in_meeting",
-              name: "Meeting mode",
-            },
           ],
+          title: "🧑‍💻 Study",
         },
         {
           type: "grid",
           cards: [
-            {
-              type: "heading",
-              heading: localize(
-                "ui.panel.page-demo.config.sections.titles.outdoor"
-              ),
-              icon: "mdi:tree",
-            },
             {
               type: "tile",
               entity: "light.outdoor_light",
@@ -322,17 +243,11 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = (localize) => ({
               name: "Illuminance",
             },
           ],
+          title: "🌳 Outdoor",
         },
         {
           type: "grid",
           cards: [
-            {
-              type: "heading",
-              heading: localize(
-                "ui.panel.page-demo.config.sections.titles.updates"
-              ),
-              icon: "mdi:update",
-            },
             {
               type: "tile",
               entity: "automation.home_assistant_auto_update",
@@ -358,6 +273,7 @@ export const demoLovelaceSections: DemoConfig["lovelace"] = (localize) => ({
               icon: "mdi:home-assistant",
             },
           ],
+          title: "🎉 Updates",
         },
       ],
     },

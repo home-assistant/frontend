@@ -1,20 +1,21 @@
-import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
-import { ensureBadgeConfig } from "../../../data/lovelace/config/badge";
-import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
-import type { LovelaceConfig } from "../../../data/lovelace/config/types";
-import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
-import { isStrategyView } from "../../../data/lovelace/config/view";
-import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardPath, LovelaceContainerPath } from "./lovelace-path";
+import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
+import { LovelaceConfig } from "../../../data/lovelace/config/types";
 import {
+  LovelaceViewConfig,
+  isStrategyView,
+} from "../../../data/lovelace/config/view";
+import type { HomeAssistant } from "../../../types";
+import {
+  LovelaceCardPath,
+  LovelaceContainerPath,
+  findLovelaceCards,
   findLovelaceContainer,
-  findLovelaceItems,
   getLovelaceContainerPath,
   parseLovelaceCardPath,
   parseLovelaceContainerPath,
+  updateLovelaceCards,
   updateLovelaceContainer,
-  updateLovelaceItems,
 } from "./lovelace-path";
 
 export const addCard = (
@@ -22,9 +23,9 @@ export const addCard = (
   path: LovelaceContainerPath,
   cardConfig: LovelaceCardConfig
 ): LovelaceConfig => {
-  const cards = findLovelaceItems("cards", config, path);
+  const cards = findLovelaceCards(config, path);
   const newCards = cards ? [...cards, cardConfig] : [cardConfig];
-  const newConfig = updateLovelaceItems("cards", config, path, newCards);
+  const newConfig = updateLovelaceCards(config, path, newCards);
   return newConfig;
 };
 
@@ -33,9 +34,9 @@ export const addCards = (
   path: LovelaceContainerPath,
   cardConfigs: LovelaceCardConfig[]
 ): LovelaceConfig => {
-  const cards = findLovelaceItems("cards", config, path);
+  const cards = findLovelaceCards(config, path);
   const newCards = cards ? [...cards, ...cardConfigs] : [...cardConfigs];
-  const newConfig = updateLovelaceItems("cards", config, path, newCards);
+  const newConfig = updateLovelaceCards(config, path, newCards);
   return newConfig;
 };
 
@@ -47,18 +48,13 @@ export const replaceCard = (
   const { cardIndex } = parseLovelaceCardPath(path);
   const containerPath = getLovelaceContainerPath(path);
 
-  const cards = findLovelaceItems("cards", config, containerPath);
+  const cards = findLovelaceCards(config, containerPath);
 
   const newCards = (cards ?? []).map((origConf, ind) =>
     ind === cardIndex ? cardConfig : origConf
   );
 
-  const newConfig = updateLovelaceItems(
-    "cards",
-    config,
-    containerPath,
-    newCards
-  );
+  const newConfig = updateLovelaceCards(config, containerPath, newCards);
   return newConfig;
 };
 
@@ -69,16 +65,11 @@ export const deleteCard = (
   const { cardIndex } = parseLovelaceCardPath(path);
   const containerPath = getLovelaceContainerPath(path);
 
-  const cards = findLovelaceItems("cards", config, containerPath);
+  const cards = findLovelaceCards(config, containerPath);
 
   const newCards = (cards ?? []).filter((_origConf, ind) => ind !== cardIndex);
 
-  const newConfig = updateLovelaceItems(
-    "cards",
-    config,
-    containerPath,
-    newCards
-  );
+  const newConfig = updateLovelaceCards(config, containerPath, newCards);
   return newConfig;
 };
 
@@ -90,18 +81,13 @@ export const insertCard = (
   const { cardIndex } = parseLovelaceCardPath(path);
   const containerPath = getLovelaceContainerPath(path);
 
-  const cards = findLovelaceItems("cards", config, containerPath);
+  const cards = findLovelaceCards(config, containerPath);
 
   const newCards = cards
     ? [...cards.slice(0, cardIndex), cardConfig, ...cards.slice(cardIndex)]
     : [cardConfig];
 
-  const newConfig = updateLovelaceItems(
-    "cards",
-    config,
-    containerPath,
-    newCards
-  );
+  const newConfig = updateLovelaceCards(config, containerPath, newCards);
   return newConfig;
 };
 
@@ -113,7 +99,7 @@ export const moveCardToIndex = (
   const { cardIndex } = parseLovelaceCardPath(path);
   const containerPath = getLovelaceContainerPath(path);
 
-  const cards = findLovelaceItems("cards", config, containerPath);
+  const cards = findLovelaceCards(config, containerPath);
 
   const newCards = cards ? [...cards] : [];
 
@@ -124,12 +110,7 @@ export const moveCardToIndex = (
   newCards.splice(oldIndex, 1);
   newCards.splice(newIndex, 0, card);
 
-  const newConfig = updateLovelaceItems(
-    "cards",
-    config,
-    containerPath,
-    newCards
-  );
+  const newConfig = updateLovelaceCards(config, containerPath, newCards);
   return newConfig;
 };
 
@@ -151,7 +132,7 @@ export const moveCardToContainer = (
   }
 
   const fromContainerPath = getLovelaceContainerPath(fromPath);
-  const cards = findLovelaceItems("cards", config, fromContainerPath);
+  const cards = findLovelaceCards(config, fromContainerPath);
   const card = cards![fromCardIndex];
 
   let newConfig = addCard(config, toPath, card);
@@ -167,7 +148,7 @@ export const moveCard = (
 ): LovelaceConfig => {
   const { cardIndex: fromCardIndex } = parseLovelaceCardPath(fromPath);
   const fromContainerPath = getLovelaceContainerPath(fromPath);
-  const cards = findLovelaceItems("cards", config, fromContainerPath);
+  const cards = findLovelaceCards(config, fromContainerPath);
   const card = cards![fromCardIndex];
 
   let newConfig = deleteCard(config, fromPath);
@@ -179,21 +160,12 @@ export const moveCard = (
 export const addView = (
   hass: HomeAssistant,
   config: LovelaceConfig,
-  viewConfig: LovelaceViewConfig,
-  tolerantPath = false
+  viewConfig: LovelaceViewConfig
 ): LovelaceConfig => {
   if (viewConfig.path && config.views.some((v) => v.path === viewConfig.path)) {
-    if (!tolerantPath) {
-      throw new Error(
-        hass.localize("ui.panel.lovelace.editor.edit_view.error_same_url")
-      );
-    } else {
-      // add a suffix to the path
-      viewConfig = {
-        ...viewConfig,
-        path: `${viewConfig.path}-2`,
-      };
-    }
+    throw new Error(
+      hass.localize("ui.panel.lovelace.editor.edit_view.error_same_url")
+    );
   }
   return {
     ...config,
@@ -248,20 +220,6 @@ export const deleteView = (
   ...config,
   views: config.views.filter((_origView, index) => index !== viewIndex),
 });
-
-export const moveViewToDashboard = (
-  hass: HomeAssistant,
-  fromConfig: LovelaceConfig,
-  toConfig: LovelaceConfig,
-  viewIndex: number
-): [LovelaceConfig, LovelaceConfig] => {
-  const view = fromConfig.views[viewIndex];
-
-  return [
-    deleteView(fromConfig, viewIndex),
-    addView(hass, toConfig, view, true),
-  ];
-};
 
 export const addSection = (
   config: LovelaceConfig,
@@ -337,112 +295,6 @@ export const moveSection = (
 
   let newConfig = deleteSection(config, fromPath[0], fromPath[1]);
   newConfig = insertSection(newConfig, toPath[0], toPath[1], section);
-
-  return newConfig;
-};
-
-export const addBadge = (
-  config: LovelaceConfig,
-  path: LovelaceContainerPath,
-  badgeConfig: LovelaceBadgeConfig
-): LovelaceConfig => {
-  const badges = findLovelaceItems("badges", config, path);
-  const newBadges = badges ? [...badges, badgeConfig] : [badgeConfig];
-  const newConfig = updateLovelaceItems("badges", config, path, newBadges);
-  return newConfig;
-};
-
-export const addBadges = (
-  config: LovelaceConfig,
-  path: LovelaceContainerPath,
-  badgeConfig: LovelaceBadgeConfig[]
-): LovelaceConfig => {
-  const badges = findLovelaceItems("badges", config, path);
-  const newBadges = badges ? [...badges, ...badgeConfig] : [...badgeConfig];
-  const newConfig = updateLovelaceItems("badges", config, path, newBadges);
-  return newConfig;
-};
-
-export const replaceBadge = (
-  config: LovelaceConfig,
-  path: LovelaceCardPath,
-  cardConfig: LovelaceBadgeConfig
-): LovelaceConfig => {
-  const { cardIndex } = parseLovelaceCardPath(path);
-  const containerPath = getLovelaceContainerPath(path);
-
-  const badges = findLovelaceItems("badges", config, containerPath);
-
-  const newBadges = (badges ?? []).map((origConf, ind) =>
-    ind === cardIndex ? cardConfig : origConf
-  );
-
-  const newConfig = updateLovelaceItems(
-    "badges",
-    config,
-    containerPath,
-    newBadges
-  );
-  return newConfig;
-};
-
-export const deleteBadge = (
-  config: LovelaceConfig,
-  path: LovelaceCardPath
-): LovelaceConfig => {
-  const { cardIndex } = parseLovelaceCardPath(path);
-  const containerPath = getLovelaceContainerPath(path);
-
-  const badges = findLovelaceItems("badges", config, containerPath);
-
-  const newBadges = (badges ?? []).filter(
-    (_origConf, ind) => ind !== cardIndex
-  );
-
-  const newConfig = updateLovelaceItems(
-    "badges",
-    config,
-    containerPath,
-    newBadges
-  );
-  return newConfig;
-};
-
-export const insertBadge = (
-  config: LovelaceConfig,
-  path: LovelaceCardPath,
-  badgeConfig: LovelaceBadgeConfig
-) => {
-  const { cardIndex } = parseLovelaceCardPath(path);
-  const containerPath = getLovelaceContainerPath(path);
-
-  const badges = findLovelaceItems("badges", config, containerPath);
-
-  const newBadges = badges
-    ? [...badges.slice(0, cardIndex), badgeConfig, ...badges.slice(cardIndex)]
-    : [badgeConfig];
-
-  const newConfig = updateLovelaceItems(
-    "badges",
-    config,
-    containerPath,
-    newBadges
-  );
-  return newConfig;
-};
-
-export const moveBadge = (
-  config: LovelaceConfig,
-  fromPath: LovelaceCardPath,
-  toPath: LovelaceCardPath
-): LovelaceConfig => {
-  const { cardIndex: fromCardIndex } = parseLovelaceCardPath(fromPath);
-  const fromContainerPath = getLovelaceContainerPath(fromPath);
-  const badges = findLovelaceItems("badges", config, fromContainerPath);
-  const badge = badges![fromCardIndex];
-
-  let newConfig = deleteBadge(config, fromPath);
-  newConfig = insertBadge(newConfig, toPath, ensureBadgeConfig(badge));
 
   return newConfig;
 };

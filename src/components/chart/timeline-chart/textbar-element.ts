@@ -1,5 +1,4 @@
-import type { BarOptions, BarProps } from "chart.js";
-import { BarElement } from "chart.js";
+import { BarElement, BarOptions, BarProps } from "chart.js";
 import { hex2rgb } from "../../../common/color/convert-color";
 import { luminosity } from "../../../common/color/rgb";
 

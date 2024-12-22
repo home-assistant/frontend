@@ -1,22 +1,19 @@
-import type { PropertyValues } from "lit";
-import { LitElement, html } from "lit";
+import { LitElement, PropertyValues, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { navigate } from "../../../../common/navigate";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
+import { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/data-table/ha-data-table";
 import type { DataTableColumnContainer } from "../../../../components/data-table/ha-data-table";
-import type {
+import {
   AssistDevice,
   AssistPipeline,
-} from "../../../../data/assist_pipeline";
-import {
   listAssistDevices,
   listAssistPipelines,
 } from "../../../../data/assist_pipeline";
 import { computeDeviceName } from "../../../../data/device_registry";
 import "../../../../layouts/hass-subpage";
-import type { HomeAssistant } from "../../../../types";
+import { HomeAssistant } from "../../../../types";
 
 interface AssistDeviceExtra extends AssistDevice {
   name: string;
@@ -45,12 +42,13 @@ class AssistDevicesPage extends LitElement {
           ),
           filterable: true,
           sortable: true,
-          flex: 2,
+          grows: true,
         },
         pipeline: {
           title: localize(
             "ui.panel.config.voice_assistants.assistants.pipeline.devices.pipeline"
           ),
+          width: "30%",
           filterable: true,
           sortable: true,
         },
@@ -60,6 +58,7 @@ class AssistDevicesPage extends LitElement {
           ),
           filterable: true,
           sortable: true,
+          width: "30%",
         },
       };
 

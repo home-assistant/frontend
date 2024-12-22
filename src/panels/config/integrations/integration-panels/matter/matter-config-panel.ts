@@ -1,9 +1,11 @@
 import { mdiMathLog, mdiServerNetwork } from "@mdi/js";
 import { customElement, property } from "lit/decorators";
-import type { RouterOptions } from "../../../../../layouts/hass-router-page";
-import { HassRouterPage } from "../../../../../layouts/hass-router-page";
-import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
-import type { HomeAssistant } from "../../../../../types";
+import {
+  HassRouterPage,
+  RouterOptions,
+} from "../../../../../layouts/hass-router-page";
+import { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
+import { HomeAssistant } from "../../../../../types";
 
 export const configTabs: PageNavigation[] = [
   {
@@ -22,7 +24,7 @@ export const configTabs: PageNavigation[] = [
 class MatterConfigRouter extends HassRouterPage {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+  @property({ type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 

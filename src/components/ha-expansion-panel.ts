@@ -1,6 +1,12 @@
 import { mdiChevronDown } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
@@ -13,11 +19,9 @@ export class HaExpansionPanel extends LitElement {
 
   @property({ type: Boolean, reflect: true }) outlined = false;
 
-  @property({ attribute: false, type: Boolean, reflect: true }) leftChevron =
-    false;
+  @property({ type: Boolean, reflect: true }) leftChevron = false;
 
-  @property({ attribute: false, type: Boolean, reflect: true }) noCollapse =
-    false;
+  @property({ type: Boolean, reflect: true }) noCollapse = false;
 
   @property() header?: string;
 
@@ -64,8 +68,8 @@ export class HaExpansionPanel extends LitElement {
                 ></ha-svg-icon>
               `
             : ""}
-          <slot name="icons"></slot>
         </div>
+        <slot name="icons"></slot>
       </div>
       <div
         class="container ${classMap({ expanded: this.expanded })}"

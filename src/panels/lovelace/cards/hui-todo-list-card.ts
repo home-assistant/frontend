@@ -10,16 +10,22 @@ import {
   mdiSort,
 } from "@mdi/js";
 import { endOfDay, isSameDay } from "date-fns";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValueMap, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValueMap,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 import "../../../components/ha-card";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-checkbox";
@@ -33,8 +39,8 @@ import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
 import { isUnavailableState } from "../../../data/entity";
-import type { TodoItem } from "../../../data/todo";
 import {
+  TodoItem,
   TodoItemStatus,
   TodoListEntityFeature,
   createItem,
@@ -44,12 +50,12 @@ import {
   updateItem,
 } from "../../../data/todo";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import type { HomeAssistant } from "../../../types";
+import { HomeAssistant } from "../../../types";
 import { showTodoItemEditDialog } from "../../todo/show-dialog-todo-item-editor";
 import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { LovelaceCard, LovelaceCardEditor } from "../types";
-import type { TodoListCardConfig } from "./types";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
+import { TodoListCardConfig } from "./types";
 
 @customElement("hui-todo-list-card")
 export class HuiTodoListCard extends LitElement implements LovelaceCard {
@@ -196,9 +202,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
         })}
       >
         <div class="addRow">
-          ${this._todoListSupportsFeature(
-            TodoListEntityFeature.CREATE_TODO_ITEM
-          )
+          ${this.todoListSupportsFeature(TodoListEntityFeature.CREATE_TODO_ITEM)
             ? html`
                 <ha-textfield
                   class="addBox"
@@ -236,10 +240,10 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                         "ui.panel.lovelace.cards.todo-list.unchecked_items"
                       )}
                     </h2>
-                    ${this._todoListSupportsFeature(
+                    ${this.todoListSupportsFeature(
                       TodoListEntityFeature.MOVE_TODO_ITEM
                     )
-                      ? html`<ha-button-menu @closed=${stopPropagation}>
+                      ? html`<ha-button-menu>
                           <ha-icon-button
                             slot="trigger"
                             .path=${mdiDotsVertical}
@@ -270,7 +274,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                     "ui.panel.lovelace.cards.todo-list.no_unchecked_items"
                   )}
                 </p>`}
-            ${!this._config.hide_completed && checkedItems.length
+            ${checkedItems.length
               ? html`
                   <div role="separator">
                     <div class="divider"></div>
@@ -280,10 +284,10 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                           "ui.panel.lovelace.cards.todo-list.checked_items"
                         )}
                       </h2>
-                      ${this._todoListSupportsFeature(
+                      ${this.todoListSupportsFeature(
                         TodoListEntityFeature.DELETE_TODO_ITEM
                       )
-                        ? html`<ha-button-menu @closed=${stopPropagation}>
+                        ? html`<ha-button-menu>
                             <ha-icon-button
                               slot="trigger"
                               .path=${mdiDotsVertical}
@@ -324,10 +328,10 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
         (item) => item.uid,
         (item) => {
           const showDelete =
-            this._todoListSupportsFeature(
+            this.todoListSupportsFeature(
               TodoListEntityFeature.DELETE_TODO_ITEM
             ) &&
-            !this._todoListSupportsFeature(
+            !this.todoListSupportsFeature(
               TodoListEntityFeature.UPDATE_TODO_ITEM
             );
           const showReorder =
@@ -350,7 +354,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
               })}"
               .selected=${item.status === TodoItemStatus.Completed}
               .disabled=${unavailable ||
-              !this._todoListSupportsFeature(
+              !this.todoListSupportsFeature(
                 TodoListEntityFeature.UPDATE_TODO_ITEM
               )}
               item-id=${item.uid}
@@ -414,7 +418,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _todoListSupportsFeature(feature: number): boolean {
+  private todoListSupportsFeature(feature: number): boolean {
     const entityStateObj = this.hass!.states[this._entityId!];
     return entityStateObj && supportsFeature(entityStateObj, feature);
   }

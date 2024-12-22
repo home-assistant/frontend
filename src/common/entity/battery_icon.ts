@@ -1,4 +1,4 @@
-import type { HassEntity } from "home-assistant-js-websocket";
+import { HassEntity } from "home-assistant-js-websocket";
 
 const BATTERY_ICONS = {
   10: "mdi:battery-10",

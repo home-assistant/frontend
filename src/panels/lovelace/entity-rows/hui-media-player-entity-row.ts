@@ -11,9 +11,15 @@ import {
   mdiVolumeOff,
   mdiVolumePlus,
 } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { HassEntity } from "home-assistant-js-websocket";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -21,11 +27,9 @@ import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-slider";
 import { isUnavailableState } from "../../../data/entity";
-import type {
+import {
   ControlButton,
   MediaPlayerEntity,
-} from "../../../data/media-player";
-import {
   MediaPlayerEntityFeature,
   computeMediaDescription,
 } from "../../../data/media-player";

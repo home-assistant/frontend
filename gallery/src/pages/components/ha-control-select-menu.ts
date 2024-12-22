@@ -1,6 +1,5 @@
 import { mdiFan, mdiFanSpeed1, mdiFanSpeed2, mdiFanSpeed3 } from "@mdi/js";
-import type { TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, TemplateResult, css, html, nothing } from "lit";
 import { customElement } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import "../../../../src/components/ha-card";

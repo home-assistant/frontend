@@ -1,7 +1,6 @@
-import type { HomeAssistant } from "../types";
+import { HomeAssistant } from "../types";
 
 export interface ThreadRouter {
-  instance_name: string;
   addresses: [string];
   border_agent_id: string | null;
   brand: "google" | "apple" | "homeassistant";
@@ -19,7 +18,7 @@ export interface ThreadDataSet {
   channel: number | null;
   created: string;
   dataset_id: string;
-  extended_pan_id: string;
+  extended_pan_id: string | null;
   network_name: string;
   pan_id: string | null;
   preferred_border_agent_id: string | null;

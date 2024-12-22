@@ -1,6 +1,5 @@
 import { mdiCheck, mdiClose } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -9,9 +8,9 @@ import "../../components/ha-control-button";
 import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-textfield";
 import type { HaTextField } from "../../components/ha-textfield";
-import type { HomeAssistant } from "../../types";
-import type { HassDialog } from "../make-dialog-manager";
-import type { EnterCodeDialogParams } from "./show-enter-code-dialog";
+import { HomeAssistant } from "../../types";
+import { HassDialog } from "../make-dialog-manager";
+import { EnterCodeDialogParams } from "./show-enter-code-dialog";
 
 const BUTTONS = [
   "1",

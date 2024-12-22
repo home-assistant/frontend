@@ -9,8 +9,7 @@ import {
   mdiVolumeOff,
   mdiVolumePlus,
 } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { stateActive } from "../../../common/entity/state_active";
@@ -21,17 +20,15 @@ import "../../../components/ha-slider";
 import "../../../components/ha-svg-icon";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
 import { isUnavailableState } from "../../../data/entity";
-import type {
+import {
   MediaPickedEvent,
   MediaPlayerEntity,
-} from "../../../data/media-player";
-import {
   MediaPlayerEntityFeature,
   computeMediaControls,
   handleMediaControlClick,
   mediaPlayerPlayMedia,
 } from "../../../data/media-player";
-import type { HomeAssistant } from "../../../types";
+import { HomeAssistant } from "../../../types";
 
 @customElement("more-info-media_player")
 class MoreInfoMediaPlayer extends LitElement {
@@ -207,15 +204,10 @@ class MoreInfoMediaPlayer extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
+      ha-icon-button[action="turn_off"],
+      ha-icon-button[action="turn_on"],
       ha-slider {
         flex-grow: 1;
-      }
-
-      ha-icon-button[action="turn_off"],
-      ha-icon-button[action="turn_on"] {
-        margin-inline-end: auto;
-        margin-right: auto;
-        margin-left: inherit;
       }
 
       .controls {

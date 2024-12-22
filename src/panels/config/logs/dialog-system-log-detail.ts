@@ -1,7 +1,6 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { mdiClose, mdiContentCopy } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
@@ -10,11 +9,11 @@ import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-header";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
-import type { IntegrationManifest } from "../../../data/integration";
 import {
   domainToName,
   fetchIntegrationManifest,
   integrationIssuesUrl,
+  IntegrationManifest,
 } from "../../../data/integration";
 import {
   getLoggedErrorIntegration,

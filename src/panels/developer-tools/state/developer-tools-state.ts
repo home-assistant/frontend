@@ -4,14 +4,13 @@ import {
   mdiRefresh,
 } from "@mdi/js";
 import { addHours } from "date-fns";
-import type {
+import {
   HassEntities,
   HassEntity,
   HassEntityAttributeBase,
 } from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
-import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
@@ -32,7 +31,7 @@ import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import "../../../components/search-input";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
+import { HomeAssistant } from "../../../types";
 
 @customElement("developer-tools-state")
 class HaPanelDevState extends LitElement {

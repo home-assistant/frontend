@@ -1,5 +1,5 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import type { LovelaceConfig } from "../../../data/lovelace/config/types";
+import { LovelaceConfig } from "../../../data/lovelace/config/types";
 
 export interface NewDashboardDialogParams {
   selectConfig: (config: LovelaceConfig | undefined) => any;

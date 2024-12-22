@@ -1,9 +1,9 @@
-import type { HassEntity } from "home-assistant-js-websocket";
+import { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { ExtEntityRegistryEntry } from "../../data/entity_registry";
+import { ExtEntityRegistryEntry } from "../../data/entity_registry";
 import { importMoreInfoControl } from "../../panels/lovelace/custom-card-helpers";
-import type { HomeAssistant } from "../../types";
+import { HomeAssistant } from "../../types";
 import { stateMoreInfoType } from "./state_more_info_control";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 

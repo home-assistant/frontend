@@ -1,0 +1,73 @@
+diff --git a/modular/sortable.core.esm.js b/modular/sortable.core.esm.js
+index 93ba17509e2e8583ab241fea6845fbe714c584a2..de0651ddb5dced30d36f7d764da0dd0b441f523f 100644
+--- a/modular/sortable.core.esm.js
++++ b/modular/sortable.core.esm.js
+@@ -1461,7 +1461,7 @@ Sortable.prototype = /** @lends Sortable.prototype */{
+           }
+           target = parent; // store last element
+         }
+-        /* jshint boss:true */ while (parent = parent.parentNode);
++        /* jshint boss:true */ while (parent = parent.parentNode || parent.getRootNode().host);
+       }
+       _unhideGhostForTarget();
+     }
+@@ -1781,11 +1781,16 @@ Sortable.prototype = /** @lends Sortable.prototype */{
+         }
+         if (_onMove(rootEl, el, dragEl, dragRect, target, targetRect, evt, !!target) !== false) {
+           capture();
+-          if (elLastChild && elLastChild.nextSibling) {
+-            // the last draggable element is not the last node
+-            el.insertBefore(dragEl, elLastChild.nextSibling);
+-          } else {
+-            el.appendChild(dragEl);
++          try {
++            if (elLastChild && elLastChild.nextSibling) {
++              // the last draggable element is not the last node
++              el.insertBefore(dragEl, elLastChild.nextSibling);
++            } else {
++              el.appendChild(dragEl);
++            }
++          }
++          catch(err) {
++            return completed(false);
+           }
+           parentEl = el; // actualization
+ 
+@@ -1802,7 +1807,13 @@ Sortable.prototype = /** @lends Sortable.prototype */{
+         targetRect = getRect(target);
+         if (_onMove(rootEl, el, dragEl, dragRect, target, targetRect, evt, false) !== false) {
+           capture();
+-          el.insertBefore(dragEl, firstChild);
++          try {
++            el.insertBefore(dragEl, firstChild);
++          }
++          catch(err) {
++            return completed(false);
++          }
++          
+           parentEl = el; // actualization
+ 
+           changed();
+@@ -1849,12 +1860,17 @@ Sortable.prototype = /** @lends Sortable.prototype */{
+           _silent = true;
+           setTimeout(_unsilent, 30);
+           capture();
+-          if (after && !nextSibling) {
+-            el.appendChild(dragEl);
+-          } else {
+-            target.parentNode.insertBefore(dragEl, after ? nextSibling : target);
+-          }
+ 
++          try {
++            if (after && !nextSibling) {
++              el.appendChild(dragEl);
++            } else {
++              target.parentNode.insertBefore(dragEl, after ? nextSibling : target);
++            }
++          }
++          catch(err) {
++            return completed(false);
++          }
+           // Undo chrome's scroll adjustment (has no effect on other browsers)
+           if (scrolledPastTop) {
+             scrollBy(scrolledPastTop, 0, scrollBefore - scrolledPastTop.scrollTop);

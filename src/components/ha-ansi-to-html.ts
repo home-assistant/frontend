@@ -1,18 +1,5 @@
-import {
-  css,
-  type CSSResultGroup,
-  html,
-  LitElement,
-  type PropertyValues,
-  type TemplateResult,
-} from "lit";
-import {
-  customElement,
-  property,
-  query,
-  state as litState,
-} from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 
 interface State {
   bold: boolean;
@@ -24,36 +11,17 @@ interface State {
 }
 
 @customElement("ha-ansi-to-html")
-export class HaAnsiToHtml extends LitElement {
+class HaAnsiToHtml extends LitElement {
   @property() public content!: string;
 
-  @property({ type: Boolean, attribute: "wrap-disabled" }) public wrapDisabled =
-    false;
-
-  @query("pre") private _pre?: HTMLPreElement;
-
-  @litState() private _filter = "";
-
   protected render(): TemplateResult | void {
-    return html`<pre class=${classMap({ wrap: !this.wrapDisabled })}></pre>`;
-  }
-
-  protected firstUpdated(_changedProperties: PropertyValues): void {
-    super.firstUpdated(_changedProperties);
-
-    // handle initial content
-    if (this.content) {
-      this.parseTextToColoredPre(this.content);
-    }
+    return html`${this._parseTextToColoredPre(this.content)}`;
   }
 
   static get styles(): CSSResultGroup {
     return css`
       pre {
         overflow-x: auto;
-        margin: 0;
-      }
-      pre.wrap {
         white-space: pre-wrap;
         overflow-wrap: break-word;
       }
@@ -117,35 +85,12 @@ export class HaAnsiToHtml extends LitElement {
       .bg-white {
         background-color: rgb(204, 204, 204);
       }
-
-      ::highlight(search-results) {
-        background-color: var(--primary-color);
-        color: var(--text-primary-color);
-      }
     `;
   }
 
-  /**
-   * add new lines to the log
-   * @param lines log lines
-   * @param top should the new lines be added to the top of the log
-   */
-  public parseLinesToColoredPre(lines: string[], top = false) {
-    for (const line of lines) {
-      this.parseLineToColoredPre(line, top);
-    }
-  }
-
-  /**
-   * Add a single line to the log
-   * @param line log line
-   * @param top should the new line be added to the top of the log
-   */
-  public parseLineToColoredPre(line, top = false) {
-    const lineDiv = document.createElement("div");
-
-    // eslint-disable-next-line no-control-regex
-    const re = /\x1b(?:\[(.*?)[@-~]|\].*?(?:\x07|\x1b\\))/g;
+  private _parseTextToColoredPre(text) {
+    const pre = document.createElement("pre");
+    const re = /\033(?:\[(.*?)[@-~]|\].*?(?:\007|\033\\))/g;
     let i = 0;
 
     const state: State = {
@@ -157,7 +102,7 @@ export class HaAnsiToHtml extends LitElement {
       backgroundColor: null,
     };
 
-    const addPart = (content) => {
+    const addSpan = (content) => {
       const span = document.createElement("span");
       if (state.bold) {
         span.classList.add("bold");
@@ -178,18 +123,15 @@ export class HaAnsiToHtml extends LitElement {
         span.classList.add(`bg-${state.backgroundColor}`);
       }
       span.appendChild(document.createTextNode(content));
-      lineDiv.appendChild(span);
+      pre.appendChild(span);
     };
 
     /* eslint-disable no-cond-assign */
     let match;
-
-    while ((match = re.exec(line)) !== null) {
+    // eslint-disable-next-line
+    while ((match = re.exec(text)) !== null) {
       const j = match!.index;
-      const substring = line.substring(i, j);
-      if (substring) {
-        addPart(substring);
-      }
+      addSpan(text.substring(i, j));
       i = j + match[0].length;
 
       if (match[1] === undefined) {
@@ -291,93 +233,9 @@ export class HaAnsiToHtml extends LitElement {
         }
       });
     }
+    addSpan(text.substring(i));
 
-    const substring = line.substring(i);
-    if (substring) {
-      addPart(substring);
-    }
-
-    if (top) {
-      this._pre?.prepend(lineDiv);
-      lineDiv.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 500 });
-    } else {
-      this._pre?.appendChild(lineDiv);
-    }
-
-    // filter new lines if a filter is set
-    if (this._filter) {
-      this.filterLines(this._filter);
-    }
-  }
-
-  public parseTextToColoredPre(text) {
-    const lines = text.split("\n");
-
-    for (const line of lines) {
-      this.parseLineToColoredPre(line);
-    }
-  }
-
-  /**
-   * Filter lines based on a search string, lines and search string will be converted to lowercase
-   * @param filter the search string
-   * @returns true if there are lines to display
-   */
-  filterLines(filter: string): boolean {
-    this._filter = filter;
-    const lines = this.shadowRoot?.querySelectorAll("div") || [];
-    let numberOfFoundLines = 0;
-    if (!filter) {
-      lines.forEach((line) => {
-        line.style.display = "";
-      });
-      numberOfFoundLines = lines.length;
-      if (CSS.highlights) {
-        CSS.highlights.delete("search-results");
-      }
-    } else {
-      const highlightRanges: Range[] = [];
-      lines.forEach((line) => {
-        if (!line.textContent?.toLowerCase().includes(filter.toLowerCase())) {
-          line.style.display = "none";
-        } else {
-          line.style.display = "";
-          numberOfFoundLines++;
-          if (CSS.highlights && line.firstChild !== null && line.textContent) {
-            const spansOfLine = line.querySelectorAll("span");
-            spansOfLine.forEach((span) => {
-              const text = span.textContent.toLowerCase();
-              const indices: number[] = [];
-              let startPos = 0;
-              while (startPos < text.length) {
-                const index = text.indexOf(filter.toLowerCase(), startPos);
-                if (index === -1) break;
-                indices.push(index);
-                startPos = index + filter.length;
-              }
-
-              indices.forEach((index) => {
-                const range = new Range();
-                range.setStart(span.firstChild!, index);
-                range.setEnd(span.firstChild!, index + filter.length);
-                highlightRanges.push(range);
-              });
-            });
-          }
-        }
-      });
-      if (CSS.highlights) {
-        CSS.highlights.set("search-results", new Highlight(...highlightRanges));
-      }
-    }
-
-    return !!numberOfFoundLines;
-  }
-
-  public clear() {
-    if (this._pre) {
-      this._pre.innerHTML = "";
-    }
+    return pre;
   }
 }
 

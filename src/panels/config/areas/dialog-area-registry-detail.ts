@@ -1,7 +1,6 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
@@ -14,11 +13,11 @@ import "../../../components/ha-icon-picker";
 import "../../../components/ha-floor-picker";
 import "../../../components/ha-textfield";
 import "../../../components/ha-labels-picker";
-import type { AreaRegistryEntryMutableParams } from "../../../data/area_registry";
-import type { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
+import { AreaRegistryEntryMutableParams } from "../../../data/area_registry";
+import { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant, ValueChangedEvent } from "../../../types";
-import type { AreaRegistryDetailDialogParams } from "./show-dialog-area-registry-detail";
+import { HomeAssistant, ValueChangedEvent } from "../../../types";
+import { AreaRegistryDetailDialogParams } from "./show-dialog-area-registry-detail";
 
 const cropOptions: CropOptions = {
   round: false,
@@ -140,7 +139,6 @@ class DialogAreaDetail extends LitElement {
               .hass=${this.hass}
               .value=${this._picture}
               crop
-              select-media
               .cropOptions=${cropOptions}
               @change=${this._pictureChanged}
             ></ha-picture-upload>

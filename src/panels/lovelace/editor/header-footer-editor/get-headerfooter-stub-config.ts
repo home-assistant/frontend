@@ -1,6 +1,6 @@
-import type { HomeAssistant } from "../../../../types";
+import { HomeAssistant } from "../../../../types";
 import { getHeaderFooterElementClass } from "../../create-element/create-header-footer-element";
-import type { LovelaceHeaderFooterConfig } from "../../header-footer/types";
+import { LovelaceHeaderFooterConfig } from "../../header-footer/types";
 
 export const getHeaderFooterStubConfig = async (
   hass: HomeAssistant,

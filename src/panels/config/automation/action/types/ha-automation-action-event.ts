@@ -1,5 +1,4 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/entity/ha-entity-picker";
@@ -9,8 +8,7 @@ import "../../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../../components/ha-yaml-editor";
 import type { EventAction } from "../../../../../data/script";
 import type { HomeAssistant } from "../../../../../types";
-import type { ActionElement } from "../ha-automation-action-row";
-import { handleChangeEvent } from "../ha-automation-action-row";
+import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-event")
 export class HaEventAction extends LitElement implements ActionElement {

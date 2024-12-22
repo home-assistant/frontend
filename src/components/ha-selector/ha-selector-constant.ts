@@ -1,6 +1,6 @@
 import { LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { ConstantSelector } from "../../data/selector";
+import { ConstantSelector } from "../../data/selector";
 
 @customElement("ha-selector-constant")
 export class HaSelectorConstant extends LitElement {

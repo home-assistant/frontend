@@ -1,10 +1,12 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list";
-import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiCalendar } from "@mdi/js";
 import {
   addDays,
+  addMonths,
+  addYears,
   endOfDay,
   endOfMonth,
   endOfWeek,
@@ -13,25 +15,28 @@ import {
   startOfMonth,
   startOfWeek,
   startOfYear,
-  isThisYear,
 } from "date-fns";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
-import { calcDate, shiftDateRange } from "../common/datetime/calc_date";
+import { calcDate } from "../common/datetime/calc_date";
 import { firstWeekdayIndex } from "../common/datetime/first_weekday";
-import {
-  formatShortDateTimeWithYear,
-  formatShortDateTime,
-} from "../common/datetime/format_date_time";
+import { formatDate } from "../common/datetime/format_date";
+import { formatDateTime } from "../common/datetime/format_date_time";
 import { useAmPm } from "../common/datetime/use_am_pm";
-import type { HomeAssistant } from "../types";
+import { HomeAssistant } from "../types";
 import "./date-range-picker";
 import "./ha-icon-button";
-import "./ha-textarea";
-import "./ha-icon-button-next";
-import "./ha-icon-button-prev";
+import "./ha-svg-icon";
+import "./ha-textfield";
 
 export interface DateRangePickerRanges {
   [key: string]: [Date, Date];
@@ -49,11 +54,9 @@ export class HaDateRangePicker extends LitElement {
 
   @state() private _ranges?: DateRangePickerRanges;
 
-  @property({ attribute: "auto-apply", type: Boolean })
-  public autoApply = false;
+  @property({ type: Boolean }) public autoApply = false;
 
-  @property({ attribute: "time-picker", type: Boolean })
-  public timePicker = true;
+  @property({ type: Boolean }) public timePicker = true;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -61,14 +64,9 @@ export class HaDateRangePicker extends LitElement {
 
   @state() private _hour24format = false;
 
-  @property({ attribute: "extended-presets", type: Boolean })
-  public extendedPresets = false;
+  @property({ type: Boolean }) public extendedPresets = false;
 
-  @property({ attribute: false }) public openingDirection?:
-    | "right"
-    | "left"
-    | "center"
-    | "inline";
+  @property() public openingDirection?: "right" | "left" | "center" | "inline";
 
   @state() private _calcedOpeningDirection?:
     | "right"
@@ -137,6 +135,9 @@ export class HaDateRangePicker extends LitElement {
         [this.hass.localize(
           "ui.components.date-range-picker.ranges.this_week"
         )]: [weekStart, weekEnd],
+        [this.hass.localize(
+          "ui.components.date-range-picker.ranges.last_week"
+        )]: [addDays(weekStart, -7), addDays(weekEnd, -7)],
         ...(this.extendedPresets
           ? {
               [this.hass.localize(
@@ -162,6 +163,28 @@ export class HaDateRangePicker extends LitElement {
                 ),
               ],
               [this.hass.localize(
+                "ui.components.date-range-picker.ranges.last_month"
+              )]: [
+                calcDate(
+                  addMonths(today, -1),
+                  startOfMonth,
+                  this.hass.locale,
+                  this.hass.config,
+                  {
+                    weekStartsOn,
+                  }
+                ),
+                calcDate(
+                  addMonths(today, -1),
+                  endOfMonth,
+                  this.hass.locale,
+                  this.hass.config,
+                  {
+                    weekStartsOn,
+                  }
+                ),
+              ],
+              [this.hass.localize(
                 "ui.components.date-range-picker.ranges.this_year"
               )]: [
                 calcDate(
@@ -176,6 +199,28 @@ export class HaDateRangePicker extends LitElement {
                 calcDate(today, endOfYear, this.hass.locale, this.hass.config, {
                   weekStartsOn,
                 }),
+              ],
+              [this.hass.localize(
+                "ui.components.date-range-picker.ranges.last_year"
+              )]: [
+                calcDate(
+                  addYears(today, -1),
+                  startOfYear,
+                  this.hass.locale,
+                  this.hass.config,
+                  {
+                    weekStartsOn,
+                  }
+                ),
+                calcDate(
+                  addYears(today, -1),
+                  endOfYear,
+                  this.hass.locale,
+                  this.hass.config,
+                  {
+                    weekStartsOn,
+                  }
+                ),
               ],
             }
           : {}),
@@ -210,52 +255,45 @@ export class HaDateRangePicker extends LitElement {
       >
         <div slot="input" class="date-range-inputs" @click=${this._handleClick}>
           ${!this.minimal
-            ? html`<ha-textarea
-                  mobile-multiline
-                  .value=${(isThisYear(this.startDate)
-                    ? formatShortDateTime(
+            ? html`<ha-svg-icon .path=${mdiCalendar}></ha-svg-icon>
+                <ha-textfield
+                  .value=${this.timePicker
+                    ? formatDateTime(
                         this.startDate,
                         this.hass.locale,
                         this.hass.config
                       )
-                    : formatShortDateTimeWithYear(
+                    : formatDate(
                         this.startDate,
                         this.hass.locale,
                         this.hass.config
-                      )) +
-                  " - \n" +
-                  (isThisYear(this.endDate)
-                    ? formatShortDateTime(
-                        this.endDate,
-                        this.hass.locale,
-                        this.hass.config
-                      )
-                    : formatShortDateTimeWithYear(
-                        this.endDate,
-                        this.hass.locale,
-                        this.hass.config
-                      ))}
+                      )}
                   .label=${this.hass.localize(
                     "ui.components.date-range-picker.start_date"
-                  ) +
-                  " - " +
-                  this.hass.localize(
+                  )}
+                  .disabled=${this.disabled}
+                  @click=${this._handleInputClick}
+                  readonly
+                ></ha-textfield>
+                <ha-textfield
+                  .value=${this.timePicker
+                    ? formatDateTime(
+                        this.endDate,
+                        this.hass.locale,
+                        this.hass.config
+                      )
+                    : formatDate(
+                        this.endDate,
+                        this.hass.locale,
+                        this.hass.config
+                      )}
+                  .label=${this.hass.localize(
                     "ui.components.date-range-picker.end_date"
                   )}
                   .disabled=${this.disabled}
                   @click=${this._handleInputClick}
                   readonly
-                ></ha-textarea>
-                <ha-icon-button-prev
-                  .label=${this.hass.localize("ui.common.previous")}
-                  @click=${this._handlePrev}
-                >
-                </ha-icon-button-prev>
-                <ha-icon-button-next
-                  .label=${this.hass.localize("ui.common.next")}
-                  @click=${this._handleNext}
-                >
-                </ha-icon-button-next>`
+                ></ha-textfield>`
             : html`<ha-icon-button
                 .label=${this.hass.localize(
                   "ui.components.date-range-picker.select_date_range"
@@ -284,33 +322,6 @@ export class HaDateRangePicker extends LitElement {
         </div>
       </date-range-picker>
     `;
-  }
-
-  private _handleNext(ev: MouseEvent): void {
-    if (ev && ev.stopPropagation) ev.stopPropagation();
-    this._shift(true);
-  }
-
-  private _handlePrev(ev: MouseEvent): void {
-    if (ev && ev.stopPropagation) ev.stopPropagation();
-    this._shift(false);
-  }
-
-  private _shift(forward: boolean) {
-    if (!this.startDate) return;
-    const { start, end } = shiftDateRange(
-      this.startDate,
-      this.endDate,
-      forward,
-      this.hass.locale,
-      this.hass.config
-    );
-    this.startDate = start;
-    this.endDate = end;
-    const dateRange = [start, end];
-    const dateRangePicker = this._dateRangePicker;
-    dateRangePicker.clickRange(dateRange);
-    dateRangePicker.clickedApply();
   }
 
   private _setDateRange(ev: CustomEvent<ActionDetail>) {
@@ -362,6 +373,12 @@ export class HaDateRangePicker extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
+      ha-svg-icon {
+        margin-right: 8px;
+        margin-inline-end: 8px;
+        margin-inline-start: initial;
+        direction: var(--direction);
+      }
 
       ha-icon-button {
         direction: var(--direction);
@@ -370,7 +387,6 @@ export class HaDateRangePicker extends LitElement {
       .date-range-inputs {
         display: flex;
         align-items: center;
-        gap: 8px;
       }
 
       .date-range-ranges {
@@ -384,19 +400,33 @@ export class HaDateRangePicker extends LitElement {
         border-top: 1px solid var(--divider-color);
       }
 
-      ha-textarea {
+      ha-textfield {
         display: inline-block;
-        width: 340px;
+        max-width: 250px;
+        min-width: 220px;
       }
-      @media only screen and (max-width: 460px) {
-      ha-textarea {
-        width: 100%
+
+      ha-textfield:last-child {
+        margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: initial;
+        direction: var(--direction);
       }
 
       @media only screen and (max-width: 800px) {
         .date-range-ranges {
           border-right: none;
           border-bottom: 1px solid var(--divider-color);
+        }
+      }
+
+      @media only screen and (max-width: 500px) {
+        ha-textfield {
+          min-width: inherit;
+        }
+
+        ha-svg-icon {
+          display: none;
         }
       }
     `;

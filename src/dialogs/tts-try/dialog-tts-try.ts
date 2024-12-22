@@ -1,6 +1,5 @@
 import { mdiPlayCircleOutline } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { storage } from "../../common/decorators/storage";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -9,9 +8,9 @@ import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-textarea";
 import type { HaTextArea } from "../../components/ha-textarea";
 import { convertTextToSpeech } from "../../data/tts";
-import type { HomeAssistant } from "../../types";
+import { HomeAssistant } from "../../types";
 import { showAlertDialog } from "../generic/show-dialog-box";
-import type { TTSTryDialogParams } from "./show-dialog-tts-try";
+import { TTSTryDialogParams } from "./show-dialog-tts-try";
 import "../../components/ha-circular-progress";
 
 @customElement("dialog-tts-try")

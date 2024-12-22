@@ -1,6 +1,6 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { DeviceRegistryEntry } from "../../../../data/device_registry";
-import type { EntityRegistryEntry } from "../../../../data/entity_registry";
+import { DeviceRegistryEntry } from "../../../../data/device_registry";
+import { EntityRegistryEntry } from "../../../../data/entity_registry";
 
 export interface DeviceAutomationDialogParams {
   device: DeviceRegistryEntry;

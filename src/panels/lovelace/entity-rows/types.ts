@@ -1,7 +1,4 @@
-import type {
-  ActionConfig,
-  ConfirmationRestrictionConfig,
-} from "../../../data/lovelace/config/action";
+import type { ActionConfig } from "../../../data/lovelace/config/action";
 import type { HomeAssistant } from "../../../types";
 import type { LegacyStateFilter } from "../common/evaluate-filter";
 import type { Condition } from "../common/validate-condition";
@@ -14,12 +11,7 @@ export interface EntityConfig {
   icon?: string;
   image?: string;
 }
-
-export interface ConfirmableRowConfig extends EntityConfig {
-  confirmation?: ConfirmationRestrictionConfig;
-}
-
-export interface ActionRowConfig extends ConfirmableRowConfig {
+export interface ActionRowConfig extends EntityConfig {
   action_name?: string;
 }
 export interface EntityFilterEntityConfig extends EntityConfig {
@@ -49,12 +41,8 @@ export interface TextConfig {
   text: string;
 }
 export interface CallServiceConfig extends EntityConfig {
-  type: "call-service" | "perform-action";
-  /** @deprecated use "action" instead */
-  service?: string;
-  action: string;
-  data?: Record<string, any>;
-  /** @deprecated use "data" instead */
+  type: "call-service";
+  service: string;
   service_data?: Record<string, any>;
   action_name?: string;
 }
@@ -93,7 +81,7 @@ export type LovelaceRowConfig =
 
 export interface LovelaceRow extends HTMLElement {
   hass?: HomeAssistant;
-  preview?: boolean;
+  editMode?: boolean;
   setConfig(config: LovelaceRowConfig);
 }
 

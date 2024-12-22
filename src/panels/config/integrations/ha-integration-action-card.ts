@@ -1,5 +1,4 @@
-import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import {
   domainToName,
@@ -17,7 +16,7 @@ export class HaIntegrationActionCard extends LitElement {
 
   @property() public banner!: string;
 
-  @property({ attribute: false }) public localizedDomainName?: string;
+  @property() public localizedDomainName?: string;
 
   @property() public domain!: string;
 

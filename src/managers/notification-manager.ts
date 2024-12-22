@@ -1,16 +1,13 @@
-import { mdiClose } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
-import { property, query, state } from "lit/decorators";
+import { property, state, query } from "lit/decorators";
+import { mdiClose } from "@mdi/js";
 import { computeRTL } from "../common/util/compute_rtl";
-import "../components/ha-button";
 import "../components/ha-toast";
-import "../components/ha-icon-button";
 import type { HaToast } from "../components/ha-toast";
 import type { HomeAssistant } from "../types";
+import "../components/ha-button";
 
 export interface ShowToastParams {
-  // Unique ID for the toast. If a new toast is shown with the same ID as the previous toast, it will be replaced to avoid flickering.
-  id?: string;
   message: string;
   action?: ToastActionParams;
   duration?: number;
@@ -30,12 +27,12 @@ class NotificationManager extends LitElement {
   @query("ha-toast") private _toast!: HaToast | undefined;
 
   public async showDialog(parameters: ShowToastParams) {
-    if (!parameters.id || this._parameters?.id !== parameters.id) {
-      this._toast?.close();
+    if (this._parameters && this._parameters.message !== parameters.message) {
+      this._parameters = undefined;
+      await this.updateComplete;
     }
 
     if (!parameters || parameters.duration === 0) {
-      this._parameters = undefined;
       return;
     }
 
@@ -47,9 +44,10 @@ class NotificationManager extends LitElement {
     ) {
       this._parameters.duration = 4000;
     }
+  }
 
-    await this.updateComplete;
-    this._toast?.show();
+  public shouldUpdate(changedProperties) {
+    return !this._toast || changedProperties.has("_parameters");
   }
 
   private _toastClosed() {
@@ -63,6 +61,7 @@ class NotificationManager extends LitElement {
     return html`
       <ha-toast
         leading
+        open
         dir=${computeRTL(this.hass) ? "rtl" : "ltr"}
         .labelText=${this._parameters.message}
         .timeoutMs=${this._parameters.duration!}
@@ -73,25 +72,23 @@ class NotificationManager extends LitElement {
               <ha-button
                 slot="action"
                 .label=${this._parameters?.action.text}
-                @click=${this._buttonClicked}
+                @click=${this.buttonClicked}
               ></ha-button>
             `
           : nothing}
         ${this._parameters?.dismissable
-          ? html`
-              <ha-icon-button
-                .label=${this.hass.localize("ui.common.close")}
-                .path=${mdiClose}
-                dialogAction="close"
-                slot="dismiss"
-              ></ha-icon-button>
-            `
+          ? html`<ha-icon-button
+              .label=${this.hass.localize("ui.common.close")}
+              .path=${mdiClose}
+              dialogAction="close"
+              slot="dismiss"
+            ></ha-icon-button>`
           : nothing}
       </ha-toast>
     `;
   }
 
-  private _buttonClicked() {
+  private buttonClicked() {
     this._toast?.close("action");
     if (this._parameters?.action) {
       this._parameters?.action.action();

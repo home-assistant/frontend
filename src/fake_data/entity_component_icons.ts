@@ -1,4 +1,4 @@
-import type { ComponentIcons } from "../data/icons";
+import { ComponentIcons } from "../data/icons";
 
 export const ENTITY_COMPONENT_ICONS: Record<string, ComponentIcons> = {
   person: {
@@ -907,7 +907,6 @@ export const ENTITY_COMPONENT_ICONS: Record<string, ComponentIcons> = {
             idle: "mdi:clock-outline",
             off: "mdi:power",
             preheating: "mdi:heat-wave",
-            defrosting: "mdi:snowflake-melt",
           },
         },
         preset_mode: {

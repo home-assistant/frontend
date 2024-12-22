@@ -1,7 +1,6 @@
-/* eslint-disable lit/lifecycle-super */
 import { customElement } from "lit/decorators";
 import { navigate } from "../../../../../common/navigate";
-import type { HomeAssistant } from "../../../../../types";
+import { HomeAssistant } from "../../../../../types";
 import { showZWaveJSAddNodeDialog } from "./show-dialog-zwave_js-add-node";
 
 @customElement("zwave_js-add-node")

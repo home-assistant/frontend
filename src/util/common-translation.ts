@@ -1,7 +1,9 @@
-import type { FrontendLocaleData } from "../data/translation";
-import { fetchTranslationPreferences } from "../data/translation";
+import {
+  fetchTranslationPreferences,
+  FrontendLocaleData,
+} from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
-import type { HomeAssistant } from "../types";
+import { HomeAssistant } from "../types";
 
 const BASE_URL = `${__STATIC_PATH__}translations`;
 const STORAGE = window.localStorage || {};
@@ -135,15 +137,14 @@ export function getLocalLanguage() {
 
 export async function getTranslation(
   fragment: string | null,
-  language: string,
-  fallback = true
+  language: string
 ) {
   const metadata = translationMetadata.translations[language];
   if (!metadata?.hash) {
-    if (fallback && language !== "en") {
+    if (language !== "en") {
       return getTranslation(fragment, "en");
     }
-    throw new Error(`Language '${language}' is not found in metadata`);
+    throw new Error("Language en is not found in metadata");
   }
 
   // nl-abcd.jon or logbook/nl-abcd.json

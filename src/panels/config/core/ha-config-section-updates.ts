@@ -1,9 +1,7 @@
-import "@material/mwc-list/mwc-list-item";
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
+import { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical, mdiRefresh } from "@mdi/js";
-import type { HassEntities } from "home-assistant-js-websocket";
-import type { TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
+import { HassEntities } from "home-assistant-js-websocket";
+import { LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -15,11 +13,9 @@ import "../../../components/ha-card";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-metric";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
-import type {
+import {
   HassioSupervisorInfo,
   SupervisorOptions,
-} from "../../../data/hassio/supervisor";
-import {
   fetchHassioSupervisorInfo,
   reloadSupervisor,
   setSupervisorOption,

@@ -1,11 +1,10 @@
 import "@material/mwc-button";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../components/ha-circular-progress";
-import type { DataEntryFlowStepProgress } from "../../data/data_entry_flow";
-import type { HomeAssistant } from "../../types";
-import type { FlowConfig } from "./show-dialog-data-entry-flow";
+import { DataEntryFlowStepProgress } from "../../data/data_entry_flow";
+import { HomeAssistant } from "../../types";
+import { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
 
 @customElement("step-flow-progress")

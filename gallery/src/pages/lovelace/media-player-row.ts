@@ -1,5 +1,4 @@
-import type { PropertyValues, TemplateResult } from "lit";
-import { html, LitElement } from "lit";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, query } from "lit/decorators";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-cards";

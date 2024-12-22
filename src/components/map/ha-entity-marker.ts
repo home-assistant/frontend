@@ -1,13 +1,9 @@
 import { LitElement, html, css } from "lit";
 import { property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import type { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../ha-state-icon";
 
 class HaEntityMarker extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: "entity-id" }) public entityId?: string;
 
   @property({ attribute: "entity-name" }) public entityName?: string;
@@ -15,8 +11,6 @@ class HaEntityMarker extends LitElement {
   @property({ attribute: "entity-picture" }) public entityPicture?: string;
 
   @property({ attribute: "entity-color" }) public entityColor?: string;
-
-  @property({ attribute: "show-icon", type: Boolean }) public showIcon = false;
 
   protected render() {
     return html`
@@ -32,12 +26,7 @@ class HaEntityMarker extends LitElement {
                 "background-image": `url(${this.entityPicture})`,
               })}
             ></div>`
-          : this.showIcon && this.entityId
-            ? html`<ha-state-icon
-                .hass=${this.hass}
-                .stateObj=${this.hass?.states[this.entityId]}
-              ></ha-state-icon>`
-            : this.entityName}
+          : this.entityName}
       </div>
     `;
   }
@@ -54,7 +43,6 @@ class HaEntityMarker extends LitElement {
       .marker {
         display: flex;
         justify-content: center;
-        text-align: center;
         align-items: center;
         box-sizing: border-box;
         width: 48px;

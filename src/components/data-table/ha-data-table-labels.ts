@@ -1,16 +1,11 @@
-import type { TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
-import type { LabelRegistryEntry } from "../../data/label_registry";
+import { LabelRegistryEntry } from "../../data/label_registry";
 import { computeCssColor } from "../../common/color/compute-color";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-label";
 import { stringCompare } from "../../common/string/compare";
-import "../chips/ha-chip-set";
-import "../ha-button-menu";
-import "../ha-icon";
-import "../ha-list-item";
 
 @customElement("ha-data-table-labels")
 class HaDataTableLabels extends LitElement {

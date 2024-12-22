@@ -1,5 +1,4 @@
-import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../types";

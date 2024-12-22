@@ -1,9 +1,7 @@
 import type { Map, TileLayer } from "leaflet";
 
 // Sets up a Leaflet map on the provided DOM element
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 export type LeafletModuleType = typeof import("leaflet");
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 export type LeafletDrawModuleType = typeof import("leaflet-draw");
 
 export const setupLeafletMap = async (

@@ -3,7 +3,7 @@ import { mdiOpenInNew } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { LocalizeFunc } from "../../common/translations/localize";
+import { LocalizeFunc } from "../../common/translations/localize";
 import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-list-item";
 
@@ -40,11 +40,7 @@ class DialogCommunity extends LitElement {
           href="https://community.home-assistant.io/"
         >
           <ha-list-item hasMeta graphic="icon">
-            <img
-              src="/static/icons/favicon-192x192.png"
-              slot="graphic"
-              alt="Home Assistant Logo"
-            />
+            <img src="/static/icons/favicon-192x192.png" slot="graphic" />
             ${this.localize("ui.panel.page-onboarding.welcome.forums")}
             <ha-svg-icon slot="meta" .path=${mdiOpenInNew}></ha-svg-icon>
           </ha-list-item>
@@ -55,11 +51,7 @@ class DialogCommunity extends LitElement {
           href="https://newsletter.openhomefoundation.org/"
         >
           <ha-list-item hasMeta graphic="icon">
-            <img
-              src="/static/icons/logo_ohf.svg"
-              slot="graphic"
-              alt="Open Home Foundation Logo"
-            />
+            <img src="/static/icons/favicon-192x192.png" slot="graphic" />
             ${this.localize(
               "ui.panel.page-onboarding.welcome.open_home_newsletter"
             )}
@@ -72,11 +64,7 @@ class DialogCommunity extends LitElement {
           href="https://www.home-assistant.io/join-chat"
         >
           <ha-list-item hasMeta graphic="icon">
-            <img
-              src="/static/images/logo_discord.png"
-              slot="graphic"
-              alt="Discord Logo"
-            />
+            <img src="/static/images/logo_discord.png" slot="graphic" />
             ${this.localize("ui.panel.page-onboarding.welcome.discord")}
             <ha-svg-icon slot="meta" .path=${mdiOpenInNew}></ha-svg-icon>
           </ha-list-item>
@@ -84,15 +72,11 @@ class DialogCommunity extends LitElement {
         <a
           target="_blank"
           rel="noreferrer noopener"
-          href="https://fosstodon.org/@homeassistant"
+          href="https://twitter.com/home_assistant"
         >
           <ha-list-item hasMeta graphic="icon">
-            <img
-              src="/static/images/logo_mastodon.svg"
-              slot="graphic"
-              alt="Mastodon Logo"
-            />
-            ${this.localize("ui.panel.page-onboarding.welcome.mastodon")}
+            <img src="/static/images/logo_twitter.png" slot="graphic" />
+            ${this.localize("ui.panel.page-onboarding.welcome.twitter")}
             <ha-svg-icon slot="meta" .path=${mdiOpenInNew}></ha-svg-icon>
           </ha-list-item>
         </a>

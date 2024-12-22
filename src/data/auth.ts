@@ -1,6 +1,6 @@
-import type { HaFormSchema } from "../components/ha-form/types";
-import type { HomeAssistant } from "../types";
-import type { RefreshTokenType } from "./refresh_token";
+import { HaFormSchema } from "../components/ha-form/types";
+import { HomeAssistant } from "../types";
+import { RefreshTokenType } from "./refresh_token";
 
 export interface AuthUrlSearchParams {
   client_id?: string;
@@ -23,18 +23,18 @@ export interface SignedPath {
   path: string;
 }
 
-export const hassUrl = __HASS_URL__;
+export const hassUrl = `${location.protocol}//${location.host}`;
 
 export const autocompleteLoginFields = (schema: HaFormSchema[]) =>
   schema.map((field) => {
     if (field.type !== "string") return field;
     switch (field.name) {
       case "username":
-        return { ...field, autocomplete: "username", autofocus: true };
+        return { ...field, autocomplete: "username" };
       case "password":
         return { ...field, autocomplete: "current-password" };
       case "code":
-        return { ...field, autocomplete: "one-time-code", autofocus: true };
+        return { ...field, autocomplete: "one-time-code" };
       default:
         return field;
     }
@@ -136,17 +136,6 @@ export const adminChangePassword = (
     type: "config/auth_provider/homeassistant/admin_change_password",
     user_id: userId,
     password,
-  });
-
-export const adminChangeUsername = (
-  hass: HomeAssistant,
-  userId: string,
-  username: string
-) =>
-  hass.callWS<void>({
-    type: "config/auth_provider/homeassistant/admin_change_username",
-    user_id: userId,
-    username,
   });
 
 export const deleteAllRefreshTokens = (

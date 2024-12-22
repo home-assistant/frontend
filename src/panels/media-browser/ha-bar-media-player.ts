@@ -9,8 +9,14 @@ import {
   mdiStop,
   mdiVolumeHigh,
 } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { until } from "lit/directives/until";
@@ -20,7 +26,6 @@ import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { debounce } from "../../common/util/debounce";
-import "../../components/ha-slider";
 import "../../components/ha-button";
 import "../../components/ha-button-menu";
 import "../../components/ha-circular-progress";
@@ -30,14 +35,12 @@ import "../../components/ha-list-item";
 import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
 import { UNAVAILABLE } from "../../data/entity";
-import type {
-  ControlButton,
-  MediaPlayerEntity,
-  MediaPlayerItem,
-} from "../../data/media-player";
 import {
   BROWSER_PLAYER,
+  ControlButton,
+  MediaPlayerEntity,
   MediaPlayerEntityFeature,
+  MediaPlayerItem,
   cleanupMediaTitle,
   computeMediaControls,
   computeMediaDescription,
@@ -46,7 +49,7 @@ import {
   handleMediaControlClick,
   setMediaPlayerVolume,
 } from "../../data/media-player";
-import type { ResolvedMediaSource } from "../../data/media_source";
+import { ResolvedMediaSource } from "../../data/media_source";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../types";

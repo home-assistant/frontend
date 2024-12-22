@@ -1,9 +1,12 @@
 import "@material/mwc-button";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import type { Edge, EdgeOptions, Node } from "vis-network/peer/esm/vis-network";
-import { Network } from "vis-network/peer/esm/vis-network";
+import {
+  Edge,
+  EdgeOptions,
+  Network,
+  Node,
+} from "vis-network/peer/esm/vis-network";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/search-input";
 import "../../../../../components/device/ha-device-picker";
@@ -11,15 +14,15 @@ import "../../../../../components/ha-button-menu";
 import "../../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../../components/ha-checkbox";
 import "../../../../../components/ha-formfield";
-import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
-import type { ZHADevice } from "../../../../../data/zha";
-import { fetchDevices, refreshTopology } from "../../../../../data/zha";
+import { DeviceRegistryEntry } from "../../../../../data/device_registry";
+import {
+  fetchDevices,
+  refreshTopology,
+  ZHADevice,
+} from "../../../../../data/zha";
 import "../../../../../layouts/hass-tabs-subpage";
-import type {
-  ValueChangedEvent,
-  HomeAssistant,
-  Route,
-} from "../../../../../types";
+import { ValueChangedEvent } from "../../../../../types";
+import type { HomeAssistant, Route } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
 import { zhaTabs } from "./zha-config-dashboard";
 
@@ -31,9 +34,9 @@ export class ZHANetworkVisualizationPage extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property({ attribute: false })
+  @property()
   public zoomedDeviceIdFromURL?: string;
 
   @state()

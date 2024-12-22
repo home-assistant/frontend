@@ -4,9 +4,15 @@ import {
   mdiWaterPercent,
   mdiWhiteBalanceSunny,
 } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { HassEntity } from "home-assistant-js-websocket";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -14,13 +20,13 @@ import { batteryLevelIcon } from "../../../common/entity/battery_icon";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
-import type { HomeAssistant } from "../../../types";
+import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { LovelaceCard, LovelaceCardEditor } from "../types";
-import type { PlantAttributeTarget, PlantStatusCardConfig } from "./types";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
+import { PlantAttributeTarget, PlantStatusCardConfig } from "./types";
 
 const SENSOR_ICONS = {
   moisture: mdiWaterPercent,
@@ -123,7 +129,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
           </div>
         </div>
         <div class="content">
-          ${this._computeAttributes(stateObj).map(
+          ${this.computeAttributes(stateObj).map(
             (item) => html`
               <div
                 class="attributes"
@@ -246,7 +252,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _computeAttributes(stateObj: HassEntity): string[] {
+  private computeAttributes(stateObj: HassEntity): string[] {
     return Object.keys(SENSOR_ICONS).filter(
       (key) => key in stateObj.attributes
     );

@@ -1,7 +1,7 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { LanguageSelector } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
+import { LanguageSelector } from "../../data/selector";
+import { HomeAssistant } from "../../types";
 import "../ha-language-picker";
 
 @customElement("ha-selector-language")

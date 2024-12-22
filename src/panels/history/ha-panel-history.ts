@@ -4,14 +4,13 @@ import {
   mdiFilterRemove,
   mdiImagePlus,
 } from "@mdi/js";
-import type { ActionDetail } from "@material/mwc-list";
+import { ActionDetail } from "@material/mwc-list";
 import { differenceInHours } from "date-fns";
-import type {
+import {
   HassServiceTarget,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket/dist/types";
-import type { PropertyValues } from "lit";
-import { LitElement, css, html } from "lit";
+import { LitElement, PropertyValues, css, html } from "lit";
 import { property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
@@ -36,25 +35,27 @@ import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
 import "../../components/ha-target-picker";
 import "../../components/ha-top-app-bar-fixed";
-import type {
+import {
   EntityHistoryState,
   HistoryResult,
   HistoryStates,
   LineChartState,
   LineChartUnit,
-} from "../../data/history";
-import {
   computeGroupKey,
   computeHistory,
   subscribeHistory,
 } from "../../data/history";
-import type { Statistics } from "../../data/recorder";
-import { fetchStatistics } from "../../data/recorder";
-import { resolveEntityIDs } from "../../data/selector";
+import { Statistics, fetchStatistics } from "../../data/recorder";
+import {
+  expandAreaTarget,
+  expandDeviceTarget,
+  expandFloorTarget,
+  expandLabelTarget,
+} from "../../data/selector";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
+import { HomeAssistant } from "../../types";
 import { fileDownload } from "../../util/file_download";
 import { addEntitiesToLovelaceView } from "../lovelace/editor/add-entities-to-view";
 
@@ -177,14 +178,14 @@ class HaPanelHistory extends LitElement {
               ?disabled=${this._isLoading}
               .startDate=${this._startDate}
               .endDate=${this._endDate}
-              extended-presets
+              extendedPresets
               @change=${this._dateRangeChanged}
             ></ha-date-range-picker>
             <ha-target-picker
               .hass=${this.hass}
               .value=${this._targetPickerValue}
               .disabled=${this._isLoading}
-              add-on-top
+              addOnTop
               @value-changed=${this._targetsChanged}
             ></ha-target-picker>
           </div>
@@ -210,7 +211,7 @@ class HaPanelHistory extends LitElement {
     `;
   }
 
-  private _mergeHistoryResults(
+  private mergeHistoryResults(
     ltsResult: HistoryResult,
     historyResult: HistoryResult
   ): HistoryResult {
@@ -307,7 +308,7 @@ class HaPanelHistory extends LitElement {
       changedProps.has("_targetPickerValue")
     ) {
       if (this._statisticsHistory && this._stateHistory) {
-        this._mungedStateHistory = this._mergeHistoryResults(
+        this._mungedStateHistory = this.mergeHistoryResults(
           this._statisticsHistory,
           this._stateHistory
         );
@@ -538,8 +539,66 @@ class HaPanelHistory extends LitElement {
       entities: HomeAssistant["entities"],
       devices: HomeAssistant["devices"],
       areas: HomeAssistant["areas"]
-    ): string[] =>
-      resolveEntityIDs(this.hass, targetPickerValue, entities, devices, areas)
+    ): string[] => {
+      if (!targetPickerValue) {
+        return [];
+      }
+
+      const targetSelector = { target: {} };
+      const targetEntities = new Set(ensureArray(targetPickerValue.entity_id));
+      const targetDevices = new Set(ensureArray(targetPickerValue.device_id));
+      const targetAreas = new Set(ensureArray(targetPickerValue.area_id));
+      const targetFloors = new Set(ensureArray(targetPickerValue.floor_id));
+      const targetLabels = new Set(ensureArray(targetPickerValue.label_id));
+
+      targetLabels.forEach((labelId) => {
+        const expanded = expandLabelTarget(
+          this.hass,
+          labelId,
+          areas,
+          devices,
+          entities,
+          targetSelector
+        );
+        expanded.devices.forEach((id) => targetDevices.add(id));
+        expanded.entities.forEach((id) => targetEntities.add(id));
+        expanded.areas.forEach((id) => targetAreas.add(id));
+      });
+
+      targetFloors.forEach((floorId) => {
+        const expanded = expandFloorTarget(
+          this.hass,
+          floorId,
+          areas,
+          targetSelector
+        );
+        expanded.areas.forEach((id) => targetAreas.add(id));
+      });
+
+      targetAreas.forEach((areaId) => {
+        const expanded = expandAreaTarget(
+          this.hass,
+          areaId,
+          devices,
+          entities,
+          targetSelector
+        );
+        expanded.devices.forEach((id) => targetDevices.add(id));
+        expanded.entities.forEach((id) => targetEntities.add(id));
+      });
+
+      targetDevices.forEach((deviceId) => {
+        const expanded = expandDeviceTarget(
+          this.hass,
+          deviceId,
+          entities,
+          targetSelector
+        );
+        expanded.entities.forEach((id) => targetEntities.add(id));
+      });
+
+      return Array.from(targetEntities);
+    }
   );
 
   private _dateRangeChanged(ev) {
@@ -772,8 +831,10 @@ class HaPanelHistory extends LitElement {
             flex-direction: column;
           }
           ha-date-range-picker {
+            margin-right: 0;
+            margin-inline-end: 0;
+            margin-inline-start: initial;
             width: 100%;
-            margin-bottom: 8px;
           }
         }
 

@@ -1,5 +1,5 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type {
+import {
   DeviceRegistryEntry,
   DeviceRegistryEntryMutableParams,
 } from "../../../../data/device_registry";

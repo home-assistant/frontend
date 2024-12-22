@@ -1,7 +1,7 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { STTSelector } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
+import { STTSelector } from "../../data/selector";
+import { HomeAssistant } from "../../types";
 import "../ha-stt-picker";
 
 @customElement("ha-selector-stt")

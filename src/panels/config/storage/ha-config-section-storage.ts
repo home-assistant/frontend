@@ -6,8 +6,14 @@ import {
   mdiPlayBox,
   mdiReload,
 } from "@mdi/js";
-import type { PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import {
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-alert";
@@ -17,16 +23,13 @@ import "../../../components/ha-metric";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-icon-next";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
-import type { HassioHostInfo } from "../../../data/hassio/host";
-import { fetchHassioHostInfo } from "../../../data/hassio/host";
-import type {
-  SupervisorMount,
-  SupervisorMounts,
-} from "../../../data/supervisor/mounts";
+import { HassioHostInfo, fetchHassioHostInfo } from "../../../data/hassio/host";
 import {
+  SupervisorMount,
   SupervisorMountState,
   SupervisorMountType,
   SupervisorMountUsage,
+  SupervisorMounts,
   fetchSupervisorMounts,
   reloadSupervisorMount,
 } from "../../../data/supervisor/mounts";

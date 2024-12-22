@@ -1,17 +1,21 @@
 import "@material/mwc-button/mwc-button";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isUnavailableState } from "../../../data/entity";
-import type { ScriptEntity } from "../../../data/script";
-import { canRun, hasScriptFields } from "../../../data/script";
-import type { HomeAssistant } from "../../../types";
+import { canRun, hasScriptFields, ScriptEntity } from "../../../data/script";
+import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { ActionRowConfig, LovelaceRow } from "./types";
+import { ActionRowConfig, LovelaceRow } from "./types";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
-import { confirmAction } from "../common/confirm-action";
 
 @customElement("hui-script-entity-row")
 class HuiScriptEntityRow extends LitElement implements LovelaceRow {
@@ -87,20 +91,12 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
     this._callService("turn_off");
   }
 
-  private async _runScript(ev): Promise<void> {
+  private _runScript(ev): void {
     ev.stopPropagation();
 
     if (hasScriptFields(this.hass!, this._config!.entity)) {
       showMoreInfoDialog(this, { entityId: this._config!.entity });
-    } else if (
-      !this._config?.confirmation ||
-      (await confirmAction(
-        this,
-        this.hass!,
-        this._config.confirmation,
-        this._config.action_name || this.hass!.localize("ui.card.script.run")
-      ))
-    ) {
+    } else {
       this._callService("turn_on");
     }
   }

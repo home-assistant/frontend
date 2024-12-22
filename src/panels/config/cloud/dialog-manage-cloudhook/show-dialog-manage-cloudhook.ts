@@ -1,6 +1,6 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { CloudWebhook } from "../../../../data/cloud";
-import type { Webhook } from "../../../../data/webhook";
+import { CloudWebhook } from "../../../../data/cloud";
+import { Webhook } from "../../../../data/webhook";
 
 export interface WebhookDialogParams {
   webhook: Webhook;

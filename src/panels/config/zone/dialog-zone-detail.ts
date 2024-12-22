@@ -1,18 +1,16 @@
 import "@material/mwc-button";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { addDistanceToCoord } from "../../../common/location/add_distance_to_coord";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../components/ha-form/types";
-import type { ZoneMutableParams } from "../../../data/zone";
-import { getZoneEditorInitData } from "../../../data/zone";
+import { SchemaUnion } from "../../../components/ha-form/types";
+import { getZoneEditorInitData, ZoneMutableParams } from "../../../data/zone";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
-import type { ZoneDetailDialogParams } from "./show-dialog-zone-detail";
+import { HomeAssistant } from "../../../types";
+import { ZoneDetailDialogParams } from "./show-dialog-zone-detail";
 
 class DialogZoneDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;

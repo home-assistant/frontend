@@ -1,15 +1,21 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { mdiInformation } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import "../../../../components/ha-card";
 import "../../../../components/ha-gauge";
 import "../../../../components/ha-svg-icon";
-import type { EnergyData } from "../../../../data/energy";
 import {
+  EnergyData,
   energySourcesByType,
   getEnergyDataCollection,
 } from "../../../../data/energy";

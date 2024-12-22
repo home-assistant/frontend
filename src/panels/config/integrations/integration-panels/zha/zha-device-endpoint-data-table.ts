@@ -1,5 +1,4 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import "../../../../../components/data-table/ha-data-table";
@@ -31,8 +30,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
 
   @property({ type: Boolean }) public selectable = false;
 
-  @property({ attribute: false, type: Array })
-  public deviceEndpoints: ZHADeviceEndpoint[] = [];
+  @property({ type: Array }) public deviceEndpoints: ZHADeviceEndpoint[] = [];
 
   @query("ha-data-table", true) private _dataTable!: HaDataTable;
 
@@ -67,7 +65,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
-              flex: 2,
+              grows: true,
               template: (device) => html`
                 <a href=${`/config/devices/device/${device.dev_id}`}>
                   ${device.name}
@@ -86,7 +84,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
-              flex: 2,
+              grows: true,
               template: (device) => html`
                 <a href=${`/config/devices/device/${device.dev_id}`}>
                   ${device.name}
@@ -102,7 +100,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
               title: "Associated Entities",
               sortable: false,
               filterable: false,
-              flex: 2,
+              width: "50%",
               template: (device) => html`
                 ${device.entities.length
                   ? device.entities.length > 3

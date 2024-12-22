@@ -1,5 +1,5 @@
 import { fireEvent } from "../../common/dom/fire_event";
-import type { CalendarEventData } from "../../data/calendar";
+import { CalendarEventData } from "../../data/calendar";
 
 export interface CalendarEventEditDialogParams {
   calendarId?: string;

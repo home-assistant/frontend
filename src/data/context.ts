@@ -1,8 +1,9 @@
 import { createContext } from "@lit-labs/context";
-import type { HassConfig } from "home-assistant-js-websocket";
-import type { HomeAssistant } from "../types";
-import type { EntityRegistryEntry } from "./entity_registry";
-import type { LabelRegistryEntry } from "./label_registry";
+import { HassConfig } from "home-assistant-js-websocket";
+import { HomeAssistant } from "../types";
+import { EntityRegistryEntry } from "./entity_registry";
+import { FloorRegistryEntry } from "./floor_registry";
+import { LabelRegistryEntry } from "./label_registry";
 
 export const connectionContext =
   createContext<HomeAssistant["connection"]>("connection");
@@ -27,6 +28,6 @@ export const panelsContext = createContext<HomeAssistant["panels"]>("panels");
 export const fullEntitiesContext =
   createContext<EntityRegistryEntry[]>("extendedEntities");
 
-export const floorsContext = createContext<HomeAssistant["floors"]>("floors");
+export const floorsContext = createContext<FloorRegistryEntry[]>("floors");
 
 export const labelsContext = createContext<LabelRegistryEntry[]>("labels");

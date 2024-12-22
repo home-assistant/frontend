@@ -1,7 +1,6 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import type { HomeAssistant } from "../../types";
@@ -14,7 +13,7 @@ class StateInfo extends LitElement {
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  @property({ attribute: "in-dialog", type: Boolean }) public inDialog = false;
+  @property({ type: Boolean }) public inDialog = false;
 
   @property() public color?: string;
 
@@ -32,7 +31,7 @@ class StateInfo extends LitElement {
         .color=${this.color}
       ></state-badge>
       <div class="info">
-        <div class="name ${this.inDialog ? "in-dialog" : ""}" .title=${name}>
+        <div class="name" .title=${name} .inDialog=${this.inDialog}>
           ${name}
         </div>
         ${this.inDialog
@@ -108,7 +107,7 @@ class StateInfo extends LitElement {
         text-overflow: ellipsis;
       }
 
-      .name.in-dialog,
+      .name[inDialog],
       :host([secondary-line]) .name {
         line-height: 20px;
       }

@@ -1,5 +1,4 @@
 import { consume } from "@lit-labs/context";
-import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -8,18 +7,14 @@ import "../../../../../components/device/ha-device-action-picker";
 import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/ha-form/ha-form";
 import { fullEntitiesContext } from "../../../../../data/context";
-import type {
-  DeviceAction,
-  DeviceCapabilities,
-} from "../../../../../data/device_automation";
 import {
+  DeviceAction,
   deviceAutomationsEqual,
+  DeviceCapabilities,
   fetchDeviceActionCapabilities,
-  localizeExtraFieldsComputeLabelCallback,
-  localizeExtraFieldsComputeHelperCallback,
 } from "../../../../../data/device_automation";
-import type { EntityRegistryEntry } from "../../../../../data/entity_registry";
-import type { HomeAssistant } from "../../../../../types";
+import { EntityRegistryEntry } from "../../../../../data/entity_registry";
+import { HomeAssistant } from "../../../../../types";
 
 @customElement("ha-automation-action-device_id")
 export class HaDeviceAction extends LitElement {
@@ -39,7 +34,7 @@ export class HaDeviceAction extends LitElement {
 
   private _origAction?: DeviceAction;
 
-  public static get defaultConfig(): DeviceAction {
+  public static get defaultConfig() {
     return {
       device_id: "",
       domain: "",
@@ -58,28 +53,6 @@ export class HaDeviceAction extends LitElement {
       return extraFieldsData;
     }
   );
-
-  public shouldUpdate(changedProperties: PropertyValues) {
-    if (!changedProperties.has("action")) {
-      return true;
-    }
-    if (
-      this.action.device_id &&
-      !(this.action.device_id in this.hass.devices)
-    ) {
-      fireEvent(
-        this,
-        "ui-mode-not-available",
-        Error(
-          this.hass.localize(
-            "ui.panel.config.automation.editor.edit_unknown_device"
-          )
-        )
-      );
-      return false;
-    }
-    return true;
-  }
 
   protected render() {
     const deviceId = this._deviceId || this.action.device_id;
@@ -111,13 +84,8 @@ export class HaDeviceAction extends LitElement {
               .data=${this._extraFieldsData(this.action, this._capabilities)}
               .schema=${this._capabilities.extra_fields}
               .disabled=${this.disabled}
-              .computeLabel=${localizeExtraFieldsComputeLabelCallback(
-                this.hass,
-                this.action
-              )}
-              .computeHelper=${localizeExtraFieldsComputeHelperCallback(
-                this.hass,
-                this.action
+              .computeLabel=${this._extraFieldsComputeLabelCallback(
+                this.hass.localize
               )}
               @value-changed=${this._extraFieldsChanged}
             ></ha-form>
@@ -182,6 +150,14 @@ export class HaDeviceAction extends LitElement {
         ...ev.detail.value,
       },
     });
+  }
+
+  private _extraFieldsComputeLabelCallback(localize) {
+    // Returns a callback for ha-form to calculate labels per schema object
+    return (schema) =>
+      localize(
+        `ui.panel.config.automation.editor.actions.type.device_id.extra_fields.${schema.name}`
+      ) || schema.name;
   }
 
   static styles = css`

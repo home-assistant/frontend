@@ -1,28 +1,35 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+  nothing,
+} from "lit";
 import { customElement, state } from "lit/decorators";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-card";
-import type { HomeAssistant } from "../../../types";
+import { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
 import { findEntities } from "../common/find-entities";
 import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-entities-toggle";
 import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
 import { createRowElement } from "../create-element/create-row-element";
-import type {
+import {
   EntityConfig,
   LovelaceRow,
   LovelaceRowConfig,
 } from "../entity-rows/types";
-import type {
+import {
   LovelaceCard,
   LovelaceCardEditor,
   LovelaceHeaderFooter,
 } from "../types";
-import type { EntitiesCardConfig } from "./types";
+import { EntitiesCardConfig } from "./types";
 
 @customElement("hui-entities-card")
 class HuiEntitiesCard extends LitElement implements LovelaceCard {
@@ -213,7 +220,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
             `}
         <div id="states" class="card-content">
           ${this._configEntities!.map((entityConf) =>
-            this._renderEntity(entityConf)
+            this.renderEntity(entityConf)
           )}
         </div>
 
@@ -287,7 +294,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _renderEntity(entityConf: LovelaceRowConfig): TemplateResult {
+  private renderEntity(entityConf: LovelaceRowConfig): TemplateResult {
     const element = createRowElement(
       (!("type" in entityConf) || entityConf.type === "conditional") &&
         "state_color" in this._config!
@@ -295,9 +302,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
             state_color: this._config.state_color,
             ...(entityConf as EntityConfig),
           } as EntityConfig)
-        : entityConf.type === "perform-action"
-          ? { ...entityConf, type: "call-service" }
-          : entityConf
+        : entityConf
     );
     if (this._hass) {
       element.hass = this._hass;

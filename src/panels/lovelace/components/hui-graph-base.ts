@@ -1,5 +1,12 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement, svg } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  svg,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { strokeWidth } from "../../../data/graph";
 import { getPath } from "../common/graph/get-path";

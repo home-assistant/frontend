@@ -1,5 +1,5 @@
-import type { HomeAssistant } from "../../../../types";
-import type { Condition } from "../../common/validate-condition";
+import { HomeAssistant } from "../../../../types";
+import { Condition } from "../../common/validate-condition";
 
 export interface LovelaceConditionEditorConstructor {
   defaultConfig?: Condition;

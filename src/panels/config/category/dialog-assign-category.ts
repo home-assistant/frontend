@@ -1,6 +1,5 @@
 import "@material/mwc-button";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
@@ -10,9 +9,9 @@ import "../../../components/ha-settings-row";
 import "../../../components/ha-textfield";
 import { updateEntityRegistryEntry } from "../../../data/entity_registry";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
+import { HomeAssistant } from "../../../types";
 import "./ha-category-picker";
-import type { AssignCategoryDialogParams } from "./show-dialog-assign-category";
+import { AssignCategoryDialogParams } from "./show-dialog-assign-category";
 
 @customElement("dialog-assign-category")
 class DialogAssignCategory extends LitElement {

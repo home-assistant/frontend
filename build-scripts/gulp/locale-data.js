@@ -24,11 +24,8 @@ const convertToJSON = async (
 ) => {
   let localeData;
   try {
-    // use "pt" for "pt-BR", because "pt-BR" is unsupported by @formatjs
-    const language = lang === "pt-BR" ? "pt" : lang;
-
     localeData = await readFile(
-      join(formatjsDir, pkg, subDir, `${language}.js`),
+      join(formatjsDir, pkg, subDir, `${lang}.js`),
       "utf-8"
     );
   } catch (e) {

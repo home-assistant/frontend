@@ -1,4 +1,4 @@
-import type { HassEntity } from "home-assistant-js-websocket";
+import { HassEntity } from "home-assistant-js-websocket";
 
 export const attributeClassNames = (
   stateObj: HassEntity,

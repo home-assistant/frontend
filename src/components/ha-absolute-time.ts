@@ -1,6 +1,5 @@
 import { addDays, differenceInMilliseconds, startOfDay } from "date-fns";
-import type { PropertyValues } from "lit";
-import { ReactiveElement } from "lit";
+import { PropertyValues, ReactiveElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { absoluteTime } from "../common/datetime/absolute_time";
 import type { HomeAssistant } from "../types";

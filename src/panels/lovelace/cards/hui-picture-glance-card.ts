@@ -1,5 +1,12 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
@@ -10,10 +17,9 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-state-icon";
-import type { ImageEntity } from "../../../data/image";
-import { computeImageUrl } from "../../../data/image";
-import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import type { HomeAssistant } from "../../../types";
+import { computeImageUrl, ImageEntity } from "../../../data/image";
+import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
@@ -23,12 +29,8 @@ import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-image";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import "../components/hui-warning-element";
-import type { LovelaceCard, LovelaceCardEditor } from "../types";
-import type {
-  PictureGlanceCardConfig,
-  PictureGlanceEntityConfig,
-} from "./types";
-import type { PersonEntity } from "../../../data/person";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
+import { PictureGlanceCardConfig, PictureGlanceEntityConfig } from "./types";
 
 const STATES_OFF = new Set(["closed", "locked", "not_home", "off"]);
 
@@ -181,21 +183,9 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
-    let image: string | undefined = this._config.image;
+    let stateObj: ImageEntity | undefined;
     if (this._config.image_entity) {
-      const stateObj: ImageEntity | PersonEntity | undefined =
-        this.hass.states[this._config.image_entity];
-      const domain: string = computeDomain(this._config.image_entity);
-      switch (domain) {
-        case "image":
-          image = computeImageUrl(stateObj as ImageEntity);
-          break;
-        case "person":
-          if ((stateObj as PersonEntity).attributes.entity_picture) {
-            image = (stateObj as PersonEntity).attributes.entity_picture;
-          }
-          break;
-      }
+      stateObj = this.hass.states[this._config.image_entity] as ImageEntity;
     }
 
     return html`
@@ -219,7 +209,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
           )}
           .config=${this._config}
           .hass=${this.hass}
-          .image=${image}
+          .image=${stateObj ? computeImageUrl(stateObj) : this._config.image}
           .stateImage=${this._config.state_image}
           .stateFilter=${this._config.state_filter}
           .cameraImage=${this._config.camera_image}
@@ -233,12 +223,12 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
             : ""}
           <div class="row">
             ${this._entitiesDialog!.map((entityConf) =>
-              this._renderEntity(entityConf, true)
+              this.renderEntity(entityConf, true)
             )}
           </div>
           <div class="row">
             ${this._entitiesToggle!.map((entityConf) =>
-              this._renderEntity(entityConf, false)
+              this.renderEntity(entityConf, false)
             )}
           </div>
         </div>
@@ -246,7 +236,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _renderEntity(
+  private renderEntity(
     entityConf: PictureGlanceEntityConfig,
     dialog: boolean
   ): TemplateResult {

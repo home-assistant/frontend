@@ -1,14 +1,20 @@
-import type { CSSResultGroup, SVGTemplateResult } from "lit";
-import { css, LitElement, nothing, svg } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  LitElement,
+  nothing,
+  svg,
+  SVGTemplateResult,
+} from "lit";
 import { customElement, property } from "lit/decorators";
 
 @customElement("ha-svg-icon")
 export class HaSvgIcon extends LitElement {
   @property() public path?: string;
 
-  @property({ attribute: false }) public secondaryPath?: string;
+  @property() public secondaryPath?: string;
 
-  @property({ attribute: false }) public viewBox?: string;
+  @property() public viewBox?: string;
 
   protected render(): SVGTemplateResult {
     return svg`

@@ -1,26 +1,21 @@
-import "@material/mwc-tab-bar/mwc-tab-bar";
-import "@material/mwc-tab/mwc-tab";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, nothing } from "lit";
+import "@polymer/paper-tabs/paper-tab";
+import "@polymer/paper-tabs/paper-tabs";
+import { CSSResultGroup, TemplateResult, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import { getCardElementClass } from "../../create-element/create-card-element";
 import type { LovelaceCardEditor, LovelaceConfigForm } from "../../types";
-import { HuiTypedElementEditor } from "../hui-typed-element-editor";
-import "./hui-card-layout-editor";
+import { HuiElementEditor } from "../hui-element-editor";
 import "./hui-card-visibility-editor";
-import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 
-const tabs = ["config", "visibility", "layout"] as const;
+const TABS = ["config", "visibility"] as const;
 
 @customElement("hui-card-element-editor")
-export class HuiCardElementEditor extends HuiTypedElementEditor<LovelaceCardConfig> {
+export class HuiCardElementEditor extends HuiElementEditor<LovelaceCardConfig> {
+  @state() private _curTab: (typeof TABS)[number] = TABS[0];
+
   @property({ type: Boolean, attribute: "show-visibility-tab" })
   public showVisibilityTab = false;
-
-  @property({ attribute: false }) public sectionConfig?: LovelaceSectionConfig;
-
-  @state() private _currTab: (typeof tabs)[number] = tabs[0];
 
   protected async getConfigElement(): Promise<LovelaceCardEditor | undefined> {
     const elClass = await getCardElementClass(this.configElementType!);
@@ -44,29 +39,24 @@ export class HuiCardElementEditor extends HuiTypedElementEditor<LovelaceCardConf
     return undefined;
   }
 
+  private _handleTabSelected(ev: CustomEvent): void {
+    if (!ev.detail.value) {
+      return;
+    }
+    this._curTab = ev.detail.value.id;
+  }
+
   private _configChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     this.value = ev.detail.value;
   }
 
-  get _showLayoutTab(): boolean {
-    return (
-      !!this.sectionConfig &&
-      (this.sectionConfig.type === undefined ||
-        this.sectionConfig.type === "grid")
-    );
-  }
-
   protected renderConfigElement(): TemplateResult {
-    const displayedTabs: string[] = ["config"];
-    if (this.showVisibilityTab) displayedTabs.push("visibility");
-    if (this._showLayoutTab) displayedTabs.push("layout");
-
-    if (displayedTabs.length === 1) return super.renderConfigElement();
+    if (!this.showVisibilityTab) return super.renderConfigElement();
 
     let content: TemplateResult<1> | typeof nothing = nothing;
 
-    switch (this._currTab) {
+    switch (this._curTab) {
       case "config":
         content = html`${super.renderConfigElement()}`;
         break;
@@ -79,50 +69,35 @@ export class HuiCardElementEditor extends HuiTypedElementEditor<LovelaceCardConf
           ></hui-card-visibility-editor>
         `;
         break;
-      case "layout":
-        content = html`
-          <hui-card-layout-editor
-            .hass=${this.hass}
-            .config=${this.value}
-            .sectionConfig=${this.sectionConfig!}
-            @value-changed=${this._configChanged}
-          >
-          </hui-card-layout-editor>
-        `;
     }
     return html`
-      <mwc-tab-bar
-        .activeIndex=${tabs.indexOf(this._currTab)}
-        @MDCTabBar:activated=${this._handleTabChanged}
+      <paper-tabs
+        scrollable
+        hide-scroll-buttons
+        .selected=${TABS.indexOf(this._curTab)}
+        @selected-item-changed=${this._handleTabSelected}
       >
-        ${displayedTabs.map(
-          (tab) => html`
-            <mwc-tab
-              .label=${this.hass.localize(
-                `ui.panel.lovelace.editor.edit_card.tab_${tab}`
+        ${TABS.map(
+          (tab, index) => html`
+            <paper-tab id=${tab} .dialogInitialFocus=${index === 0}>
+              ${this.hass.localize(
+                `ui.panel.lovelace.editor.edit_card.tab-${tab}`
               )}
-            >
-            </mwc-tab>
+            </paper-tab>
           `
         )}
-      </mwc-tab-bar>
+      </paper-tabs>
       ${content}
     `;
   }
 
-  private _handleTabChanged(ev: CustomEvent): void {
-    const newTab = tabs[ev.detail.index];
-    if (newTab === this._currTab) {
-      return;
-    }
-    this._currTab = newTab;
-  }
-
   static get styles(): CSSResultGroup {
     return [
-      HuiTypedElementEditor.styles,
+      HuiElementEditor.styles,
       css`
-        mwc-tab-bar {
+        paper-tabs {
+          --paper-tabs-selection-bar-color: var(--primary-color);
+          color: var(--primary-text-color);
           text-transform: uppercase;
           margin-bottom: 16px;
           border-bottom: 1px solid var(--divider-color);

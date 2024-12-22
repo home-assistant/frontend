@@ -18,25 +18,31 @@ import {
   mdiTextureBox,
 } from "@mdi/js";
 import { differenceInDays } from "date-fns";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { storage } from "../../../common/decorators/storage";
-import type { HASSDomEvent } from "../../../common/dom/fire_event";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { HASSDomEvent, fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
-import type { LocalizeFunc } from "../../../common/translations/localize";
+import { LocalizeFunc } from "../../../common/translations/localize";
 import {
   hasRejectedItems,
   rejectedItems,
 } from "../../../common/util/promise-all-settled-results";
-import type {
+import {
   DataTableColumnContainer,
   RowClickedEvent,
   SelectionChangedEvent,
@@ -44,7 +50,6 @@ import type {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-button";
-import "../../../components/ha-md-divider";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-categories";
 import "../../../components/ha-filter-devices";
@@ -53,36 +58,31 @@ import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
-import "../../../components/ha-md-menu-item";
+import "../../../components/ha-menu-item";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
 import { createAreaRegistryEntry } from "../../../data/area_registry";
-import type { CategoryRegistryEntry } from "../../../data/category_registry";
 import {
+  CategoryRegistryEntry,
   createCategoryRegistryEntry,
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
 import { fullEntitiesContext } from "../../../data/context";
-import type { DataTableFilters } from "../../../data/data_table_filters";
-import {
-  deserializeFilters,
-  serializeFilters,
-} from "../../../data/data_table_filters";
 import { isUnavailableState } from "../../../data/entity";
-import type {
+import {
   EntityRegistryEntry,
   UpdateEntityRegistryEntryResult,
+  updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
-import { updateEntityRegistryEntry } from "../../../data/entity_registry";
 import { forwardHaptic } from "../../../data/haptics";
-import type { LabelRegistryEntry } from "../../../data/label_registry";
 import {
+  LabelRegistryEntry,
   createLabelRegistryEntry,
   subscribeLabelRegistry,
 } from "../../../data/label_registry";
-import type { SceneEntity } from "../../../data/scene";
 import {
+  SceneEntity,
   activateScene,
   deleteScene,
   getSceneConfig,
@@ -96,7 +96,7 @@ import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../types";
+import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry-detail";
@@ -104,6 +104,11 @@ import { showAssignCategoryDialog } from "../category/show-dialog-assign-categor
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
+import {
+  serializeFilters,
+  deserializeFilters,
+  DataTableFilters,
+} from "../../../data/data_table_filters";
 
 type SceneItem = SceneEntity & {
   name: string;
@@ -118,7 +123,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+  @property({ type: Boolean }) public isWide = false;
 
   @property({ attribute: false }) public route!: Route;
 
@@ -175,20 +180,6 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
   })
   private _activeCollapsed?: string;
 
-  @storage({
-    key: "scene-table-column-order",
-    state: false,
-    subscribe: false,
-  })
-  private _activeColumnOrder?: string[];
-
-  @storage({
-    key: "scene-table-hidden-columns",
-    state: false,
-    subscribe: false,
-  })
-  private _activeHiddenColumns?: string[];
-
   private _sizeController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width,
   });
@@ -234,13 +225,11 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
   );
 
   private _columns = memoizeOne(
-    (localize: LocalizeFunc): DataTableColumnContainer => {
+    (narrow, localize: LocalizeFunc): DataTableColumnContainer => {
       const columns: DataTableColumnContainer<SceneItem> = {
         icon: {
           title: "",
-          label: localize("ui.panel.config.scene.picker.headers.icon"),
-          moveable: false,
-          showNarrow: true,
+          label: localize("ui.panel.config.scene.picker.headers.state"),
           type: "icon",
           template: (scene) => html`
             <ha-state-icon
@@ -255,14 +244,16 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           sortable: true,
           filterable: true,
           direction: "asc",
-          flex: 2,
-          extraTemplate: (scene) =>
-            scene.labels.length
+          grows: true,
+          template: (scene) => html`
+            <div style="font-size: 14px;">${scene.name}</div>
+            ${scene.labels.length
               ? html`<ha-data-table-labels
                   @label-clicked=${this._labelClicked}
                   .labels=${scene.labels}
                 ></ha-data-table-labels>`
-              : nothing,
+              : nothing}
+          `,
         },
         area: {
           title: localize("ui.panel.config.scene.picker.headers.area"),
@@ -289,6 +280,8 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
             "ui.panel.config.scene.picker.headers.last_activated"
           ),
           sortable: true,
+          width: "30%",
+          hidden: narrow,
           template: (scene) => {
             const lastActivated = scene.state;
             if (!lastActivated || isUnavailableState(lastActivated)) {
@@ -306,11 +299,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         },
         only_editable: {
           title: "",
-          label: this.hass.localize(
-            "ui.panel.config.scene.picker.headers.editable"
-          ),
-          type: "icon",
-          showNarrow: true,
+          width: "56px",
           template: (scene) =>
             !scene.attributes.id
               ? html`
@@ -328,23 +317,13 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         },
         actions: {
           title: "",
-          label: this.hass.localize("ui.panel.config.generic.headers.actions"),
+          width: "64px",
           type: "overflow-menu",
-          showNarrow: true,
-          moveable: false,
-          hideable: false,
           template: (scene) => html`
             <ha-icon-overflow-menu
               .hass=${this.hass}
               narrow
               .items=${[
-                {
-                  path: mdiPlay,
-                  label: this.hass.localize(
-                    "ui.panel.config.scene.picker.apply"
-                  ),
-                  action: () => this._activateScene(scene),
-                },
                 {
                   path: mdiInformationOutline,
                   label: this.hass.localize(
@@ -358,6 +337,13 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                     "ui.panel.config.automation.picker.show_settings"
                   ),
                   action: () => this._openSettings(scene),
+                },
+                {
+                  path: mdiPlay,
+                  label: this.hass.localize(
+                    "ui.panel.config.scene.picker.activate"
+                  ),
+                  action: () => this._activateScene(scene),
                 },
                 {
                   path: mdiTag,
@@ -418,7 +404,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
   protected render(): TemplateResult {
     const categoryItems = html`${this._categories?.map(
         (category) =>
-          html`<ha-md-menu-item
+          html`<ha-menu-item
             .value=${category.category_id}
             @click=${this._handleBulkCategory}
           >
@@ -426,21 +412,21 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
               ? html`<ha-icon slot="start" .icon=${category.icon}></ha-icon>`
               : html`<ha-svg-icon slot="start" .path=${mdiTag}></ha-svg-icon>`}
             <div slot="headline">${category.name}</div>
-          </ha-md-menu-item>`
+          </ha-menu-item>`
       )}
-      <ha-md-menu-item .value=${null} @click=${this._handleBulkCategory}>
+      <ha-menu-item .value=${null} @click=${this._handleBulkCategory}>
         <div slot="headline">
           ${this.hass.localize(
             "ui.panel.config.automation.picker.bulk_actions.no_category"
           )}
         </div>
-      </ha-md-menu-item>
-      <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-      <ha-md-menu-item @click=${this._bulkCreateCategory}>
+      </ha-menu-item>
+      <md-divider role="separator" tabindex="-1"></md-divider>
+      <ha-menu-item @click=${this._bulkCreateCategory}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.category.editor.add")}
         </div>
-      </ha-md-menu-item>`;
+      </ha-menu-item>`;
 
     const labelItems = html` ${this._labels?.map((label) => {
         const color = label.color ? computeCssColor(label.color) : undefined;
@@ -452,7 +438,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           this._selected.some((entityId) =>
             this.hass.entities[entityId]?.labels.includes(label.label_id)
           );
-        return html`<ha-md-menu-item
+        return html`<ha-menu-item
           .value=${label.label_id}
           .action=${selected ? "remove" : "add"}
           @click=${this._handleBulkLabel}
@@ -470,18 +456,18 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
               : nothing}
             ${label.name}
           </ha-label>
-        </ha-md-menu-item>`;
+        </ha-menu-item>`;
       })}
-      <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-      <ha-md-menu-item @click=${this._bulkCreateLabel}>
+      <md-divider role="separator" tabindex="-1"></md-divider>
+      <ha-menu-item @click=${this._bulkCreateLabel}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.labels.add_label")}
-        </div></ha-md-menu-item
+        </div></ha-menu-item
       >`;
 
     const areaItems = html`${Object.values(this.hass.areas).map(
         (area) =>
-          html`<ha-md-menu-item
+          html`<ha-menu-item
             .value=${area.area_id}
             @click=${this._handleBulkArea}
           >
@@ -492,23 +478,23 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                   .path=${mdiTextureBox}
                 ></ha-svg-icon>`}
             <div slot="headline">${area.name}</div>
-          </ha-md-menu-item>`
+          </ha-menu-item>`
       )}
-      <ha-md-menu-item .value=${null} @click=${this._handleBulkArea}>
+      <ha-menu-item .value=${null} @click=${this._handleBulkArea}>
         <div slot="headline">
           ${this.hass.localize(
             "ui.panel.config.devices.picker.bulk_actions.no_area"
           )}
         </div>
-      </ha-md-menu-item>
-      <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-      <ha-md-menu-item @click=${this._bulkCreateArea}>
+      </ha-menu-item>
+      <md-divider role="separator" tabindex="-1"></md-divider>
+      <ha-menu-item @click=${this._bulkCreateArea}>
         <div slot="headline">
           ${this.hass.localize(
             "ui.panel.config.devices.picker.bulk_actions.add_area"
           )}
         </div>
-      </ha-md-menu-item>`;
+      </ha-menu-item>`;
 
     const areasInOverflow =
       (this._sizeController.value && this._sizeController.value < 900) ||
@@ -541,7 +527,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         selectable
         .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}
-        has-filters
+        hasFilters
         .filters=${Object.values(this._filters).filter((filter) =>
           Array.isArray(filter.value)
             ? filter.value.length
@@ -550,14 +536,11 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                 Array.isArray(val) ? val.length : val
               )
         ).length}
-        .columns=${this._columns(this.hass.localize)}
+        .columns=${this._columns(this.narrow, this.hass.localize)}
         id="entity_id"
         .initialGroupColumn=${this._activeGrouping || "category"}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._activeSorting}
-        .columnOrder=${this._activeColumnOrder}
-        .hiddenColumns=${this._activeHiddenColumns}
-        @columns-changed=${this._handleColumnsChanged}
         @sorting-changed=${this._handleSortingChanged}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
@@ -570,7 +553,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         @clear-filter=${this._clearFilter}
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
-        has-fab
+        hasFab
         clickable
         @row-click=${this._handleRowClicked}
       >
@@ -632,7 +615,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         ></ha-filter-categories>
 
         ${!this.narrow
-          ? html`<ha-md-button-menu slot="selection-bar">
+          ? html`<ha-button-menu-new slot="selection-bar">
                 <ha-assist-chip
                   slot="trigger"
                   .label=${this.hass.localize(
@@ -645,10 +628,10 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                   ></ha-svg-icon>
                 </ha-assist-chip>
                 ${categoryItems}
-              </ha-md-button-menu>
+              </ha-button-menu-new>
               ${labelsInOverflow
                 ? nothing
-                : html`<ha-md-button-menu slot="selection-bar">
+                : html`<ha-button-menu-new slot="selection-bar">
                     <ha-assist-chip
                       slot="trigger"
                       .label=${this.hass.localize(
@@ -661,10 +644,10 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                       ></ha-svg-icon>
                     </ha-assist-chip>
                     ${labelItems}
-                  </ha-md-button-menu>`}
+                  </ha-button-menu-new>`}
               ${areasInOverflow
                 ? nothing
-                : html`<ha-md-button-menu slot="selection-bar">
+                : html`<ha-button-menu-new slot="selection-bar">
                     <ha-assist-chip
                       slot="trigger"
                       .label=${this.hass.localize(
@@ -677,11 +660,11 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                       ></ha-svg-icon>
                     </ha-assist-chip>
                     ${areaItems}
-                  </ha-md-button-menu>`}`
+                  </ha-button-menu-new>`}`
           : nothing}
         ${this.narrow || areasInOverflow
           ? html`
-          <ha-md-button-menu has-overflow slot="selection-bar">
+          <ha-button-menu-new has-overflow slot="selection-bar">
             ${
               this.narrow
                 ? html`<ha-assist-chip
@@ -709,7 +692,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
             ${
               this.narrow
                 ? html`<ha-sub-menu>
-                    <ha-md-menu-item slot="item">
+                    <ha-menu-item slot="item">
                       <div slot="headline">
                         ${this.hass.localize(
                           "ui.panel.config.automation.picker.bulk_actions.move_category"
@@ -719,7 +702,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                         slot="end"
                         .path=${mdiChevronRight}
                       ></ha-svg-icon>
-                    </ha-md-menu-item>
+                    </ha-menu-item>
                     <ha-menu slot="menu">${categoryItems}</ha-menu>
                   </ha-sub-menu>`
                 : nothing
@@ -727,7 +710,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
             ${
               this.narrow || labelsInOverflow
                 ? html`<ha-sub-menu>
-                    <ha-md-menu-item slot="item">
+                    <ha-menu-item slot="item">
                       <div slot="headline">
                         ${this.hass.localize(
                           "ui.panel.config.automation.picker.bulk_actions.add_label"
@@ -737,7 +720,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                         slot="end"
                         .path=${mdiChevronRight}
                       ></ha-svg-icon>
-                    </ha-md-menu-item>
+                    </ha-menu-item>
                     <ha-menu slot="menu">${labelItems}</ha-menu>
                   </ha-sub-menu>`
                 : nothing
@@ -745,7 +728,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
             ${
               this.narrow || areasInOverflow
                 ? html`<ha-sub-menu>
-                    <ha-md-menu-item slot="item">
+                    <ha-menu-item slot="item">
                       <div slot="headline">
                         ${this.hass.localize(
                           "ui.panel.config.devices.picker.bulk_actions.move_area"
@@ -755,12 +738,12 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                         slot="end"
                         .path=${mdiChevronRight}
                       ></ha-svg-icon>
-                    </ha-md-menu-item>
+                    </ha-menu-item>
                     <ha-menu slot="menu">${areaItems}</ha-menu>
                   </ha-sub-menu>`
                 : nothing
             }
-          </ha-md-button-menu>`
+          </ha-button-menu-new>`
           : nothing}
         ${!this.scenes.length
           ? html`<div class="empty" slot="empty">
@@ -1172,11 +1155,6 @@ ${rejected
     this._filter = ev.detail.value;
   }
 
-  private _handleColumnsChanged(ev: CustomEvent) {
-    this._activeColumnOrder = ev.detail.columnOrder;
-    this._activeHiddenColumns = ev.detail.hiddenColumns;
-  }
-
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -1199,7 +1177,7 @@ ${rejected
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;
         }
-        ha-md-button-menu ha-assist-chip {
+        ha-button-menu-new ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;
         }
         ha-label {

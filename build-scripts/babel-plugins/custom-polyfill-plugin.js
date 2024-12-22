@@ -5,7 +5,7 @@ import paths from "../paths.cjs";
 const POLYFILL_DIR = join(paths.polymer_dir, "src/resources/polyfills");
 
 // List of polyfill keys with supported browser targets for the functionality
-const polyfillSupport = {
+const PolyfillSupport = {
   // Note states and shadowRoot properties should be supported.
   "element-internals": {
     android: 90,
@@ -17,6 +17,17 @@ const polyfillSupport = {
     opera_mobile: 64,
     safari: 17.4,
     samsung: 15.0,
+  },
+  "element-append": {
+    android: 54,
+    chrome: 54,
+    edge: 17,
+    firefox: 49,
+    ios: 10.0,
+    opera: 41,
+    opera_mobile: 41,
+    safari: 10.0,
+    samsung: 6.0,
   },
   "element-getattributenames": {
     android: 61,
@@ -40,18 +51,27 @@ const polyfillSupport = {
     safari: 12.0,
     samsung: 10.0,
   },
-  // FormatJS polyfill detects fix for https://bugs.chromium.org/p/v8/issues/detail?id=10682,
-  // so adjusted to several months after that was marked fixed
+  fetch: {
+    android: 42,
+    chrome: 42,
+    edge: 14,
+    firefox: 39,
+    ios: 10.3,
+    opera: 29,
+    opera_mobile: 29,
+    safari: 10.1,
+    samsung: 4.0,
+  },
   "intl-getcanonicallocales": {
-    android: 90,
-    chrome: 90,
-    edge: 90,
+    android: 54,
+    chrome: 54,
+    edge: 16,
     firefox: 48,
     ios: 10.3,
-    opera: 76,
-    opera_mobile: 64,
+    opera: 41,
+    opera_mobile: 41,
     safari: 10.1,
-    samsung: 15.0,
+    samsung: 6.0,
   },
   "intl-locale": {
     android: 74,
@@ -66,6 +86,17 @@ const polyfillSupport = {
   },
   "intl-other": {
     // Not specified (i.e. always try polyfill) since compatibility depends on supported locales
+  },
+  proxy: {
+    android: 49,
+    chrome: 49,
+    edge: 12,
+    firefox: 18,
+    ios: 10.0,
+    opera: 36,
+    opera_mobile: 36,
+    safari: 10.0,
+    samsung: 5.0,
   },
   "resize-observer": {
     android: 64,
@@ -84,6 +115,8 @@ const polyfillSupport = {
 // corresponding polyfill key and actual module to import
 const polyfillMap = {
   global: {
+    fetch: { key: "fetch", module: "unfetch/polyfill" },
+    Proxy: { key: "proxy", module: "proxy-polyfill" },
     ResizeObserver: {
       key: "resize-observer",
       module: join(POLYFILL_DIR, "resize-observer.ts"),
@@ -95,7 +128,7 @@ const polyfillMap = {
       module: "element-internals-polyfill",
     },
     ...Object.fromEntries(
-      ["getAttributeNames", "toggleAttribute"].map((prop) => {
+      ["append", "getAttributeNames", "toggleAttribute"].map((prop) => {
         const key = `element-${prop.toLowerCase()}`;
         return [prop, { key, module: join(POLYFILL_DIR, `${key}.ts`) }];
       })
@@ -114,7 +147,6 @@ const polyfillMap = {
       ...Object.fromEntries(
         [
           "DateTimeFormat",
-          "DurationFormat",
           "DisplayNames",
           "ListFormat",
           "NumberFormat",
@@ -135,7 +167,7 @@ export default defineProvider(
     const resolvePolyfill = createMetaResolver(polyfillMap);
     return {
       name: "custom-polyfill",
-      polyfills: polyfillSupport,
+      polyfills: PolyfillSupport,
       usageGlobal(meta, utils) {
         const polyfill = resolvePolyfill(meta);
         if (polyfill && shouldInjectPolyfill(polyfill.desc.key)) {

@@ -1,5 +1,4 @@
-import type { PropertyValues } from "lit";
-import { html, LitElement } from "lit";
+import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
@@ -135,7 +134,7 @@ export class HaNumericStateTrigger extends LitElement {
           },
         },
         {
-          name: "lower_limit",
+          name: "mode_above",
           type: "select",
           required: true,
           options: [
@@ -176,7 +175,7 @@ export class HaNumericStateTrigger extends LitElement {
               },
             ] as const)),
         {
-          name: "upper_limit",
+          name: "mode_below",
           type: "select",
           required: true,
           options: [
@@ -225,19 +224,6 @@ export class HaNumericStateTrigger extends LitElement {
   );
 
   public willUpdate(changedProperties: PropertyValues) {
-    this._inputAboveIsEntity =
-      this._inputAboveIsEntity ??
-      (typeof this.trigger.above === "string" &&
-        ((this.trigger.above as string).startsWith("input_number.") ||
-          (this.trigger.above as string).startsWith("number.") ||
-          (this.trigger.above as string).startsWith("sensor.")));
-    this._inputBelowIsEntity =
-      this._inputBelowIsEntity ??
-      (typeof this.trigger.below === "string" &&
-        ((this.trigger.below as string).startsWith("input_number.") ||
-          (this.trigger.below as string).startsWith("number.") ||
-          (this.trigger.below as string).startsWith("sensor.")));
-
     if (!changedProperties.has("trigger")) {
       return;
     }
@@ -251,40 +237,42 @@ export class HaNumericStateTrigger extends LitElement {
     }
   }
 
-  public static get defaultConfig(): NumericStateTrigger {
+  public static get defaultConfig() {
     return {
-      trigger: "numeric_state",
       entity_id: [],
     };
   }
 
-  private _data = memoizeOne(
-    (
-      inputAboveIsEntity: boolean,
-      inputBelowIsEntity: boolean,
-      trigger: NumericStateTrigger
-    ) => ({
-      lower_limit: inputAboveIsEntity ? "input" : "value",
-      upper_limit: inputBelowIsEntity ? "input" : "value",
-      ...trigger,
-      entity_id: ensureArray(trigger.entity_id),
-      for: createDurationData(trigger.for),
-    })
-  );
-
   public render() {
+    const trgFor = createDurationData(this.trigger.for);
+
+    const inputAboveIsEntity =
+      this._inputAboveIsEntity ??
+      (typeof this.trigger.above === "string" &&
+        ((this.trigger.above as string).startsWith("input_number.") ||
+          (this.trigger.above as string).startsWith("number.") ||
+          (this.trigger.above as string).startsWith("sensor.")));
+    const inputBelowIsEntity =
+      this._inputBelowIsEntity ??
+      (typeof this.trigger.below === "string" &&
+        ((this.trigger.below as string).startsWith("input_number.") ||
+          (this.trigger.below as string).startsWith("number.") ||
+          (this.trigger.below as string).startsWith("sensor.")));
+
     const schema = this._schema(
       this.hass.localize,
       this.trigger.entity_id,
-      this._inputAboveIsEntity,
-      this._inputBelowIsEntity
+      inputAboveIsEntity,
+      inputBelowIsEntity
     );
 
-    const data = this._data(
-      this._inputAboveIsEntity!,
-      this._inputBelowIsEntity!,
-      this.trigger
-    );
+    const data = {
+      mode_above: inputAboveIsEntity ? "input" : "value",
+      mode_below: inputBelowIsEntity ? "input" : "value",
+      ...this.trigger,
+      entity_id: ensureArray(this.trigger.entity_id),
+      for: trgFor,
+    };
 
     return html`
       <ha-form
@@ -300,13 +288,13 @@ export class HaNumericStateTrigger extends LitElement {
 
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    const newTrigger = { ...ev.detail.value };
+    const newTrigger = ev.detail.value;
 
-    this._inputAboveIsEntity = newTrigger.lower_limit === "input";
-    this._inputBelowIsEntity = newTrigger.upper_limit === "input";
+    this._inputAboveIsEntity = newTrigger.mode_above === "input";
+    this._inputBelowIsEntity = newTrigger.mode_below === "input";
 
-    delete newTrigger.lower_limit;
-    delete newTrigger.upper_limit;
+    delete newTrigger.mode_above;
+    delete newTrigger.mode_below;
 
     if (newTrigger.value_template === "") {
       delete newTrigger.value_template;

@@ -1,5 +1,4 @@
-import type { TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
+import { LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 
 @customElement("ha-tree-indicator")

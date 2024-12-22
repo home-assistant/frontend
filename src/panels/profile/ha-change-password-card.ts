@@ -1,11 +1,16 @@
 import "@material/mwc-button";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-card";
 import "../../components/ha-circular-progress";
 import "../../components/ha-textfield";
-import "../../components/ha-password-field";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../../components/ha-alert";
@@ -13,7 +18,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
-import type { RefreshToken } from "../../data/refresh_token";
+import { RefreshToken } from "../../data/refresh_token";
 import { changePassword, deleteAllRefreshTokens } from "../../data/auth";
 
 @customElement("ha-change-password-card")
@@ -47,44 +52,44 @@ class HaChangePasswordCard extends LitElement {
             ? html`<ha-alert alert-type="success">${this._statusMsg}</ha-alert>`
             : ""}
 
-          <ha-password-field
+          <ha-textfield
             id="currentPassword"
             name="currentPassword"
             .label=${this.hass.localize(
               "ui.panel.profile.change_password.current_password"
             )}
+            type="password"
             autocomplete="current-password"
             .value=${this._currentPassword}
             @input=${this._currentPasswordChanged}
-            @change=${this._currentPasswordChanged}
             required
-          ></ha-password-field>
+          ></ha-textfield>
 
           ${this._currentPassword
-            ? html`<ha-password-field
+            ? html`<ha-textfield
                   .label=${this.hass.localize(
                     "ui.panel.profile.change_password.new_password"
                   )}
                   name="password"
+                  type="password"
                   autocomplete="new-password"
                   .value=${this._password}
-                  @input=${this._newPasswordChanged}
                   @change=${this._newPasswordChanged}
                   required
-                  autoValidate
-                ></ha-password-field>
-                <ha-password-field
+                  auto-validate
+                ></ha-textfield>
+                <ha-textfield
                   .label=${this.hass.localize(
                     "ui.panel.profile.change_password.confirm_new_password"
                   )}
                   name="passwordConfirm"
+                  type="password"
                   autocomplete="new-password"
                   .value=${this._passwordConfirm}
                   @input=${this._newPasswordConfirmChanged}
-                  @change=${this._newPasswordConfirmChanged}
                   required
-                  autoValidate
-                ></ha-password-field>`
+                  auto-validate
+                ></ha-textfield>`
             : ""}
         </div>
 

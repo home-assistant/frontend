@@ -2,7 +2,7 @@ import type { Selector } from "../../data/selector";
 import type { HaFormSchema } from "./types";
 
 export const computeInitialHaFormData = (
-  schema: HaFormSchema[] | readonly HaFormSchema[]
+  schema: HaFormSchema[]
 ): Record<string, any> => {
   const data = {};
   schema.forEach((field) => {
@@ -36,8 +36,6 @@ export const computeInitialHaFormData = (
         minutes: 0,
         seconds: 0,
       };
-    } else if (field.type === "expandable") {
-      data[field.name] = computeInitialHaFormData(field.schema);
     } else if ("selector" in field) {
       const selector: Selector = field.selector;
 
@@ -47,8 +45,6 @@ export const computeInitialHaFormData = (
         data[field.name] = selector.entity?.multiple ? [] : "";
       } else if ("area" in selector) {
         data[field.name] = selector.area?.multiple ? [] : "";
-      } else if ("label" in selector) {
-        data[field.name] = selector.label?.multiple ? [] : "";
       } else if ("boolean" in selector) {
         data[field.name] = false;
       } else if (
@@ -96,11 +92,9 @@ export const computeInitialHaFormData = (
         data[field.name] = selector.color_temp?.min_mireds ?? 153;
       } else if (
         "action" in selector ||
-        "trigger" in selector ||
-        "condition" in selector
+        "media" in selector ||
+        "target" in selector
       ) {
-        data[field.name] = [];
-      } else if ("media" in selector || "target" in selector) {
         data[field.name] = {};
       } else {
         throw new Error(

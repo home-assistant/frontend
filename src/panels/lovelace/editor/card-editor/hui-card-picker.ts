@@ -1,7 +1,13 @@
-import type { IFuseOptions } from "fuse.js";
-import Fuse from "fuse.js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import Fuse, { IFuseOptions } from "fuse.js";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
@@ -10,20 +16,18 @@ import memoizeOne from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
-import { stripDiacritics } from "../../../../common/string/strip-diacritics";
 import "../../../../components/ha-circular-progress";
 import "../../../../components/search-input";
 import { isUnavailableState } from "../../../../data/entity";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
-import type { CustomCardEntry } from "../../../../data/lovelace_custom_cards";
 import {
   CUSTOM_TYPE_PREFIX,
+  CustomCardEntry,
   customCards,
   getCustomCardEntry,
 } from "../../../../data/lovelace_custom_cards";
 import type { HomeAssistant } from "../../../../types";
-import { getStripDiacriticsFn } from "../../../../util/fuse";
 import {
   calcUnusedEntities,
   computeUsedEntities,
@@ -46,7 +50,7 @@ export class HuiCardPicker extends LitElement {
   @property({ attribute: false }) public suggestedCards?: string[];
 
   @storage({
-    key: "dashboardCardClipboard",
+    key: "lovelaceClipboard",
     state: true,
     subscribe: true,
     storage: "sessionStorage",
@@ -69,16 +73,6 @@ export class HuiCardPicker extends LitElement {
 
   private _usedEntities?: string[];
 
-  public async focus(): Promise<void> {
-    const searchInput = this.renderRoot.querySelector("search-input");
-    if (searchInput) {
-      searchInput.focus();
-    } else {
-      await this.updateComplete;
-      this.focus();
-    }
-  }
-
   private _filterCards = memoizeOne(
     (cardElements: CardElement[], filter?: string): CardElement[] => {
       if (!filter) {
@@ -92,10 +86,9 @@ export class HuiCardPicker extends LitElement {
         isCaseSensitive: false,
         minMatchCharLength: Math.min(filter.length, 2),
         threshold: 0.2,
-        getFn: getStripDiacriticsFn,
       };
       const fuse = new Fuse(cards, options);
-      cards = fuse.search(stripDiacritics(filter)).map((result) => result.item);
+      cards = fuse.search(filter).map((result) => result.item);
       return cardElements.filter((cardElement: CardElement) =>
         cards.includes(cardElement.card)
       );
@@ -494,7 +487,7 @@ export class HuiCardPicker extends LitElement {
         .cards-container {
           display: grid;
           grid-gap: 8px 8px;
-          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
           margin-top: 20px;
         }
 
@@ -513,7 +506,7 @@ export class HuiCardPicker extends LitElement {
         }
 
         .card-header {
-          color: var(--ha-card-header-color, var(--primary-text-color));
+          color: var(--ha-card-header-color, --primary-text-color);
           font-family: var(--ha-card-header-font-family, inherit);
           font-size: 16px;
           font-weight: bold;
@@ -564,7 +557,6 @@ export class HuiCardPicker extends LitElement {
 
         .manual {
           max-width: none;
-          grid-column: 1 / -1;
         }
 
         .icon {

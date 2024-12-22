@@ -2,10 +2,10 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { forwardHaptic } from "../../../data/haptics";
 import { domainToName } from "../../../data/integration";
-import type { ActionConfig } from "../../../data/lovelace/config/action";
+import { ActionConfig } from "../../../data/lovelace/config/action";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { showVoiceCommandDialog } from "../../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
-import type { HomeAssistant } from "../../../types";
+import { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
 import { toggleEntity } from "./entity/toggle-entity";
 
@@ -56,12 +56,8 @@ export const handleAction = async (
     forwardHaptic("warning");
 
     let serviceName;
-    if (
-      actionConfig.action === "call-service" ||
-      actionConfig.action === "perform-action"
-    ) {
-      const [domain, service] = (actionConfig.perform_action ||
-        actionConfig.service)!.split(".", 2);
+    if (actionConfig.action === "call-service") {
+      const [domain, service] = actionConfig.service.split(".", 2);
       const serviceDomains = hass.services;
       if (domain in serviceDomains && service in serviceDomains[domain]) {
         await hass.loadBackendTranslation("title");
@@ -94,13 +90,12 @@ export const handleAction = async (
 
   switch (actionConfig.action) {
     case "more-info": {
-      const entityId =
-        actionConfig.entity ||
-        config.entity ||
-        config.camera_image ||
-        config.image_entity;
-      if (entityId) {
-        fireEvent(node, "hass-more-info", { entityId });
+      if (config.entity || config.camera_image || config.image_entity) {
+        fireEvent(node, "hass-more-info", {
+          entityId: (config.entity ||
+            config.camera_image ||
+            config.image_entity)!,
+        });
       } else {
         showToast(node, {
           message: hass.localize(
@@ -150,17 +145,15 @@ export const handleAction = async (
       }
       break;
     }
-    case "perform-action":
     case "call-service": {
-      if (!actionConfig.perform_action && !actionConfig.service) {
+      if (!actionConfig.service) {
         showToast(node, {
-          message: hass.localize("ui.panel.lovelace.cards.actions.no_action"),
+          message: hass.localize("ui.panel.lovelace.cards.actions.no_service"),
         });
         forwardHaptic("failure");
         return;
       }
-      const [domain, service] = (actionConfig.perform_action ||
-        actionConfig.service)!.split(".", 2);
+      const [domain, service] = actionConfig.service.split(".", 2);
       hass.callService(
         domain,
         service,

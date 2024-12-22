@@ -1,42 +1,37 @@
-import type { ActionDetail } from "@material/mwc-list";
+import { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiClose, mdiDotsVertical } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { atLeastVersion } from "../../../../src/common/config/version";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { stopPropagation } from "../../../../src/common/dom/stop_propagation";
 import { slugify } from "../../../../src/common/string/slugify";
-import "../../../../src/components/ha-md-dialog";
-import "../../../../src/components/ha-dialog-header";
+import "../../../../src/components/ha-dialog";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-alert";
-import "../../../../src/components/ha-button";
 import "../../../../src/components/ha-button-menu";
 import "../../../../src/components/ha-header-bar";
 import "../../../../src/components/ha-icon-button";
 import { getSignedPath } from "../../../../src/data/auth";
-import type { HassioBackupDetail } from "../../../../src/data/hassio/backup";
 import {
   fetchHassioBackupInfo,
+  HassioBackupDetail,
   removeBackup,
-  restoreBackup,
 } from "../../../../src/data/hassio/backup";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../src/dialogs/generic/show-dialog-box";
-import type { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
+import { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
-import type { HomeAssistant } from "../../../../src/types";
+import { HomeAssistant } from "../../../../src/types";
 import { fileDownload } from "../../../../src/util/file_download";
 import "../../components/supervisor-backup-content";
 import type { SupervisorBackupContent } from "../../components/supervisor-backup-content";
-import type { HassioBackupDialogParams } from "./show-dialog-hassio-backup";
-import type { BackupOrRestoreKey } from "../../util/translations";
-import type { HaMdDialog } from "../../../../src/components/ha-md-dialog";
+import { HassioBackupDialogParams } from "./show-dialog-hassio-backup";
+import { BackupOrRestoreKey } from "../../util/translations";
 
 @customElement("dialog-hassio-backup")
 class HassioBackupDialog
@@ -56,29 +51,18 @@ class HassioBackupDialog
   @query("supervisor-backup-content")
   private _backupContent!: SupervisorBackupContent;
 
-  @query("ha-md-dialog") private _dialog?: HaMdDialog;
-
   public async showDialog(dialogParams: HassioBackupDialogParams) {
-    this._dialogParams = dialogParams;
     this._backup = await fetchHassioBackupInfo(this.hass, dialogParams.slug);
-    if (!this._backup) {
-      this._error = this._localize("no_backup_found");
-    } else if (this._dialogParams.onboarding && !this._backup.homeassistant) {
-      this._error = this._localize("restore_no_home_assistant");
-    }
+    this._dialogParams = dialogParams;
     this._restoringBackup = false;
   }
 
-  private _dialogClosed(): void {
+  public closeDialog() {
     this._backup = undefined;
     this._dialogParams = undefined;
     this._restoringBackup = false;
     this._error = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-  }
-
-  public closeDialog(): void {
-    this._dialog?.close();
   }
 
   private _localize(key: BackupOrRestoreKey) {
@@ -93,78 +77,98 @@ class HassioBackupDialog
       return nothing;
     }
     return html`
-      <ha-md-dialog
+      <ha-dialog
         open
-        .disableCancelAction=${!this._error}
-        @closed=${this._dialogClosed}
+        scrimClickAction
+        @closed=${this.closeDialog}
+        .heading=${this._backup.name}
       >
-        <ha-dialog-header slot="headline">
-          <ha-icon-button
-            slot="navigationIcon"
-            .label=${this._localize("close")}
-            .path=${mdiClose}
-            @click=${this.closeDialog}
-            .disabled=${this._restoringBackup}
-          ></ha-icon-button>
-          <span slot="title" .title=${this._backup.name}
-            >${this._backup.name}</span
-          >
-          ${!this._dialogParams.onboarding && this._dialogParams.supervisor
-            ? html`<ha-button-menu
-                slot="actionItems"
-                fixed
-                @action=${this._handleMenuAction}
-                @closed=${stopPropagation}
+        <div slot="heading">
+          <ha-header-bar>
+            <span slot="title">${this._backup.name}</span>
+            <ha-icon-button
+              .label=${this._localize("close")}
+              .path=${mdiClose}
+              slot="actionItems"
+              dialogAction="cancel"
+            ></ha-icon-button>
+          </ha-header-bar>
+        </div>
+        ${this._restoringBackup
+          ? html`<ha-circular-progress indeterminate></ha-circular-progress>`
+          : html`
+              <supervisor-backup-content
+                .hass=${this.hass}
+                .supervisor=${this._dialogParams.supervisor}
+                .backup=${this._backup}
+                .onboarding=${this._dialogParams.onboarding || false}
+                .localize=${this._dialogParams.localize}
+                dialogInitialFocus
               >
-                <ha-icon-button
-                  .label=${this._dialogParams.supervisor.localize(
-                    "backup.more_actions"
-                  )}
-                  .path=${mdiDotsVertical}
-                  slot="trigger"
-                ></ha-icon-button>
-                <mwc-list-item
-                  >${this._dialogParams.supervisor.localize(
-                    "backup.download_backup"
-                  )}</mwc-list-item
-                >
-                <mwc-list-item class="error"
-                  >${this._dialogParams.supervisor.localize(
-                    "backup.delete_backup_title"
-                  )}</mwc-list-item
-                >
-              </ha-button-menu>`
-            : nothing}
-        </ha-dialog-header>
-        <div slot="content">
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : this._restoringBackup
-              ? html`<div class="loading">
-                  <ha-circular-progress indeterminate></ha-circular-progress>
-                </div>`
-              : html`
-                  <supervisor-backup-content
-                    .hass=${this.hass}
-                    .supervisor=${this._dialogParams.supervisor}
-                    .backup=${this._backup}
-                    .onboarding=${this._dialogParams.onboarding || false}
-                    .localize=${this._dialogParams.localize}
-                    dialogInitialFocus
-                  >
-                  </supervisor-backup-content>
-                `}
-        </div>
-        <div slot="actions">
-          <ha-button
-            .disabled=${this._restoringBackup || !!this._error}
-            @click=${this._restoreClicked}
-          >
-            ${this._localize("restore")}
-          </ha-button>
-        </div>
-      </ha-md-dialog>
+              </supervisor-backup-content>
+            `}
+        ${this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : nothing}
+
+        <mwc-button
+          .disabled=${this._restoringBackup}
+          slot="secondaryAction"
+          @click=${this._restoreClicked}
+        >
+          ${this._localize("restore")}
+        </mwc-button>
+
+        ${!this._dialogParams.onboarding && this._dialogParams.supervisor
+          ? html`<ha-button-menu
+              fixed
+              slot="primaryAction"
+              @action=${this._handleMenuAction}
+              @closed=${stopPropagation}
+            >
+              <ha-icon-button
+                .label=${this._dialogParams.supervisor.localize(
+                  "backup.more_actions"
+                )}
+                .path=${mdiDotsVertical}
+                slot="trigger"
+              ></ha-icon-button>
+              <mwc-list-item
+                >${this._dialogParams.supervisor.localize(
+                  "backup.download_backup"
+                )}</mwc-list-item
+              >
+              <mwc-list-item class="error"
+                >${this._dialogParams.supervisor.localize(
+                  "backup.delete_backup_title"
+                )}</mwc-list-item
+              >
+            </ha-button-menu>`
+          : nothing}
+      </ha-dialog>
     `;
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyle,
+      haStyleDialog,
+      css`
+        ha-circular-progress {
+          display: block;
+          text-align: center;
+        }
+        ha-header-bar {
+          --mdc-theme-on-primary: var(--primary-text-color);
+          --mdc-theme-primary: var(--mdc-theme-surface);
+          flex-shrink: 0;
+          display: block;
+        }
+        ha-icon-button {
+          color: var(--secondary-text-color);
+        }
+      `,
+    ];
   }
 
   private _handleMenuAction(ev: CustomEvent<ActionDetail>) {
@@ -179,9 +183,18 @@ class HassioBackupDialog
   }
 
   private async _restoreClicked() {
-    this._restoringBackup = true;
     const backupDetails = this._backupContent.backupDetails();
+    this._restoringBackup = true;
+    this._dialogParams?.onRestoring?.();
+    if (this._backupContent.backupType === "full") {
+      await this._fullRestoreClicked(backupDetails);
+    } else {
+      await this._partialRestoreClicked(backupDetails);
+    }
+    this._restoringBackup = false;
+  }
 
+  private async _partialRestoreClicked(backupDetails) {
     const supervisor = this._dialogParams?.supervisor;
     if (supervisor !== undefined && supervisor.info.state !== "running") {
       await showAlertDialog(this, {
@@ -190,45 +203,91 @@ class HassioBackupDialog
           state: supervisor.info.state,
         }),
       });
-      this._restoringBackup = false;
       return;
     }
     if (
       !(await showConfirmationDialog(this, {
-        title: this._localize(
-          this._backupContent.backupType === "full"
-            ? "confirm_restore_full_backup_title"
-            : "confirm_restore_partial_backup_title"
-        ),
-        text: this._localize(
-          this._backupContent.backupType === "full"
-            ? "confirm_restore_full_backup_text"
-            : "confirm_restore_partial_backup_text"
-        ),
+        title: this._localize("confirm_restore_partial_backup_title"),
+        text: this._localize("confirm_restore_partial_backup_text"),
         confirmText: this._localize("restore"),
         dismissText: this._localize("cancel"),
       }))
     ) {
-      this._restoringBackup = false;
       return;
     }
 
-    try {
-      await restoreBackup(
-        this.hass,
-        this._backupContent.backupType,
-        this._backup!.slug,
-        backupDetails,
-        !!this.hass && atLeastVersion(this.hass.config.version, 2021, 9)
-      );
+    if (!this._dialogParams?.onboarding) {
+      try {
+        await this.hass!.callApi(
+          "POST",
 
+          `hassio/${
+            atLeastVersion(this.hass!.config.version, 2021, 9)
+              ? "backups"
+              : "snapshots"
+          }/${this._backup!.slug}/restore/partial`,
+          backupDetails
+        );
+        this.closeDialog();
+      } catch (error: any) {
+        this._error = error.body.message;
+      }
+    } else {
       this._dialogParams?.onRestoring?.();
+      await fetch(`/api/hassio/backups/${this._backup!.slug}/restore/partial`, {
+        method: "POST",
+        body: JSON.stringify(backupDetails),
+      });
       this.closeDialog();
-    } catch (error: any) {
-      this._error =
-        error?.body?.message || this._localize("restore_start_failed");
-    } finally {
-      this._restoringBackup = false;
+    }
+  }
+
+  private async _fullRestoreClicked(backupDetails) {
+    const supervisor = this._dialogParams?.supervisor;
+    if (supervisor !== undefined && supervisor.info.state !== "running") {
+      await showAlertDialog(this, {
+        title: supervisor.localize("backup.could_not_restore"),
+        text: supervisor.localize("backup.restore_blocked_not_running", {
+          state: supervisor.info.state,
+        }),
+      });
+      return;
+    }
+    if (
+      !(await showConfirmationDialog(this, {
+        title: this._localize("confirm_restore_full_backup_title"),
+        text: this._localize("confirm_restore_full_backup_text"),
+        confirmText: this._localize("restore"),
+        dismissText: this._localize("cancel"),
+      }))
+    ) {
+      return;
+    }
+
+    if (!this._dialogParams?.onboarding) {
+      this.hass!.callApi(
+        "POST",
+        `hassio/${
+          atLeastVersion(this.hass!.config.version, 2021, 9)
+            ? "backups"
+            : "snapshots"
+        }/${this._backup!.slug}/restore/full`,
+        backupDetails
+      ).then(
+        () => {
+          this.closeDialog();
+        },
+        (error) => {
+          this._error = error.body.message;
+        }
+      );
+    } else {
+      this._dialogParams?.onRestoring?.();
+      fetch(`/api/hassio/backups/${this._backup!.slug}/restore/full`, {
+        method: "POST",
+        body: JSON.stringify(backupDetails),
+      });
+      this.closeDialog();
     }
   }
 
@@ -242,7 +301,6 @@ class HassioBackupDialog
         text: supervisor!.localize("backup.confirm_delete_text"),
         confirmText: supervisor!.localize("backup.delete"),
         dismissText: supervisor!.localize("backup.cancel"),
-        destructive: true,
       }))
     ) {
       return;
@@ -301,36 +359,7 @@ class HassioBackupDialog
   private get _computeName() {
     return this._backup
       ? this._backup.name || this._backup.slug
-      : this._localize("unnamed_backup");
-  }
-
-  static get styles(): CSSResultGroup {
-    return [
-      haStyle,
-      haStyleDialog,
-      css`
-        ha-circular-progress {
-          display: block;
-          text-align: center;
-        }
-        ha-header-bar {
-          --mdc-theme-on-primary: var(--primary-text-color);
-          --mdc-theme-primary: var(--mdc-theme-surface);
-          flex-shrink: 0;
-          display: block;
-        }
-        ha-icon-button {
-          color: var(--secondary-text-color);
-        }
-        .loading {
-          width: 100%;
-          display: flex;
-          height: 100%;
-          justify-content: center;
-          align-items: center;
-        }
-      `,
-    ];
+      : "Unnamed backup";
   }
 }
 

@@ -1,6 +1,5 @@
 import { expose } from "comlink";
 import { stringCompare } from "../../common/string/compare";
-import { stripDiacritics } from "../../common/string/strip-diacritics";
 import type {
   ClonedDataTableColumnData,
   DataTableRowData,
@@ -13,18 +12,20 @@ const filterData = (
   columns: SortableColumnContainer,
   filter: string
 ) => {
-  filter = stripDiacritics(filter.toLowerCase());
+  filter = filter.toUpperCase();
   return data.filter((row) =>
     Object.entries(columns).some((columnEntry) => {
       const [key, column] = columnEntry;
       if (column.filterable) {
-        const value = String(
-          column.filterKey
-            ? row[column.valueColumn || key][column.filterKey]
-            : row[column.valueColumn || key]
-        );
-
-        if (stripDiacritics(value).toLowerCase().includes(filter)) {
+        if (
+          String(
+            column.filterKey
+              ? row[column.valueColumn || key][column.filterKey]
+              : row[column.valueColumn || key]
+          )
+            .toUpperCase()
+            .includes(filter)
+        ) {
           return true;
         }
       }

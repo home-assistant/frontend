@@ -1,6 +1,12 @@
 import { mdiMenuDown, mdiMenuUp } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-button-menu";
@@ -13,7 +19,7 @@ import "../ha-textfield";
 import "../ha-button-menu-new";
 import "../ha-menu-item";
 
-import type {
+import {
   HaFormElement,
   HaFormMultiSelectData,
   HaFormMultiSelectSchema,

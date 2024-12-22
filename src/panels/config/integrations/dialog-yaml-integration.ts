@@ -1,12 +1,10 @@
 import "@material/mwc-button/mwc-button";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import type { HomeAssistant } from "../../../types";
+import { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import type { YamlIntegrationDialogParams } from "./show-add-integration-dialog";
-import "../../../components/ha-dialog";
+import { YamlIntegrationDialogParams } from "./show-add-integration-dialog";
 
 @customElement("dialog-yaml-integration")
 export class DialogYamlIntegration extends LitElement {
@@ -49,7 +47,7 @@ export class DialogYamlIntegration extends LitElement {
         </mwc-button>
         ${docLink
           ? html`<a
-              href=${docLink}
+              .href=${docLink}
               target="_blank"
               rel="noreferrer noopener"
               slot="primaryAction"

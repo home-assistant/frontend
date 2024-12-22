@@ -1,6 +1,6 @@
 import { getPanelTitleFromUrlPath } from "../data/panel";
-import type { Constructor, HomeAssistant } from "../types";
-import type { HassBaseEl } from "./hass-base-mixin";
+import { Constructor, HomeAssistant } from "../types";
+import { HassBaseEl } from "./hass-base-mixin";
 
 const setTitle = (title: string | undefined) => {
   document.title = title ? `${title} – Home Assistant` : "Home Assistant";

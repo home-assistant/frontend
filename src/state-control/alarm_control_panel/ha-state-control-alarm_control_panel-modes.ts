@@ -1,5 +1,4 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
@@ -8,16 +7,14 @@ import { supportsFeature } from "../../common/entity/supports-feature";
 import "../../components/ha-control-select";
 import type { ControlSelectOption } from "../../components/ha-control-select";
 import "../../components/ha-control-slider";
-import type {
-  AlarmControlPanelEntity,
-  AlarmMode,
-} from "../../data/alarm_control_panel";
 import {
   ALARM_MODES,
+  AlarmControlPanelEntity,
+  AlarmMode,
   setProtectedAlarmControlPanelMode,
 } from "../../data/alarm_control_panel";
 import { UNAVAILABLE } from "../../data/entity";
-import type { HomeAssistant } from "../../types";
+import { HomeAssistant } from "../../types";
 
 @customElement("ha-state-control-alarm_control_panel-modes")
 export class HaStateControlAlarmControlPanelModes extends LitElement {

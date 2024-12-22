@@ -1,9 +1,11 @@
 import { consume } from "@lit-labs/context";
-import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import "@material/mwc-list/mwc-list-item";
 import {
   mdiAlertCircleCheck,
   mdiArrowDown,
   mdiArrowUp,
+  mdiCheck,
   mdiContentCopy,
   mdiContentCut,
   mdiContentDuplicate,
@@ -11,19 +13,23 @@ import {
   mdiDotsVertical,
   mdiPlay,
   mdiPlayCircleOutline,
-  mdiPlaylistEdit,
   mdiRenameBox,
   mdiStopCircleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { storage } from "../../../../common/decorators/storage";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-alert";
@@ -34,20 +40,20 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-service-icon";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { ACTION_ICONS, YAML_ONLY_ACTION_TYPES } from "../../../../data/action";
-import type { AutomationClipboard } from "../../../../data/automation";
+import { AutomationClipboard } from "../../../../data/automation";
 import { validateConfig } from "../../../../data/config";
 import {
   floorsContext,
   fullEntitiesContext,
   labelsContext,
 } from "../../../../data/context";
-import type { EntityRegistryEntry } from "../../../../data/entity_registry";
-import type { FloorRegistryEntry } from "../../../../data/floor_registry";
-import type { LabelRegistryEntry } from "../../../../data/label_registry";
-import type { Action, NonConditionAction } from "../../../../data/script";
+import { EntityRegistryEntry } from "../../../../data/entity_registry";
+import { FloorRegistryEntry } from "../../../../data/floor_registry";
+import { LabelRegistryEntry } from "../../../../data/label_registry";
 import {
+  Action,
+  NonConditionAction,
   getActionType,
-  migrateAutomationAction,
 } from "../../../../data/script";
 import { describeAction } from "../../../../data/script_i18n";
 import { callExecuteScript } from "../../../../data/service";
@@ -57,18 +63,19 @@ import {
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ItemPath } from "../../../../types";
 import { showToast } from "../../../../util/toast";
+import "./types/ha-automation-action-activate_scene";
 import "./types/ha-automation-action-choose";
 import "./types/ha-automation-action-condition";
 import "./types/ha-automation-action-delay";
 import "./types/ha-automation-action-device_id";
 import "./types/ha-automation-action-event";
 import "./types/ha-automation-action-if";
+import "./types/ha-automation-action-sequence";
 import "./types/ha-automation-action-parallel";
 import "./types/ha-automation-action-play_media";
 import "./types/ha-automation-action-repeat";
-import "./types/ha-automation-action-sequence";
 import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-set_conversation_response";
 import "./types/ha-automation-action-stop";
@@ -79,8 +86,8 @@ export const getType = (action: Action | undefined) => {
   if (!action) {
     return undefined;
   }
-  if ("action" in action) {
-    return getActionType(action) as "action" | "play_media";
+  if ("service" in action || "scene" in action) {
+    return getActionType(action) as "activate_scene" | "service" | "play_media";
   }
   if (["and", "or", "not"].some((key) => key in action)) {
     return "condition" as const;
@@ -128,6 +135,8 @@ export default class HaAutomationActionRow extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Array }) public path?: ItemPath;
+
   @property({ type: Boolean }) public first?: boolean;
 
   @property({ type: Boolean }) public last?: boolean;
@@ -150,7 +159,7 @@ export default class HaAutomationActionRow extends LitElement {
 
   @state()
   @consume({ context: floorsContext, subscribe: true })
-  _floorReg!: { [id: string]: FloorRegistryEntry };
+  _floorReg!: FloorRegistryEntry[];
 
   @state() private _warnings?: string[];
 
@@ -204,12 +213,12 @@ export default class HaAutomationActionRow extends LitElement {
         <ha-expansion-panel leftChevron>
           <h3 slot="header">
             ${type === "service" &&
-            "action" in this.action &&
-            this.action.action
+            "service" in this.action &&
+            this.action.service
               ? html`<ha-service-icon
                   class="action-icon"
                   .hass=${this.hass}
-                  .service=${this.action.action}
+                  .service=${this.action.service}
                 ></ha-service-icon>`
               : html`<ha-svg-icon
                   class="action-icon"
@@ -244,7 +253,6 @@ export default class HaAutomationActionRow extends LitElement {
             slot="icons"
             @action=${this._handleAction}
             @click=${preventDefault}
-            @closed=${stopPropagation}
             fixed
           >
             <ha-icon-button
@@ -252,23 +260,23 @@ export default class HaAutomationActionRow extends LitElement {
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-            <ha-list-item graphic="icon">
+            <mwc-list-item graphic="icon">
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.run"
               )}
               <ha-svg-icon slot="graphic" .path=${mdiPlay}></ha-svg-icon>
-            </ha-list-item>
+            </mwc-list-item>
 
-            <ha-list-item graphic="icon" .disabled=${this.disabled}>
+            <mwc-list-item graphic="icon" .disabled=${this.disabled}>
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.rename"
               )}
               <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
-            </ha-list-item>
+            </mwc-list-item>
 
             <li divider role="separator"></li>
 
-            <ha-list-item graphic="icon" .disabled=${this.disabled}>
+            <mwc-list-item graphic="icon" .disabled=${this.disabled}>
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.duplicate"
               )}
@@ -276,31 +284,31 @@ export default class HaAutomationActionRow extends LitElement {
                 slot="graphic"
                 .path=${mdiContentDuplicate}
               ></ha-svg-icon>
-            </ha-list-item>
+            </mwc-list-item>
 
-            <ha-list-item graphic="icon" .disabled=${this.disabled}>
+            <mwc-list-item graphic="icon" .disabled=${this.disabled}>
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.triggers.copy"
               )}
               <ha-svg-icon slot="graphic" .path=${mdiContentCopy}></ha-svg-icon>
-            </ha-list-item>
+            </mwc-list-item>
 
-            <ha-list-item graphic="icon" .disabled=${this.disabled}>
+            <mwc-list-item graphic="icon" .disabled=${this.disabled}>
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.triggers.cut"
               )}
               <ha-svg-icon slot="graphic" .path=${mdiContentCut}></ha-svg-icon>
-            </ha-list-item>
+            </mwc-list-item>
 
-            <ha-list-item
+            <mwc-list-item
               graphic="icon"
               .disabled=${this.disabled || this.first}
             >
               ${this.hass.localize("ui.panel.config.automation.editor.move_up")}
               <ha-svg-icon slot="graphic" .path=${mdiArrowUp}></ha-svg-icon
-            ></ha-list-item>
+            ></mwc-list-item>
 
-            <ha-list-item
+            <mwc-list-item
               graphic="icon"
               .disabled=${this.disabled || this.last}
             >
@@ -308,21 +316,37 @@ export default class HaAutomationActionRow extends LitElement {
                 "ui.panel.config.automation.editor.move_down"
               )}
               <ha-svg-icon slot="graphic" .path=${mdiArrowDown}></ha-svg-icon
-            ></ha-list-item>
-
-            <ha-list-item graphic="icon" .disabled=${!this._uiModeAvailable}>
-              ${this.hass.localize(
-                `ui.panel.config.automation.editor.edit_${!yamlMode ? "yaml" : "ui"}`
-              )}
-              <ha-svg-icon
-                slot="graphic"
-                .path=${mdiPlaylistEdit}
-              ></ha-svg-icon>
-            </ha-list-item>
+            ></mwc-list-item>
 
             <li divider role="separator"></li>
 
-            <ha-list-item graphic="icon" .disabled=${this.disabled}>
+            <mwc-list-item .disabled=${!this._uiModeAvailable} graphic="icon">
+              ${this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
+              ${!yamlMode
+                ? html`<ha-svg-icon
+                    class="selected_menu_item"
+                    slot="graphic"
+                    .path=${mdiCheck}
+                  ></ha-svg-icon>`
+                : ``}
+            </mwc-list-item>
+
+            <mwc-list-item .disabled=${!this._uiModeAvailable} graphic="icon">
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.edit_yaml"
+              )}
+              ${yamlMode
+                ? html`<ha-svg-icon
+                    class="selected_menu_item"
+                    slot="graphic"
+                    .path=${mdiCheck}
+                  ></ha-svg-icon>`
+                : ``}
+            </mwc-list-item>
+
+            <li divider role="separator"></li>
+
+            <mwc-list-item graphic="icon" .disabled=${this.disabled}>
               ${this.action.enabled === false
                 ? this.hass.localize(
                     "ui.panel.config.automation.editor.actions.enable"
@@ -336,8 +360,8 @@ export default class HaAutomationActionRow extends LitElement {
                   ? mdiPlayCircleOutline
                   : mdiStopCircleOutline}
               ></ha-svg-icon>
-            </ha-list-item>
-            <ha-list-item
+            </mwc-list-item>
+            <mwc-list-item
               class="warning"
               graphic="icon"
               .disabled=${this.disabled}
@@ -350,7 +374,7 @@ export default class HaAutomationActionRow extends LitElement {
                 slot="graphic"
                 .path=${mdiDelete}
               ></ha-svg-icon>
-            </ha-list-item>
+            </mwc-list-item>
           </ha-button-menu>
 
           <div
@@ -405,6 +429,7 @@ export default class HaAutomationActionRow extends LitElement {
                       action: this.action,
                       narrow: this.narrow,
                       disabled: this.disabled,
+                      path: this.path,
                     })}
                   </div>
                 `}
@@ -449,17 +474,17 @@ export default class HaAutomationActionRow extends LitElement {
         fireEvent(this, "move-down");
         break;
       case 7:
-        if (this._yamlMode) {
-          this._switchUiMode();
-        } else {
-          this._switchYamlMode();
-        }
+        this._switchUiMode();
         this.expand();
         break;
       case 8:
-        this._onDisable();
+        this._switchYamlMode();
+        this.expand();
         break;
       case 9:
+        this._onDisable();
+        break;
+      case 10:
         this._onDelete();
         break;
     }
@@ -483,15 +508,15 @@ export default class HaAutomationActionRow extends LitElement {
 
   private async _runAction() {
     const validated = await validateConfig(this.hass, {
-      actions: this.action,
+      action: this.action,
     });
 
-    if (!validated.actions.valid) {
+    if (!validated.action.valid) {
       showAlertDialog(this, {
         title: this.hass.localize(
           "ui.panel.config.automation.editor.actions.invalid_action"
         ),
-        text: validated.actions.error,
+        text: validated.action.error,
       });
       return;
     }
@@ -537,9 +562,7 @@ export default class HaAutomationActionRow extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    fireEvent(this, "value-changed", {
-      value: migrateAutomationAction(ev.detail.value),
-    });
+    fireEvent(this, "value-changed", { value: ev.detail.value });
   }
 
   private _onUiChanged(ev: CustomEvent) {
@@ -614,9 +637,6 @@ export default class HaAutomationActionRow extends LitElement {
         ha-icon-button {
           --mdc-theme-text-primary-on-background: var(--primary-text-color);
         }
-        ha-card {
-          overflow: hidden;
-        }
         .disabled {
           opacity: 0.5;
           pointer-events: none;
@@ -649,6 +669,8 @@ export default class HaAutomationActionRow extends LitElement {
         .disabled-bar {
           background: var(--divider-color, #e0e0e0);
           text-align: center;
+          border-top-right-radius: var(--ha-card-border-radius);
+          border-top-left-radius: var(--ha-card-border-radius);
         }
 
         mwc-list-item[disabled] {
@@ -659,6 +681,9 @@ export default class HaAutomationActionRow extends LitElement {
         }
         .warning ul {
           margin: 4px 0;
+        }
+        .selected_menu_item {
+          color: var(--primary-color);
         }
         li[role="separator"] {
           border-bottom-color: var(--divider-color);

@@ -2,9 +2,9 @@ import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../../common/dom/fire_event";
 import "../../../../../../components/ha-icon-next";
-import "../../../../../../components/ha-md-list-item";
-import "../../../../../../components/ha-md-list";
-import type { HomeAssistant } from "../../../../../../types";
+import "../../../../../../components/ha-list-item-new";
+import "../../../../../../components/ha-list-new";
+import { HomeAssistant } from "../../../../../../types";
 import { sharedStyles } from "./matter-add-device-shared-styles";
 
 @customElement("matter-add-device-main")
@@ -18,8 +18,8 @@ class MatterAddDeviceMain extends LitElement {
           ${this.hass.localize(`ui.dialogs.matter-add-device.main.question`)}
         </p>
       </div>
-      <ha-md-list>
-        <ha-md-list-item
+      <ha-list-new>
+        <ha-list-item-new
           interactive
           type="button"
           .step=${"new"}
@@ -37,8 +37,8 @@ class MatterAddDeviceMain extends LitElement {
             )}
           </span>
           <ha-icon-next slot="end"></ha-icon-next>
-        </ha-md-list-item>
-        <ha-md-list-item
+        </ha-list-item-new>
+        <ha-list-item-new
           interactive
           type="button"
           .step=${"existing"}
@@ -56,8 +56,8 @@ class MatterAddDeviceMain extends LitElement {
             )}
           </span>
           <ha-icon-next slot="end"></ha-icon-next>
-        </ha-md-list-item>
-      </ha-md-list>
+        </ha-list-item-new>
+      </ha-list-new>
     `;
   }
 

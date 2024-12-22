@@ -1,9 +1,0 @@
-#!/bin/sh
-# Run the landing-page
-
-# Stop on errors
-set -e
-
-cd "$(dirname "$0")/../.."
-
-./node_modules/.bin/gulp develop-landing-page

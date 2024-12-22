@@ -1,18 +1,17 @@
-import type { HassEntity } from "home-assistant-js-websocket";
+import { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
-import "../../../../components/ha-form/ha-form";
 import type { HomeAssistant } from "../../../../types";
 import { supportsVacuumCommand } from "../../card-features/hui-vacuum-commands-card-feature";
-import type {
+import {
   LovelaceCardFeatureContext,
   VacuumCommandsCardFeatureConfig,
+  VACUUM_COMMANDS,
 } from "../../card-features/types";
-import { VACUUM_COMMANDS } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
 
 @customElement("hui-vacuum-commands-card-feature-editor")

@@ -1,11 +1,13 @@
+import { Connection, createCollection } from "home-assistant-js-websocket";
+import { Store } from "home-assistant-js-websocket/dist/store";
 import { stringCompare } from "../common/string/compare";
-import type { HomeAssistant } from "../types";
-import type { AreaRegistryEntry } from "./area_registry";
-import type { RegistryEntry } from "./registry";
+import { debounce } from "../common/util/debounce";
+import { HomeAssistant } from "../types";
+import { AreaRegistryEntry } from "./area_registry";
 
 export { subscribeAreaRegistry } from "./ws-area_registry";
 
-export interface FloorRegistryEntry extends RegistryEntry {
+export interface FloorRegistryEntry {
   floor_id: string;
   name: string;
   level: number | null;
@@ -23,6 +25,48 @@ export interface FloorRegistryEntryMutableParams {
   icon?: string | null;
   aliases?: string[];
 }
+
+const fetchFloorRegistry = (conn: Connection) =>
+  conn
+    .sendMessagePromise({
+      type: "config/floor_registry/list",
+    })
+    .then((floors) =>
+      (floors as FloorRegistryEntry[]).sort((ent1, ent2) => {
+        if (ent1.level !== ent2.level) {
+          return (ent1.level ?? 9999) - (ent2.level ?? 9999);
+        }
+        return stringCompare(ent1.name, ent2.name);
+      })
+    );
+
+const subscribeFloorRegistryUpdates = (
+  conn: Connection,
+  store: Store<FloorRegistryEntry[]>
+) =>
+  conn.subscribeEvents(
+    debounce(
+      () =>
+        fetchFloorRegistry(conn).then((areas: FloorRegistryEntry[]) =>
+          store.setState(areas, true)
+        ),
+      500,
+      true
+    ),
+    "floor_registry_updated"
+  );
+
+export const subscribeFloorRegistry = (
+  conn: Connection,
+  onChange: (floors: FloorRegistryEntry[]) => void
+) =>
+  createCollection<FloorRegistryEntry[]>(
+    "_floorRegistry",
+    fetchFloorRegistry,
+    subscribeFloorRegistryUpdates,
+    conn,
+    onChange
+  );
 
 export const createFloorRegistryEntry = (
   hass: HomeAssistant,

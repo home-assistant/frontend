@@ -4,8 +4,8 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../../../common/entity/compute_state_domain";
 import { hasLocation } from "../../../../../common/entity/has_location";
 import "../../../../../components/entity/ha-entity-picker";
-import type { ZoneCondition } from "../../../../../data/automation";
-import type { ValueChangedEvent, HomeAssistant } from "../../../../../types";
+import { ZoneCondition } from "../../../../../data/automation";
+import { ValueChangedEvent, HomeAssistant } from "../../../../../types";
 
 function zoneAndLocationFilter(stateObj) {
   return hasLocation(stateObj) && computeStateDomain(stateObj) !== "zone";
@@ -21,9 +21,8 @@ export class HaZoneCondition extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  public static get defaultConfig(): ZoneCondition {
+  public static get defaultConfig() {
     return {
-      condition: "zone",
       entity_id: "",
       zone: "",
     };

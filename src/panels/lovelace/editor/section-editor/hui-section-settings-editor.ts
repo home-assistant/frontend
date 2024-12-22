@@ -1,18 +1,22 @@
 import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import type {
+import { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
+import { HomeAssistant } from "../../../../types";
+import {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
-import "../../../../components/ha-form/ha-form";
-import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
-import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
-import type { HomeAssistant } from "../../../../types";
+import { fireEvent } from "../../../../common/dom/fire_event";
+
+const SCHEMA = [
+  {
+    name: "title",
+    selector: { text: {} },
+  },
+] as const satisfies HaFormSchema[];
 
 type SettingsData = {
-  column_span?: number;
+  title: string;
 };
 
 @customElement("hui-section-settings-editor")
@@ -21,36 +25,16 @@ export class HuiDialogEditSection extends LitElement {
 
   @property({ attribute: false }) public config!: LovelaceSectionRawConfig;
 
-  @property({ attribute: false }) public viewConfig!: LovelaceViewConfig;
-
-  private _schema = memoizeOne(
-    (maxColumns: number) =>
-      [
-        {
-          name: "column_span",
-          selector: {
-            number: {
-              min: 1,
-              max: maxColumns,
-              slider_ticks: true,
-            },
-          },
-        },
-      ] as const satisfies HaFormSchema[]
-  );
-
   render() {
     const data: SettingsData = {
-      column_span: this.config.column_span || 1,
+      title: this.config.title || "",
     };
-
-    const schema = this._schema(this.viewConfig.max_columns || 4);
 
     return html`
       <ha-form
         .hass=${this.hass}
         .data=${data}
-        .schema=${schema}
+        .schema=${SCHEMA}
         .computeLabel=${this._computeLabel}
         .computeHelper=${this._computeHelper}
         @value-changed=${this._valueChanged}
@@ -58,16 +42,12 @@ export class HuiDialogEditSection extends LitElement {
     `;
   }
 
-  private _computeLabel = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ) =>
+  private _computeLabel = (schema: SchemaUnion<typeof SCHEMA>) =>
     this.hass.localize(
       `ui.panel.lovelace.editor.edit_section.settings.${schema.name}`
     );
 
-  private _computeHelper = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ) =>
+  private _computeHelper = (schema: SchemaUnion<typeof SCHEMA>) =>
     this.hass.localize(
       `ui.panel.lovelace.editor.edit_section.settings.${schema.name}_helper`
     ) || "";
@@ -78,8 +58,12 @@ export class HuiDialogEditSection extends LitElement {
 
     const newConfig: LovelaceSectionRawConfig = {
       ...this.config,
-      column_span: newData.column_span,
+      title: newData.title,
     };
+
+    if (!newConfig.title) {
+      delete newConfig.title;
+    }
 
     fireEvent(this, "value-changed", { value: newConfig });
   }

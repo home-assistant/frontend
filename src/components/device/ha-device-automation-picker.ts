@@ -1,17 +1,16 @@
 import { consume } from "@lit-labs/context";
 import "@material/mwc-list/mwc-list-item";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { fullEntitiesContext } from "../../data/context";
-import type { DeviceAutomation } from "../../data/device_automation";
 import {
+  DeviceAutomation,
   deviceAutomationsEqual,
   sortDeviceAutomations,
 } from "../../data/device_automation";
-import type { EntityRegistryEntry } from "../../data/entity_registry";
-import type { HomeAssistant } from "../../types";
+import { EntityRegistryEntry } from "../../data/entity_registry";
+import { HomeAssistant } from "../../types";
 import "../ha-select";
 
 const NO_AUTOMATION_KEY = "NO_AUTOMATION";
@@ -24,7 +23,7 @@ export abstract class HaDeviceAutomationPicker<
 
   @property() public label?: string;
 
-  @property({ attribute: false }) public deviceId?: string;
+  @property() public deviceId?: string;
 
   @property({ type: Object }) public value?: T;
 

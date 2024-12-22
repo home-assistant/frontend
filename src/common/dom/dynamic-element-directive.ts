@@ -1,6 +1,12 @@
 import { noChange } from "lit";
-import type { ChildPart, DirectiveParameters, PartInfo } from "lit/directive";
-import { Directive, directive, PartType } from "lit/directive";
+import {
+  ChildPart,
+  Directive,
+  directive,
+  DirectiveParameters,
+  PartInfo,
+  PartType,
+} from "lit/directive";
 
 export const dynamicElement = directive(
   class extends Directive {

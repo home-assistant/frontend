@@ -1,7 +1,7 @@
 import { object, optional, number, string, boolean } from "superstruct";
 
 export const baseTriggerStruct = object({
-  trigger: string(),
+  platform: string(),
   id: optional(string()),
   enabled: optional(boolean()),
 });

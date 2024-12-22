@@ -1,5 +1,5 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import type { IntegrationManifest } from "../../../data/integration";
+import { IntegrationManifest } from "../../../data/integration";
 
 export interface AddIntegrationDialogParams {
   brand?: string;

@@ -2,10 +2,10 @@ import "@material/mwc-list";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import type { LocalizeFunc } from "../common/translations/localize";
+import { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-icon-next";
 import "../components/ha-list-item";
-import type { AuthProvider } from "../data/auth";
+import { AuthProvider } from "../data/auth";
 
 declare global {
   interface HTMLElementTagNameMap {

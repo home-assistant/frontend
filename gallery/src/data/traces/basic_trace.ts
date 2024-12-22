@@ -1,4 +1,4 @@
-import type { DemoTrace } from "./types";
+import { DemoTrace } from "./types";
 
 export const basicTrace: DemoTrace = {
   trace: {
@@ -217,22 +217,22 @@ export const basicTrace: DemoTrace = {
       id: "1615419646544",
       alias: "Ensure Party mode",
       description: "",
-      triggers: [
+      trigger: [
         {
-          trigger: "state",
+          platform: "state",
           entity_id: "input_boolean.toggle_1",
         },
       ],
-      conditions: [
+      condition: [
         {
           condition: "template",
           alias: "Test if Paulus is home",
           value_template: "{{ true }}",
         },
       ],
-      actions: [
+      action: [
         {
-          action: "input_boolean.toggle",
+          service: "input_boolean.toggle",
           target: {
             entity_id: "input_boolean.toggle_4",
           },
@@ -268,7 +268,7 @@ export const basicTrace: DemoTrace = {
           ],
           default: [
             {
-              action: "input_boolean.toggle",
+              service: "input_boolean.toggle",
               alias: "Toggle 2",
               target: {
                 entity_id: "input_boolean.toggle_2",
@@ -277,7 +277,7 @@ export const basicTrace: DemoTrace = {
           ],
         },
         {
-          action: "input_boolean.toggle",
+          service: "input_boolean.toggle",
           target: {
             entity_id: "input_boolean.toggle_4",
           },

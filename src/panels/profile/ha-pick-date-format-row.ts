@@ -1,6 +1,5 @@
 import "@material/mwc-list/mwc-list-item";
-import type { TemplateResult } from "lit";
-import { html, LitElement } from "lit";
+import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { formatDateNumeric } from "../../common/datetime/format_date";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -8,7 +7,7 @@ import "../../components/ha-card";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import { DateFormat } from "../../data/translation";
-import type { HomeAssistant } from "../../types";
+import { HomeAssistant } from "../../types";
 
 @customElement("ha-pick-date-format-row")
 class DateFormatRow extends LitElement {

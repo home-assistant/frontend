@@ -24,7 +24,7 @@ export class HaTopAppBarFixed extends TopAppBarFixedBase {
         );
       }
       .mdc-top-app-bar__title {
-        padding-inline-start: 24px;
+        padding-inline-start: 20px;
         padding-inline-end: initial;
       }
     `,

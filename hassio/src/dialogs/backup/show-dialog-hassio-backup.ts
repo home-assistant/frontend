@@ -1,6 +1,6 @@
 import { fireEvent } from "../../../../src/common/dom/fire_event";
-import type { LocalizeFunc } from "../../../../src/common/translations/localize";
-import type { Supervisor } from "../../../../src/data/supervisor/supervisor";
+import { LocalizeFunc } from "../../../../src/common/translations/localize";
+import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 
 export interface HassioBackupDialogParams {
   slug: string;

@@ -1,6 +1,5 @@
 import "@material/mwc-button";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/buttons/ha-progress-button";
@@ -13,10 +12,10 @@ import {
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import { showAlertDialog } from "../../../../src/dialogs/generic/show-dialog-box";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
-import type { HomeAssistant } from "../../../../src/types";
+import { HomeAssistant } from "../../../../src/types";
 import "../../components/supervisor-backup-content";
 import type { SupervisorBackupContent } from "../../components/supervisor-backup-content";
-import type { HassioCreateBackupDialogParams } from "./show-dialog-hassio-create-backup";
+import { HassioCreateBackupDialogParams } from "./show-dialog-hassio-create-backup";
 
 @customElement("dialog-hassio-create-backup")
 class HassioCreateBackupDialog extends LitElement {

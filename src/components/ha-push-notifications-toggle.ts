@@ -1,12 +1,10 @@
-import type { TemplateResult } from "lit";
-import { LitElement, html } from "lit";
+import { LitElement, TemplateResult, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { getAppKey } from "../data/notify_html5";
 import { showPromptDialog } from "../dialogs/generic/show-dialog-box";
-import type { HaSwitch } from "./ha-switch";
-import type { HomeAssistant } from "../types";
+import { HaSwitch } from "./ha-switch";
+import { HomeAssistant } from "../types";
 import { fireEvent } from "../common/dom/fire_event";
-import "./ha-switch";
 
 export const pushSupported =
   "serviceWorker" in navigator &&

@@ -1,13 +1,15 @@
 import "@material/mwc-button";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import "../../components/ha-icon-button-prev";
-import type { PersistentNotification } from "../../data/persistent_notification";
-import { subscribeNotifications } from "../../data/persistent_notification";
-import type { HomeAssistant } from "../../types";
+import {
+  PersistentNotification,
+  subscribeNotifications,
+} from "../../data/persistent_notification";
+import { HomeAssistant } from "../../types";
 import "./notification-item";
 import "../../components/ha-header-bar";
 import "../../components/ha-drawer";

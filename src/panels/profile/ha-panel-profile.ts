@@ -1,12 +1,11 @@
 import { customElement, property } from "lit/decorators";
 
 import { mdiAccount, mdiLock } from "@mdi/js";
-import type { PropertyValues } from "lit";
-import type { RouterOptions } from "../../layouts/hass-router-page";
-import { HassRouterPage } from "../../layouts/hass-router-page";
-import type { PageNavigation } from "../../layouts/hass-tabs-subpage";
+import { PropertyValues } from "lit";
+import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
+import { PageNavigation } from "../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../types";
+import { HomeAssistant } from "../../types";
 
 export const profileSections: PageNavigation[] = [
   {

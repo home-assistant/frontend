@@ -1,15 +1,22 @@
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { fireEvent } from "../../../common/dom/fire_event";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/ha-card";
 import "../../../components/ha-markdown";
 import "../../../components/ha-alert";
-import type { RenderTemplateResult } from "../../../data/ws-templates";
-import { subscribeRenderTemplate } from "../../../data/ws-templates";
+import {
+  RenderTemplateResult,
+  subscribeRenderTemplate,
+} from "../../../data/ws-templates";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { MarkdownCardConfig } from "./types";
@@ -31,7 +38,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ type: Boolean }) public preview = false;
+  @property({ type: Boolean }) public editMode = false;
 
   @state() private _config?: MarkdownCardConfig;
 
@@ -106,15 +113,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     if (changedProps.has("_config")) {
       this._tryConnect();
     }
-    const shouldBeHidden =
-      this._templateResult &&
-      this._config.show_empty === false &&
-      this._templateResult.result.length === 0;
-    if (shouldBeHidden !== this.hidden) {
-      this.style.display = shouldBeHidden ? "none" : "";
-      this.toggleAttribute("hidden", shouldBeHidden);
-      fireEvent(this, "card-visibility-changed", { value: !shouldBeHidden });
-    }
+
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
       | MarkdownCardConfig
@@ -164,12 +163,12 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
             user: this.hass.user!.name,
           },
           strict: true,
-          report_errors: this.preview,
+          report_errors: this.editMode,
         }
       );
       await this._unsubRenderTemplate;
     } catch (e: any) {
-      if (this.preview) {
+      if (this.editMode) {
         this._error = e.message;
         this._errorLevel = undefined;
       }

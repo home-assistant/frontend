@@ -1,11 +1,10 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 
 import "../components/entity/state-info";
 import "../components/ha-humidifier-state";
-import type { HomeAssistant } from "../types";
+import { HomeAssistant } from "../types";
 import { haStyle } from "../resources/styles";
 
 @customElement("state-card-humidifier")
@@ -14,7 +13,7 @@ class StateCardHumidifier extends LitElement {
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
-  @property({ attribute: "in-dialog", type: Boolean }) public inDialog = false;
+  @property({ type: Boolean }) public inDialog = false;
 
   protected render(): TemplateResult {
     return html`

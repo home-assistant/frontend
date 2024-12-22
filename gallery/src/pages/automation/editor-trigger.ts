@@ -1,5 +1,5 @@
-import type { TemplateResult } from "lit";
-import { LitElement, html, css } from "lit";
+/* eslint-disable lit/no-template-arrow */
+import { LitElement, TemplateResult, html, css } from "lit";
 import { customElement, state } from "lit/decorators";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import type { HomeAssistant } from "../../../../src/types";
@@ -8,9 +8,6 @@ import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
 import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
 import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
 import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
-import { mockConfig } from "../../../../demo/src/stubs/config";
-import { mockTags } from "../../../../demo/src/stubs/tags";
-import { mockAuth } from "../../../../demo/src/stubs/auth";
 import type { Trigger } from "../../../../src/data/automation";
 import { HaGeolocationTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-geo_location";
 import { HaEventTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-event";
@@ -29,53 +26,59 @@ import { HaStateTrigger } from "../../../../src/panels/config/automation/trigger
 import { HaMQTTTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-mqtt";
 import "../../../../src/panels/config/automation/trigger/ha-automation-trigger";
 import { HaConversationTrigger } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-conversation";
-import { HaTriggerList } from "../../../../src/panels/config/automation/trigger/types/ha-automation-trigger-list";
 
 const SCHEMAS: { name: string; triggers: Trigger[] }[] = [
   {
     name: "State",
-    triggers: [{ ...HaStateTrigger.defaultConfig }],
+    triggers: [{ platform: "state", ...HaStateTrigger.defaultConfig }],
   },
 
   {
     name: "MQTT",
-    triggers: [{ ...HaMQTTTrigger.defaultConfig }],
+    triggers: [{ platform: "mqtt", ...HaMQTTTrigger.defaultConfig }],
   },
 
   {
     name: "GeoLocation",
-    triggers: [{ ...HaGeolocationTrigger.defaultConfig }],
+    triggers: [
+      { platform: "geo_location", ...HaGeolocationTrigger.defaultConfig },
+    ],
   },
 
   {
     name: "Home Assistant",
-    triggers: [{ ...HaHassTrigger.defaultConfig }],
+    triggers: [{ platform: "homeassistant", ...HaHassTrigger.defaultConfig }],
   },
 
   {
     name: "Numeric State",
-    triggers: [{ ...HaNumericStateTrigger.defaultConfig }],
+    triggers: [
+      { platform: "numeric_state", ...HaNumericStateTrigger.defaultConfig },
+    ],
   },
 
   {
     name: "Sun",
-    triggers: [{ ...HaSunTrigger.defaultConfig }],
+    triggers: [{ platform: "sun", ...HaSunTrigger.defaultConfig }],
   },
 
   {
     name: "Time Pattern",
-    triggers: [{ ...HaTimePatternTrigger.defaultConfig }],
+    triggers: [
+      { platform: "time_pattern", ...HaTimePatternTrigger.defaultConfig },
+    ],
   },
 
   {
     name: "Webhook",
-    triggers: [{ ...HaWebhookTrigger.defaultConfig }],
+    triggers: [{ platform: "webhook", ...HaWebhookTrigger.defaultConfig }],
   },
 
   {
     name: "Persistent Notification",
     triggers: [
       {
+        platform: "persistent_notification",
         ...HaPersistentNotificationTrigger.defaultConfig,
       },
     ],
@@ -83,46 +86,42 @@ const SCHEMAS: { name: string; triggers: Trigger[] }[] = [
 
   {
     name: "Zone",
-    triggers: [{ ...HaZoneTrigger.defaultConfig }],
+    triggers: [{ platform: "zone", ...HaZoneTrigger.defaultConfig }],
   },
 
   {
     name: "Tag",
-    triggers: [{ ...HaTagTrigger.defaultConfig }],
+    triggers: [{ platform: "tag", ...HaTagTrigger.defaultConfig }],
   },
 
   {
     name: "Time",
-    triggers: [{ ...HaTimeTrigger.defaultConfig }],
+    triggers: [{ platform: "time", ...HaTimeTrigger.defaultConfig }],
   },
 
   {
     name: "Template",
-    triggers: [{ ...HaTemplateTrigger.defaultConfig }],
+    triggers: [{ platform: "template", ...HaTemplateTrigger.defaultConfig }],
   },
 
   {
     name: "Event",
-    triggers: [{ ...HaEventTrigger.defaultConfig }],
+    triggers: [{ platform: "event", ...HaEventTrigger.defaultConfig }],
   },
 
   {
     name: "Device Trigger",
-    triggers: [{ ...HaDeviceTrigger.defaultConfig }],
+    triggers: [{ platform: "device", ...HaDeviceTrigger.defaultConfig }],
   },
   {
     name: "Sentence",
     triggers: [
-      { ...HaConversationTrigger.defaultConfig },
+      { platform: "conversation", ...HaConversationTrigger.defaultConfig },
       {
-        trigger: "conversation",
+        platform: "conversation",
         command: ["Turn on the lights", "Turn the lights on"],
       },
     ],
-  },
-  {
-    name: "Trigger list",
-    triggers: [{ ...HaTriggerList.defaultConfig }],
   },
 ];
 
@@ -143,12 +142,14 @@ export class DemoAutomationEditorTrigger extends LitElement {
     mockDeviceRegistry(hass);
     mockAreaRegistry(hass);
     mockHassioSupervisor(hass);
-    mockConfig(hass);
-    mockTags(hass);
-    mockAuth(hass);
   }
 
   protected render(): TemplateResult {
+    const valueChanged = (ev) => {
+      const sampleIdx = ev.target.sampleIdx;
+      this.data[sampleIdx] = ev.detail.value;
+      this.requestUpdate();
+    };
     return html`
       <div class="options">
         <ha-formfield label="Disabled">
@@ -173,7 +174,7 @@ export class DemoAutomationEditorTrigger extends LitElement {
                   .triggers=${this.data[sampleIdx]}
                   .sampleIdx=${sampleIdx}
                   .disabled=${this._disabled}
-                  @value-changed=${this._handleValueChange}
+                  @value-changed=${valueChanged}
                 ></ha-automation-trigger>
               `
             )}
@@ -181,12 +182,6 @@ export class DemoAutomationEditorTrigger extends LitElement {
         `
       )}
     `;
-  }
-
-  private _handleValueChange(ev) {
-    const sampleIdx = ev.target.sampleIdx;
-    this.data[sampleIdx] = ev.detail.value;
-    this.requestUpdate();
   }
 
   private _handleOptionChange(ev) {

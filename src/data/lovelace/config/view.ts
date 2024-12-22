@@ -7,22 +7,8 @@ export interface ShowViewConfig {
   user?: string;
 }
 
-export interface LovelaceViewBackgroundConfig {
+interface LovelaceViewBackgroundConfig {
   image?: string;
-  transparency?: number;
-  size?: "auto" | "cover" | "contain";
-  alignment?:
-    | "top left"
-    | "top center"
-    | "top right"
-    | "center left"
-    | "center"
-    | "center right"
-    | "bottom left"
-    | "bottom center"
-    | "bottom right";
-  repeat?: "repeat" | "no-repeat";
-  attachment?: "scroll" | "fixed";
 }
 
 export interface LovelaceBaseViewConfig {
@@ -36,14 +22,12 @@ export interface LovelaceBaseViewConfig {
   visible?: boolean | ShowViewConfig[];
   subview?: boolean;
   back_path?: string;
-  // Only used for section view, it should move to a section view config type when the views will have dedicated editor.
-  max_columns?: number;
-  dense_section_placement?: boolean;
+  max_columns?: number; // Only used for section view, it should move to a section view config type when the views will have dedicated editor.
 }
 
 export interface LovelaceViewConfig extends LovelaceBaseViewConfig {
   type?: string;
-  badges?: (string | Partial<LovelaceBadgeConfig>)[]; // Badge can be just an entity_id or without type
+  badges?: Array<string | LovelaceBadgeConfig>;
   cards?: LovelaceCardConfig[];
   sections?: LovelaceSectionRawConfig[];
 }

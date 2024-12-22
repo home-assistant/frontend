@@ -1,17 +1,26 @@
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
-import type { Cluster, ZHADevice } from "../../../../../data/zha";
-import { fetchClustersForZhaDevice } from "../../../../../data/zha";
+import {
+  Cluster,
+  fetchClustersForZhaDevice,
+  ZHADevice,
+} from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
+import { HomeAssistant } from "../../../../../types";
 import { computeClusterKey } from "./functions";
 import "./zha-cluster-attributes";
 import "./zha-cluster-commands";
@@ -31,7 +40,7 @@ const tabs = ["attributes", "commands"] as const;
 export class ZHAManageClusters extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+  @property({ type: Boolean }) public isWide = false;
 
   @property({ attribute: false }) public device?: ZHADevice;
 

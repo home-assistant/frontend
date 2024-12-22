@@ -1,12 +1,11 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list";
-import type { ActionDetail } from "@material/mwc-list/mwc-list";
 import { mdiCast, mdiCastConnected, mdiViewDashboard } from "@mdi/js";
-import type { Auth, Connection } from "home-assistant-js-websocket";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
+import "@polymer/paper-item/paper-icon-item";
+import "@polymer/paper-listbox/paper-listbox";
+import { Auth, Connection } from "home-assistant-js-websocket";
+import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { CastManager } from "../../../../src/cast/cast_manager";
+import { CastManager } from "../../../../src/cast/cast_manager";
 import {
   castSendShowLovelaceView,
   ensureConnectedCastSession,
@@ -25,11 +24,10 @@ import {
   getLovelaceCollection,
 } from "../../../../src/data/lovelace";
 import { isStrategyDashboard } from "../../../../src/data/lovelace/config/types";
-import type { LovelaceViewConfig } from "../../../../src/data/lovelace/config/view";
+import { LovelaceViewConfig } from "../../../../src/data/lovelace/config/view";
 import "../../../../src/layouts/hass-loading-screen";
 import { generateDefaultViewConfig } from "../../../../src/panels/lovelace/common/generate-lovelace-config";
 import "./hc-layout";
-import "../../../../src/components/ha-list-item";
 
 @customElement("hc-cast")
 class HcCast extends LitElement {
@@ -85,38 +83,37 @@ class HcCast extends LitElement {
               `
             : html`
                 <div class="section-header">PICK A VIEW</div>
-                <mwc-list @action=${this._handlePickView} activatable>
+                <paper-listbox
+                  attr-for-selected="data-path"
+                  .selected=${this.castManager.status.lovelacePath || ""}
+                >
                   ${(
                     this.lovelaceViews ?? [
                       generateDefaultViewConfig({}, {}, {}, {}, () => ""),
                     ]
                   ).map(
                     (view, idx) => html`
-                      <ha-list-item
-                        graphic="avatar"
-                        .activated=${this.castManager.status?.lovelacePath ===
-                        (view.path ?? idx)}
-                        .selected=${this.castManager.status?.lovelacePath ===
-                        (view.path ?? idx)}
+                      <paper-icon-item
+                        @click=${this._handlePickView}
+                        data-path=${view.path || idx}
                       >
-                        ${view.title || view.path || "Unnamed view"}
                         ${view.icon
                           ? html`
                               <ha-icon
                                 .icon=${view.icon}
-                                slot="graphic"
+                                slot="item-icon"
                               ></ha-icon>
                             `
                           : html`<ha-svg-icon
                               slot="item-icon"
                               .path=${mdiViewDashboard}
                             ></ha-svg-icon>`}
-                      </ha-list-item>
+                        ${view.title || view.path || "Unnamed view"}
+                      </paper-icon-item>
                     `
-                  )}</mwc-list
-                >
+                  )}
+                </paper-listbox>
               `}
-
         <div class="card-actions">
           ${this.castManager.status
             ? html`
@@ -188,8 +185,8 @@ class HcCast extends LitElement {
     this.castManager.requestSession();
   }
 
-  private async _handlePickView(ev: CustomEvent<ActionDetail>) {
-    const path = this.lovelaceViews![ev.detail.index].path ?? ev.detail.index;
+  private async _handlePickView(ev: Event) {
+    const path = (ev.currentTarget as any).getAttribute("data-path");
     await ensureConnectedCastSession(this.castManager!, this.auth!);
     castSendShowLovelaceView(this.castManager, this.auth.data.hassUrl, path);
   }
@@ -252,14 +249,26 @@ class HcCast extends LitElement {
         height: 18px;
       }
 
-      ha-list-item ha-icon,
-      ha-list-item ha-svg-icon {
+      paper-listbox {
+        padding-top: 0;
+      }
+
+      paper-listbox ha-icon,
+      paper-listbox ha-svg-icon {
         padding: 12px;
         color: var(--secondary-text-color);
       }
 
-      :host([hide-icons]) ha-icon {
-        display: none;
+      paper-icon-item {
+        cursor: pointer;
+      }
+
+      paper-icon-item[disabled] {
+        cursor: initial;
+      }
+
+      :host([hide-icons]) paper-icon-item {
+        --paper-item-icon-width: 0px;
       }
 
       .spacer {

@@ -1,5 +1,4 @@
-import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/buttons/ha-progress-button";
@@ -10,15 +9,14 @@ import type { HaTextField } from "../../../../components/ha-textfield";
 import { cloudRegister, cloudResendVerification } from "../../../../data/cloud";
 import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import { HomeAssistant } from "../../../../types";
 import "../../ha-config-section";
-import "../../../../components/ha-password-field";
 
 @customElement("cloud-register")
 export class CloudRegister extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+  @property({ type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -147,13 +145,14 @@ export class CloudRegister extends LitElement {
                     "ui.panel.config.cloud.register.email_error_msg"
                   )}
                 ></ha-textfield>
-                <ha-password-field
+                <ha-textfield
                   id="password"
                   name="password"
                   .label=${this.hass.localize(
                     "ui.panel.config.cloud.register.password"
                   )}
                   .value=${this._password}
+                  type="password"
                   autocomplete="new-password"
                   minlength="8"
                   required
@@ -161,7 +160,7 @@ export class CloudRegister extends LitElement {
                   validationMessage=${this.hass.localize(
                     "ui.panel.config.cloud.register.password_error_msg"
                   )}
-                ></ha-password-field>
+                ></ha-textfield>
               </div>
               <div class="card-actions">
                 <ha-progress-button
@@ -198,6 +197,9 @@ export class CloudRegister extends LitElement {
     const emailField = this._emailField;
     const passwordField = this._passwordField;
 
+    const email = emailField.value;
+    const password = passwordField.value;
+
     if (!emailField.reportValidity()) {
       passwordField.reportValidity();
       emailField.focus();
@@ -208,9 +210,6 @@ export class CloudRegister extends LitElement {
       passwordField.focus();
       return;
     }
-
-    const email = emailField.value.toLowerCase();
-    const password = passwordField.value;
 
     this._requestInProgress = true;
 
@@ -230,31 +229,22 @@ export class CloudRegister extends LitElement {
   private async _handleResendVerifyEmail() {
     const emailField = this._emailField;
 
+    const email = emailField.value;
+
     if (!emailField.reportValidity()) {
       emailField.focus();
       return;
     }
 
-    const email = emailField.value;
-
-    const doResend = async (username: string) => {
-      try {
-        await cloudResendVerification(this.hass, username);
-        this._verificationEmailSent(username);
-      } catch (err: any) {
-        const errCode = err && err.body && err.body.code;
-        if (errCode === "usernotfound" && username !== username.toLowerCase()) {
-          await doResend(username.toLowerCase());
-        } else {
-          this._error =
-            err && err.body && err.body.message
-              ? err.body.message
-              : "Unknown error";
-        }
-      }
-    };
-
-    await doResend(email);
+    try {
+      await cloudResendVerification(this.hass, email);
+      this._verificationEmailSent(email);
+    } catch (err: any) {
+      this._error =
+        err && err.body && err.body.message
+          ? err.body.message
+          : "Unknown error";
+    }
   }
 
   private _verificationEmailSent(email: string) {

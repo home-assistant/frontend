@@ -1,6 +1,5 @@
 import "@material/mwc-list";
-import type { PropertyValues } from "lit";
-import { LitElement, css, html } from "lit";
+import { LitElement, PropertyValues, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { array, assert, literal, object, string } from "superstruct";
@@ -9,10 +8,9 @@ import { stringCompare } from "../../../../../common/string/compare";
 import "../../../../../components/ha-check-list-item";
 import "../../../../../components/ha-switch";
 import "../../../../../components/user/ha-user-badge";
-import type { User } from "../../../../../data/user";
-import { fetchUsers } from "../../../../../data/user";
+import { User, fetchUsers } from "../../../../../data/user";
 import type { HomeAssistant } from "../../../../../types";
-import type { UserCondition } from "../../../common/validate-condition";
+import { UserCondition } from "../../../common/validate-condition";
 
 const userConditionStruct = object({
   condition: literal("user"),

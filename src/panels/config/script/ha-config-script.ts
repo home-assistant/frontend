@@ -1,16 +1,18 @@
 import { consume } from "@lit-labs/context";
-import type { HassEntities } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
+import { HassEntities } from "home-assistant-js-websocket";
+import { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { debounce } from "../../../common/util/debounce";
 import { fullEntitiesContext } from "../../../data/context";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
-import type { ScriptEntity } from "../../../data/script";
-import type { RouterOptions } from "../../../layouts/hass-router-page";
-import { HassRouterPage } from "../../../layouts/hass-router-page";
-import type { HomeAssistant } from "../../../types";
+import { EntityRegistryEntry } from "../../../data/entity_registry";
+import { ScriptEntity } from "../../../data/script";
+import {
+  HassRouterPage,
+  RouterOptions,
+} from "../../../layouts/hass-router-page";
+import { HomeAssistant } from "../../../types";
 import "./ha-script-editor";
 import "./ha-script-picker";
 
@@ -27,9 +29,9 @@ class HaConfigScript extends HassRouterPage {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property({ attribute: false }) public showAdvanced = false;
+  @property({ type: Boolean }) public showAdvanced = false;
 
   @property({ attribute: false }) public scripts: ScriptEntity[] = [];
 

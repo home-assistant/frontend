@@ -46,7 +46,7 @@ export class HaCalendarTrigger extends LitElement implements TriggerElement {
             ],
           ],
         },
-        { name: "offset", required: true, selector: { duration: {} } },
+        { name: "offset", selector: { duration: {} } },
         {
           name: "offset_type",
           type: "select",
@@ -69,12 +69,10 @@ export class HaCalendarTrigger extends LitElement implements TriggerElement {
       ] as const
   );
 
-  public static get defaultConfig(): CalendarTrigger {
+  public static get defaultConfig() {
     return {
-      trigger: "calendar",
-      entity_id: "",
       event: "start" as CalendarTrigger["event"],
-      offset: "0",
+      offset: 0,
     };
   }
 

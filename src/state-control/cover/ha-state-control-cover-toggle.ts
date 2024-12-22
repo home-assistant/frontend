@@ -1,6 +1,5 @@
-import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { HassEntity } from "home-assistant-js-websocket";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
@@ -10,7 +9,7 @@ import "../../components/ha-control-switch";
 import "../../components/ha-state-icon";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
 import { forwardHaptic } from "../../data/haptics";
-import type { HomeAssistant } from "../../types";
+import { HomeAssistant } from "../../types";
 
 @customElement("ha-state-control-cover-toggle")
 export class HaStateControlCoverToggle extends LitElement {

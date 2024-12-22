@@ -1,11 +1,11 @@
 import "@material/mwc-list/mwc-list-item";
 import {
   css,
-  type CSSResultGroup,
+  CSSResultGroup,
   html,
   LitElement,
+  PropertyValues,
   nothing,
-  type PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -16,16 +16,16 @@ import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-checkbox";
 import "../../../src/components/ha-faded";
+import "../../../src/components/ha-formfield";
 import "../../../src/components/ha-icon-button";
 import "../../../src/components/ha-markdown";
 import "../../../src/components/ha-settings-row";
 import "../../../src/components/ha-svg-icon";
 import "../../../src/components/ha-switch";
-import type { HaSwitch } from "../../../src/components/ha-switch";
-import type { HassioAddonDetails } from "../../../src/data/hassio/addon";
 import {
   fetchHassioAddonChangelog,
   fetchHassioAddonInfo,
+  HassioAddonDetails,
   updateHassioAddon,
 } from "../../../src/data/hassio/addon";
 import {
@@ -39,11 +39,10 @@ import {
   updateSupervisor,
 } from "../../../src/data/hassio/supervisor";
 import { updateCore } from "../../../src/data/supervisor/core";
-import type { StoreAddon } from "../../../src/data/supervisor/store";
-import type { Supervisor } from "../../../src/data/supervisor/supervisor";
+import { StoreAddon } from "../../../src/data/supervisor/store";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
-import { haStyle } from "../../../src/resources/styles";
-import type { HomeAssistant, Route } from "../../../src/types";
+import { HomeAssistant, Route } from "../../../src/types";
 import { addonArchIsSupported, extractChangelog } from "../util/addon";
 
 declare global {
@@ -58,10 +57,10 @@ const SUPERVISOR_UPDATE_NAMES = {
   supervisor: "Home Assistant Supervisor",
 };
 
-type UpdateType = "os" | "supervisor" | "core" | "addon";
+type updateType = "os" | "supervisor" | "core" | "addon";
 
 const changelogUrl = (
-  entry: UpdateType,
+  entry: updateType,
   version: string
 ): string | undefined => {
   if (entry === "addon") {
@@ -99,7 +98,7 @@ class UpdateAvailableCard extends LitElement {
 
   @property({ attribute: false }) public addonSlug?: string;
 
-  @state() private _updateType?: UpdateType;
+  @state() private _updateType?: updateType;
 
   @state() private _changelogContent?: string;
 
@@ -150,7 +149,7 @@ class UpdateAvailableCard extends LitElement {
                           </ha-markdown>
                         </ha-faded>
                       `
-                    : nothing}
+                    : ""}
                   <div class="versions">
                     <p>
                       ${this.supervisor.localize(
@@ -165,17 +164,15 @@ class UpdateAvailableCard extends LitElement {
                   </div>
                   ${["core", "addon"].includes(this._updateType)
                     ? html`
-                        <hr />
-                        <ha-settings-row>
-                          <span slot="heading">
-                            ${this.supervisor.localize(
-                              "update_available.create_backup"
-                            )}
-                          </span>
-                          <ha-switch id="create_backup" checked></ha-switch>
-                        </ha-settings-row>
+                        <ha-formfield
+                          .label=${this.supervisor.localize(
+                            "update_available.create_backup"
+                          )}
+                        >
+                          <ha-checkbox checked></ha-checkbox>
+                        </ha-formfield>
                       `
-                    : nothing}
+                    : ""}
                 `
               : html`<ha-circular-progress
                     aria-label="Updating"
@@ -194,24 +191,22 @@ class UpdateAvailableCard extends LitElement {
           ? html`
               <div class="card-actions">
                 ${changelog
-                  ? html`
-                      <a href=${changelog} target="_blank" rel="noreferrer">
-                        <ha-button
-                          .label=${this.supervisor.localize(
-                            "update_available.open_release_notes"
-                          )}
-                        >
-                        </ha-button>
-                      </a>
-                    `
-                  : nothing}
+                  ? html`<a .href=${changelog} target="_blank" rel="noreferrer">
+                      <mwc-button
+                        .label=${this.supervisor.localize(
+                          "update_available.open_release_notes"
+                        )}
+                      >
+                      </mwc-button>
+                    </a>`
+                  : ""}
                 <span></span>
-                <ha-progress-button @click=${this._update}>
+                <ha-progress-button @click=${this._update} raised>
                   ${this.supervisor.localize("common.update")}
                 </ha-progress-button>
               </div>
             `
-          : nothing}
+          : ""}
       </ha-card>
     `;
   }
@@ -222,7 +217,7 @@ class UpdateAvailableCard extends LitElement {
     const updateType = ["core", "os", "supervisor"].includes(pathPart)
       ? pathPart
       : "addon";
-    this._updateType = updateType as UpdateType;
+    this._updateType = updateType as updateType;
 
     switch (updateType) {
       case "addon":
@@ -247,11 +242,9 @@ class UpdateAvailableCard extends LitElement {
     if (this._updateType && !["core", "addon"].includes(this._updateType)) {
       return false;
     }
-    const createBackupSwitch = this.shadowRoot?.getElementById(
-      "create-backup"
-    ) as HaSwitch;
-    if (createBackupSwitch) {
-      return createBackupSwitch.checked;
+    const checkbox = this.shadowRoot?.querySelector("ha-checkbox");
+    if (checkbox) {
+      return checkbox.checked;
     }
     return true;
   }
@@ -404,50 +397,41 @@ class UpdateAvailableCard extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      haStyle,
-      css`
-        :host {
-          display: block;
-        }
-        ha-card {
-          margin: auto;
-        }
-        a {
-          text-decoration: none;
-          color: var(--primary-text-color);
-        }
-        .card-actions {
-          display: flex;
-          justify-content: space-between;
-        }
+    return css`
+      :host {
+        display: block;
+      }
+      ha-card {
+        margin: auto;
+      }
+      a {
+        text-decoration: none;
+        color: var(--primary-text-color);
+      }
+      ha-settings-row {
+        padding: 0;
+      }
+      .card-actions {
+        display: flex;
+        justify-content: space-between;
+        border-top: none;
+        padding: 0 8px 8px;
+      }
 
-        ha-circular-progress {
-          display: block;
-          margin: 32px;
-          text-align: center;
-        }
+      ha-circular-progress {
+        display: block;
+        margin: 32px;
+        text-align: center;
+      }
 
-        .progress-text {
-          text-align: center;
-        }
+      .progress-text {
+        text-align: center;
+      }
 
-        ha-markdown {
-          padding-bottom: 8px;
-        }
-
-        ha-settings-row {
-          padding: 0;
-          margin-bottom: -16px;
-        }
-
-        hr {
-          border-color: var(--divider-color);
-          border-bottom: none;
-          margin: 16px 0 0 0;
-        }
-      `,
-    ];
+      ha-markdown {
+        padding-bottom: 8px;
+      }
+    `;
   }
 }
 

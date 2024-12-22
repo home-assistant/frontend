@@ -1,7 +1,6 @@
 import { atLeastVersion } from "../../common/config/version";
-import type { HomeAssistant } from "../../types";
-import type { HassioResponse } from "./common";
-import { hassioApiResultExtractor } from "./common";
+import { HomeAssistant } from "../../types";
+import { hassioApiResultExtractor, HassioResponse } from "./common";
 
 export type HassioHostInfo = {
   agent_version: string;

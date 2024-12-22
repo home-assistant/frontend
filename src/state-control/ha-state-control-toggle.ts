@@ -1,7 +1,6 @@
 import { mdiFlash, mdiFlashOff } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
+import { HassEntity } from "home-assistant-js-websocket";
+import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
@@ -12,7 +11,7 @@ import "../components/ha-control-button";
 import "../components/ha-control-switch";
 import { UNAVAILABLE, UNKNOWN } from "../data/entity";
 import { forwardHaptic } from "../data/haptics";
-import type { HomeAssistant } from "../types";
+import { HomeAssistant } from "../types";
 
 @customElement("ha-state-control-toggle")
 export class HaStateControlToggle extends LitElement {

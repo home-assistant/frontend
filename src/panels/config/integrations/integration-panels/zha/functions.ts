@@ -1,4 +1,4 @@
-import type { Cluster, ZHADevice, ZHAGroup } from "../../../../../data/zha";
+import { Cluster, ZHADevice, ZHAGroup } from "../../../../../data/zha";
 
 export const formatAsPaddedHex = (value: string | number): string => {
   let hex = value;

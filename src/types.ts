@@ -1,5 +1,4 @@
-import type { DurationFormatConstructor } from "@formatjs/intl-durationformat/src/types";
-import type {
+import {
   Auth,
   Connection,
   HassConfig,
@@ -9,30 +8,25 @@ import type {
   HassServiceTarget,
   MessageBase,
 } from "home-assistant-js-websocket";
-import type { LocalizeFunc } from "./common/translations/localize";
-import type { AreaRegistryEntry } from "./data/area_registry";
-import type { DeviceRegistryEntry } from "./data/device_registry";
-import type { EntityRegistryDisplayEntry } from "./data/entity_registry";
-import type { FloorRegistryEntry } from "./data/floor_registry";
-import type { CoreFrontendUserData } from "./data/frontend";
-import type {
-  FrontendLocaleData,
-  getHassTranslations,
-} from "./data/translation";
-import type { Themes } from "./data/ws-themes";
-import type { ExternalMessaging } from "./external_app/external_messaging";
+import { LocalizeFunc } from "./common/translations/localize";
+import { AreaRegistryEntry } from "./data/area_registry";
+import { DeviceRegistryEntry } from "./data/device_registry";
+import { EntityRegistryDisplayEntry } from "./data/entity_registry";
+import { CoreFrontendUserData } from "./data/frontend";
+import { FrontendLocaleData, getHassTranslations } from "./data/translation";
+import { Themes } from "./data/ws-themes";
+import { ExternalMessaging } from "./external_app/external_messaging";
 
 declare global {
-  /* eslint-disable no-var, @typescript-eslint/naming-convention */
+  /* eslint-disable no-var, no-redeclare */
   var __DEV__: boolean;
   var __DEMO__: boolean;
-  var __BUILD__: "modern" | "legacy";
+  var __BUILD__: "latest" | "es5";
   var __VERSION__: string;
   var __STATIC_PATH__: string;
   var __BACKWARDS_COMPAT__: boolean;
   var __SUPERVISOR__: boolean;
-  var __HASS_URL__: string;
-  /* eslint-enable no-var, @typescript-eslint/naming-convention */
+  /* eslint-enable no-var, no-redeclare */
 
   interface Window {
     // Custom panel entry point url
@@ -62,16 +56,9 @@ declare global {
     };
   }
 
-  // For loading workers in rspack
+  // For loading workers in webpack
   interface ImportMeta {
     url: string;
-  }
-
-  // Intl.DurationFormat is not yet part of the TypeScript standard
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace Intl {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    const DurationFormat: DurationFormatConstructor;
   }
 }
 
@@ -173,7 +160,6 @@ export interface TranslationMetadata {
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 export type TranslationDict = typeof import("./translations/en.json");
 
 export interface IconMetaFile {
@@ -224,7 +210,6 @@ export interface HomeAssistant {
   entities: { [id: string]: EntityRegistryDisplayEntry };
   devices: { [id: string]: DeviceRegistryEntry };
   areas: { [id: string]: AreaRegistryEntry };
-  floors: { [id: string]: FloorRegistryEntry };
   services: HassServices;
   config: HassConfig;
   themes: Themes;
@@ -268,13 +253,6 @@ export interface HomeAssistant {
     parameters?: Record<string, any>,
     headers?: Record<string, string>
   ): Promise<T>;
-  callApiRaw( // introduced in 2024.11
-    method: "GET" | "POST" | "PUT" | "DELETE",
-    path: string,
-    parameters?: Record<string, any>,
-    headers?: Record<string, string>,
-    signal?: AbortSignal
-  ): Promise<Response>;
   fetchWithAuth(path: string, init?: Record<string, any>): Promise<Response>;
   sendWS(msg: MessageBase): void;
   callWS<T>(msg: MessageBase): Promise<T>;
@@ -320,3 +298,5 @@ export type AsyncReturnType<T extends (...args: any) => any> = T extends (
     : never;
 
 export type Entries<T> = [keyof T, T[keyof T]][];
+
+export type ItemPath = (number | string)[];

@@ -7,8 +7,15 @@ import {
   mdiProgressWrench,
   mdiRecordCircleOutline,
 } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
@@ -20,29 +27,30 @@ import {
   fullEntitiesContext,
   labelsContext,
 } from "../../data/context";
-import type { EntityRegistryEntry } from "../../data/entity_registry";
-import type { FloorRegistryEntry } from "../../data/floor_registry";
-import type { LabelRegistryEntry } from "../../data/label_registry";
-import type { LogbookEntry } from "../../data/logbook";
-import type {
+import { EntityRegistryEntry } from "../../data/entity_registry";
+import { FloorRegistryEntry } from "../../data/floor_registry";
+import { LabelRegistryEntry } from "../../data/label_registry";
+import { LogbookEntry } from "../../data/logbook";
+import {
   ChooseAction,
-  Option,
+  ChooseActionChoice,
   IfAction,
   ParallelAction,
   RepeatAction,
   SequenceAction,
+  getActionType,
 } from "../../data/script";
-import { getActionType } from "../../data/script";
 import { describeAction } from "../../data/script_i18n";
-import type {
+import {
   ActionTraceStep,
   AutomationTraceExtended,
   ChooseActionTraceStep,
   IfActionTraceStep,
   TriggerTraceStep,
+  getDataFromPath,
+  isTriggerPath,
 } from "../../data/trace";
-import { getDataFromPath, isTriggerPath } from "../../data/trace";
-import type { HomeAssistant } from "../../types";
+import { HomeAssistant } from "../../types";
 import "./ha-timeline";
 import type { HaTimeline } from "./ha-timeline";
 
@@ -198,7 +206,7 @@ class ActionRenderer {
     private hass: HomeAssistant,
     private entityReg: EntityRegistryEntry[],
     private labelReg: LabelRegistryEntry[],
-    private floorReg: { [id: string]: FloorRegistryEntry },
+    private floorReg: FloorRegistryEntry[],
     private entries: TemplateResult[],
     private trace: AutomationTraceExtended,
     private logbookRenderer: LogbookRenderer,
@@ -405,7 +413,7 @@ class ActionRenderer {
           : undefined;
       const choiceConfig = this._getDataFromPath(
         `${this.keys[index]}/choose/${chooseTrace.result.choice}`
-      ) as Option | undefined;
+      ) as ChooseActionChoice | undefined;
       const choiceName = choiceConfig
         ? `${
             choiceConfig.alias ||
@@ -676,8 +684,7 @@ export class HaAutomationTracer extends LitElement {
 
   @property({ attribute: false }) public selectedPath?: string;
 
-  @property({ attribute: "allow-pick", type: Boolean }) public allowPick =
-    false;
+  @property({ type: Boolean }) public allowPick = false;
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -689,7 +696,7 @@ export class HaAutomationTracer extends LitElement {
 
   @state()
   @consume({ context: floorsContext, subscribe: true })
-  _floorReg!: { [id: string]: FloorRegistryEntry };
+  _floorReg!: FloorRegistryEntry[];
 
   protected render() {
     if (!this.trace) {
@@ -839,7 +846,7 @@ export class HaAutomationTracer extends LitElement {
 
     entries.push(html`
       <ha-timeline
-        last-item
+        lastItem
         .icon=${entry.icon}
         class=${ifDefined(entry.className)}
       >

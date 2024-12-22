@@ -1,13 +1,10 @@
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-textfield";
-import "../../../../../components/ha-formfield";
-import "../../../../../components/ha-switch";
-import type { StopAction } from "../../../../../data/script";
-import type { HomeAssistant } from "../../../../../types";
-import type { ActionElement } from "../ha-automation-action-row";
+import { StopAction } from "../../../../../data/script";
+import { HomeAssistant } from "../../../../../types";
+import { ActionElement } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-stop")
 export class HaStopAction extends LitElement implements ActionElement {
@@ -17,7 +14,7 @@ export class HaStopAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  public static get defaultConfig(): StopAction {
+  public static get defaultConfig() {
     return { stop: "" };
   }
 

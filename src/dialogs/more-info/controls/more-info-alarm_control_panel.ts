@@ -1,12 +1,13 @@
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-control-button";
 import "../../../components/ha-state-icon";
-import type { AlarmControlPanelEntity } from "../../../data/alarm_control_panel";
-import { setProtectedAlarmControlPanelMode } from "../../../data/alarm_control_panel";
+import {
+  AlarmControlPanelEntity,
+  setProtectedAlarmControlPanelMode,
+} from "../../../data/alarm_control_panel";
 import "../../../state-control/alarm_control_panel/ha-state-control-alarm_control_panel-modes";
 import type { HomeAssistant } from "../../../types";
 import "../components/ha-more-info-state-header";

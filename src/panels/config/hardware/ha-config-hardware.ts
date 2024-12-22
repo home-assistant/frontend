@@ -2,9 +2,8 @@ import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiPower } from "@mdi/js";
 import type { ChartOptions } from "chart.js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { css, html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { numberFormatToLocale } from "../../../common/number/format_number";
@@ -18,15 +17,19 @@ import "../../../components/ha-clickable-list-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-settings-row";
-import type { ConfigEntry } from "../../../data/config_entries";
-import { subscribeConfigEntries } from "../../../data/config_entries";
-import type {
+import {
+  ConfigEntry,
+  subscribeConfigEntries,
+} from "../../../data/config_entries";
+import {
+  BOARD_NAMES,
   HardwareInfo,
   SystemStatusStreamMessage,
 } from "../../../data/hardware";
-import { BOARD_NAMES } from "../../../data/hardware";
-import type { HassioHassOSInfo } from "../../../data/hassio/host";
-import { fetchHassioHassOsInfo } from "../../../data/hassio/host";
+import {
+  fetchHassioHassOsInfo,
+  HassioHassOSInfo,
+} from "../../../data/hassio/host";
 import { scanUSBDevices } from "../../../data/usb";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
@@ -37,7 +40,6 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { hardwareBrandsUrl } from "../../../util/brands-url";
 import { showhardwareAvailableDialog } from "./show-dialog-hardware-available";
-import { extractApiErrorMessage } from "../../../data/hassio/common";
 
 const DATASAMPLES = 60;
 
@@ -56,7 +58,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @state() private _error?: string;
+  @state() private _error?: { code: string; message: string };
 
   @state() private _OSData?: HassioHassOSInfo;
 
@@ -145,6 +147,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
   protected willUpdate(): void {
     if (!this.hasUpdated) {
       this._chartOptions = {
+        animation: false,
         responsive: true,
         scales: {
           y: {
@@ -268,7 +271,11 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
             `
           : ""}
         ${this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          ? html`
+              <ha-alert alert-type="error"
+                >${this._error.message || this._error.code}</ha-alert
+              >
+            `
           : ""}
         <div class="content">
           ${boardName || isComponentLoaded(this.hass, "hassio")
@@ -300,7 +307,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                         <mwc-list>
                           <ha-clickable-list-item
                             .href=${documentationURL}
-                            open-new-tab
+                            openNewTab
                             twoline
                             hasMeta
                           >
@@ -462,7 +469,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
         this._OSData = await fetchHassioHassOsInfo(this.hass);
       }
     } catch (err: any) {
-      this._error = extractApiErrorMessage(err);
+      this._error = err.message || err;
     }
   }
 

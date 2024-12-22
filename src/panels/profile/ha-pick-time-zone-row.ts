@@ -1,6 +1,5 @@
 import "@material/mwc-list/mwc-list-item";
-import type { TemplateResult } from "lit";
-import { html, LitElement } from "lit";
+import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { formatDateTimeNumeric } from "../../common/datetime/format_date_time";
 import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
@@ -9,7 +8,7 @@ import "../../components/ha-card";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import { TimeZone } from "../../data/translation";
-import type { HomeAssistant } from "../../types";
+import { HomeAssistant } from "../../types";
 
 @customElement("ha-pick-time-zone-row")
 class TimeZoneRow extends LitElement {

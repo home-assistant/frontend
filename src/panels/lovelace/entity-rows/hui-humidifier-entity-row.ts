@@ -1,14 +1,20 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-humidifier-state";
-import type { HumidifierEntity } from "../../../data/humidifier";
-import type { HomeAssistant } from "../../../types";
+import { HumidifierEntity } from "../../../data/humidifier";
+import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { EntityConfig, LovelaceRow } from "./types";
+import { EntityConfig, LovelaceRow } from "./types";
 
 @customElement("hui-humidifier-entity-row")
 class HuiHumidifierEntityRow extends LitElement implements LovelaceRow {

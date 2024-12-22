@@ -2,8 +2,14 @@ import { undoDepth } from "@codemirror/commands";
 import "@material/mwc-button";
 import { mdiClose } from "@mdi/js";
 import { dump, load } from "js-yaml";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { array, assert, object, optional, string, type } from "superstruct";
@@ -21,8 +27,10 @@ import type { HomeAssistant } from "../../types";
 import { showToast } from "../../util/toast";
 import type { Lovelace } from "./types";
 import "../../components/ha-top-app-bar-fixed";
-import type { LovelaceRawConfig } from "../../data/lovelace/config/types";
-import { isStrategyDashboard } from "../../data/lovelace/config/types";
+import {
+  LovelaceRawConfig,
+  isStrategyDashboard,
+} from "../../data/lovelace/config/types";
 
 const lovelaceStruct = type({
   title: optional(string()),
@@ -223,15 +231,14 @@ class LovelaceFullConfigEditor extends LitElement {
     if (!value) {
       showConfirmationDialog(this, {
         title: this.hass.localize(
-          "ui.panel.lovelace.editor.raw_editor.confirm_delete_config_title"
+          "ui.panel.lovelace.editor.raw_editor.confirm_remove_config_title"
         ),
         text: this.hass.localize(
-          "ui.panel.lovelace.editor.raw_editor.confirm_delete_config_text"
+          "ui.panel.lovelace.editor.raw_editor.confirm_remove_config_text"
         ),
-        confirmText: this.hass.localize("ui.common.delete"),
+        confirmText: this.hass.localize("ui.common.remove"),
         dismissText: this.hass.localize("ui.common.cancel"),
         confirm: () => this._removeConfig(),
-        destructive: true,
       });
       return;
     }

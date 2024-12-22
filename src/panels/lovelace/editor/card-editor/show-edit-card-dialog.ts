@@ -1,7 +1,7 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
-import type { LovelaceContainerPath } from "../lovelace-path";
+import { LovelaceContainerPath } from "../lovelace-path";
 
 export type EditCardDialogParams = {
   lovelaceConfig: LovelaceConfig;

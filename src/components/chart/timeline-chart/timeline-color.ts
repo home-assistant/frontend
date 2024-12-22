@@ -1,4 +1,4 @@
-import type { HassEntity } from "home-assistant-js-websocket";
+import { HassEntity } from "home-assistant-js-websocket";
 import { getGraphColorByIndex } from "../../../common/color/colors";
 import { hex2rgb, lab2hex, rgb2lab } from "../../../common/color/convert-color";
 import { labBrighten } from "../../../common/color/lab";

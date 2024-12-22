@@ -1,6 +1,6 @@
 import { customElement } from "lit/decorators";
-import type { DeviceCondition } from "../../data/device_automation";
 import {
+  DeviceCondition,
   fetchDeviceConditions,
   localizeDeviceAutomationCondition,
 } from "../../data/device_automation";

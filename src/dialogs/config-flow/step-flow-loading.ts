@@ -1,10 +1,9 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../components/ha-circular-progress";
-import type { DataEntryFlowStep } from "../../data/data_entry_flow";
-import type { HomeAssistant } from "../../types";
-import type { FlowConfig, LoadingReason } from "./show-dialog-data-entry-flow";
+import { DataEntryFlowStep } from "../../data/data_entry_flow";
+import { HomeAssistant } from "../../types";
+import { FlowConfig, LoadingReason } from "./show-dialog-data-entry-flow";
 
 @customElement("step-flow-loading")
 class StepFlowLoading extends LitElement {
@@ -12,7 +11,7 @@ class StepFlowLoading extends LitElement {
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public loadingReason!: LoadingReason;
+  @property() public loadingReason!: LoadingReason;
 
   @property() public handler?: string;
 

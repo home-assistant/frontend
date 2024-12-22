@@ -1,5 +1,5 @@
 import memoizeOne from "memoize-one";
-import type { FrontendLocaleData } from "../../data/translation";
+import { FrontendLocaleData } from "../../data/translation";
 
 export const formatLanguageCode = (
   languageCode: string,

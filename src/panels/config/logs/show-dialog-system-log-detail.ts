@@ -1,5 +1,5 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import type { LoggedError } from "../../../data/system_log";
+import { LoggedError } from "../../../data/system_log";
 
 declare global {
   // for fire event

@@ -1,40 +1,41 @@
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { createConnection, getAuth } from "home-assistant-js-websocket";
-import type { TemplateResult } from "lit";
-import { html } from "lit";
+import {
+  createConnection,
+  getAuth,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket";
+import { html, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
 import { CAST_NS } from "../../../../src/cast/const";
-import type {
+import {
   ConnectMessage,
   GetStatusMessage,
   HassMessage,
   ShowDemoMessage,
   ShowLovelaceViewMessage,
 } from "../../../../src/cast/receiver_messages";
-import type {
+import {
+  ReceiverErrorCode,
   ReceiverErrorMessage,
   ReceiverStatusMessage,
 } from "../../../../src/cast/sender_messages";
-import { ReceiverErrorCode } from "../../../../src/cast/sender_messages";
 import { atLeastVersion } from "../../../../src/common/config/version";
 import { isNavigationClick } from "../../../../src/common/dom/is-navigation-click";
 import {
   getLegacyLovelaceCollection,
   getLovelaceCollection,
 } from "../../../../src/data/lovelace";
-import type {
+import {
+  isStrategyDashboard,
   LegacyLovelaceConfig,
   LovelaceConfig,
   LovelaceDashboardStrategyConfig,
 } from "../../../../src/data/lovelace/config/types";
-import { isStrategyDashboard } from "../../../../src/data/lovelace/config/types";
 import { fetchResources } from "../../../../src/data/lovelace/resource";
 import { loadLovelaceResources } from "../../../../src/panels/lovelace/common/load-resources";
 import { HassElement } from "../../../../src/state/hass-element";
 import { castContext } from "../cast_context";
 import "./hc-launch-screen";
 import { getPanelTitleFromUrlPath } from "../../../../src/data/panel";
-import { checkLovelaceConfig } from "../../../../src/panels/lovelace/common/check-lovelace-config";
 
 const DEFAULT_CONFIG: LovelaceDashboardStrategyConfig = {
   strategy: {
@@ -144,10 +145,10 @@ export class HcMain extends HassElement {
     }
 
     if (senderId) {
-      this._sendMessage(senderId, status);
+      this.sendMessage(senderId, status);
     } else {
       for (const sender of castContext.getSenders()) {
-        this._sendMessage(sender.id, status);
+        this.sendMessage(sender.id, status);
       }
     }
   }
@@ -164,10 +165,10 @@ export class HcMain extends HassElement {
     };
 
     if (senderId) {
-      this._sendMessage(senderId, error);
+      this.sendMessage(senderId, error);
     } else {
       for (const sender of castContext.getSenders()) {
-        this._sendMessage(sender.id, error);
+        this.sendMessage(sender.id, error);
       }
     }
   }
@@ -364,9 +365,7 @@ export class HcMain extends HassElement {
       this._urlPath || "lovelace"
     );
     castContext.setApplicationState(title || "");
-    this._lovelaceConfig = checkLovelaceConfig(
-      lovelaceConfig
-    ) as LovelaceConfig;
+    this._lovelaceConfig = lovelaceConfig;
   }
 
   private _handleShowDemo(_msg: ShowDemoMessage) {
@@ -394,7 +393,7 @@ export class HcMain extends HassElement {
     }
   }
 
-  private _sendMessage(senderId: string, response: any) {
+  private sendMessage(senderId: string, response: any) {
     castContext.sendCustomMessage(CAST_NS, senderId, response);
   }
 }

@@ -1,5 +1,5 @@
-import type { LovelaceCardConfig } from "../../../../src/data/lovelace/config/card";
-import type { LovelaceConfig } from "../../../../src/data/lovelace/config/types";
+import { LovelaceCardConfig } from "../../../../src/data/lovelace/config/card";
+import { LovelaceConfig } from "../../../../src/data/lovelace/config/types";
 import { castContext } from "../cast_context";
 
 export const castDemoLovelace: () => LovelaceConfig = () => {

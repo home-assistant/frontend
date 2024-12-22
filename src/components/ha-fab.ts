@@ -19,9 +19,6 @@ export class HaFab extends FabBase {
         margin-inline-end: 12px;
         direction: var(--direction);
       }
-      :disabled {
-        opacity: var(--light-disabled-opacity);
-      }
     `,
     // safari workaround - must be explicit
     mainWindow.document.dir === "rtl"

@@ -1,17 +1,14 @@
-import "@material/mwc-list/mwc-list";
 import "@material/mwc-button/mwc-button";
 import { mdiAlertCircle, mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-circular-progress";
-import "../../../../../components/ha-list-item";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
-import { pingMatterNode } from "../../../../../data/matter";
+import { pingMatterNode, MatterPingResult } from "../../../../../data/matter";
 import { haStyle, haStyleDialog } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
-import type { MatterPingNodeDialogParams } from "./show-dialog-matter-ping-node";
+import { HomeAssistant } from "../../../../../types";
+import { MatterPingNodeDialogParams } from "./show-dialog-matter-ping-node";
 
 @customElement("dialog-matter-ping-node")
 class DialogMatterPingNode extends LitElement {
@@ -19,12 +16,9 @@ class DialogMatterPingNode extends LitElement {
 
   @state() private device_id?: string;
 
-  @state() private _status?: "started" | "failed";
+  @state() private _status?: string;
 
-  @state() private _pingResultEntries?: [
-    ip_address: string,
-    success: boolean,
-  ][];
+  @state() private _pingResult?: MatterPingResult;
 
   public async showDialog(params: MatterPingNodeDialogParams): Promise<void> {
     this.device_id = params.device_id;
@@ -44,62 +38,60 @@ class DialogMatterPingNode extends LitElement {
           this.hass.localize("ui.panel.config.matter.ping_node.title")
         )}
       >
-        ${this._status === "failed"
+        ${this._pingResult
           ? html`
-              <div class="flex-container">
-                <ha-svg-icon
-                  .path=${mdiCloseCircle}
-                  class="failed"
-                ></ha-svg-icon>
-                <div class="status">
-                  <p>
-                    ${this.hass.localize(
-                      this._pingResultEntries
-                        ? "ui.panel.config.matter.ping_node.no_ip_found"
-                        : "ui.panel.config.matter.ping_node.ping_failed"
-                    )}
-                  </p>
-                </div>
-              </div>
+              <h2>
+                ${this.hass.localize(
+                  "ui.panel.config.matter.ping_node.ping_complete"
+                )}
+              </h2>
+              <mwc-list>
+                ${Object.entries(this._pingResult).map(
+                  ([ip, success]) =>
+                    html`<ha-list-item hasMeta noninteractive
+                      >${ip}
+                      <ha-svg-icon
+                        slot="meta"
+                        .path=${success ? mdiCheckCircle : mdiAlertCircle}
+                        class=${success ? "success" : "failed"}
+                      ></ha-svg-icon>
+                    </ha-list-item>`
+                )}
+              </mwc-list>
               <mwc-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize("ui.common.close")}
               </mwc-button>
             `
-          : this._pingResultEntries
+          : this._status === "started"
             ? html`
-                <h2>
-                  ${this.hass.localize(
-                    "ui.panel.config.matter.ping_node.ping_complete"
-                  )}
-                </h2>
-                <mwc-list>
-                  ${this._pingResultEntries.map(
-                    ([ip, success]) =>
-                      html`<ha-list-item hasMeta noninteractive
-                        >${ip}
-                        <ha-svg-icon
-                          slot="meta"
-                          .path=${success ? mdiCheckCircle : mdiAlertCircle}
-                          class=${success ? "success" : "failed"}
-                        ></ha-svg-icon>
-                      </ha-list-item>`
-                  )}
-                </mwc-list>
+                <div class="flex-container">
+                  <ha-circular-progress indeterminate></ha-circular-progress>
+                  <div class="status">
+                    <p>
+                      <b>
+                        ${this.hass.localize(
+                          "ui.panel.config.matter.ping_node.in_progress"
+                        )}
+                      </b>
+                    </p>
+                  </div>
+                </div>
                 <mwc-button slot="primaryAction" @click=${this.closeDialog}>
                   ${this.hass.localize("ui.common.close")}
                 </mwc-button>
               `
-            : this._status === "started"
+            : this._status === "failed"
               ? html`
                   <div class="flex-container">
-                    <ha-circular-progress indeterminate></ha-circular-progress>
+                    <ha-svg-icon
+                      .path=${mdiCloseCircle}
+                      class="failed"
+                    ></ha-svg-icon>
                     <div class="status">
                       <p>
-                        <b>
-                          ${this.hass.localize(
-                            "ui.panel.config.matter.ping_node.in_progress"
-                          )}
-                        </b>
+                        ${this.hass.localize(
+                          "ui.panel.config.matter.ping_node.ping_failed"
+                        )}
                       </p>
                     </div>
                   </div>
@@ -136,13 +128,7 @@ class DialogMatterPingNode extends LitElement {
     }
     this._status = "started";
     try {
-      const pingResult = await pingMatterNode(this.hass, this.device_id!);
-      const pingResultEntries = Object.entries(pingResult);
-      if (pingResultEntries.length === 0) {
-        this._status = "failed";
-      }
-
-      this._pingResultEntries = pingResultEntries;
+      this._pingResult = await pingMatterNode(this.hass, this.device_id!);
     } catch (err) {
       this._status = "failed";
     }
@@ -151,7 +137,7 @@ class DialogMatterPingNode extends LitElement {
   public closeDialog(): void {
     this.device_id = undefined;
     this._status = undefined;
-    this._pingResultEntries = undefined;
+    this._pingResult = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 

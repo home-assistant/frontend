@@ -1,16 +1,8 @@
 import { customElement } from "lit/decorators";
 import { HaLogicalCondition } from "./ha-automation-condition-logical";
-import type { LogicalCondition } from "../../../../../data/automation";
 
 @customElement("ha-automation-condition-and")
-export class HaAndCondition extends HaLogicalCondition {
-  public static get defaultConfig(): LogicalCondition {
-    return {
-      condition: "and",
-      conditions: [],
-    };
-  }
-}
+export class HaAndCondition extends HaLogicalCondition {}
 
 declare global {
   interface HTMLElementTagNameMap {

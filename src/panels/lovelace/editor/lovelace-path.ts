@@ -1,10 +1,13 @@
-import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
-import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
-import { isStrategySection } from "../../../data/lovelace/config/section";
-import type { LovelaceConfig } from "../../../data/lovelace/config/types";
-import type { LovelaceViewRawConfig } from "../../../data/lovelace/config/view";
-import { isStrategyView } from "../../../data/lovelace/config/view";
+import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import {
+  LovelaceSectionRawConfig,
+  isStrategySection,
+} from "../../../data/lovelace/config/section";
+import { LovelaceConfig } from "../../../data/lovelace/config/types";
+import {
+  LovelaceViewRawConfig,
+  isStrategyView,
+} from "../../../data/lovelace/config/view";
 
 export type LovelaceCardPath = [number, number] | [number, number, number];
 export type LovelaceContainerPath = [number] | [number, number];
@@ -77,6 +80,35 @@ export const findLovelaceContainer: FindLovelaceContainer = (
   return section;
 };
 
+export const findLovelaceCards = (
+  config: LovelaceConfig,
+  path: LovelaceContainerPath
+): LovelaceCardConfig[] | undefined => {
+  const { viewIndex, sectionIndex } = parseLovelaceContainerPath(path);
+
+  const view = config.views[viewIndex];
+
+  if (!view) {
+    throw new Error("View does not exist");
+  }
+  if (isStrategyView(view)) {
+    throw new Error("Can not find cards in a strategy view");
+  }
+  if (sectionIndex === undefined) {
+    return view.cards;
+  }
+
+  const section = view.sections?.[sectionIndex];
+
+  if (!section) {
+    throw new Error("Section does not exist");
+  }
+  if (isStrategySection(section)) {
+    throw new Error("Can not find cards in a strategy section");
+  }
+  return section.cards;
+};
+
 export const updateLovelaceContainer = (
   config: LovelaceConfig,
   path: LovelaceContainerPath,
@@ -121,16 +153,10 @@ export const updateLovelaceContainer = (
   };
 };
 
-type LovelaceItemKeys = {
-  cards: LovelaceCardConfig[];
-  badges: (Partial<LovelaceBadgeConfig> | string)[];
-};
-
-export const updateLovelaceItems = <T extends keyof LovelaceItemKeys>(
-  key: T,
+export const updateLovelaceCards = (
   config: LovelaceConfig,
   path: LovelaceContainerPath,
-  items: LovelaceItemKeys[T]
+  cards: LovelaceCardConfig[]
 ): LovelaceConfig => {
   const { viewIndex, sectionIndex } = parseLovelaceContainerPath(path);
 
@@ -138,13 +164,13 @@ export const updateLovelaceItems = <T extends keyof LovelaceItemKeys>(
   const newViews = config.views.map((view, vIndex) => {
     if (vIndex !== viewIndex) return view;
     if (isStrategyView(view)) {
-      throw new Error(`Can not update ${key} in a strategy view`);
+      throw new Error("Can not update cards in a strategy view");
     }
     if (sectionIndex === undefined) {
       updated = true;
       return {
         ...view,
-        [key]: items,
+        cards,
       };
     }
 
@@ -155,12 +181,12 @@ export const updateLovelaceItems = <T extends keyof LovelaceItemKeys>(
     const newSections = view.sections.map((section, sIndex) => {
       if (sIndex !== sectionIndex) return section;
       if (isStrategySection(section)) {
-        throw new Error(`Can not update ${key} in a strategy section`);
+        throw new Error("Can not update cards in a strategy section");
       }
       updated = true;
       return {
         ...section,
-        [key]: items,
+        cards,
       };
     });
     return {
@@ -170,43 +196,10 @@ export const updateLovelaceItems = <T extends keyof LovelaceItemKeys>(
   });
 
   if (!updated) {
-    throw new Error(`Can not update ${key} in a non-existing view/section`);
+    throw new Error("Can not update cards in a non-existing view/section");
   }
   return {
     ...config,
     views: newViews,
   };
-};
-
-export const findLovelaceItems = <T extends keyof LovelaceItemKeys>(
-  key: T,
-  config: LovelaceConfig,
-  path: LovelaceContainerPath
-): LovelaceItemKeys[T] | undefined => {
-  const { viewIndex, sectionIndex } = parseLovelaceContainerPath(path);
-
-  const view = config.views[viewIndex];
-
-  if (!view) {
-    throw new Error("View does not exist");
-  }
-  if (isStrategyView(view)) {
-    throw new Error("Can not find cards in a strategy view");
-  }
-  if (sectionIndex === undefined) {
-    return view[key] as LovelaceItemKeys[T] | undefined;
-  }
-
-  const section = view.sections?.[sectionIndex];
-
-  if (!section) {
-    throw new Error("Section does not exist");
-  }
-  if (isStrategySection(section)) {
-    throw new Error("Can not find cards in a strategy section");
-  }
-  if (key === "cards") {
-    return section[key as "cards"] as LovelaceItemKeys[T] | undefined;
-  }
-  throw new Error(`${key} is not supported in section`);
 };

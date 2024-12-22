@@ -1,13 +1,10 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { until } from "lit/directives/until";
+import { DEFAULT_SERVICE_ICON, FIXED_DOMAIN_ICONS } from "../common/const";
 import { computeDomain } from "../common/entity/compute_domain";
-import {
-  DEFAULT_SERVICE_ICON,
-  FALLBACK_DOMAIN_ICONS,
-  serviceIcon,
-} from "../data/icons";
-import type { HomeAssistant } from "../types";
+import { serviceIcon } from "../data/icons";
+import { HomeAssistant } from "../types";
 import "./ha-icon";
 import "./ha-svg-icon";
 
@@ -47,7 +44,7 @@ export class HaServiceIcon extends LitElement {
 
     return html`
       <ha-svg-icon
-        .path=${FALLBACK_DOMAIN_ICONS[domain] || DEFAULT_SERVICE_ICON}
+        .path=${FIXED_DOMAIN_ICONS[domain] || DEFAULT_SERVICE_ICON}
       ></ha-svg-icon>
     `;
   }

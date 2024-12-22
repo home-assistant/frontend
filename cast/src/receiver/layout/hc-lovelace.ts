@@ -1,20 +1,12 @@
-import {
-  css,
-  type CSSResultGroup,
-  html,
-  LitElement,
-  type TemplateResult,
-} from "lit";
-import { customElement, property } from "lit/decorators";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
-import type { LovelaceConfig } from "../../../../src/data/lovelace/config/types";
+import { LovelaceConfig } from "../../../../src/data/lovelace/config/types";
 import { getPanelTitleFromUrlPath } from "../../../../src/data/panel";
-import type { Lovelace } from "../../../../src/panels/lovelace/types";
+import { Lovelace } from "../../../../src/panels/lovelace/types";
 import "../../../../src/panels/lovelace/views/hui-view";
-import "../../../../src/panels/lovelace/views/hui-view-container";
-import type { HomeAssistant } from "../../../../src/types";
+import { HomeAssistant } from "../../../../src/types";
 import "./hc-launch-screen";
-import "../../../../src/panels/lovelace/views/hui-view-background";
 
 (window as any).loadCardHelpers = () =>
   import("../../../../src/panels/lovelace/custom-card-helpers");
@@ -26,9 +18,11 @@ class HcLovelace extends LitElement {
   @property({ attribute: false })
   public lovelaceConfig!: LovelaceConfig;
 
-  @property({ attribute: false }) public viewPath?: string | number | null;
+  @property() public viewPath?: string | number | null;
 
-  @property({ attribute: false }) public urlPath: string | null = null;
+  @property() public urlPath: string | null = null;
+
+  @query("hui-view") private _huiView?: HTMLElement;
 
   protected render(): TemplateResult {
     const index = this._viewIndex;
@@ -51,21 +45,13 @@ class HcLovelace extends LitElement {
       saveConfig: async () => undefined,
       deleteConfig: async () => undefined,
       setEditMode: () => undefined,
-      showToast: () => undefined,
     };
-
-    const viewConfig = this.lovelaceConfig.views[index];
-    const background = viewConfig.background || this.lovelaceConfig.background;
-
     return html`
-      <hui-view-container .hass=${this.hass} .theme=${viewConfig.theme}>
-        <hui-view-background .background=${background}> </hui-view-background>
-        <hui-view
-          .hass=${this.hass}
-          .lovelace=${lovelace}
-          .index=${index}
-        ></hui-view>
-      </hui-view-container>
+      <hui-view
+        .hass=${this.hass}
+        .lovelace=${lovelace}
+        .index=${index}
+      ></hui-view>
     `;
   }
 
@@ -95,6 +81,26 @@ class HcLovelace extends LitElement {
                 }${viewTitle || ""}`
               : undefined,
         });
+
+        const configBackground =
+          this.lovelaceConfig.views[index].background ||
+          this.lovelaceConfig.background;
+
+        const backgroundStyle =
+          typeof configBackground === "string"
+            ? configBackground
+            : configBackground?.image
+              ? `center / cover no-repeat url('${configBackground.image}')`
+              : undefined;
+
+        if (backgroundStyle) {
+          this._huiView!.style.setProperty(
+            "--lovelace-background",
+            backgroundStyle
+          );
+        } else {
+          this._huiView!.style.removeProperty("--lovelace-background");
+        }
       }
     }
   }
@@ -118,15 +124,19 @@ class HcLovelace extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      hui-view-container {
-        display: flex;
-        position: relative;
+      :host {
         min-height: 100vh;
+        height: 0;
+        display: flex;
+        flex-direction: column;
         box-sizing: border-box;
+        background: var(--primary-background-color);
+      }
+      :host > * {
+        flex: 1;
       }
       hui-view {
-        flex: 1 1 100%;
-        max-width: 100%;
+        background: var(--lovelace-background, var(--primary-background-color));
       }
     `;
   }

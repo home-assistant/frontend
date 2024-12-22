@@ -1,14 +1,13 @@
-import type { PropertyValues } from "lit";
-import { LitElement, html, nothing } from "lit";
+import { LitElement, PropertyValues, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/entity/ha-entity-toggle";
-import type { HomeAssistant } from "../../../types";
+import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { EntityConfig, LovelaceRow } from "./types";
+import { EntityConfig, LovelaceRow } from "./types";
 
 @customElement("hui-group-entity-row")
 class HuiGroupEntityRow extends LitElement implements LovelaceRow {

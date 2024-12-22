@@ -1,7 +1,7 @@
-import type { HassConfig } from "home-assistant-js-websocket";
+import { HassConfig } from "home-assistant-js-websocket";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import { formatTimeWithSeconds } from "../../../common/datetime/format_time";
-import type { FrontendLocaleData } from "../../../data/translation";
+import { FrontendLocaleData } from "../../../data/translation";
 
 export const formatSystemLogTime = (
   date,

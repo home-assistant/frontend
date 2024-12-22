@@ -1,5 +1,5 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import type {
+import {
   FloorRegistryEntry,
   FloorRegistryEntryMutableParams,
 } from "../../../data/floor_registry";

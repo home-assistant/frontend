@@ -1,7 +1,6 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -10,10 +9,9 @@ import "../../../../components/ha-select";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-switch";
 import "../../../../components/ha-language-picker";
-import type { CloudStatusLoggedIn } from "../../../../data/cloud";
-import { updateCloudPref } from "../../../../data/cloud";
-import type { CloudTTSInfo } from "../../../../data/cloud/tts";
+import { CloudStatusLoggedIn, updateCloudPref } from "../../../../data/cloud";
 import {
+  CloudTTSInfo,
   getCloudTTSInfo,
   getCloudTtsLanguages,
   getCloudTtsSupportedVoices,
@@ -47,12 +45,9 @@ export class CloudTTSPref extends LitElement {
         header=${this.hass.localize("ui.panel.config.cloud.account.tts.title")}
       >
         <div class="card-content">
-          ${this.hass.localize(
-            "ui.panel.config.cloud.account.tts.description",
-            {
-              service: '"tts.cloud_say"',
-            }
-          )}
+          ${this.hass.localize("ui.panel.config.cloud.account.tts.info", {
+            service: '"tts.cloud_say"',
+          })}
           <br /><br />
           <div class="row">
             <ha-language-picker
@@ -123,7 +118,7 @@ export class CloudTTSPref extends LitElement {
     });
   }
 
-  private async _handleLanguageChange(ev) {
+  async _handleLanguageChange(ev) {
     if (ev.detail.value === this.cloudStatus!.prefs.tts_default_voice[0]) {
       return;
     }
@@ -152,7 +147,7 @@ export class CloudTTSPref extends LitElement {
     }
   }
 
-  private async _handleVoiceChange(ev) {
+  async _handleVoiceChange(ev) {
     if (ev.target.value === this.cloudStatus!.prefs.tts_default_voice[1]) {
       return;
     }

@@ -34,7 +34,7 @@ import type {
 } from "home-assistant-js-websocket";
 import { supportsFeature } from "../common/entity/supports-feature";
 import { stateActive } from "../common/entity/state_active";
-import type { MediaPlayerItemId } from "../components/media-player/ha-media-player-browse";
+import { MediaPlayerItemId } from "../components/media-player/ha-media-player-browse";
 import type { HomeAssistant, TranslationDict } from "../types";
 import { isUnavailableState } from "./entity";
 import { isTTSMediaSource } from "./tts";
@@ -245,8 +245,7 @@ export const computeMediaDescription = (
       secondaryTitle = stateObj.attributes.media_artist!;
       break;
     case "playlist":
-      secondaryTitle =
-        stateObj.attributes.media_playlist || stateObj.attributes.media_artist!;
+      secondaryTitle = stateObj.attributes.media_playlist!;
       break;
     case "tvshow":
       secondaryTitle = stateObj.attributes.media_series_title!;

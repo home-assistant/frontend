@@ -1,6 +1,5 @@
 import { mdiBookshelf, mdiCog, mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
-import type { TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
+import { LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -45,9 +44,9 @@ export class HaConfigFlowCard extends LitElement {
           unelevated
           @click=${this._continueFlow}
           .label=${this.hass.localize(
-            attention
-              ? "ui.panel.config.integrations.reconfigure"
-              : "ui.common.add"
+            `ui.panel.config.integrations.${
+              attention ? "reconfigure" : "configure"
+            }`
           )}
         ></ha-button>
         ${DISCOVERY_SOURCES.includes(this.flow.context.source) &&
@@ -124,17 +123,6 @@ export class HaConfigFlowCard extends LitElement {
   }
 
   private _continueFlow() {
-    if (this.flow.flow_id === "external") {
-      this.hass.auth.external!.fireMessage({
-        type: "improv/configure_device",
-        payload: {
-          name:
-            this.flow.localized_title ||
-            this.flow.context.title_placeholders.name,
-        },
-      });
-      return;
-    }
     showConfigFlowDialog(this, {
       continueFlowId: this.flow.flow_id,
       dialogClosedCallback: () => {

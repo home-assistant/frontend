@@ -38,14 +38,3 @@ gulp.task(
     ])
   )
 );
-
-gulp.task(
-  "clean-landing-page",
-  gulp.parallel("clean-translations", async () =>
-    deleteSync([
-      paths.landingPage_output_root,
-      paths.landingPage_build,
-      paths.build_dir,
-    ])
-  )
-);

@@ -1,23 +1,27 @@
 import "@material/mwc-button";
 import { mdiPlus } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
+import { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
-import type { LocalizeFunc } from "../../../../../common/translations/localize";
-import type {
+import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-button";
-import type { ZHAGroup } from "../../../../../data/zha";
-import { fetchGroups } from "../../../../../data/zha";
+import { fetchGroups, ZHAGroup } from "../../../../../data/zha";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../../../types";
+import { HomeAssistant, Route } from "../../../../../types";
 import { formatAsPaddedHex, sortZHAGroups } from "./functions";
 import { zhaTabs } from "./zha-config-dashboard";
 
@@ -34,7 +38,7 @@ export class ZHAGroupsDashboard extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+  @property({ type: Boolean }) public isWide = false;
 
   @state() private _groups: ZHAGroup[] = [];
 
@@ -67,35 +71,40 @@ export class ZHAGroupsDashboard extends LitElement {
   });
 
   private _columns = memoizeOne(
-    (localize: LocalizeFunc): DataTableColumnContainer => {
-      const columns: DataTableColumnContainer<GroupRowData> = {
-        name: {
-          title: localize("ui.panel.config.zha.groups.groups"),
-          sortable: true,
-          filterable: true,
-          showNarrow: true,
-          main: true,
-          hideable: false,
-          moveable: false,
-          direction: "asc",
-          flex: 2,
-        },
-        group_id: {
-          title: localize("ui.panel.config.zha.groups.group_id"),
-          type: "numeric",
-          template: (group) => html` ${formatAsPaddedHex(group.group_id)} `,
-          sortable: true,
-        },
-        members: {
-          title: localize("ui.panel.config.zha.groups.members"),
-          type: "numeric",
-          template: (group) => html` ${group.members.length} `,
-          sortable: true,
-        },
-      };
-
-      return columns;
-    }
+    (narrow: boolean): DataTableColumnContainer<GroupRowData> =>
+      narrow
+        ? {
+            name: {
+              title: "Group",
+              sortable: true,
+              filterable: true,
+              direction: "asc",
+              grows: true,
+            },
+          }
+        : {
+            name: {
+              title: this.hass.localize("ui.panel.config.zha.groups.groups"),
+              sortable: true,
+              filterable: true,
+              direction: "asc",
+              grows: true,
+            },
+            group_id: {
+              title: this.hass.localize("ui.panel.config.zha.groups.group_id"),
+              type: "numeric",
+              width: "15%",
+              template: (group) => html` ${formatAsPaddedHex(group.group_id)} `,
+              sortable: true,
+            },
+            members: {
+              title: this.hass.localize("ui.panel.config.zha.groups.members"),
+              type: "numeric",
+              width: "15%",
+              template: (group) => html` ${group.members.length} `,
+              sortable: true,
+            },
+          }
   );
 
   protected render(): TemplateResult {
@@ -105,11 +114,11 @@ export class ZHAGroupsDashboard extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .columns=${this._columns(this.hass.localize)}
+        .columns=${this._columns(this.narrow)}
         .data=${this._formattedGroups(this._groups)}
         @row-click=${this._handleRowClicked}
         clickable
-        has-fab
+        hasFab
       >
         <a href="/config/zha/group-add" slot="fab">
           <ha-fab

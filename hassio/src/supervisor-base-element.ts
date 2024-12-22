@@ -1,11 +1,10 @@
-import type { Collection, UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
-import { LitElement } from "lit";
+import { Collection, UnsubscribeFunc } from "home-assistant-js-websocket";
+import { LitElement, PropertyValues } from "lit";
 import { property, state } from "lit/decorators";
 import { atLeastVersion } from "../../src/common/config/version";
 import { computeLocalize } from "../../src/common/translations/localize";
 import { fetchHassioAddonsInfo } from "../../src/data/hassio/addon";
-import type { HassioResponse } from "../../src/data/hassio/common";
+import { HassioResponse } from "../../src/data/hassio/common";
 import {
   fetchHassioHassOsInfo,
   fetchHassioHostInfo,
@@ -18,19 +17,17 @@ import {
   fetchHassioSupervisorInfo,
 } from "../../src/data/hassio/supervisor";
 import { fetchSupervisorStore } from "../../src/data/supervisor/store";
-import type {
-  Supervisor,
-  SupervisorObject,
-  SupervisorKeys,
-} from "../../src/data/supervisor/supervisor";
 import {
   getSupervisorEventCollection,
+  Supervisor,
+  SupervisorObject,
   supervisorCollection,
+  SupervisorKeys,
   cleanupSupervisorCollection,
 } from "../../src/data/supervisor/supervisor";
 import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
 import { urlSyncMixin } from "../../src/state/url-sync-mixin";
-import type { HomeAssistant, Route } from "../../src/types";
+import { HomeAssistant, Route } from "../../src/types";
 import { getTranslation } from "../../src/util/common-translation";
 import {
   computeRTLDirection,

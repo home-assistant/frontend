@@ -1,18 +1,17 @@
 import "@material/mwc-list/mwc-list";
 import { mdiMap, mdiPencilOutline, mdiShape, mdiWeb } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list-item";
-import type { LovelaceRawConfig } from "../../../data/lovelace/config/types";
-import type { HassDialog } from "../../../dialogs/make-dialog-manager";
+import { LovelaceRawConfig } from "../../../data/lovelace/config/types";
+import { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import type { NewDashboardDialogParams } from "./show-dialog-new-dashboard";
+import { NewDashboardDialogParams } from "./show-dialog-new-dashboard";
 
 const EMPTY_CONFIG: LovelaceRawConfig = { views: [{ title: "Home" }] };
 

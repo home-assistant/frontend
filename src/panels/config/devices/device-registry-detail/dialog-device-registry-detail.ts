@@ -1,6 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
@@ -9,11 +8,13 @@ import "../../../../components/ha-dialog";
 import "../../../../components/ha-labels-picker";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import "../../../../components/ha-textfield";
-import type { DeviceRegistryEntry } from "../../../../data/device_registry";
-import { computeDeviceName } from "../../../../data/device_registry";
+import {
+  computeDeviceName,
+  DeviceRegistryEntry,
+} from "../../../../data/device_registry";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
-import type { DeviceRegistryDetailDialogParams } from "./show-dialog-device-registry-detail";
+import { HomeAssistant } from "../../../../types";
+import { DeviceRegistryDetailDialogParams } from "./show-dialog-device-registry-detail";
 
 @customElement("dialog-device-registry-detail")
 class DialogDeviceRegistryDetail extends LitElement {

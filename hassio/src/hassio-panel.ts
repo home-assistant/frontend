@@ -1,10 +1,11 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { Supervisor } from "../../src/data/supervisor/supervisor";
-import { supervisorCollection } from "../../src/data/supervisor/supervisor";
+import {
+  Supervisor,
+  supervisorCollection,
+} from "../../src/data/supervisor/supervisor";
 import "../../src/layouts/hass-loading-screen";
-import type { HomeAssistant, Route } from "../../src/types";
+import { HomeAssistant, Route } from "../../src/types";
 import "./hassio-panel-router";
 
 @customElement("hassio-panel")

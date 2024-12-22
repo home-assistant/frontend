@@ -1,11 +1,10 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../layouts/hass-tabs-subpage";
 import { profileSections } from "./ha-panel-profile";
-import type { RefreshToken } from "../../data/refresh_token";
+import { RefreshToken } from "../../data/refresh_token";
 import { haStyle } from "../../resources/styles";
-import type { HomeAssistant, Route } from "../../types";
+import { HomeAssistant, Route } from "../../types";
 import "./ha-change-password-card";
 import "./ha-long-lived-access-tokens-card";
 import "./ha-mfa-modules-card";

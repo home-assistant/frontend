@@ -1,9 +1,9 @@
 import { startOfYesterday } from "date-fns";
-import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { fireEvent } from "../../common/dom/fire_event";
 import { createSearchParam } from "../../common/url/search-params";
 import "../../panels/logbook/ha-logbook";
 import type { HomeAssistant } from "../../types";
@@ -12,7 +12,7 @@ import type { HomeAssistant } from "../../types";
 export class MoreInfoLogbook extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public entityId!: string;
+  @property() public entityId!: string;
 
   private _showMoreHref = "";
 
@@ -35,7 +35,7 @@ export class MoreInfoLogbook extends LitElement {
         <div class="title">
           ${this.hass.localize("ui.dialogs.more_info_control.logbook")}
         </div>
-        <a href=${this._showMoreHref}
+        <a href=${this._showMoreHref} @click=${this._close}
           >${this.hass.localize("ui.dialogs.more_info_control.show_more")}</a
         >
       </div>
@@ -64,6 +64,10 @@ export class MoreInfoLogbook extends LitElement {
 
       this._showMoreHref = `/logbook?${createSearchParam(params)}`;
     }
+  }
+
+  private _close(): void {
+    setTimeout(() => fireEvent(this, "close-dialog"), 500);
   }
 
   static get styles() {

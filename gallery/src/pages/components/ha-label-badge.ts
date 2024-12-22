@@ -1,5 +1,4 @@
-import type { TemplateResult } from "lit";
-import { html, css, LitElement } from "lit";
+import { html, css, LitElement, TemplateResult } from "lit";
 import { customElement } from "lit/decorators";
 import "../../../../src/components/ha-label-badge";
 import "../../../../src/components/ha-card";

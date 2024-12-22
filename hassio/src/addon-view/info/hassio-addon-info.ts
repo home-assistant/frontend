@@ -2,8 +2,7 @@ import "@material/mwc-button";
 import {
   mdiCheckCircle,
   mdiChip,
-  mdiPlayCircle,
-  mdiCircleOffOutline,
+  mdiCircle,
   mdiCursorDefaultClickOutline,
   mdiDocker,
   mdiExclamationThick,
@@ -22,8 +21,7 @@ import {
   mdiPound,
   mdiShield,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
+import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -39,15 +37,11 @@ import "../../../../src/components/ha-markdown";
 import "../../../../src/components/ha-settings-row";
 import "../../../../src/components/ha-svg-icon";
 import "../../../../src/components/ha-switch";
-import "../../../../src/components/ha-formfield";
-import type { HaSwitch } from "../../../../src/components/ha-switch";
-import type {
+import {
   AddonCapability,
   HassioAddonDetails,
   HassioAddonSetOptionParams,
   HassioAddonSetSecurityParams,
-} from "../../../../src/data/hassio/addon";
-import {
   fetchHassioAddonChangelog,
   fetchHassioAddonInfo,
   installHassioAddon,
@@ -60,23 +54,23 @@ import {
   uninstallHassioAddon,
   validateHassioAddonOption,
 } from "../../../../src/data/hassio/addon";
-import type { HassioStats } from "../../../../src/data/hassio/common";
 import {
+  HassioStats,
   extractApiErrorMessage,
   fetchHassioStats,
 } from "../../../../src/data/hassio/common";
-import type {
+import {
   StoreAddon,
   StoreAddonDetails,
 } from "../../../../src/data/supervisor/store";
-import type { Supervisor } from "../../../../src/data/supervisor/supervisor";
+import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../src/dialogs/generic/show-dialog-box";
 import { mdiHomeAssistant } from "../../../../src/resources/home-assistant-logo-svg";
 import { haStyle } from "../../../../src/resources/styles";
-import type { HomeAssistant, Route } from "../../../../src/types";
+import { HomeAssistant, Route } from "../../../../src/types";
 import { bytesToString } from "../../../../src/util/bytes-to-string";
 import "../../components/hassio-card-content";
 import "../../components/supervisor-metric";
@@ -204,7 +198,7 @@ class HassioAddonInfo extends LitElement {
                               "dashboard.addon_running"
                             )}
                             class="running"
-                            .path=${mdiPlayCircle}
+                            .path=${mdiCircle}
                           ></ha-svg-icon>
                         `
                       : html`
@@ -213,7 +207,7 @@ class HassioAddonInfo extends LitElement {
                               "dashboard.addon_stopped"
                             )}
                             class="stopped"
-                            .path=${mdiCircleOffOutline}
+                            .path=${mdiCircle}
                           ></ha-svg-icon>
                         `}
                   `
@@ -223,10 +217,7 @@ class HassioAddonInfo extends LitElement {
           <div class="description light-color">
             ${this.addon.version
               ? html`
-                  ${this.supervisor.localize(
-                    "addon.dashboard.current_version",
-                    { version: this.addon.version }
-                  )}
+                  Current version: ${this.addon.version}
                   <div class="changelog" @click=${this._openChangelog}>
                     (<span class="changelog-link"
                       >${this.supervisor.localize(
@@ -1127,28 +1118,12 @@ class HassioAddonInfo extends LitElement {
   private async _uninstallClicked(ev: CustomEvent): Promise<void> {
     const button = ev.currentTarget as any;
     button.progress = true;
-    let removeData = false;
-    const _removeDataToggled = (e: Event) => {
-      removeData = (e.target as HaSwitch).checked;
-    };
 
     const confirmed = await showConfirmationDialog(this, {
       title: this.supervisor.localize("dialog.uninstall_addon.title", {
         name: this.addon.name,
       }),
-      text: html`
-        <ha-formfield
-          .label=${html`<p>
-            ${this.supervisor.localize("dialog.uninstall_addon.remove_data")}
-          </p>`}
-        >
-          <ha-switch
-            @change=${_removeDataToggled}
-            .checked=${removeData}
-            haptic
-          ></ha-switch>
-        </ha-formfield>
-      `,
+      text: this.supervisor.localize("dialog.uninstall_addon.text"),
       confirmText: this.supervisor.localize("dialog.uninstall_addon.uninstall"),
       dismissText: this.supervisor.localize("common.cancel"),
       destructive: true,
@@ -1161,7 +1136,7 @@ class HassioAddonInfo extends LitElement {
 
     this._error = undefined;
     try {
-      await uninstallHassioAddon(this.hass, this.addon.slug, removeData);
+      await uninstallHassioAddon(this.hass, this.addon.slug);
       const eventdata = {
         success: true,
         response: undefined,
@@ -1216,7 +1191,7 @@ class HassioAddonInfo extends LitElement {
           padding-inline-start: 8px;
           padding-inline-end: initial;
           font-size: 24px;
-          color: var(--ha-card-header-color, var(--primary-text-color));
+          color: var(--ha-card-header-color, --primary-text-color);
         }
         .addon-version {
           float: var(--float-end);

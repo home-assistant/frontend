@@ -1,11 +1,10 @@
 import { dump } from "js-yaml";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../ha-code-editor";
 import "../ha-icon-button";
-import type { TraceExtended } from "../../data/trace";
-import type { HomeAssistant } from "../../types";
+import { TraceExtended } from "../../data/trace";
+import { HomeAssistant } from "../../types";
 
 @customElement("ha-trace-config")
 export class HaTraceConfig extends LitElement {
@@ -17,7 +16,7 @@ export class HaTraceConfig extends LitElement {
     return html`
       <ha-code-editor
         .value=${dump(this.trace.config).trimRight()}
-        read-only
+        readOnly
         dir="ltr"
       ></ha-code-editor>
     `;

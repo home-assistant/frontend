@@ -1,8 +1,15 @@
-import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
@@ -12,15 +19,17 @@ import { extractSearchParam } from "../../../src/common/url/search-params";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-icon-button";
 import "../../../src/components/search-input";
-import type { HassioAddonRepository } from "../../../src/data/hassio/addon";
-import { reloadHassioAddons } from "../../../src/data/hassio/addon";
+import {
+  HassioAddonRepository,
+  reloadHassioAddons,
+} from "../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
-import type { StoreAddon } from "../../../src/data/supervisor/store";
-import type { Supervisor } from "../../../src/data/supervisor/supervisor";
+import { StoreAddon } from "../../../src/data/supervisor/store";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import "../../../src/layouts/hass-loading-screen";
 import "../../../src/layouts/hass-subpage";
-import type { HomeAssistant, Route } from "../../../src/types";
+import { HomeAssistant, Route } from "../../../src/types";
 import { showRegistriesDialog } from "../dialogs/registries/show-dialog-registries";
 import { showRepositoriesDialog } from "../dialogs/repositories/show-dialog-repositories";
 import "./hassio-addon-repository";
@@ -136,7 +145,7 @@ export class HassioAddonStore extends LitElement {
       this._manageRepositories(repositoryUrl);
     }
 
-    this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
+    this.addEventListener("hass-api-called", (ev) => this.apiCalled(ev));
     this._loadData();
   }
 
@@ -179,7 +188,7 @@ export class HassioAddonStore extends LitElement {
     }
   }
 
-  private _apiCalled(ev) {
+  private apiCalled(ev) {
     if (ev.detail.success) {
       this._loadData();
     }

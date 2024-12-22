@@ -1,6 +1,6 @@
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import type { ActionConfig } from "../../../data/lovelace/config/action";
-import type { HomeAssistant } from "../../../types";
+import { ActionConfig } from "../../../data/lovelace/config/action";
+import { HomeAssistant } from "../../../types";
 
 interface Config {
   entity?: string;
@@ -45,7 +45,7 @@ function computeActionTooltip(
       break;
     case "call-service":
       tooltip += `${hass.localize(
-        "ui.panel.lovelace.cards.picture-elements.perform_action",
+        "ui.panel.lovelace.cards.picture-elements.call_service",
         { name: config.service }
       )}`;
       break;

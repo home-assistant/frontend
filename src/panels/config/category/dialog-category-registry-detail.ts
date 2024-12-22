@@ -1,6 +1,5 @@
 import "@material/mwc-button";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
@@ -8,13 +7,13 @@ import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-textfield";
-import type {
+import {
   CategoryRegistryEntry,
   CategoryRegistryEntryMutableParams,
 } from "../../../data/category_registry";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
-import type { CategoryRegistryDetailDialogParams } from "./show-dialog-category-registry-detail";
+import { HomeAssistant } from "../../../types";
+import { CategoryRegistryDetailDialogParams } from "./show-dialog-category-registry-detail";
 
 @customElement("dialog-category-registry-detail")
 class DialogCategoryDetail extends LitElement {

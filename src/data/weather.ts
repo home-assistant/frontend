@@ -1,9 +1,6 @@
 import {
   mdiAlertCircleOutline,
   mdiGauge,
-  mdiThermometer,
-  mdiThermometerWater,
-  mdiSunWireless,
   mdiWaterPercent,
   mdiWeatherCloudy,
   mdiWeatherFog,
@@ -20,13 +17,12 @@ import {
   mdiWeatherWindy,
   mdiWeatherWindyVariant,
 } from "@mdi/js";
-import type {
+import {
   HassConfig,
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
-import type { SVGTemplateResult, TemplateResult } from "lit";
-import { css, html, svg } from "lit";
+import { SVGTemplateResult, TemplateResult, css, html, svg } from "lit";
 import { styleMap } from "lit/directives/style-map";
 import { supportsFeature } from "../common/entity/supports-feature";
 import { round } from "../common/number/round";
@@ -118,15 +114,10 @@ export const weatherIcons = {
 };
 
 export const weatherAttrIcons = {
-  apparent_temperature: mdiThermometer,
-  cloud_coverage: mdiWeatherCloudy,
-  dew_point: mdiThermometerWater,
   humidity: mdiWaterPercent,
   wind_bearing: mdiWeatherWindy,
   wind_speed: mdiWeatherWindy,
   pressure: mdiGauge,
-  temperature: mdiThermometer,
-  uv_index: mdiSunWireless,
   visibility: mdiWeatherFog,
   precipitation: mdiWeatherRainy,
 };
@@ -230,8 +221,6 @@ export const getWeatherUnit = (
         stateObj.attributes.pressure_unit ||
         (lengthUnit === "km" ? "hPa" : "inHg")
       );
-    case "apparent_temperature":
-    case "dew_point":
     case "temperature":
     case "templow":
       return (
@@ -239,7 +228,6 @@ export const getWeatherUnit = (
       );
     case "wind_speed":
       return stateObj.attributes.wind_speed_unit || `${lengthUnit}/h`;
-    case "cloud_coverage":
     case "humidity":
     case "precipitation_probability":
       return "%";

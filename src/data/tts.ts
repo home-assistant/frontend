@@ -1,10 +1,8 @@
-import type { HomeAssistant } from "../types";
+import { HomeAssistant } from "../types";
 
 export interface TTSEngine {
   engine_id: string;
   supported_languages?: string[];
-  name?: string;
-  deprecated: boolean;
 }
 
 export interface TTSVoice {

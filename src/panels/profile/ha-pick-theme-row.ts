@@ -1,7 +1,13 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list-item";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-formfield";
@@ -14,7 +20,7 @@ import {
   DEFAULT_ACCENT_COLOR,
   DEFAULT_PRIMARY_COLOR,
 } from "../../resources/styles-data";
-import type { HomeAssistant } from "../../types";
+import { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 
 const USE_DEFAULT_THEME = "__USE_DEFAULT_THEME__";

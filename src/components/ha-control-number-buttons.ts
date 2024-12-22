@@ -1,14 +1,20 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { mdiMinus, mdiPlus } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  TemplateResult,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import { conditionalClamp } from "../common/number/clamp";
 import { formatNumber } from "../common/number/format_number";
 import { blankBeforeUnit } from "../common/translations/blank_before_unit";
-import type { FrontendLocaleData } from "../data/translation";
+import { FrontendLocaleData } from "../data/translation";
 import "./ha-svg-icon";
 
 const A11Y_KEY_CODES = new Set([
@@ -52,7 +58,7 @@ export class HaControlNumberButton extends LitElement {
     },
   });
 
-  private _boundedValue(value: number) {
+  private boundedValue(value: number) {
     const clamped = conditionalClamp(value, this.min, this.max);
     return Math.round(clamped / this._step) * this._step;
   }
@@ -86,14 +92,14 @@ export class HaControlNumberButton extends LitElement {
   }
 
   private _increment() {
-    this.value = this._boundedValue(this._value + this._step);
+    this.value = this.boundedValue(this._value + this._step);
   }
 
   private _decrement() {
-    this.value = this._boundedValue(this._value - this._step);
+    this.value = this.boundedValue(this._value - this._step);
   }
 
-  private _handleKeyDown(e: KeyboardEvent) {
+  _handleKeyDown(e: KeyboardEvent) {
     if (this.disabled) return;
     if (!A11Y_KEY_CODES.has(e.code)) return;
     e.preventDefault();
@@ -107,10 +113,10 @@ export class HaControlNumberButton extends LitElement {
         this._decrement();
         break;
       case "PageUp":
-        this.value = this._boundedValue(this._value + this._tenPercentStep);
+        this.value = this.boundedValue(this._value + this._tenPercentStep);
         break;
       case "PageDown":
-        this.value = this._boundedValue(this._value - this._tenPercentStep);
+        this.value = this.boundedValue(this._value - this._tenPercentStep);
         break;
       case "Home":
         if (this.min != null) {
@@ -190,8 +196,8 @@ export class HaControlNumberButton extends LitElement {
         --control-number-buttons-background-opacity: 0.2;
         --control-number-buttons-border-radius: 10px;
         --mdc-icon-size: 16px;
-        height: var(--feature-height);
-        width: 100%;
+        height: 40px;
+        width: 200px;
         color: var(--primary-text-color);
         -webkit-tap-highlight-color: transparent;
         font-style: normal;

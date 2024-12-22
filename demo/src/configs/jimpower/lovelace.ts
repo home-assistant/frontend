@@ -1,5 +1,5 @@
 import "../../custom-cards/card-modder";
-import type { DemoConfig } from "../types";
+import { DemoConfig } from "../types";
 
 export const demoLovelaceJimpower: DemoConfig["lovelace"] = () => ({
   name: "Kingia Castle",

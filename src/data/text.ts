@@ -1,8 +1,8 @@
-import type {
+import {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
-import type { HomeAssistant } from "../types";
+import { HomeAssistant } from "../types";
 
 interface TextEntityAttributes extends HassEntityAttributeBase {
   min?: number;

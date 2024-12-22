@@ -1,15 +1,23 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../../components/ha-expansion-panel";
-import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
-import type { MatterNodeDiagnostics } from "../../../../../../data/matter";
-import { getMatterNodeDiagnostics } from "../../../../../../data/matter";
+import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import {
+  getMatterNodeDiagnostics,
+  MatterNodeDiagnostics,
+} from "../../../../../../data/matter";
 import "@material/mwc-list";
 import "../../../../../../components/ha-list-item";
 import { SubscribeMixin } from "../../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../../types";
+import { HomeAssistant } from "../../../../../../types";
 
 @customElement("ha-device-info-matter")
 export class HaDeviceInfoMatter extends SubscribeMixin(LitElement) {

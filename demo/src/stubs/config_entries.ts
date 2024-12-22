@@ -1,4 +1,4 @@
-import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
+import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 
 export const mockConfigEntries = (hass: MockHomeAssistant) => {
   hass.mockWS("config_entries/get", () => ({

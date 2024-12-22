@@ -1,9 +1,8 @@
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import type { HomeAssistant } from "../../../types";
-import type { DividerConfig, LovelaceRow } from "../entity-rows/types";
+import { HomeAssistant } from "../../../types";
+import { DividerConfig, LovelaceRow } from "../entity-rows/types";
 
 @customElement("hui-divider-row")
 class HuiDividerRow extends LitElement implements LovelaceRow {

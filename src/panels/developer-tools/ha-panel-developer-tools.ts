@@ -1,8 +1,7 @@
 import { mdiDotsVertical } from "@mdi/js";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { ActionDetail } from "@material/mwc-list";
 import { navigate } from "../../common/navigate";
@@ -11,7 +10,7 @@ import "../../components/ha-button-menu";
 import "../../components/ha-icon-button";
 import "../../components/ha-list-item";
 import { haStyle } from "../../resources/styles";
-import type { HomeAssistant, Route } from "../../types";
+import { HomeAssistant, Route } from "../../types";
 import "./developer-tools-router";
 
 @customElement("ha-panel-developer-tools")
@@ -55,7 +54,7 @@ class PanelDeveloperTools extends LitElement {
           scrollable
           attr-for-selected="page-name"
           .selected=${page}
-          @selected-changed=${this._handlePageSelected}
+          @selected-changed=${this.handlePageSelected}
         >
           <paper-tab page-name="yaml">
             ${this.hass.localize("ui.panel.developer-tools.tabs.yaml.title")}
@@ -63,8 +62,10 @@ class PanelDeveloperTools extends LitElement {
           <paper-tab page-name="state">
             ${this.hass.localize("ui.panel.developer-tools.tabs.states.title")}
           </paper-tab>
-          <paper-tab page-name="action">
-            ${this.hass.localize("ui.panel.developer-tools.tabs.actions.title")}
+          <paper-tab page-name="service">
+            ${this.hass.localize(
+              "ui.panel.developer-tools.tabs.services.title"
+            )}
           </paper-tab>
           <paper-tab page-name="template">
             ${this.hass.localize(
@@ -90,7 +91,7 @@ class PanelDeveloperTools extends LitElement {
     `;
   }
 
-  private _handlePageSelected(ev) {
+  private handlePageSelected(ev) {
     const newPage = ev.detail.value;
     if (newPage !== this._page) {
       navigate(`/developer-tools/${newPage}`);

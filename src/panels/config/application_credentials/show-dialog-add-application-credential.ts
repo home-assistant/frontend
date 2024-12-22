@@ -1,6 +1,6 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import type { ApplicationCredential } from "../../../data/application_credential";
-import type { IntegrationManifest } from "../../../data/integration";
+import { ApplicationCredential } from "../../../data/application_credential";
+import { IntegrationManifest } from "../../../data/integration";
 
 export interface AddApplicationCredentialDialogParams {
   applicationCredentialAddedCallback: (

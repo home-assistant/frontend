@@ -1,5 +1,5 @@
 import { fireEvent } from "../../../../src/common/dom/fire_event";
-import type { Supervisor } from "../../../../src/data/supervisor/supervisor";
+import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import "./dialog-hassio-network";
 
 export interface HassioNetworkDialogParams {

@@ -1,11 +1,8 @@
 import { load } from "js-yaml";
-import type { PropertyValueMap } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { html, css, LitElement, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import "../../../src/panels/lovelace/cards/hui-card";
-import type { HuiCard } from "../../../src/panels/lovelace/cards/hui-card";
-import type { HomeAssistant } from "../../../src/types";
+import { createCardElement } from "../../../src/panels/lovelace/create-element/create-card-element";
+import { HomeAssistant } from "../../../src/types";
 
 export interface DemoCardConfig {
   heading: string;
@@ -18,17 +15,11 @@ class DemoCard extends LitElement {
 
   @property({ attribute: false }) public config!: DemoCardConfig;
 
-  @property({ attribute: "show-config", type: Boolean })
-  public showConfig = false;
+  @property({ type: Boolean }) public showConfig = false;
 
   @state() private _size?: number;
 
-  @query("hui-card", false) private _card?: HuiCard;
-
-  private _config = memoizeOne((config: string) => {
-    const c = (load(config) as any)[0];
-    return c;
-  });
+  @query("#card") private _card!: HTMLElement;
 
   render() {
     return html`
@@ -39,32 +30,63 @@ class DemoCard extends LitElement {
           : ""}
       </h2>
       <div class="root">
-        <hui-card
-          .config=${this._config(this.config.config)}
-          .hass=${this.hass}
-          @card-updated=${this._cardUpdated}
-        ></hui-card>
-        ${this.showConfig
-          ? html`<pre>${this.config.config.trim()}</pre>`
-          : nothing}
+        <div id="card"></div>
+        ${this.showConfig ? html`<pre>${this.config.config.trim()}</pre>` : ""}
       </div>
     `;
   }
 
-  private async _cardUpdated(ev) {
-    ev.stopPropagation();
-    this._updateSize();
+  updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+
+    if (changedProps.has("config")) {
+      const card = this._card;
+      while (card.lastChild) {
+        card.removeChild(card.lastChild);
+      }
+
+      const el = this._createCardElement((load(this.config.config) as any)[0]);
+      card.appendChild(el);
+      this._getSize(el);
+    }
+
+    if (changedProps.has("hass")) {
+      const card = this._card.lastChild;
+      if (card) {
+        (card as any).hass = this.hass;
+      }
+    }
   }
 
-  private async _updateSize() {
-    this._size = await this._card?.getCardSize();
+  async _getSize(el) {
+    await customElements.whenDefined(el.localName);
+
+    if (!("getCardSize" in el)) {
+      this._size = undefined;
+      return;
+    }
+    this._size = await el.getCardSize();
   }
 
-  protected update(
-    _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
-  ): void {
-    super.update(_changedProperties);
-    this._updateSize();
+  _createCardElement(cardConfig) {
+    const element = createCardElement(cardConfig);
+    if (this.hass) {
+      element.hass = this.hass;
+    }
+    element.addEventListener(
+      "ll-rebuild",
+      (ev) => {
+        ev.stopPropagation();
+        this._rebuildCard(element, cardConfig);
+      },
+      { once: true }
+    );
+    return element;
+  }
+
+  _rebuildCard(cardElToReplace, config) {
+    const newCardEl = this._createCardElement(config);
+    cardElToReplace.parentElement.replaceChild(newCardEl, cardElToReplace);
   }
 
   static styles = css`
@@ -79,7 +101,7 @@ class DemoCard extends LitElement {
       font-size: 0.5em;
       color: var(--primary-text-color);
     }
-    hui-card {
+    #card {
       max-width: 400px;
       width: 100vw;
     }

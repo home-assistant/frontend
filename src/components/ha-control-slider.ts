@@ -1,11 +1,18 @@
 import { DIRECTION_ALL, Manager, Pan, Tap } from "@egjs/hammerjs";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
-import type { FrontendLocaleData } from "../data/translation";
+import { FrontendLocaleData } from "../data/translation";
 import { formatNumber } from "../common/number/format_number";
 import { blankBeforeUnit } from "../common/translations/blank_before_unit";
 
@@ -215,12 +222,12 @@ export class HaControlSlider extends LitElement {
     return Math.max(this.step, (this.max - this.min) / 10);
   }
 
-  private _showTooltip() {
+  _showTooltip() {
     if (this._tooltipTimeout != null) window.clearTimeout(this._tooltipTimeout);
     this.tooltipVisible = true;
   }
 
-  private _hideTooltip(delay?: number) {
+  _hideTooltip(delay?: number) {
     if (!delay) {
       this.tooltipVisible = false;
       return;
@@ -230,7 +237,7 @@ export class HaControlSlider extends LitElement {
     }, delay);
   }
 
-  private _handleKeyDown(e: KeyboardEvent) {
+  _handleKeyDown(e: KeyboardEvent) {
     if (!A11Y_KEY_CODES.has(e.code)) return;
     e.preventDefault();
     switch (e.code) {
@@ -265,7 +272,7 @@ export class HaControlSlider extends LitElement {
 
   private _tooltipTimeout?: number;
 
-  private _handleKeyUp(e: KeyboardEvent) {
+  _handleKeyUp(e: KeyboardEvent) {
     if (!A11Y_KEY_CODES.has(e.code)) return;
     e.preventDefault();
     this._hideTooltip(500);

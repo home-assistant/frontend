@@ -1,14 +1,23 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { getColorByIndex } from "../../../common/color/colors";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
-import type { Calendar, CalendarEvent } from "../../../data/calendar";
-import { fetchCalendarEvents } from "../../../data/calendar";
+import {
+  Calendar,
+  CalendarEvent,
+  fetchCalendarEvents,
+} from "../../../data/calendar";
 import type {
   CalendarViewChanged,
   FullCalendarView,
@@ -222,7 +231,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       }
 
       .header {
-        color: var(--ha-card-header-color, var(--primary-text-color));
+        color: var(--ha-card-header-color, --primary-text-color);
         font-size: var(--ha-card-header-font-size, 24px);
         line-height: 1.2;
         padding-top: 16px;

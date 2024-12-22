@@ -1,6 +1,5 @@
 import "@material/mwc-list/mwc-list-item";
-import type { TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { UNIT_C } from "../../../common/const";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
@@ -22,8 +21,7 @@ import "../../../components/ha-settings-row";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
 import "../../../components/ha-timezone-picker";
-import type { ConfigUpdateValues } from "../../../data/core";
-import { saveCoreConfig } from "../../../data/core";
+import { ConfigUpdateValues, saveCoreConfig } from "../../../data/core";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
@@ -77,13 +75,13 @@ class HaConfigSectionGeneral extends LitElement {
             <div class="card-content">
               ${!canEdit
                 ? html`
-                    <ha-alert>
+                    <p>
                       ${this.hass.localize(
                         "ui.panel.config.core.section.core.core_config.edit_requires_storage"
                       )}
-                    </ha-alert>
+                    </p>
                   `
-                : nothing}
+                : ""}
               <ha-textfield
                 name="name"
                 .label=${this.hass.localize(
@@ -142,7 +140,7 @@ class HaConfigSectionGeneral extends LitElement {
                     value="metric"
                     .checked=${this._unitSystem === "metric"}
                     @change=${this._unitSystemChanged}
-                    .disabled=${disabled}
+                    .disabled=${this._submitting}
                   ></ha-radio>
                 </ha-formfield>
                 <ha-formfield
@@ -164,7 +162,7 @@ class HaConfigSectionGeneral extends LitElement {
                     value="us_customary"
                     .checked=${this._unitSystem === "us_customary"}
                     @change=${this._unitSystemChanged}
-                    .disabled=${disabled}
+                    .disabled=${this._submitting}
                   ></ha-radio>
                 </ha-formfield>
                 ${this._unitSystem !== this._configuredUnitSystem()
@@ -229,7 +227,7 @@ class HaConfigSectionGeneral extends LitElement {
               ></ha-country-picker>
               <ha-language-picker
                 .hass=${this.hass}
-                native-name
+                nativeName
                 .label=${this.hass.localize(
                   "ui.panel.config.core.section.core.core_config.language"
                 )}
@@ -253,15 +251,12 @@ class HaConfigSectionGeneral extends LitElement {
                   "ui.panel.config.core.section.core.core_config.edit_location_description"
                 )}
               </div>
-              <mwc-button @click=${this._editLocation} .disabled=${disabled}
+              <mwc-button @click=${this._editLocation}
                 >${this.hass.localize("ui.common.edit")}</mwc-button
               >
             </ha-settings-row>
             <div class="card-actions">
-              <ha-progress-button
-                @click=${this._updateEntry}
-                .disabled=${disabled}
-              >
+              <ha-progress-button @click=${this._updateEntry}>
                 ${this.hass!.localize("ui.panel.config.zone.detail.update")}
               </ha-progress-button>
             </div>

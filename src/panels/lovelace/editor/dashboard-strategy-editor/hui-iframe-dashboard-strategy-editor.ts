@@ -7,8 +7,8 @@ import type {
   SchemaUnion,
 } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
-import type { IframeDashboardStrategyConfig } from "../../strategies/iframe/iframe-dashboard-strategy";
-import type { LovelaceStrategyEditor } from "../../strategies/types";
+import { IframeDashboardStrategyConfig } from "../../strategies/iframe/iframe-dashboard-strategy";
+import { LovelaceStrategyEditor } from "../../strategies/types";
 
 const SCHEMA = [
   {

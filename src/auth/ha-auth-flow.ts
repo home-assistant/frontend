@@ -1,24 +1,22 @@
 /* eslint-disable lit/prefer-static-styles */
 import "@material/mwc-button";
 import { genClientId } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
-import { html, LitElement, nothing } from "lit";
-import { keyed } from "lit/directives/keyed";
+import { html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { LocalizeFunc } from "../common/translations/localize";
+import { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
 import "../components/ha-checkbox";
 import { computeInitialHaFormData } from "../components/ha-form/compute-initial-ha-form-data";
 import "../components/ha-formfield";
-import type { AuthProvider } from "../data/auth";
 import {
+  AuthProvider,
   autocompleteLoginFields,
   createLoginFlow,
   deleteLoginFlow,
   redirectWithAuthCode,
   submitLoginFlow,
 } from "../data/auth";
-import type {
+import {
   DataEntryFlowStep,
   DataEntryFlowStepForm,
 } from "../data/data_entry_flow";
@@ -30,17 +28,17 @@ type State = "loading" | "error" | "step";
 export class HaAuthFlow extends LitElement {
   @property({ attribute: false }) public authProvider?: AuthProvider;
 
-  @property({ attribute: false }) public clientId?: string;
+  @property() public clientId?: string;
 
-  @property({ attribute: false }) public redirectUri?: string;
+  @property() public redirectUri?: string;
 
-  @property({ attribute: false }) public oauth2State?: string;
+  @property() public oauth2State?: string;
 
   @property({ attribute: false }) public localize!: LocalizeFunc;
 
   @property({ attribute: false }) public step?: DataEntryFlowStep;
 
-  @property({ attribute: false }) public initStoreToken = false;
+  @property({ type: Boolean }) public initStoreToken = false;
 
   @state() private _storeToken = false;
 
@@ -225,19 +223,16 @@ export class HaAuthFlow extends LitElement {
               : this.localize("ui.panel.page-authorize.just_checking")}
           </h1>
           ${this._computeStepDescription(step)}
-          ${keyed(
-            step.step_id,
-            html`<ha-auth-form
-              .localize=${this.localize}
-              .data=${this._stepData!}
-              .schema=${autocompleteLoginFields(step.data_schema)}
-              .error=${step.errors}
-              .disabled=${this._submitting}
-              .computeLabel=${this._computeLabelCallback(step)}
-              .computeError=${this._computeErrorCallback(step)}
-              @value-changed=${this._stepDataChanged}
-            ></ha-auth-form>`
-          )}
+          <ha-auth-form
+            .localize=${this.localize}
+            .data=${this._stepData!}
+            .schema=${autocompleteLoginFields(step.data_schema)}
+            .error=${step.errors}
+            .disabled=${this._submitting}
+            .computeLabel=${this._computeLabelCallback(step)}
+            .computeError=${this._computeErrorCallback(step)}
+            @value-changed=${this._stepDataChanged}
+          ></ha-auth-form>
           ${this.clientId === genClientId() &&
           !["select_mfa_module", "mfa"].includes(step.step_id)
             ? html`

@@ -1,13 +1,12 @@
 import { computeStateName } from "../common/entity/compute_state_name";
 import type { HaFormSchema } from "../components/ha-form/types";
-import type { HomeAssistant } from "../types";
-import type { BaseTrigger } from "./automation";
-import { migrateAutomationTrigger } from "./automation";
-import type { EntityRegistryEntry } from "./entity_registry";
+import { HomeAssistant } from "../types";
+import { BaseTrigger } from "./automation";
 import {
   computeEntityRegistryName,
   entityRegistryByEntityId,
   entityRegistryById,
+  EntityRegistryEntry,
 } from "./entity_registry";
 
 export interface DeviceAutomation {
@@ -32,7 +31,7 @@ export interface DeviceCondition extends DeviceAutomation {
 
 export type DeviceTrigger = DeviceAutomation &
   BaseTrigger & {
-    trigger: "device";
+    platform: "device";
   };
 
 export interface DeviceCapabilities {
@@ -52,12 +51,10 @@ export const fetchDeviceConditions = (hass: HomeAssistant, deviceId: string) =>
   });
 
 export const fetchDeviceTriggers = (hass: HomeAssistant, deviceId: string) =>
-  hass
-    .callWS<DeviceTrigger[]>({
-      type: "device_automation/trigger/list",
-      device_id: deviceId,
-    })
-    .then((triggers) => migrateAutomationTrigger(triggers) as DeviceTrigger[]);
+  hass.callWS<DeviceTrigger[]>({
+    type: "device_automation/trigger/list",
+    device_id: deviceId,
+  });
 
 export const fetchDeviceActionCapabilities = (
   hass: HomeAssistant,
@@ -94,7 +91,7 @@ const deviceAutomationIdentifiers = [
   "subtype",
   "event",
   "condition",
-  "trigger",
+  "platform",
 ];
 
 export const deviceAutomationsEqual = (
@@ -181,11 +178,7 @@ const getEntityName = (
   entityId: string | undefined
 ): string => {
   if (!entityId) {
-    return (
-      "<" +
-      hass.localize("ui.panel.config.automation.editor.unknown_entity") +
-      ">"
-    );
+    return "<unknown entity>";
   }
   if (entityId.includes(".")) {
     const state = hass.states[entityId];
@@ -198,11 +191,7 @@ const getEntityName = (
   if (entityReg) {
     return computeEntityRegistryName(hass, entityReg) || entityId;
   }
-  return (
-    "<" +
-    hass.localize("ui.panel.config.automation.editor.unknown_entity") +
-    ">"
-  );
+  return "<unknown entity>";
 };
 
 export const localizeDeviceAutomationAction = (
@@ -259,22 +248,6 @@ export const localizeDeviceAutomationTrigger = (
     }
   ) ||
   (trigger.subtype ? `"${trigger.subtype}" ${trigger.type}` : trigger.type!);
-
-export const localizeExtraFieldsComputeLabelCallback =
-  (hass: HomeAssistant, deviceAutomation: DeviceAutomation) =>
-  // Returns a callback for ha-form to calculate labels per schema object
-  (schema): string =>
-    hass.localize(
-      `component.${deviceAutomation.domain}.device_automation.extra_fields.${schema.name}`
-    ) || schema.name;
-
-export const localizeExtraFieldsComputeHelperCallback =
-  (hass: HomeAssistant, deviceAutomation: DeviceAutomation) =>
-  // Returns a callback for ha-form to calculate helper texts per schema object
-  (schema): string | undefined =>
-    hass.localize(
-      `component.${deviceAutomation.domain}.device_automation.extra_fields_descriptions.${schema.name}`
-    );
 
 export const sortDeviceAutomations = (
   automationA: DeviceAutomation,

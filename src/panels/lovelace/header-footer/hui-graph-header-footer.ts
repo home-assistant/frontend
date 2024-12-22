@@ -1,20 +1,23 @@
-import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { HassEntity } from "home-assistant-js-websocket";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-circular-progress";
 import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
-import type { HomeAssistant } from "../../../types";
+import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { coordinatesMinimalResponseCompressedState } from "../common/graph/coordinates";
 import "../components/hui-graph-base";
-import type {
-  LovelaceHeaderFooter,
-  LovelaceHeaderFooterEditor,
-} from "../types";
-import type { GraphHeaderFooterConfig } from "./types";
+import { LovelaceHeaderFooter, LovelaceHeaderFooterEditor } from "../types";
+import { GraphHeaderFooterConfig } from "./types";
 
 const MINUTE = 60000;
 const HOUR = 60 * MINUTE;

@@ -1,7 +1,10 @@
-import type { Auth, Connection, HassUser } from "home-assistant-js-websocket";
-import { getUser } from "home-assistant-js-websocket";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import {
+  Auth,
+  Connection,
+  getUser,
+  HassUser,
+} from "home-assistant-js-websocket";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../src/components/ha-card";
 
@@ -85,7 +88,7 @@ class HcLayout extends LitElement {
       }
 
       .card-header {
-        color: var(--ha-card-header-color, var(--primary-text-color));
+        color: var(--ha-card-header-color, --primary-text-color);
         font-family: var(--ha-card-header-font-family, inherit);
         font-size: var(--ha-card-header-font-size, 24px);
         letter-spacing: -0.012em;

@@ -1,7 +1,6 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { HomeAssistant } from "../../../../src/types";
+import { HomeAssistant } from "../../../../src/types";
 
 @customElement("hc-launch-screen")
 class HcLaunchScreen extends LitElement {

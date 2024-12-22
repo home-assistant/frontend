@@ -9,8 +9,14 @@ import {
   mdiDotsVertical,
   mdiWeb,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  TemplateResult,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { relativeTime } from "../../common/datetime/relative_time";
@@ -20,15 +26,14 @@ import "../../components/ha-card";
 import "../../components/ha-icon-button";
 import "../../components/ha-label";
 import "../../components/ha-settings-row";
-import "../../components/ha-list-item";
 import { deleteAllRefreshTokens } from "../../data/auth";
-import type { RefreshToken } from "../../data/refresh_token";
+import { RefreshToken } from "../../data/refresh_token";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
+import { HomeAssistant } from "../../types";
 
 // Client ID used by iOS app
 const iOSclientId = "https://home-assistant.io/iOS";
@@ -148,7 +153,7 @@ class HaRefreshTokens extends LitElement {
                     <div>
                       <ha-button-menu
                         corner="BOTTOM_END"
-                        menu-corner="END"
+                        menuCorner="END"
                         @action=${this._handleAction}
                         .token=${token}
                       >
@@ -296,7 +301,7 @@ class HaRefreshTokens extends LitElement {
         text: this.hass.localize(
           "ui.panel.profile.refresh_tokens.confirm_delete_all"
         ),
-        confirmText: this.hass.localize("ui.common.delete_all"),
+        confirmText: this.hass.localize("ui.common.delete"),
         destructive: true,
       }))
     ) {

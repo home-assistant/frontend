@@ -1,5 +1,5 @@
 import { strokeWidth } from "../../../../data/graph";
-import type { EntityHistoryState } from "../../../../data/history";
+import { EntityHistoryState } from "../../../../data/history";
 
 const average = (items: any[]): number =>
   items.reduce((sum, entry) => sum + parseFloat(entry.state), 0) / items.length;
@@ -22,14 +22,8 @@ const calcPoints = (
   let xRatio = width / (hours - (detail === 1 ? 1 : 0));
   xRatio = isFinite(xRatio) ? xRatio : width;
 
-  let first = history.filter(Boolean)[0];
-  if (detail > 1) {
-    first = first.filter(Boolean)[0];
-  }
+  const first = history.filter(Boolean)[0];
   let last = [average(first), lastValue(first)];
-
-  const getY = (value: number): number =>
-    height + strokeWidth / 2 - (value - min) / yRatio;
 
   const getCoords = (item: any[], i: number, offset = 0, depth = 1) => {
     if (depth > 1 && item) {
@@ -43,7 +37,8 @@ const calcPoints = (
     if (item) {
       last = [average(item), lastValue(item)];
     }
-    const y = getY(item ? last[0] : last[1]);
+    const y =
+      height + strokeWidth / 2 - ((item ? last[0] : last[1]) - min) / yRatio;
     return coords.push([x, y]);
   };
 
@@ -51,7 +46,11 @@ const calcPoints = (
     getCoords(history[i], i, 0, detail);
   }
 
-  coords.push([width, getY(last[1])]);
+  if (coords.length === 1) {
+    coords[1] = [width, coords[0][1]];
+  }
+
+  coords.push([width, coords[coords.length - 1][1]]);
   return coords;
 };
 

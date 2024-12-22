@@ -1,8 +1,6 @@
-import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
-import { stripDiacritics } from "../../../src/common/string/strip-diacritics";
-import type { StoreAddon } from "../../../src/data/supervisor/store";
-import { getStripDiacriticsFn } from "../../../src/util/fuse";
+import type { IFuseOptions } from "fuse.js";
+import { StoreAddon } from "../../../src/data/supervisor/store";
 
 export function filterAndSort(addons: StoreAddon[], filter: string) {
   const options: IFuseOptions<StoreAddon> = {
@@ -10,8 +8,7 @@ export function filterAndSort(addons: StoreAddon[], filter: string) {
     isCaseSensitive: false,
     minMatchCharLength: Math.min(filter.length, 2),
     threshold: 0.2,
-    getFn: getStripDiacriticsFn,
   };
   const fuse = new Fuse(addons, options);
-  return fuse.search(stripDiacritics(filter)).map((result) => result.item);
+  return fuse.search(filter).map((result) => result.item);
 }

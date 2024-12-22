@@ -1,13 +1,13 @@
 import { mdiHome, mdiHomeExportOutline } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
+import { HassEntity } from "home-assistant-js-websocket";
 import { html } from "lit";
 import { styleMap } from "lit/directives/style-map";
 import { stateColorCss } from "../../../../../common/entity/state_color";
 import "../../../../../components/ha-icon";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/tile/ha-tile-badge";
-import type { HomeAssistant } from "../../../../../types";
-import type { RenderBadgeFunction } from "./tile-badge";
+import { HomeAssistant } from "../../../../../types";
+import { RenderBadgeFunction } from "./tile-badge";
 
 function getZone(entity: HassEntity, hass: HomeAssistant) {
   const state = entity.state;

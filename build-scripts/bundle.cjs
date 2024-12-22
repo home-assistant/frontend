@@ -47,17 +47,12 @@ module.exports.emptyPackages = ({ latestBuild, isHassioBuild }) =>
 
 module.exports.definedVars = ({ isProdBuild, latestBuild, defineOverlay }) => ({
   __DEV__: !isProdBuild,
-  __BUILD__: JSON.stringify(latestBuild ? "modern" : "legacy"),
+  __BUILD__: JSON.stringify(latestBuild ? "latest" : "es5"),
   __VERSION__: JSON.stringify(env.version()),
   __DEMO__: false,
   __SUPERVISOR__: false,
   __BACKWARDS_COMPAT__: false,
   __STATIC_PATH__: "/static/",
-  __HASS_URL__: `\`${
-    "HASS_URL" in process.env
-      ? process.env["HASS_URL"]
-      : "${location.protocol}//${location.host}"
-  }\``,
   "process.env.NODE_ENV": JSON.stringify(
     isProdBuild ? "production" : "development"
   ),
@@ -84,12 +79,7 @@ module.exports.terserOptions = ({ latestBuild, isTestBuild }) => ({
   sourceMap: !isTestBuild,
 });
 
-module.exports.babelOptions = ({
-  latestBuild,
-  isProdBuild,
-  isTestBuild,
-  sw,
-}) => ({
+module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
   babelrc: false,
   compact: false,
   assumptions: {
@@ -97,13 +87,13 @@ module.exports.babelOptions = ({
     setPublicClassFields: true,
     setSpreadProperties: true,
   },
-  browserslistEnv: latestBuild ? "modern" : `legacy${sw ? "-sw" : ""}`,
+  browserslistEnv: latestBuild ? "modern" : "legacy",
   presets: [
     [
       "@babel/preset-env",
       {
-        useBuiltIns: "usage",
-        corejs: dependencies["core-js"],
+        useBuiltIns: latestBuild ? false : "usage",
+        corejs: latestBuild ? false : dependencies["core-js"],
         bugfixes: true,
         shippedProposals: true,
       },
@@ -145,18 +135,13 @@ module.exports.babelOptions = ({
       "@babel/plugin-transform-runtime",
       { version: dependencies["@babel/runtime"] },
     ],
-    // Transpile decorators (still in TC39 process)
-    // Modern browsers support class fields and private methods, but transform is required with the older decorator version dictated by Lit
-    [
-      "@babel/plugin-proposal-decorators",
-      { version: "2018-09", decoratorsBeforeExport: true },
-    ],
-    "@babel/plugin-transform-class-properties",
-    "@babel/plugin-transform-private-methods",
+    // Support  some proposals still in TC39 process
+    ["@babel/plugin-proposal-decorators", { decoratorsBeforeExport: true }],
   ].filter(Boolean),
   exclude: [
     // \\ for Windows, / for Mac OS and Linux
     /node_modules[\\/]core-js/,
+    /node_modules[\\/]webpack[\\/]buildin/,
   ],
   sourceMaps: !isTestBuild,
   overrides: [
@@ -172,7 +157,7 @@ module.exports.babelOptions = ({
       exclude: [
         path.join(paths.polymer_dir, "src/resources/polyfills"),
         ...[
-          "@formatjs/(?:ecma402-abstract|intl-\\w+)",
+          "@formatjs/intl-\\w+",
           "@lit-labs/virtualizer/polyfills",
           "@webcomponents/scoped-custom-element-registry",
           "element-internals-polyfill",
@@ -230,12 +215,7 @@ module.exports.config = {
     return {
       name: "frontend" + nameSuffix(latestBuild),
       entry: {
-        "service-worker": !latestBuild
-          ? {
-              import: "./src/entrypoints/service-worker.ts",
-              layer: "sw",
-            }
-          : "./src/entrypoints/service-worker.ts",
+        service_worker: "./src/entrypoints/service_worker.ts",
         app: "./src/entrypoints/app.ts",
         authorize: "./src/entrypoints/authorize.ts",
         onboarding: "./src/entrypoints/onboarding.ts",
@@ -329,19 +309,6 @@ module.exports.config = {
       defineOverlay: {
         __DEMO__: true,
       },
-    };
-  },
-
-  landingPage({ isProdBuild, latestBuild }) {
-    return {
-      name: "landing-page" + nameSuffix(latestBuild),
-      entry: {
-        entrypoint: path.resolve(paths.landingPage_dir, "src/entrypoint.js"),
-      },
-      outputPath: outputPath(paths.landingPage_output_root, latestBuild),
-      publicPath: publicPath(latestBuild),
-      isProdBuild,
-      latestBuild,
     };
   },
 };

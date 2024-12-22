@@ -1,11 +1,10 @@
-import type { PropertyValues, TemplateResult } from "lit";
-import { css, LitElement, svg } from "lit";
+import { css, LitElement, PropertyValues, svg, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { formatNumber } from "../common/number/format_number";
 import { blankBeforePercent } from "../common/translations/blank_before_percent";
 import { afterNextRender } from "../common/util/render-status";
-import type { FrontendLocaleData } from "../data/translation";
+import { FrontendLocaleData } from "../data/translation";
 import { getValueInPercentage, normalize } from "../util/calculate";
 
 const getAngle = (value: number, min: number, max: number) => {
@@ -30,7 +29,7 @@ export class HaGauge extends LitElement {
   @property({ attribute: false })
   public formatOptions?: Intl.NumberFormatOptions;
 
-  @property({ attribute: false, type: String }) public valueText?: string;
+  @property({ type: String }) public valueText?: string;
 
   @property({ attribute: false }) public locale!: FrontendLocaleData;
 
@@ -52,8 +51,8 @@ export class HaGauge extends LitElement {
     afterNextRender(() => {
       this._updated = true;
       this._angle = getAngle(this.value, this.min, this.max);
-      this._segment_label = this._getSegmentLabel();
-      this._rescaleSvg();
+      this._segment_label = this.getSegmentLabel();
+      this._rescale_svg();
     });
   }
 
@@ -68,8 +67,8 @@ export class HaGauge extends LitElement {
       return;
     }
     this._angle = getAngle(this.value, this.min, this.max);
-    this._segment_label = this._getSegmentLabel();
-    this._rescaleSvg();
+    this._segment_label = this.getSegmentLabel();
+    this._rescale_svg();
   }
 
   protected render() {
@@ -149,7 +148,7 @@ export class HaGauge extends LitElement {
       </svg>`;
   }
 
-  private _rescaleSvg() {
+  private _rescale_svg() {
     // Set the viewbox of the SVG containing the value to perfectly
     // fit the text
     // That way it will auto-scale correctly
@@ -161,7 +160,7 @@ export class HaGauge extends LitElement {
     );
   }
 
-  private _getSegmentLabel() {
+  private getSegmentLabel() {
     if (this.levels) {
       this.levels.sort((a, b) => a.level - b.level);
       for (let i = this.levels.length - 1; i >= 0; i--) {

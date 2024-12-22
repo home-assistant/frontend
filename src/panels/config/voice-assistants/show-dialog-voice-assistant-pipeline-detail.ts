@@ -1,5 +1,5 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import type {
+import {
   AssistPipeline,
   AssistPipelineMutableParams,
 } from "../../../data/assist_pipeline";
@@ -7,9 +7,11 @@ import type {
 export interface VoiceAssistantPipelineDetailsDialogParams {
   cloudActiveSubscription?: boolean;
   pipeline?: AssistPipeline;
-  hideWakeWord?: boolean;
+  preferred?: boolean;
+  createPipeline: (values: AssistPipelineMutableParams) => Promise<unknown>;
   updatePipeline: (updates: AssistPipelineMutableParams) => Promise<unknown>;
-  createPipeline?: (values: AssistPipelineMutableParams) => Promise<unknown>;
+  setPipelinePreferred: () => Promise<unknown>;
+  deletePipeline: () => Promise<boolean>;
 }
 
 export const loadVoiceAssistantPipelineDetailDialog = () =>

@@ -1,23 +1,30 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
+import { mdiChevronRight } from "@mdi/js";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/chart/state-history-charts";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
-import "../../../components/ha-icon-next";
-import type { HistoryResult } from "../../../data/history";
+import "../../../components/ha-icon-button";
 import {
+  HistoryResult,
   computeHistory,
   subscribeHistoryStatesTimeWindow,
 } from "../../../data/history";
 import { getSensorNumericDeviceClasses } from "../../../data/sensor";
-import type { HomeAssistant } from "../../../types";
+import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
-import type { LovelaceCard } from "../types";
-import type { HistoryGraphCardConfig } from "./types";
+import { LovelaceCard } from "../types";
+import { HistoryGraphCardConfig } from "./types";
 import { createSearchParam } from "../../../common/url/search-params";
 
 export const DEFAULT_HOURS_TO_SHOW = 24;
@@ -202,7 +209,9 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
           ? html`
               <h1 class="card-header">
                 ${this._config.title}
-                <a href=${configUrl}><ha-icon-next></ha-icon-next></a>
+                <a href=${configUrl}
+                  ><ha-icon-button .path=${mdiChevronRight}></ha-icon-button
+                ></a>
               </h1>
             `
           : nothing}
@@ -249,7 +258,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
         justify-content: space-between;
         display: flex;
       }
-      .card-header ha-icon-next {
+      .card-header ha-icon-button {
         --mdc-icon-button-size: 24px;
         line-height: 24px;
         color: var(--primary-text-color);

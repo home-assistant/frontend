@@ -5,8 +5,14 @@ import {
   Swipe,
   Tap,
 } from "@egjs/hammerjs";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-svg-icon";
@@ -22,10 +28,10 @@ export class HaControlSwitch extends LitElement {
   @property({ type: Boolean, reflect: true }) public checked = false;
 
   // SVG icon path (if you need a non SVG icon instead, use the provided on icon slot to pass an <ha-icon slot="icon-on"> in)
-  @property({ attribute: false, type: String }) pathOn?: string;
+  @property({ type: String }) pathOn?: string;
 
   // SVG icon path (if you need a non SVG icon instead, use the provided off icon slot to pass an <ha-icon slot="icon-off"> in)
-  @property({ attribute: false, type: String }) pathOff?: string;
+  @property({ type: String }) pathOff?: string;
 
   @property({ attribute: "touch-action" })
   public touchAction?: string;

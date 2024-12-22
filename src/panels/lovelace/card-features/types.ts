@@ -1,6 +1,6 @@
-import type { AlarmMode } from "../../../data/alarm_control_panel";
-import type { HvacMode } from "../../../data/climate";
-import type { OperationMode } from "../../../data/water_heater";
+import { AlarmMode } from "../../../data/alarm_control_panel";
+import { HvacMode } from "../../../data/climate";
+import { OperationMode } from "../../../data/water_heater";
 
 export interface CoverOpenCloseCardFeatureConfig {
   type: "cover-open-close";
@@ -34,10 +34,6 @@ export interface LockOpenDoorCardFeatureConfig {
   type: "lock-open-door";
 }
 
-export interface MediaPlayerVolumeSliderCardFeatureConfig {
-  type: "media-player-volume-slider";
-}
-
 export interface FanPresetModesCardFeatureConfig {
   type: "fan-preset-modes";
   style?: "dropdown" | "icons";
@@ -63,12 +59,6 @@ export interface ClimateSwingModesCardFeatureConfig {
   type: "climate-swing-modes";
   style?: "dropdown" | "icons";
   swing_modes?: string[];
-}
-
-export interface ClimateSwingHorizontalModesCardFeatureConfig {
-  type: "climate-swing-horizontal-modes";
-  style?: "dropdown" | "icons";
-  swing_horizontal_modes?: string[];
 }
 
 export interface ClimateHvacModesCardFeatureConfig {
@@ -149,7 +139,6 @@ export type LovelaceCardFeatureConfig =
   | AlarmModesCardFeatureConfig
   | ClimateFanModesCardFeatureConfig
   | ClimateSwingModesCardFeatureConfig
-  | ClimateSwingHorizontalModesCardFeatureConfig
   | ClimateHvacModesCardFeatureConfig
   | ClimatePresetModesCardFeatureConfig
   | CoverOpenCloseCardFeatureConfig
@@ -165,7 +154,6 @@ export type LovelaceCardFeatureConfig =
   | LightColorTempCardFeatureConfig
   | LockCommandsCardFeatureConfig
   | LockOpenDoorCardFeatureConfig
-  | MediaPlayerVolumeSliderCardFeatureConfig
   | NumericInputCardFeatureConfig
   | SelectOptionsCardFeatureConfig
   | TargetHumidityCardFeatureConfig

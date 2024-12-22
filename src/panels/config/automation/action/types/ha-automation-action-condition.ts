@@ -8,7 +8,7 @@ import "../../../../../components/ha-select";
 import type { HaSelect } from "../../../../../components/ha-select";
 import type { Condition } from "../../../../../data/automation";
 import { CONDITION_ICONS } from "../../../../../data/condition";
-import type { Entries, HomeAssistant } from "../../../../../types";
+import { Entries, HomeAssistant } from "../../../../../types";
 import "../../condition/ha-automation-condition-editor";
 import type { ActionElement } from "../ha-automation-action-row";
 
@@ -20,7 +20,7 @@ export class HaConditionAction extends LitElement implements ActionElement {
 
   @property({ attribute: false }) public action!: Condition;
 
-  public static get defaultConfig(): Omit<Condition, "state" | "entity_id"> {
+  public static get defaultConfig() {
     return { condition: "state" };
   }
 
@@ -87,12 +87,13 @@ export class HaConditionAction extends LitElement implements ActionElement {
     const elClass = customElements.get(
       `ha-automation-condition-${type}`
     ) as CustomElementConstructor & {
-      defaultConfig: Condition;
+      defaultConfig: Omit<Condition, "condition">;
     };
 
     if (type !== this.action.condition) {
       fireEvent(this, "value-changed", {
         value: {
+          condition: type,
           ...elClass.defaultConfig,
         },
       });

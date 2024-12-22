@@ -1,12 +1,11 @@
 import { mdiClose, mdiMagnify } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import "./ha-icon-button";
 import "./ha-svg-icon";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
-import type { HomeAssistant } from "../types";
+import { HomeAssistant } from "../types";
 import { fireEvent } from "../common/dom/fire_event";
 
 @customElement("search-input")
@@ -18,8 +17,8 @@ class SearchInput extends LitElement {
   @property({ type: Boolean })
   public suffix = false;
 
-  // eslint-disable-next-line lit/no-native-attributes
-  @property({ type: Boolean }) public autofocus = false;
+  @property({ type: Boolean })
+  public autofocus = false;
 
   @property({ type: String })
   public label?: string;
@@ -68,7 +67,7 @@ class SearchInput extends LitElement {
   }
 
   private async _filterInputChanged(e) {
-    this._filterChanged(e.target.value);
+    this._filterChanged(e.target.value?.trim());
   }
 
   private async _clearSearch() {

@@ -1,8 +1,14 @@
 import "@material/mwc-button/mwc-button";
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item-base";
+import { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item-base";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  TemplateResult,
+  nothing,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -19,18 +25,14 @@ import { createInputDateTime } from "../../../data/input_datetime";
 import { createInputNumber } from "../../../data/input_number";
 import { createInputSelect } from "../../../data/input_select";
 import { createInputText } from "../../../data/input_text";
-import {
-  domainToName,
-  fetchIntegrationManifest,
-} from "../../../data/integration";
+import { domainToName } from "../../../data/integration";
 import { createSchedule } from "../../../data/schedule";
 import { createTimer } from "../../../data/timer";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
+import { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import type { Helper, HelperDomain } from "./const";
-import { isHelperDomain } from "./const";
+import { Helper, HelperDomain, isHelperDomain } from "./const";
 import type { ShowDialogHelperDetailParams } from "./show-dialog-helper-detail";
 
 type HelperCreators = {
@@ -118,10 +120,13 @@ export class DialogHelperDetail extends LitElement {
     this._opened = true;
     await this.updateComplete;
     this.hass.loadFragmentTranslation("config");
-    const flows = await getConfigFlowHandlers(this.hass, ["helper"]);
-    await this.hass.loadBackendTranslation("title", flows, true);
-    // Ensure the titles are loaded before we render the flows.
-    this._helperFlows = flows;
+    Promise.all([
+      getConfigFlowHandlers(this.hass, ["helper"]),
+      // Ensure the titles are loaded before we render the flows.
+      this.hass.loadBackendTranslation("title", undefined, true),
+    ]).then(([flows]) => {
+      this._helperFlows = flows;
+    });
   }
 
   public closeDialog(): void {
@@ -320,7 +325,6 @@ export class DialogHelperDetail extends LitElement {
     } else {
       showConfigFlowDialog(this, {
         startFlowHandler: domain,
-        manifest: await fetchIntegrationManifest(this.hass, domain),
         dialogClosedCallback: this._params!.dialogClosedCallback,
       });
       this.closeDialog();

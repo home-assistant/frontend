@@ -1,32 +1,27 @@
+import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import { mdiOpenInNew } from "@mdi/js";
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
-import "../../../components/ha-button";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-combo-box";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-markdown";
-import "../../../components/ha-password-field";
 import "../../../components/ha-textfield";
-import type {
+import {
   ApplicationCredential,
   ApplicationCredentialsConfig,
-} from "../../../data/application_credential";
-import {
   createApplicationCredential,
   fetchApplicationCredentialsConfig,
 } from "../../../data/application_credential";
-import type { IntegrationManifest } from "../../../data/integration";
-import { domainToName } from "../../../data/integration";
+import { domainToName, IntegrationManifest } from "../../../data/integration";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
+import { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import type { AddApplicationCredentialDialogParams } from "./show-dialog-add-application-credential";
+import { AddApplicationCredentialDialogParams } from "./show-dialog-add-application-credential";
 
 interface Domain {
   id: string;
@@ -213,10 +208,11 @@ export class DialogAddApplicationCredential extends LitElement {
             )}
             helperPersistent
           ></ha-textfield>
-          <ha-password-field
+          <ha-textfield
             .label=${this.hass.localize(
               "ui.panel.config.application_credentials.editor.client_secret"
             )}
+            type="password"
             name="clientSecret"
             .value=${this._clientSecret}
             required
@@ -226,7 +222,7 @@ export class DialogAddApplicationCredential extends LitElement {
               "ui.panel.config.application_credentials.editor.client_secret_helper"
             )}
             helperPersistent
-          ></ha-password-field>
+          ></ha-textfield>
         </div>
         ${this._loading
           ? html`
@@ -235,10 +231,10 @@ export class DialogAddApplicationCredential extends LitElement {
               </div>
             `
           : html`
-              <ha-button slot="secondaryAction" @click=${this._abortDialog}>
+              <mwc-button slot="primaryAction" @click=${this._abortDialog}>
                 ${this.hass.localize("ui.common.cancel")}
-              </ha-button>
-              <ha-button
+              </mwc-button>
+              <mwc-button
                 slot="primaryAction"
                 .disabled=${!this._domain ||
                 !this._clientId ||
@@ -248,7 +244,7 @@ export class DialogAddApplicationCredential extends LitElement {
                 ${this.hass.localize(
                   "ui.panel.config.application_credentials.editor.add"
                 )}
-              </ha-button>
+              </mwc-button>
             `}
       </ha-dialog>
     `;

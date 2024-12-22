@@ -1,9 +1,8 @@
-import type { PropertyValues } from "lit";
-import { ReactiveElement } from "lit";
+import { PropertyValues, ReactiveElement } from "lit";
 import { property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { navigate } from "../common/navigate";
-import type { Route } from "../types";
+import { Route } from "../types";
 
 const extractPage = (path: string, defaultPage: string) => {
   if (path === "") {

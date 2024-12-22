@@ -1,5 +1,4 @@
-import type { TemplateResult } from "lit";
-import { render } from "lit";
+import { render, TemplateResult } from "lit";
 
 export const removeLaunchScreen = () => {
   const launchScreenElement = document.getElementById("ha-launch-screen");

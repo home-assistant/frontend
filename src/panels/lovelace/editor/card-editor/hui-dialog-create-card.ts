@@ -1,9 +1,7 @@
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
 import { mdiClose } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { ifDefined } from "lit/directives/if-defined";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { classMap } from "lit/directives/class-map";
@@ -11,11 +9,13 @@ import memoize from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
-import type { DataTableRowData } from "../../../../components/data-table/ha-data-table";
+import { DataTableRowData } from "../../../../components/data-table/ha-data-table";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
-import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
-import { isStrategySection } from "../../../../data/lovelace/config/section";
+import {
+  isStrategySection,
+  LovelaceSectionConfig,
+} from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
@@ -30,7 +30,7 @@ import {
 } from "../lovelace-path";
 import "./hui-card-picker";
 import "./hui-entity-picker-table";
-import type { CreateCardDialogParams } from "./show-create-card-dialog";
+import { CreateCardDialogParams } from "./show-create-card-dialog";
 import { showEditCardDialog } from "./show-edit-card-dialog";
 import { showSuggestCardDialog } from "./show-suggest-card-dialog";
 
@@ -61,14 +61,8 @@ export class HuiCreateDialogCard
 
   @state() private _currTabIndex = 0;
 
-  @state() private _narrow = false;
-
   public async showDialog(params: CreateCardDialogParams): Promise<void> {
     this._params = params;
-
-    this._narrow = matchMedia(
-      "all and (max-width: 450px), all and (max-height: 500px)"
-    ).matches;
 
     const containerConfig = findLovelaceContainer(
       params.lovelaceConfig,
@@ -127,7 +121,7 @@ export class HuiCreateDialogCard
               .label=${this.hass!.localize(
                 "ui.panel.lovelace.editor.cardpicker.by_card"
               )}
-              dialogInitialFocus=${ifDefined(this._narrow ? "" : undefined)}
+              dialogInitialFocus
             ></mwc-tab>
             <mwc-tab
               .label=${this.hass!.localize(
@@ -140,7 +134,6 @@ export class HuiCreateDialogCard
           this._currTabIndex === 0
             ? html`
                 <hui-card-picker
-                  dialogInitialFocus=${ifDefined(this._narrow ? undefined : "")}
                   .suggestedCards=${this._params.suggestedCards}
                   .lovelace=${this._params.lovelaceConfig}
                   .hass=${this.hass}
@@ -151,7 +144,7 @@ export class HuiCreateDialogCard
                 <hui-entity-picker-table
                   no-label-float
                   .hass=${this.hass}
-                  narrow
+                  .narrow=${true}
                   .entities=${this._allEntities(this.hass.states)}
                   @selected-changed=${this._handleSelectedChanged}
                 ></hui-entity-picker-table>

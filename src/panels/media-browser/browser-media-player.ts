@@ -1,13 +1,11 @@
-import type {
-  MediaPlayerEntity,
-  MediaPlayerItem,
-} from "../../data/media-player";
 import {
   BROWSER_PLAYER,
+  MediaPlayerEntity,
   MediaPlayerEntityFeature,
+  MediaPlayerItem,
 } from "../../data/media-player";
-import type { ResolvedMediaSource } from "../../data/media_source";
-import type { HomeAssistant } from "../../types";
+import { ResolvedMediaSource } from "../../data/media_source";
+import { HomeAssistant } from "../../types";
 
 export const ERR_UNSUPPORTED_MEDIA = "Unsupported Media";
 
@@ -99,6 +97,7 @@ export class BrowserMediaPlayer {
       supported_features:
         // eslint-disable-next-line no-bitwise
         MediaPlayerEntityFeature.PLAY |
+        // eslint-disable-next-line no-bitwise
         MediaPlayerEntityFeature.PAUSE |
         MediaPlayerEntityFeature.VOLUME_SET,
     };

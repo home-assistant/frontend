@@ -1,10 +1,9 @@
 import "@material/mwc-button";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
+import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { HassEntity } from "home-assistant-js-websocket";
+import { HassEntity } from "home-assistant-js-websocket";
 import { haStyle } from "../resources/styles";
-import type { HomeAssistant } from "../types";
+import { HomeAssistant } from "../types";
 
 const STATES_INTERCEPTABLE: {
   [state: string]: {

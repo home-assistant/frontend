@@ -1,6 +1,5 @@
 /* eslint-disable lit/prefer-static-styles */
-import type { TemplateResult } from "lit";
-import { html } from "lit";
+import { TemplateResult, html } from "lit";
 import { customElement } from "lit/decorators";
 import { HaFormString } from "../components/ha-form/ha-form-string";
 import "../components/ha-icon-button";
@@ -54,7 +53,6 @@ export class HaAuthFormString extends HaFormString {
         .autoValidate=${this.schema.required}
         .name=${this.schema.name}
         .autocomplete=${this.schema.autocomplete}
-        ?autofocus=${this.schema.autofocus}
         .suffix=${
           this.isPassword
             ? // reserve some space for the icon.

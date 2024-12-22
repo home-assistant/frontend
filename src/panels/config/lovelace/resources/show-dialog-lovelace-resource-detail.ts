@@ -1,5 +1,5 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type {
+import {
   LovelaceResource,
   LovelaceResourcesMutableParams,
 } from "../../../../data/lovelace/resource";
@@ -10,6 +10,7 @@ export interface LovelaceResourceDetailsDialogParams {
   updateResource: (
     updates: Partial<LovelaceResourcesMutableParams>
   ) => Promise<unknown>;
+  removeResource: () => Promise<boolean>;
 }
 
 export const loadResourceDetailDialog = () =>

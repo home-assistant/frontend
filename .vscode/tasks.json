@@ -101,38 +101,6 @@
       }
     },
     {
-      "label": "Develop Landing Page",
-      "type": "gulp",
-      "task": "develop-landing-page",
-      "problemMatcher": {
-        "owner": "ha-build",
-        "source": "ha-build",
-        "fileLocation": "absolute",
-        "severity": "error",
-        "pattern": [
-          {
-            "regexp": "(SyntaxError): (.+): (.+) \\((\\d+):(\\d+)\\)",
-            "severity": 1,
-            "file": 2,
-            "message": 3,
-            "line": 4,
-            "column": 5
-          }
-        ],
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "Changes detected. Starting compilation",
-          "endsPattern": "Build done @"
-        }
-      },
-
-      "isBackground": true,
-      "group": "build",
-      "runOptions": {
-        "instanceLimit": 1
-      }
-    },
-    {
       "label": "Develop Demo",
       "type": "gulp",
       "task": "develop-demo",

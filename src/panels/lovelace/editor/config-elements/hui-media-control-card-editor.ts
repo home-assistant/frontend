@@ -4,11 +4,11 @@ import { assert, assign, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-theme-picker";
-import type { HomeAssistant } from "../../../../types";
-import type { MediaControlCardConfig } from "../../cards/types";
-import type { LovelaceCardEditor } from "../../types";
+import { HomeAssistant } from "../../../../types";
+import { MediaControlCardConfig } from "../../cards/types";
+import { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import type { EditorTarget, EntitiesEditorEvent } from "../types";
+import { EditorTarget, EntitiesEditorEvent } from "../types";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,

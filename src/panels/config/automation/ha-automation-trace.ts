@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import {
   mdiDotsVertical,
   mdiDownload,
@@ -8,8 +7,14 @@ import {
   mdiRayStartArrow,
   mdiRefresh,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  TemplateResult,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
@@ -29,18 +34,18 @@ import type {
   NodeInfo,
 } from "../../../components/trace/hat-script-graph";
 import { traceTabStyles } from "../../../components/trace/trace-tab-styles";
-import type { AutomationEntity } from "../../../data/automation";
-import type { LogbookEntry } from "../../../data/logbook";
-import { getLogbookDataForContext } from "../../../data/logbook";
-import type {
+import { AutomationEntity } from "../../../data/automation";
+import { getLogbookDataForContext, LogbookEntry } from "../../../data/logbook";
+import {
   AutomationTrace,
   AutomationTraceExtended,
+  loadTrace,
+  loadTraces,
 } from "../../../data/trace";
-import { loadTrace, loadTraces } from "../../../data/trace";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../types";
+import { HomeAssistant, Route } from "../../../types";
 import { computeRTL } from "../../../common/util/compute_rtl";
 
 const TABS = ["details", "automation_config", "timeline", "logbook"] as const;
@@ -49,11 +54,11 @@ const TABS = ["details", "automation_config", "timeline", "logbook"] as const;
 export class HaAutomationTrace extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public automationId!: string;
+  @property() public automationId!: string;
 
   @property({ attribute: false }) public automations!: AutomationEntity[];
 
-  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+  @property({ type: Boolean }) public isWide = false;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
@@ -424,9 +429,7 @@ export class HaAutomationTrace extends LitElement {
       }
 
       await showAlertDialog(this, {
-        text: this.hass!.localize(
-          "ui.panel.config.automation.trace.trace_no_longer_available"
-        ),
+        text: "Chosen trace is no longer available",
       });
     }
 
@@ -473,22 +476,17 @@ export class HaAutomationTrace extends LitElement {
   }
 
   private _importTrace() {
-    const traceText = prompt(
-      this.hass.localize(
-        "ui.panel.config.automation.trace.enter_downloaded_trace"
-      )
-    );
+    const traceText = prompt("Enter downloaded trace");
     if (!traceText) {
       return;
     }
-    window.localStorage.setItem("devTrace", traceText);
+    localStorage.devTrace = traceText;
     this._loadLocalTrace(traceText);
   }
 
   private _loadLocalStorageTrace() {
-    const devTrace = window.localStorage.getItem("devTrace");
-    if (devTrace) {
-      this._loadLocalTrace(devTrace);
+    if (localStorage.devTrace) {
+      this._loadLocalTrace(localStorage.devTrace);
     }
   }
 

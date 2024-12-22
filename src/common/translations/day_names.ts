@@ -1,7 +1,7 @@
 import { addDays, startOfWeek } from "date-fns";
-import type { HassConfig } from "home-assistant-js-websocket";
+import { HassConfig } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
-import type { FrontendLocaleData } from "../../data/translation";
+import { FrontendLocaleData } from "../../data/translation";
 import { formatDateWeekday } from "../datetime/format_date";
 
 export const dayNames = memoizeOne(

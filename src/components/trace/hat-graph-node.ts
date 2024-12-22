@@ -1,6 +1,13 @@
 import { mdiExclamationThick } from "@mdi/js";
-import type { PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing, svg } from "lit";
+import {
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+  css,
+  html,
+  nothing,
+  svg,
+} from "lit";
 import { customElement, property } from "lit/decorators";
 import { isSafari } from "../../util/is_safari";
 import { NODE_SIZE, SPACING } from "./hat-graph-const";
@@ -11,17 +18,15 @@ import { NODE_SIZE, SPACING } from "./hat-graph-const";
  */
 @customElement("hat-graph-node")
 export class HatGraphNode extends LitElement {
-  @property({ attribute: false }) iconPath?: string;
+  @property() iconPath?: string;
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
   @property({ type: Boolean }) public error = false;
 
-  @property({ attribute: false, reflect: true, type: Boolean }) notEnabled =
-    false;
+  @property({ reflect: true, type: Boolean }) notEnabled = false;
 
-  @property({ attribute: false, reflect: true, type: Boolean }) graphStart =
-    false;
+  @property({ reflect: true, type: Boolean }) graphStart = false;
 
   @property({ type: Boolean, attribute: "nofocus" }) noFocus = false;
 

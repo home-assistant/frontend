@@ -1,8 +1,10 @@
 import { customElement, property } from "lit/decorators";
-import type { Supervisor } from "../../src/data/supervisor/supervisor";
-import type { RouterOptions } from "../../src/layouts/hass-router-page";
-import { HassRouterPage } from "../../src/layouts/hass-router-page";
-import type { HomeAssistant, Route } from "../../src/types";
+import { Supervisor } from "../../src/data/supervisor/supervisor";
+import {
+  HassRouterPage,
+  RouterOptions,
+} from "../../src/layouts/hass-router-page";
+import { HomeAssistant, Route } from "../../src/types";
 // Don't codesplit it, that way the dashboard always loads fast.
 import "./dashboard/hassio-dashboard";
 

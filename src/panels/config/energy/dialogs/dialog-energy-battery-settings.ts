@@ -1,21 +1,20 @@
 import "@material/mwc-button/mwc-button";
 import { mdiBatteryHigh } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-dialog";
-import type { BatterySourceTypeEnergyPreference } from "../../../../data/energy";
 import {
+  BatterySourceTypeEnergyPreference,
   emptyBatteryEnergyPreference,
   energyStatisticHelpUrl,
 } from "../../../../data/energy";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
-import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
-import type { EnergySettingsBatteryDialogParams } from "./show-dialogs-energy";
+import { HomeAssistant } from "../../../../types";
+import { EnergySettingsBatteryDialogParams } from "./show-dialogs-energy";
 
 const energyUnitClasses = ["energy"];
 
@@ -80,7 +79,9 @@ export class DialogEnergyBatterySettings
             .path=${mdiBatteryHigh}
             style="--mdc-icon-size: 32px;"
           ></ha-svg-icon>
-          ${this.hass.localize("ui.panel.config.energy.battery.dialog.header")}`}
+          ${this.hass.localize(
+            "ui.panel.config.energy.battery.dialog.header"
+          )}`}
         @closed=${this.closeDialog}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}

@@ -1,4 +1,4 @@
-import type { Card } from "./types";
+import { Card } from "./types";
 
 export const coreCards: Card[] = [
   {
@@ -124,9 +124,5 @@ export const coreCards: Card[] = [
   },
   {
     type: "todo-list",
-  },
-  {
-    type: "heading",
-    showElement: true,
   },
 ];

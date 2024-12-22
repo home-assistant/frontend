@@ -1,4 +1,4 @@
-import type { ActionDetail } from "@material/mwc-list";
+import { ActionDetail } from "@material/mwc-list";
 import {
   mdiAlphaABoxOutline,
   mdiArrowLeft,
@@ -7,11 +7,9 @@ import {
   mdiGrid,
   mdiListBoxOutline,
 } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import type { HASSDomEvent } from "../../common/dom/fire_event";
-import { fireEvent } from "../../common/dom/fire_event";
+import { HASSDomEvent, fireEvent } from "../../common/dom/fire_event";
 import type {
   MediaPickedEvent,
   MediaPlayerBrowseAction,
@@ -28,7 +26,7 @@ import type {
   HaMediaPlayerBrowse,
   MediaPlayerItemId,
 } from "./ha-media-player-browse";
-import type { MediaPlayerBrowseDialogParams } from "./show-media-browser-dialog";
+import { MediaPlayerBrowseDialogParams } from "./show-media-browser-dialog";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 
 @customElement("dialog-media-player-browse")
@@ -85,7 +83,7 @@ class DialogMediaPlayerBrowse extends LitElement {
         @opened=${this._dialogOpened}
       >
         <ha-dialog-header show-border slot="heading">
-          ${this._navigateIds.length > (this._params.minimumNavigateLevel ?? 1)
+          ${this._navigateIds.length > 1
             ? html`
                 <ha-icon-button
                   slot="navigationIcon"

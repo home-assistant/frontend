@@ -1,20 +1,19 @@
 import "../../../layouts/hass-error-screen";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type {
+import {
   EnergyPreferencesValidation,
+  getEnergyPreferenceValidation,
   EnergyInfo,
   EnergyPreferences,
-} from "../../../data/energy";
-import {
-  getEnergyPreferenceValidation,
   getEnergyInfo,
   getEnergyPreferences,
   getReferencedStatisticIds,
 } from "../../../data/energy";
-import type { StatisticsMetaData } from "../../../data/recorder";
-import { getStatisticMetadata } from "../../../data/recorder";
+import {
+  getStatisticMetadata,
+  StatisticsMetaData,
+} from "../../../data/recorder";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
@@ -38,9 +37,9 @@ class HaConfigEnergy extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+  @property({ type: Boolean }) public isWide = false;
 
-  @property({ attribute: false }) public showAdvanced = false;
+  @property({ type: Boolean }) public showAdvanced = false;
 
   @property({ attribute: false }) public route!: Route;
 

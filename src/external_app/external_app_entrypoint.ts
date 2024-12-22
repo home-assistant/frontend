@@ -8,12 +8,11 @@ This is the entry point for providing external app stuff from app entrypoint.
 import { fireEvent } from "../common/dom/fire_event";
 import { mainWindow } from "../common/dom/get_main_window";
 import { showAutomationEditor } from "../data/automation";
-import type { HomeAssistantMain } from "../layouts/home-assistant-main";
+import { HomeAssistantMain } from "../layouts/home-assistant-main";
 import type {
   EMIncomingMessageBarCodeScanAborted,
   EMIncomingMessageBarCodeScanResult,
   EMIncomingMessageCommands,
-  ImprovDiscoveredDevice,
 } from "./external_messaging";
 
 const barCodeListeners = new Set<
@@ -114,22 +113,6 @@ const handleExternalMessage = (
       success: true,
       result: null,
     });
-  } else if (msg.command === "improv/discovered_device") {
-    fireEvent(window, "improv-discovered-device", msg.payload);
-    bus.fireMessage({
-      id: msg.id,
-      type: "result",
-      success: true,
-      result: null,
-    });
-  } else if (msg.command === "improv/device_setup_done") {
-    fireEvent(window, "improv-device-setup-done");
-    bus.fireMessage({
-      id: msg.id,
-      type: "result",
-      success: true,
-      result: null,
-    });
   } else if (msg.command === "bar_code/scan_result") {
     barCodeListeners.forEach((listener) => listener(msg));
     bus.fireMessage({
@@ -152,10 +135,3 @@ const handleExternalMessage = (
 
   return true;
 };
-
-declare global {
-  interface HASSDomEvents {
-    "improv-discovered-device": ImprovDiscoveredDevice;
-    "improv-device-setup-done": undefined;
-  }
-}

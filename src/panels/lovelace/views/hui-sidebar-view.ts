@@ -1,17 +1,21 @@
 import { mdiArrowLeft, mdiArrowRight, mdiPlus } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+  css,
+  html,
+} from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
-import type { HuiBadge } from "../badges/hui-badge";
-import "../badges/hui-view-badges";
-import type { HuiCard } from "../cards/hui-card";
-import type { HuiCardOptions } from "../components/hui-card-options";
+import { HuiCard } from "../cards/hui-card";
+import { HuiCardOptions } from "../components/hui-card-options";
 import { replaceCard } from "../editor/config-util";
-import type { Lovelace } from "../types";
+import type { Lovelace, LovelaceCard } from "../types";
 
 export class SideBarView extends LitElement implements LovelaceViewElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -20,11 +24,9 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
 
   @property({ type: Number }) public index?: number;
 
-  @property({ attribute: false }) public isStrategy = false;
+  @property({ type: Boolean }) public isStrategy = false;
 
   @property({ attribute: false }) public cards: HuiCard[] = [];
-
-  @property({ attribute: false }) public badges: HuiBadge[] = [];
 
   @state() private _config?: LovelaceViewConfig;
 
@@ -83,12 +85,6 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
 
   protected render(): TemplateResult {
     return html`
-      <hui-view-badges
-        .hass=${this.hass}
-        .badges=${this.badges}
-        .lovelace=${this.lovelace}
-        .viewIndex=${this.index}
-      ></hui-view-badges>
       <div
         class="container ${this.lovelace?.editMode ? "edit-mode" : ""}"
       ></div>
@@ -144,18 +140,18 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
       });
     }
 
-    this.cards.forEach((card, idx) => {
+    this.cards.forEach((card: LovelaceCard, idx) => {
       const cardConfig = this._config?.cards?.[idx];
-      let element: HuiCard | HuiCardOptions;
+      let element: LovelaceCard | HuiCardOptions;
       if (this.isStrategy || !this.lovelace?.editMode) {
-        card.preview = false;
+        card.editMode = false;
         element = card;
       } else {
         element = document.createElement("hui-card-options");
         element.hass = this.hass;
         element.lovelace = this.lovelace;
         element.path = [this.index!, idx];
-        card.preview = true;
+        card.editMode = true;
         const movePositionButton = document.createElement("ha-icon-button");
         movePositionButton.slot = "buttons";
         const moveIcon = document.createElement("ha-svg-icon");
@@ -193,12 +189,6 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
       :host {
         display: block;
         padding-top: 4px;
-      }
-
-      hui-view-badges {
-        display: block;
-        margin: 4px 8px 4px 8px;
-        font-size: 85%;
       }
 
       .container {

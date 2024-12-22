@@ -1,19 +1,18 @@
-import type { PropertyValues } from "lit";
-import { ReactiveElement } from "lit";
+import { PropertyValues, ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { MediaQueriesListener } from "../../../common/dom/media_query";
+import { MediaQueriesListener } from "../../../common/dom/media_query";
 import { deepEqual } from "../../../common/util/deep-equal";
-import type { HomeAssistant } from "../../../types";
-import type { HuiCard } from "../cards/hui-card";
-import type { ConditionalCardConfig } from "../cards/types";
-import type { Condition } from "../common/validate-condition";
+import { HomeAssistant } from "../../../types";
+import { ConditionalCardConfig } from "../cards/types";
 import {
+  Condition,
   attachConditionMediaQueriesListeners,
   checkConditionsMet,
   extractMediaQueries,
   validateConditionalConfig,
 } from "../common/validate-condition";
-import type { ConditionalRowConfig, LovelaceRow } from "../entity-rows/types";
+import { ConditionalRowConfig, LovelaceRow } from "../entity-rows/types";
+import { LovelaceCard } from "../types";
 
 declare global {
   interface HASSDomEvents {
@@ -25,11 +24,11 @@ declare global {
 export class HuiConditionalBase extends ReactiveElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ type: Boolean }) public preview = false;
+  @property({ type: Boolean }) public editMode = false;
 
   @state() protected _config?: ConditionalCardConfig | ConditionalRowConfig;
 
-  protected _element?: HuiCard | LovelaceRow;
+  protected _element?: LovelaceCard | LovelaceRow;
 
   private _listeners: MediaQueriesListener[] = [];
 
@@ -117,7 +116,7 @@ export class HuiConditionalBase extends ReactiveElement {
       changed.has("_element") ||
       changed.has("_config") ||
       changed.has("hass") ||
-      changed.has("preview")
+      changed.has("editMode")
     ) {
       this._listenMediaQueries();
       this._updateVisibility();
@@ -129,7 +128,7 @@ export class HuiConditionalBase extends ReactiveElement {
       return;
     }
 
-    this._element.preview = this.preview;
+    this._element.editMode = this.editMode;
 
     const conditionMet = checkConditionsMet(
       this._config!.conditions,
@@ -143,7 +142,7 @@ export class HuiConditionalBase extends ReactiveElement {
     if (!this._element || !this.hass) {
       return;
     }
-    const visible = this.preview || conditionMet;
+    const visible = this.editMode || conditionMet;
     if (this.hidden !== !visible) {
       this.toggleAttribute("hidden", !visible);
       this.style.setProperty("display", visible ? "" : "none");

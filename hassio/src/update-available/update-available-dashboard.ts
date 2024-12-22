@@ -1,9 +1,8 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { Supervisor } from "../../../src/data/supervisor/supervisor";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import "../../../src/layouts/hass-subpage";
-import type { HomeAssistant, Route } from "../../../src/types";
+import { HomeAssistant, Route } from "../../../src/types";
 import "./update-available-card";
 
 @customElement("update-available-dashboard")

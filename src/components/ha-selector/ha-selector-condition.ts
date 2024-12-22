@@ -1,10 +1,9 @@
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { Condition } from "../../data/automation";
-import type { ConditionSelector } from "../../data/selector";
+import { Condition } from "../../data/automation";
+import { ConditionSelector } from "../../data/selector";
 import "../../panels/config/automation/condition/ha-automation-condition";
-import type { HomeAssistant } from "../../types";
+import { HomeAssistant } from "../../types";
 
 @customElement("ha-selector-condition")
 export class HaConditionSelector extends LitElement {
@@ -25,6 +24,7 @@ export class HaConditionSelector extends LitElement {
         .disabled=${this.disabled}
         .conditions=${this.value || []}
         .hass=${this.hass}
+        .path=${this.selector.condition?.path}
       ></ha-automation-condition>
     `;
   }
@@ -34,6 +34,10 @@ export class HaConditionSelector extends LitElement {
       ha-automation-condition {
         display: block;
         margin-bottom: 16px;
+      }
+      :host([disabled]) ha-automation-condition {
+        opacity: var(--light-disabled-opacity);
+        pointer-events: none;
       }
       label {
         display: block;

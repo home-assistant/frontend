@@ -1,10 +1,9 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import type { UpdateUserParams, User } from "../../../data/user";
+import { UpdateUserParams, User } from "../../../data/user";
 
 export interface UserDetailDialogParams {
   entry: User;
   updateEntry: (updates: Partial<UpdateUserParams>) => Promise<unknown>;
-  replaceEntry: (entry: User) => void;
   removeEntry: () => Promise<boolean>;
 }
 

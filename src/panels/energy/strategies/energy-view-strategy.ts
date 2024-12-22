@@ -1,13 +1,13 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
-import type {
+import {
   EnergyPreferences,
+  getEnergyPreferences,
   GridSourceTypeEnergyPreference,
 } from "../../../data/energy";
-import { getEnergyPreferences } from "../../../data/energy";
-import type { HomeAssistant } from "../../../types";
-import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
-import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
+import { HomeAssistant } from "../../../types";
+import { LovelaceViewConfig } from "../../../data/lovelace/config/view";
+import { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
 
 const setupWizard = async (): Promise<LovelaceViewConfig> => {
   await import("../cards/energy-setup-wizard-card");

@@ -1,6 +1,6 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { HomeAssistant, Route } from "../../../../types";
+import { HomeAssistant, Route } from "../../../../types";
 import "./assist-pipeline-debug";
 import "./assist-pipeline-run-debug";
 

@@ -29,6 +29,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 declare global {
+  // eslint-disable-next-line
   interface HASSDomEvents {}
 }
 

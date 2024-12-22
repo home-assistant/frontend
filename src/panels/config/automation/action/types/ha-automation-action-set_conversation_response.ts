@@ -25,7 +25,7 @@ export class HaSetConversationResponseAction
 
   @property({ type: Boolean }) public disabled = false;
 
-  public static get defaultConfig(): SetConversationResponseAction {
+  public static get defaultConfig() {
     return { set_conversation_response: "" };
   }
 

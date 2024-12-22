@@ -1,5 +1,5 @@
-import type { ActionConfig } from "../../../data/lovelace/config/action";
-import type { EntitiesCardEntityConfig } from "../cards/types";
+import { ActionConfig } from "../../../data/lovelace/config/action";
+import { EntitiesCardEntityConfig } from "../cards/types";
 
 export interface LovelaceHeaderFooterConfig {
   type: "buttons" | "graph" | "picture";

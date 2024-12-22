@@ -1,11 +1,10 @@
 import { mdiExclamationThick } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
-import type { TemplateResult } from "lit";
-import { html, nothing } from "lit";
+import { HassEntity } from "home-assistant-js-websocket";
+import { TemplateResult, html, nothing } from "lit";
 import { styleMap } from "lit/directives/style-map";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
 import { UNAVAILABLE, UNKNOWN } from "../../../../../data/entity";
-import type { HomeAssistant } from "../../../../../types";
+import { HomeAssistant } from "../../../../../types";
 import { renderClimateBadge } from "./tile-badge-climate";
 import { renderHumidifierBadge } from "./tile-badge-humidifier";
 import { renderPersonBadge } from "./tile-badge-person";

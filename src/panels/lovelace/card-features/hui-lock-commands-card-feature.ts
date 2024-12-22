@@ -1,7 +1,6 @@
 import { mdiLock, mdiLockOpenVariant } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
-import { LitElement, html, nothing } from "lit";
+import { HassEntity } from "home-assistant-js-websocket";
+import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 
@@ -13,10 +12,9 @@ import {
   canLock,
   canUnlock,
 } from "../../../data/lock";
-import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeature } from "../types";
-import { cardFeatureStyles } from "./common/card-feature-styles";
-import type { LockCommandsCardFeatureConfig } from "./types";
+import { HomeAssistant } from "../../../types";
+import { LovelaceCardFeature } from "../types";
+import { LockCommandsCardFeatureConfig } from "./types";
 
 export const supportsLockCommandsCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -90,7 +88,12 @@ class HuiLockCommandsCardFeature
   }
 
   static get styles(): CSSResultGroup {
-    return cardFeatureStyles;
+    return css`
+      ha-control-button-group {
+        margin: 0 12px 12px 12px;
+        --control-button-group-spacing: 12px;
+      }
+    `;
   }
 }
 

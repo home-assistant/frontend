@@ -7,19 +7,23 @@ import {
   mdiWaterPercent,
   mdiWeatherWindy,
 } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  css,
+  html,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { formatDateWeekdayDay } from "../../../common/datetime/format_date";
 import { formatTimeWeekday } from "../../../common/datetime/format_time";
 import "../../../components/ha-svg-icon";
-import type {
+import {
   ForecastEvent,
   ModernForecastType,
   WeatherEntity,
-} from "../../../data/weather";
-import {
   getDefaultForecastType,
   getForecast,
   getSupportedForecastTypes,
@@ -27,7 +31,7 @@ import {
   subscribeForecast,
   weatherIcons,
 } from "../../../data/weather";
-import type { HomeAssistant } from "../../../types";
+import { HomeAssistant } from "../../../types";
 
 @customElement("more-info-weather")
 class MoreInfoWeather extends LitElement {

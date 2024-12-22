@@ -1,10 +1,12 @@
 import { customElement, property } from "lit/decorators";
-import type { HassioAddonDetails } from "../../../src/data/hassio/addon";
-import type { StoreAddonDetails } from "../../../src/data/supervisor/store";
-import type { Supervisor } from "../../../src/data/supervisor/supervisor";
-import type { RouterOptions } from "../../../src/layouts/hass-router-page";
-import { HassRouterPage } from "../../../src/layouts/hass-router-page";
-import type { HomeAssistant } from "../../../src/types";
+import { HassioAddonDetails } from "../../../src/data/hassio/addon";
+import { StoreAddonDetails } from "../../../src/data/supervisor/store";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
+import {
+  HassRouterPage,
+  RouterOptions,
+} from "../../../src/layouts/hass-router-page";
+import { HomeAssistant } from "../../../src/types";
 import "./config/hassio-addon-config-tab";
 import "./documentation/hassio-addon-documentation-tab";
 // Don't codesplit the others, because it breaks the UI when pushed to a Pi

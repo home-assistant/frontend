@@ -1,6 +1,5 @@
 import { mdiPencil } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { navigate } from "../../common/navigate";
@@ -9,7 +8,7 @@ import "../../components/ha-menu-button";
 import "../../components/ha-top-app-bar-fixed";
 import "../../components/map/ha-map";
 import { haStyle } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
+import { HomeAssistant } from "../../types";
 
 @customElement("ha-panel-map")
 class HaPanelMap extends LitElement {
@@ -39,8 +38,8 @@ class HaPanelMap extends LitElement {
         <ha-map
           .hass=${this.hass}
           .entities=${this._entities}
-          auto-fit
-          interactive-zones
+          autoFit
+          interactiveZones
         ></ha-map>
       </ha-top-app-bar-fixed>
     `;

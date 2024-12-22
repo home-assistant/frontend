@@ -1,11 +1,14 @@
 import { atLeastVersion } from "../../common/config/version";
 import type { HaFormSchema } from "../../components/ha-form/types";
-import type { HomeAssistant, TranslationDict } from "../../types";
+import { HomeAssistant, TranslationDict } from "../../types";
 import { supervisorApiCall } from "../supervisor/common";
-import type { StoreAddonDetails } from "../supervisor/store";
-import type { Supervisor, SupervisorArch } from "../supervisor/supervisor";
-import type { HassioResponse } from "./common";
-import { extractApiErrorMessage, hassioApiResultExtractor } from "./common";
+import { StoreAddonDetails } from "../supervisor/store";
+import { Supervisor, SupervisorArch } from "../supervisor/supervisor";
+import {
+  extractApiErrorMessage,
+  hassioApiResultExtractor,
+  HassioResponse,
+} from "./common";
 
 export type AddonCapability = Exclude<
   keyof TranslationDict["supervisor"]["addon"]["dashboard"]["capability"],
@@ -355,24 +358,21 @@ export const restartHassioAddon = async (
 
 export const uninstallHassioAddon = async (
   hass: HomeAssistant,
-  slug: string,
-  removeData: boolean
-): Promise<void> => {
+  slug: string
+) => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
     await hass.callWS({
       type: "supervisor/api",
       endpoint: `/addons/${slug}/uninstall`,
       method: "post",
       timeout: null,
-      data: { remove_config: removeData },
     });
     return;
   }
 
   await hass.callApi<HassioResponse<void>>(
     "POST",
-    `hassio/addons/${slug}/uninstall`,
-    { remove_config: removeData }
+    `hassio/addons/${slug}/uninstall`
   );
 };
 

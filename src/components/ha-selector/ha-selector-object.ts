@@ -1,8 +1,7 @@
-import type { PropertyValues } from "lit";
-import { html, LitElement } from "lit";
+import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { HomeAssistant } from "../../types";
+import { HomeAssistant } from "../../types";
 import "../ha-yaml-editor";
 import "../ha-input-helper-text";
 import type { HaYamlEditor } from "../ha-yaml-editor";

@@ -3,10 +3,10 @@ import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
 import { formatDateNumeric } from "../../../../src/common/datetime/format_date";
 import "../../../../src/components/ha-card";
-import type { FrontendLocaleData } from "../../../../src/data/translation";
 import {
   DateFormat,
   FirstWeekday,
+  FrontendLocaleData,
   NumberFormat,
   TimeFormat,
   TimeZone,

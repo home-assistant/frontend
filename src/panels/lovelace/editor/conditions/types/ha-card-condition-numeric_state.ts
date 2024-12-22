@@ -1,16 +1,14 @@
-import type { HassEntity } from "home-assistant-js-websocket";
+import { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { assert, literal, number, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-form/ha-form";
-import type {
-  SchemaUnion,
-  HaFormSchema,
-} from "../../../../../components/ha-form/types";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
+import { HaFormSchema } from "../../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../../types";
-import type {
+import {
   NumericStateCondition,
   StateCondition,
 } from "../../../common/validate-condition";

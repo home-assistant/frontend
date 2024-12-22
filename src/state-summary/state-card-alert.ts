@@ -1,6 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { stateActive } from "../common/entity/state_active";
 import "../components/entity/ha-entity-toggle";
@@ -14,7 +13,7 @@ class StateCardAlert extends LitElement {
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
-  @property({ attribute: "in-dialog", type: Boolean }) public inDialog = false;
+  @property({ type: Boolean }) public inDialog = false;
 
   protected render(): TemplateResult {
     return html`

@@ -1,5 +1,5 @@
 import { fireEvent } from "../../common/dom/fire_event";
-import type { HomeAssistant } from "../../types";
+import { HomeAssistant } from "../../types";
 
 const loadVoiceCommandDialog = () => import("./ha-voice-command-dialog");
 

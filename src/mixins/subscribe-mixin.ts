@@ -1,7 +1,7 @@
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { PropertyValues, ReactiveElement } from "lit";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { PropertyValues, ReactiveElement } from "lit";
 import { property } from "lit/decorators";
-import type { Constructor, HomeAssistant } from "../types";
+import { Constructor, HomeAssistant } from "../types";
 
 export interface HassSubscribeElement {
   hassSubscribe(): UnsubscribeFunc[];
@@ -20,7 +20,7 @@ export const SubscribeMixin = <T extends Constructor<ReactiveElement>>(
 
     public connectedCallback() {
       super.connectedCallback();
-      this._checkSubscribed();
+      this.__checkSubscribed();
     }
 
     public disconnectedCallback() {
@@ -41,7 +41,7 @@ export const SubscribeMixin = <T extends Constructor<ReactiveElement>>(
     protected updated(changedProps: PropertyValues) {
       super.updated(changedProps);
       if (changedProps.has("hass")) {
-        this._checkSubscribed();
+        this.__checkSubscribed();
         return;
       }
       if (!this.hassSubscribeRequiredHostProps) {
@@ -49,7 +49,7 @@ export const SubscribeMixin = <T extends Constructor<ReactiveElement>>(
       }
       for (const key of changedProps.keys()) {
         if (this.hassSubscribeRequiredHostProps.includes(key as string)) {
-          this._checkSubscribed();
+          this.__checkSubscribed();
           return;
         }
       }
@@ -61,7 +61,7 @@ export const SubscribeMixin = <T extends Constructor<ReactiveElement>>(
       return [];
     }
 
-    private _checkSubscribed(): void {
+    private __checkSubscribed(): void {
       if (
         this.__unsubs !== undefined ||
         !(this as unknown as Element).isConnected ||

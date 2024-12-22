@@ -1,4 +1,4 @@
-import type { HomeAssistant } from "../types";
+import { HomeAssistant } from "../types";
 
 interface Image {
   filesize: number;
@@ -9,7 +9,6 @@ interface Image {
 }
 
 export const URL_PREFIX = "/api/image/serve/";
-export const MEDIA_PREFIX = "media-source://image_upload";
 
 export interface ImageMutableParams {
   name: string;
@@ -23,8 +22,6 @@ export const getIdFromUrl = (url: string): string | undefined => {
     if (idx >= 0) {
       id = id.substring(0, idx);
     }
-  } else if (url.startsWith(MEDIA_PREFIX)) {
-    id = url.substring(MEDIA_PREFIX.length + 1);
   }
   return id;
 };
@@ -80,17 +77,3 @@ export const deleteImage = (hass: HomeAssistant, id: string) =>
     type: "image/delete",
     image_id: id,
   });
-
-export const getImageData = async (url: string) => {
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    throw new Error(
-      `Failed to fetch image: ${
-        response.statusText ? response.statusText : response.status
-      }`
-    );
-  }
-
-  return response.blob();
-};

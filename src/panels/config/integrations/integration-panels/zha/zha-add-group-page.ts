@@ -1,13 +1,16 @@
 import "@material/mwc-button";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
 import type { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-circular-progress";
-import type { ZHADeviceEndpoint, ZHAGroup } from "../../../../../data/zha";
-import { addGroup, fetchGroupableDevices } from "../../../../../data/zha";
+import {
+  addGroup,
+  fetchGroupableDevices,
+  ZHADeviceEndpoint,
+  ZHAGroup,
+} from "../../../../../data/zha";
 import "../../../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../../../types";
 import "../../../ha-config-section";
@@ -21,8 +24,7 @@ export class ZHAAddGroupPage extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: false, type: Array })
-  public deviceEndpoints: ZHADeviceEndpoint[] = [];
+  @property({ type: Array }) public deviceEndpoints: ZHADeviceEndpoint[] = [];
 
   @state() private _processingAdd = false;
 

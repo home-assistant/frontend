@@ -1,4 +1,4 @@
-import type { DemoConfig } from "../types";
+import { DemoConfig } from "../types";
 
 export const demoLovelaceKernehed: DemoConfig["lovelace"] = () => ({
   name: "Hem",

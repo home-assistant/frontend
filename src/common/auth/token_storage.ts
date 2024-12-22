@@ -1,5 +1,7 @@
-import type { AuthData } from "home-assistant-js-websocket";
+import { AuthData } from "home-assistant-js-websocket";
 import { extractSearchParam } from "../url/search-params";
+
+const storage = window.localStorage || {};
 
 declare global {
   interface Window {
@@ -36,15 +38,9 @@ export function saveTokens(tokens: AuthData | null) {
 
   if (tokenCache.writeEnabled) {
     try {
-      window.localStorage.setItem("hassTokens", JSON.stringify(tokens));
+      storage.hassTokens = JSON.stringify(tokens);
     } catch (err: any) {
       // write failed, ignore it. Happens if storage is full or private mode.
-      // eslint-disable-next-line no-console
-      console.warn(
-        "Failed to store tokens; Are you in private mode or is your storage full?"
-      );
-      // eslint-disable-next-line no-console
-      console.error("Error storing tokens:", err);
     }
   }
 }
@@ -55,11 +51,12 @@ export function enableWrite() {
     saveTokens(tokenCache.tokens);
   }
 }
-
 export function loadTokens() {
   if (tokenCache.tokens === undefined) {
     try {
-      const tokens = window.localStorage.getItem("hassTokens");
+      // Delete the old token cache.
+      delete storage.tokens;
+      const tokens = storage.hassTokens;
       if (tokens) {
         tokenCache.tokens = JSON.parse(tokens);
         tokenCache.writeEnabled = true;

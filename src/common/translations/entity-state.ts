@@ -12,7 +12,7 @@ export type FormatEntityAttributeValueFunc = (
   attribute: string,
   value?: any
 ) => string;
-export type FormatEntityAttributeNameFunc = (
+export type formatEntityAttributeNameFunc = (
   stateObj: HassEntity,
   attribute: string
 ) => string;
@@ -26,7 +26,7 @@ export const computeFormatFunctions = async (
 ): Promise<{
   formatEntityState: FormatEntityStateFunc;
   formatEntityAttributeValue: FormatEntityAttributeValueFunc;
-  formatEntityAttributeName: FormatEntityAttributeNameFunc;
+  formatEntityAttributeName: formatEntityAttributeNameFunc;
 }> => {
   const { computeStateDisplay } = await import(
     "../entity/compute_state_display"
