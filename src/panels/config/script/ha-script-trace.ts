@@ -1,3 +1,4 @@
+import "@material/mwc-list/mwc-list-item";
 import {
   mdiDotsVertical,
   mdiDownload,
@@ -7,7 +8,8 @@ import {
   mdiRayStartArrow,
   mdiRefresh,
 } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
@@ -25,31 +27,28 @@ import type {
   NodeInfo,
 } from "../../../components/trace/hat-script-graph";
 import { traceTabStyles } from "../../../components/trace/trace-tab-styles";
-import { getLogbookDataForContext, LogbookEntry } from "../../../data/logbook";
-import { ScriptEntity } from "../../../data/script";
-import {
-  loadTrace,
-  loadTraces,
-  ScriptTrace,
-  ScriptTraceExtended,
-} from "../../../data/trace";
+import type { LogbookEntry } from "../../../data/logbook";
+import { getLogbookDataForContext } from "../../../data/logbook";
+import type { ScriptEntity } from "../../../data/script";
+import type { ScriptTrace, ScriptTraceExtended } from "../../../data/trace";
+import { loadTrace, loadTraces } from "../../../data/trace";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant, Route } from "../../../types";
+import type { HomeAssistant, Route } from "../../../types";
 import "../../../layouts/hass-subpage";
 import "../../../components/ha-button-menu";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { EntityRegistryEntry } from "../../../data/entity_registry";
+import type { EntityRegistryEntry } from "../../../data/entity_registry";
 
 @customElement("ha-script-trace")
 export class HaScriptTrace extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public scriptId!: string;
+  @property({ attribute: false }) public scriptId!: string;
 
   @property({ attribute: false }) public scripts!: ScriptEntity[];
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
@@ -210,7 +209,11 @@ export class HaScriptTrace extends LitElement {
         ${this._traces === undefined
           ? html`<div class="container">Loading…</div>`
           : this._traces.length === 0
-            ? html`<div class="container">No traces found</div>`
+            ? html`<div class="container">
+                ${this.hass!.localize(
+                  "ui.panel.config.automation.trace.no_traces_found"
+                )}
+              </div>`
             : this._trace === undefined
               ? ""
               : html`
@@ -227,10 +230,30 @@ export class HaScriptTrace extends LitElement {
                     <div class="info">
                       <div class="tabs top">
                         ${[
-                          ["details", "Step Details"],
-                          ["timeline", "Trace Timeline"],
-                          ["logbook", "Related logbook entries"],
-                          ["config", "Script Config"],
+                          [
+                            "details",
+                            this.hass.localize(
+                              "ui.panel.config.automation.trace.tabs.details"
+                            ),
+                          ],
+                          [
+                            "timeline",
+                            this.hass.localize(
+                              "ui.panel.config.automation.trace.tabs.timeline"
+                            ),
+                          ],
+                          [
+                            "logbook",
+                            this.hass.localize(
+                              "ui.panel.config.automation.trace.tabs.logbook"
+                            ),
+                          ],
+                          [
+                            "config",
+                            this.hass.localize(
+                              "ui.panel.config.automation.trace.tabs.script_config"
+                            ),
+                          ],
                         ].map(
                           ([view, label]) => html`
                             <button
@@ -407,7 +430,9 @@ export class HaScriptTrace extends LitElement {
       }
 
       await showAlertDialog(this, {
-        text: "Chosen trace is no longer available",
+        text: this.hass!.localize(
+          "ui.panel.config.automation.trace.trace_no_longer_available"
+        ),
       });
     }
 
@@ -454,17 +479,23 @@ export class HaScriptTrace extends LitElement {
   }
 
   private _importTrace() {
-    const traceText = prompt("Enter downloaded trace");
+    const traceText = prompt(
+      this.hass.localize(
+        "ui.panel.config.automation.trace.enter_downloaded_trace"
+      )
+    );
     if (!traceText) {
       return;
     }
-    localStorage.devTrace = traceText;
+
+    window.localStorage.setItem("devTrace", traceText);
     this._loadLocalTrace(traceText);
   }
 
   private _loadLocalStorageTrace() {
-    if (localStorage.devTrace) {
-      this._loadLocalTrace(localStorage.devTrace);
+    const devTrace = window.localStorage.getItem("devTrace");
+    if (devTrace) {
+      this._loadLocalTrace(devTrace);
     }
   }
 

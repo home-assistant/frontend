@@ -1,10 +1,15 @@
-import {
+import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
 import { UNAVAILABLE } from "./entity";
 
-export type LawnMowerEntityState = "paused" | "mowing" | "docked" | "error";
+export type LawnMowerEntityState =
+  | "paused"
+  | "mowing"
+  | "returning"
+  | "docked"
+  | "error";
 
 export const enum LawnMowerEntityFeature {
   START_MOWING = 1,

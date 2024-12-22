@@ -1,5 +1,5 @@
-import { Connection, UnsubscribeFunc } from "home-assistant-js-websocket";
-import { HomeAssistant } from "../types";
+import type { Connection, UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { HomeAssistant } from "../types";
 
 export interface RenderTemplateResult {
   result: string;

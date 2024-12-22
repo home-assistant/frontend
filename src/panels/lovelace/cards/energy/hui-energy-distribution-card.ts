@@ -12,15 +12,16 @@ import {
   mdiTransmissionTower,
   mdiWater,
 } from "@mdi/js";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, html, LitElement, svg, nothing, PropertyValues } from "lit";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, svg, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
+import type { EnergyData } from "../../../../data/energy";
 import {
-  EnergyData,
   energySourcesByType,
   getEnergyDataCollection,
   getEnergyGasUnit,
@@ -28,9 +29,9 @@ import {
 } from "../../../../data/energy";
 import { calculateStatisticsSumGrowth } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCard } from "../../types";
-import { EnergyDistributionCardConfig } from "../types";
+import type { HomeAssistant } from "../../../../types";
+import type { LovelaceCard } from "../../types";
+import type { EnergyDistributionCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 
 const CIRCLE_CIRCUMFERENCE = 238.76104;

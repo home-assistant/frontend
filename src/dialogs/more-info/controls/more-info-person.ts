@@ -1,13 +1,14 @@
 import "@material/mwc-button";
-import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-attributes";
 import "../../../components/map/ha-map";
 import { showZoneEditor } from "../../../data/zone";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 
 @customElement("more-info-person")
 class MoreInfoPerson extends LitElement {
@@ -28,7 +29,7 @@ class MoreInfoPerson extends LitElement {
             <ha-map
               .hass=${this.hass}
               .entities=${this._entityArray(this.stateObj.entity_id)}
-              autoFit
+              auto-fit
             ></ha-map>
           `
         : ""}

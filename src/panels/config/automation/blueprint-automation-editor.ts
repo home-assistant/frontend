@@ -1,12 +1,12 @@
 import "@material/mwc-button/mwc-button";
-import { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-alert";
-import { BlueprintAutomationConfig } from "../../../data/automation";
+import "../../../components/ha-markdown";
+import type { BlueprintAutomationConfig } from "../../../data/automation";
 import { fetchBlueprints } from "../../../data/blueprint";
 import { HaBlueprintGenericEditor } from "../blueprint/blueprint-generic-editor";
-import "../../../components/ha-markdown";
 
 @customElement("blueprint-automation-editor")
 export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
@@ -20,14 +20,6 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
 
   protected render() {
     return html`
-      ${this.disabled
-        ? html`<ha-alert alert-type="warning">
-            ${this.hass.localize("ui.panel.config.automation.editor.read_only")}
-            <mwc-button slot="action" @click=${this._duplicate}>
-              ${this.hass.localize("ui.panel.config.automation.editor.migrate")}
-            </mwc-button>
-          </ha-alert>`
-        : nothing}
       ${this.stateObj?.state === "off"
         ? html`
             <ha-alert alert-type="info">

@@ -1,16 +1,16 @@
-import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import "../cards/hui-button-card";
-import "../cards/hui-calendar-card";
-import "../cards/hui-entities-card";
-import "../cards/hui-entity-button-card";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import "../cards/hui-entity-card";
+import "../cards/hui-entities-card";
+import "../cards/hui-button-card";
+import "../cards/hui-entity-button-card";
 import "../cards/hui-glance-card";
 import "../cards/hui-grid-card";
 import "../cards/hui-light-card";
 import "../cards/hui-sensor-card";
 import "../cards/hui-thermostat-card";
-import "../cards/hui-tile-card";
 import "../cards/hui-weather-forecast-card";
+import "../cards/hui-tile-card";
+import "../cards/hui-heading-card";
 import {
   createLovelaceElement,
   getLovelaceElementClass,
@@ -30,6 +30,7 @@ const ALWAYS_LOADED_TYPES = new Set([
   "thermostat",
   "weather-forecast",
   "tile",
+  "heading",
 ]);
 
 const LAZY_LOAD_TYPES = {
@@ -64,6 +65,7 @@ const LAZY_LOAD_TYPES = {
     import("../cards/energy/hui-energy-sources-table-card"),
   "energy-usage-graph": () =>
     import("../cards/energy/hui-energy-usage-graph-card"),
+  "energy-sankey": () => import("../cards/energy/hui-energy-sankey-card"),
   "entity-filter": () => import("../cards/hui-entity-filter-card"),
   error: () => import("../cards/hui-error-card"),
   gauge: () => import("../cards/hui-gauge-card"),

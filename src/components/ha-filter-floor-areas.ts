@@ -1,27 +1,17 @@
+import "@material/mwc-list/mwc-list";
 import "@material/mwc-menu/mwc-menu-surface";
 import { mdiFilterVariantRemove, mdiTextureBox } from "@mdi/js";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeRTL } from "../common/util/compute_rtl";
-import {
-  FloorRegistryEntry,
-  getFloorAreaLookup,
-  subscribeFloorRegistry,
-} from "../data/floor_registry";
-import { RelatedResult, findRelated } from "../data/search";
-import { SubscribeMixin } from "../mixins/subscribe-mixin";
+import { getFloorAreaLookup } from "../data/floor_registry";
+import type { RelatedResult } from "../data/search";
+import { findRelated } from "../data/search";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
@@ -29,9 +19,11 @@ import "./ha-floor-icon";
 import "./ha-icon";
 import "./ha-svg-icon";
 import "./ha-tree-indicator";
+import "./ha-icon-button";
+import "./ha-expansion-panel";
 
 @customElement("ha-filter-floor-areas")
-export class HaFilterFloorAreas extends SubscribeMixin(LitElement) {
+export class HaFilterFloorAreas extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public value?: {
@@ -47,8 +39,6 @@ export class HaFilterFloorAreas extends SubscribeMixin(LitElement) {
 
   @state() private _shouldRender = false;
 
-  @state() private _floors?: FloorRegistryEntry[];
-
   public willUpdate(properties: PropertyValues) {
     super.willUpdate(properties);
 
@@ -60,7 +50,7 @@ export class HaFilterFloorAreas extends SubscribeMixin(LitElement) {
   }
 
   protected render() {
-    const areas = this._areas(this.hass.areas, this._floors);
+    const areas = this._areas(this.hass.areas, this.hass.floors);
 
     return html`
       <ha-expansion-panel
@@ -189,14 +179,6 @@ export class HaFilterFloorAreas extends SubscribeMixin(LitElement) {
     this._findRelated();
   }
 
-  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
-    return [
-      subscribeFloorRegistry(this.hass.connection, (floors) => {
-        this._floors = floors;
-      }),
-    ];
-  }
-
   protected updated(changed) {
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
@@ -220,9 +202,9 @@ export class HaFilterFloorAreas extends SubscribeMixin(LitElement) {
   }
 
   private _areas = memoizeOne(
-    (areaReg: HomeAssistant["areas"], floors?: FloorRegistryEntry[]) => {
+    (areaReg: HomeAssistant["areas"], floorReg: HomeAssistant["floors"]) => {
       const areas = Object.values(areaReg);
-
+      const floors = Object.values(floorReg);
       const floorAreaLookup = getFloorAreaLookup(areas);
 
       const unassisgnedAreas = areas.filter(

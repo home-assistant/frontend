@@ -3,7 +3,7 @@
 // Returns a function, that, as long as it continues to be invoked, will not
 // be triggered. The function will be called after it stops being called for
 // N milliseconds. If `immediate` is passed, trigger the function on the
-// leading edge, instead of the trailing.
+// leading edge and on the trailing.
 
 export const debounce = <T extends any[]>(
   func: (...args: T) => void,
@@ -14,9 +14,7 @@ export const debounce = <T extends any[]>(
   const debouncedFunc = (...args: T): void => {
     const later = () => {
       timeout = undefined;
-      if (!immediate) {
-        func(...args);
-      }
+      func(...args);
     };
     const callNow = immediate && !timeout;
     clearTimeout(timeout);

@@ -1,12 +1,6 @@
-import { HassEntity } from "home-assistant-js-websocket/dist/types";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  nothing,
-} from "lit";
+import type { HassEntity } from "home-assistant-js-websocket/dist/types";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { classMap } from "lit/directives/class-map";
@@ -18,12 +12,12 @@ import { getNumberFormatOptions } from "../../../common/number/format_number";
 import "../../../components/ha-card";
 import "../../../components/ha-gauge";
 import { UNAVAILABLE } from "../../../data/entity";
-import { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
-import { hasAction } from "../common/has-action";
+import { hasAction, hasAnyAction } from "../common/has-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
@@ -128,24 +122,20 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
     const name = this._config.name ?? computeStateName(stateObj);
 
-    const hasAnyAction =
-      !this._config.tap_action ||
-      hasAction(this._config.tap_action) ||
-      hasAction(this._config.hold_action) ||
-      hasAction(this._config.double_tap_action);
-
     // Use `stateObj.state` as value to keep formatting (e.g trailing zeros)
     // for consistent value display across gauge, entity, entity-row, etc.
     return html`
       <ha-card
-        class=${classMap({ action: hasAnyAction })}
+        class=${classMap({ action: hasAnyAction(this._config) })}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this._config.hold_action),
           hasDoubleClick: hasAction(this._config.double_tap_action),
         })}
         tabindex=${ifDefined(
-          hasAction(this._config.tap_action) ? "0" : undefined
+          !this._config.tap_action || hasAction(this._config.tap_action)
+            ? "0"
+            : undefined
         )}
       >
         <ha-gauge

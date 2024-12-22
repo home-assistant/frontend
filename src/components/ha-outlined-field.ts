@@ -24,9 +24,11 @@ export class HaOutlinedField extends MdOutlinedField {
       }
       .with-start .start {
         margin-inline-end: var(--ha-outlined-field-start-margin, 4px);
+        margin-inline-start: initial;
       }
       .with-end .end {
         margin-inline-start: var(--ha-outlined-field-end-margin, 4px);
+        margin-inline-end: initial;
       }
     `,
   ];

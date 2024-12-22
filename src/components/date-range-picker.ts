@@ -11,6 +11,7 @@ import {
 } from "../common/datetime/localize_date";
 import { mainWindow } from "../common/dom/get_main_window";
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const CustomDateRangePicker = Vue.extend({
   mixins: [DateRangePicker],
   methods: {
@@ -53,6 +54,7 @@ const CustomDateRangePicker = Vue.extend({
   },
 });
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const Component = Vue.extend({
   props: {
     timePicker: {
@@ -154,6 +156,7 @@ const Component = Vue.extend({
 });
 
 // Assertion corrects HTMLElement type from package
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const WrappedElement = wrap(
   Vue,
   Component
@@ -254,7 +257,7 @@ class DateRangePickerElement extends WrappedElement {
           .daterangepicker select.hourselect,
           .daterangepicker select.minuteselect,
           .daterangepicker select.secondselect {
-            background: transparent;
+            background: var(--card-background-color);
             border: 1px solid var(--divider-color);
             color: var(--primary-color);
           }

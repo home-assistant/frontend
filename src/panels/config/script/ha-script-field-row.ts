@@ -1,7 +1,7 @@
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
-import "@material/mwc-list/mwc-list-item";
-import { mdiCheck, mdiDelete, mdiDotsVertical } from "@mdi/js";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import { mdiDelete, mdiDotsVertical, mdiPlaylistEdit } from "@mdi/js";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -10,11 +10,13 @@ import { slugify } from "../../../common/string/slugify";
 import "../../../components/ha-alert";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
+import "../../../components/ha-form/ha-form";
 import "../../../components/ha-expansion-panel";
+import "../../../components/ha-list-item";
 import type { SchemaUnion } from "../../../components/ha-form/types";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-yaml-editor";
-import { Field } from "../../../data/script";
+import type { Field } from "../../../data/script";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -27,7 +29,8 @@ export default class HaScriptFieldRow extends LitElement {
 
   @property() public key!: string;
 
-  @property({ type: Array }) public excludeKeys: string[] = [];
+  @property({ attribute: false, type: Array }) public excludeKeys: string[] =
+    [];
 
   @property({ attribute: false }) public field!: Field;
 
@@ -95,31 +98,17 @@ export default class HaScriptFieldRow extends LitElement {
               .path=${mdiDotsVertical}
             ></ha-icon-button>
 
-            <mwc-list-item graphic="icon">
-              ${this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
-              ${!this._yamlMode
-                ? html` <ha-svg-icon
-                    class="selected_menu_item"
-                    slot="graphic"
-                    .path=${mdiCheck}
-                  ></ha-svg-icon>`
-                : ``}
-            </mwc-list-item>
-
-            <mwc-list-item graphic="icon">
+            <ha-list-item graphic="icon">
               ${this.hass.localize(
-                "ui.panel.config.automation.editor.edit_yaml"
+                `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
               )}
-              ${this._yamlMode
-                ? html`<ha-svg-icon
-                    class="selected_menu_item"
-                    slot="graphic"
-                    .path=${mdiCheck}
-                  ></ha-svg-icon>`
-                : ``}
-            </mwc-list-item>
+              <ha-svg-icon
+                slot="graphic"
+                .path=${mdiPlaylistEdit}
+              ></ha-svg-icon>
+            </ha-list-item>
 
-            <mwc-list-item
+            <ha-list-item
               class="warning"
               graphic="icon"
               .disabled=${this.disabled}
@@ -132,7 +121,7 @@ export default class HaScriptFieldRow extends LitElement {
                 slot="graphic"
                 .path=${mdiDelete}
               ></ha-svg-icon>
-            </mwc-list-item>
+            </ha-list-item>
           </ha-button-menu>
           <div
             class=${classMap({
@@ -171,12 +160,9 @@ export default class HaScriptFieldRow extends LitElement {
   private async _handleAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
-        this._yamlMode = false;
+        this._yamlMode = !this._yamlMode;
         break;
       case 1:
-        this._yamlMode = true;
-        break;
-      case 2:
         this._onDelete();
         break;
     }
@@ -309,6 +295,9 @@ export default class HaScriptFieldRow extends LitElement {
         ha-icon-button {
           --mdc-theme-text-primary-on-background: var(--primary-text-color);
         }
+        ha-card {
+          overflow: hidden;
+        }
         .disabled {
           opacity: 0.5;
           pointer-events: none;
@@ -341,11 +330,9 @@ export default class HaScriptFieldRow extends LitElement {
         .disabled-bar {
           background: var(--divider-color, #e0e0e0);
           text-align: center;
-          border-top-right-radius: var(--ha-card-border-radius);
-          border-top-left-radius: var(--ha-card-border-radius);
         }
 
-        mwc-list-item[disabled] {
+        ha-list-item[disabled] {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
         }
         .warning ul {

@@ -1,8 +1,10 @@
-import { LitElement, TemplateResult, html } from "lit";
+import type { TemplateResult } from "lit";
+import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import "./ha-progress-button";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 
 @customElement("ha-call-service-button")
@@ -17,7 +19,9 @@ class HaCallServiceButton extends LitElement {
 
   @property() public service!: string;
 
-  @property({ type: Object }) public serviceData = {};
+  @property({ type: Object }) public target!: HassServiceTarget;
+
+  @property({ type: Object }) public data = {};
 
   @property() public confirmation?;
 
@@ -39,7 +43,8 @@ class HaCallServiceButton extends LitElement {
     const eventData = {
       domain: this.domain,
       service: this.service,
-      serviceData: this.serviceData,
+      data: this.data,
+      target: this.target,
       success: false,
     };
 
@@ -47,7 +52,12 @@ class HaCallServiceButton extends LitElement {
       this.shadowRoot!.querySelector("ha-progress-button")!;
 
     try {
-      await this.hass.callService(this.domain, this.service, this.serviceData);
+      await this.hass.callService(
+        this.domain,
+        this.service,
+        this.data,
+        this.target
+      );
       this.progress = false;
       progressElement.actionSuccess();
       eventData.success = true;
@@ -85,7 +95,8 @@ declare global {
     "hass-service-called": {
       domain: string;
       service: string;
-      serviceData: object;
+      target: HassServiceTarget;
+      data: object;
       success: boolean;
     };
   }

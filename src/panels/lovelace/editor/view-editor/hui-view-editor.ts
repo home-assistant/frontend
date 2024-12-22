@@ -9,14 +9,15 @@ import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
-import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import {
-  DEFAULT_VIEW_LAYOUT,
-  SECTION_VIEW_LAYOUT,
+  MASONRY_VIEW_LAYOUT,
+  SECTIONS_VIEW_LAYOUT,
   PANEL_VIEW_LAYOUT,
   SIDEBAR_VIEW_LAYOUT,
 } from "../../views/const";
+import { getViewType } from "../../views/get-view-type";
 
 declare global {
   interface HASSDomEvents {
@@ -30,7 +31,7 @@ declare global {
 export class HuiViewEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isNew = false;
+  @property({ attribute: false }) public isNew = false;
 
   @state() private _config!: LovelaceViewConfig;
 
@@ -39,25 +40,16 @@ export class HuiViewEditor extends LitElement {
   private _schema = memoizeOne(
     (localize: LocalizeFunc, viewType: string) =>
       [
-        { name: "title", selector: { text: {} } },
-        {
-          name: "icon",
-          selector: {
-            icon: {},
-          },
-        },
-        { name: "path", selector: { text: {} } },
-        { name: "theme", selector: { theme: {} } },
         {
           name: "type",
           selector: {
             select: {
               options: (
                 [
-                  DEFAULT_VIEW_LAYOUT,
+                  SECTIONS_VIEW_LAYOUT,
+                  MASONRY_VIEW_LAYOUT,
                   SIDEBAR_VIEW_LAYOUT,
                   PANEL_VIEW_LAYOUT,
-                  SECTION_VIEW_LAYOUT,
                 ] as const
               ).map((type) => ({
                 value: type,
@@ -68,26 +60,50 @@ export class HuiViewEditor extends LitElement {
             },
           },
         },
-        ...(viewType === SECTION_VIEW_LAYOUT
-          ? ([
-              {
-                name: "max_columns",
-                selector: {
-                  number: {
-                    min: 1,
-                    max: 10,
-                    mode: "slider",
-                  },
-                },
-              },
-            ] as const satisfies HaFormSchema[])
-          : []),
+        { name: "title", selector: { text: {} } },
+        {
+          name: "icon",
+          selector: {
+            icon: {},
+          },
+        },
+        { name: "path", selector: { text: {} } },
+        { name: "theme", selector: { theme: {} } },
         {
           name: "subview",
           selector: {
             boolean: {},
           },
         },
+        ...(viewType === SECTIONS_VIEW_LAYOUT
+          ? ([
+              {
+                name: "section_specifics",
+                type: "expandable",
+                flatten: true,
+                expanded: true,
+                schema: [
+                  {
+                    name: "max_columns",
+                    selector: {
+                      number: {
+                        min: 1,
+                        max: 10,
+                        mode: "slider",
+                        slider_ticks: true,
+                      },
+                    },
+                  },
+                  {
+                    name: "dense_section_placement",
+                    selector: {
+                      boolean: {},
+                    },
+                  },
+                ],
+              },
+            ] as const satisfies HaFormSchema[])
+          : []),
       ] as const satisfies HaFormSchema[]
   );
 
@@ -96,12 +112,7 @@ export class HuiViewEditor extends LitElement {
   }
 
   get _type(): string {
-    if (!this._config) {
-      return DEFAULT_VIEW_LAYOUT;
-    }
-    return this._config.panel
-      ? PANEL_VIEW_LAYOUT
-      : this._config.type || DEFAULT_VIEW_LAYOUT;
+    return getViewType(this._config);
   }
 
   protected render() {
@@ -116,7 +127,7 @@ export class HuiViewEditor extends LitElement {
       type: this._type,
     };
 
-    if (data.max_columns === undefined && this._type === SECTION_VIEW_LAYOUT) {
+    if (data.max_columns === undefined && this._type === SECTIONS_VIEW_LAYOUT) {
       data.max_columns = 4;
     }
 
@@ -135,22 +146,19 @@ export class HuiViewEditor extends LitElement {
   private _valueChanged(ev: CustomEvent): void {
     const config = ev.detail.value as LovelaceViewConfig;
 
-    if (config.type === DEFAULT_VIEW_LAYOUT) {
-      delete config.type;
-    }
-
-    if (config.type !== SECTION_VIEW_LAYOUT) {
+    if (config.type !== SECTIONS_VIEW_LAYOUT) {
       delete config.max_columns;
+      delete config.dense_section_placement;
     }
 
     if (
       this.isNew &&
       !this._suggestedPath &&
-      config.title &&
+      this._config.path === config.path &&
       (!this._config.path ||
         config.path === slugify(this._config.title || "", "-"))
     ) {
-      config.path = slugify(config.title, "-");
+      config.path = slugify(config.title || "", "-");
     }
 
     fireEvent(this, "view-config-changed", { config });
@@ -163,12 +171,12 @@ export class HuiViewEditor extends LitElement {
       case "path":
         return this.hass!.localize("ui.panel.lovelace.editor.card.generic.url");
       case "type":
-        return this.hass.localize("ui.panel.lovelace.editor.edit_view.type");
       case "subview":
-        return this.hass.localize("ui.panel.lovelace.editor.edit_view.subview");
       case "max_columns":
+      case "dense_section_placement":
+      case "section_specifics":
         return this.hass.localize(
-          "ui.panel.lovelace.editor.edit_view.max_columns"
+          `ui.panel.lovelace.editor.edit_view.${schema.name}`
         );
       default:
         return this.hass!.localize(
@@ -182,9 +190,11 @@ export class HuiViewEditor extends LitElement {
   ) => {
     switch (schema.name) {
       case "subview":
+      case "dense_section_placement":
         return this.hass.localize(
-          "ui.panel.lovelace.editor.edit_view.subview_helper"
+          `ui.panel.lovelace.editor.edit_view.${schema.name}_helper`
         );
+
       default:
         return undefined;
     }

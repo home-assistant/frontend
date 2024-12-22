@@ -1,11 +1,13 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/entity/state-info";
 import "../components/ha-cover-controls";
 import "../components/ha-cover-tilt-controls";
-import { CoverEntity, isTiltOnly } from "../data/cover";
+import type { CoverEntity } from "../data/cover";
+import { isTiltOnly } from "../data/cover";
 import { haStyle } from "../resources/styles";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 
 @customElement("state-card-cover")
 class StateCardCover extends LitElement {
@@ -13,7 +15,7 @@ class StateCardCover extends LitElement {
 
   @property({ attribute: false }) public stateObj!: CoverEntity;
 
-  @property({ type: Boolean }) public inDialog = false;
+  @property({ attribute: "in-dialog", type: Boolean }) public inDialog = false;
 
   protected render(): TemplateResult {
     return html`

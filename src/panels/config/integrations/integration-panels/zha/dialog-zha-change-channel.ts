@@ -1,17 +1,19 @@
-import { html, LitElement, TemplateResult, nothing } from "lit";
+import type { TemplateResult } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../../common/dom/stop_propagation";
-import { HassDialog } from "../../../../../dialogs/make-dialog-manager";
+import type { HassDialog } from "../../../../../dialogs/make-dialog-manager";
 import { changeZHANetworkChannel } from "../../../../../data/zha";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
-import { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant } from "../../../../../types";
 import "../../../../../components/buttons/ha-progress-button";
+import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-list-item";
-import { ZHAChangeChannelDialogParams } from "./show-dialog-zha-change-channel";
+import type { ZHAChangeChannelDialogParams } from "./show-dialog-zha-change-channel";
 
 const VALID_CHANNELS = [
   "auto",
@@ -70,9 +72,21 @@ class DialogZHAChangeChannel extends LitElement implements HassDialog {
           this.hass.localize("ui.panel.config.zha.change_channel_dialog.title")
         )}
       >
-        <p>
+        <ha-alert alert-type="warning">
           ${this.hass.localize(
             "ui.panel.config.zha.change_channel_dialog.migration_warning"
+          )}
+        </ha-alert>
+
+        <p>
+          ${this.hass.localize(
+            "ui.panel.config.zha.change_channel_dialog.description"
+          )}
+        </p>
+
+        <p>
+          ${this.hass.localize(
+            "ui.panel.config.zha.change_channel_dialog.smart_explanation"
           )}
         </p>
 
@@ -90,7 +104,11 @@ class DialogZHAChangeChannel extends LitElement implements HassDialog {
             ${VALID_CHANNELS.map(
               (newChannel) =>
                 html`<ha-list-item .value=${String(newChannel)}
-                  >${newChannel}</ha-list-item
+                  >${newChannel === "auto"
+                    ? this.hass.localize(
+                        "ui.panel.config.zha.change_channel_dialog.channel_auto"
+                      )
+                    : newChannel}</ha-list-item
                 >`
             )}
           </ha-select>

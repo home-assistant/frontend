@@ -1,16 +1,9 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import "@material/mwc-list/mwc-list";
 import { mdiPencil, mdiPencilOff, mdiPlus } from "@mdi/js";
-import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
@@ -29,10 +22,12 @@ import type {
 } from "../../../components/map/ha-locations-editor";
 import { saveCoreConfig } from "../../../data/core";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
-import {
+import type {
   HomeZoneMutableParams,
   Zone,
   ZoneMutableParams,
+} from "../../../data/zone";
+import {
   createZone,
   deleteZone,
   fetchZones,
@@ -55,7 +50,7 @@ import { showZoneDetailDialog } from "./show-dialog-zone-detail";
 export class HaConfigZone extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -101,7 +96,8 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                 : zoneRadiusColor,
           location_editable:
             entityState.entity_id === "zone.home" && this._canEditCore,
-          radius_editable: false,
+          radius_editable:
+            entityState.entity_id === "zone.home" && this._canEditCore,
         })
       );
       const storageLocations: MarkerLocation[] = storageItems.map((zone) => ({
@@ -276,7 +272,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
           : ""}
         <ha-fab
           slot="fab"
-          .label=${hass.localize("ui.panel.config.zone.add_zone")}
+          .label=${hass.localize("ui.panel.config.zone.create_zone")}
           extended
           @click=${this._createZone}
         >
@@ -381,8 +377,14 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _radiusUpdated(ev: CustomEvent) {
+  private async _radiusUpdated(ev: CustomEvent) {
     this._activeEntry = ev.detail.id;
+    if (ev.detail.id === "zone.home" && this._canEditCore) {
+      await saveCoreConfig(this.hass, {
+        radius: Math.round(ev.detail.radius),
+      });
+      return;
+    }
     const entry = this._storageItems!.find((item) => item.id === ev.detail.id);
     if (!entry) {
       return;
@@ -478,6 +480,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     await saveCoreConfig(this.hass, {
       latitude: values.latitude,
       longitude: values.longitude,
+      radius: values.radius,
     });
     this._zoomZone("zone.home");
   }
@@ -506,6 +509,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         title: this.hass!.localize("ui.panel.config.zone.confirm_delete"),
         dismissText: this.hass!.localize("ui.common.cancel"),
         confirmText: this.hass!.localize("ui.common.delete"),
+        destructive: true,
       }))
     ) {
       return false;

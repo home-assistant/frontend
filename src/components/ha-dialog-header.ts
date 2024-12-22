@@ -10,8 +10,13 @@ export class HaDialogHeader extends LitElement {
           <section class="header-navigation-icon">
             <slot name="navigationIcon"></slot>
           </section>
-          <section class="header-title">
-            <slot name="title"></slot>
+          <section class="header-content">
+            <div class="header-title">
+              <slot name="title"></slot>
+            </div>
+            <div class="header-subtitle">
+              <slot name="subtitle"></slot>
+            </div>
           </section>
           <section class="header-action-items">
             <slot name="actionItems"></slot>
@@ -39,16 +44,23 @@ export class HaDialogHeader extends LitElement {
           padding: 4px;
           box-sizing: border-box;
         }
-        .header-title {
+        .header-content {
           flex: 1;
-          font-size: 22px;
-          line-height: 28px;
-          font-weight: 400;
           padding: 10px 4px;
           min-width: 0;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
+        }
+        .header-title {
+          font-size: 22px;
+          line-height: 28px;
+          font-weight: 400;
+        }
+        .header-subtitle {
+          font-size: 14px;
+          line-height: 20px;
+          color: var(--secondary-text-color);
         }
         @media all and (min-width: 450px) and (min-height: 500px) {
           .header-bar {

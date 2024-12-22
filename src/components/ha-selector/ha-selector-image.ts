@@ -1,13 +1,15 @@
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import { ImageSelector } from "../../data/selector";
-import { HomeAssistant } from "../../types";
+import type { ImageSelector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
 import "../ha-icon-button";
 import "../ha-textarea";
 import "../ha-textfield";
 import "../ha-picture-upload";
 import "../ha-radio";
+import "../ha-formfield";
 import type { HaPictureUpload } from "../ha-picture-upload";
 import { URL_PREFIX } from "../../data/image_upload";
 
@@ -45,7 +47,14 @@ export class HaImageSelector extends LitElement {
     return html`
       <div>
         <label>
-          ${this.hass.localize("ui.components.selectors.image.select_image")}
+          ${this.hass.localize(
+            "ui.components.selectors.image.select_image_with_label",
+            {
+              label:
+                this.label ||
+                this.hass.localize("ui.components.selectors.image.image"),
+            }
+          )}
           <ha-formfield
             .label=${this.hass.localize("ui.components.selectors.image.upload")}
           >
@@ -87,6 +96,7 @@ export class HaImageSelector extends LitElement {
                 .value=${this.value?.startsWith(URL_PREFIX) ? this.value : null}
                 .original=${this.selector.image?.original}
                 .cropOptions=${this.selector.image?.crop}
+                select-media
                 @change=${this._pictureChanged}
               ></ha-picture-upload>
             `}

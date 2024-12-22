@@ -1,13 +1,16 @@
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
 import { CoverEntityFeature } from "../../../../src/data/cover";
 import { LightColorMode } from "../../../../src/data/light";
 import { LockEntityFeature } from "../../../../src/data/lock";
+import { MediaPlayerEntityFeature } from "../../../../src/data/media-player";
 import { VacuumEntityFeature } from "../../../../src/data/vacuum";
 import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-cards";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
+import { ClimateEntityFeature } from "../../../../src/data/climate";
 
 const ENTITIES = [
   getEntity("switch", "tv_outlet", "on", {
@@ -25,6 +28,10 @@ const ENTITIES = [
     friendly_name: "Front Door Lock",
     device_class: "lock",
     supported_features: LockEntityFeature.OPEN,
+  }),
+  getEntity("media_player", "living_room", "playing", {
+    friendly_name: "Living room speaker",
+    supported_features: MediaPlayerEntityFeature.VOLUME_SET,
   }),
   getEntity("climate", "thermostat", "heat", {
     current_temperature: 73,
@@ -59,6 +66,39 @@ const ENTITIES = [
       CoverEntityFeature.CLOSE_TILT +
       CoverEntityFeature.OPEN_TILT +
       CoverEntityFeature.STOP_TILT,
+  }),
+  getEntity("input_number", "counter", "1.0", {
+    friendly_name: "Counter",
+    initial: 0,
+    min: 0,
+    max: 100,
+    step: 1,
+    mode: "slider",
+  }),
+  getEntity("climate", "dual_thermostat", "heat/cool", {
+    friendly_name: "Dual thermostat",
+    hvac_modes: ["off", "cool", "heat_cool", "auto", "dry", "fan_only"],
+    min_temp: 7,
+    max_temp: 35,
+    fan_modes: ["on_low", "on_high", "auto_low", "auto_high", "off"],
+    preset_modes: ["home", "eco", "away"],
+    swing_modes: ["auto", "1", "2", "3", "off"],
+    switch_horizontal_modes: ["auto", "4", "5", "6", "off"],
+    current_temperature: 23,
+    target_temp_high: 24,
+    target_temp_low: 21,
+    fan_mode: "auto_low",
+    preset_mode: "home",
+    swing_mode: "auto",
+    swing_horizontal_mode: "off",
+    supported_features:
+      ClimateEntityFeature.TURN_ON +
+      ClimateEntityFeature.TURN_OFF +
+      ClimateEntityFeature.SWING_MODE +
+      ClimateEntityFeature.SWING_HORIZONTAL_MODE +
+      ClimateEntityFeature.PRESET_MODE +
+      ClimateEntityFeature.FAN_MODE +
+      ClimateEntityFeature.TARGET_TEMPERATURE_RANGE,
   }),
 ];
 
@@ -163,6 +203,15 @@ const CONFIGS = [
     `,
   },
   {
+    heading: "Media player volume slider feature",
+    config: `
+- type: tile
+  entity: media_player.living_room
+  features:
+    - type: "media-player-volume-slider"
+    `,
+  },
+  {
     heading: "Vacuum commands feature",
     config: `
 - type: tile
@@ -191,6 +240,25 @@ const CONFIGS = [
   entity: cover.pergola_roof
   features:
   - type: "cover-tilt"
+    `,
+  },
+  {
+    heading: "Number buttons feature",
+    config: `
+- type: tile
+  entity: input_number.counter
+  features:
+  - type: numeric-input
+    style: buttons
+    `,
+  },
+  {
+    heading: "Dual thermostat feature",
+    config: `
+- type: tile
+  entity: climate.dual_thermostat
+  features:
+  - type: target-temperature
     `,
   },
 ];

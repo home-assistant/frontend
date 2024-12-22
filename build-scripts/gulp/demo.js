@@ -1,13 +1,11 @@
 import gulp from "gulp";
-import env from "../env.cjs";
 import "./clean.js";
 import "./entry-html.js";
 import "./gather-static.js";
 import "./gen-icons-json.js";
-import "./rollup.js";
 import "./service-worker.js";
 import "./translations.js";
-import "./webpack.js";
+import "./rspack.js";
 
 gulp.task(
   "develop-demo",
@@ -24,7 +22,7 @@ gulp.task(
       "build-locale-data"
     ),
     "copy-static-demo",
-    env.useRollup() ? "rollup-dev-server-demo" : "webpack-dev-server-demo"
+    "rspack-dev-server-demo"
   )
 );
 
@@ -39,7 +37,18 @@ gulp.task(
     "translations-enable-merge-backend",
     gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
     "copy-static-demo",
-    env.useRollup() ? "rollup-prod-demo" : "webpack-prod-demo",
+    "rspack-prod-demo",
     "gen-pages-demo-prod"
+  )
+);
+
+gulp.task(
+  "analyze-demo",
+  gulp.series(
+    async function setEnv() {
+      process.env.STATS = "1";
+    },
+    "clean",
+    "rspack-prod-demo"
   )
 );

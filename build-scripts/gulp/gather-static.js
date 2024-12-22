@@ -4,7 +4,6 @@ import fs from "fs-extra";
 import gulp from "gulp";
 import path from "path";
 import paths from "../paths.cjs";
-import env from "../env.cjs";
 
 const npmPath = (...parts) =>
   path.resolve(paths.polymer_dir, "node_modules", ...parts);
@@ -60,15 +59,12 @@ function copyPolyfills(staticDir) {
     npmPath("@webcomponents/webcomponentsjs/webcomponents-bundle.js.map"),
     staticPath("polyfills/")
   );
-}
 
-function copyLoaderJS(staticDir) {
-  if (!env.useRollup()) {
-    return;
-  }
-  const staticPath = genStaticPath(staticDir);
-  copyFileDir(npmPath("systemjs/dist/s.min.js"), staticPath("js"));
-  copyFileDir(npmPath("systemjs/dist/s.min.js.map"), staticPath("js"));
+  // dialog-polyfill css
+  copyFileDir(
+    npmPath("dialog-polyfill/dialog-polyfill.css"),
+    staticPath("polyfills/")
+  );
 }
 
 function copyFonts(staticDir) {
@@ -100,6 +96,14 @@ function copyMapPanel(staticDir) {
   );
 }
 
+function copyZXingWasm(staticDir) {
+  const staticPath = genStaticPath(staticDir);
+  copyFileDir(
+    npmPath("zxing-wasm/dist/reader/zxing_reader.wasm"),
+    staticPath("js")
+  );
+}
+
 gulp.task("copy-locale-data", async () => {
   const staticDir = paths.app_output_static;
   copyLocaleData(staticDir);
@@ -115,6 +119,11 @@ gulp.task("copy-translations-supervisor", async () => {
   copyTranslations(staticDir);
 });
 
+gulp.task("copy-translations-landing-page", async () => {
+  const staticDir = paths.landingPage_output_static;
+  copyTranslations(staticDir);
+});
+
 gulp.task("copy-static-supervisor", async () => {
   const staticDir = paths.hassio_output_static;
   copyLocaleData(staticDir);
@@ -125,8 +134,6 @@ gulp.task("copy-static-app", async () => {
   const staticDir = paths.app_output_static;
   // Basic static files
   fs.copySync(polyPath("public"), paths.app_output_root);
-
-  copyLoaderJS(staticDir);
   copyPolyfills(staticDir);
   copyFonts(staticDir);
   copyTranslations(staticDir);
@@ -137,6 +144,7 @@ gulp.task("copy-static-app", async () => {
   copyMapPanel(staticDir);
 
   // Qr Scanner assets
+  copyZXingWasm(staticDir);
   copyQrScannerWorker(staticDir);
 });
 
@@ -148,8 +156,6 @@ gulp.task("copy-static-demo", async () => {
   );
   // Copy demo static files
   fs.copySync(path.resolve(paths.demo_dir, "public"), paths.demo_output_root);
-
-  copyLoaderJS(paths.demo_output_static);
   copyPolyfills(paths.demo_output_static);
   copyMapPanel(paths.demo_output_static);
   copyFonts(paths.demo_output_static);
@@ -163,8 +169,6 @@ gulp.task("copy-static-cast", async () => {
   fs.copySync(polyPath("public/static"), paths.cast_output_static);
   // Copy cast static files
   fs.copySync(path.resolve(paths.cast_dir, "public"), paths.cast_output_root);
-
-  copyLoaderJS(paths.cast_output_static);
   copyPolyfills(paths.cast_output_static);
   copyMapPanel(paths.cast_output_static);
   copyFonts(paths.cast_output_static);
@@ -187,4 +191,15 @@ gulp.task("copy-static-gallery", async () => {
   copyTranslations(paths.gallery_output_static);
   copyLocaleData(paths.gallery_output_static);
   copyMdiIcons(paths.gallery_output_static);
+});
+
+gulp.task("copy-static-landing-page", async () => {
+  // Copy landing-page static files
+  fs.copySync(
+    path.resolve(paths.landingPage_dir, "public"),
+    paths.landingPage_output_root
+  );
+
+  copyFonts(paths.landingPage_output_static);
+  copyTranslations(paths.landingPage_output_static);
 });

@@ -1,6 +1,7 @@
+/* eslint-disable lit/lifecycle-super */
 import { customElement } from "lit/decorators";
 import { navigate } from "../../../../../common/navigate";
-import { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant } from "../../../../../types";
 import { showMatterAddDeviceDialog } from "./show-dialog-add-matter-device";
 
 @customElement("matter-add-device")

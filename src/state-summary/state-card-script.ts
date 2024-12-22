@@ -1,13 +1,15 @@
 import "@material/mwc-button";
-import { HassEntity } from "home-assistant-js-websocket";
-import { CSSResultGroup, html, LitElement } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/entity/ha-entity-toggle";
 import "../components/entity/state-info";
 import { isUnavailableState } from "../data/entity";
-import { canRun, hasScriptFields, ScriptEntity } from "../data/script";
+import type { ScriptEntity } from "../data/script";
+import { canRun, hasScriptFields } from "../data/script";
 import { haStyle } from "../resources/styles";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import { showMoreInfoDialog } from "../dialogs/more-info/show-ha-more-info-dialog";
 
 @customElement("state-card-script")
@@ -16,7 +18,7 @@ class StateCardScript extends LitElement {
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
-  @property({ type: Boolean }) public inDialog = false;
+  @property({ attribute: "in-dialog", type: Boolean }) public inDialog = false;
 
   protected render() {
     const stateObj = this.stateObj as ScriptEntity;

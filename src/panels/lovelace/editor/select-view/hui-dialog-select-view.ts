@@ -2,7 +2,8 @@ import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-list/mwc-radio-list-item";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
@@ -10,16 +11,12 @@ import "../../../../components/ha-alert";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-select";
-import {
-  fetchConfig,
-  LovelaceConfig,
-} from "../../../../data/lovelace/config/types";
-import {
-  fetchDashboards,
-  LovelaceDashboard,
-} from "../../../../data/lovelace/dashboard";
+import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
+import { fetchConfig } from "../../../../data/lovelace/config/types";
+import type { LovelaceDashboard } from "../../../../data/lovelace/dashboard";
+import { fetchDashboards } from "../../../../data/lovelace/dashboard";
 import { haStyleDialog } from "../../../../resources/styles";
-import { HomeAssistant } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 import type { SelectViewDialogParams } from "./show-select-view-dialog";
 import { isStrategyView } from "../../../../data/lovelace/config/view";
 
@@ -93,18 +90,15 @@ export class HuiDialogSelectView extends LitElement {
               >
                 Default
               </mwc-list-item>
-              ${this._dashboards.map((dashboard) => {
-                if (!this.hass.user!.is_admin && dashboard.require_admin) {
-                  return "";
-                }
-                return html`
+              ${this._dashboards.map(
+                (dashboard) => html`
                   <mwc-list-item
                     .disabled=${dashboard.mode !== "storage"}
                     .value=${dashboard.url_path}
                     >${dashboard.title}</mwc-list-item
                   >
-                `;
-              })}
+                `
+              )}
             </ha-select>`
           : ""}
         ${!this._config || (this._config.views || []).length < 1

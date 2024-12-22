@@ -1,13 +1,15 @@
-import "@material/mwc-button/mwc-button";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { showHassioBackupDialog } from "../../hassio/src/dialogs/backup/show-dialog-hassio-backup";
 import "../../hassio/src/components/hassio-upload-backup";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-ansi-to-html";
 import "../components/ha-card";
+import "../components/ha-alert";
+import "../components/ha-button";
 import { fetchInstallationType } from "../data/onboarding";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "./onboarding-loading";
 import { onBoardingStyles } from "./styles";
 import { removeSearchParam } from "../common/url/search-params";
@@ -15,32 +17,49 @@ import { navigate } from "../common/navigate";
 
 @customElement("onboarding-restore-backup")
 class OnboardingRestoreBackup extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public localize!: LocalizeFunc;
 
   @property() public language!: string;
 
-  @state() public _restoring = false;
+  @state() private _restoring = false;
+
+  @state() private _backupSlug?: string;
 
   protected render(): TemplateResult {
-    return html`${this._restoring
+    return html`
+      ${this._restoring
         ? html`<h1>
               ${this.localize("ui.panel.page-onboarding.restore.in_progress")}
             </h1>
+            <ha-alert alert-type="info">
+              ${this.localize("ui.panel.page-onboarding.restore.in_progress")}
+            </ha-alert>
             <onboarding-loading></onboarding-loading>`
         : html` <h1>
               ${this.localize("ui.panel.page-onboarding.restore.header")}
             </h1>
             <hassio-upload-backup
               @backup-uploaded=${this._backupUploaded}
+              @backup-cleared=${this._backupCleared}
               .hass=${this.hass}
+              .localize=${this.localize}
             ></hassio-upload-backup>`}
       <div class="footer">
-        <mwc-button @click=${this._back} .disabled=${this._restoring}>
+        <ha-button @click=${this._back} .disabled=${this._restoring}>
           ${this.localize("ui.panel.page-onboarding.back")}
-        </mwc-button>
-      </div> `;
+        </ha-button>
+        ${this._backupSlug
+          ? html`<ha-button
+              @click=${this._showBackupDialog}
+              .disabled=${this._restoring}
+            >
+              ${this.localize("ui.panel.page-onboarding.restore.restore")}
+            </ha-button>`
+          : nothing}
+      </div>
+    `;
   }
 
   private _back(): void {
@@ -49,12 +68,16 @@ class OnboardingRestoreBackup extends LitElement {
 
   private _backupUploaded(ev) {
     const backup = ev.detail.backup;
-    this._showBackupDialog(backup.slug);
+    this._backupSlug = backup.slug;
+    this._showBackupDialog();
+  }
+
+  private _backupCleared() {
+    this._backupSlug = undefined;
   }
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    setInterval(() => this._checkRestoreStatus(), 1000);
   }
 
   private async _checkRestoreStatus(): Promise<void> {
@@ -72,13 +95,18 @@ class OnboardingRestoreBackup extends LitElement {
     }
   }
 
-  private _showBackupDialog(slug: string): void {
+  private _scheduleCheckRestoreStatus(): void {
+    setTimeout(() => this._checkRestoreStatus(), 1000);
+  }
+
+  private _showBackupDialog(): void {
     showHassioBackupDialog(this, {
-      slug,
+      slug: this._backupSlug!,
       onboarding: true,
       localize: this.localize,
       onRestoring: () => {
         this._restoring = true;
+        this._scheduleCheckRestoreStatus();
       },
     });
   }
@@ -96,8 +124,9 @@ class OnboardingRestoreBackup extends LitElement {
           width: 100%;
         }
         .footer {
+          display: flex;
+          justify-content: space-between;
           width: 100%;
-          text-align: left;
         }
       `,
     ];

@@ -17,14 +17,8 @@ import {
 } from "@mdi/js";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
@@ -33,7 +27,7 @@ import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
-import { LocalizeKeys } from "../../common/translations/localize";
+import type { LocalizeKeys } from "../../common/translations/localize";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
   addSearchParam,
@@ -52,21 +46,23 @@ import "../../components/ha-menu-button";
 import "../../components/ha-svg-icon";
 import "../../components/ha-tabs";
 import type { LovelacePanelConfig } from "../../data/lovelace";
-import {
-  LovelaceConfig,
-  isStrategyDashboard,
-} from "../../data/lovelace/config/types";
-import { LovelaceViewConfig } from "../../data/lovelace/config/view";
+import type { LovelaceConfig } from "../../data/lovelace/config/types";
+import { isStrategyDashboard } from "../../data/lovelace/config/types";
+import type { LovelaceViewConfig } from "../../data/lovelace/config/view";
 import {
   deleteDashboard,
   fetchDashboards,
   updateDashboard,
 } from "../../data/lovelace/dashboard";
+import { getPanelTitle } from "../../data/panel";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
-import { showQuickBar } from "../../dialogs/quick-bar/show-dialog-quick-bar";
+import {
+  QuickBarMode,
+  showQuickBar,
+} from "../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, PanelInfo } from "../../types";
@@ -80,8 +76,9 @@ import { getLovelaceStrategy } from "./strategies/get-strategy";
 import { isLegacyStrategyConfig } from "./strategies/legacy-strategy";
 import type { Lovelace } from "./types";
 import "./views/hui-view";
+import "./views/hui-view-container";
 import type { HUIView } from "./views/hui-view";
-import { getPanelTitle } from "../../data/panel";
+import "./views/hui-view-background";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
@@ -291,6 +288,8 @@ class HUIRoot extends LitElement {
       ? getPanelTitle(this.hass, this.panel)
       : undefined;
 
+    const background = curViewConfig?.background || this.config.background;
+
     return html`
       <div
         class=${classMap({
@@ -469,7 +468,14 @@ class HUIRoot extends LitElement {
               `
             : ""}
         </div>
-        <div id="view" @ll-rebuild=${this._debouncedConfigChanged}></div>
+        <hui-view-container
+          .hass=${this.hass}
+          .theme=${curViewConfig?.theme}
+          id="view"
+          @ll-rebuild=${this._debouncedConfigChanged}
+        >
+          <hui-view-background .background=${background}> </hui-view-background>
+        </hui-view-container>
       </div>
     `;
   }
@@ -660,7 +666,7 @@ class HUIRoot extends LitElement {
 
   private _showQuickBar(): void {
     showQuickBar(this, {
-      commandMode: false,
+      mode: QuickBarMode.Entity,
       hint: this.hass.enableShortcuts
         ? this.hass.localize("ui.tips.key_e_hint")
         : undefined,
@@ -831,6 +837,10 @@ class HUIRoot extends LitElement {
     showEditViewDialog(this, {
       lovelace: this.lovelace!,
       viewIndex: this._curView as number,
+      saveCallback: (viewIndex: number, viewConfig: LovelaceViewConfig) => {
+        const path = viewConfig.path || viewIndex;
+        this._navigateToView(path);
+      },
     });
   }
 
@@ -936,21 +946,6 @@ class HUIRoot extends LitElement {
     view.lovelace = this.lovelace;
     view.hass = this.hass;
     view.narrow = this.narrow;
-
-    const configBackground = viewConfig.background || this.config.background;
-
-    const backgroundStyle =
-      typeof configBackground === "string"
-        ? configBackground
-        : configBackground?.image
-          ? `center / cover no-repeat url('${configBackground.image}')`
-          : undefined;
-
-    if (backgroundStyle) {
-      root.style.setProperty("--lovelace-background", backgroundStyle);
-    } else {
-      root.style.removeProperty("--lovelace-background");
-    }
 
     root.appendChild(view);
   }
@@ -1063,30 +1058,26 @@ class HUIRoot extends LitElement {
         mwc-button.warning:not([disabled]) {
           color: var(--error-color);
         }
-        #view {
+        hui-view-container {
           position: relative;
           display: flex;
-          padding-top: calc(var(--header-height) + env(safe-area-inset-top));
           min-height: 100vh;
           box-sizing: border-box;
+          padding-top: calc(var(--header-height) + env(safe-area-inset-top));
           padding-left: env(safe-area-inset-left);
           padding-right: env(safe-area-inset-right);
           padding-inline-start: env(safe-area-inset-left);
           padding-inline-end: env(safe-area-inset-right);
           padding-bottom: env(safe-area-inset-bottom);
-          background: var(
-            --lovelace-background,
-            var(--primary-background-color)
-          );
         }
-        #view > * {
+        hui-view-container > * {
           flex: 1 1 100%;
           max-width: 100%;
         }
         /**
          * In edit mode we have the tab bar on a new line *
          */
-        .edit-mode #view {
+        .edit-mode hui-view-container {
           padding-top: calc(
             var(--header-height) + 48px + env(safe-area-inset-top)
           );

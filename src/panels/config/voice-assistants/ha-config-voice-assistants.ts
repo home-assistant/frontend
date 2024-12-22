@@ -1,18 +1,14 @@
 import { consume } from "@lit-labs/context";
 import { mdiDevices, mdiMicrophone } from "@mdi/js";
-import { PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { CloudStatus } from "../../../data/cloud";
+import type { CloudStatus } from "../../../data/cloud";
 import { entitiesContext } from "../../../data/context";
-import {
-  ExposeEntitySettings,
-  listExposedEntities,
-} from "../../../data/expose";
-import {
-  HassRouterPage,
-  RouterOptions,
-} from "../../../layouts/hass-router-page";
-import { HomeAssistant } from "../../../types";
+import type { ExposeEntitySettings } from "../../../data/expose";
+import { listExposedEntities } from "../../../data/expose";
+import type { RouterOptions } from "../../../layouts/hass-router-page";
+import { HassRouterPage } from "../../../layouts/hass-router-page";
+import type { HomeAssistant } from "../../../types";
 
 export const voiceAssistantTabs = [
   {
@@ -35,7 +31,7 @@ class HaConfigVoiceAssistants extends HassRouterPage {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @state()
   @consume({ context: entitiesContext, subscribe: true })

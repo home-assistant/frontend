@@ -1,19 +1,12 @@
 import { mdiExclamationThick, mdiHelp } from "@mdi/js";
-import { HassEntity } from "home-assistant-js-websocket";
-import {
-  CSSResultGroup,
-  LitElement,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { ensureArray } from "../../../common/array/ensure-array";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
 import { DOMAINS_TOGGLE } from "../../../common/const";
@@ -30,26 +23,21 @@ import "../../../components/tile/ha-tile-image";
 import type { TileImageStyle } from "../../../components/tile/ha-tile-image";
 import "../../../components/tile/ha-tile-info";
 import { cameraUrlWithWidthHeight } from "../../../data/camera";
-import { isUnavailableState } from "../../../data/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
-import { UpdateEntity, computeUpdateStateDisplay } from "../../../data/update";
-import { HomeAssistant } from "../../../types";
+import "../../../state-display/state-display";
+import type { HomeAssistant } from "../../../types";
 import "../card-features/hui-card-features";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
-import "../components/hui-timestamp-display";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
-  LovelaceLayoutOptions,
+  LovelaceGridOptions,
 } from "../types";
 import { renderTileBadge } from "./tile/badges/tile-badge";
 import type { ThermostatCardConfig, TileCardConfig } from "./types";
-
-const TIMESTAMP_STATE_DOMAINS = ["button", "input_button", "scene"];
 
 export const getEntityDefaultTileIconAction = (entityId: string) => {
   const domain = computeDomain(entityId);
@@ -121,18 +109,23 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     );
   }
 
-  public getLayoutOptions(): LovelaceLayoutOptions {
-    const options = {
-      grid_columns: 2,
-      grid_rows: 1,
-    };
+  public getGridOptions(): LovelaceGridOptions {
+    const columns = 6;
+    let min_columns = 6;
+    let rows = 1;
     if (this._config?.features?.length) {
-      options.grid_rows += Math.ceil((this._config.features.length * 2) / 3);
+      rows += this._config.features.length;
     }
     if (this._config?.vertical) {
-      options.grid_rows++;
+      rows++;
+      min_columns = 3;
     }
-    return options;
+    return {
+      columns,
+      rows,
+      min_columns,
+      min_rows: rows,
+    };
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
@@ -144,8 +137,10 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     const config = {
       entity: this._config!.entity,
       tap_action: this._config!.icon_tap_action,
+      hold_action: this._config!.icon_hold_action,
+      double_tap_action: this._config!.icon_double_tap_action,
     };
-    handleAction(this, this.hass!, config, "tap");
+    handleAction(this, this.hass!, config, ev.detail.action!);
   }
 
   private _getImageUrl(entity: HassEntity): string | undefined {
@@ -202,110 +197,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     }
   );
 
-  private _renderStateContent(
-    stateObj: HassEntity,
-    stateContent: string | string[]
-  ) {
-    const contents = ensureArray(stateContent);
-
-    const values = contents
-      .map((content) => {
-        if (content === "state") {
-          const domain = computeDomain(stateObj.entity_id);
-          if (
-            (stateObj.attributes.device_class ===
-              SENSOR_DEVICE_CLASS_TIMESTAMP ||
-              TIMESTAMP_STATE_DOMAINS.includes(domain)) &&
-            !isUnavailableState(stateObj.state)
-          ) {
-            return html`
-              <hui-timestamp-display
-                .hass=${this.hass}
-                .ts=${new Date(stateObj.state)}
-                format="relative"
-                capitalize
-              ></hui-timestamp-display>
-            `;
-          }
-
-          return this.hass!.formatEntityState(stateObj);
-        }
-        if (content === "last-changed") {
-          return html`
-            <ha-relative-time
-              .hass=${this.hass}
-              .datetime=${stateObj.last_changed}
-            ></ha-relative-time>
-          `;
-        }
-        if (content === "last_triggered") {
-          return html`
-            <ha-relative-time
-              .hass=${this.hass}
-              .datetime=${stateObj.attributes.last_triggered}
-            ></ha-relative-time>
-          `;
-        }
-        if (stateObj.attributes[content] == null) {
-          return undefined;
-        }
-        return this.hass!.formatEntityAttributeValue(stateObj, content);
-      })
-      .filter(Boolean);
-
-    if (!values.length) {
-      return html`${this.hass!.formatEntityState(stateObj)}`;
-    }
-
-    return html`
-      ${values.map(
-        (value, index, array) =>
-          html`${value}${index < array.length - 1 ? " ⸱ " : nothing}`
-      )}
-    `;
-  }
-
-  private _renderState(stateObj: HassEntity): TemplateResult | typeof nothing {
-    const domain = computeDomain(stateObj.entity_id);
-    const active = stateActive(stateObj);
-
-    if (domain === "light" && active) {
-      return this._renderStateContent(stateObj, ["brightness"]);
-    }
-
-    if (domain === "fan" && active) {
-      return this._renderStateContent(stateObj, ["percentage"]);
-    }
-
-    if (domain === "cover" && active) {
-      return this._renderStateContent(stateObj, ["state", "current_position"]);
-    }
-
-    if (domain === "valve" && active) {
-      return this._renderStateContent(stateObj, ["state", "current_position"]);
-    }
-
-    if (domain === "humidifier") {
-      return this._renderStateContent(stateObj, ["state", "current_humidity"]);
-    }
-
-    if (domain === "climate") {
-      return this._renderStateContent(stateObj, [
-        "state",
-        "current_temperature",
-      ]);
-    }
-
-    if (domain === "update") {
-      return html`${computeUpdateStateDisplay(
-        stateObj as UpdateEntity,
-        this.hass!
-      )}`;
-    }
-
-    return this._renderStateContent(stateObj, "state");
-  }
-
   get hasCardAction() {
     return (
       !this._config?.tap_action ||
@@ -352,16 +243,21 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     }
 
     const name = this._config.name || stateObj.attributes.friendly_name;
-
-    const localizedState = this._config.hide_state
-      ? nothing
-      : this._config.state_content
-        ? this._renderStateContent(stateObj, this._config.state_content)
-        : this._renderState(stateObj);
-
     const active = stateActive(stateObj);
     const color = this._computeStateColor(stateObj, this._config.color);
     const domain = computeDomain(stateObj.entity_id);
+
+    const stateDisplay = this._config.hide_state
+      ? nothing
+      : html`
+          <state-display
+            .stateObj=${stateObj}
+            .hass=${this.hass}
+            .content=${this._config.state_content}
+            .name=${this._config.name}
+          >
+          </state-display>
+        `;
 
     const style = {
       "--tile-color": color,
@@ -386,51 +282,56 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         >
           <ha-ripple .disabled=${!this.hasCardAction}></ha-ripple>
         </div>
-        <div class="content ${classMap(contentClasses)}">
-          <div
-            class="icon-container"
-            role=${ifDefined(this.hasIconAction ? "button" : undefined)}
-            tabindex=${ifDefined(this.hasIconAction ? "0" : undefined)}
-            @action=${this._handleIconAction}
-            .actionHandler=${actionHandler()}
-          >
-            ${imageUrl
-              ? html`
-                  <ha-tile-image
-                    .imageStyle=${DOMAIN_IMAGE_STYLE[domain] || "circle"}
-                    .imageUrl=${imageUrl}
-                  ></ha-tile-image>
-                `
-              : html`
-                  <ha-tile-icon
-                    data-domain=${ifDefined(domain)}
-                    data-state=${ifDefined(stateObj?.state)}
-                  >
-                    <ha-state-icon
-                      .icon=${this._config.icon}
-                      .stateObj=${stateObj}
-                      .hass=${this.hass}
-                    ></ha-state-icon>
-                  </ha-tile-icon>
-                `}
-            ${renderTileBadge(stateObj, this.hass)}
+        <div class="container">
+          <div class="content ${classMap(contentClasses)}">
+            <div
+              class="icon-container"
+              role=${ifDefined(this.hasIconAction ? "button" : undefined)}
+              tabindex=${ifDefined(this.hasIconAction ? "0" : undefined)}
+              @action=${this._handleIconAction}
+              .actionHandler=${actionHandler({
+                hasHold: hasAction(this._config!.icon_hold_action),
+                hasDoubleClick: hasAction(this._config!.icon_double_tap_action),
+              })}
+            >
+              ${imageUrl
+                ? html`
+                    <ha-tile-image
+                      .imageStyle=${DOMAIN_IMAGE_STYLE[domain] || "circle"}
+                      .imageUrl=${imageUrl}
+                    ></ha-tile-image>
+                  `
+                : html`
+                    <ha-tile-icon
+                      data-domain=${ifDefined(domain)}
+                      data-state=${ifDefined(stateObj?.state)}
+                    >
+                      <ha-state-icon
+                        .icon=${this._config.icon}
+                        .stateObj=${stateObj}
+                        .hass=${this.hass}
+                      ></ha-state-icon>
+                    </ha-tile-icon>
+                  `}
+              ${renderTileBadge(stateObj, this.hass)}
+            </div>
+            <ha-tile-info
+              id="info"
+              .primary=${name}
+              .secondary=${stateDisplay}
+            ></ha-tile-info>
           </div>
-          <ha-tile-info
-            id="info"
-            .primary=${name}
-            .secondary=${localizedState}
-          ></ha-tile-info>
+          ${this._config.features
+            ? html`
+                <hui-card-features
+                  .hass=${this.hass}
+                  .stateObj=${stateObj}
+                  .color=${this._config.color}
+                  .features=${this._config.features}
+                ></hui-card-features>
+              `
+            : nothing}
         </div>
-        ${this._config.features
-          ? html`
-              <hui-card-features
-                .hass=${this.hass}
-                .stateObj=${stateObj}
-                .color=${this._config.color}
-                .features=${this._config.features}
-              ></hui-card-features>
-            `
-          : nothing}
       </ha-card>
     `;
   }
@@ -478,31 +379,43 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         margin: calc(-1 * var(--ha-card-border-width, 1px));
         overflow: hidden;
       }
+      .container {
+        margin: calc(-1 * var(--ha-card-border-width, 1px));
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
       .content {
+        position: relative;
         display: flex;
         flex-direction: row;
         align-items: center;
-        padding: 12px;
+        padding: 10px;
+        flex: 1;
+        box-sizing: border-box;
+        pointer-events: none;
       }
       .vertical {
         flex-direction: column;
         text-align: center;
+        justify-content: center;
       }
       .vertical .icon-container {
-        margin-bottom: 12px;
+        margin-bottom: 10px;
         margin-right: 0;
         margin-inline-start: initial;
         margin-inline-end: initial;
       }
       .vertical ha-tile-info {
         width: 100%;
+        flex: none;
       }
       .icon-container {
         position: relative;
         flex: none;
-        margin-right: 12px;
+        margin-right: 10px;
         margin-inline-start: initial;
-        margin-inline-end: 12px;
+        margin-inline-end: 10px;
         direction: var(--direction);
         transition: transform 180ms ease-in-out;
       }
@@ -521,8 +434,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         inset-inline-end: -3px;
         inset-inline-start: initial;
       }
-      .icon-container:not([role="button"]) {
-        pointer-events: none;
+      .icon-container[role="button"] {
+        pointer-events: auto;
       }
       .icon-container[role="button"]:focus-visible,
       .icon-container[role="button"]:active {
@@ -530,11 +443,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       }
       ha-tile-info {
         position: relative;
-        flex: 1;
         min-width: 0;
         transition: background-color 180ms ease-in-out;
         box-sizing: border-box;
-        pointer-events: none;
       }
       hui-card-features {
         --feature-color: var(--tile-color);

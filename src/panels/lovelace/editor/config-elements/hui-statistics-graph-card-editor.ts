@@ -1,11 +1,5 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import {
@@ -28,13 +22,15 @@ import { supportedStatTypeMap } from "../../../../components/chart/statistics-ch
 import "../../../../components/entity/ha-statistics-picker";
 import "../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../components/ha-form/types";
+import type {
+  StatisticsMetaData,
+  StatisticType,
+} from "../../../../data/recorder";
 import {
   getDisplayUnit,
   getStatisticMetadata,
   isExternalStatistic,
-  StatisticsMetaData,
   statisticsMetaHasType,
-  StatisticType,
 } from "../../../../data/recorder";
 import type { HomeAssistant } from "../../../../types";
 import type { StatisticsGraphCardConfig } from "../../cards/types";
@@ -73,6 +69,9 @@ const cardConfigStruct = assign(
     unit: optional(string()),
     hide_legend: optional(boolean()),
     logarithmic_scale: optional(boolean()),
+    min_y_axis: optional(number()),
+    max_y_axis: optional(number()),
+    fit_y_data: optional(boolean()),
   })
 );
 
@@ -130,7 +129,8 @@ export class HuiStatisticsGraphCardEditor
     (
       localize: LocalizeFunc,
       statisticIds: string[] | undefined,
-      metaDatas: StatisticsMetaData[] | undefined
+      metaDatas: StatisticsMetaData[] | undefined,
+      showFitOption: boolean
     ) => {
       const units = new Set<string>();
       metaDatas?.forEach((metaData) => {
@@ -203,10 +203,47 @@ export class HuiStatisticsGraphCardEditor
               required: true,
               type: "select",
               options: [
-                ["line", "Line"],
-                ["bar", "Bar"],
+                [
+                  "line",
+                  localize(
+                    `ui.panel.lovelace.editor.card.statistics-graph.chart_type_labels.line`
+                  ),
+                ],
+                [
+                  "bar",
+                  localize(
+                    `ui.panel.lovelace.editor.card.statistics-graph.chart_type_labels.bar`
+                  ),
+                ],
               ],
             },
+            {
+              name: "",
+              type: "grid",
+              schema: [
+                {
+                  name: "min_y_axis",
+                  required: false,
+                  selector: { number: { mode: "box", step: "any" } },
+                },
+                {
+                  name: "max_y_axis",
+                  required: false,
+                  selector: { number: { mode: "box", step: "any" } },
+                },
+              ],
+            },
+
+            ...(showFitOption
+              ? [
+                  {
+                    name: "fit_y_data",
+                    required: false,
+                    selector: { boolean: {} },
+                  },
+                ]
+              : []),
+
             {
               name: "hide_legend",
               required: false,
@@ -248,7 +285,9 @@ export class HuiStatisticsGraphCardEditor
     const schema = this._schema(
       this.hass.localize,
       this._configEntities,
-      this._metaDatas
+      this._metaDatas,
+      this._config!.min_y_axis !== undefined ||
+        this._config!.max_y_axis !== undefined
     );
     const configured_stat_types = this._config!.stat_types
       ? ensureArray(this._config.stat_types)
@@ -353,6 +392,9 @@ export class HuiStatisticsGraphCardEditor
       case "unit":
       case "hide_legend":
       case "logarithmic_scale":
+      case "min_y_axis":
+      case "max_y_axis":
+      case "fit_y_data":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.statistics-graph.${schema.name}`
         );

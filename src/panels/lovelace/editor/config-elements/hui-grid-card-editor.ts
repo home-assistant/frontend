@@ -1,4 +1,3 @@
-import { html, nothing } from "lit";
 import { customElement } from "lit/decorators";
 import {
   any,
@@ -11,8 +10,10 @@ import {
   optional,
   string,
 } from "superstruct";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
 import type { GridCardConfig } from "../../cards/types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { HuiStackCardEditor } from "./hui-stack-card-editor";
@@ -49,35 +50,18 @@ const SCHEMA = [
 
 @customElement("hui-grid-card-editor")
 export class HuiGridCardEditor extends HuiStackCardEditor {
+  protected _schema: readonly HaFormSchema[] = SCHEMA;
+
   public setConfig(config: Readonly<GridCardConfig>): void {
     assert(config, cardConfigStruct);
     this._config = config;
   }
 
-  protected render() {
-    if (!this.hass || !this._config) {
-      return nothing;
-    }
-
-    const data = { square: true, ...this._config };
-
-    return html`
-      <ha-form
-        .hass=${this.hass}
-        .data=${data}
-        .schema=${SCHEMA}
-        .computeLabel=${this._computeLabelCallback}
-        @value-changed=${this._valueChanged}
-      ></ha-form>
-      ${super.render()}
-    `;
+  protected formData(): object {
+    return { square: true, ...this._config };
   }
 
-  private _valueChanged(ev: CustomEvent): void {
-    fireEvent(this, "config-changed", { config: ev.detail.value });
-  }
-
-  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) =>
+  protected _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) =>
     this.hass!.localize(`ui.panel.lovelace.editor.card.grid.${schema.name}`);
 }
 

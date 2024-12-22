@@ -13,7 +13,7 @@ import {
 } from "../../common/url/search-params";
 import { domainToName } from "../../data/integration";
 import "../../layouts/hass-error-screen";
-import { HomeAssistant, Route } from "../../types";
+import type { HomeAssistant, Route } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 
 export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
@@ -431,6 +431,9 @@ class HaPanelMy extends LitElement {
               >${this.hass.localize("ui.panel.my.download_app")}</a
             >`,
           });
+          break;
+        case "url_error":
+          error = this.hass.localize("ui.panel.my.url_error");
           break;
         default:
           error = this.hass.localize("ui.panel.my.error") || "Unknown error";

@@ -9,15 +9,8 @@ import {
   mdiWaterAlert,
 } from "@mdi/js";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
@@ -37,26 +30,24 @@ import "../../../components/ha-card";
 import "../../../components/ha-domain-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-state-icon";
-import {
-  AreaRegistryEntry,
-  subscribeAreaRegistry,
-} from "../../../data/area_registry";
-import {
-  DeviceRegistryEntry,
-  subscribeDeviceRegistry,
-} from "../../../data/device_registry";
+import type { AreaRegistryEntry } from "../../../data/area_registry";
+import { subscribeAreaRegistry } from "../../../data/area_registry";
+import type { DeviceRegistryEntry } from "../../../data/device_registry";
+import { subscribeDeviceRegistry } from "../../../data/device_registry";
 import { isUnavailableState } from "../../../data/entity";
-import {
-  EntityRegistryEntry,
-  subscribeEntityRegistry,
-} from "../../../data/entity_registry";
+import type { EntityRegistryEntry } from "../../../data/entity_registry";
+import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import { forwardHaptic } from "../../../data/haptics";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import "../components/hui-image";
 import "../components/hui-warning";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { AreaCardConfig } from "./types";
+import type {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceGridOptions,
+} from "../types";
+import type { AreaCardConfig } from "./types";
 
 export const DEFAULT_ASPECT_RATIO = "16:9";
 
@@ -101,6 +92,9 @@ export class HuiAreaCard
   }
 
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false })
+  public layout?: string;
 
   @state() private _config?: AreaCardConfig;
 
@@ -407,13 +401,17 @@ export class HuiAreaCard
     }
 
     const imageClass = area.picture || cameraEntityId;
+
+    const ignoreAspectRatio = this.layout === "grid";
+
     return html`
       <ha-card
         class=${imageClass ? "image" : ""}
         style=${styleMap({
-          paddingBottom: imageClass
-            ? "0"
-            : `${((100 * this._ratio!.h) / this._ratio!.w).toFixed(2)}%`,
+          paddingBottom:
+            ignoreAspectRatio || imageClass
+              ? "0"
+              : `${((100 * this._ratio!.h) / this._ratio!.w).toFixed(2)}%`,
         })}
       >
         ${area.picture || cameraEntityId
@@ -424,8 +422,10 @@ export class HuiAreaCard
                 .image=${area.picture ? area.picture : undefined}
                 .cameraImage=${cameraEntityId}
                 .cameraView=${this._config.camera_view}
-                .aspectRatio=${this._config.aspect_ratio ||
-                DEFAULT_ASPECT_RATIO}
+                .aspectRatio=${ignoreAspectRatio
+                  ? undefined
+                  : this._config.aspect_ratio || DEFAULT_ASPECT_RATIO}
+                fitMode="cover"
               ></hui-image>
             `
           : area.icon
@@ -534,12 +534,21 @@ export class HuiAreaCard
     forwardHaptic("light");
   }
 
+  getGridOptions(): LovelaceGridOptions {
+    return {
+      columns: 12,
+      rows: 3,
+      min_columns: 3,
+    };
+  }
+
   static get styles(): CSSResultGroup {
     return css`
       ha-card {
         overflow: hidden;
         position: relative;
         background-size: cover;
+        height: 100%;
       }
 
       .container {
@@ -565,6 +574,10 @@ export class HuiAreaCard
         height: 100%;
         background-color: var(--sidebar-selected-icon-color);
         opacity: 0.12;
+      }
+
+      .image hui-image {
+        height: 100%;
       }
 
       .icon-container {

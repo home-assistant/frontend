@@ -1,22 +1,16 @@
 import "@material/mwc-button";
-import { ActionDetail } from "@material/mwc-list";
+import type { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiBackupRestore, mdiDelete, mdiDotsVertical, mdiPlus } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { relativeTime } from "../../../src/common/datetime/relative_time";
-import { HASSDomEvent } from "../../../src/common/dom/fire_event";
-import {
+import type { HASSDomEvent } from "../../../src/common/dom/fire_event";
+import type {
   DataTableColumnContainer,
   RowClickedEvent,
   SelectionChangedEvent,
@@ -25,15 +19,15 @@ import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-fab";
 import "../../../src/components/ha-icon-button";
 import "../../../src/components/ha-svg-icon";
+import type { HassioBackup } from "../../../src/data/hassio/backup";
 import {
-  HassioBackup,
   fetchHassioBackups,
   friendlyFolderName,
   reloadHassioBackups,
   removeBackup,
 } from "../../../src/data/hassio/backup";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
-import { Supervisor } from "../../../src/data/supervisor/supervisor";
+import type { Supervisor } from "../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -41,13 +35,14 @@ import {
 import "../../../src/layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../src/layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../src/resources/styles";
-import { HomeAssistant, Route } from "../../../src/types";
+import type { HomeAssistant, Route } from "../../../src/types";
 import { showBackupUploadDialog } from "../dialogs/backup/show-dialog-backup-upload";
 import { showHassioBackupLocationDialog } from "../dialogs/backup/show-dialog-hassio-backu-location";
 import { showHassioBackupDialog } from "../dialogs/backup/show-dialog-hassio-backup";
 import { showHassioCreateBackupDialog } from "../dialogs/backup/show-dialog-hassio-create-backup";
 import { supervisorTabs } from "../hassio-tabs";
 import { hassioStyle } from "../resources/hassio-style";
+import "../../../src/layouts/hass-loading-screen";
 
 type BackupItem = HassioBackup & {
   secondary: string;
@@ -63,11 +58,13 @@ export class HassioBackups extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @state() private _selectedBackups: string[] = [];
 
   @state() private _backups?: HassioBackup[] = [];
+
+  @state() private _isLoading = false;
 
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
@@ -77,13 +74,8 @@ export class HassioBackups extends LitElement {
   public connectedCallback(): void {
     super.connectedCallback();
     if (this.hass && this._firstUpdatedCalled) {
-      this.refreshData();
+      this._fetchBackups();
     }
-  }
-
-  public async refreshData() {
-    await reloadHassioBackups(this.hass);
-    await this.fetchBackups();
   }
 
   private _computeBackupContent = (backup: HassioBackup): string => {
@@ -115,7 +107,7 @@ export class HassioBackups extends LitElement {
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
     if (this.hass && this.isConnected) {
-      this.refreshData();
+      this._fetchBackups();
     }
     this._firstUpdatedCalled = true;
   }
@@ -127,14 +119,13 @@ export class HassioBackups extends LitElement {
         main: true,
         sortable: true,
         filterable: true,
-        grows: true,
+        flex: 2,
         template: (backup) =>
           html`${backup.name || backup.slug}
             <div class="secondary">${backup.secondary}</div>`,
       },
       size: {
         title: this.supervisor.localize("backup.size"),
-        width: "15%",
         hidden: narrow,
         filterable: true,
         sortable: true,
@@ -142,7 +133,6 @@ export class HassioBackups extends LitElement {
       },
       location: {
         title: this.supervisor.localize("backup.location"),
-        width: "15%",
         hidden: narrow,
         filterable: true,
         sortable: true,
@@ -151,7 +141,6 @@ export class HassioBackups extends LitElement {
       },
       date: {
         title: this.supervisor.localize("backup.created"),
-        width: "15%",
         direction: "desc",
         hidden: narrow,
         filterable: true,
@@ -178,6 +167,13 @@ export class HassioBackups extends LitElement {
     if (!this.supervisor) {
       return nothing;
     }
+
+    if (this._isLoading) {
+      return html`<hass-loading-screen
+        .message=${this.supervisor.localize("backup.loading_backups")}
+      ></hass-loading-screen>`;
+    }
+
     return html`
       <hass-tabs-subpage-data-table
         .tabs=${atLeastVersion(this.hass.config.version, 2022, 5)
@@ -202,7 +198,7 @@ export class HassioBackups extends LitElement {
         @selection-changed=${this._handleSelectionChanged}
         clickable
         selectable
-        hasFab
+        has-fab
         .mainPage=${!atLeastVersion(this.hass.config.version, 2021, 12)}
         back-path=${atLeastVersion(this.hass.config.version, 2022, 5)
           ? "/config/system"
@@ -284,7 +280,7 @@ export class HassioBackups extends LitElement {
   private _handleAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
-        this.refreshData();
+        this._fetchBackups();
         break;
       case 1:
         showHassioBackupLocationDialog(this, { supervisor: this.supervisor });
@@ -307,15 +303,17 @@ export class HassioBackups extends LitElement {
         showHassioBackupDialog(this, {
           slug,
           supervisor: this.supervisor,
-          onDelete: () => this.fetchBackups(),
+          onDelete: () => this._fetchBackups(),
         }),
-      reloadBackup: () => this.refreshData(),
+      reloadBackup: () => this._fetchBackups(),
     });
   }
 
-  private async fetchBackups() {
+  private async _fetchBackups() {
+    this._isLoading = true;
     await reloadHassioBackups(this.hass);
     this._backups = await fetchHassioBackups(this.hass);
+    this._isLoading = false;
   }
 
   private async _deleteSelected() {
@@ -325,6 +323,7 @@ export class HassioBackups extends LitElement {
         number: this._selectedBackups.length,
       }),
       confirmText: this.supervisor.localize("backup.delete_backup_confirm"),
+      destructive: true,
     });
 
     if (!confirm) {
@@ -342,8 +341,7 @@ export class HassioBackups extends LitElement {
       });
       return;
     }
-    await reloadHassioBackups(this.hass);
-    this._backups = await fetchHassioBackups(this.hass);
+    await this._fetchBackups();
     this._dataTable.clearSelection();
   }
 
@@ -352,7 +350,7 @@ export class HassioBackups extends LitElement {
     showHassioBackupDialog(this, {
       slug,
       supervisor: this.supervisor,
-      onDelete: () => this.fetchBackups(),
+      onDelete: () => this._fetchBackups(),
     });
   }
 
@@ -368,7 +366,7 @@ export class HassioBackups extends LitElement {
     }
     showHassioCreateBackupDialog(this, {
       supervisor: this.supervisor!,
-      onCreate: () => this.fetchBackups(),
+      onCreate: () => this._fetchBackups(),
     });
   }
 
@@ -377,6 +375,9 @@ export class HassioBackups extends LitElement {
       haStyle,
       hassioStyle,
       css`
+        :host {
+          color: var(--primary-text-color);
+        }
         .table-header {
           display: flex;
           justify-content: space-between;

@@ -1,13 +1,15 @@
-import { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing, PropertyValues } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-control-slider";
 import { UNAVAILABLE } from "../../../data/entity";
-import { HumidifierEntity } from "../../../data/humidifier";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCardFeature } from "../types";
-import { TargetHumidityCardFeatureConfig } from "./types";
+import type { HumidifierEntity } from "../../../data/humidifier";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardFeature } from "../types";
+import { cardFeatureStyles } from "./common/card-feature-styles";
+import type { TargetHumidityCardFeatureConfig } from "./types";
 
 export const supportsTargetHumidityCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -84,39 +86,22 @@ class HuiTargetHumidityCardFeature
     }
 
     return html`
-      <div class="container">
-        <ha-control-slider
-          .value=${this.stateObj.attributes.humidity}
-          .min=${this._min}
-          .max=${this._max}
-          .step=${this._step}
-          .disabled=${this.stateObj!.state === UNAVAILABLE}
-          @value-changed=${this._valueChanged}
-          .label=${this.hass.formatEntityAttributeName(
-            this.stateObj,
-            "humidity"
-          )}
-          unit="%"
-          .locale=${this.hass.locale}
-        ></ha-control-slider>
-      </div>
+      <ha-control-slider
+        .value=${this.stateObj.attributes.humidity}
+        .min=${this._min}
+        .max=${this._max}
+        .step=${this._step}
+        .disabled=${this.stateObj!.state === UNAVAILABLE}
+        @value-changed=${this._valueChanged}
+        .label=${this.hass.formatEntityAttributeName(this.stateObj, "humidity")}
+        unit="%"
+        .locale=${this.hass.locale}
+      ></ha-control-slider>
     `;
   }
 
   static get styles() {
-    return css`
-      ha-control-slider {
-        --control-slider-color: var(--feature-color);
-        --control-slider-background: var(--feature-color);
-        --control-slider-background-opacity: 0.2;
-        --control-slider-thickness: 40px;
-        --control-slider-border-radius: 10px;
-      }
-      .container {
-        padding: 0 12px 12px 12px;
-        width: auto;
-      }
-    `;
+    return cardFeatureStyles;
   }
 }
 
