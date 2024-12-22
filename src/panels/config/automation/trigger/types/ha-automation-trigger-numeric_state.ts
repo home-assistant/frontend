@@ -135,7 +135,7 @@ export class HaNumericStateTrigger extends LitElement {
           },
         },
         {
-          name: "mode_above",
+          name: "lower_limit",
           type: "select",
           required: true,
           options: [
@@ -176,7 +176,7 @@ export class HaNumericStateTrigger extends LitElement {
               },
             ] as const)),
         {
-          name: "mode_below",
+          name: "upper_limit",
           type: "select",
           required: true,
           options: [
@@ -264,8 +264,8 @@ export class HaNumericStateTrigger extends LitElement {
       inputBelowIsEntity: boolean,
       trigger: NumericStateTrigger
     ) => ({
-      mode_above: inputAboveIsEntity ? "input" : "value",
-      mode_below: inputBelowIsEntity ? "input" : "value",
+      lower_limit: inputAboveIsEntity ? "input" : "value",
+      upper_limit: inputBelowIsEntity ? "input" : "value",
       ...trigger,
       entity_id: ensureArray(trigger.entity_id),
       for: createDurationData(trigger.for),
@@ -302,11 +302,11 @@ export class HaNumericStateTrigger extends LitElement {
     ev.stopPropagation();
     const newTrigger = { ...ev.detail.value };
 
-    this._inputAboveIsEntity = newTrigger.mode_above === "input";
-    this._inputBelowIsEntity = newTrigger.mode_below === "input";
+    this._inputAboveIsEntity = newTrigger.lower_limit === "input";
+    this._inputBelowIsEntity = newTrigger.upper_limit === "input";
 
-    delete newTrigger.mode_above;
-    delete newTrigger.mode_below;
+    delete newTrigger.lower_limit;
+    delete newTrigger.upper_limit;
 
     if (newTrigger.value_template === "") {
       delete newTrigger.value_template;
