@@ -42,7 +42,7 @@ class FlowPreviewGenericCamera extends FlowPreviewGeneric {
   }
 
   private _videoLoaded() {
-      this.shadowRoot!.getElementById("hls-load-spinner")?.remove();
+    this.shadowRoot!.getElementById("hls-load-spinner")?.remove();
   }
 }
 
