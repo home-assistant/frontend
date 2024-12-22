@@ -6048,7 +6048,7 @@
             "header": "Badge configuration",
             "typed_header": "{type} Badge configuration",
             "pick_badge": "Which badge would you like to add?",
-            "pick_badge_title": "Which badge would you like to add to {name}",
+            "pick_badge_title": "Which badge would you like to add to \"{name}\"?",
             "toggle_editor": "[%key:ui::panel::lovelace::editor::edit_card::toggle_editor%]",
             "unsaved_changes": "[%key:ui::panel::lovelace::editor::edit_card::unsaved_changes%]",
             "confirm_cancel": "[%key:ui::panel::lovelace::editor::edit_card::confirm_cancel%]",
