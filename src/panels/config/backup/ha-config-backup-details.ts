@@ -1,5 +1,5 @@
 import type { ActionDetail } from "@material/mwc-list";
-import { mdiDatabase, mdiDelete, mdiDotsVertical, mdiDownload } from "@mdi/js";
+import { mdiDelete, mdiDotsVertical, mdiDownload, mdiHarddisk } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
@@ -15,15 +15,15 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import { getSignedPath } from "../../../data/auth";
-import type { BackupContentExtended } from "../../../data/backup";
+import type { BackupContentExtended, BackupData } from "../../../data/backup";
 import {
+  compareAgents,
   computeBackupAgentName,
   deleteBackup,
   fetchBackupDetails,
   getBackupDownloadUrl,
   getPreferredAgentForDownload,
   isLocalAgent,
-  restoreBackup,
 } from "../../../data/backup";
 import type { HassioAddonInfo } from "../../../data/hassio/addon";
 import "../../../layouts/hass-subpage";
@@ -33,7 +33,23 @@ import { bytesToString } from "../../../util/bytes-to-string";
 import { fileDownload } from "../../../util/file_download";
 import { showConfirmationDialog } from "../../lovelace/custom-card-helpers";
 import "./components/ha-backup-data-picker";
-import { showRestoreBackupEncryptionKeyDialog } from "./dialogs/show-dialog-restore-backup-encryption-key";
+import { showRestoreBackupDialog } from "./dialogs/show-dialog-restore-backup";
+
+type Agent = {
+  id: string;
+  success: boolean;
+};
+
+const computeAgents = (agent_ids: string[], failed_agent_ids: string[]) =>
+  [
+    ...agent_ids.filter((id) => !failed_agent_ids.includes(id)),
+    ...failed_agent_ids,
+  ]
+    .map<Agent>((id) => ({
+      id,
+      success: !failed_agent_ids.includes(id),
+    }))
+    .sort((a, b) => compareAgents(a.id, b.id));
 
 @customElement("ha-config-backup-details")
 class HaConfigBackupDetails extends LitElement {
@@ -45,9 +61,11 @@ class HaConfigBackupDetails extends LitElement {
 
   @state() private _backup?: BackupContentExtended | null;
 
+  @state() private _agents: Agent[] = [];
+
   @state() private _error?: string;
 
-  @state() private _selectedBackup?: BackupContentExtended;
+  @state() private _selectedData?: BackupData;
 
   @state() private _addonsInfo?: HassioAddonInfo[];
 
@@ -68,7 +86,7 @@ class HaConfigBackupDetails extends LitElement {
 
     return html`
       <hass-subpage
-        back-path="/config/backup"
+        back-path="/config/backup/backups"
         .hass=${this.hass}
         .narrow=${this.narrow}
         .header=${this._backup?.name || "Backup"}
@@ -92,32 +110,14 @@ class HaConfigBackupDetails extends LitElement {
           ${this._error &&
           html`<ha-alert alert-type="error">${this._error}</ha-alert>`}
           ${this._backup === null
-            ? html`<ha-alert alert-type="warning" title="Not found">
-                Backup matching ${this.backupId} not found
-              </ha-alert>`
+            ? html`
+                <ha-alert alert-type="warning" title="Not found">
+                  Backup matching ${this.backupId} not found
+                </ha-alert>
+              `
             : !this._backup
               ? html`<ha-circular-progress active></ha-circular-progress>`
               : html`
-                  <ha-card header="Select what to restore">
-                    <div class="card-content">
-                      <ha-backup-data-picker
-                        .hass=${this.hass}
-                        .data=${this._backup}
-                        .value=${this._selectedBackup}
-                        @value-changed=${this._selectedBackupChanged}
-                        .addonsInfo=${this._addonsInfo}
-                      >
-                      </ha-backup-data-picker>
-                    </div>
-                    <div class="card-actions">
-                      <ha-button
-                        @click=${this._restore}
-                        .disabled=${this._isRestoreDisabled()}
-                      >
-                        Restore
-                      </ha-button>
-                    </div>
-                  </ha-card>
                   <ha-card header="Backup">
                     <div class="card-content">
                       <ha-md-list>
@@ -138,10 +138,33 @@ class HaConfigBackupDetails extends LitElement {
                       </ha-md-list>
                     </div>
                   </ha-card>
+                  <ha-card header="Select what to restore">
+                    <div class="card-content">
+                      <ha-backup-data-picker
+                        .hass=${this.hass}
+                        .data=${this._backup}
+                        .value=${this._selectedData}
+                        @value-changed=${this._selectedBackupChanged}
+                        .addonsInfo=${this._addonsInfo}
+                      >
+                      </ha-backup-data-picker>
+                    </div>
+                    <div class="card-actions">
+                      <ha-button
+                        @click=${this._restore}
+                        .disabled=${this._isRestoreDisabled()}
+                        class="danger"
+                      >
+                        Restore
+                      </ha-button>
+                    </div>
+                  </ha-card>
                   <ha-card header="Locations">
                     <div class="card-content">
                       <ha-md-list>
-                        ${this._backup.agent_ids?.map((agentId) => {
+                        ${this._agents.map((agent) => {
+                          const agentId = agent.id;
+                          const success = agent.success;
                           const domain = computeDomain(agentId);
                           const name = computeBackupAgentName(
                             this.hass.localize,
@@ -149,12 +172,14 @@ class HaConfigBackupDetails extends LitElement {
                             this._backup!.agent_ids!
                           );
 
+                          const isLocal = isLocalAgent(agentId);
+
                           return html`
                             <ha-md-list-item>
                               ${isLocalAgent(agentId)
                                 ? html`
                                     <ha-svg-icon
-                                      .path=${mdiDatabase}
+                                      .path=${mdiHarddisk}
                                       slot="start"
                                     >
                                     </ha-svg-icon>
@@ -175,25 +200,42 @@ class HaConfigBackupDetails extends LitElement {
                                     />
                                   `}
                               <div slot="headline">${name}</div>
-                              <ha-button-menu
-                                slot="end"
-                                @action=${this._handleAgentAction}
-                                .agent=${agentId}
-                                fixed
-                              >
-                                <ha-icon-button
-                                  slot="trigger"
-                                  .label=${this.hass.localize("ui.common.menu")}
-                                  .path=${mdiDotsVertical}
-                                ></ha-icon-button>
-                                <ha-list-item graphic="icon">
-                                  <ha-svg-icon
-                                    slot="graphic"
-                                    .path=${mdiDownload}
-                                  ></ha-svg-icon>
-                                  Download from this location
-                                </ha-list-item>
-                              </ha-button-menu>
+                              <div slot="supporting-text">
+                                <span
+                                  class="dot ${success ? "success" : "error"}"
+                                >
+                                </span>
+                                <span>
+                                  ${success
+                                    ? isLocal
+                                      ? "Backup created"
+                                      : "Backup uploaded"
+                                    : "Backup failed"}
+                                </span>
+                              </div>
+                              ${success
+                                ? html`<ha-button-menu
+                                    slot="end"
+                                    @action=${this._handleAgentAction}
+                                    .agent=${agentId}
+                                    fixed
+                                  >
+                                    <ha-icon-button
+                                      slot="trigger"
+                                      .label=${this.hass.localize(
+                                        "ui.common.menu"
+                                      )}
+                                      .path=${mdiDotsVertical}
+                                    ></ha-icon-button>
+                                    <ha-list-item graphic="icon">
+                                      <ha-svg-icon
+                                        slot="graphic"
+                                        .path=${mdiDownload}
+                                      ></ha-svg-icon>
+                                      Download from this location
+                                    </ha-list-item>
+                                  </ha-button-menu>`
+                                : nothing}
                             </ha-md-list-item>
                           `;
                         })}
@@ -208,57 +250,28 @@ class HaConfigBackupDetails extends LitElement {
 
   private _selectedBackupChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    this._selectedBackup = ev.detail.value;
+    this._selectedData = ev.detail.value;
   }
 
   private _isRestoreDisabled() {
     return (
-      !this._selectedBackup ||
+      !this._selectedData ||
       !(
-        this._selectedBackup?.database_included ||
-        this._selectedBackup?.homeassistant_included ||
-        this._selectedBackup.addons.length ||
-        this._selectedBackup.folders.length
+        this._selectedData?.database_included ||
+        this._selectedData?.homeassistant_included ||
+        this._selectedData.addons.length ||
+        this._selectedData.folders.length
       )
     );
   }
 
-  private async _restore() {
-    let password: string | undefined;
-    if (this._backup?.protected) {
-      const response = await showRestoreBackupEncryptionKeyDialog(this, {});
-      if (!response) {
-        return;
-      }
-      password = response;
-    } else {
-      const response = await showConfirmationDialog(this, {
-        title: "Restore backup",
-        text: "The backup will be restored to your instance.",
-        confirmText: "Restore",
-        dismissText: "Cancel",
-        destructive: true,
-      });
-      if (!response) {
-        return;
-      }
+  private _restore() {
+    if (!this._backup || !this._selectedData) {
+      return;
     }
-
-    const preferedAgent = getPreferredAgentForDownload(
-      this._backup!.agent_ids!
-    );
-
-    const { addons, database_included, homeassistant_included, folders } =
-      this._selectedBackup!;
-
-    await restoreBackup(this.hass, {
-      backup_id: this._backup!.backup_id,
-      agent_id: preferedAgent,
-      password: password,
-      restore_addons: addons.map((addon) => addon.slug),
-      restore_database: database_included,
-      restore_folders: folders,
-      restore_homeassistant: homeassistant_included,
+    showRestoreBackupDialog(this, {
+      backup: this._backup,
+      selectedData: this._selectedData,
     });
   }
 
@@ -266,6 +279,10 @@ class HaConfigBackupDetails extends LitElement {
     try {
       const response = await fetchBackupDetails(this.hass, this.backupId);
       this._backup = response.backup;
+      this._agents = computeAgents(
+        response.backup.agent_ids || [],
+        response.backup.failed_agent_ids || []
+      );
     } catch (err: any) {
       this._error = err?.message || "Could not fetch backup details";
     }
@@ -350,8 +367,33 @@ class HaConfigBackupDetails extends LitElement {
     .warning ha-svg-icon {
       color: var(--error-color);
     }
+    ha-button.danger {
+      --mdc-theme-primary: var(--error-color);
+    }
     ha-backup-data-picker {
       display: block;
+    }
+    ha-md-list-item [slot="supporting-text"] {
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      gap: 8px;
+      line-height: normal;
+    }
+    .dot {
+      display: block;
+      position: relative;
+      width: 8px;
+      height: 8px;
+      background-color: var(--disabled-color);
+      border-radius: 50%;
+      flex: none;
+    }
+    .dot.success {
+      background-color: var(--success-color);
+    }
+    .dot.error {
+      background-color: var(--error-color);
     }
   `;
 }

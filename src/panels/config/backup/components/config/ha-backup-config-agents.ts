@@ -1,21 +1,23 @@
-import { mdiDatabase } from "@mdi/js";
+import { mdiHarddisk } from "@mdi/js";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeDomain } from "../../../../common/entity/compute_domain";
-import "../../../../components/ha-md-list";
-import "../../../../components/ha-md-list-item";
-import "../../../../components/ha-switch";
-import "../../../../components/ha-svg-icon";
-import type { BackupAgent } from "../../../../data/backup";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { computeDomain } from "../../../../../common/entity/compute_domain";
+import "../../../../../components/ha-md-list";
+import "../../../../../components/ha-md-list-item";
+import "../../../../../components/ha-svg-icon";
+import "../../../../../components/ha-switch";
 import {
+  CLOUD_AGENT,
+  compareAgents,
   computeBackupAgentName,
   fetchBackupAgentsInfo,
   isLocalAgent,
-} from "../../../../data/backup";
-import type { HomeAssistant } from "../../../../types";
-import { brandsUrl } from "../../../../util/brands-url";
+} from "../../../../../data/backup";
+import type { CloudStatus } from "../../../../../data/cloud";
+import type { HomeAssistant } from "../../../../../types";
+import { brandsUrl } from "../../../../../util/brands-url";
 
 const DEFAULT_AGENTS = [];
 
@@ -23,7 +25,9 @@ const DEFAULT_AGENTS = [];
 class HaBackupConfigAgents extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _agents: BackupAgent[] = [];
+  @property({ attribute: false }) public cloudStatus!: CloudStatus;
+
+  @state() private _agentIds: string[] = [];
 
   @state() private value?: string[];
 
@@ -34,32 +38,41 @@ class HaBackupConfigAgents extends LitElement {
 
   private async _fetchAgents() {
     const { agents } = await fetchBackupAgentsInfo(this.hass);
-    this._agents = agents;
+    this._agentIds = agents
+      .map((agent) => agent.agent_id)
+      .filter((id) => id !== CLOUD_AGENT || this.cloudStatus.logged_in)
+      .sort(compareAgents);
   }
 
   private get _value() {
     return this.value ?? DEFAULT_AGENTS;
   }
 
-  protected render() {
-    const agentIds = this._agents.map((agent) => agent.agent_id);
+  private _description(agentId: string) {
+    if (agentId === CLOUD_AGENT) {
+      return "It stores one backup. The oldest backups are deleted.";
+    }
+    return "";
+  }
 
+  protected render() {
     return html`
-      ${agentIds.length > 0
+      ${this._agentIds.length > 0
         ? html`
             <ha-md-list>
-              ${agentIds.map((agentId) => {
+              ${this._agentIds.map((agentId) => {
                 const domain = computeDomain(agentId);
                 const name = computeBackupAgentName(
                   this.hass.localize,
                   agentId,
-                  agentIds
+                  this._agentIds
                 );
+                const description = this._description(agentId);
                 return html`
                   <ha-md-list-item>
                     ${isLocalAgent(agentId)
                       ? html`
-                          <ha-svg-icon .path=${mdiDatabase} slot="start">
+                          <ha-svg-icon .path=${mdiHarddisk} slot="start">
                           </ha-svg-icon>
                         `
                       : html`
@@ -77,6 +90,9 @@ class HaBackupConfigAgents extends LitElement {
                           />
                         `}
                     <div slot="headline">${name}</div>
+                    ${description
+                      ? html`<div slot="supporting-text">${description}</div>`
+                      : nothing}
                     <ha-switch
                       slot="end"
                       id=${agentId}
@@ -103,10 +119,11 @@ class HaBackupConfigAgents extends LitElement {
       this.value = this._value.filter((agent) => agent !== agentId);
     }
 
-    // Ensure agents exist in the list
-    this.value = this.value.filter((agent) =>
-      this._agents.some((a) => a.agent_id === agent)
-    );
+    // Ensure we don't have duplicates, agents exist in the list and cloud is logged in
+    this.value = [...new Set(this.value)]
+      .filter((agent) => this._agentIds.some((id) => id === agent))
+      .filter((id) => id !== CLOUD_AGENT || this.cloudStatus.logged_in);
+
     fireEvent(this, "value-changed", { value: this.value });
   }
 

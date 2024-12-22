@@ -35,7 +35,10 @@ import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
 import { validateConfig } from "../../../data/config";
 import { UNAVAILABLE } from "../../../data/entity";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
+import {
+  type EntityRegistryEntry,
+  updateEntityRegistryEntry,
+} from "../../../data/entity_registry";
 import type { BlueprintScriptConfig, ScriptConfig } from "../../../data/script";
 import {
   deleteScript,
@@ -58,6 +61,7 @@ import { haStyle } from "../../../resources/styles";
 import type { Entries, HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import { showAutomationModeDialog } from "../automation/automation-mode-dialog/show-dialog-automation-mode";
+import type { EntityRegistryUpdate } from "../automation/automation-rename-dialog/show-dialog-automation-rename";
 import { showAutomationRenameDialog } from "../automation/automation-rename-dialog/show-dialog-automation-rename";
 import "./blueprint-script-editor";
 import "./manual-script-editor";
@@ -115,6 +119,34 @@ export class HaScriptEditor extends SubscribeMixin(
   @state() private _validationErrors?: (string | TemplateResult)[];
 
   @state() private _blueprintConfig?: BlueprintScriptConfig;
+
+  @state() private _saving = false;
+
+  private _entityRegistryUpdate?: EntityRegistryUpdate;
+
+  private _newScriptId?: string;
+
+  private _entityRegCreated?: (
+    value: PromiseLike<EntityRegistryEntry> | EntityRegistryEntry
+  ) => void;
+
+  protected willUpdate(changedProps) {
+    super.willUpdate(changedProps);
+
+    if (
+      this._entityRegCreated &&
+      this._newScriptId &&
+      changedProps.has("entityRegistry")
+    ) {
+      const script = this.entityRegistry.find(
+        (entity: EntityRegistryEntry) => entity.unique_id === this._newScriptId
+      );
+      if (script) {
+        this._entityRegCreated(script);
+        this._entityRegCreated = undefined;
+      }
+    }
+  }
 
   protected render(): TemplateResult | typeof nothing {
     if (!this._config) {
@@ -410,11 +442,12 @@ export class HaScriptEditor extends SubscribeMixin(
         <ha-fab
           slot="fab"
           class=${classMap({
-            dirty: this._dirty,
+            dirty: !this._readOnly && this._dirty,
           })}
           .label=${this.hass.localize(
             "ui.panel.config.script.editor.save_script"
           )}
+          .disabled=${this._saving}
           extended
           @click=${this._saveScript}
         >
@@ -812,13 +845,18 @@ export class HaScriptEditor extends SubscribeMixin(
       showAutomationRenameDialog(this, {
         config: this._config!,
         domain: "script",
-        updateConfig: (config) => {
+        updateConfig: (config, entityRegistryUpdate) => {
           this._config = config;
+          this._entityRegistryUpdate = entityRegistryUpdate;
           this._dirty = true;
           this.requestUpdate();
           resolve(true);
         },
         onClose: () => resolve(false),
+        entityRegistryUpdate: this._entityRegistryUpdate,
+        entityRegistryEntry: this.entityRegistry.find(
+          (entry) => entry.unique_id === this.scriptId
+        ),
       });
     });
   }
@@ -855,24 +893,48 @@ export class HaScriptEditor extends SubscribeMixin(
     }
     const id = this.scriptId || this._entityId || Date.now();
 
+    this._saving = true;
     try {
       await this.hass!.callApi(
         "POST",
         "config/script/config/" + id,
         this._config
       );
+
+      if (this._entityRegistryUpdate !== undefined) {
+        let entityId = id.toString().startsWith("script.")
+          ? id.toString()
+          : `script.${id}`;
+
+        // wait for new script to appear in entity registry
+        if (!this.scriptId) {
+          const script = await new Promise<EntityRegistryEntry>((resolve) => {
+            this._entityRegCreated = resolve;
+          });
+          entityId = script.entity_id;
+        }
+
+        await updateEntityRegistryEntry(this.hass, entityId, {
+          categories: {
+            script: this._entityRegistryUpdate.category || null,
+          },
+          labels: this._entityRegistryUpdate.labels || [],
+        });
+      }
+
+      this._dirty = false;
+
+      if (!this.scriptId) {
+        navigate(`/config/script/edit/${id}`, { replace: true });
+      }
     } catch (errors: any) {
       this._errors = errors.body.message || errors.error || errors.body;
       showToast(this, {
         message: errors.body.message || errors.error || errors.body,
       });
       throw errors;
-    }
-
-    this._dirty = false;
-
-    if (!this.scriptId) {
-      navigate(`/config/script/edit/${id}`, { replace: true });
+    } finally {
+      this._saving = false;
     }
   }
 

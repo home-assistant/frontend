@@ -1,4 +1,4 @@
-import { mdiClose, mdiCog, mdiPencil } from "@mdi/js";
+import { mdiCalendarSync, mdiClose, mdiGestureTap } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -7,6 +7,7 @@ import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-next";
 import "../../../../components/ha-md-dialog";
+import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-svg-icon";
@@ -14,7 +15,6 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { NewBackupDialogParams } from "./show-dialog-new-backup";
-import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 
 @customElement("ha-dialog-new-backup")
 class DialogNewBackup extends LitElement implements HassDialog {
@@ -71,22 +71,22 @@ class DialogNewBackup extends LitElement implements HassDialog {
             dialogInitialFocus
           >
             <ha-md-list-item
-              @click=${this._default}
+              @click=${this._automatic}
               type="button"
               .disabled=${!this._params.config.create_backup.password}
             >
-              <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
-              <span slot="headline">Use backup strategy</span>
+              <ha-svg-icon slot="start" .path=${mdiCalendarSync}></ha-svg-icon>
+              <span slot="headline">Automatic backup</span>
               <span slot="supporting-text">
                 Create a backup with the data and locations you have configured.
               </span>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
-            <ha-md-list-item @click=${this._custom} type="button">
-              <ha-svg-icon slot="start" .path=${mdiPencil}></ha-svg-icon>
-              <span slot="headline">Make custom backup</span>
+            <ha-md-list-item @click=${this._manual} type="button">
+              <ha-svg-icon slot="start" .path=${mdiGestureTap}></ha-svg-icon>
+              <span slot="headline">Manual backup</span>
               <span slot="supporting-text">
-                Select specific data and locations for a custom backup.
+                Select data and locations for a manual backup.
               </span>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
@@ -96,13 +96,13 @@ class DialogNewBackup extends LitElement implements HassDialog {
     `;
   }
 
-  private async _custom() {
-    this._params!.submit?.("custom");
+  private async _manual() {
+    this._params!.submit?.("manual");
     this.closeDialog();
   }
 
-  private async _default() {
-    this._params!.submit?.("strategy");
+  private async _automatic() {
+    this._params!.submit?.("automatic");
     this.closeDialog();
   }
 
@@ -114,9 +114,6 @@ class DialogNewBackup extends LitElement implements HassDialog {
         ha-md-dialog {
           --dialog-content-padding: 0;
           max-width: 500px;
-        }
-        div[slot="content"] {
-          margin-top: -16px;
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           ha-md-dialog {
