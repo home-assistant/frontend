@@ -797,7 +797,7 @@ class HaPanelDevStatistics extends LitElement {
 
         #sort-by-anchor,
         #group-by-anchor,
-        ha-button-menu-new ha-assist-chip {
+        ha-md-button-menu ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;
         }
       `,
