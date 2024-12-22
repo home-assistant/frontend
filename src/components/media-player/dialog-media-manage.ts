@@ -207,12 +207,10 @@ class DialogMediaManage extends LitElement {
                     href="/config/storage"
                     @click=${this.closeDialog}
                   >
-                    ${this.hass
-                      .localize(
-                        "ui.components.media-browser.file_management.tip_storage_panel"
-                      )
-                      .toLowerCase()}
-                  </a>`,
+                    ${this.hass.localize(
+                      "ui.components.media-browser.file_management.tip_storage_panel"
+                    )}</a
+                  >`,
                 }
               )}
             </ha-tip>`
