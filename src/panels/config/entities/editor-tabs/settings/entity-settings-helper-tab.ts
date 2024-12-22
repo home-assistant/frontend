@@ -1,19 +1,11 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import {
-  ExtEntityRegistryEntry,
-  removeEntityRegistryEntry,
-} from "../../../../../data/entity_registry";
+import type { ExtEntityRegistryEntry } from "../../../../../data/entity_registry";
+import { removeEntityRegistryEntry } from "../../../../../data/entity_registry";
 import { HELPERS_CRUD } from "../../../../../data/helpers_crud";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../../resources/styles";
@@ -100,8 +92,8 @@ export class EntitySettingsHelperTab extends LitElement {
           .entry=${this.entry}
           .disabled=${this._submitting}
           @change=${this._entityRegistryChanged}
-          hideName
-          hideIcon
+          hide-name
+          hide-icon
         ></entity-registry-settings-editor>
       </div>
       <div class="buttons">
@@ -164,6 +156,9 @@ export class EntitySettingsHelperTab extends LitElement {
         text: this.hass.localize(
           "ui.dialogs.entity_registry.editor.confirm_delete"
         ),
+        confirmText: this.hass.localize("ui.common.delete"),
+        dismissText: this.hass.localize("ui.common.cancel"),
+        destructive: true,
       }))
     ) {
       return;

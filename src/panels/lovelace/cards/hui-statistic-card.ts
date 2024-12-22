@@ -1,12 +1,6 @@
-import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  nothing,
-} from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -15,26 +9,27 @@ import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-state-icon";
+import type { StatisticsMetaData } from "../../../data/recorder";
 import {
   fetchStatistic,
   getDisplayUnit,
   getStatisticLabel,
   getStatisticMetadata,
   isExternalStatistic,
-  StatisticsMetaData,
 } from "../../../data/recorder";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
-import {
+import type {
   LovelaceCard,
   LovelaceCardEditor,
   LovelaceHeaderFooter,
+  LovelaceGridOptions,
 } from "../types";
-import { HuiErrorCard } from "./hui-error-card";
-import { EntityCardConfig, StatisticCardConfig } from "./types";
+import type { HuiErrorCard } from "./hui-error-card";
+import type { EntityCardConfig, StatisticCardConfig } from "./types";
 
 @customElement("hui-statistic-card")
 export class HuiStatisticCard extends LitElement implements LovelaceCard {
@@ -252,6 +247,15 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
 
   private _handleClick(): void {
     fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
+  }
+
+  public getGridOptions(): LovelaceGridOptions {
+    return {
+      columns: 6,
+      rows: 2,
+      min_columns: 6,
+      min_rows: 2,
+    };
   }
 
   static get styles(): CSSResultGroup {

@@ -6,15 +6,9 @@ import {
   mdiPower,
   mdiRefresh,
 } from "@mdi/js";
-import { HassEntities, UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-} from "lit";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -28,23 +22,26 @@ import "../../../components/ha-menu-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tip";
 import "../../../components/ha-top-app-bar-fixed";
-import { CloudStatus } from "../../../data/cloud";
+import type { CloudStatus } from "../../../data/cloud";
+import type { RepairsIssue } from "../../../data/repairs";
 import {
-  RepairsIssue,
   severitySort,
   subscribeRepairsIssueRegistry,
 } from "../../../data/repairs";
+import type { UpdateEntity } from "../../../data/update";
 import {
-  UpdateEntity,
   checkForEntityUpdates,
   filterUpdateEntitiesWithInstall,
 } from "../../../data/update";
-import { showQuickBar } from "../../../dialogs/quick-bar/show-dialog-quick-bar";
+import {
+  QuickBarMode,
+  showQuickBar,
+} from "../../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
-import { PageNavigation } from "../../../layouts/hass-tabs-subpage";
+import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
@@ -61,32 +58,32 @@ const randomTip = (hass: HomeAssistant, narrow: boolean) => {
           href="https://community.home-assistant.io"
           target="_blank"
           rel="noreferrer"
-          >Forums</a
+          >${hass.localize("ui.panel.config.tips.join_forums")}</a
         >`,
         twitter: html`<a
           href=${documentationUrl(hass, `/twitter`)}
           target="_blank"
           rel="noreferrer"
-          >Twitter</a
+          >${hass.localize("ui.panel.config.tips.join_x")}</a
         >`,
         discord: html`<a
           href=${documentationUrl(hass, `/join-chat`)}
           target="_blank"
           rel="noreferrer"
-          >Chat</a
+          >${hass.localize("ui.panel.config.tips.join_chat")}</a
         >`,
         blog: html`<a
           href=${documentationUrl(hass, `/blog`)}
           target="_blank"
           rel="noreferrer"
-          >Blog</a
+          >${hass.localize("ui.panel.config.tips.join_blog")}</a
         >`,
         newsletter: html`<span class="keep-together"
           ><a
             href="https://newsletter.openhomefoundation.org/"
             target="_blank"
             rel="noreferrer"
-            >Newsletter</a
+            >${hass.localize("ui.panel.config.tips.join_newsletter")}</a
           >
         </span>`,
       }),
@@ -102,7 +99,12 @@ const randomTip = (hass: HomeAssistant, narrow: boolean) => {
         weight: 1,
         narrow: false,
       },
-      { content: hass.localize("ui.tips.key_m_hint"), weight: 1, narrow: false }
+      {
+        content: hass.localize("ui.tips.key_m_hint"),
+        weight: 1,
+        narrow: false,
+      },
+      { content: hass.localize("ui.tips.key_a_hint"), weight: 1, narrow: false }
     );
   }
 
@@ -125,11 +127,11 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
-  @property({ type: Boolean }) public showAdvanced = false;
+  @property({ attribute: false }) public showAdvanced = false;
 
   @state() private _tip?: string;
 
@@ -177,7 +179,10 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
   protected render(): TemplateResult {
     const { updates: canInstallUpdates, total: totalUpdates } =
-      this._filterUpdateEntitiesWithInstall(this.hass.states);
+      this._filterUpdateEntitiesWithInstall(
+        this.hass.states,
+        this.hass.entities
+      );
 
     const { issues: repairsIssues, total: totalRepairIssues } =
       this._repairsIssues;
@@ -306,8 +311,13 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
   }
 
   private _filterUpdateEntitiesWithInstall = memoizeOne(
-    (entities: HassEntities): { updates: UpdateEntity[]; total: number } => {
-      const updates = filterUpdateEntitiesWithInstall(entities);
+    (
+      entities: HomeAssistant["states"],
+      entityRegistry: HomeAssistant["entities"]
+    ): { updates: UpdateEntity[]; total: number } => {
+      const updates = filterUpdateEntitiesWithInstall(entities).filter(
+        (entity) => !entityRegistry[entity.entity_id]?.hidden
+      );
 
       return {
         updates: updates.slice(0, updates.length === 3 ? updates.length : 2),
@@ -318,7 +328,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
   private _showQuickBar(): void {
     showQuickBar(this, {
-      commandMode: true,
+      mode: QuickBarMode.Command,
       hint: this.hass.enableShortcuts
         ? this.hass.localize("ui.dialogs.quick-bar.key_c_hint")
         : undefined,

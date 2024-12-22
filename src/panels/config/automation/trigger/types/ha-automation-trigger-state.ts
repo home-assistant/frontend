@@ -1,4 +1,5 @@
-import { html, LitElement, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import {
   array,
@@ -17,10 +18,10 @@ import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { hasTemplate } from "../../../../../common/string/has-template";
-import { StateTrigger } from "../../../../../data/automation";
-import { HomeAssistant } from "../../../../../types";
+import type { StateTrigger } from "../../../../../data/automation";
+import type { HomeAssistant } from "../../../../../types";
 import { baseTriggerStruct, forDictStruct } from "../../structs";
-import { TriggerElement } from "../ha-automation-trigger-row";
+import type { TriggerElement } from "../ha-automation-trigger-row";
 import "../../../../../components/ha-form/ha-form";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
@@ -29,7 +30,7 @@ const stateTriggerStruct = assign(
   baseTriggerStruct,
   object({
     alias: optional(string()),
-    platform: literal("state"),
+    trigger: literal("state"),
     entity_id: optional(union([string(), array(string())])),
     attribute: optional(string()),
     from: optional(nullable(string())),
@@ -48,8 +49,8 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  public static get defaultConfig() {
-    return { entity_id: [] };
+  public static get defaultConfig(): StateTrigger {
+    return { trigger: "state", entity_id: [] };
   }
 
   private _schema = memoizeOne(

@@ -1,5 +1,7 @@
-import { ActionDetail } from "@material/mwc-list/mwc-list";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import "@material/mwc-list/mwc-list";
+import type { ActionDetail } from "@material/mwc-list/mwc-list";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { navigate } from "../common/navigate";
@@ -17,7 +19,8 @@ class HaNavigationList extends LitElement {
 
   @property({ attribute: false }) public pages!: PageNavigation[];
 
-  @property({ type: Boolean }) public hasSecondary = false;
+  @property({ attribute: "has-secondary", type: Boolean })
+  public hasSecondary = false;
 
   @property() public label?: string;
 

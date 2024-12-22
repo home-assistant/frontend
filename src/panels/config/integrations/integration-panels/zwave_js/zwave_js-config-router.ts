@@ -1,12 +1,10 @@
 import { mdiServerNetwork, mdiMathLog } from "@mdi/js";
 import { customElement, property } from "lit/decorators";
-import {
-  HassRouterPage,
-  RouterOptions,
-} from "../../../../../layouts/hass-router-page";
-import { HomeAssistant } from "../../../../../types";
+import type { RouterOptions } from "../../../../../layouts/hass-router-page";
+import { HassRouterPage } from "../../../../../layouts/hass-router-page";
+import type { HomeAssistant } from "../../../../../types";
 import { navigate } from "../../../../../common/navigate";
-import { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
+import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 import { getConfigEntries } from "../../../../../data/config_entries";
 
 export const configTabs: PageNavigation[] = [
@@ -26,7 +24,7 @@ export const configTabs: PageNavigation[] = [
 class ZWaveJSConfigRouter extends HassRouterPage {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -49,6 +47,10 @@ class ZWaveJSConfigRouter extends HassRouterPage {
       node_config: {
         tag: "zwave_js-node-config",
         load: () => import("./zwave_js-node-config"),
+      },
+      node_installer: {
+        tag: "zwave_js-node-installer",
+        load: () => import("./zwave_js-node-installer"),
       },
       logs: {
         tag: "zwave_js-logs",

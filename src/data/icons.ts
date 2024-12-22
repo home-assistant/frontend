@@ -1,15 +1,123 @@
-import { HassEntity } from "home-assistant-js-websocket";
+import {
+  mdiAccount,
+  mdiAirFilter,
+  mdiAlert,
+  mdiAppleSafari,
+  mdiBell,
+  mdiBookmark,
+  mdiBullhorn,
+  mdiButtonPointer,
+  mdiCalendar,
+  mdiCalendarClock,
+  mdiChatSleep,
+  mdiClipboardList,
+  mdiClock,
+  mdiCog,
+  mdiCommentAlert,
+  mdiCounter,
+  mdiEye,
+  mdiFlower,
+  mdiFormatListBulleted,
+  mdiFormTextbox,
+  mdiForumOutline,
+  mdiGoogleAssistant,
+  mdiGoogleCirclesCommunities,
+  mdiHomeAutomation,
+  mdiImage,
+  mdiImageFilterFrames,
+  mdiLightbulb,
+  mdiMapMarkerRadius,
+  mdiMicrophoneMessage,
+  mdiPalette,
+  mdiRayVertex,
+  mdiRemote,
+  mdiRobot,
+  mdiRobotMower,
+  mdiRobotVacuum,
+  mdiRoomService,
+  mdiScriptText,
+  mdiSpeakerMessage,
+  mdiThermostat,
+  mdiTimerOutline,
+  mdiToggleSwitch,
+  mdiWeatherPartlyCloudy,
+  mdiWhiteBalanceSunny,
+} from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
+import { atLeastVersion } from "../common/config/version";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { stateIcon } from "../common/entity/state_icon";
-import { HomeAssistant } from "../types";
-import {
+import type { HomeAssistant } from "../types";
+import type {
   EntityRegistryDisplayEntry,
   EntityRegistryEntry,
 } from "./entity_registry";
-import { isComponentLoaded } from "../common/config/is_component_loaded";
-import { atLeastVersion } from "../common/config/version";
+
+import { mdiHomeAssistant } from "../resources/home-assistant-logo-svg";
+
+/** Icon to use when no icon specified for service. */
+export const DEFAULT_SERVICE_ICON = mdiRoomService;
+
+/** Icon to use when no icon specified for domain. */
+export const DEFAULT_DOMAIN_ICON = mdiBookmark;
+
+/** Fallback icons for each domain */
+export const FALLBACK_DOMAIN_ICONS = {
+  air_quality: mdiAirFilter,
+  alert: mdiAlert,
+  automation: mdiRobot,
+  calendar: mdiCalendar,
+  climate: mdiThermostat,
+  configurator: mdiCog,
+  conversation: mdiForumOutline,
+  counter: mdiCounter,
+  date: mdiCalendar,
+  datetime: mdiCalendarClock,
+  demo: mdiHomeAssistant,
+  device_tracker: mdiAccount,
+  google_assistant: mdiGoogleAssistant,
+  group: mdiGoogleCirclesCommunities,
+  homeassistant: mdiHomeAssistant,
+  homekit: mdiHomeAutomation,
+  image_processing: mdiImageFilterFrames,
+  image: mdiImage,
+  input_boolean: mdiToggleSwitch,
+  input_button: mdiButtonPointer,
+  input_datetime: mdiCalendarClock,
+  input_number: mdiRayVertex,
+  input_select: mdiFormatListBulleted,
+  input_text: mdiFormTextbox,
+  lawn_mower: mdiRobotMower,
+  light: mdiLightbulb,
+  notify: mdiCommentAlert,
+  number: mdiRayVertex,
+  persistent_notification: mdiBell,
+  person: mdiAccount,
+  plant: mdiFlower,
+  proximity: mdiAppleSafari,
+  remote: mdiRemote,
+  scene: mdiPalette,
+  schedule: mdiCalendarClock,
+  script: mdiScriptText,
+  select: mdiFormatListBulleted,
+  sensor: mdiEye,
+  simple_alarm: mdiBell,
+  siren: mdiBullhorn,
+  stt: mdiMicrophoneMessage,
+  sun: mdiWhiteBalanceSunny,
+  text: mdiFormTextbox,
+  time: mdiClock,
+  timer: mdiTimerOutline,
+  todo: mdiClipboardList,
+  tts: mdiSpeakerMessage,
+  vacuum: mdiRobotVacuum,
+  wake_word: mdiChatSleep,
+  weather: mdiWeatherPartlyCloudy,
+  zone: mdiMapMarkerRadius,
+};
 
 const resources: {
   entity: Record<string, Promise<PlatformIcons>>;
@@ -62,7 +170,7 @@ export interface ComponentIcons {
 }
 
 interface ServiceIcons {
-  [service: string]: string;
+  [service: string]: { service: string; sections?: { [name: string]: string } };
 }
 
 export type IconCategory = "entity" | "entity_component" | "services";
@@ -288,12 +396,28 @@ export const serviceIcon = async (
   const serviceName = computeObjectId(service);
   const serviceIcons = await getServiceIcons(hass, domain);
   if (serviceIcons) {
-    icon = serviceIcons[serviceName] as string;
+    const srvceIcon = serviceIcons[serviceName] as ServiceIcons[string];
+    icon = srvceIcon?.service;
   }
   if (!icon) {
     icon = await domainIcon(hass, domain);
   }
   return icon;
+};
+
+export const serviceSectionIcon = async (
+  hass: HomeAssistant,
+  service: string,
+  section: string
+): Promise<string | undefined> => {
+  const domain = computeDomain(service);
+  const serviceName = computeObjectId(service);
+  const serviceIcons = await getServiceIcons(hass, domain);
+  if (serviceIcons) {
+    const srvceIcon = serviceIcons[serviceName] as ServiceIcons[string];
+    return srvceIcon?.sections?.[section];
+  }
+  return undefined;
 };
 
 export const domainIcon = async (

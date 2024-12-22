@@ -1,20 +1,19 @@
 import "@material/mwc-button/mwc-button";
 import { mdiCloseCircle } from "@mdi/js";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-qr-code";
 import { domainToName } from "../../../../../data/integration";
-import {
-  MatterCommissioningParameters,
-  openMatterCommissioningWindow,
-} from "../../../../../data/matter";
+import type { MatterCommissioningParameters } from "../../../../../data/matter";
+import { openMatterCommissioningWindow } from "../../../../../data/matter";
 import { haStyleDialog } from "../../../../../resources/styles";
-import { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
-import { MatterOpenCommissioningWindowDialogParams } from "./show-dialog-matter-open-commissioning-window";
+import type { MatterOpenCommissioningWindowDialogParams } from "./show-dialog-matter-open-commissioning-window";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 
 @customElement("dialog-matter-open-commissioning-window")
@@ -137,7 +136,19 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
               : html`
                   <p>
                     ${this.hass.localize(
-                      "ui.panel.config.matter.open_commissioning_window.introduction"
+                      "ui.panel.config.matter.open_commissioning_window.description",
+                      {
+                        startCommissioning: html`<b
+                          >${this.hass.localize(
+                            "ui.panel.config.matter.open_commissioning_window.start_commissioning"
+                          )}</b
+                        >`,
+                      }
+                    )}
+                  </p>
+                  <p class="note">
+                    ${this.hass.localize(
+                      "ui.panel.config.matter.open_commissioning_window.prevent_misuse_description"
                     )}
                   </p>
                   <mwc-button slot="primaryAction" @click=${this._start}>
@@ -246,6 +257,11 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
 
         .code {
           font-family: monospace;
+        }
+
+        .note {
+          color: var(--secondary-text-color);
+          font-size: 0.9em;
         }
       `,
     ];

@@ -1,13 +1,7 @@
 import { mdiAlert } from "@mdi/js";
-import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { arrayLiteralIncludes } from "../../common/array/literal-includes";
@@ -21,9 +15,9 @@ import {
   isNumericState,
 } from "../../common/number/format_number";
 import { isUnavailableState, UNAVAILABLE, UNKNOWN } from "../../data/entity";
-import { EntityRegistryDisplayEntry } from "../../data/entity_registry";
+import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
 import { timerTimeRemaining } from "../../data/timer";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import "../ha-label-badge";
 import "../ha-state-icon";
 
@@ -61,7 +55,7 @@ export class HaStateLabelBadge extends LitElement {
 
   @property() public image?: string;
 
-  @property({ type: Boolean }) public showName = false;
+  @property({ attribute: "show-name", type: Boolean }) public showName = false;
 
   @state() private _timerTimeRemaining?: number;
 
@@ -72,13 +66,13 @@ export class HaStateLabelBadge extends LitElement {
   public connectedCallback(): void {
     super.connectedCallback();
     this._connected = true;
-    this.startInterval(this.state);
+    this._startInterval(this.state);
   }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     this._connected = false;
-    this.clearInterval();
+    this._clearInterval();
   }
 
   protected render(): TemplateResult {
@@ -134,7 +128,7 @@ export class HaStateLabelBadge extends LitElement {
           this._timerTimeRemaining
         )}
         .description=${this.showName
-          ? this.name ?? computeStateName(entityState)
+          ? (this.name ?? computeStateName(entityState))
           : undefined}
       >
         ${!image && showIcon
@@ -157,7 +151,7 @@ export class HaStateLabelBadge extends LitElement {
     super.updated(changedProperties);
 
     if (this._connected && changedProperties.has("state")) {
-      this.startInterval(this.state);
+      this._startInterval(this.state);
     }
   }
 
@@ -243,28 +237,28 @@ export class HaStateLabelBadge extends LitElement {
     return entityState.attributes.unit_of_measurement || null;
   }
 
-  private clearInterval() {
+  private _clearInterval() {
     if (this._updateRemaining) {
       clearInterval(this._updateRemaining);
       this._updateRemaining = undefined;
     }
   }
 
-  private startInterval(stateObj) {
-    this.clearInterval();
+  private _startInterval(stateObj) {
+    this._clearInterval();
     if (stateObj && computeStateDomain(stateObj) === "timer") {
-      this.calculateTimerRemaining(stateObj);
+      this._calculateTimerRemaining(stateObj);
 
       if (stateObj.state === "active") {
         this._updateRemaining = window.setInterval(
-          () => this.calculateTimerRemaining(this.state),
+          () => this._calculateTimerRemaining(this.state),
           1000
         );
       }
     }
   }
 
-  private calculateTimerRemaining(stateObj) {
+  private _calculateTimerRemaining(stateObj) {
     this._timerTimeRemaining = timerTimeRemaining(stateObj);
   }
 

@@ -1,7 +1,8 @@
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import "../../../components/ha-icon";
-import { LovelaceRow, TextConfig } from "../entity-rows/types";
+import type { LovelaceRow, TextConfig } from "../entity-rows/types";
 
 @customElement("hui-text-row")
 class HuiTextRow extends LitElement implements LovelaceRow {

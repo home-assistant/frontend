@@ -1,13 +1,7 @@
 import "@material/mwc-button";
 import { mdiEyedropper } from "@mdi/js";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
   hex2rgb,
@@ -19,19 +13,17 @@ import {
 } from "../../../../common/color/convert-color";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { throttle } from "../../../../common/util/throttle";
-import "../../../../components/ha-button-toggle-group";
 import "../../../../components/ha-hs-color-picker";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-icon-button-prev";
 import "../../../../components/ha-labeled-slider";
+import type { LightColor, LightEntity } from "../../../../data/light";
 import {
   getLightCurrentModeRgbColor,
-  LightColor,
   LightColorMode,
-  LightEntity,
   lightSupportsColorMode,
 } from "../../../../data/light";
-import { HomeAssistant } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 
 declare global {
   interface HASSDomEvents {
@@ -165,7 +157,7 @@ class LightRgbColorPicker extends LitElement {
     `;
   }
 
-  public _updateSliderValues() {
+  private _updateSliderValues() {
     const stateObj = this.stateObj;
 
     if (stateObj.state === "on") {

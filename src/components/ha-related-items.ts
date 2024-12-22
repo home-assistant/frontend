@@ -5,24 +5,21 @@ import {
   mdiPaletteSwatch,
   mdiSofa,
 } from "@mdi/js";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
-import { Blueprints, fetchBlueprints } from "../data/blueprint";
-import { ConfigEntry, getConfigEntries } from "../data/config_entries";
-import { findRelated, ItemType, RelatedResult } from "../data/search";
+import type { Blueprints } from "../data/blueprint";
+import { fetchBlueprints } from "../data/blueprint";
+import type { ConfigEntry } from "../data/config_entries";
+import { getConfigEntries } from "../data/config_entries";
+import type { ItemType, RelatedResult } from "../data/search";
+import { findRelated } from "../data/search";
 import { haStyle } from "../resources/styles";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import { brandsUrl } from "../util/brands-url";
 import "./ha-icon-next";
 import "./ha-list-item";
@@ -33,9 +30,9 @@ import "./ha-switch";
 export class HaRelatedItems extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public itemType!: ItemType;
+  @property({ attribute: false }) public itemType!: ItemType;
 
-  @property() public itemId!: string;
+  @property({ attribute: false }) public itemId!: string;
 
   @state() private _entries?: ConfigEntry[];
 
@@ -109,6 +106,26 @@ export class HaRelatedItems extends LitElement {
         )
       );
 
+  private _getConfigEntries = memoizeOne(
+    (
+      relatedConfigEntries: string[] | undefined,
+      entries: ConfigEntry[] | undefined
+    ) => {
+      const configEntries =
+        relatedConfigEntries && entries
+          ? relatedConfigEntries.map((entryId) =>
+              entries!.find((configEntry) => configEntry.entry_id === entryId)
+            )
+          : undefined;
+
+      const configEntryDomains = new Set(
+        configEntries?.map((entry) => entry?.domain)
+      );
+
+      return { configEntries, configEntryDomains };
+    }
+  );
+
   protected render() {
     if (!this._related) {
       return nothing;
@@ -128,23 +145,25 @@ export class HaRelatedItems extends LitElement {
         </mwc-list>
       `;
     }
+
+    const { configEntries, configEntryDomains } = this._getConfigEntries(
+      this._related.config_entry,
+      this._entries
+    );
+
     return html`
-      ${this._related.config_entry && this._entries
+      ${configEntries || this._related.integration
         ? html`<h3>
               ${this.hass.localize("ui.components.related-items.integration")}
             </h3>
             <mwc-list
-              >${this._related.config_entry.map((relatedConfigEntryId) => {
-                const entry: ConfigEntry | undefined = this._entries!.find(
-                  (configEntry) => configEntry.entry_id === relatedConfigEntryId
-                );
+              >${configEntries?.map((entry) => {
                 if (!entry) {
                   return nothing;
                 }
                 return html`
                   <a
-                    href=${`/config/integrations/integration/${entry.domain}#config_entry=${relatedConfigEntryId}`}
-                    @click=${this._navigateAwayClose}
+                    href=${`/config/integrations/integration/${entry.domain}#config_entry=${entry.entry_id}`}
                   >
                     <ha-list-item hasMeta graphic="icon">
                       <img
@@ -164,8 +183,33 @@ export class HaRelatedItems extends LitElement {
                     </ha-list-item>
                   </a>
                 `;
-              })}</mwc-list
-            >`
+              })}
+              ${this._related.integration
+                ?.filter((integration) => !configEntryDomains.has(integration))
+                .map(
+                  (integration) =>
+                    html`<a
+                      href=${`/config/integrations/integration/${integration}`}
+                    >
+                      <ha-list-item hasMeta graphic="icon">
+                        <img
+                          .src=${brandsUrl({
+                            domain: integration,
+                            type: "icon",
+                            useFallback: true,
+                            darkOptimized: this.hass.themes?.darkMode,
+                          })}
+                          crossorigin="anonymous"
+                          referrerpolicy="no-referrer"
+                          alt=${integration}
+                          slot="graphic"
+                        />
+                        ${this.hass.localize(`component.${integration}.title`)}
+                        <ha-icon-next slot="meta"></ha-icon-next>
+                      </ha-list-item>
+                    </a>`
+                )}
+            </mwc-list>`
         : nothing}
       ${this._related.device
         ? html`<h3>
@@ -177,10 +221,7 @@ export class HaRelatedItems extends LitElement {
                 return nothing;
               }
               return html`
-                <a
-                  href="/config/devices/device/${relatedDeviceId}"
-                  @click=${this._navigateAwayClose}
-                >
+                <a href="/config/devices/device/${relatedDeviceId}">
                   <ha-list-item hasMeta graphic="icon">
                     <ha-svg-icon
                       .path=${mdiDevices}
@@ -205,10 +246,7 @@ export class HaRelatedItems extends LitElement {
                   return nothing;
                 }
                 return html`
-                  <a
-                    href="/config/areas/area/${relatedAreaId}"
-                    @click=${this._navigateAwayClose}
-                  >
+                  <a href="/config/areas/area/${relatedAreaId}">
                     <ha-list-item
                       hasMeta
                       .graphic=${area.picture ? "avatar" : "icon"}
@@ -318,10 +356,7 @@ export class HaRelatedItems extends LitElement {
                 const blueprintMeta = this._blueprints
                   ? this._blueprints.automation[path]
                   : undefined;
-                return html`<a
-                  href="/config/blueprint/dashboard"
-                  @click=${this._navigateAwayClose}
-                >
+                return html`<a href="/config/blueprint/dashboard">
                   <ha-list-item hasMeta graphic="icon">
                     <ha-svg-icon
                       .path=${mdiPaletteSwatch}
@@ -375,10 +410,7 @@ export class HaRelatedItems extends LitElement {
                 const blueprintMeta = this._blueprints
                   ? this._blueprints.script[path]
                   : undefined;
-                return html`<a
-                  href="/config/blueprint/dashboard"
-                  @click=${this._navigateAwayClose}
-                >
+                return html`<a href="/config/blueprint/dashboard">
                   <ha-list-item hasMeta graphic="icon">
                     <ha-svg-icon
                       .path=${mdiPaletteSwatch}
@@ -420,14 +452,6 @@ export class HaRelatedItems extends LitElement {
           `
         : nothing}
     `;
-  }
-
-  private async _navigateAwayClose() {
-    // allow new page to open before closing dialog
-    await new Promise((resolve) => {
-      setTimeout(resolve, 0);
-    });
-    fireEvent(this, "close-dialog");
   }
 
   private async _findRelated() {

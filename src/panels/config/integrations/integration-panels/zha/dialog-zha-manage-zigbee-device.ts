@@ -1,14 +1,8 @@
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
 import { mdiClose } from "@mdi/js";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import memoizeOne from "memoize-one";
@@ -16,16 +10,12 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-code-editor";
 import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-header";
-import {
-  fetchBindableDevices,
-  fetchGroups,
-  ZHADevice,
-  ZHAGroup,
-} from "../../../../../data/zha";
+import type { ZHADevice, ZHAGroup } from "../../../../../data/zha";
+import { fetchBindableDevices, fetchGroups } from "../../../../../data/zha";
 import { haStyleDialog } from "../../../../../resources/styles";
-import { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant } from "../../../../../types";
 import { sortZHADevices, sortZHAGroups } from "./functions";
-import {
+import type {
   Tab,
   ZHAManageZigbeeDeviceDialogParams,
 } from "./show-dialog-zha-manage-zigbee-device";

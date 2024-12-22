@@ -1,4 +1,5 @@
-import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/ha-card";
 import "../components/ha-ripple";
@@ -8,7 +9,7 @@ import "../components/ha-svg-icon";
 class OnboardingWelcomeLink extends LitElement {
   @property() public label!: string;
 
-  @property() public iconPath!: string;
+  @property({ attribute: false }) public iconPath!: string;
 
   @property({ type: Boolean }) public noninteractive = false;
 

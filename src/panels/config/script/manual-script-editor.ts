@@ -1,17 +1,23 @@
 import "@material/mwc-button/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { nestedArrayMove } from "../../../common/util/array-move";
+import { constructUrlCurrentPath } from "../../../common/url/construct-url";
+import {
+  extractSearchParam,
+  removeSearchParam,
+} from "../../../common/url/search-params";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
-import { Action, Fields, ScriptConfig } from "../../../data/script";
+import type { Action, Fields, ScriptConfig } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import "../automation/action/ha-automation-action";
+import type HaAutomationAction from "../automation/action/ha-automation-action";
 import "./ha-script-fields";
 import type HaScriptFields from "./ha-script-fields";
 
@@ -19,7 +25,7 @@ import type HaScriptFields from "./ha-script-fields";
 export class HaManualScriptEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -58,16 +64,33 @@ export class HaManualScriptEditor extends LitElement {
     }
   }
 
+  protected firstUpdated(changedProps: PropertyValues): void {
+    super.firstUpdated(changedProps);
+    const expanded = extractSearchParam("expanded");
+    if (expanded === "1") {
+      this._clearParam("expanded");
+      const items = this.shadowRoot!.querySelectorAll<HaAutomationAction>(
+        "ha-automation-action"
+      );
+
+      items.forEach((el) => {
+        el.updateComplete.then(() => {
+          el.expandAll();
+        });
+      });
+    }
+  }
+
+  private _clearParam(param: string) {
+    window.history.replaceState(
+      null,
+      "",
+      constructUrlCurrentPath(removeSearchParam(param))
+    );
+  }
+
   protected render() {
     return html`
-      ${this.disabled
-        ? html`<ha-alert alert-type="warning">
-            ${this.hass.localize("ui.panel.config.script.editor.read_only")}
-            <mwc-button slot="action" @click=${this._duplicate}>
-              ${this.hass.localize("ui.panel.config.script.editor.migrate")}
-            </mwc-button>
-          </ha-alert>`
-        : nothing}
       ${this.config.description
         ? html`<ha-markdown
             class="description"
@@ -133,7 +156,6 @@ export class HaManualScriptEditor extends LitElement {
         .actions=${this.config.sequence || []}
         .path=${["sequence"]}
         @value-changed=${this._sequenceChanged}
-        @item-moved=${this._itemMoved}
         .hass=${this.hass}
         .narrow=${this.narrow}
         .disabled=${this.disabled}
@@ -153,25 +175,6 @@ export class HaManualScriptEditor extends LitElement {
     fireEvent(this, "value-changed", {
       value: { ...this.config!, sequence: ev.detail.value as Action[] },
     });
-  }
-
-  private _itemMoved(ev: CustomEvent): void {
-    ev.stopPropagation();
-    const { oldIndex, newIndex, oldPath, newPath } = ev.detail;
-    const updatedConfig = nestedArrayMove(
-      this.config,
-      oldIndex,
-      newIndex,
-      oldPath,
-      newPath
-    );
-    fireEvent(this, "value-changed", {
-      value: updatedConfig,
-    });
-  }
-
-  private _duplicate() {
-    fireEvent(this, "duplicate");
   }
 
   static get styles(): CSSResultGroup {
@@ -204,12 +207,6 @@ export class HaManualScriptEditor extends LitElement {
         }
         .header a {
           color: var(--secondary-text-color);
-        }
-        ha-alert.re-order {
-          display: block;
-          margin-bottom: 16px;
-          border-radius: var(--ha-card-border-radius, 12px);
-          overflow: hidden;
         }
       `,
     ];

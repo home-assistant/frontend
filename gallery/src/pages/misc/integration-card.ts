@@ -4,10 +4,10 @@ import "../../../../src/components/ha-switch";
 
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { IntegrationManifest } from "../../../../src/data/integration";
+import type { IntegrationManifest } from "../../../../src/data/integration";
 
-import { DeviceRegistryEntry } from "../../../../src/data/device_registry";
-import { EntityRegistryEntry } from "../../../../src/data/entity_registry";
+import type { DeviceRegistryEntry } from "../../../../src/data/device_registry";
+import type { EntityRegistryEntry } from "../../../../src/data/entity_registry";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../../../src/panels/config/integrations/ha-config-flow-card";
 import type {
@@ -16,7 +16,7 @@ import type {
 } from "../../../../src/panels/config/integrations/ha-config-integrations";
 import "../../../../src/panels/config/integrations/ha-ignored-config-entry-card";
 import "../../../../src/panels/config/integrations/ha-integration-card";
-import { HomeAssistant } from "../../../../src/types";
+import type { HomeAssistant } from "../../../../src/types";
 
 const createConfigEntry = (
   title: string,
@@ -203,6 +203,8 @@ const createEntityRegistryEntries = (
     options: null,
     labels: [],
     categories: {},
+    created_at: 0,
+    modified_at: 0,
   },
 ];
 
@@ -215,6 +217,7 @@ const createDeviceRegistryEntries = (
     connections: [],
     manufacturer: "ESPHome",
     model: "Mock Device",
+    model_id: "ABC-001",
     name: "Tag Reader",
     sw_version: null,
     hw_version: "1.0.0",
@@ -227,6 +230,9 @@ const createDeviceRegistryEntries = (
     disabled_by: null,
     configuration_url: null,
     labels: [],
+    created_at: 0,
+    modified_at: 0,
+    primary_config_entry: null,
   },
 ];
 

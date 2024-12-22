@@ -2,7 +2,8 @@ import "@material/mwc-button";
 import { mdiCalendarClock } from "@mdi/js";
 import { toDate } from "date-fns-tz";
 import { addDays, isSameDay } from "date-fns";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { formatDate } from "../../common/datetime/format_date";
 import { formatDateTime } from "../../common/datetime/format_date_time";
@@ -14,16 +15,14 @@ import "../../components/ha-alert";
 import "../../components/ha-date-input";
 import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-time-input";
-import {
-  CalendarEventMutableParams,
-  deleteCalendarEvent,
-} from "../../data/calendar";
+import type { CalendarEventMutableParams } from "../../data/calendar";
+import { deleteCalendarEvent } from "../../data/calendar";
 import { haStyleDialog } from "../../resources/styles";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import "../lovelace/components/hui-generic-entity-row";
 import { renderRRuleAsText } from "./recurrence";
 import { showConfirmEventDialog } from "./show-confirm-event-dialog-box";
-import { CalendarEventDetailDialogParams } from "./show-dialog-calendar-event-detail";
+import type { CalendarEventDetailDialogParams } from "./show-dialog-calendar-event-detail";
 import { showCalendarEventEditDialog } from "./show-dialog-calendar-event-editor";
 import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 
@@ -51,7 +50,7 @@ class DialogCalendarEventDetail extends LitElement {
     }
   }
 
-  private closeDialog(): void {
+  public closeDialog(): void {
     this._calendarId = undefined;
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -94,7 +93,7 @@ class DialogCalendarEventDetail extends LitElement {
               .hass=${this.hass}
               .stateObj=${stateObj}
               .color=${this._params.color}
-              inDialog
+              in-dialog
             ></state-info>
           </div>
         </div>

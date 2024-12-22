@@ -1,0 +1,530 @@
+import { mdiClose, mdiContentCopy, mdiDownload } from "@mdi/js";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
+import "../../../../components/ha-button";
+import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-icon-button";
+import "../../../../components/ha-icon-button-prev";
+import "../../../../components/ha-icon-next";
+import "../../../../components/ha-md-dialog";
+import type { HaMdDialog } from "../../../../components/ha-md-dialog";
+import "../../../../components/ha-md-list";
+import "../../../../components/ha-md-list-item";
+import "../../../../components/ha-password-field";
+import "../../../../components/ha-svg-icon";
+import type {
+  BackupConfig,
+  BackupMutableConfig,
+} from "../../../../data/backup";
+import {
+  BackupScheduleState,
+  CLOUD_AGENT,
+  CORE_LOCAL_AGENT,
+  generateEncryptionKey,
+  HASSIO_LOCAL_AGENT,
+  updateBackupConfig,
+} from "../../../../data/backup";
+import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { haStyle, haStyleDialog } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
+import { fileDownload } from "../../../../util/file_download";
+import { showToast } from "../../../../util/toast";
+import "../components/config/ha-backup-config-agents";
+import "../components/config/ha-backup-config-data";
+import type { BackupConfigData } from "../components/config/ha-backup-config-data";
+import "../components/config/ha-backup-config-schedule";
+import type { BackupConfigSchedule } from "../components/config/ha-backup-config-schedule";
+import type { BackupOnboardingDialogParams } from "./show-dialog-backup_onboarding";
+
+const STEPS = [
+  "welcome",
+  "key",
+  "setup",
+  "schedule",
+  "data",
+  "locations",
+] as const;
+
+type Step = (typeof STEPS)[number];
+
+const FULL_DIALOG_STEPS = new Set<Step>(["setup"]);
+
+const RECOMMENDED_CONFIG: BackupConfig = {
+  create_backup: {
+    agent_ids: [],
+    include_folders: [],
+    include_database: true,
+    include_addons: [],
+    include_all_addons: true,
+    password: null,
+    name: null,
+  },
+  retention: {
+    copies: 3,
+    days: null,
+  },
+  schedule: {
+    state: BackupScheduleState.DAILY,
+  },
+  last_attempted_automatic_backup: null,
+  last_completed_automatic_backup: null,
+};
+
+@customElement("ha-dialog-backup-onboarding")
+class DialogBackupOnboarding extends LitElement implements HassDialog {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @state() private _opened = false;
+
+  @state() private _step?: Step;
+
+  @state() private _params?: BackupOnboardingDialogParams;
+
+  @query("ha-md-dialog") private _dialog!: HaMdDialog;
+
+  @state() private _config?: BackupConfig;
+
+  public showDialog(params: BackupOnboardingDialogParams): void {
+    this._params = params;
+    this._step = STEPS[0];
+    this._config = RECOMMENDED_CONFIG;
+
+    const agents: string[] = [];
+    // Enable local location by default
+    if (isComponentLoaded(this.hass, "hassio")) {
+      agents.push(HASSIO_LOCAL_AGENT);
+    } else {
+      agents.push(CORE_LOCAL_AGENT);
+    }
+    // Enable cloud location if logged in
+    if (this._params.cloudStatus.logged_in) {
+      agents.push(CLOUD_AGENT);
+    }
+
+    this._config = {
+      ...this._config,
+      create_backup: {
+        ...this._config.create_backup,
+        agent_ids: agents,
+        password: generateEncryptionKey(),
+      },
+    };
+    this._opened = true;
+  }
+
+  public closeDialog(): void {
+    if (this._params!.cancel) {
+      this._params!.cancel();
+    }
+    if (this._opened) {
+      fireEvent(this, "dialog-closed", { dialog: this.localName });
+    }
+    this._opened = false;
+    this._step = undefined;
+    this._config = undefined;
+    this._params = undefined;
+  }
+
+  private async _done() {
+    if (!this._config) {
+      return;
+    }
+
+    const params: BackupMutableConfig = {
+      create_backup: {
+        password: this._config.create_backup.password,
+        include_database: this._config.create_backup.include_database,
+        agent_ids: this._config.create_backup.agent_ids,
+      },
+      schedule: this._config.schedule.state,
+      retention: this._config.retention,
+    };
+
+    if (isComponentLoaded(this.hass, "hassio")) {
+      params.create_backup!.include_folders =
+        this._config.create_backup.include_folders || [];
+      params.create_backup!.include_all_addons =
+        this._config.create_backup.include_all_addons;
+      params.create_backup!.include_addons =
+        this._config.create_backup.include_addons || [];
+    }
+
+    try {
+      await updateBackupConfig(this.hass, params);
+
+      this._params?.submit!(true);
+      this._dialog.close();
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      showToast(this, { message: "Failed to save backup configuration" });
+    }
+  }
+
+  private _previousStep() {
+    const index = STEPS.indexOf(this._step!);
+    if (index === 0) {
+      return;
+    }
+    this._step = STEPS[index - 1];
+  }
+
+  private _nextStep() {
+    const index = STEPS.indexOf(this._step!);
+    if (index === STEPS.length - 1) {
+      return;
+    }
+    this._step = STEPS[index + 1];
+  }
+
+  protected render() {
+    if (!this._opened || !this._params || !this._step) {
+      return nothing;
+    }
+
+    const isLastStep = this._step === STEPS[STEPS.length - 1];
+    const isFirstStep = this._step === STEPS[0];
+
+    return html`
+      <ha-md-dialog disable-cancel-action open @closed=${this.closeDialog}>
+        <ha-dialog-header slot="headline">
+          ${isFirstStep
+            ? html`
+                <ha-icon-button
+                  slot="navigationIcon"
+                  .label=${this.hass.localize("ui.dialogs.generic.close")}
+                  .path=${mdiClose}
+                  @click=${this.closeDialog}
+                ></ha-icon-button>
+              `
+            : html`
+                <ha-icon-button-prev
+                  slot="navigationIcon"
+                  @click=${this._previousStep}
+                ></ha-icon-button-prev>
+              `}
+
+          <span slot="title">${this._stepTitle}</span>
+        </ha-dialog-header>
+        <div slot="content">${this._renderStepContent()}</div>
+        ${!FULL_DIALOG_STEPS.has(this._step)
+          ? html`
+              <div slot="actions">
+                ${isLastStep
+                  ? html`
+                      <ha-button
+                        @click=${this._done}
+                        .disabled=${!this._isStepValid()}
+                      >
+                        Save and create backup
+                      </ha-button>
+                    `
+                  : html`
+                      <ha-button
+                        @click=${this._nextStep}
+                        .disabled=${!this._isStepValid()}
+                      >
+                        Next
+                      </ha-button>
+                    `}
+              </div>
+            `
+          : nothing}
+      </ha-md-dialog>
+    `;
+  }
+
+  private get _stepTitle(): string {
+    switch (this._step) {
+      case "welcome":
+        return "";
+      case "key":
+        return "Encryption key";
+      case "setup":
+        return "Set up your automatic backups";
+      case "schedule":
+        return "Automatic backups";
+      case "data":
+        return "Backup data";
+      case "locations":
+        return "Locations";
+      default:
+        return "";
+    }
+  }
+
+  private _isStepValid(): boolean {
+    switch (this._step) {
+      case "key":
+        return true;
+      case "setup":
+        return true;
+      case "schedule":
+        return !!this._config?.schedule;
+      case "data":
+        return !!this._config?.schedule;
+      case "locations":
+        return !!this._config?.create_backup.agent_ids.length;
+      default:
+        return true;
+    }
+  }
+
+  private _renderStepContent() {
+    if (!this._config) {
+      return nothing;
+    }
+
+    switch (this._step) {
+      case "welcome":
+        return html`
+          <div class="welcome">
+            <img
+              src="/static/images/voice-assistant/hi.png"
+              alt="Casita Home Assistant logo"
+            />
+            <h1>Set up your automatic backups</h1>
+            <p class="secondary">
+              Backups are essential to a reliable smart home. They protect your
+              setup against failures and allows you to quickly have a working
+              system again. It is recommended to create a daily backup and keep
+              backups of the last 3 days on two different locations. And one of
+              them is off-site.
+            </p>
+          </div>
+        `;
+      case "key":
+        return html`
+          <p>
+            All your backups are encrypted to keep your data private and secure.
+            We recommend to save this key somewhere secure. As you can only
+            restore your data with the backup encryption key.
+          </p>
+          <div class="encryption-key">
+            <p>${this._config.create_backup.password}</p>
+            <ha-icon-button
+              .path=${mdiContentCopy}
+              @click=${this._copyKeyToClipboard}
+            ></ha-icon-button>
+          </div>
+          <ha-md-list>
+            <ha-md-list-item>
+              <span slot="headline">Download emergency kit</span>
+              <span slot="supporting-text">
+                We recommend to save this encryption key somewhere secure.
+              </span>
+              <ha-button slot="end" @click=${this._downloadKey}>
+                <ha-svg-icon .path=${mdiDownload} slot="icon"></ha-svg-icon>
+                Download
+              </ha-button>
+            </ha-md-list-item>
+          </ha-md-list>
+        `;
+      case "setup":
+        return html`
+          <p>
+            It is recommended to create a daily backup and keep backups of the
+            last 3 days on two different locations. And one of them is off-site.
+          </p>
+          <ha-md-list class="full">
+            <ha-md-list-item type="button" @click=${this._done}>
+              <span slot="headline">Recommended settings</span>
+              <span slot="supporting-text">
+                Set the proven settings of daily backup.
+              </span>
+              <ha-icon-next slot="end"> </ha-icon-next>
+            </ha-md-list-item>
+            <ha-md-list-item type="button" @click=${this._nextStep}>
+              <span slot="headline">Custom settings</span>
+              <span slot="supporting-text">
+                Select your own automation, data and locations
+              </span>
+              <ha-icon-next slot="end"> </ha-icon-next>
+            </ha-md-list-item>
+          </ha-md-list>
+        `;
+      case "schedule":
+        return html`
+          <p>
+            Let Home Assistant take care of your backups by creating a scheduled
+            backup that also removes older backups.
+          </p>
+          <ha-backup-config-schedule
+            .hass=${this.hass}
+            .value=${this._config}
+            @value-changed=${this._scheduleChanged}
+          ></ha-backup-config-schedule>
+        `;
+      case "data":
+        return html`
+          <p>
+            Choose what data to include in your backups. You can always change
+            this later.
+          </p>
+          <ha-backup-config-data
+            .hass=${this.hass}
+            .value=${this._dataConfig(this._config)}
+            @value-changed=${this._dataChanged}
+            force-home-assistant
+            hide-addon-version
+          ></ha-backup-config-data>
+        `;
+      case "locations":
+        return html`
+          <p>
+            Home Assistant will upload to these locations when an automatic
+            backup is made. You can use all locations for manual backups.
+          </p>
+          <ha-backup-config-agents
+            .hass=${this.hass}
+            .value=${this._config.create_backup.agent_ids}
+            .cloudStatus=${this._params!.cloudStatus}
+            @value-changed=${this._agentsConfigChanged}
+          ></ha-backup-config-agents>
+        `;
+    }
+    return nothing;
+  }
+
+  private _downloadKey() {
+    const key = this._config?.create_backup.password;
+    if (!key) {
+      return;
+    }
+    fileDownload(
+      "data:text/plain;charset=utf-8," + encodeURIComponent(key),
+      "emergency_kit.txt"
+    );
+  }
+
+  private _copyKeyToClipboard() {
+    copyToClipboard(this._config!.create_backup.password!);
+    showToast(this, {
+      message: this.hass.localize("ui.common.copied_clipboard"),
+    });
+  }
+
+  private _dataConfig(config: BackupConfig): BackupConfigData {
+    const {
+      include_addons,
+      include_all_addons,
+      include_database,
+      include_folders,
+    } = config.create_backup;
+
+    return {
+      include_homeassistant: true,
+      include_database,
+      include_folders: include_folders || undefined,
+      include_all_addons,
+      include_addons: include_addons || undefined,
+    };
+  }
+
+  private _dataChanged(ev) {
+    const data = ev.detail.value as BackupConfigData;
+    this._config = {
+      ...this._config!,
+      create_backup: {
+        ...this._config!.create_backup,
+        include_database: data.include_database,
+        include_folders: data.include_folders || null,
+        include_all_addons: data.include_all_addons,
+        include_addons: data.include_addons || null,
+      },
+    };
+  }
+
+  private _scheduleChanged(ev) {
+    const value = ev.detail.value as BackupConfigSchedule;
+    this._config = {
+      ...this._config!,
+      schedule: value.schedule,
+      retention: value.retention,
+    };
+  }
+
+  private _agentsConfigChanged(ev) {
+    const agents = ev.detail.value as string[];
+    this._config = {
+      ...this._config!,
+      create_backup: {
+        ...this._config!.create_backup,
+        agent_ids: agents,
+      },
+    };
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyle,
+      haStyleDialog,
+      css`
+        ha-md-dialog {
+          width: 90vw;
+          max-width: 560px;
+          --dialog-content-padding: 8px 24px;
+        }
+        ha-md-list {
+          background: none;
+          --md-list-item-leading-space: 0;
+          --md-list-item-trailing-space: 0;
+        }
+        ha-md-list.full {
+          --md-list-item-leading-space: 24px;
+          --md-list-item-trailing-space: 24px;
+          margin-left: -24px;
+          margin-right: -24px;
+        }
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          ha-md-dialog {
+            max-width: none;
+          }
+          div[slot="content"] {
+            margin-top: 0;
+          }
+        }
+        p {
+          margin-top: 0;
+        }
+        .welcome {
+          text-align: center;
+        }
+        .encryption-key {
+          border: 1px solid var(--divider-color);
+          background-color: var(--primary-background-color);
+          border-radius: 8px;
+          padding: 16px;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 24px;
+        }
+        .encryption-key p {
+          margin: 0;
+          flex: 1;
+          font-family: "Roboto Mono", "Consolas", "Menlo", monospace;
+          font-size: 20px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 28px;
+          text-align: center;
+        }
+        .encryption-key ha-icon-button {
+          flex: none;
+          margin: -16px;
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-dialog-backup-onboarding": DialogBackupOnboarding;
+  }
+}

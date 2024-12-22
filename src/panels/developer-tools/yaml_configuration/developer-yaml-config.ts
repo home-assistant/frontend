@@ -1,19 +1,14 @@
 import "@material/mwc-button";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { componentsWithService } from "../../../common/config/components_with_service";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
-import { CheckConfigResult, checkCoreConfig } from "../../../data/core";
+import type { CheckConfigResult } from "../../../data/core";
+import { checkCoreConfig } from "../../../data/core";
 import { domainToName } from "../../../data/integration";
 import { stringCompare } from "../../../common/string/compare";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
@@ -34,13 +29,13 @@ interface TranslatedReloadableDomain {
 export class DeveloperYamlConfig extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ type: Boolean }) public showAdvanced = false;
+  @property({ attribute: false }) public showAdvanced = false;
 
   @state() private _validating = false;
 

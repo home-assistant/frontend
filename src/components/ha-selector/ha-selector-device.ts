@@ -1,16 +1,17 @@
-import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, PropertyValues, nothing } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { DeviceRegistryEntry } from "../../data/device_registry";
 import { getDeviceIntegrationLookup } from "../../data/device_registry";
-import {
-  EntitySources,
-  fetchEntitySourcesWithCache,
-} from "../../data/entity_sources";
+import type { EntitySources } from "../../data/entity_sources";
+import { fetchEntitySourcesWithCache } from "../../data/entity_sources";
 import type { DeviceSelector } from "../../data/selector";
+import type { ConfigEntry } from "../../data/config_entries";
+import { getConfigEntries } from "../../data/config_entries";
 import {
   filterSelectorDevices,
   filterSelectorEntities,
@@ -26,6 +27,8 @@ export class HaDeviceSelector extends LitElement {
   @property({ attribute: false }) public selector!: DeviceSelector;
 
   @state() private _entitySources?: EntitySources;
+
+  @state() private _configEntries?: ConfigEntry[];
 
   @property() public value?: any;
 
@@ -73,6 +76,12 @@ export class HaDeviceSelector extends LitElement {
     ) {
       fetchEntitySourcesWithCache(this.hass).then((sources) => {
         this._entitySources = sources;
+      });
+    }
+    if (!this._configEntries && this._hasIntegration(this.selector)) {
+      this._configEntries = [];
+      getConfigEntries(this.hass).then((entries) => {
+        this._configEntries = entries;
       });
     }
   }
@@ -123,7 +132,9 @@ export class HaDeviceSelector extends LitElement {
     const deviceIntegrations = this._entitySources
       ? this._deviceIntegrationLookup(
           this._entitySources,
-          Object.values(this.hass.entities)
+          Object.values(this.hass.entities),
+          Object.values(this.hass.devices),
+          this._configEntries
         )
       : undefined;
 

@@ -1,11 +1,12 @@
 import deepFreeze from "deep-freeze";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import "./hui-card-preview";
+import "../../cards/hui-card";
 import type { DeleteCardDialogParams } from "./show-delete-card-dialog";
 
 @customElement("hui-dialog-delete-card")
@@ -45,10 +46,11 @@ export class HuiDialogDeleteCard extends LitElement {
           ${this._cardConfig
             ? html`
                 <div class="element-preview">
-                  <hui-card-preview
+                  <hui-card
                     .hass=${this.hass}
                     .config=${this._cardConfig}
-                  ></hui-card-preview>
+                    preview
+                  ></hui-card>
                 </div>
               `
             : ""}
@@ -74,7 +76,7 @@ export class HuiDialogDeleteCard extends LitElement {
         .element-preview {
           position: relative;
         }
-        hui-card-preview {
+        hui-card {
           margin: 4px auto;
           max-width: 500px;
           display: block;

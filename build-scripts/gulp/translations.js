@@ -172,12 +172,14 @@ const createMasterTranslation = () =>
 
 const FRAGMENTS = ["base"];
 
-const toggleSupervisorFragment = async () => {
-  FRAGMENTS[0] = "supervisor";
+const setFragment = (fragment) => async () => {
+  FRAGMENTS[0] = fragment;
 };
 
 const panelFragment = (fragment) =>
-  fragment !== "base" && fragment !== "supervisor";
+  fragment !== "base" &&
+  fragment !== "supervisor" &&
+  fragment !== "landing-page";
 
 const HASHES = new Map();
 
@@ -224,6 +226,9 @@ const createTranslations = async () => {
             case "supervisor":
               // Supervisor key is at the top level
               return [flatten(data.supervisor), ""];
+            case "landing-page":
+              // landing-page key is at the top level
+              return [flatten(data["landing-page"]), ""];
             default:
               // Create a fragment with only the given panel
               return [
@@ -244,11 +249,11 @@ const createTranslations = async () => {
   // TODO: This is a naive interpretation of BCP47 that should be improved.
   //       Will be OK for now as long as we don't have anything more complicated
   // than a base translation + region.
-  gulp
+  const masterStream = gulp
     .src(`${workDir}/en.json`)
-    .pipe(new PassThrough({ objectMode: true }))
-    .pipe(hashStream, { end: false });
-  const mergesFinished = [];
+    .pipe(new PassThrough({ objectMode: true }));
+  masterStream.pipe(hashStream, { end: false });
+  const mergesFinished = [finished(masterStream)];
   for (const translationFile of translationFiles) {
     const locale = basename(translationFile, ".json");
     const subtags = locale.split("-");
@@ -322,5 +327,10 @@ gulp.task(
 
 gulp.task(
   "build-supervisor-translations",
-  gulp.series(toggleSupervisorFragment, "build-translations")
+  gulp.series(setFragment("supervisor"), "build-translations")
+);
+
+gulp.task(
+  "build-landing-page-translations",
+  gulp.series(setFragment("landing-page"), "build-translations")
 );

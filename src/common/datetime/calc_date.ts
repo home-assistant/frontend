@@ -1,6 +1,16 @@
+import {
+  addMilliseconds,
+  addMonths,
+  isFirstDayOfMonth,
+  isLastDayOfMonth,
+  differenceInMilliseconds,
+  differenceInMonths,
+  endOfMonth,
+} from "date-fns";
 import { toZonedTime, fromZonedTime } from "date-fns-tz";
-import { HassConfig } from "home-assistant-js-websocket";
-import { FrontendLocaleData, TimeZone } from "../../data/translation";
+import type { HassConfig } from "home-assistant-js-websocket";
+import type { FrontendLocaleData } from "../../data/translation";
+import { TimeZone } from "../../data/translation";
 
 const calcZonedDate = (
   date: Date,
@@ -54,3 +64,55 @@ export const calcDateDifferenceProperty = (
       ? toZonedTime(startDate, config.time_zone)
       : startDate
   );
+
+export const shiftDateRange = (
+  startDate: Date,
+  endDate: Date,
+  forward: boolean,
+  locale: FrontendLocaleData,
+  config: any
+): { start: Date; end: Date } => {
+  let start: Date;
+  let end: Date;
+  if (
+    (calcDateProperty(
+      startDate,
+      isFirstDayOfMonth,
+      locale,
+      config
+    ) as boolean) &&
+    (calcDateProperty(endDate, isLastDayOfMonth, locale, config) as boolean)
+  ) {
+    const difference =
+      ((calcDateDifferenceProperty(
+        endDate,
+        startDate,
+        differenceInMonths,
+        locale,
+        config
+      ) as number) +
+        1) *
+      (forward ? 1 : -1);
+    start = calcDate(startDate, addMonths, locale, config, difference);
+    end = calcDate(
+      calcDate(endDate, addMonths, locale, config, difference),
+      endOfMonth,
+      locale,
+      config
+    );
+  } else {
+    const difference =
+      ((calcDateDifferenceProperty(
+        endDate,
+        startDate,
+        differenceInMilliseconds,
+        locale,
+        config
+      ) as number) +
+        1) *
+      (forward ? 1 : -1);
+    start = calcDate(startDate, addMilliseconds, locale, config, difference);
+    end = calcDate(endDate, addMilliseconds, locale, config, difference);
+  }
+  return { start, end };
+};

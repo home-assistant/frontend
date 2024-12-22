@@ -8,21 +8,15 @@ import {
   mdiInformationOutline,
   mdiPlus,
 } from "@mdi/js";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
-import { customElement, property, state } from "lit/decorators";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { storage } from "../../common/decorators/storage";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateName } from "../../common/entity/compute_state_name";
+import { supportsFeature } from "../../common/entity/supports-feature";
 import { navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
@@ -40,6 +34,7 @@ import "../../components/ha-two-pane-top-app-bar-fixed";
 import { deleteConfigEntry } from "../../data/config_entries";
 import { getExtendedEntityRegistryEntry } from "../../data/entity_registry";
 import { fetchIntegrationManifest } from "../../data/integration";
+import type { LovelaceCardConfig } from "../../data/lovelace/config/card";
 import { TodoListEntityFeature, getTodoLists } from "../../data/todo";
 import { showConfigFlowDialog } from "../../dialogs/config-flow/show-dialog-config-flow";
 import {
@@ -48,12 +43,9 @@ import {
 } from "../../dialogs/generic/show-dialog-box";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { haStyle } from "../../resources/styles";
-import { HomeAssistant } from "../../types";
-import { HuiErrorCard } from "../lovelace/cards/hui-error-card";
-import { createCardElement } from "../lovelace/create-element/create-card-element";
-import { LovelaceCard } from "../lovelace/types";
+import type { HomeAssistant } from "../../types";
+import "../lovelace/cards/hui-card";
 import { showTodoItemEditDialog } from "./show-dialog-todo-item-editor";
-import { supportsFeature } from "../../common/entity/supports-feature";
 
 @customElement("ha-panel-todo")
 class PanelTodo extends LitElement {
@@ -62,8 +54,6 @@ class PanelTodo extends LitElement {
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ type: Boolean, reflect: true }) public mobile = false;
-
-  @state() private _card?: LovelaceCard | HuiErrorCard;
 
   @storage({
     key: "selectedTodoEntity",
@@ -128,15 +118,10 @@ class PanelTodo extends LitElement {
     if (changedProperties.has("_entityId") || !this.hasUpdated) {
       this._setupTodoElement();
     }
-
-    if (changedProperties.has("hass") && this._card) {
-      this._card.hass = this.hass;
-    }
   }
 
   private _setupTodoElement(): void {
     if (!this._entityId) {
-      this._card = undefined;
       navigate(constructUrlCurrentPath(""), { replace: true });
       return;
     }
@@ -144,12 +129,15 @@ class PanelTodo extends LitElement {
       constructUrlCurrentPath(createSearchParam({ entity_id: this._entityId })),
       { replace: true }
     );
-    this._card = createCardElement({
-      type: "todo-list",
-      entity: this._entityId,
-    }) as LovelaceCard;
-    this._card.hass = this.hass;
   }
+
+  private _cardConfig = memoizeOne(
+    (entityId: string) =>
+      ({
+        type: "todo-list",
+        entity: entityId,
+      }) as LovelaceCardConfig
+  );
 
   protected render(): TemplateResult {
     const entityRegistryEntry = this._entityId
@@ -274,7 +262,16 @@ class PanelTodo extends LitElement {
             : nothing}
         </ha-button-menu>
         <div id="columns">
-          <div class="column">${this._card}</div>
+          <div class="column">
+            ${this._entityId
+              ? html`
+                  <hui-card
+                    .hass=${this.hass}
+                    .config=${this._cardConfig(this._entityId)}
+                  ></hui-card>
+                `
+              : nothing}
+          </div>
         </div>
         ${entityState &&
         supportsFeature(entityState, TodoListEntityFeature.CREATE_TODO_ITEM)

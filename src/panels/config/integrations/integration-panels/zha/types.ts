@@ -1,5 +1,5 @@
-import { HaSelect } from "../../../../../components/ha-select";
-import { ZHADevice } from "../../../../../data/zha";
+import type { HaSelect } from "../../../../../components/ha-select";
+import type { ZHADevice } from "../../../../../data/zha";
 
 export interface ItemSelectedEvent {
   target?: HaSelect;

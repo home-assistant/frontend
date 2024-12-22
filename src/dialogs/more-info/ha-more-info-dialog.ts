@@ -10,7 +10,8 @@ import {
   mdiPencilOutline,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import { LitElement, PropertyValues, css, html, nothing } from "lit";
+import type { PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
@@ -27,16 +28,16 @@ import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-prev";
 import "../../components/ha-list-item";
 import "../../components/ha-related-items";
-import {
+import type {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
-  getExtendedEntityRegistryEntry,
 } from "../../data/entity_registry";
+import { getExtendedEntityRegistryEntry } from "../../data/entity_registry";
 import { lightSupportsFavoriteColors } from "../../data/light";
 import { SearchableDomains } from "../../data/search";
 import { haStyleDialog } from "../../resources/styles";
 import "../../state-summary/state-card-content";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import {
   DOMAINS_WITH_MORE_INFO,
   EDITABLE_DOMAINS_WITH_ID,
@@ -136,7 +137,7 @@ export class MoreInfoDialog extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  private shouldShowEditIcon(
+  private _shouldShowEditIcon(
     domain: string,
     stateObj: HassEntity | undefined
   ): boolean {
@@ -156,7 +157,7 @@ export class MoreInfoDialog extends LitElement {
     return false;
   }
 
-  private shouldShowHistory(domain: string): boolean {
+  private _shouldShowHistory(domain: string): boolean {
     return (
       DOMAINS_WITH_MORE_INFO.includes(domain) &&
       (computeShowHistoryComponent(this.hass, this._entityId!) ||
@@ -171,7 +172,7 @@ export class MoreInfoDialog extends LitElement {
     return entity?.device_id ?? null;
   }
 
-  private setView(view: View) {
+  private _setView(view: View) {
     history.replaceState(
       {
         ...history.state,
@@ -189,21 +190,21 @@ export class MoreInfoDialog extends LitElement {
     if (this._childView) {
       this._childView = undefined;
     } else {
-      this.setView(this._initialView);
+      this._setView(this._initialView);
     }
   }
 
   private _resetInitialView() {
     this._initialView = DEFAULT_VIEW;
-    this.setView(DEFAULT_VIEW);
+    this._setView(DEFAULT_VIEW);
   }
 
   private _goToHistory() {
-    this.setView("history");
+    this._setView("history");
   }
 
   private _goToSettings(): void {
-    this.setView("settings");
+    this._setView("settings");
   }
 
   private _showChildView(ev: CustomEvent): void {
@@ -254,7 +255,7 @@ export class MoreInfoDialog extends LitElement {
 
   private _goToRelated(ev): void {
     if (!shouldHandleRequestSelectedEvent(ev)) return;
-    this.setView("related");
+    this._setView("related");
   }
 
   protected render() {
@@ -313,7 +314,7 @@ export class MoreInfoDialog extends LitElement {
           </span>
           ${isDefaultView
             ? html`
-                ${this.shouldShowHistory(domain)
+                ${this._shouldShowHistory(domain)
                   ? html`
                       <ha-icon-button
                         slot="actionItems"
@@ -325,7 +326,7 @@ export class MoreInfoDialog extends LitElement {
                       ></ha-icon-button>
                     `
                   : nothing}
-                ${isAdmin
+                ${!__DEMO__ && isAdmin
                   ? html`
                       <ha-icon-button
                         slot="actionItems"
@@ -337,7 +338,7 @@ export class MoreInfoDialog extends LitElement {
                       ></ha-icon-button>
                       <ha-button-menu
                         corner="BOTTOM_END"
-                        menuCorner="END"
+                        menu-corner="END"
                         slot="actionItems"
                         @closed=${stopPropagation}
                         fixed
@@ -364,7 +365,7 @@ export class MoreInfoDialog extends LitElement {
                               </ha-list-item>
                             `
                           : nothing}
-                        ${this.shouldShowEditIcon(domain, stateObj)
+                        ${this._shouldShowEditIcon(domain, stateObj)
                           ? html`
                               <ha-list-item
                                 graphic="icon"
@@ -425,7 +426,7 @@ export class MoreInfoDialog extends LitElement {
               ? html`
                   <ha-button-menu
                     corner="BOTTOM_END"
-                    menuCorner="END"
+                    menu-corner="END"
                     slot="actionItems"
                     @closed=${stopPropagation}
                     fixed

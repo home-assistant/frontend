@@ -1,12 +1,12 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { CloudStatus } from "../../../data/cloud";
-import { ExposeEntitySettings } from "../../../data/expose";
+import type { CloudStatus } from "../../../data/cloud";
+import type { ExposeEntitySettings } from "../../../data/expose";
 
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage";
-import { HomeAssistant, Route } from "../../../types";
+import type { HomeAssistant, Route } from "../../../types";
 import "./assist-pref";
 import "./cloud-alexa-pref";
 import "./cloud-discover";
@@ -24,7 +24,7 @@ export class HaConfigVoiceAssistantsAssistants extends LitElement {
     ExposeEntitySettings
   >;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 

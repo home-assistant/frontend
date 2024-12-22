@@ -1,19 +1,20 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-formfield/mwc-formfield";
 import "@material/mwc-list/mwc-list-item";
-import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
+import type { ConfigEntry } from "../../../data/config_entries";
 import {
-  ConfigEntry,
   deleteConfigEntry,
   getConfigEntry,
 } from "../../../data/config_entries";
 import { updateDeviceRegistryEntry } from "../../../data/device_registry";
+import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
 import {
-  ExtEntityRegistryEntry,
   removeEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
@@ -215,6 +216,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         text: this.hass.localize(
           "ui.dialogs.entity_registry.editor.confirm_delete"
         ),
+        confirmText: this.hass.localize("ui.common.delete"),
+        dismissText: this.hass.localize("ui.common.cancel"),
+        destructive: true,
       }))
     ) {
       return;

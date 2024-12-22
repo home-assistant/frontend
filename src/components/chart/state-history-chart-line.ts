@@ -1,5 +1,6 @@
 import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
-import { html, LitElement, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
+import { html, LitElement } from "lit";
 import { property, query, state } from "lit/decorators";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -9,13 +10,11 @@ import {
   numberFormatToLocale,
   getNumberFormatOptions,
 } from "../../common/number/format_number";
-import { LineChartEntity, LineChartState } from "../../data/history";
-import { HomeAssistant } from "../../types";
-import {
-  ChartResizeOptions,
-  HaChartBase,
-  MIN_TIME_BETWEEN_UPDATES,
-} from "./ha-chart-base";
+import type { LineChartEntity, LineChartState } from "../../data/history";
+import type { HomeAssistant } from "../../types";
+import type { ChartResizeOptions, HaChartBase } from "./ha-chart-base";
+import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
+import { clickIsTouch } from "./click_is_touch";
 
 const safeParseFloat = (value) => {
   const parsed = parseFloat(value);
@@ -33,25 +32,28 @@ export class StateHistoryChartLine extends LitElement {
 
   @property() public identifier?: string;
 
-  @property({ type: Boolean }) public showNames = true;
+  @property({ attribute: "show-names", type: Boolean })
+  public showNames = true;
 
-  @property({ type: Boolean }) public clickForMoreInfo = true;
+  @property({ attribute: "click-for-more-info", type: Boolean })
+  public clickForMoreInfo = true;
 
   @property({ attribute: false }) public startTime!: Date;
 
   @property({ attribute: false }) public endTime!: Date;
 
-  @property({ type: Number }) public paddingYAxis = 0;
+  @property({ attribute: false, type: Number }) public paddingYAxis = 0;
 
-  @property({ type: Number }) public chartIndex?;
+  @property({ attribute: false, type: Number }) public chartIndex?;
 
-  @property({ type: Boolean }) public logarithmicScale = false;
+  @property({ attribute: "logarithmic-scale", type: Boolean })
+  public logarithmicScale = false;
 
-  @property({ type: Number }) public minYAxis?: number;
+  @property({ attribute: false, type: Number }) public minYAxis?: number;
 
-  @property({ type: Number }) public maxYAxis?: number;
+  @property({ attribute: false, type: Number }) public maxYAxis?: number;
 
-  @property({ type: Boolean }) public fitYData = false;
+  @property({ attribute: "fit-y-data", type: Boolean }) public fitYData = false;
 
   @state() private _chartData?: ChartData<"line">;
 
@@ -97,7 +99,6 @@ export class StateHistoryChartLine extends LitElement {
     ) {
       this._chartOptions = {
         parsing: false,
-        animation: false,
         interaction: {
           mode: "nearest",
           axis: "xy",
@@ -112,7 +113,7 @@ export class StateHistoryChartLine extends LitElement {
               },
             },
             min: this.startTime,
-            suggestedMax: this.endTime,
+            max: this.endTime,
             ticks: {
               maxRotation: 0,
               sampleSize: 5,
@@ -220,12 +221,7 @@ export class StateHistoryChartLine extends LitElement {
         // @ts-expect-error
         locale: numberFormatToLocale(this.hass.locale),
         onClick: (e: any) => {
-          if (
-            !this.clickForMoreInfo ||
-            !(e.native instanceof MouseEvent) ||
-            (e.native instanceof PointerEvent &&
-              e.native.pointerType !== "mouse")
-          ) {
+          if (!this.clickForMoreInfo || clickIsTouch(e)) {
             return;
           }
 

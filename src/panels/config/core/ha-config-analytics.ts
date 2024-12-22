@@ -1,20 +1,14 @@
 import "@material/mwc-button/mwc-button";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-analytics";
 import "../../../components/ha-card";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-settings-row";
+import type { Analytics } from "../../../data/analytics";
 import {
-  Analytics,
   getAnalyticsDetails,
   setAnalyticsPreferences,
 } from "../../../data/analytics";
@@ -59,7 +53,7 @@ class ConfigAnalytics extends LitElement {
       </ha-card>
       <div class="footer">
         <a
-          .href=${documentationUrl(this.hass, "/integrations/analytics/")}
+          href=${documentationUrl(this.hass, "/integrations/analytics/")}
           target="_blank"
           rel="noreferrer"
         >

@@ -1,11 +1,14 @@
-import { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { until } from "lit/directives/until";
-import { DEFAULT_DOMAIN_ICON, FIXED_DOMAIN_ICONS } from "../common/const";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
-import { entityIcon } from "../data/icons";
-import { HomeAssistant } from "../types";
+import {
+  DEFAULT_DOMAIN_ICON,
+  entityIcon,
+  FALLBACK_DOMAIN_ICONS,
+} from "../data/icons";
+import type { HomeAssistant } from "../types";
 import "./ha-icon";
 import "./ha-svg-icon";
 
@@ -49,7 +52,7 @@ export class HaStateIcon extends LitElement {
 
     return html`
       <ha-svg-icon
-        .path=${FIXED_DOMAIN_ICONS[domain] || DEFAULT_DOMAIN_ICON}
+        .path=${FALLBACK_DOMAIN_ICONS[domain] || DEFAULT_DOMAIN_ICON}
       ></ha-svg-icon>
     `;
   }

@@ -8,7 +8,7 @@ import {
   mdiThermostatAuto,
   mdiWaterPercent,
 } from "@mdi/js";
-import {
+import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
@@ -28,13 +28,14 @@ export type HvacMode = (typeof HVAC_MODES)[number];
 export const CLIMATE_PRESET_NONE = "none";
 
 export type HvacAction =
-  | "off"
-  | "preheating"
-  | "heating"
   | "cooling"
+  | "defrosting"
   | "drying"
+  | "fan"
+  | "heating"
   | "idle"
-  | "fan";
+  | "off"
+  | "preheating";
 
 export type ClimateEntity = HassEntityBase & {
   attributes: HassEntityAttributeBase & {
@@ -60,6 +61,8 @@ export type ClimateEntity = HassEntityBase & {
     preset_modes?: string[];
     swing_mode?: string;
     swing_modes?: string[];
+    swing_horizontal_mode?: string;
+    swing_horizontal_modes?: string[];
     aux_heat?: "on" | "off";
   };
 };
@@ -74,6 +77,7 @@ export const enum ClimateEntityFeature {
   AUX_HEAT = 64,
   TURN_OFF = 128,
   TURN_ON = 256,
+  SWING_HORIZONTAL_MODE = 512,
 }
 
 const hvacModeOrdering = HVAC_MODES.reduce(
@@ -89,12 +93,13 @@ export const compareClimateHvacModes = (mode1: HvacMode, mode2: HvacMode) =>
 
 export const CLIMATE_HVAC_ACTION_TO_MODE: Record<HvacAction, HvacMode> = {
   cooling: "cool",
+  defrosting: "heat",
   drying: "dry",
   fan: "fan_only",
-  preheating: "heat",
   heating: "heat",
   idle: "off",
   off: "off",
+  preheating: "heat",
 };
 
 export const CLIMATE_HVAC_MODE_ICONS: Record<HvacMode, string> = {

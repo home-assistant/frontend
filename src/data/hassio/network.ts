@@ -1,10 +1,11 @@
 import { atLeastVersion } from "../../common/config/version";
-import { HomeAssistant } from "../../types";
-import { hassioApiResultExtractor, HassioResponse } from "./common";
+import type { HomeAssistant } from "../../types";
+import type { HassioResponse } from "./common";
+import { hassioApiResultExtractor } from "./common";
 
 interface IpConfiguration {
   address: string[];
-  gateway: string;
+  gateway: string | null;
   method: "disabled" | "static" | "auto";
   nameservers: string[];
 }
@@ -17,7 +18,7 @@ export interface NetworkInterface {
   ipv4?: Partial<IpConfiguration>;
   ipv6?: Partial<IpConfiguration>;
   type: "ethernet" | "wireless" | "vlan";
-  wifi?: Partial<WifiConfiguration>;
+  wifi?: Partial<WifiConfiguration> | null;
 }
 
 interface DockerNetwork {
@@ -27,7 +28,7 @@ interface DockerNetwork {
   interface: string;
 }
 
-interface AccessPoint {
+export interface AccessPoint {
   mode: "infrastructure" | "mesh" | "adhoc" | "ap";
   ssid: string;
   mac: string;
@@ -113,4 +114,69 @@ export const accesspointScan = async (
       `hassio/network/interface/${network_interface}/accesspoints`
     )
   );
+};
+
+export const parseAddress = (address: string) => {
+  const isIPv6 = address.includes(":");
+  const [ip, cidr] = address.includes("/")
+    ? address.split("/")
+    : [address, isIPv6 ? "64" : "24"];
+  return { ip, mask: cidrToNetmask(cidr, isIPv6) };
+};
+
+export const formatAddress = (ip: string, mask: string) =>
+  `${ip}/${netmaskToCidr(mask)}`;
+
+// Helper functions
+export const cidrToNetmask = (
+  cidr: string,
+  isIPv6: boolean = false
+): string => {
+  const bits = parseInt(cidr, 10);
+  if (isIPv6) {
+    const fullMask = "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff";
+    const numGroups = Math.floor(bits / 16);
+    const remainingBits = bits % 16;
+    const lastGroup = remainingBits
+      ? parseInt(
+          "1".repeat(remainingBits) + "0".repeat(16 - remainingBits),
+          2
+        ).toString(16)
+      : "";
+    return fullMask
+      .split(":")
+      .slice(0, numGroups)
+      .concat(lastGroup)
+      .concat(Array(8 - numGroups - (lastGroup ? 1 : 0)).fill("0"))
+      .join(":");
+  }
+  /* eslint-disable no-bitwise */
+  const mask = ~(2 ** (32 - bits) - 1);
+  return [
+    (mask >>> 24) & 255,
+    (mask >>> 16) & 255,
+    (mask >>> 8) & 255,
+    mask & 255,
+  ].join(".");
+  /* eslint-enable no-bitwise */
+};
+
+export const netmaskToCidr = (netmask: string): number => {
+  if (netmask.includes(":")) {
+    // IPv6
+    return netmask
+      .split(":")
+      .map((group) =>
+        group ? (parseInt(group, 16).toString(2).match(/1/g) || []).length : 0
+      )
+      .reduce((sum, val) => sum + val, 0);
+  }
+  // IPv4
+  return netmask
+    .split(".")
+    .reduce(
+      (count, octet) =>
+        count + (parseInt(octet, 10).toString(2).match(/1/g) || []).length,
+      0
+    );
 };

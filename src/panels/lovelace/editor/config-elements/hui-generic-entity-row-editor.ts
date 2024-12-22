@@ -12,7 +12,7 @@ import type { EntitiesCardEntityConfig } from "../../cards/types";
 import type { LovelaceRowEditor } from "../../types";
 import { entitiesConfigStruct } from "../structs/entities-struct";
 
-const SecondaryInfoValues = {
+const SECONDARY_INFO_VALUES = {
   none: {},
   "entity-id": {},
   "last-changed": {},
@@ -21,7 +21,7 @@ const SecondaryInfoValues = {
   position: { domains: ["cover"] },
   "tilt-position": { domains: ["cover"] },
   brightness: { domains: ["light"] },
-} as const;
+};
 
 @customElement("hui-generic-entity-row-editor")
 export class HuiGenericEntityRowEditor
@@ -63,12 +63,12 @@ export class HuiGenericEntityRowEditor
         selector: {
           select: {
             options: (
-              Object.keys(SecondaryInfoValues).filter(
+              Object.keys(SECONDARY_INFO_VALUES).filter(
                 (info) =>
-                  !("domains" in SecondaryInfoValues[info]) ||
-                  ("domains" in SecondaryInfoValues[info] &&
-                    SecondaryInfoValues[info].domains!.includes(domain))
-              ) as Array<keyof typeof SecondaryInfoValues>
+                  !("domains" in SECONDARY_INFO_VALUES[info]) ||
+                  ("domains" in SECONDARY_INFO_VALUES[info] &&
+                    SECONDARY_INFO_VALUES[info].domains!.includes(domain))
+              ) as Array<keyof typeof SECONDARY_INFO_VALUES>
             ).map((info) => ({
               value: info,
               label: localize(

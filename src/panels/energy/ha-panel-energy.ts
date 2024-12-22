@@ -1,34 +1,30 @@
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { mdiPencil, mdiDownload } from "@mdi/js";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-menu-button";
 import "../../components/ha-list-item";
 import "../../components/ha-top-app-bar-fixed";
-import { LovelaceConfig } from "../../data/lovelace/config/types";
+import type { LovelaceConfig } from "../../data/lovelace/config/types";
 import { haStyle } from "../../resources/styles";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import "../lovelace/components/hui-energy-period-selector";
-import { Lovelace } from "../lovelace/types";
+import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
+import "../lovelace/views/hui-view-container";
 import { navigate } from "../../common/navigate";
-import {
-  getEnergyDataCollection,
-  getEnergyGasUnit,
-  getEnergyWaterUnit,
+import type {
   GridSourceTypeEnergyPreference,
   SolarSourceTypeEnergyPreference,
   BatterySourceTypeEnergyPreference,
   GasSourceTypeEnergyPreference,
   WaterSourceTypeEnergyPreference,
   DeviceConsumptionEnergyPreference,
+} from "../../data/energy";
+import {
+  getEnergyDataCollection,
+  getEnergyGasUnit,
+  getEnergyWaterUnit,
 } from "../../data/energy";
 import { fileDownload } from "../../util/file_download";
 
@@ -85,7 +81,7 @@ class PanelEnergy extends LitElement {
 
           <hui-energy-period-selector
             .hass=${this.hass}
-            collectionKey="energy_dashboard"
+            collection-key="energy_dashboard"
           >
             ${this.hass.user?.is_admin
               ? html` <ha-list-item
@@ -108,14 +104,18 @@ class PanelEnergy extends LitElement {
           </hui-energy-period-selector>
         </div>
       </div>
-      <div id="view" @reload-energy-panel=${this._reloadView}>
+
+      <hui-view-container
+        .hass=${this.hass}
+        @reload-energy-panel=${this._reloadView}
+      >
         <hui-view
           .hass=${this.hass}
           .narrow=${this.narrow}
           .lovelace=${this._lovelace}
           .index=${this._viewIndex}
         ></hui-view>
-      </div>
+      </hui-view-container>
     `;
   }
 
@@ -131,6 +131,7 @@ class PanelEnergy extends LitElement {
       saveConfig: async () => undefined,
       deleteConfig: async () => undefined,
       setEditMode: () => undefined,
+      showToast: () => undefined,
     };
   }
 
@@ -187,9 +188,7 @@ class PanelEnergy extends LitElement {
       row.push(type);
       row.push(unit.normalize("NFKD"));
       times.forEach((t) => {
-        if (stats[stat][n].start > t) {
-          row.push("");
-        } else if (n < stats[stat].length && stats[stat][n].start === t) {
+        if (n < stats[stat].length && stats[stat][n].start === t) {
           row.push((stats[stat][n].change ?? "").toString());
           n++;
         } else {
@@ -205,32 +204,43 @@ class PanelEnergy extends LitElement {
       type: string,
       statIds: string[],
       unit: string,
-      costType?: string
+      costType?: string,
+      costStatIds?: string[]
     ) {
       if (statIds.length) {
         statIds.forEach((stat) => processStat(stat, type, unit));
-        if (costType) {
-          statIds.forEach((stat) => {
-            const costStat = energyData.state.info.cost_sensors[stat];
-            if (energyData.state.info.cost_sensors[stat]) {
-              processStat(costStat, costType, currency);
-            }
-          });
+        if (costType && costStatIds) {
+          costStatIds.forEach((stat) => processStat(stat, costType, currency));
         }
       }
     };
 
     const grid_consumptions: string[] = [];
     const grid_productions: string[] = [];
+    const grid_consumptions_cost: string[] = [];
+    const grid_productions_cost: string[] = [];
     energy_sources
       .filter((s) => s.type === "grid")
       .forEach((source) => {
         source = source as GridSourceTypeEnergyPreference;
         source.flow_from.forEach((flowFrom) => {
-          grid_consumptions.push(flowFrom.stat_energy_from);
+          const statId = flowFrom.stat_energy_from;
+          grid_consumptions.push(statId);
+          const costId =
+            flowFrom.stat_cost || energyData.state.info.cost_sensors[statId];
+          if (costId) {
+            grid_consumptions_cost.push(costId);
+          }
         });
         source.flow_to.forEach((flowTo) => {
-          grid_productions.push(flowTo.stat_energy_to);
+          const statId = flowTo.stat_energy_to;
+          grid_productions.push(statId);
+          const costId =
+            flowTo.stat_compensation ||
+            energyData.state.info.cost_sensors[statId];
+          if (costId) {
+            grid_productions_cost.push(costId);
+          }
         });
       });
 
@@ -238,13 +248,15 @@ class PanelEnergy extends LitElement {
       "grid_consumption",
       grid_consumptions,
       electricUnit,
-      "grid_consumption_cost"
+      "grid_consumption_cost",
+      grid_consumptions_cost
     );
     printCategory(
       "grid_return",
       grid_productions,
       electricUnit,
-      "grid_return_compensation"
+      "grid_return_compensation",
+      grid_productions_cost
     );
 
     const battery_ins: string[] = [];
@@ -271,33 +283,49 @@ class PanelEnergy extends LitElement {
     printCategory("solar_production", solar_productions, electricUnit);
 
     const gas_consumptions: string[] = [];
+    const gas_consumptions_cost: string[] = [];
     energy_sources
       .filter((s) => s.type === "gas")
       .forEach((source) => {
         source = source as GasSourceTypeEnergyPreference;
-        gas_consumptions.push(source.stat_energy_from);
+        const statId = source.stat_energy_from;
+        gas_consumptions.push(statId);
+        const costId =
+          source.stat_cost || energyData.state.info.cost_sensors[statId];
+        if (costId) {
+          gas_consumptions_cost.push(costId);
+        }
       });
 
     printCategory(
       "gas_consumption",
       gas_consumptions,
       gasUnit,
-      "gas_consumption_cost"
+      "gas_consumption_cost",
+      gas_consumptions_cost
     );
 
     const water_consumptions: string[] = [];
+    const water_consumptions_cost: string[] = [];
     energy_sources
       .filter((s) => s.type === "water")
       .forEach((source) => {
         source = source as WaterSourceTypeEnergyPreference;
-        water_consumptions.push(source.stat_energy_from);
+        const statId = source.stat_energy_from;
+        water_consumptions.push(statId);
+        const costId =
+          source.stat_cost || energyData.state.info.cost_sensors[statId];
+        if (costId) {
+          water_consumptions_cost.push(costId);
+        }
       });
 
     printCategory(
       "water_consumption",
       water_consumptions,
       waterUnit,
-      "water_consumption_cost"
+      "water_consumption_cost",
+      water_consumptions_cost
     );
 
     const devices: string[] = [];
@@ -329,7 +357,7 @@ class PanelEnergy extends LitElement {
       haStyle,
       css`
         :host hui-energy-period-selector {
-          width: 100%;
+          flex-grow: 1;
           padding-left: 32px;
           padding-inline-start: 32px;
           padding-inline-end: initial;
@@ -390,23 +418,19 @@ class PanelEnergy extends LitElement {
           line-height: 20px;
           flex-grow: 1;
         }
-        #view {
+        hui-view-container {
           position: relative;
           display: flex;
-          padding-top: calc(var(--header-height) + env(safe-area-inset-top));
           min-height: 100vh;
           box-sizing: border-box;
+          padding-top: calc(var(--header-height) + env(safe-area-inset-top));
           padding-left: env(safe-area-inset-left);
           padding-right: env(safe-area-inset-right);
           padding-inline-start: env(safe-area-inset-left);
           padding-inline-end: env(safe-area-inset-right);
           padding-bottom: env(safe-area-inset-bottom);
-          background: var(
-            --lovelace-background,
-            var(--primary-background-color)
-          );
         }
-        #view > * {
+        hui-view {
           flex: 1 1 100%;
           max-width: 100%;
         }

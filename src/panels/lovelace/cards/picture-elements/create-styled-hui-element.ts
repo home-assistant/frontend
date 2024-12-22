@@ -1,5 +1,8 @@
 import { createHuiElement } from "../../create-element/create-hui-element";
-import { LovelaceElement, LovelaceElementConfig } from "../../elements/types";
+import type {
+  LovelaceElement,
+  LovelaceElementConfig,
+} from "../../elements/types";
 
 export function createStyledHuiElement(
   elementConfig: LovelaceElementConfig
@@ -12,7 +15,7 @@ export function createStyledHuiElement(
 
   if (elementConfig.style) {
     Object.keys(elementConfig.style).forEach((prop) => {
-      element.style.setProperty(prop, elementConfig.style[prop]);
+      element.style.setProperty(prop, elementConfig.style![prop]);
     });
   }
 

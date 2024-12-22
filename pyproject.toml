@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools~=68.0", "wheel~=0.40.0"]
+requires = ["setuptools~=75.1"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name         = "home-assistant-frontend"
-version      = "20240603.0"
+version      = "20241127.0"
 license      = {text = "Apache-2.0"}
 description  = "The Home Assistant frontend"
 readme       = "README.md"

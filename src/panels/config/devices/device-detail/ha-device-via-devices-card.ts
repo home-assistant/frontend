@@ -1,14 +1,13 @@
 import "@material/mwc-list/mwc-list-item";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { caseInsensitiveStringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-next";
-import {
-  computeDeviceName,
-  DeviceRegistryEntry,
-} from "../../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../../data/device_registry";
+import { computeDeviceName } from "../../../../data/device_registry";
 import type { HomeAssistant } from "../../../../types";
 
 const MAX_VISIBLE_VIA_DEVICES = 10;
@@ -17,7 +16,7 @@ const MAX_VISIBLE_VIA_DEVICES = 10;
 export class HaDeviceViaDevicesCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public deviceId!: string;
+  @property({ attribute: false }) public deviceId!: string;
 
   @state() public _showAll = false;
 

@@ -1,28 +1,23 @@
 import "@material/mwc-button/mwc-button";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isUnavailableState } from "../../../data/entity";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import { EntityConfig, LovelaceRow } from "./types";
+import type { ConfirmableRowConfig, LovelaceRow } from "./types";
 import { callProtectedLockService } from "../../../data/lock";
+import { confirmAction } from "../common/confirm-action";
 
 @customElement("hui-lock-entity-row")
 class HuiLockEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @state() private _config?: EntityConfig;
+  @state() private _config?: ConfirmableRowConfig;
 
-  public setConfig(config: EntityConfig): void {
+  public setConfig(config: ConfirmableRowConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -73,15 +68,21 @@ class HuiLockEntityRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  private _callService(ev): void {
+  private async _callService(ev): Promise<void> {
     ev.stopPropagation();
     const stateObj = this.hass!.states[this._config!.entity];
-    callProtectedLockService(
-      this,
-      this.hass!,
-      stateObj,
-      stateObj.state === "locked" ? "unlock" : "lock"
-    );
+    const action = stateObj.state === "locked" ? "unlock" : "lock";
+    if (
+      !this._config?.confirmation ||
+      (await confirmAction(
+        this,
+        this.hass!,
+        this._config.confirmation,
+        this.hass!.localize(`ui.card.lock.${action}`)
+      ))
+    ) {
+      callProtectedLockService(this, this.hass!, stateObj, action);
+    }
   }
 }
 

@@ -1,12 +1,6 @@
 import "@material/mwc-button/mwc-button";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-alert";
@@ -15,11 +9,8 @@ import "../../../components/ha-checkbox";
 import "../../../components/ha-network";
 import "../../../components/ha-settings-row";
 import { fetchNetworkInfo } from "../../../data/hassio/network";
-import {
-  getNetworkConfig,
-  NetworkConfig,
-  setNetworkConfig,
-} from "../../../data/network";
+import type { NetworkConfig } from "../../../data/network";
+import { getNetworkConfig, setNetworkConfig } from "../../../data/network";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 

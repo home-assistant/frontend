@@ -1,17 +1,11 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/entity/state-info";
-import { computeDisplayTimer, timerTimeRemaining } from "../data/timer";
-import { HomeAssistant } from "../types";
 import { haStyle } from "../resources/styles";
+import "../state-display/ha-timer-remaining-time";
+import type { HomeAssistant } from "../types";
 
 @customElement("state-card-timer")
 class StateCardTimer extends LitElement {
@@ -19,11 +13,7 @@ class StateCardTimer extends LitElement {
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
-  @property({ type: Boolean }) public inDialog = false;
-
-  @property({ type: Number }) public timeRemaining?: number;
-
-  private _updateRemaining: any;
+  @property({ attribute: "in-dialog", type: Boolean }) public inDialog = false;
 
   protected render(): TemplateResult {
     return html`
@@ -34,54 +24,13 @@ class StateCardTimer extends LitElement {
           .inDialog=${this.inDialog}
         ></state-info>
         <div class="state">
-          ${this._displayState(this.timeRemaining, this.stateObj)}
+          <ha-timer-remaining-time
+            .hass=${this.hass}
+            .stateObj=${this.stateObj}
+          ></ha-timer-remaining-time>
         </div>
       </div>
     `;
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-    this._startInterval(this.stateObj);
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    this._clearInterval();
-  }
-
-  protected willUpdate(changedProp: PropertyValues): void {
-    super.willUpdate(changedProp);
-    if (changedProp.has("stateObj")) {
-      this._startInterval(this.stateObj);
-    }
-  }
-
-  private _clearInterval() {
-    if (this._updateRemaining) {
-      clearInterval(this._updateRemaining);
-      this._updateRemaining = null;
-    }
-  }
-
-  private _startInterval(stateObj) {
-    this._clearInterval();
-    this._calculateRemaining(stateObj);
-
-    if (stateObj.state === "active") {
-      this._updateRemaining = setInterval(
-        () => this._calculateRemaining(this.stateObj),
-        1000
-      );
-    }
-  }
-
-  private _calculateRemaining(stateObj) {
-    this.timeRemaining = timerTimeRemaining(stateObj);
-  }
-
-  private _displayState(timeRemaining, stateObj) {
-    return computeDisplayTimer(this.hass, stateObj, timeRemaining);
   }
 
   static get styles(): CSSResultGroup {
@@ -90,7 +39,6 @@ class StateCardTimer extends LitElement {
       css`
         .state {
           color: var(--primary-text-color);
-
           margin-left: 16px;
           margin-inline-start: 16px;
           margin-inline-end: initial;

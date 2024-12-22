@@ -1,6 +1,7 @@
 import "@material/mwc-button";
 import { mdiContentCopy, mdiOpenInNew } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
@@ -9,10 +10,10 @@ import "../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../components/ha-textfield";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import { HomeAssistant } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
 import { showToast } from "../../../../util/toast";
-import { WebhookDialogParams } from "./show-dialog-manage-cloudhook";
+import type { WebhookDialogParams } from "./show-dialog-manage-cloudhook";
 
 export class DialogManageCloudhook extends LitElement {
   protected hass?: HomeAssistant;
@@ -88,7 +89,7 @@ export class DialogManageCloudhook extends LitElement {
             .value=${cloudhook.cloudhook_url}
             iconTrailing
             readOnly
-            @click=${this.focusInput}
+            @click=${this._focusInput}
           >
             <ha-icon-button
               @click=${this._copyUrl}
@@ -136,7 +137,7 @@ export class DialogManageCloudhook extends LitElement {
     }
   }
 
-  private focusInput(ev) {
+  private _focusInput(ev) {
     const inputElement = ev.currentTarget as HaTextField;
     inputElement.select();
   }
