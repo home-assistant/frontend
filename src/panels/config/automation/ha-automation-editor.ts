@@ -53,8 +53,8 @@ import { substituteBlueprint } from "../../../data/blueprint";
 import { validateConfig } from "../../../data/config";
 import { UNAVAILABLE } from "../../../data/entity";
 import {
-  fetchEntityRegistry,
   type EntityRegistryEntry,
+  updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import {
   showAlertDialog,
@@ -67,7 +67,10 @@ import type { Entries, HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import "../ha-config-section";
 import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-automation-mode";
-import { showAutomationRenameDialog } from "./automation-rename-dialog/show-dialog-automation-rename";
+import {
+  type EntityRegistryUpdate,
+  showAutomationRenameDialog,
+} from "./automation-rename-dialog/show-dialog-automation-rename";
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
@@ -137,12 +140,45 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
   })
   private _registryEntry?: EntityRegistryEntry;
 
+  @state() private _saving = false;
+
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  _entityRegistry!: EntityRegistryEntry[];
+
   private _configSubscriptions: Record<
     string,
     (config?: AutomationConfig) => void
   > = {};
 
   private _configSubscriptionsId = 1;
+
+  private _entityRegistryUpdate?: EntityRegistryUpdate;
+
+  private _newAutomationId?: string;
+
+  private _entityRegCreated?: (
+    value: PromiseLike<EntityRegistryEntry> | EntityRegistryEntry
+  ) => void;
+
+  protected willUpdate(changedProps) {
+    super.willUpdate(changedProps);
+
+    if (
+      this._entityRegCreated &&
+      this._newAutomationId &&
+      changedProps.has("entityRegistry")
+    ) {
+      const automation = this._entityRegistry.find(
+        (entity: EntityRegistryEntry) =>
+          entity.unique_id === this._newAutomationId
+      );
+      if (automation) {
+        this._entityRegCreated(automation);
+        this._entityRegCreated = undefined;
+      }
+    }
+  }
 
   protected render(): TemplateResult | typeof nothing {
     if (!this._config) {
@@ -456,8 +492,11 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
         </div>
         <ha-fab
           slot="fab"
-          class=${classMap({ dirty: !this._readOnly && this._dirty })}
+          class=${classMap({
+            dirty: !this._readOnly && this._dirty,
+          })}
           .label=${this.hass.localize("ui.panel.config.automation.editor.save")}
+          .disabled=${this._saving}
           extended
           @click=${this._saveAutomation}
         >
@@ -577,8 +616,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       this._config = normalizeAutomationConfig(config);
       this._checkValidation();
     } catch (err: any) {
-      const entityRegistry = await fetchEntityRegistry(this.hass.connection);
-      const entity = entityRegistry.find(
+      const entity = this._entityRegistry.find(
         (ent) =>
           ent.platform === "automation" && ent.unique_id === this.automationId
       );
@@ -841,13 +879,16 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       showAutomationRenameDialog(this, {
         config: this._config!,
         domain: "automation",
-        updateConfig: (config) => {
+        updateConfig: (config, entityRegistryUpdate) => {
           this._config = config;
+          this._entityRegistryUpdate = entityRegistryUpdate;
           this._dirty = true;
           this.requestUpdate();
           resolve(true);
         },
         onClose: () => resolve(false),
+        entityRegistryUpdate: this._entityRegistryUpdate,
+        entityRegistryEntry: this._registryEntry,
       });
     });
   }
@@ -883,21 +924,49 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       }
     }
 
+    this._saving = true;
     this._validationErrors = undefined;
+
     try {
       await saveAutomationConfig(this.hass, id, this._config!);
+
+      if (this._entityRegistryUpdate !== undefined) {
+        let entityId = this._entityId;
+
+        // wait for automation to appear in entity registry when creating a new automation
+        if (!entityId) {
+          this._newAutomationId = id;
+          const automation = await new Promise<EntityRegistryEntry>(
+            (resolve) => {
+              this._entityRegCreated = resolve;
+            }
+          );
+          entityId = automation.entity_id;
+        }
+
+        if (entityId) {
+          await updateEntityRegistryEntry(this.hass, entityId, {
+            categories: {
+              automation: this._entityRegistryUpdate.category || null,
+            },
+            labels: this._entityRegistryUpdate.labels || [],
+          });
+        }
+      }
+
+      this._dirty = false;
+
+      if (!this.automationId) {
+        navigate(`/config/automation/edit/${id}`, { replace: true });
+      }
     } catch (errors: any) {
       this._errors = errors.body.message || errors.error || errors.body;
       showToast(this, {
         message: errors.body.message || errors.error || errors.body,
       });
       throw errors;
-    }
-
-    this._dirty = false;
-
-    if (!this.automationId) {
-      navigate(`/config/automation/edit/${id}`, { replace: true });
+    } finally {
+      this._saving = false;
     }
   }
 
