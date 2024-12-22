@@ -2843,7 +2843,9 @@
               "header": "Expose entities",
               "expose_to": "to {assistants}",
               "expose_entities": "Expose {count} {count, plural,\n  one {entity}\n  other {entities}\n}"
-            }
+            },
+            "expose_new_entities": "Expose new entities",
+            "expose_new_entities_info": "Should new entities be exposed? Exposes supported devices that are not classified as security devices."
           },
           "satellite_wizard": {
             "skip": "Skip",
