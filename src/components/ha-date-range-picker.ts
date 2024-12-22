@@ -349,7 +349,6 @@ export class HaDateRangePicker extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-
       ha-icon-button {
         direction: var(--direction);
       }
@@ -376,10 +375,10 @@ export class HaDateRangePicker extends LitElement {
         width: 340px;
       }
       @media only screen and (max-width: 460px) {
-      ha-textarea {
-        width: 100%
+        ha-textarea {
+          width: 100%;
+        }
       }
-
       @media only screen and (max-width: 800px) {
         .date-range-ranges {
           border-right: none;
@@ -387,10 +386,10 @@ export class HaDateRangePicker extends LitElement {
         }
       }
 
-      @media only screen and (max-height: 900px) and (max-width: 800px) {
+      @media only screen and (max-height: 920px) and (max-width: 800px) {
         .date-range-ranges {
           overflow: scroll;
-          max-height: 270px;
+          max-height: calc(70vh - 350px);
         }
       }
     `;
