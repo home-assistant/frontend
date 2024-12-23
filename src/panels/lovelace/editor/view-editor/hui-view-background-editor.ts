@@ -59,6 +59,7 @@ export class HuiViewBackgroundEditor extends LitElement {
                     translation_key:
                       "ui.panel.lovelace.editor.edit_view.background.size",
                     options: ["auto", "cover", "contain"],
+                    mode: "dropdown",
                   },
                 },
               },
@@ -79,6 +80,7 @@ export class HuiViewBackgroundEditor extends LitElement {
                       "bottom center",
                       "bottom right",
                     ],
+                    mode: "dropdown",
                   },
                 },
               },
@@ -89,6 +91,7 @@ export class HuiViewBackgroundEditor extends LitElement {
                     translation_key:
                       "ui.panel.lovelace.editor.edit_view.background.repeat",
                     options: ["repeat", "no-repeat"],
+                    mode: "dropdown"
                   },
                 },
               },
