@@ -91,7 +91,7 @@ export class HuiViewBackgroundEditor extends LitElement {
                     translation_key:
                       "ui.panel.lovelace.editor.edit_view.background.repeat",
                     options: ["repeat", "no-repeat"],
-                    mode: "dropdown"
+                    mode: "dropdown",
                   },
                 },
               },
