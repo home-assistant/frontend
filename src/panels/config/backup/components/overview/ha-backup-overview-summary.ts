@@ -70,16 +70,16 @@ class HaBackupOverviewBackups extends LitElement {
     if (this.fetching) {
       return html`
         <ha-backup-summary-card heading="Loading backups" status="loading">
-          <ul class="list">
-            <li class="item">
+          <ha-md-list>
+            <ha-md-list-item>
               <ha-svg-icon slot="start" .path=${mdiBackupRestore}></ha-svg-icon>
-              <span class="skeleton"></span>
-            </li>
-            <li class="item">
+              <span slot="headline" class="skeleton"></span>
+            </ha-md-list-item>
+            <ha-md-list-item>
               <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
-              <span class="skeleton"></span>
-            </li>
-          </ul>
+              <span slot="headline" class="skeleton"></span>
+            </ha-md-list-item>
+          </ha-md-list>
         </ha-backup-summary-card>
       `;
     }
@@ -117,16 +117,16 @@ class HaBackupOverviewBackups extends LitElement {
           heading=${`Last automatic backup failed`}
           status="error"
         >
-          <ul class="list">
-            <li class="item">
+          <ha-md-list>
+            <ha-md-list-item>
               <ha-svg-icon slot="start" .path=${mdiBackupRestore}></ha-svg-icon>
-              <span>${lastAttemptDescription}</span>
-            </li>
-            <li class="item">
+              <span slot="headline">${lastAttemptDescription}</span>
+            </ha-md-list-item>
+            <ha-md-list-item>
               <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
-              <span>${lastBackupDescription}</span>
-            </li>
-          </ul>
+              <span slot="headline">${lastBackupDescription}</span>
+            </ha-md-list-item>
+          </ha-md-list>
         </ha-backup-summary-card>
       `;
     }
@@ -148,31 +148,31 @@ class HaBackupOverviewBackups extends LitElement {
           heading=${`No backup for ${numberOfDays} days`}
           status="warning"
         >
-          <ul class="list">
-            <li class="item">
+          <ha-md-list>
+            <ha-md-list-item>
               <ha-svg-icon slot="start" .path=${mdiBackupRestore}></ha-svg-icon>
-              <span>${lastBackupDescription}</span>
-            </li>
-            <li class="item">
+              <span slot="headline">${lastBackupDescription}</span>
+            </ha-md-list-item>
+            <ha-md-list-item>
               <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
-              <span>${nextBackupDescription}</span>
-            </li>
-          </ul>
+              <span slot="headline">${nextBackupDescription}</span>
+            </ha-md-list-item>
+          </ha-md-list>
         </ha-backup-summary-card>
       `;
     }
     return html`
       <ha-backup-summary-card heading=${`Backed up`} status="success">
-        <ul class="list">
-          <li class="item">
+        <ha-md-list>
+          <ha-md-list-item>
             <ha-svg-icon slot="start" .path=${mdiBackupRestore}></ha-svg-icon>
-            <span>${lastBackupDescription}</span>
-          </li>
-          <li class="item">
+            <span slot="headline">${lastBackupDescription}</span>
+          </ha-md-list-item>
+          <ha-md-list-item>
             <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
-            <span>${nextBackupDescription}</span>
-          </li>
-        </ul>
+            <span slot="headline">${nextBackupDescription}</span>
+          </ha-md-list-item>
+        </ha-md-list>
       </ha-backup-summary-card>
     `;
   }
@@ -190,25 +190,6 @@ class HaBackupOverviewBackups extends LitElement {
         p {
           margin: 0;
         }
-        .list {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-          padding: 8px 24px 20px 24px;
-          margin: 0;
-        }
-        .item {
-          display: flex;
-          flex-direction: row;
-          gap: 16px;
-          align-items: center;
-          color: var(--secondary-text-color);
-          font-size: 14px;
-          font-style: normal;
-          font-weight: 400;
-          line-height: 20px;
-          letter-spacing: 0.25px;
-        }
         ha-svg-icon {
           flex: none;
         }
@@ -216,6 +197,14 @@ class HaBackupOverviewBackups extends LitElement {
           display: flex;
           justify-content: flex-end;
           border-top: none;
+        }
+        ha-md-list {
+          background: none;
+        }
+        ha-md-list-item {
+          --md-list-item-top-space: 8px;
+          --md-list-item-bottom-space: 8px;
+          --md-list-item-one-line-container-height: 40x;
         }
         span.skeleton {
           position: relative;
