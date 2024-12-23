@@ -2685,7 +2685,8 @@
             "picker": {
               "headers": {
                 "url": "URL",
-                "type": "Type"
+                "type": "Type",
+                "delete": "Delete"
               },
               "no_resources": "No resources",
               "add_resource": "Add resource"
