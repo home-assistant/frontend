@@ -157,24 +157,19 @@ class HaBackupConfigData extends LitElement {
       <ha-md-list>
         <ha-md-list-item>
           <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
-          <span slot="headline">
-            ${this.forceHomeAssistant
-              ? "Home Assistant settings are always included"
-              : "Home Assistant settings"}
-          </span>
+          <span slot="headline"> Home Assistant settings </span>
           <span slot="supporting-text">
-            The bare minimum needed to restore your system.
+            ${this.forceHomeAssistant
+              ? "The bare minimum needed to restore the system. It is always included in automatic backup data."
+              : "The bare minimum needed to restore your system."}
           </span>
-          ${this.forceHomeAssistant
-            ? nothing
-            : html`
-                <ha-switch
-                  id="homeassistant"
-                  slot="end"
-                  @change=${this._switchChanged}
-                  .checked=${data.homeassistant}
-                ></ha-switch>
-              `}
+          <ha-switch
+            id="homeassistant"
+            slot="end"
+            @change=${this._switchChanged}
+            .checked=${data.homeassistant}
+            .disabled=${this.forceHomeAssistant}
+          ></ha-switch>
         </ha-md-list-item>
 
         <ha-md-list-item>
