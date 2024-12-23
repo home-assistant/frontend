@@ -51,7 +51,7 @@ class HaBackupConfigAgents extends LitElement {
 
   private _description(agentId: string) {
     if (agentId === CLOUD_AGENT) {
-      return "It stores one backup. The oldest backups are deleted.";
+      return "Note: It stores only one backup, regardless of your settings.";
     }
     if (isNetworkMountAgent(agentId)) {
       return "Network storage";
