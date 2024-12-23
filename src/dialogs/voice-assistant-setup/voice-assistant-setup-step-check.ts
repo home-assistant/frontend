@@ -12,7 +12,7 @@ import { documentationUrl } from "../../util/documentation-url";
 export class HaVoiceAssistantSetupStepCheck extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public assistEntityId?: string;
+  @property({ attribute: false }) public assistEntityId?: string;
 
   @state() private _status?: "success" | "timeout";
 

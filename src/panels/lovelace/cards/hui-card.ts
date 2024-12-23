@@ -87,7 +87,7 @@ export class HuiCard extends ReactiveElement {
     }
     if (this._element.getLayoutOptions) {
       // Disabled for now to avoid spamming the console, need to be re-enabled when hui-card performance are fixed
-      // eslint-disable-next-line no-console
+
       // console.warn(
       //   `This card (${this.config?.type}) is using "getLayoutOptions" and it is deprecated, contact the developer to suggest to use "getGridOptions" instead`
       // );

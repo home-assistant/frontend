@@ -63,28 +63,28 @@ export class StatisticsChart extends LitElement {
 
   @property({ attribute: false }) public endTime?: Date;
 
-  @property({ type: Array }) public statTypes: Array<StatisticType> = [
-    "sum",
-    "min",
-    "mean",
-    "max",
-  ];
+  @property({ attribute: false, type: Array })
+  public statTypes: Array<StatisticType> = ["sum", "min", "mean", "max"];
 
-  @property() public chartType: ChartType = "line";
+  @property({ attribute: false }) public chartType: ChartType = "line";
 
-  @property({ type: Number }) public minYAxis?: number;
+  @property({ attribute: false, type: Number }) public minYAxis?: number;
 
-  @property({ type: Number }) public maxYAxis?: number;
+  @property({ attribute: false, type: Number }) public maxYAxis?: number;
 
-  @property({ type: Boolean }) public fitYData = false;
+  @property({ attribute: "fit-y-data", type: Boolean }) public fitYData = false;
 
-  @property({ type: Boolean }) public hideLegend = false;
+  @property({ attribute: "hide-legend", type: Boolean }) public hideLegend =
+    false;
 
-  @property({ type: Boolean }) public logarithmicScale = false;
+  @property({ attribute: "logarithmic-scale", type: Boolean })
+  public logarithmicScale = false;
 
-  @property({ type: Boolean }) public isLoadingData = false;
+  @property({ attribute: "is-loading-data", type: Boolean })
+  public isLoadingData = false;
 
-  @property({ type: Boolean }) public clickForMoreInfo = true;
+  @property({ attribute: "click-for-more-info", type: Boolean })
+  public clickForMoreInfo = true;
 
   @property() public period?: string;
 
@@ -167,7 +167,7 @@ export class StatisticsChart extends LitElement {
 
     return html`
       <ha-chart-base
-        externalHidden
+        external-hidden
         .hass=${this.hass}
         .data=${this._chartData}
         .extraData=${this._chartDatasetExtra}
@@ -194,7 +194,6 @@ export class StatisticsChart extends LitElement {
   private _createOptions(unit?: string) {
     this._chartOptions = {
       parsing: false,
-      animation: false,
       interaction: {
         mode: "nearest",
         axis: "x",

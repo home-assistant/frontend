@@ -45,23 +45,6 @@ class HuiViewContainer extends LitElement {
     );
   }
 
-  private _isFixedBackground(background?: BackgroundConfig) {
-    if (typeof background === "string") {
-      return background.split(" ").includes("fixed");
-    }
-    return false;
-  }
-
-  private _computeBackgroundProperty(background?: BackgroundConfig) {
-    if (typeof background === "object" && background.image) {
-      return `center / cover no-repeat url('${background.image}')`;
-    }
-    if (typeof background === "string") {
-      return background;
-    }
-    return null;
-  }
-
   protected willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
     if (changedProperties.has("hass") && this.hass) {
@@ -76,7 +59,7 @@ class HuiViewContainer extends LitElement {
       }
     }
 
-    if (changedProperties.has("theme") || changedProperties.has("background")) {
+    if (changedProperties.has("theme")) {
       this._applyTheme();
     }
   }
@@ -89,48 +72,12 @@ class HuiViewContainer extends LitElement {
     if (this.hass) {
       applyThemesOnElement(this, this.hass?.themes, this.theme);
     }
-
-    const computedStyles = getComputedStyle(this);
-    const themeBackground = computedStyles.getPropertyValue(
-      "--lovelace-background"
-    );
-
-    const fixedBackground = this._isFixedBackground(
-      this.background || themeBackground
-    );
-    const viewBackground = this._computeBackgroundProperty(this.background);
-    this.toggleAttribute("fixed-background", fixedBackground);
-    this.style.setProperty("--view-background", viewBackground);
   }
 
   static get styles(): CSSResultGroup {
     return css`
       :host {
         display: relative;
-      }
-      /* Fixed background hack for Safari iOS */
-      :host([fixed-background]) ::slotted(*):before {
-        display: block;
-        content: "";
-        z-index: -1;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        height: 100%;
-        width: 100%;
-        background: var(
-          --view-background,
-          var(--lovelace-background, var(--primary-background-color))
-        );
-        background-attachment: scroll !important;
-      }
-      :host(:not([fixed-background])) {
-        background: var(
-          --view-background,
-          var(--lovelace-background, var(--primary-background-color))
-        );
       }
     `;
   }

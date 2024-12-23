@@ -8,9 +8,9 @@ export const temperature2rgb = (
 ): [number, number, number] => {
   const value = temperature / 100;
   return [
-    temperatureRed(value),
-    temperatureGreen(value),
-    temperatureBlue(value),
+    Math.round(temperatureRed(value)),
+    Math.round(temperatureGreen(value)),
+    Math.round(temperatureBlue(value)),
   ];
 };
 
@@ -59,10 +59,10 @@ const matchMaxScale = (
 };
 
 export const mired2kelvin = (miredTemperature: number) =>
-  Math.floor(1000000 / miredTemperature);
+  miredTemperature === 0 ? 1000000 : Math.floor(1000000 / miredTemperature);
 
-export const kelvin2mired = (kelvintTemperature: number) =>
-  Math.floor(1000000 / kelvintTemperature);
+export const kelvin2mired = (kelvinTemperature: number) =>
+  kelvinTemperature === 0 ? 1000000 : Math.floor(1000000 / kelvinTemperature);
 
 export const rgbww2rgb = (
   rgbww: [number, number, number, number, number],

@@ -18,7 +18,7 @@ import {
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
@@ -59,7 +59,10 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
-import { showQuickBar } from "../../dialogs/quick-bar/show-dialog-quick-bar";
+import {
+  QuickBarMode,
+  showQuickBar,
+} from "../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, PanelInfo } from "../../types";
@@ -75,6 +78,7 @@ import type { Lovelace } from "./types";
 import "./views/hui-view";
 import "./views/hui-view-container";
 import type { HUIView } from "./views/hui-view";
+import "./views/hui-view-background";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
@@ -466,11 +470,11 @@ class HUIRoot extends LitElement {
         </div>
         <hui-view-container
           .hass=${this.hass}
-          .background=${background}
           .theme=${curViewConfig?.theme}
           id="view"
           @ll-rebuild=${this._debouncedConfigChanged}
         >
+          <hui-view-background .background=${background}> </hui-view-background>
         </hui-view-container>
       </div>
     `;
@@ -662,7 +666,7 @@ class HUIRoot extends LitElement {
 
   private _showQuickBar(): void {
     showQuickBar(this, {
-      commandMode: false,
+      mode: QuickBarMode.Entity,
       hint: this.hass.enableShortcuts
         ? this.hass.localize("ui.tips.key_e_hint")
         : undefined,

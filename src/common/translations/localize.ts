@@ -94,6 +94,7 @@ export const computeLocalize = async <Keys extends string = LocalizeKeys>(
   resources: Resources,
   formats?: FormatsType
 ): Promise<LocalizeFunc<Keys>> => {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   const { IntlMessageFormat } = await import("intl-messageformat");
   await polyfillLocaleData(language);
 

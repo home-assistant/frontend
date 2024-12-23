@@ -11,7 +11,7 @@ import "../../components/ha-area-picker";
 export class HaVoiceAssistantSetupStepArea extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public deviceId!: string;
+  @property({ attribute: false }) public deviceId!: string;
 
   protected override render() {
     const device = this.hass.devices[this.deviceId];
