@@ -2957,8 +2957,8 @@
             "traces_not_available": "[%key:ui::panel::config::automation::editor::traces_not_available%]",
             "edit_category": "Edit category",
             "assign_category": "Assign category",
-            "no_category_support": "You can't assign an category to this automation",
-            "no_category_entity_reg": "To assign an category to an automation it needs to have a unique ID.",
+            "no_category_support": "You can't assign a category to this automation",
+            "no_category_entity_reg": "To assign a category to an automation it needs to have a unique ID.",
             "search": "Search {number} automations",
             "headers": {
               "toggle": "Enable/disable",
