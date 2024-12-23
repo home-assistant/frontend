@@ -1,5 +1,5 @@
 import { mdiBackupRestore, mdiCalendar } from "@mdi/js";
-import { differenceInDays, setHours, setMinutes } from "date-fns";
+import { addHours, differenceInDays, setHours, setMinutes } from "date-fns";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -17,6 +17,8 @@ import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import "../ha-backup-summary-card";
 
+const OVERDUE_MARGIN_HOURS = 3;
+
 @customElement("ha-backup-overview-summary")
 class HaBackupOverviewBackups extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -25,9 +27,14 @@ class HaBackupOverviewBackups extends LitElement {
 
   @property({ attribute: false }) public config!: BackupConfig;
 
+  @property({ type: Boolean }) public fetching = false;
+
   private _lastBackup = memoizeOne((backups: BackupContent[]) => {
     const sortedBackups = backups
-      .filter((backup) => backup.with_automatic_settings)
+      .filter(
+        (backup) =>
+          backup.with_automatic_settings && !backup.failed_agent_ids?.length
+      )
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     return sortedBackups[0] as BackupContent | undefined;
@@ -60,6 +67,23 @@ class HaBackupOverviewBackups extends LitElement {
   }
 
   protected render() {
+    if (this.fetching) {
+      return html`
+        <ha-backup-summary-card heading="Loading backups" status="loading">
+          <ha-md-list>
+            <ha-md-list-item>
+              <ha-svg-icon slot="start" .path=${mdiBackupRestore}></ha-svg-icon>
+              <span slot="headline" class="skeleton"></span>
+            </ha-md-list-item>
+            <ha-md-list-item>
+              <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
+              <span slot="headline" class="skeleton"></span>
+            </ha-md-list-item>
+          </ha-md-list>
+        </ha-backup-summary-card>
+      `;
+    }
+
     const lastBackup = this._lastBackup(this.backups);
 
     if (!lastBackup) {
@@ -75,10 +99,9 @@ class HaBackupOverviewBackups extends LitElement {
 
     const lastBackupDate = new Date(lastBackup.date);
 
-    const numberOfDays = differenceInDays(new Date(), lastBackupDate);
     const now = new Date();
 
-    const lastBackupDescription = `Last successful backup ${relativeTime(lastBackupDate, this.hass.locale, now, true)} and synced to ${lastBackup.agent_ids?.length} locations.`;
+    const lastBackupDescription = `Last successful backup ${relativeTime(lastBackupDate, this.hass.locale, now, true)} and stored to ${lastBackup.agent_ids?.length} locations.`;
     const nextBackupDescription = this._nextBackupDescription(
       this.config.schedule.state
     );
@@ -94,51 +117,62 @@ class HaBackupOverviewBackups extends LitElement {
           heading=${`Last automatic backup failed`}
           status="error"
         >
-          <ul class="list">
-            <li class="item">
+          <ha-md-list>
+            <ha-md-list-item>
               <ha-svg-icon slot="start" .path=${mdiBackupRestore}></ha-svg-icon>
-              <span>${lastAttemptDescription}</span>
-            </li>
-            <li class="item">
+              <span slot="headline">${lastAttemptDescription}</span>
+            </ha-md-list-item>
+            <ha-md-list-item>
               <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
-              <span>${lastBackupDescription}</span>
-            </li>
-          </ul>
+              <span slot="headline">${lastBackupDescription}</span>
+            </ha-md-list-item>
+          </ha-md-list>
         </ha-backup-summary-card>
       `;
     }
 
-    if (numberOfDays > 0) {
+    const numberOfDays = differenceInDays(
+      // Subtract a few hours to avoid showing as overdue if it's just a few hours (e.g. daylight saving)
+      addHours(now, -OVERDUE_MARGIN_HOURS),
+      lastBackupDate
+    );
+
+    const isOverdue =
+      (numberOfDays >= 1 &&
+        this.config.schedule.state === BackupScheduleState.DAILY) ||
+      numberOfDays >= 7;
+
+    if (isOverdue) {
       return html`
         <ha-backup-summary-card
           heading=${`No backup for ${numberOfDays} days`}
           status="warning"
         >
-          <ul class="list">
-            <li class="item">
+          <ha-md-list>
+            <ha-md-list-item>
               <ha-svg-icon slot="start" .path=${mdiBackupRestore}></ha-svg-icon>
-              <span>${lastBackupDescription}</span>
-            </li>
-            <li class="item">
+              <span slot="headline">${lastBackupDescription}</span>
+            </ha-md-list-item>
+            <ha-md-list-item>
               <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
-              <span>${nextBackupDescription}</span>
-            </li>
-          </ul>
+              <span slot="headline">${nextBackupDescription}</span>
+            </ha-md-list-item>
+          </ha-md-list>
         </ha-backup-summary-card>
       `;
     }
     return html`
       <ha-backup-summary-card heading=${`Backed up`} status="success">
-        <ul class="list">
-          <li class="item">
+        <ha-md-list>
+          <ha-md-list-item>
             <ha-svg-icon slot="start" .path=${mdiBackupRestore}></ha-svg-icon>
-            <span>${lastBackupDescription}</span>
-          </li>
-          <li class="item">
+            <span slot="headline">${lastBackupDescription}</span>
+          </ha-md-list-item>
+          <ha-md-list-item>
             <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
-            <span>${nextBackupDescription}</span>
-          </li>
-        </ul>
+            <span slot="headline">${nextBackupDescription}</span>
+          </ha-md-list-item>
+        </ha-md-list>
       </ha-backup-summary-card>
     `;
   }
@@ -156,25 +190,6 @@ class HaBackupOverviewBackups extends LitElement {
         p {
           margin: 0;
         }
-        .list {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-          padding: 8px 24px 24px 24px;
-          margin: 0;
-        }
-        .item {
-          display: flex;
-          flex-direction: row;
-          gap: 16px;
-          align-items: center;
-          color: var(--secondary-text-color);
-          font-size: 14px;
-          font-style: normal;
-          font-weight: 400;
-          line-height: 20px;
-          letter-spacing: 0.25px;
-        }
         ha-svg-icon {
           flex: none;
         }
@@ -182,6 +197,42 @@ class HaBackupOverviewBackups extends LitElement {
           display: flex;
           justify-content: flex-end;
           border-top: none;
+        }
+        ha-md-list {
+          background: none;
+        }
+        ha-md-list-item {
+          --md-list-item-top-space: 8px;
+          --md-list-item-bottom-space: 8px;
+          --md-list-item-one-line-container-height: 40x;
+        }
+        span.skeleton {
+          position: relative;
+          display: block;
+          width: 160px;
+          animation-fill-mode: forwards;
+          animation-iteration-count: infinite;
+          animation-name: loading;
+          animation-timing-function: linear;
+          animation-duration: 1.2s;
+          border-radius: 4px;
+          height: 20px;
+          background: linear-gradient(
+              to right,
+              rgb(247, 249, 250) 8%,
+              rgb(235, 238, 240) 18%,
+              rgb(247, 249, 250) 33%
+            )
+            0% 0% / 936px 104px;
+        }
+
+        @keyframes loading {
+          0% {
+            background-position: -468px 0;
+          }
+          100% {
+            background-position: 468px 0;
+          }
         }
       `,
     ];

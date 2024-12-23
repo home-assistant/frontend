@@ -10,7 +10,11 @@ import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
 import type { BackupConfig } from "../../../../../data/backup";
-import { BackupScheduleState, isLocalAgent } from "../../../../../data/backup";
+import {
+  BackupScheduleState,
+  computeBackupAgentName,
+  isLocalAgent,
+} from "../../../../../data/backup";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 
@@ -88,6 +92,14 @@ class HaBackupBackupsSummary extends LitElement {
     );
 
     if (offsiteLocations.length) {
+      if (offsiteLocations.length === 1) {
+        const name = computeBackupAgentName(
+          this.hass.localize,
+          offsiteLocations[0],
+          offsiteLocations
+        );
+        return `Upload to ${name}`;
+      }
       return `Upload to ${offsiteLocations.length} off-site locations`;
     }
     if (hasLocal) {
@@ -184,9 +196,13 @@ class HaBackupBackupsSummary extends LitElement {
           display: flex;
           justify-content: flex-end;
         }
+        .card-header {
+          padding-bottom: 8px;
+        }
         .card-content {
           padding-left: 0;
           padding-right: 0;
+          padding-bottom: 0;
         }
       `,
     ];
