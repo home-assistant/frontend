@@ -220,6 +220,11 @@ export const CLOUD_AGENT = "cloud.cloud";
 export const isLocalAgent = (agentId: string) =>
   [CORE_LOCAL_AGENT, HASSIO_LOCAL_AGENT].includes(agentId);
 
+export const isNetworkMountAgent = (agentId: string) => {
+  const [domain, name] = agentId.split(".");
+  return domain === "hassio" && name !== "local";
+};
+
 export const computeBackupAgentName = (
   localize: LocalizeFunc,
   agentId: string,
@@ -229,6 +234,11 @@ export const computeBackupAgentName = (
     return "This system";
   }
   const [domain, name] = agentId.split(".");
+
+  if (isNetworkMountAgent(agentId)) {
+    return name;
+  }
+
   const domainName = domainToName(localize, domain);
 
   // If there are multiple agents for a domain, show the name
@@ -242,7 +252,23 @@ export const computeBackupAgentName = (
 export const compareAgents = (a: string, b: string) => {
   const isLocalA = isLocalAgent(a);
   const isLocalB = isLocalAgent(b);
-  return isLocalA === isLocalB ? a.localeCompare(b) : isLocalA ? -1 : 1;
+  const isNetworkMountAgentA = isNetworkMountAgent(a);
+  const isNetworkMountAgentB = isNetworkMountAgent(b);
+
+  const getPriority = (isLocal: boolean, isNetworkMount: boolean) => {
+    if (isLocal) return 1;
+    if (isNetworkMount) return 2;
+    return 3;
+  };
+
+  const priorityA = getPriority(isLocalA, isNetworkMountAgentA);
+  const priorityB = getPriority(isLocalB, isNetworkMountAgentB);
+
+  if (priorityA !== priorityB) {
+    return priorityA - priorityB;
+  }
+
+  return a.localeCompare(b);
 };
 
 export const generateEncryptionKey = () => {

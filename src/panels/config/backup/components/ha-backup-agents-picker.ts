@@ -1,4 +1,4 @@
-import { mdiHarddisk } from "@mdi/js";
+import { mdiHarddisk, mdiNas } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -7,7 +7,11 @@ import { computeDomain } from "../../../../common/entity/compute_domain";
 import "../../../../components/ha-checkbox";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-svg-icon";
-import { computeBackupAgentName, isLocalAgent } from "../../../../data/backup";
+import {
+  computeBackupAgentName,
+  isLocalAgent,
+  isNetworkMountAgent,
+} from "../../../../data/backup";
 import type { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
 
@@ -54,20 +58,22 @@ class HaBackupAgentsPicker extends LitElement {
             ? html`
                 <ha-svg-icon .path=${mdiHarddisk} slot="start"> </ha-svg-icon>
               `
-            : html`
-                <img
-                  .src=${brandsUrl({
-                    domain,
-                    type: "icon",
-                    useFallback: true,
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
-                  crossorigin="anonymous"
-                  referrerpolicy="no-referrer"
-                  alt=""
-                  slot="start"
-                />
-              `}
+            : isNetworkMountAgent(agentId)
+              ? html` <ha-svg-icon .path=${mdiNas} slot="start"></ha-svg-icon> `
+              : html`
+                  <img
+                    .src=${brandsUrl({
+                      domain,
+                      type: "icon",
+                      useFallback: true,
+                      darkOptimized: this.hass.themes?.darkMode,
+                    })}
+                    crossorigin="anonymous"
+                    referrerpolicy="no-referrer"
+                    alt=""
+                    slot="start"
+                  />
+                `}
           ${name}
         </span>
         <ha-checkbox
