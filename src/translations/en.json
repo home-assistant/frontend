@@ -348,6 +348,7 @@
       "move": "Move",
       "save": "Save",
       "add": "Add",
+      "create": "Create",
       "edit": "Edit",
       "submit": "Submit",
       "rename": "Rename",
@@ -2159,7 +2160,7 @@
               "edit_floor": "Edit floor",
               "delete_floor": "Delete floor",
               "confirm_delete": "Delete floor?",
-              "confirm_delete_text": "Removing the floor will unassign all areas from it."
+              "confirm_delete_text": "Deleting the floor will unassign all areas from it."
             }
           },
           "editor": {
