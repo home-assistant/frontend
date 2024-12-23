@@ -88,11 +88,7 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
     this._error = undefined;
     this._stage = undefined;
     this._step = undefined;
-    if (this._unsub) {
-      this._unsub.then((unsub) => unsub());
-      this._unsub = undefined;
-    }
-    window.removeEventListener("connection-status", this._connectionStatus);
+    this._unsubscribe();
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -189,15 +185,16 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
   }
 
   private async _restoreBackup() {
+    this._unsubscribe();
     try {
       this._step = "progress";
       window.addEventListener("connection-status", this._connectionStatus);
+      this._subscribeBackupEvents();
       await this._doRestoreBackup(
         this._userPassword || this._backupEncryptionKey
       );
-      this._subscribeBackupEvents();
     } catch (e: any) {
-      window.removeEventListener("connection-status", this._connectionStatus);
+      this._unsubscribe();
       if (e.code === "password_incorrect") {
         this._step = "encryption";
       } else {
@@ -227,6 +224,14 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
         this._stage = event.stage;
       }
     });
+  }
+
+  private _unsubscribe() {
+    window.removeEventListener("connection-status", this._connectionStatus);
+    if (this._unsub) {
+      this._unsub.then((unsub) => unsub());
+      this._unsub = undefined;
+    }
   }
 
   private _restoreState() {
