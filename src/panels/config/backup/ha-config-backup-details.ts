@@ -125,7 +125,8 @@ class HaConfigBackupDetails extends LitElement {
             : !this._backup
               ? html`<ha-circular-progress active></ha-circular-progress>`
               : html`
-                  <ha-card header="Backup">
+                  <ha-card>
+                    <div class="card-header">Backup</div>
                     <div class="card-content">
                       <ha-md-list>
                         <ha-md-list-item>
@@ -145,7 +146,8 @@ class HaConfigBackupDetails extends LitElement {
                       </ha-md-list>
                     </div>
                   </ha-card>
-                  <ha-card header="Select what to restore">
+                  <ha-card>
+                    <div class="card-header">Select what to restore</div>
                     <div class="card-content">
                       <ha-backup-data-picker
                         .hass=${this.hass}
@@ -166,7 +168,8 @@ class HaConfigBackupDetails extends LitElement {
                       </ha-button>
                     </div>
                   </ha-card>
-                  <ha-card header="Locations">
+                  <ha-card>
+                    <div class="card-header">Locations</div>
                     <div class="card-content">
                       <ha-md-list>
                         ${this._agents.map((agent) => {
@@ -355,7 +358,7 @@ class HaConfigBackupDetails extends LitElement {
       margin-bottom: 24px;
     }
     .card-content {
-      padding: 0 20px 8px 20px;
+      padding: 0 20px;
     }
     .card-actions {
       display: flex;
@@ -409,6 +412,9 @@ class HaConfigBackupDetails extends LitElement {
     }
     .dot.error {
       background-color: var(--error-color);
+    }
+    .card-header {
+      padding-bottom: 8px;
     }
   `;
 }
