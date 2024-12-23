@@ -104,7 +104,8 @@ export class HaConfigLovelaceRescources extends LitElement {
         `,
       },
       delete: {
-        title: localize(
+        title: "",
+        label: localize(
           "ui.panel.config.lovelace.resources.picker.headers.delete"
         ),
         type: "icon-button",
