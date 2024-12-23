@@ -287,13 +287,14 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
               src="/static/images/voice-assistant/hi.png"
               alt="Casita Home Assistant logo"
             />
-            <h1>Set up your automatic backups</h1>
+            <h1>Set up backups</h1>
             <p class="secondary">
-              Backups are essential to a reliable smart home. They protect your
-              setup against failures and allows you to quickly have a working
-              system again. It is recommended to create a daily backup and keep
-              backups of the last 3 days on two different locations. And one of
-              them is off-site.
+              Backups are essential for a reliable smart home. They help protect
+              the work you've put into setting up your smart home, and if the
+              worst happens, you can get back up and running quickly. It is
+              recommended that you create a backup every day. You should keep
+              three backups in at least two different locations, one of which
+              should be off-site.
             </p>
           </div>
         `;
@@ -327,21 +328,23 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
       case "setup":
         return html`
           <p>
-            It is recommended to create a daily backup and keep backups of the
-            last 3 days on two different locations. And one of them is off-site.
+            It is recommended that you create a backup every day. You should
+            keep three backups in at least two different locations, one of which
+            should be off-site. Once you make your selection, your first backup
+            will begin.
           </p>
           <ha-md-list class="full">
             <ha-md-list-item type="button" @click=${this._done}>
               <span slot="headline">Recommended settings</span>
               <span slot="supporting-text">
-                Set the proven settings of daily backup.
+                Backup everything daily, keeping three days of backups
               </span>
               <ha-icon-next slot="end"> </ha-icon-next>
             </ha-md-list-item>
             <ha-md-list-item type="button" @click=${this._nextStep}>
               <span slot="headline">Custom settings</span>
               <span slot="supporting-text">
-                Select your own automation, data and locations
+                Select when, where, and what to backup
               </span>
               <ha-icon-next slot="end"> </ha-icon-next>
             </ha-md-list-item>
