@@ -258,10 +258,6 @@ class HaConfigBackupOverview extends LitElement {
           padding-left: 0;
           padding-right: 0;
         }
-        ha-fab[disabled] {
-          --mdc-theme-secondary: var(--disabled-text-color) !important;
-          pointer-events: none;
-        }
       `,
     ];
   }

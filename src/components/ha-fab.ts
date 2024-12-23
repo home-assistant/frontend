@@ -20,7 +20,8 @@ export class HaFab extends FabBase {
         direction: var(--direction);
       }
       :disabled {
-        opacity: var(--light-disabled-opacity);
+        --mdc-theme-secondary: var(--disabled-text-color);
+        pointer-events: none;
       }
     `,
     // safari workaround - must be explicit
