@@ -156,7 +156,7 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
               </span>
               <ha-button slot="end" @click=${this._downloadOld}>
                 <ha-svg-icon .path=${mdiDownload} slot="icon"></ha-svg-icon>
-                Download emergency kit
+                Download
               </ha-button>
             </ha-md-list-item>
           </ha-md-list>
@@ -184,7 +184,7 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
               </span>
               <ha-button slot="end" @click=${this._downloadNew}>
                 <ha-svg-icon .path=${mdiDownload} slot="icon"></ha-svg-icon>
-                Download emergency kit
+                Download
               </ha-button>
             </ha-md-list-item>
           </ha-md-list>
