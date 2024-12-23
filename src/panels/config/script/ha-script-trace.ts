@@ -202,7 +202,7 @@ export class HaScriptTrace extends LitElement {
                   .disabled=${this._traces[0].run_id === this._runId}
                   label=${this.hass!.localize(
                     "ui.panel.config.automation.trace.newer_trace"
-                  )
+                  )}
                   @click=${this._pickNewerTrace}
                   .path=${mdiRayStartArrow}
                 ></ha-icon-button>
