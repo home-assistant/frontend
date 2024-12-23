@@ -3,6 +3,7 @@ import {
   mdiDotsVertical,
   mdiDownload,
   mdiHarddisk,
+  mdiNas,
   mdiPlus,
   mdiUpload,
 } from "@mdi/js";
@@ -44,6 +45,7 @@ import {
   getBackupDownloadUrl,
   getPreferredAgentForDownload,
   isLocalAgent,
+  isNetworkMountAgent,
 } from "../../../data/backup";
 import type { ManagerStateEvent } from "../../../data/backup_manager";
 import type { CloudStatus } from "../../../data/cloud";
@@ -179,6 +181,15 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
                 return html`
                   <ha-svg-icon
                     .path=${mdiHarddisk}
+                    title=${name}
+                    slot="graphic"
+                  ></ha-svg-icon>
+                `;
+              }
+              if (isNetworkMountAgent(agentId)) {
+                return html`
+                  <ha-svg-icon
+                    .path=${mdiNas}
                     title=${name}
                     slot="graphic"
                   ></ha-svg-icon>

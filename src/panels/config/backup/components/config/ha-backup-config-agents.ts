@@ -1,4 +1,4 @@
-import { mdiHarddisk } from "@mdi/js";
+import { mdiHarddisk, mdiNas } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -14,6 +14,7 @@ import {
   computeBackupAgentName,
   fetchBackupAgentsInfo,
   isLocalAgent,
+  isNetworkMountAgent,
 } from "../../../../../data/backup";
 import type { CloudStatus } from "../../../../../data/cloud";
 import type { HomeAssistant } from "../../../../../types";
@@ -52,6 +53,9 @@ class HaBackupConfigAgents extends LitElement {
     if (agentId === CLOUD_AGENT) {
       return "It stores one backup. The oldest backups are deleted.";
     }
+    if (isNetworkMountAgent(agentId)) {
+      return "Network storage";
+    }
     return "";
   }
 
@@ -75,20 +79,27 @@ class HaBackupConfigAgents extends LitElement {
                           <ha-svg-icon .path=${mdiHarddisk} slot="start">
                           </ha-svg-icon>
                         `
-                      : html`
-                          <img
-                            .src=${brandsUrl({
-                              domain,
-                              type: "icon",
-                              useFallback: true,
-                              darkOptimized: this.hass.themes?.darkMode,
-                            })}
-                            crossorigin="anonymous"
-                            referrerpolicy="no-referrer"
-                            alt=""
-                            slot="start"
-                          />
-                        `}
+                      : isNetworkMountAgent(agentId)
+                        ? html`
+                            <ha-svg-icon
+                              .path=${mdiNas}
+                              slot="start"
+                            ></ha-svg-icon>
+                          `
+                        : html`
+                            <img
+                              .src=${brandsUrl({
+                                domain,
+                                type: "icon",
+                                useFallback: true,
+                                darkOptimized: this.hass.themes?.darkMode,
+                              })}
+                              crossorigin="anonymous"
+                              referrerpolicy="no-referrer"
+                              alt=""
+                              slot="start"
+                            />
+                          `}
                     <div slot="headline">${name}</div>
                     ${description
                       ? html`<div slot="supporting-text">${description}</div>`
