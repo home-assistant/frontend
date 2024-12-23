@@ -67,7 +67,7 @@ class HaBackupOverviewBackups extends LitElement {
   }
 
   protected render() {
-    if (true) {
+    if (this.fetching) {
       return html`
         <ha-backup-summary-card heading="Loading backups" status="loading">
           <ha-md-list>
