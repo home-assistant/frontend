@@ -31,7 +31,10 @@ import {
   BROWSER_PLAYER,
   MediaClassBrowserSettings,
 } from "../../data/media-player";
-import { browseLocalMediaPlayer } from "../../data/media_source";
+import {
+  browseLocalMediaPlayer,
+  resolveMediaSource,
+} from "../../data/media_source";
 import { isTTSMediaSource } from "../../data/tts";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../resources/styles";
@@ -81,7 +84,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   @property() public action: MediaPlayerBrowseAction = "play";
 
-  @property({ attribute: false })
+  @property({ reflect: true, attribute: "preferred-layout" })
   public preferredLayout: MediaPlayerLayoutType = "auto";
 
   @property({ type: Boolean }) public dialog = false;
@@ -93,6 +96,8 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   // @todo Consider reworking to eliminate need for attribute since it is manipulated internally
   @property({ type: Boolean, reflect: true }) public scrolled = false;
+
+  @property({ attribute: false }) public backgroundImage: string | undefined;
 
   @state() private _error?: { message: string; code: string };
 
@@ -340,10 +345,8 @@ export class HaMediaPlayerBrowse extends LitElement {
       : MediaClassBrowserSettings.directory;
 
     const backgroundImage = currentItem.thumbnail
-      ? this._getThumbnailURLorBase64(currentItem.thumbnail).then(
-          (value) => `url(${value})`
-        )
-      : "none";
+      ? this._getThumbnailURLorBase64(currentItem.thumbnail)
+      : undefined;
 
     return html`
               ${
@@ -359,13 +362,14 @@ export class HaMediaPlayerBrowse extends LitElement {
                         <div class="header-content">
                           ${currentItem.thumbnail
                             ? html`
-                                <div
-                                  class="img"
-                                  style="background-image: ${until(
-                                    backgroundImage,
-                                    ""
-                                  )}"
-                                >
+                                <div class="img">
+                                  <img
+                                    alt=${currentItem.title ??
+                                    currentItem.media_content_id}
+                                    src=${until(backgroundImage, "")}
+                                    loading="lazy"
+                                  />
+
                                   ${this.narrow && currentItem?.can_play
                                     ? html`
                                         <ha-fab
@@ -478,7 +482,6 @@ export class HaMediaPlayerBrowse extends LitElement {
                           childrenMediaClass.layout === "grid")
                       ? html`
                           <lit-virtualizer
-                            scroller
                             .layout=${grid({
                               itemSize: {
                                 width: "175px",
@@ -518,7 +521,6 @@ export class HaMediaPlayerBrowse extends LitElement {
                       : html`
                           <mwc-list>
                             <lit-virtualizer
-                              scroller
                               .items=${children}
                               style=${styleMap({
                                 height: `${children.length * 72 + 26}px`,
@@ -554,26 +556,32 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   private _renderGridItem = (child: MediaPlayerItem): TemplateResult => {
     const backgroundImage = child.thumbnail
-      ? this._getThumbnailURLorBase64(child.thumbnail).then(
-          (value) => `url(${value})`
-        )
-      : "none";
+      ? this._getThumbnailURLorBase64(child.thumbnail)
+      : child.media_class === "image"
+        ? resolveMediaSource(this.hass, child.media_content_id).then(
+            ({ url }) => url
+          )
+        : undefined;
 
     return html`
       <div class="child" .item=${child} @click=${this._childClicked}>
         <ha-card outlined>
           <div class="thumbnail">
-            ${child.thumbnail
+            ${child.thumbnail || child.media_class === "image"
               ? html`
-                  <div
+                  <img
+                    alt=${child.title}
                     class="${classMap({
                       "centered-image": ["app", "directory"].includes(
                         child.media_class
                       ),
-                      "brand-image": isBrandUrl(child.thumbnail),
+                      "brand-image": child.thumbnail
+                        ? isBrandUrl(child.thumbnail)
+                        : false,
                     })} image"
-                    style="background-image: ${until(backgroundImage, "")}"
-                  ></div>
+                    src=${until(backgroundImage, "")}
+                    loading="lazy"
+                  />
                 `
               : html`
                   <div class="icon-holder image">
@@ -618,12 +626,16 @@ export class HaMediaPlayerBrowse extends LitElement {
     const currentItem = this._currentItem;
     const mediaClass = MediaClassBrowserSettings[currentItem!.media_class];
 
-    const backgroundImage =
-      mediaClass.show_list_images && child.thumbnail
-        ? this._getThumbnailURLorBase64(child.thumbnail).then(
-            (value) => `url(${value})`
-          )
-        : "none";
+    let backgroundImage;
+    if (mediaClass.show_list_images) {
+      backgroundImage = child.thumbnail
+        ? this._getThumbnailURLorBase64(child.thumbnail)
+        : child.media_class === "image"
+          ? resolveMediaSource(this.hass, child.media_content_id).then(
+              ({ url }) => url
+            )
+          : undefined;
+    }
 
     return html`
       <mwc-list-item
@@ -631,23 +643,40 @@ export class HaMediaPlayerBrowse extends LitElement {
         .item=${child}
         .graphic=${mediaClass.show_list_images ? "medium" : "avatar"}
       >
-        ${backgroundImage === "none" && !child.can_play
+        ${backgroundImage === undefined
           ? html`<ha-svg-icon
-              .path=${MediaClassBrowserSettings[
-                child.media_class === "directory"
-                  ? child.children_media_class || child.media_class
-                  : child.media_class
-              ].icon}
-              slot="graphic"
-            ></ha-svg-icon>`
+                .path=${MediaClassBrowserSettings[
+                  child.media_class === "directory"
+                    ? child.children_media_class || child.media_class
+                    : child.media_class
+                ].icon}
+                slot="graphic"
+              ></ha-svg-icon>
+              ${child.can_play
+                ? html`<ha-icon-button
+                    class="play ${classMap({
+                      show: !mediaClass.show_list_images || !child.thumbnail,
+                    })}"
+                    .item=${child}
+                    .label=${this.hass.localize(
+                      `ui.components.media-browser.${this.action}-media`
+                    )}
+                    .path=${this.action === "play" ? mdiPlay : mdiPlus}
+                    @click=${this._actionClicked}
+                  ></ha-icon-button>`
+                : nothing}`
           : html`<div
               class=${classMap({
                 graphic: true,
                 thumbnail: mediaClass.show_list_images === true,
               })}
-              style="background-image: ${until(backgroundImage, "")}"
               slot="graphic"
             >
+              <img
+                alt=${child.title}
+                src=${until(backgroundImage, "")}
+                loading="lazy"
+              />
               ${child.can_play
                 ? html`<ha-icon-button
                     class="play ${classMap({
@@ -905,8 +934,15 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         .content {
           overflow-y: auto;
-          box-sizing: border-box;
           height: 100%;
+        }
+
+        :host([preferred-layout="list"]) .content {
+          align-items: center;
+          display: flex;
+          flex-direction: column;
+          box-sizing: border-box;
+          padding: 4px;
         }
 
         /* HEADER */
@@ -1012,6 +1048,8 @@ export class HaMediaPlayerBrowse extends LitElement {
           --mdc-list-item-graphic-margin: 0;
           --mdc-theme-text-icon-on-background: var(--secondary-text-color);
           margin-top: 10px;
+          width: 100%;
+          max-width: 1120px;
         }
 
         mwc-list li:last-child {
@@ -1068,27 +1106,27 @@ export class HaMediaPlayerBrowse extends LitElement {
         }
 
         ha-card .image {
-          border-radius: 3px 3px 0 0;
+          border-radius: var(--ha-card-border-radius, 12px);
+          padding: 4px;
+          box-sizing: border-box;
+        }
+
+        :host([preferred-layout="list"]) img {
+          height: 56px;
+          width: 56px;
         }
 
         .image {
+          max-height: 173px;
+          width: 100%;
           position: absolute;
-          top: 0;
-          right: 0;
-          left: 0;
-          bottom: 0;
-          background-size: cover;
-          background-repeat: no-repeat;
-          background-position: center;
-        }
-
-        .centered-image {
-          margin: 0 8px;
-          background-size: contain;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
         }
 
         .brand-image {
-          background-size: 40%;
+          width: 40%;
         }
 
         .children ha-card .icon-holder {
@@ -1158,15 +1196,17 @@ export class HaMediaPlayerBrowse extends LitElement {
           padding-left: 16px;
         }
 
-        mwc-list-item .graphic {
-          background-size: contain;
-          background-repeat: no-repeat;
-          background-position: center;
+        mwc-list-item .graphic,
+        mwc-list-item .graphic img {
           border-radius: 2px;
           display: flex;
           align-content: center;
           align-items: center;
           line-height: initial;
+        }
+
+        mwc-list-item .graphic img {
+          position: absolute;
         }
 
         mwc-list-item .graphic .play {
@@ -1314,7 +1354,6 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         lit-virtualizer {
           height: 100%;
-          overflow: overlay !important;
           contain: size layout !important;
         }
 
