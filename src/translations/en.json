@@ -4359,7 +4359,7 @@
           "error_delete": "Error deleting device",
           "picker": {
             "search": "Search {number} devices",
-            "state": "State",
+            "state": "Status",
             "bulk_actions": {
               "move_area": "Move to area",
               "no_area": "No area",
