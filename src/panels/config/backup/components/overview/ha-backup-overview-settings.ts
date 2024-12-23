@@ -54,7 +54,7 @@ class HaBackupBackupsSummary extends LitElement {
       scheduleText = `Weekly on Mondays at ${time}`;
     }
     if (schedule === BackupScheduleState.TUESDAY) {
-      scheduleText = `Weekly on Thuesdays at ${time}`;
+      scheduleText = `Weekly on Tuesdays at ${time}`;
     }
     if (schedule === BackupScheduleState.WEDNESDAY) {
       scheduleText = `Weekly on Wednesdays at ${time}`;
