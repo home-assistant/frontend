@@ -27,6 +27,8 @@ class HaBackupOverviewBackups extends LitElement {
 
   @property({ attribute: false }) public config!: BackupConfig;
 
+  @property({ type: Boolean }) public fetching = false;
+
   private _lastBackup = memoizeOne((backups: BackupContent[]) => {
     const sortedBackups = backups
       .filter(
@@ -65,6 +67,23 @@ class HaBackupOverviewBackups extends LitElement {
   }
 
   protected render() {
+    if (this.fetching) {
+      return html`
+        <ha-backup-summary-card heading="Loading backups" status="loading">
+          <ul class="list">
+            <li class="item">
+              <ha-svg-icon slot="start" .path=${mdiBackupRestore}></ha-svg-icon>
+              <span class="skeleton"></span>
+            </li>
+            <li class="item">
+              <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
+              <span class="skeleton"></span>
+            </li>
+          </ul>
+        </ha-backup-summary-card>
+      `;
+    }
+
     const lastBackup = this._lastBackup(this.backups);
 
     if (!lastBackup) {
@@ -82,7 +101,7 @@ class HaBackupOverviewBackups extends LitElement {
 
     const now = new Date();
 
-    const lastBackupDescription = `Last successful backup ${relativeTime(lastBackupDate, this.hass.locale, now, true)} and synced to ${lastBackup.agent_ids?.length} locations.`;
+    const lastBackupDescription = `Last successful backup ${relativeTime(lastBackupDate, this.hass.locale, now, true)} and stored to ${lastBackup.agent_ids?.length} locations.`;
     const nextBackupDescription = this._nextBackupDescription(
       this.config.schedule.state
     );
@@ -175,7 +194,7 @@ class HaBackupOverviewBackups extends LitElement {
           display: flex;
           flex-direction: column;
           gap: 16px;
-          padding: 8px 24px 24px 24px;
+          padding: 8px 24px 20px 24px;
           margin: 0;
         }
         .item {
@@ -197,6 +216,34 @@ class HaBackupOverviewBackups extends LitElement {
           display: flex;
           justify-content: flex-end;
           border-top: none;
+        }
+        span.skeleton {
+          position: relative;
+          display: block;
+          width: 160px;
+          animation-fill-mode: forwards;
+          animation-iteration-count: infinite;
+          animation-name: loading;
+          animation-timing-function: linear;
+          animation-duration: 1.2s;
+          border-radius: 4px;
+          height: 20px;
+          background: linear-gradient(
+              to right,
+              rgb(247, 249, 250) 8%,
+              rgb(235, 238, 240) 18%,
+              rgb(247, 249, 250) 33%
+            )
+            0% 0% / 936px 104px;
+        }
+
+        @keyframes loading {
+          0% {
+            background-position: -468px 0;
+          }
+          100% {
+            background-position: 468px 0;
+          }
         }
       `,
     ];
