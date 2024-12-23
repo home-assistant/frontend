@@ -1,10 +1,9 @@
 import { mdiBackupRestore, mdiCalendar } from "@mdi/js";
-import { addHours, differenceInDays, setHours, setMinutes } from "date-fns";
+import { addHours, differenceInDays } from "date-fns";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { formatTime } from "../../../../../common/datetime/format_time";
 import { relativeTime } from "../../../../../common/datetime/relative_time";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
@@ -12,7 +11,10 @@ import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
 import type { BackupConfig, BackupContent } from "../../../../../data/backup";
-import { BackupScheduleState } from "../../../../../data/backup";
+import {
+  BackupScheduleState,
+  getFormattedBackupTime,
+} from "../../../../../data/backup";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import "../ha-backup-summary-card";
@@ -41,8 +43,7 @@ class HaBackupOverviewBackups extends LitElement {
   });
 
   private _nextBackupDescription(schedule: BackupScheduleState) {
-    const newDate = setMinutes(setHours(new Date(), 4), 45);
-    const time = formatTime(newDate, this.hass.locale, this.hass.config);
+    const time = getFormattedBackupTime(this.hass.locale, this.hass.config);
 
     switch (schedule) {
       case BackupScheduleState.DAILY:
