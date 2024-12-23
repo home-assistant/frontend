@@ -152,11 +152,11 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
             <ha-md-list-item>
               <span slot="headline">Download old emergency kit</span>
               <span slot="supporting-text">
-                We recommend to save this encryption key somewhere secure.
+                We recommend saving this encryption key file somewhere secure.
               </span>
               <ha-button slot="end" @click=${this._downloadOld}>
                 <ha-svg-icon .path=${mdiDownload} slot="icon"></ha-svg-icon>
-                Download
+                Download emergency kit
               </ha-button>
             </ha-md-list-item>
           </ha-md-list>
@@ -164,9 +164,10 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
       case "new":
         return html`
           <p>
-            All next backups will use the new encryption key. We recommend to
-            save this key somewhere secure. As you can only restore your data
-            with the backup encryption key.
+            Keep this encryption key in a safe place, as you will need it to
+            access your backup, allowing it to be restored. Either record the
+            characters below or download them as an emergency kit file.
+            Encryption keeps your backups private and secure.
           </p>
           <div class="encryption-key">
             <p>${this._newEncryptionKey}</p>
@@ -179,11 +180,11 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
             <ha-md-list-item>
               <span slot="headline">Download new emergency kit</span>
               <span slot="supporting-text">
-                We recommend to save this encryption key somewhere secure.
+                We recommend saving this encryption key file somewhere secure.
               </span>
               <ha-button slot="end" @click=${this._downloadNew}>
                 <ha-svg-icon .path=${mdiDownload} slot="icon"></ha-svg-icon>
-                Download
+                Download emergency kit
               </ha-button>
             </ha-md-list-item>
           </ha-md-list>
