@@ -27,7 +27,6 @@ import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import "./components/ha-backup-summary-card";
-import "./components/ha-backup-summary-status";
 import "./components/overview/ha-backup-overview-backups";
 import "./components/overview/ha-backup-overview-onboarding";
 import "./components/overview/ha-backup-overview-progress";
@@ -182,31 +181,23 @@ class HaConfigBackupOverview extends LitElement {
                 >
                 </ha-backup-overview-progress>
               `
-            : this.fetching
+            : this._needsOnboarding
               ? html`
-                  <ha-backup-summary-card
-                    heading="Loading backups"
-                    description="Your backup information is being retrieved."
-                    status="loading"
+                  <ha-backup-overview-onboarding
+                    .hass=${this.hass}
+                    @button-click=${this._handleOnboardingButtonClick}
                   >
-                  </ha-backup-summary-card>
+                  </ha-backup-overview-onboarding>
                 `
-              : this._needsOnboarding
-                ? html`
-                    <ha-backup-overview-onboarding
-                      .hass=${this.hass}
-                      @button-click=${this._handleOnboardingButtonClick}
-                    >
-                    </ha-backup-overview-onboarding>
-                  `
-                : html`
-                    <ha-backup-overview-summary
-                      .hass=${this.hass}
-                      .backups=${this.backups}
-                      .config=${this.config}
-                    >
-                    </ha-backup-overview-summary>
-                  `}
+              : html`
+                  <ha-backup-overview-summary
+                    .hass=${this.hass}
+                    .backups=${this.backups}
+                    .config=${this.config}
+                    .fetching=${this.fetching}
+                  >
+                  </ha-backup-overview-summary>
+                `}
 
           <ha-backup-overview-backups
             .hass=${this.hass}

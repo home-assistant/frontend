@@ -173,7 +173,7 @@ class DialogAreaDetail extends LitElement {
         >
           ${entry
             ? this.hass.localize("ui.common.save")
-            : this.hass.localize("ui.common.add")}
+            : this.hass.localize("ui.common.create")}
         </mwc-button>
       </ha-dialog>
     `;
