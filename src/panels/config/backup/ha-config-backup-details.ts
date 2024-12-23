@@ -368,6 +368,7 @@ class HaConfigBackupDetails extends LitElement {
     ha-md-list-item {
       --md-list-item-leading-space: 0;
       --md-list-item-trailing-space: 0;
+      --md-list-item-two-line-container-height: 64px;
     }
     ha-md-list-item img {
       width: 48px;
