@@ -338,6 +338,7 @@ class HaConfigBackupDetails extends LitElement {
       margin: 0 auto;
       gap: 24px;
       display: grid;
+      margin-bottom: 24px;
     }
     .card-content {
       padding: 0 20px 8px 20px;
