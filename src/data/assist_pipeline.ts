@@ -39,7 +39,7 @@ export interface AssistPipelineMutableParams {
   wake_word_id: string | null;
 }
 
-export interface assistRunListing {
+export interface AssistRunListing {
   pipeline_run_id: string;
   timestamp: string;
 }
@@ -303,7 +303,7 @@ export const listAssistPipelineRuns = (
   pipeline_id: string
 ) =>
   hass.callWS<{
-    pipeline_runs: assistRunListing[];
+    pipeline_runs: AssistRunListing[];
   }>({
     type: "assist_pipeline/pipeline_debug/list",
     pipeline_id,

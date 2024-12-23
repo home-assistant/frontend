@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import {
-  mdiCheck,
+  mdiCog,
   mdiContentDuplicate,
   mdiContentSave,
   mdiDebugStepOver,
@@ -10,9 +10,11 @@ import {
   mdiInformationOutline,
   mdiPlay,
   mdiPlayCircleOutline,
+  mdiPlaylistEdit,
   mdiRenameBox,
   mdiRobotConfused,
   mdiStopCircleOutline,
+  mdiTag,
   mdiTransitConnection,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -20,6 +22,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consume } from "@lit-labs/context";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
@@ -49,7 +52,10 @@ import {
 import { substituteBlueprint } from "../../../data/blueprint";
 import { validateConfig } from "../../../data/config";
 import { UNAVAILABLE } from "../../../data/entity";
-import { fetchEntityRegistry } from "../../../data/entity_registry";
+import {
+  type EntityRegistryEntry,
+  updateEntityRegistryEntry,
+} from "../../../data/entity_registry";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -61,9 +67,17 @@ import type { Entries, HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import "../ha-config-section";
 import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-automation-mode";
-import { showAutomationRenameDialog } from "./automation-rename-dialog/show-dialog-automation-rename";
+import {
+  type EntityRegistryUpdate,
+  showAutomationRenameDialog,
+} from "./automation-rename-dialog/show-dialog-automation-rename";
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
+import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
+import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
+import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
+import { fullEntitiesContext } from "../../../data/context";
+import { transform } from "../../../common/decorators/transform";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -82,16 +96,18 @@ declare global {
   }
 }
 
-export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
+export class HaAutomationEditor extends PreventUnsavedMixin(
+  KeyboardShortcutMixin(LitElement)
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public automationId: string | null = null;
+  @property({ attribute: false }) public automationId: string | null = null;
 
-  @property() public entityId: string | null = null;
+  @property({ attribute: false }) public entityId: string | null = null;
 
   @property({ attribute: false }) public automations!: AutomationEntity[];
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -115,12 +131,54 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   @state() private _blueprintConfig?: BlueprintAutomationConfig;
 
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  @transform<EntityRegistryEntry | undefined, EntityRegistryEntry[]>({
+    transformer: function (this: HaAutomationEditor, value) {
+      return value.find(({ entity_id }) => entity_id === this._entityId);
+    },
+    watch: ["_entityId"],
+  })
+  private _registryEntry?: EntityRegistryEntry;
+
+  @state() private _saving = false;
+
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  _entityRegistry!: EntityRegistryEntry[];
+
   private _configSubscriptions: Record<
     string,
     (config?: AutomationConfig) => void
   > = {};
 
   private _configSubscriptionsId = 1;
+
+  private _entityRegistryUpdate?: EntityRegistryUpdate;
+
+  private _newAutomationId?: string;
+
+  private _entityRegCreated?: (
+    value: PromiseLike<EntityRegistryEntry> | EntityRegistryEntry
+  ) => void;
+
+  protected willUpdate(changedProps) {
+    super.willUpdate(changedProps);
+
+    if (
+      this._entityRegCreated &&
+      this._newAutomationId &&
+      changedProps.has("entityRegistry")
+    ) {
+      const automation = this._entityRegistry.find(
+        (entity: EntityRegistryEntry) =>
+          entity.unique_id === this._newAutomationId
+      );
+      if (automation) {
+        this._entityRegCreated(automation);
+        this._entityRegCreated = undefined;
+      }
+    }
+  }
 
   protected render(): TemplateResult | typeof nothing {
     if (!this._config) {
@@ -167,6 +225,28 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
               slot="graphic"
               .path=${mdiInformationOutline}
             ></ha-svg-icon>
+          </ha-list-item>
+
+          <ha-list-item
+            graphic="icon"
+            .disabled=${!stateObj}
+            @click=${this._showSettings}
+          >
+            ${this.hass.localize(
+              "ui.panel.config.automation.picker.show_settings"
+            )}
+            <ha-svg-icon slot="graphic" .path=${mdiCog}></ha-svg-icon>
+          </ha-list-item>
+
+          <ha-list-item
+            graphic="icon"
+            .disabled=${!stateObj}
+            @click=${this._editCategory}
+          >
+            ${this.hass.localize(
+              `ui.panel.config.scene.picker.${this._registryEntry?.categories?.automation ? "edit_category" : "assign_category"}`
+            )}
+            <ha-svg-icon slot="graphic" .path=${mdiTag}></ha-svg-icon>
           </ha-list-item>
 
           <ha-list-item
@@ -259,27 +339,16 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
               `
             : nothing}
 
-          <li divider role="separator"></li>
-
-          <ha-list-item graphic="icon" @click=${this._switchUiMode}>
-            ${this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
-            ${this._mode === "gui"
-              ? html`<ha-svg-icon
-                  class="selected_menu_item"
-                  slot="graphic"
-                  .path=${mdiCheck}
-                ></ha-svg-icon>`
-              : ``}
-          </ha-list-item>
-          <ha-list-item graphic="icon" @click=${this._switchYamlMode}>
-            ${this.hass.localize("ui.panel.config.automation.editor.edit_yaml")}
-            ${this._mode === "yaml"
-              ? html`<ha-svg-icon
-                  class="selected_menu_item"
-                  slot="graphic"
-                  .path=${mdiCheck}
-                ></ha-svg-icon>`
-              : ``}
+          <ha-list-item
+            graphic="icon"
+            @click=${this._mode === "gui"
+              ? this._switchYamlMode
+              : this._switchUiMode}
+          >
+            ${this.hass.localize(
+              `ui.panel.config.automation.editor.edit_${this._mode === "gui" ? "yaml" : "ui"}`
+            )}
+            <ha-svg-icon slot="graphic" .path=${mdiPlaylistEdit}></ha-svg-icon>
           </ha-list-item>
 
           <li divider role="separator"></li>
@@ -413,7 +482,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                       `
                     : ""}
                   <ha-yaml-editor
-                    copyClipboard
+                    copy-clipboard
                     .hass=${this.hass}
                     .defaultValue=${this._preprocessYaml()}
                     .readOnly=${this._readOnly}
@@ -423,8 +492,11 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         </div>
         <ha-fab
           slot="fab"
-          class=${classMap({ dirty: !this._readOnly && this._dirty })}
+          class=${classMap({
+            dirty: !this._readOnly && this._dirty,
+          })}
           .label=${this.hass.localize("ui.panel.config.automation.editor.save")}
+          .disabled=${this._saving}
           extended
           @click=${this._saveAutomation}
         >
@@ -544,8 +616,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       this._config = normalizeAutomationConfig(config);
       this._checkValidation();
     } catch (err: any) {
-      const entityRegistry = await fetchEntityRegistry(this.hass.connection);
-      const entity = entityRegistry.find(
+      const entity = this._entityRegistry.find(
         (ent) =>
           ent.platform === "automation" && ent.unique_id === this.automationId
       );
@@ -588,9 +659,34 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     fireEvent(this, "hass-more-info", { entityId: this._entityId });
   }
 
+  private _showSettings() {
+    showMoreInfoDialog(this, {
+      entityId: this._entityId!,
+      view: "settings",
+    });
+  }
+
+  private _editCategory() {
+    if (!this._registryEntry) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.scene.picker.no_category_support"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.scene.picker.no_category_entity_reg"
+        ),
+      });
+      return;
+    }
+    showAssignCategoryDialog(this, {
+      scope: "automation",
+      entityReg: this._registryEntry,
+    });
+  }
+
   private async _showTrace() {
     if (this._config?.id) {
-      const result = await this.confirmUnsavedChanged();
+      const result = await this._confirmUnsavedChanged();
       if (result) {
         navigate(
           `/config/automation/trace/${encodeURIComponent(this._config.id)}`
@@ -644,7 +740,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     this._errors = undefined;
   }
 
-  private async confirmUnsavedChanged(): Promise<boolean> {
+  private async _confirmUnsavedChanged(): Promise<boolean> {
     if (this._dirty) {
       return showConfirmationDialog(this, {
         title: this.hass!.localize(
@@ -662,7 +758,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   }
 
   private _backTapped = async () => {
-    const result = await this.confirmUnsavedChanged();
+    const result = await this._confirmUnsavedChanged();
     if (result) {
       afterNextRender(() => history.back());
     }
@@ -723,7 +819,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
             "ui.panel.config.automation.picker.migrate_automation_description"
           ),
         })
-      : await this.confirmUnsavedChanged();
+      : await this._confirmUnsavedChanged();
     if (result) {
       showAutomationEditor({
         ...this._config,
@@ -783,13 +879,16 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       showAutomationRenameDialog(this, {
         config: this._config!,
         domain: "automation",
-        updateConfig: (config) => {
+        updateConfig: (config, entityRegistryUpdate) => {
           this._config = config;
+          this._entityRegistryUpdate = entityRegistryUpdate;
           this._dirty = true;
           this.requestUpdate();
           resolve(true);
         },
         onClose: () => resolve(false),
+        entityRegistryUpdate: this._entityRegistryUpdate,
+        entityRegistryEntry: this._registryEntry,
       });
     });
   }
@@ -825,21 +924,49 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       }
     }
 
+    this._saving = true;
     this._validationErrors = undefined;
+
     try {
       await saveAutomationConfig(this.hass, id, this._config!);
+
+      if (this._entityRegistryUpdate !== undefined) {
+        let entityId = this._entityId;
+
+        // wait for automation to appear in entity registry when creating a new automation
+        if (!entityId) {
+          this._newAutomationId = id;
+          const automation = await new Promise<EntityRegistryEntry>(
+            (resolve) => {
+              this._entityRegCreated = resolve;
+            }
+          );
+          entityId = automation.entity_id;
+        }
+
+        if (entityId) {
+          await updateEntityRegistryEntry(this.hass, entityId, {
+            categories: {
+              automation: this._entityRegistryUpdate.category || null,
+            },
+            labels: this._entityRegistryUpdate.labels || [],
+          });
+        }
+      }
+
+      this._dirty = false;
+
+      if (!this.automationId) {
+        navigate(`/config/automation/edit/${id}`, { replace: true });
+      }
     } catch (errors: any) {
       this._errors = errors.body.message || errors.error || errors.body;
       showToast(this, {
         message: errors.body.message || errors.error || errors.body,
       });
       throw errors;
-    }
-
-    this._dirty = false;
-
-    if (!this.automationId) {
-      navigate(`/config/automation/edit/${id}`, { replace: true });
+    } finally {
+      this._saving = false;
     }
   }
 
@@ -852,8 +979,18 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     ev.detail.callback(this._config);
   }
 
-  protected handleKeyboardSave() {
-    this._saveAutomation();
+  protected supportedShortcuts(): SupportedShortcuts {
+    return {
+      s: () => this._saveAutomation(),
+    };
+  }
+
+  protected get isDirty() {
+    return this._dirty;
+  }
+
+  protected async promptDiscardChanges() {
+    return this._confirmUnsavedChanged();
   }
 
   static get styles(): CSSResultGroup {
@@ -900,9 +1037,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         }
         ha-fab.dirty {
           bottom: 0;
-        }
-        .selected_menu_item {
-          color: var(--primary-color);
         }
         li[role="separator"] {
           border-bottom-color: var(--divider-color);

@@ -15,6 +15,7 @@ import { bytesToString } from "../util/bytes-to-string";
 declare global {
   interface HASSDomEvents {
     "file-picked": { files: File[] };
+    "files-cleared": void;
   }
 }
 
@@ -56,6 +57,21 @@ export class HaFileUpload extends LitElement {
     }
   }
 
+  private get _name() {
+    if (this.value === undefined) {
+      return "";
+    }
+    if (typeof this.value === "string") {
+      return this.value;
+    }
+    const files =
+      this.value instanceof FileList
+        ? Array.from(this.value)
+        : ensureArray(this.value);
+
+    return files.map((file) => file.name).join(", ");
+  }
+
   public render(): TemplateResult {
     return html`
       ${this.uploading
@@ -65,7 +81,7 @@ export class HaFileUpload extends LitElement {
                 >${this.value
                   ? this.hass?.localize(
                       "ui.components.file-upload.uploading_name",
-                      { name: this.value.toString() }
+                      { name: this._name }
                     )
                   : this.hass?.localize(
                       "ui.components.file-upload.uploading"
@@ -201,6 +217,7 @@ export class HaFileUpload extends LitElement {
     this._input!.value = "";
     this.value = undefined;
     fireEvent(this, "change");
+    fireEvent(this, "files-cleared");
   }
 
   static get styles() {
@@ -304,6 +321,15 @@ export class HaFileUpload extends LitElement {
       }
       .progress {
         color: var(--secondary-text-color);
+      }
+      button.link {
+        background: none;
+        border: none;
+        padding: 0;
+        font-size: 14px;
+        color: var(--primary-color);
+        text-decoration: underline;
+        cursor: pointer;
       }
     `;
   }

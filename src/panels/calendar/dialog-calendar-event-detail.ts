@@ -50,7 +50,7 @@ class DialogCalendarEventDetail extends LitElement {
     }
   }
 
-  private closeDialog(): void {
+  public closeDialog(): void {
     this._calendarId = undefined;
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -93,7 +93,7 @@ class DialogCalendarEventDetail extends LitElement {
               .hass=${this.hass}
               .stateObj=${stateObj}
               .color=${this._params.color}
-              inDialog
+              in-dialog
             ></state-info>
           </div>
         </div>

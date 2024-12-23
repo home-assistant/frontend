@@ -13,7 +13,10 @@ import { MediaClassBrowserSettings } from "../../data/media-player";
 import {
   browseLocalMediaPlayer,
   removeLocalMedia,
+  isLocalMediaSourceContentId,
+  isImageUploadMediaSourceContentId,
 } from "../../data/media_source";
+import { deleteImage, getIdFromUrl } from "../../data/image_upload";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
@@ -270,7 +273,14 @@ class DialogMediaManage extends LitElement {
     try {
       await Promise.all(
         toDelete.map(async (item) => {
-          await removeLocalMedia(this.hass, item.media_content_id);
+          if (isLocalMediaSourceContentId(item.media_content_id)) {
+            await removeLocalMedia(this.hass, item.media_content_id);
+          } else if (isImageUploadMediaSourceContentId(item.media_content_id)) {
+            const media_id = getIdFromUrl(item.media_content_id);
+            if (media_id) {
+              await deleteImage(this.hass, media_id);
+            }
+          }
           this._currentItem = {
             ...this._currentItem!,
             children: this._currentItem!.children!.filter((i) => i !== item),

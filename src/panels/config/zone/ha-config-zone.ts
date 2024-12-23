@@ -50,7 +50,7 @@ import { showZoneDetailDialog } from "./show-dialog-zone-detail";
 export class HaConfigZone extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -272,7 +272,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
           : ""}
         <ha-fab
           slot="fab"
-          .label=${hass.localize("ui.panel.config.zone.add_zone")}
+          .label=${hass.localize("ui.panel.config.zone.create_zone")}
           extended
           @click=${this._createZone}
         >

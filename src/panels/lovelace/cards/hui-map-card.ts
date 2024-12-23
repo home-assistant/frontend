@@ -44,6 +44,7 @@ interface MapEntityConfig extends EntityConfig {
 
 interface GeoEntity {
   entity_id: string;
+  label_mode?: "state" | "name" | "icon";
   focus: boolean;
 }
 
@@ -169,8 +170,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             .autoFit=${this._config.auto_fit || false}
             .fitZones=${this._config.fit_zones}
             .themeMode=${themeMode}
-            interactiveZones
-            renderPassive
+            interactive-zones
+            render-passive
           ></ha-map>
           <ha-icon-button
             .label=${this.hass!.localize(
@@ -351,6 +352,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       ) {
         geoEntities.push({
           entity_id: stateObj.entity_id,
+          label_mode: sourceObj?.label_mode ?? allSource?.label_mode,
           focus: sourceObj
             ? (sourceObj.focus ?? true)
             : (allSource?.focus ?? true),
@@ -370,8 +372,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         name: entityConf.name,
       })),
       ...this._getSourceEntities(this.hass?.states).map((entity) => ({
-        entity_id: entity.entity_id,
-        focus: entity.focus,
+        ...entity,
         color: this._getColor(entity.entity_id),
       })),
     ];

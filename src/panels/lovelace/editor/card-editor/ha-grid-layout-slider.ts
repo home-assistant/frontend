@@ -196,7 +196,7 @@ export class HaGridLayoutSlider extends LitElement {
     return Math.max(this.step, (this.max - this.min) / 10);
   }
 
-  _handleKeyDown(e: KeyboardEvent) {
+  private _handleKeyDown(e: KeyboardEvent) {
     if (!A11Y_KEY_CODES.has(e.code)) return;
     e.preventDefault();
     switch (e.code) {
@@ -228,7 +228,7 @@ export class HaGridLayoutSlider extends LitElement {
     fireEvent(this, "slider-moved", { value: this.value });
   }
 
-  _handleKeyUp(e: KeyboardEvent) {
+  private _handleKeyUp(e: KeyboardEvent) {
     if (!A11Y_KEY_CODES.has(e.code)) return;
     e.preventDefault();
     fireEvent(this, "value-changed", { value: this.value });
@@ -236,12 +236,12 @@ export class HaGridLayoutSlider extends LitElement {
 
   private _tooltipTimeout?: number;
 
-  _showTooltip() {
+  private _showTooltip() {
     if (this._tooltipTimeout != null) window.clearTimeout(this._tooltipTimeout);
     this.tooltipVisible = true;
   }
 
-  _hideTooltip(delay?: number) {
+  private _hideTooltip(delay?: number) {
     if (!delay) {
       this.tooltipVisible = false;
       return;

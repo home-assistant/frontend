@@ -58,11 +58,11 @@ class DemoMoreInfos extends LitElement {
     }
   `;
 
-  _showConfigToggled(ev) {
+  private _showConfigToggled(ev) {
     this._showConfig = ev.target.checked;
   }
 
-  _darkThemeToggled(ev) {
+  private _darkThemeToggled(ev) {
     applyThemesOnElement(
       this.shadowRoot!.querySelector("#container"),
       {

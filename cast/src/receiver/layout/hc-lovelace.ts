@@ -14,6 +14,7 @@ import "../../../../src/panels/lovelace/views/hui-view";
 import "../../../../src/panels/lovelace/views/hui-view-container";
 import type { HomeAssistant } from "../../../../src/types";
 import "./hc-launch-screen";
+import "../../../../src/panels/lovelace/views/hui-view-background";
 
 (window as any).loadCardHelpers = () =>
   import("../../../../src/panels/lovelace/custom-card-helpers");
@@ -25,9 +26,9 @@ class HcLovelace extends LitElement {
   @property({ attribute: false })
   public lovelaceConfig!: LovelaceConfig;
 
-  @property() public viewPath?: string | number | null;
+  @property({ attribute: false }) public viewPath?: string | number | null;
 
-  @property() public urlPath: string | null = null;
+  @property({ attribute: false }) public urlPath: string | null = null;
 
   protected render(): TemplateResult {
     const index = this._viewIndex;
@@ -57,11 +58,8 @@ class HcLovelace extends LitElement {
     const background = viewConfig.background || this.lovelaceConfig.background;
 
     return html`
-      <hui-view-container
-        .hass=${this.hass}
-        .background=${background}
-        .theme=${viewConfig.theme}
-      >
+      <hui-view-container .hass=${this.hass} .theme=${viewConfig.theme}>
+        <hui-view-background .background=${background}> </hui-view-background>
         <hui-view
           .hass=${this.hass}
           .lovelace=${lovelace}

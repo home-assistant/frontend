@@ -215,12 +215,12 @@ export class HaControlSlider extends LitElement {
     return Math.max(this.step, (this.max - this.min) / 10);
   }
 
-  _showTooltip() {
+  private _showTooltip() {
     if (this._tooltipTimeout != null) window.clearTimeout(this._tooltipTimeout);
     this.tooltipVisible = true;
   }
 
-  _hideTooltip(delay?: number) {
+  private _hideTooltip(delay?: number) {
     if (!delay) {
       this.tooltipVisible = false;
       return;
@@ -230,7 +230,7 @@ export class HaControlSlider extends LitElement {
     }, delay);
   }
 
-  _handleKeyDown(e: KeyboardEvent) {
+  private _handleKeyDown(e: KeyboardEvent) {
     if (!A11Y_KEY_CODES.has(e.code)) return;
     e.preventDefault();
     switch (e.code) {
@@ -265,7 +265,7 @@ export class HaControlSlider extends LitElement {
 
   private _tooltipTimeout?: number;
 
-  _handleKeyUp(e: KeyboardEvent) {
+  private _handleKeyUp(e: KeyboardEvent) {
     if (!A11Y_KEY_CODES.has(e.code)) return;
     e.preventDefault();
     this._hideTooltip(500);
