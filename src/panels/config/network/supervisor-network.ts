@@ -655,8 +655,14 @@ export class HassioNetwork extends LitElement {
     this._dirty = true;
     if (id === "address") {
       const index = (ev.target as any).index as number;
+      const { mask: oldMask } = parseAddress(
+        this._interface![version]!.address![index]
+      );
       const { mask } = parseAddress(value);
-      this._interface[version]!.address![index] = formatAddress(value, mask);
+      this._interface[version]!.address![index] = formatAddress(
+        value,
+        mask || oldMask || ""
+      );
       this.requestUpdate("_interface");
     } else if (id === "netmask") {
       const index = (ev.target as any).index as number;
