@@ -1,5 +1,5 @@
 import { mdiBackupRestore, mdiCalendar } from "@mdi/js";
-import { differenceInDays, setHours, setMinutes } from "date-fns";
+import { addHours, differenceInDays, setHours, setMinutes } from "date-fns";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -17,6 +17,8 @@ import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import "../ha-backup-summary-card";
 
+const OVERDUE_MARGIN_HOURS = 3;
+
 @customElement("ha-backup-overview-summary")
 class HaBackupOverviewBackups extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -27,7 +29,10 @@ class HaBackupOverviewBackups extends LitElement {
 
   private _lastBackup = memoizeOne((backups: BackupContent[]) => {
     const sortedBackups = backups
-      .filter((backup) => backup.with_automatic_settings)
+      .filter(
+        (backup) =>
+          backup.with_automatic_settings && !backup.failed_agent_ids?.length
+      )
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     return sortedBackups[0] as BackupContent | undefined;
@@ -75,7 +80,6 @@ class HaBackupOverviewBackups extends LitElement {
 
     const lastBackupDate = new Date(lastBackup.date);
 
-    const numberOfDays = differenceInDays(new Date(), lastBackupDate);
     const now = new Date();
 
     const lastBackupDescription = `Last successful backup ${relativeTime(lastBackupDate, this.hass.locale, now, true)} and synced to ${lastBackup.agent_ids?.length} locations.`;
@@ -108,7 +112,18 @@ class HaBackupOverviewBackups extends LitElement {
       `;
     }
 
-    if (numberOfDays > 0) {
+    const numberOfDays = differenceInDays(
+      // Subtract a few hours to avoid showing as overdue if it's just a few hours (e.g. daylight saving)
+      addHours(now, -OVERDUE_MARGIN_HOURS),
+      lastBackupDate
+    );
+
+    const isOverdue =
+      (numberOfDays >= 1 &&
+        this.config.schedule.state === BackupScheduleState.DAILY) ||
+      numberOfDays >= 7;
+
+    if (isOverdue) {
       return html`
         <ha-backup-summary-card
           heading=${`No backup for ${numberOfDays} days`}
