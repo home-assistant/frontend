@@ -5,6 +5,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-form/ha-form";
+import "../../../../components/ha-alert";
 import type {
   HaFormSchema,
   SchemaUnion,
@@ -83,6 +84,11 @@ class LocalBackupLocationDialog extends LitElement {
           @value-changed=${this._valueChanged}
           dialogInitialFocus
         ></ha-form>
+        <ha-alert alert-type="info">
+          ${this.hass.localize(
+            `ui.panel.config.backup.dialogs.local_backup_location.note`
+          )}
+        </ha-alert>
         <ha-button
           slot="secondaryAction"
           @click=${this.closeDialog}
@@ -138,6 +144,10 @@ class LocalBackupLocationDialog extends LitElement {
       css`
         ha-dialog {
           --mdc-dialog-max-width: 500px;
+        }
+        ha-form {
+          display: block;
+          margin-bottom: 16px;
         }
       `,
     ];

@@ -1,5 +1,11 @@
 import type { ActionDetail } from "@material/mwc-list";
-import { mdiDelete, mdiDotsVertical, mdiDownload, mdiHarddisk } from "@mdi/js";
+import {
+  mdiDelete,
+  mdiDotsVertical,
+  mdiDownload,
+  mdiHarddisk,
+  mdiNas,
+} from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
@@ -24,6 +30,7 @@ import {
   getBackupDownloadUrl,
   getPreferredAgentForDownload,
   isLocalAgent,
+  isNetworkMountAgent,
 } from "../../../data/backup";
 import type { HassioAddonInfo } from "../../../data/hassio/addon";
 import "../../../layouts/hass-subpage";
@@ -184,21 +191,28 @@ class HaConfigBackupDetails extends LitElement {
                                     >
                                     </ha-svg-icon>
                                   `
-                                : html`
-                                    <img
-                                      .src=${brandsUrl({
-                                        domain,
-                                        type: "icon",
-                                        useFallback: true,
-                                        darkOptimized:
-                                          this.hass.themes?.darkMode,
-                                      })}
-                                      crossorigin="anonymous"
-                                      referrerpolicy="no-referrer"
-                                      alt=""
-                                      slot="start"
-                                    />
-                                  `}
+                                : isNetworkMountAgent(agentId)
+                                  ? html`
+                                      <ha-svg-icon
+                                        .path=${mdiNas}
+                                        slot="start"
+                                      ></ha-svg-icon>
+                                    `
+                                  : html`
+                                      <img
+                                        .src=${brandsUrl({
+                                          domain,
+                                          type: "icon",
+                                          useFallback: true,
+                                          darkOptimized:
+                                            this.hass.themes?.darkMode,
+                                        })}
+                                        crossorigin="anonymous"
+                                        referrerpolicy="no-referrer"
+                                        alt=""
+                                        slot="start"
+                                      />
+                                    `}
                               <div slot="headline">${name}</div>
                               <div slot="supporting-text">
                                 <span
