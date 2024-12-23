@@ -257,6 +257,12 @@ class HaConfigBackupSettings extends LitElement {
     .alert {
       --mdc-theme-primary: var(--error-color);
     }
+    .card-header {
+      padding-bottom: 8px;
+    }
+    .card-content {
+      padding-bottom: 0;
+    }
   `;
 }
 
