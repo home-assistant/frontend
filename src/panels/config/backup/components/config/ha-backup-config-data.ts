@@ -195,7 +195,7 @@ class HaBackupConfigData extends LitElement {
                 ></ha-svg-icon>
                 <span slot="headline">Media</span>
                 <span slot="supporting-text">
-                  For example, camera recordings.
+                  This can include large filesize camera recordings.
                 </span>
                 <ha-switch
                   id="media"
@@ -209,7 +209,7 @@ class HaBackupConfigData extends LitElement {
                 <ha-svg-icon slot="start" .path=${mdiFolder}></ha-svg-icon>
                 <span slot="headline">Share folder</span>
                 <span slot="supporting-text">
-                  Folder that is often used for advanced or older
+                  Folder that is often used by add-ons for advanced or older
                   configurations.
                 </span>
                 <ha-switch

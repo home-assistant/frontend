@@ -109,9 +109,13 @@ class HaBackupOverviewBackups extends LitElement {
           display: flex;
           justify-content: flex-end;
         }
+        .card-header {
+          padding-bottom: 8px;
+        }
         .card-content {
           padding-left: 0;
           padding-right: 0;
+          padding-bottom: 0;
         }
       `,
     ];
