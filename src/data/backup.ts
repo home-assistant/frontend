@@ -1,6 +1,11 @@
+import { setHours, setMinutes } from "date-fns";
+import type { HassConfig } from "home-assistant-js-websocket";
+import memoizeOne from "memoize-one";
+import { formatTime } from "../common/datetime/format_time";
 import type { LocalizeFunc } from "../common/translations/localize";
 import type { HomeAssistant } from "../types";
 import { domainToName } from "./integration";
+import type { FrontendLocaleData } from "./translation";
 
 export const enum BackupScheduleState {
   NEVER = "never",
@@ -282,3 +287,10 @@ export const generateEncryptionKey = () => {
   });
   return result;
 };
+
+export const getFormattedBackupTime = memoizeOne(
+  (locale: FrontendLocaleData, config: HassConfig) => {
+    const date = setMinutes(setHours(new Date(), 4), 45);
+    return formatTime(date, locale, config);
+  }
+);
