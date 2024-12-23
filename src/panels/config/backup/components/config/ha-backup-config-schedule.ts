@@ -2,19 +2,19 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import type { HaCheckbox } from "../../../../components/ha-checkbox";
-import "../../../../components/ha-md-list";
-import "../../../../components/ha-md-list-item";
-import "../../../../components/ha-md-select";
-import "../../../../components/ha-md-textfield";
-import type { HaMdSelect } from "../../../../components/ha-md-select";
-import "../../../../components/ha-md-select-option";
-import "../../../../components/ha-switch";
-import type { BackupConfig } from "../../../../data/backup";
-import { BackupScheduleState } from "../../../../data/backup";
-import type { HomeAssistant } from "../../../../types";
-import { clamp } from "../../../../common/number/clamp";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import type { HaCheckbox } from "../../../../../components/ha-checkbox";
+import "../../../../../components/ha-md-list";
+import "../../../../../components/ha-md-list-item";
+import "../../../../../components/ha-md-select";
+import "../../../../../components/ha-md-textfield";
+import type { HaMdSelect } from "../../../../../components/ha-md-select";
+import "../../../../../components/ha-md-select-option";
+import "../../../../../components/ha-switch";
+import type { BackupConfig } from "../../../../../data/backup";
+import { BackupScheduleState } from "../../../../../data/backup";
+import type { HomeAssistant } from "../../../../../types";
+import { clamp } from "../../../../../common/number/clamp";
 
 export type BackupConfigSchedule = Pick<BackupConfig, "schedule" | "retention">;
 
@@ -23,8 +23,7 @@ const MAX_VALUE = 50;
 
 enum RetentionPreset {
   COPIES_3 = "copies_3",
-  DAYS_7 = "days_7",
-  FOREOVER = "forever",
+  FOREVER = "forever",
   CUSTOM = "custom",
 }
 
@@ -38,7 +37,6 @@ const RETENTION_PRESETS: Record<
   RetentionData
 > = {
   copies_3: { type: "copies", value: 3 },
-  days_7: { type: "days", value: 7 },
   forever: { type: "days", value: 0 },
 };
 
@@ -176,7 +174,7 @@ class HaBackupConfigSchedule extends LitElement {
                 </ha-md-select>
               </ha-md-list-item>
               <ha-md-list-item>
-                <span slot="headline">Maximum copies</span>
+                <span slot="headline">Backups to keep</span>
                 <span slot="supporting-text">
                   The number of backups that are saved
                 </span>
@@ -186,13 +184,10 @@ class HaBackupConfigSchedule extends LitElement {
                   .value=${this._retentionPreset}
                 >
                   <ha-md-select-option .value=${RetentionPreset.COPIES_3}>
-                    <div slot="headline">Latest 3 copies</div>
+                    <div slot="headline">3 backups</div>
                   </ha-md-select-option>
-                  <ha-md-select-option .value=${RetentionPreset.DAYS_7}>
-                    <div slot="headline">Keep 7 days</div>
-                  </ha-md-select-option>
-                  <ha-md-select-option .value=${RetentionPreset.FOREOVER}>
-                    <div slot="headline">Keep forever</div>
+                  <ha-md-select-option .value=${RetentionPreset.FOREVER}>
+                    <div slot="headline">All backups</div>
                   </ha-md-select-option>
                   <ha-md-select-option .value=${RetentionPreset.CUSTOM}>
                     <div slot="headline">Custom</div>
@@ -223,7 +218,7 @@ class HaBackupConfigSchedule extends LitElement {
                           <div slot="headline">days</div>
                         </ha-md-select-option>
                         <ha-md-select-option .value=${"copies"}>
-                          <div slot="headline">copies</div>
+                          <div slot="headline">backups</div>
                         </ha-md-select-option>
                       </ha-md-select>
                     </ha-md-list-item>
@@ -270,7 +265,9 @@ class HaBackupConfigSchedule extends LitElement {
       const data = this._getData(this.value);
       const retention = RETENTION_PRESETS[value];
       // Ensure we have at least 1 in defaut value because user can't select 0
-      retention.value = Math.max(retention.value, 1);
+      if (value !== RetentionPreset.FOREVER) {
+        retention.value = Math.max(retention.value, 1);
+      }
       this._setData({
         ...data,
         retention: RETENTION_PRESETS[value],

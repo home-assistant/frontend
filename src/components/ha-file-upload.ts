@@ -15,6 +15,7 @@ import { bytesToString } from "../util/bytes-to-string";
 declare global {
   interface HASSDomEvents {
     "file-picked": { files: File[] };
+    "files-cleared": void;
   }
 }
 
@@ -216,6 +217,7 @@ export class HaFileUpload extends LitElement {
     this._input!.value = "";
     this.value = undefined;
     fireEvent(this, "change");
+    fireEvent(this, "files-cleared");
   }
 
   static get styles() {
@@ -319,6 +321,15 @@ export class HaFileUpload extends LitElement {
       }
       .progress {
         color: var(--secondary-text-color);
+      }
+      button.link {
+        background: none;
+        border: none;
+        padding: 0;
+        font-size: 14px;
+        color: var(--primary-color);
+        text-decoration: underline;
+        cursor: pointer;
       }
     `;
   }

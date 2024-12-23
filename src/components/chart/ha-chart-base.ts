@@ -372,6 +372,9 @@ export class HaChartBase extends LitElement {
     const modifierKey = isMac ? "meta" : "ctrl";
     return {
       maintainAspectRatio: false,
+      animation: {
+        duration: 500,
+      },
       ...this.options,
       plugins: {
         ...this.options?.plugins,
@@ -396,14 +399,24 @@ export class HaChartBase extends LitElement {
             drag: {
               enabled: true,
               modifierKey,
+              threshold: 2,
             },
             wheel: {
               enabled: true,
               modifierKey,
+              speed: 0.05,
             },
             mode: "x",
             onZoomComplete: () => {
-              this._isZoomed = this.chart?.isZoomedOrPanned() ?? false;
+              const isZoomed = this.chart?.isZoomedOrPanned() ?? false;
+              if (this._isZoomed && !isZoomed) {
+                setTimeout(() => {
+                  // make sure the scales are properly reset after full zoom out
+                  // they get bugged when zooming in/out multiple times and panning
+                  this.chart?.resetZoom();
+                });
+              }
+              this._isZoomed = isZoomed;
             },
           },
           limits: {

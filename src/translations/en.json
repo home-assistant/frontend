@@ -348,6 +348,7 @@
       "move": "Move",
       "save": "Save",
       "add": "Add",
+      "create": "Create",
       "edit": "Edit",
       "submit": "Submit",
       "rename": "Rename",
@@ -757,7 +758,9 @@
         "change_picture": "Change picture",
         "current_image_alt": "Current picture",
         "supported_formats": "Supports JPEG, PNG, or GIF image.",
-        "unsupported_format": "Unsupported format, please choose a JPEG, PNG, or GIF image."
+        "unsupported_format": "Unsupported format, please choose a JPEG, PNG, or GIF image.",
+        "secondary": "Drop your file here or {select_media}",
+        "select_media": "select from media"
       },
       "color-picker": {
         "default": "default",
@@ -1226,7 +1229,8 @@
       },
       "image_cropper": {
         "crop": "Crop",
-        "crop_image": "Picture to crop"
+        "crop_image": "Picture to crop",
+        "use_original": "Use original"
       },
       "date-picker": {
         "today": "Today",
@@ -2156,7 +2160,7 @@
               "edit_floor": "Edit floor",
               "delete_floor": "Delete floor",
               "confirm_delete": "Delete floor?",
-              "confirm_delete_text": "Removing the floor will unassign all areas from it."
+              "confirm_delete_text": "Deleting the floor will unassign all areas from it."
             }
           },
           "editor": {
@@ -2206,6 +2210,18 @@
           },
           "picker": {
             "search": "Search backups"
+          },
+          "dialogs": {
+            "local_backup_location": {
+              "title": "Change local backup location",
+              "description": "Change the default location where local backups are stored on your Home Assistant instance.",
+              "note": "This location will be used when you create a backup using the supervisor actions in an automation for example.",
+              "options": {
+                "default_backup_mount": {
+                  "name": "Default location"
+                }
+              }
+            }
           }
         },
         "tag": {
@@ -2829,7 +2845,9 @@
               "header": "Expose entities",
               "expose_to": "to {assistants}",
               "expose_entities": "Expose {count} {count, plural,\n  one {entity}\n  other {entities}\n}"
-            }
+            },
+            "expose_new_entities": "Expose new entities",
+            "expose_new_entities_info": "Should new entities be exposed? Exposes supported devices that are not classified as security devices."
           },
           "satellite_wizard": {
             "skip": "Skip",
@@ -3163,8 +3181,8 @@
                   "label": "Numeric state",
                   "above": "Above",
                   "below": "Below",
-                  "mode_above": "Above mode",
-                  "mode_below": "Below mode",
+                  "lower_limit": "Lower limit",
+                  "upper_limit": "Upper limit",
                   "value_template": "Value template",
                   "type_value": "Fixed number",
                   "type_input": "Numeric value of another entity",
@@ -3366,8 +3384,8 @@
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::label%]",
                   "above": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::above%]",
                   "below": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::below%]",
-                  "mode_above": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::mode_above%]",
-                  "mode_below": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::mode_below%]",
+                  "lower_limit": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::lower_limit%]",
+                  "upper_limit": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::upper_limit%]",
                   "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::value_template%]",
                   "description": {
                     "picker": "If the numeric value of an entity''s state (or attribute''s value) is above or below a given threshold.",
@@ -3694,6 +3712,12 @@
                   "label": "Unknown"
                 }
               }
+            },
+            "dialog": {
+              "add_description": "Add description",
+              "add_icon": "Add icon",
+              "add_category": "Add category",
+              "add_labels": "Add labels"
             }
           },
           "trace": {
@@ -4335,7 +4359,7 @@
           "error_delete": "Error deleting device",
           "picker": {
             "search": "Search {number} devices",
-            "state": "State",
+            "state": "Status",
             "bulk_actions": {
               "move_area": "Move to area",
               "no_area": "No area",
@@ -5904,7 +5928,45 @@
             "header_name": "{name} View Configuration",
             "add": "Add view",
             "background": {
-              "title": "Add a background to the view"
+              "settings": "Background settings",
+              "image": "Background image",
+              "size": {
+                "name": "Background size",
+                "options": {
+                  "auto": "Original",
+                  "cover": "Fill view",
+                  "contain": "Fit view"
+                }
+              },
+              "alignment": {
+                "name": "Background alignment",
+                "options": {
+                  "top left": "Top left",
+                  "top center": "Top center",
+                  "top right": "Top right",
+                  "center left": "Center left",
+                  "center": "Center",
+                  "center right": "Center right",
+                  "bottom left": "Bottom left",
+                  "bottom center": "Bottom center",
+                  "bottom right": "Bottom right"
+                }
+              },
+              "transparency": "Background transparency",
+              "repeat": {
+                "name": "Background repeat",
+                "options": {
+                  "repeat": "Repeat (tile)",
+                  "no-repeat": "No repeat"
+                }
+              },
+              "attachment": {
+                "name": "Background attachment",
+                "options": {
+                  "scroll": "Scroll",
+                  "fixed": "Fixed"
+                }
+              }
             },
             "edit": "Edit view",
             "delete": "Delete view",
@@ -5988,7 +6050,7 @@
             "header": "Badge configuration",
             "typed_header": "{type} Badge configuration",
             "pick_badge": "Which badge would you like to add?",
-            "pick_badge_title": "Which badge would you like to add to {name}",
+            "pick_badge_title": "Which badge would you like to add to \"{name}\"?",
             "toggle_editor": "[%key:ui::panel::lovelace::editor::edit_card::toggle_editor%]",
             "unsaved_changes": "[%key:ui::panel::lovelace::editor::edit_card::unsaved_changes%]",
             "confirm_cancel": "[%key:ui::panel::lovelace::editor::edit_card::confirm_cancel%]",
@@ -7584,7 +7646,10 @@
         "restore": {
           "header": "Restore a backup",
           "in_progress": "Restore in progress",
+          "failed": "Restore failed",
           "upload_backup": "[%key:supervisor::backup::upload_backup%]",
+          "upload_supports": "Supports .TAR files",
+          "upload_drop": "[%key:ui::components::file-upload::secondary%]",
           "show_log": "Show full log",
           "hide_log": "Hide full log",
           "full_backup": "[%key:supervisor::backup::full_backup%]",
@@ -7598,12 +7663,17 @@
           "password": "[%key:supervisor::backup::password%]",
           "confirm_password": "[%key:supervisor::backup::confirm_password%]",
           "confirm_restore_partial_backup_title": "[%key:supervisor::backup::confirm_restore_partial_backup_title%]",
-          "confirm_restore_partial_backup_text": "[%key:supervisor::backup::confirm_restore_partial_backup_text%]",
+          "confirm_restore_partial_backup_text": "The backup will be restored. Depending on the size of the backup, this can take up to 45 min. Home Assistant needs to shutdown and the restore progress is running in the background. If it succeeds, Home Assistant will automatically start again and you see the login screen. If it fails it will bring you back to the onboarding.",
           "confirm_restore_full_backup_title": "[%key:supervisor::backup::confirm_restore_full_backup_title%]",
-          "confirm_restore_full_backup_text": "[%key:supervisor::backup::confirm_restore_full_backup_text%]",
+          "confirm_restore_full_backup_text": "Your entire system will be wiped and the backup will be restored. Depending on the size of the backup, this can take up to 45 min. Home Assistant needs to shutdown and the restore progress is running in the background. If it succeeds, Home Assistant will automatically start again and you see the login screen. If it fails it will bring you back to the onboarding.",
           "restore": "[%key:supervisor::backup::restore%]",
           "close": "[%key:ui::common::close%]",
-          "cancel": "[%key:ui::common::cancel%]"
+          "cancel": "[%key:ui::common::cancel%]",
+          "retry": "Retry",
+          "restore_start_failed": "[%key:supervisor::backup::restore_start_failed%]",
+          "no_backup_found": "[%key:supervisor::backup::no_backup_found%]",
+          "restore_no_home_assistant": "[%key:supervisor::backup::restore_no_home_assistant%]",
+          "unnamed_backup": "[%key:supervisor::backup::unnamed_backup%]"
         }
       },
       "custom": {
@@ -7640,7 +7710,8 @@
           "energy_distribution_title": "Energy distribution",
           "energy_sources_table_title": "Sources",
           "energy_devices_graph_title": "Individual devices total usage",
-          "energy_devices_detail_graph_title": "Individual devices detail usage"
+          "energy_devices_detail_graph_title": "Individual devices detail usage",
+          "energy_sankey_title": "Energy flow"
         }
       },
       "history": {
@@ -8089,16 +8160,16 @@
       "addons": "Add-ons",
       "folders": "Folders",
       "size": "Size",
-      "password": "Backup password",
-      "confirm_password": "Confirm backup password",
+      "password": "Backup encryption key",
+      "confirm_password": "Confirm encryption key",
       "password_protection": "Password protection",
       "enter_password": "Please enter a password.",
       "passwords_not_matching": "The passwords does not match",
       "backup_already_running": "A backup or restore is already running. Creating a new backup is currently not possible, try again later.",
       "confirm_restore_partial_backup_title": "Restore partial backup",
-      "confirm_restore_partial_backup_text": "The backup will be restored. Depending on the size of the backup, this can take up to 45 min.",
+      "confirm_restore_partial_backup_text": "The backup will be restored. Depending on the size of the backup, this can take up to 45 min. Home Assistant needs to shutdown and the restore progress is running in the background. If it succeeds, Home Assistant will automatically start again.",
       "confirm_restore_full_backup_title": "Restore full backup",
-      "confirm_restore_full_backup_text": "Your entire system will be wiped and the backup will be restored. Depending on the size of the backup, this can take up to 45 min.",
+      "confirm_restore_full_backup_text": "Your entire system will be wiped and the backup will be restored. Depending on the size of the backup, this can take up to 45 min. Home Assistant needs to shutdown and the restore progress is running in the background. If it succeeds, Home Assistant will automatically start again.",
       "confirm_delete_title": "Delete backup",
       "confirm_delete_text": "This backup will be permanently deleted and cannot be restored later.",
       "restore": "Restore",
@@ -8108,7 +8179,11 @@
       "download": "Download",
       "more_actions": "More actions",
       "remote_download_title": "Potentially slow download",
-      "remote_download_text": "You are accessing Home Assistant via remote access. Downloading backups over the Nabu Casa URL will take some time. If you are at home, cancel this dialog and enter your local URL, such as 'http://homeassistant.local:8123'"
+      "remote_download_text": "You are accessing Home Assistant via remote access. Downloading backups over the Nabu Casa URL will take some time. If you are at home, cancel this dialog and enter your local URL, such as 'http://homeassistant.local:8123'",
+      "restore_start_failed": "Failed to start restore. Unknown error.",
+      "no_backup_found": "No backup found.",
+      "restore_no_home_assistant": "Backup does not contain Home Assistant data. To restore Home Assistant you need a backup of Home Assistant core.",
+      "unnamed_backup": "Unnamed backup"
     },
     "dialog": {
       "network": {

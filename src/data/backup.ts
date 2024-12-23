@@ -15,8 +15,8 @@ export const enum BackupScheduleState {
 }
 
 export interface BackupConfig {
-  last_attempted_strategy_backup: string | null;
-  last_completed_strategy_backup: string | null;
+  last_attempted_automatic_backup: string | null;
+  last_completed_automatic_backup: string | null;
   create_backup: {
     agent_ids: string[];
     include_addons: string[] | null;
@@ -64,7 +64,7 @@ export interface BackupContent {
   size: number;
   agent_ids?: string[];
   failed_agent_ids?: string[];
-  with_strategy_settings: boolean;
+  with_automatic_settings: boolean;
 }
 
 export interface BackupData {
@@ -164,11 +164,11 @@ export const generateBackup = (
     ...params,
   });
 
-export const generateBackupWithStrategySettings = (
+export const generateBackupWithAutomaticSettings = (
   hass: HomeAssistant
 ): Promise<void> =>
   hass.callWS({
-    type: "backup/generate_with_strategy_settings",
+    type: "backup/generate_with_automatic_settings",
   });
 
 export const restoreBackup = (
@@ -214,11 +214,16 @@ export const getPreferredAgentForDownload = (agents: string[]) => {
 };
 
 export const CORE_LOCAL_AGENT = "backup.local";
-export const HASSIO_LOCAL_AGENT = "backup.hassio";
+export const HASSIO_LOCAL_AGENT = "hassio.local";
 export const CLOUD_AGENT = "cloud.cloud";
 
 export const isLocalAgent = (agentId: string) =>
   [CORE_LOCAL_AGENT, HASSIO_LOCAL_AGENT].includes(agentId);
+
+export const isNetworkMountAgent = (agentId: string) => {
+  const [domain, name] = agentId.split(".");
+  return domain === "hassio" && name !== "local";
+};
 
 export const computeBackupAgentName = (
   localize: LocalizeFunc,
@@ -229,6 +234,11 @@ export const computeBackupAgentName = (
     return "This system";
   }
   const [domain, name] = agentId.split(".");
+
+  if (isNetworkMountAgent(agentId)) {
+    return name;
+  }
+
   const domainName = domainToName(localize, domain);
 
   // If there are multiple agents for a domain, show the name
@@ -242,7 +252,23 @@ export const computeBackupAgentName = (
 export const compareAgents = (a: string, b: string) => {
   const isLocalA = isLocalAgent(a);
   const isLocalB = isLocalAgent(b);
-  return isLocalA === isLocalB ? a.localeCompare(b) : isLocalA ? -1 : 1;
+  const isNetworkMountAgentA = isNetworkMountAgent(a);
+  const isNetworkMountAgentB = isNetworkMountAgent(b);
+
+  const getPriority = (isLocal: boolean, isNetworkMount: boolean) => {
+    if (isLocal) return 1;
+    if (isNetworkMount) return 2;
+    return 3;
+  };
+
+  const priorityA = getPriority(isLocalA, isNetworkMountAgentA);
+  const priorityB = getPriority(isLocalB, isNetworkMountAgentB);
+
+  if (priorityA !== priorityB) {
+    return priorityA - priorityB;
+  }
+
+  return a.localeCompare(b);
 };
 
 export const generateEncryptionKey = () => {
