@@ -94,7 +94,9 @@ export class HuiGenericEntityRow extends LitElement {
             })}
             .title=${name}
           >
+          <div class="primary">
             ${this.config.name || computeStateName(stateObj)}
+          </div>
             ${hasSecondary
               ? html`
                   <div class="secondary">
@@ -218,6 +220,12 @@ export class HuiGenericEntityRow extends LitElement {
         margin-left: 0;
         margin-inline-start: 0;
         margin-inline-end: initial;
+      }
+      .primary {
+        font-weight: 500;
+        font-size: 14px
+        letter-spacing: 0.1px
+        color: var(--primary-text-color);
       }
       .secondary,
       ha-relative-time {
