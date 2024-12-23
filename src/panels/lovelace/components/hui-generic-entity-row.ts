@@ -227,6 +227,12 @@ export class HuiGenericEntityRow extends LitElement {
         letter-spacing: 0.1px
         color: var(--primary-text-color);
       }
+      .secondary {
+        font-weight: 400;
+        font-size: 12px;
+        letter-spacing: 0.4px;
+        color: var(--primary-text-color);
+      }
       .secondary,
       ha-relative-time {
         color: var(--secondary-text-color);
