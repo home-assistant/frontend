@@ -68,6 +68,9 @@ class HaBackupSummaryCard extends LitElement {
   }
 
   static styles = css`
+    ha-card {
+      min-height: 74px;
+    }
     .summary {
       display: flex;
       flex-direction: row;
