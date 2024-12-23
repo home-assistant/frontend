@@ -56,9 +56,6 @@ class HaBackupConfigAgents extends LitElement {
     if (isNetworkMountAgent(agentId)) {
       return "Network storage";
     }
-    if (isLocalAgent(agentId)) {
-      return "Stored on this system";
-    }
     return "";
   }
 
