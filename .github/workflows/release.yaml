@@ -25,13 +25,13 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v4.2.2
 
-      - name: Verify version
-        uses: home-assistant/actions/helpers/verify-version@master
-
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Verify version
+        uses: home-assistant/actions/helpers/verify-version@master
 
       - name: Setup Node
         uses: actions/setup-node@v4.1.0
