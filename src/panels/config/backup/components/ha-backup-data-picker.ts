@@ -320,12 +320,12 @@ export class HaBackupDataPicker extends LitElement {
     return css`
       .section {
         margin-inline-start: -16px;
-        margin-inline-end: 0;
+        margin-inline-end: initial;
         margin-left: -16px;
       }
       .items {
         padding-inline-start: 40px;
-        padding-inline-end: 0;
+        padding-inline-end: initial;
         padding-left: 40px;
         display: flex;
         flex-direction: column;
@@ -333,7 +333,7 @@ export class HaBackupDataPicker extends LitElement {
       ha-backup-addons-picker {
         display: block;
         padding-inline-start: 40px;
-        padding-inline-end: 0;
+        padding-inline-end: initial;
         padding-left: 40px;
       }
     `;

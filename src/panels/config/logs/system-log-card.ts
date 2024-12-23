@@ -247,6 +247,14 @@ export class SystemLogCard extends LitElement {
         padding-top: 8px;
       }
 
+      :host {
+        direction: var(--direction);
+      }
+
+      mwc-list {
+        direction: ltr;
+      }
+
       .header {
         display: flex;
         justify-content: space-between;
@@ -295,11 +303,9 @@ export class SystemLogCard extends LitElement {
 
       .card-actions,
       .empty-content {
-        direction: var(--direction);
       }
 
       .row-secondary {
-        direction: var(--direction);
         text-align: left;
       }
     `;
