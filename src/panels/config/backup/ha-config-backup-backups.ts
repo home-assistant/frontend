@@ -489,6 +489,9 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     }
 
     await deleteBackup(this.hass, backup.backup_id);
+    if (this._selected.includes(backup.backup_id)) {
+      this._selected = this._selected.filter((id) => id !== backup.backup_id);
+    }
     fireEvent(this, "ha-refresh-backup-info");
   }
 
