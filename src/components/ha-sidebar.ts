@@ -871,7 +871,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           border-bottom: 1px solid var(--divider-color);
           background-color: var(
             --sidebar-menu-button-background-color,
-            var(--primary-background-color)
+            inherit
           );
           font-size: 20px;
           align-items: center;
