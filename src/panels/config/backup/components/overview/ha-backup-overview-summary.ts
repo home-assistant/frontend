@@ -67,7 +67,7 @@ class HaBackupOverviewBackups extends LitElement {
   }
 
   protected render() {
-    if (this.fetching) {
+    if (true) {
       return html`
         <ha-backup-summary-card heading="Loading backups" status="loading">
           <ha-md-list>
@@ -216,12 +216,13 @@ class HaBackupOverviewBackups extends LitElement {
           animation-timing-function: linear;
           animation-duration: 1.2s;
           border-radius: 4px;
-          height: 20px;
+          height: 16px;
+          margin: 2px 0;
           background: linear-gradient(
               to right,
-              rgb(247, 249, 250) 8%,
-              rgb(235, 238, 240) 18%,
-              rgb(247, 249, 250) 33%
+              var(--card-background-color) 8%,
+              var(--secondary-background-color) 18%,
+              var(--card-background-color) 33%
             )
             0% 0% / 936px 104px;
         }
