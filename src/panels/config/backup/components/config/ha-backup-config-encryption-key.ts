@@ -6,8 +6,9 @@ import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import type { HomeAssistant } from "../../../../../types";
 import { showChangeBackupEncryptionKeyDialog } from "../../dialogs/show-dialog-change-backup-encryption-key";
-import { fileDownload } from "../../../../../util/file_download";
 import { showSetBackupEncryptionKeyDialog } from "../../dialogs/show-dialog-set-backup-encryption-key";
+
+import { downloadEmergencyKit } from "../../../../../data/backup";
 
 @customElement("ha-backup-config-encryption-key")
 class HaBackupConfigEncryptionKey extends LitElement {
@@ -64,10 +65,7 @@ class HaBackupConfigEncryptionKey extends LitElement {
     if (!this._value) {
       return;
     }
-    fileDownload(
-      "data:text/plain;charset=utf-8," + encodeURIComponent(this._value),
-      "emergency_kit.txt"
-    );
+    downloadEmergencyKit(this.hass, this._value);
   }
 
   private _change() {
