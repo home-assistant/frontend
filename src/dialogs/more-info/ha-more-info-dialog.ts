@@ -545,11 +545,7 @@ export class MoreInfoDialog extends LitElement {
           /* Set the top top of the dialog to a fixed position, so it doesnt jump when the content changes size */
           --vertical-align-dialog: flex-start;
           --dialog-surface-margin-top: 40px;
-          /* This is needed for the tooltip of the history charts to be positioned correctly */
-          --dialog-surface-position: static;
-          --dialog-content-position: static;
           --dialog-content-padding: 0;
-          --chart-base-position: static;
         }
 
         .content {

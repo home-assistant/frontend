@@ -167,10 +167,11 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
     if (
       this._entityRegCreated &&
       this._newAutomationId &&
-      changedProps.has("entityRegistry")
+      changedProps.has("_entityRegistry")
     ) {
       const automation = this._entityRegistry.find(
         (entity: EntityRegistryEntry) =>
+          entity.platform === "automation" &&
           entity.unique_id === this._newAutomationId
       );
       if (automation) {
@@ -927,6 +928,14 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
     this._saving = true;
     this._validationErrors = undefined;
 
+    let entityRegPromise: Promise<EntityRegistryEntry> | undefined;
+    if (this._entityRegistryUpdate !== undefined && !this._entityId) {
+      this._newAutomationId = id;
+      entityRegPromise = new Promise<EntityRegistryEntry>((resolve) => {
+        this._entityRegCreated = resolve;
+      });
+    }
+
     try {
       await saveAutomationConfig(this.hass, id, this._config!);
 
@@ -934,13 +943,8 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
         let entityId = this._entityId;
 
         // wait for automation to appear in entity registry when creating a new automation
-        if (!entityId) {
-          this._newAutomationId = id;
-          const automation = await new Promise<EntityRegistryEntry>(
-            (resolve) => {
-              this._entityRegCreated = resolve;
-            }
-          );
+        if (entityRegPromise) {
+          const automation = await entityRegPromise;
           entityId = automation.entity_id;
         }
 
@@ -950,6 +954,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
               automation: this._entityRegistryUpdate.category || null,
             },
             labels: this._entityRegistryUpdate.labels || [],
+            area_id: this._entityRegistryUpdate.area || null,
           });
         }
       }

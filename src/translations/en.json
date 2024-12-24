@@ -936,7 +936,7 @@
           "delete": "Delete {count}",
           "deleting": "Deleting {count}",
           "tip_media_storage": "[%key:ui::panel::config::tips::media_storage%]",
-          "tip_storage_panel": "[%key:ui::panel::config::storage::caption%]"
+          "tip_storage_panel": "storage"
         },
         "class": {
           "album": "Album",
@@ -2685,7 +2685,8 @@
             "picker": {
               "headers": {
                 "url": "URL",
-                "type": "Type"
+                "type": "Type",
+                "delete": "Delete"
               },
               "no_resources": "No resources",
               "add_resource": "Add resource"
@@ -2957,8 +2958,8 @@
             "traces_not_available": "[%key:ui::panel::config::automation::editor::traces_not_available%]",
             "edit_category": "Edit category",
             "assign_category": "Assign category",
-            "no_category_support": "You can't assign an category to this automation",
-            "no_category_entity_reg": "To assign an category to an automation it needs to have a unique ID.",
+            "no_category_support": "You can't assign a category to this automation",
+            "no_category_entity_reg": "To assign a category to an automation it needs to have a unique ID.",
             "search": "Search {number} automations",
             "headers": {
               "toggle": "Enable/disable",
@@ -3717,7 +3718,8 @@
               "add_description": "Add description",
               "add_icon": "Add icon",
               "add_category": "Add category",
-              "add_labels": "Add labels"
+              "add_labels": "Add labels",
+              "add_area": "Add area"
             }
           },
           "trace": {
@@ -4117,6 +4119,7 @@
               "try": "Try",
               "dialog": {
                 "header": "Try text-to-speech",
+                "message": "Message",
                 "example_message": "Hello {name}, you can play any text on any supported media player!",
                 "target": "Target",
                 "target_browser": "Browser",
