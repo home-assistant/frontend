@@ -51,7 +51,7 @@ class HaBackupConfigAgents extends LitElement {
 
   private _description(agentId: string) {
     if (agentId === CLOUD_AGENT) {
-      return "Note: It stores only one backup, regardless of your settings.";
+      return "Note: It stores only one backup with a maximum size of 5 GB, regardless of your settings.";
     }
     if (isNetworkMountAgent(agentId)) {
       return "Network storage";
