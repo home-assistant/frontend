@@ -95,7 +95,7 @@ class HaBackupOverviewBackups extends LitElement {
     const now = new Date();
 
     const lastBackupDescription = lastSuccessfulBackup
-      ? `Last successful backup ${relativeTime(lastSuccessfulBackupDate, this.hass.locale, now, true)} and stored to ${lastSuccessfulBackup.agent_ids?.length} locations.`
+      ? `Last successful backup ${relativeTime(lastSuccessfulBackupDate, this.hass.locale, now, true)} and stored in ${lastSuccessfulBackup.agent_ids?.length} locations.`
       : "You have no successful backups.";
 
     if (lastAttempt && lastAttempt > lastSuccessfulBackupDate) {
