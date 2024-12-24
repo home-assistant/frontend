@@ -203,18 +203,18 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
     return nothing;
   }
 
-  private _copyKeyToClipboard() {
-    copyToClipboard(this._newEncryptionKey);
+  private async _copyKeyToClipboard() {
+    await copyToClipboard(this._newEncryptionKey);
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
     });
   }
 
-  private _copyOldKeyToClipboard() {
+  private async _copyOldKeyToClipboard() {
     if (!this._params?.currentKey) {
       return;
     }
-    copyToClipboard(this._params.currentKey);
+    await copyToClipboard(this._params.currentKey);
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
     });
