@@ -327,12 +327,6 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
         `;
       case "setup":
         return html`
-          <p>
-            It is recommended that you create a backup every day. You should
-            keep three backups in at least two different locations, one of which
-            should be off-site. Once you make your selection, your first backup
-            will begin.
-          </p>
           <ha-md-list class="full">
             <ha-md-list-item type="button" @click=${this._done}>
               <span slot="headline">Recommended settings</span>
