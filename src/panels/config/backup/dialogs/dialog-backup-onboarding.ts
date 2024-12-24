@@ -24,6 +24,7 @@ import {
   BackupScheduleState,
   CLOUD_AGENT,
   CORE_LOCAL_AGENT,
+  downloadEmergencyKit,
   generateEncryptionKey,
   HASSIO_LOCAL_AGENT,
   updateBackupConfig,
@@ -31,7 +32,6 @@ import {
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import { fileDownload } from "../../../../util/file_download";
 import { showToast } from "../../../../util/toast";
 import "../components/config/ha-backup-config-agents";
 import "../components/config/ha-backup-config-data";
@@ -392,10 +392,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
     if (!key) {
       return;
     }
-    fileDownload(
-      "data:text/plain;charset=utf-8," + encodeURIComponent(key),
-      "emergency_kit.txt"
-    );
+    downloadEmergencyKit(this.hass, key);
   }
 
   private _copyKeyToClipboard() {
@@ -465,6 +462,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
           width: 90vw;
           max-width: 560px;
           --dialog-content-padding: 8px 24px;
+          max-height: min(605px, 100% - 48px);
         }
         ha-md-list {
           background: none;

@@ -6,6 +6,11 @@ import type { LocalizeFunc } from "../common/translations/localize";
 import type { HomeAssistant } from "../types";
 import { domainToName } from "./integration";
 import type { FrontendLocaleData } from "./translation";
+import {
+  formatDateTime,
+  formatDateTimeNumeric,
+} from "../common/datetime/format_date_time";
+import { fileDownload } from "../util/file_download";
 
 export const enum BackupScheduleState {
   NEVER = "never",
@@ -287,6 +292,45 @@ export const generateEncryptionKey = () => {
   });
   return result;
 };
+
+export const generateEmergencyKit = (
+  hass: HomeAssistant,
+  encryptionKey: string
+) =>
+  "data:text/plain;charset=utf-8," +
+  encodeURIComponent(`Home Assistant Backup Emergency Kit
+
+This emergency kit contains your backup encryption key. You need this key
+to be able to restore your Home Assistant backups.
+
+Date: ${formatDateTime(new Date(), hass.locale, hass.config)}
+
+Instance:
+${hass.config.location_name}
+
+URL:
+${hass.auth.data.hassUrl}
+
+Encryption key:
+${encryptionKey}
+
+For more information visit: https://www.home-assistant.io/more-info/backup-emergency-kit`);
+
+export const geneateEmergencyKitFileName = (
+  hass: HomeAssistant,
+  append?: string
+) =>
+  `home_assistant_backup_emergency_kit_${append ? `${append}_` : ""}${formatDateTimeNumeric(new Date(), hass.locale, hass.config).replace(",", "").replace(" ", "_")}.txt`;
+
+export const downloadEmergencyKit = (
+  hass: HomeAssistant,
+  key: string,
+  appendFileName?: string
+) =>
+  fileDownload(
+    generateEmergencyKit(hass, key),
+    geneateEmergencyKitFileName(hass, appendFileName)
+  );
 
 export const getFormattedBackupTime = memoizeOne(
   (locale: FrontendLocaleData, config: HassConfig) => {
