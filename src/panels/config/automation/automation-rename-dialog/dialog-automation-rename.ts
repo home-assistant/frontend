@@ -14,6 +14,7 @@ import "../../category/ha-category-picker";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/chips/ha-chip-set";
 import "../../../../components/chips/ha-assist-chip";
+import "../../../../components/ha-area-picker";
 
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
@@ -57,6 +58,7 @@ class DialogAutomationRename extends LitElement implements HassDialog {
       );
     this._newDescription = params.config.description || "";
     this._entryUpdates = params.entityRegistryUpdate || {
+      area: params.entityRegistryEntry?.area_id || "",
       labels: params.entityRegistryEntry?.labels || [],
       category: params.entityRegistryEntry?.categories[params.domain] || "",
     };
@@ -66,6 +68,7 @@ class DialogAutomationRename extends LitElement implements HassDialog {
       this._newIcon ? "icon" : "",
       this._entryUpdates.category ? "category" : "",
       this._entryUpdates.labels.length > 0 ? "labels" : "",
+      this._entryUpdates.area ? "area" : "",
     ];
   }
 
@@ -193,6 +196,14 @@ class DialogAutomationRename extends LitElement implements HassDialog {
               @value-changed=${this._registryEntryChanged}
             ></ha-labels-picker>`
           : nothing}
+        ${this._visibleOptionals.includes("area")
+          ? html` <ha-area-picker
+              id="area"
+              .hass=${this.hass}
+              .value=${this._entryUpdates.area}
+              @value-changed=${this._registryEntryChanged}
+            ></ha-area-picker>`
+          : nothing}
 
         <ha-chip-set>
           ${this._renderOptionalChip(
@@ -209,6 +220,12 @@ class DialogAutomationRename extends LitElement implements HassDialog {
                 )
               )
             : nothing}
+          ${this._renderOptionalChip(
+            "area",
+            this.hass.localize(
+              "ui.panel.config.automation.editor.dialog.add_area"
+            )
+          )}
           ${this._renderOptionalChip(
             "category",
             this.hass.localize(
@@ -311,12 +328,14 @@ class DialogAutomationRename extends LitElement implements HassDialog {
         ha-icon-picker,
         ha-category-picker,
         ha-labels-picker,
+        ha-area-picker,
         ha-chip-set {
           display: block;
         }
         ha-icon-picker,
         ha-category-picker,
         ha-labels-picker,
+        ha-area-picker,
         ha-chip-set {
           margin-top: 16px;
         }
