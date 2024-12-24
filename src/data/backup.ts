@@ -304,11 +304,17 @@ This emergency kit contains your backup encryption key. You need this key
 to be able to restore your Home Assistant backups.
 
 Date: ${formatDateTime(new Date(), hass.locale, hass.config)}
-Instance: ${hass.config.location_name}
-URL: ${hass.auth.data.hassUrl}
-Encryption key: ${encryptionKey}
 
-For more information: https://www.home-assistant.io/use-backup-emergency-kit`);
+Instance:
+${hass.config.location_name}
+
+URL:
+${hass.auth.data.hassUrl}
+
+Encryption key:
+${encryptionKey}
+
+For more information visit: https://www.home-assistant.io/more-info/backup-emergency-kit`);
 
 export const geneateEmergencyKitFileName = (
   hass: HomeAssistant,
