@@ -935,7 +935,7 @@
           "delete": "Delete {count}",
           "deleting": "Deleting {count}",
           "tip_media_storage": "[%key:ui::panel::config::tips::media_storage%]",
-          "tip_storage_panel": "[%key:ui::panel::config::storage::caption%]"
+          "tip_storage_panel": "storage"
         },
         "class": {
           "album": "Album",
