@@ -99,7 +99,7 @@ class HaBackupOverviewBackups extends LitElement {
       : "You have no successful backups.";
 
     if (lastAttempt && lastAttempt > lastSuccessfulBackupDate) {
-      const lastAttemptDescription = `The last automatic backup trigged ${relativeTime(lastAttempt, this.hass.locale, now, true)} wasn't successful.`;
+      const lastAttemptDescription = `The last automatic backup triggered ${relativeTime(lastAttempt, this.hass.locale, now, true)} wasn't successful.`;
       return html`
         <ha-backup-summary-card
           heading="Last automatic backup failed"
