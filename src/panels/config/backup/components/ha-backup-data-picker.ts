@@ -319,22 +319,22 @@ export class HaBackupDataPicker extends LitElement {
   static get styles(): CSSResultGroup {
     return css`
       .section {
-        margin-inline-start: -16px;
-        margin-inline-end: 0;
         margin-left: -16px;
+        margin-inline-start: -16px;
+        margin-inline-end: initial;
       }
       .items {
-        padding-inline-start: 40px;
-        padding-inline-end: 0;
         padding-left: 40px;
+        padding-inline-start: 40px;
+        padding-inline-end: initial;
         display: flex;
         flex-direction: column;
       }
       ha-backup-addons-picker {
         display: block;
-        padding-inline-start: 40px;
-        padding-inline-end: 0;
         padding-left: 40px;
+        padding-inline-start: 40px;
+        padding-inline-end: initial;
       }
     `;
   }
