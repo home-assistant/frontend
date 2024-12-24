@@ -324,10 +324,10 @@ class HaPanelDevState extends LitElement {
     `;
   }
 
-  private _copyEntity(ev) {
+  private async _copyEntity(ev) {
     ev.preventDefault();
     const entity = (ev.currentTarget! as any).entity;
-    copyToClipboard(entity.entity_id);
+    await copyToClipboard(entity.entity_id);
   }
 
   private _entitySelected(ev) {
