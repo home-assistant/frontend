@@ -331,16 +331,13 @@ class HaBackupConfigSchedule extends LitElement {
     @media all and (max-width: 450px) {
       ha-md-select {
         min-width: 160px;
-        width: 160px;
       }
     }
     ha-md-textfield#value {
       min-width: 70px;
-      width: 70px;
     }
     ha-md-select#type {
       min-width: 100px;
-      width: 100px;
     }
   `;
 }
