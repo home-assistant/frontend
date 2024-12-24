@@ -141,9 +141,9 @@ class HaConfigBackupSettings extends LitElement {
             <div class="card-content">
               <p>
                 Keep this encryption key in a safe place, as you will need it to
-                access your backup, allowing it to be restored. Either record
-                the characters below or download them as an emergency kit file.
-                Encryption keeps your backups private and secure.
+                access your backup, allowing it to be restored. Download them as
+                an emergency kit file and store it somewhere safe. Encryption
+                keeps your backups private and secure.
               </p>
               <ha-backup-config-encryption-key
                 .hass=${this.hass}
