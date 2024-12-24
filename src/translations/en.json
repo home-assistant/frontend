@@ -4118,6 +4118,7 @@
               "try": "Try",
               "dialog": {
                 "header": "Try text-to-speech",
+                "message": "Message",
                 "example_message": "Hello {name}, you can play any text on any supported media player!",
                 "target": "Target",
                 "target_browser": "Browser",
