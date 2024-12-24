@@ -40,6 +40,7 @@ import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import { QuickBarMode, type QuickBarParams } from "./show-dialog-quick-bar";
+import { computeDeviceName } from "../../data/device_registry";
 
 interface QuickBarItem extends ScorableTextItem {
   primaryText: string;
@@ -522,12 +523,14 @@ export class QuickBar extends LitElement {
   }
 
   private _generateDeviceItems(): DeviceItem[] {
-    return Object.keys(this.hass.devices)
-      .map((deviceId) => {
-        const device = this.hass.devices[deviceId];
-        const area = this.hass.areas[device.area_id!];
+    return Object.values(this.hass.devices)
+      .filter((device) => !device.disabled_by)
+      .map((device) => {
+        const area = device.area_id
+          ? this.hass.areas[device.area_id]
+          : undefined;
         const deviceItem = {
-          primaryText: device.name!,
+          primaryText: computeDeviceName(device, this.hass),
           deviceId: device.id,
           area: area?.name,
           action: () => navigate(`/config/devices/device/${device.id}`),
