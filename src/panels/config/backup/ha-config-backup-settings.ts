@@ -142,7 +142,7 @@ class HaConfigBackupSettings extends LitElement {
               <p>
                 Keep this encryption key in a safe place, as you will need it to
                 access your backup, allowing it to be restored. Download them as
-                an emergency kit file and store it somewhere save. Encryption
+                an emergency kit file and store it somewhere safe. Encryption
                 keeps your backups private and secure.
               </p>
               <ha-backup-config-encryption-key
