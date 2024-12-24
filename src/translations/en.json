@@ -935,6 +935,7 @@
           "confirm_delete": "Do you want to delete {count} {count, plural,\n  one {file}\n  other {files}\n}?",
           "delete": "Delete {count}",
           "deleting": "Deleting {count}",
+          "deselect_all": "Deselect all",
           "tip_media_storage": "[%key:ui::panel::config::tips::media_storage%]",
           "tip_storage_panel": "storage"
         },
