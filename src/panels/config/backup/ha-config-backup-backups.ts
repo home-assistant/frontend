@@ -78,7 +78,7 @@ const TYPE_ORDER: Array<BackupType> = ["automatic", "manual", "imported"];
 class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public cloudStatus!: CloudStatus;
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -167,7 +167,6 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         title: "Locations",
         showNarrow: true,
         minWidth: "60px",
-        maxWidth: "120px",
         template: (backup) => html`
           <div style="display: flex; gap: 4px;">
             ${(backup.agent_ids || []).map((agentId) => {
@@ -181,7 +180,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
                   <ha-svg-icon
                     .path=${mdiHarddisk}
                     title=${name}
-                    slot="graphic"
+                    style="flex-shrink: 0;"
                   ></ha-svg-icon>
                 `;
               }
@@ -190,7 +189,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
                   <ha-svg-icon
                     .path=${mdiNas}
                     title=${name}
-                    slot="graphic"
+                    style="flex-shrink: 0;"
                   ></ha-svg-icon>
                 `;
               }
@@ -209,6 +208,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
                   referrerpolicy="no-referrer"
                   alt=${name}
                   slot="graphic"
+                  style="flex-shrink: 0;"
                 />
               `;
             })}

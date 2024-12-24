@@ -13,11 +13,13 @@ import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-password-field";
-import { generateEncryptionKey } from "../../../../data/backup";
+import {
+  downloadEmergencyKit,
+  generateEncryptionKey,
+} from "../../../../data/backup";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import { fileDownload } from "../../../../util/file_download";
 import { showToast } from "../../../../util/toast";
 import type { ChangeBackupEncryptionKeyDialogParams } from "./show-dialog-change-backup-encryption-key";
 
@@ -203,18 +205,18 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
     return nothing;
   }
 
-  private _copyKeyToClipboard() {
-    copyToClipboard(this._newEncryptionKey);
+  private async _copyKeyToClipboard() {
+    await copyToClipboard(this._newEncryptionKey);
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
     });
   }
 
-  private _copyOldKeyToClipboard() {
+  private async _copyOldKeyToClipboard() {
     if (!this._params?.currentKey) {
       return;
     }
-    copyToClipboard(this._params.currentKey);
+    await copyToClipboard(this._params.currentKey);
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
     });
@@ -224,22 +226,14 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
     if (!this._params?.currentKey) {
       return;
     }
-    fileDownload(
-      "data:text/plain;charset=utf-8," +
-        encodeURIComponent(this._params.currentKey),
-      "emergency_kit_old.txt"
-    );
+    downloadEmergencyKit(this.hass, this._params.currentKey, "old");
   }
 
   private _downloadNew() {
     if (!this._newEncryptionKey) {
       return;
     }
-    fileDownload(
-      "data:text/plain;charset=utf-8," +
-        encodeURIComponent(this._newEncryptionKey),
-      "emergency_kit.txt"
-    );
+    downloadEmergencyKit(this.hass, this._newEncryptionKey);
   }
 
   private async _submit() {

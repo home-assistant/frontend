@@ -13,6 +13,7 @@ import type { BackupConfig } from "../../../../../data/backup";
 import {
   BackupScheduleState,
   computeBackupAgentName,
+  getFormattedBackupTime,
   isLocalAgent,
 } from "../../../../../data/backup";
 import { haStyle } from "../../../../../resources/styles";
@@ -43,30 +44,32 @@ class HaBackupBackupsSummary extends LitElement {
       copiesText = `and keep backups for ${days} day(s)`;
     }
 
+    const time = getFormattedBackupTime(this.hass.locale, this.hass.config);
+
     let scheduleText = "";
     if (schedule === BackupScheduleState.DAILY) {
-      scheduleText = `Daily at 04:45`;
+      scheduleText = `Daily at ${time}`;
     }
     if (schedule === BackupScheduleState.MONDAY) {
-      scheduleText = `Weekly on Mondays at 04:45`;
+      scheduleText = `Weekly on Mondays at ${time}`;
     }
     if (schedule === BackupScheduleState.TUESDAY) {
-      scheduleText = `Weekly on Thuesdays at 04:45`;
+      scheduleText = `Weekly on Tuesdays at ${time}`;
     }
     if (schedule === BackupScheduleState.WEDNESDAY) {
-      scheduleText = `Weekly on Wednesdays at 04:45`;
+      scheduleText = `Weekly on Wednesdays at ${time}`;
     }
     if (schedule === BackupScheduleState.THURSDAY) {
-      scheduleText = `Weekly on Thursdays at 04:45`;
+      scheduleText = `Weekly on Thursdays at ${time}`;
     }
     if (schedule === BackupScheduleState.FRIDAY) {
-      scheduleText = `Weekly on Fridays at 04:45`;
+      scheduleText = `Weekly on Fridays at ${time}`;
     }
     if (schedule === BackupScheduleState.SATURDAY) {
-      scheduleText = `Weekly on Saturdays at 04:45`;
+      scheduleText = `Weekly on Saturdays at ${time}`;
     }
     if (schedule === BackupScheduleState.SUNDAY) {
-      scheduleText = `Weekly on Sundays at 04:45`;
+      scheduleText = `Weekly on Sundays at ${time}`;
     }
 
     return scheduleText + " " + copiesText;
