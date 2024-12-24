@@ -99,7 +99,9 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     const { agents } = await fetchBackupAgentsInfo(this.hass);
     this._agentIds = agents
       .map((agent) => agent.agent_id)
-      .filter((id) => id !== CLOUD_AGENT || this._params?.cloudStatus.logged_in)
+      .filter(
+        (id) => id !== CLOUD_AGENT || this._params?.cloudStatus?.logged_in
+      )
       .sort(compareAgents);
   }
 

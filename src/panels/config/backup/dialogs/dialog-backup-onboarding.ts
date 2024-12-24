@@ -101,7 +101,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
       agents.push(CORE_LOCAL_AGENT);
     }
     // Enable cloud location if logged in
-    if (this._params.cloudStatus.logged_in) {
+    if (this._params.cloudStatus?.logged_in) {
       agents.push(CLOUD_AGENT);
     }
 

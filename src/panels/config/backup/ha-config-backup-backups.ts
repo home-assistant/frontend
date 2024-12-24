@@ -78,7 +78,7 @@ const TYPE_ORDER: Array<BackupType> = ["automatic", "manual", "imported"];
 class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public cloudStatus!: CloudStatus;
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @property({ type: Boolean }) public narrow = false;
 

@@ -41,7 +41,7 @@ import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
 class HaConfigBackupOverview extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public cloudStatus!: CloudStatus;
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @property({ type: Boolean }) public narrow = false;
 
