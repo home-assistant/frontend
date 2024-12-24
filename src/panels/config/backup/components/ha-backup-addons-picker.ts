@@ -2,7 +2,9 @@ import { mdiPuzzle } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../components/ha-checkbox";
 import "../../../../components/ha-formfield";
@@ -29,10 +31,16 @@ export class HaBackupAddonsPicker extends LitElement {
   @property({ attribute: "hide-version", type: Boolean })
   public hideVersion = false;
 
+  private _addons = memoizeOne((addons: BackupAddonItem[]) =>
+    addons.sort((a, b) =>
+      stringCompare(a.name, b.name, this.hass.locale.language)
+    )
+  );
+
   protected render() {
     return html`
       <div class="items">
-        ${this.addons.map(
+        ${this._addons(this.addons).map(
           (item) => html`
             <ha-formfield>
               <ha-backup-formfield-label
