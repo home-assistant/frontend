@@ -90,7 +90,7 @@ export const showRepairsFlowDialog = (
           ? html`
               <ha-markdown
                 breaks
-                allowsvg
+                allow-svg
                 .content=${description}
               ></ha-markdown>
             `
@@ -123,7 +123,7 @@ export const showRepairsFlowDialog = (
         ${description
           ? html`
               <ha-markdown
-                allowsvg
+                allow-svg
                 breaks
                 .content=${description}
               ></ha-markdown>
@@ -220,7 +220,7 @@ export const showRepairsFlowDialog = (
         return html`${renderIssueDescription(hass, issue)}${description
           ? html`
               <ha-markdown
-                allowsvg
+                allow-svg
                 breaks
                 .content=${description}
               ></ha-markdown>
@@ -254,7 +254,7 @@ export const showRepairsFlowDialog = (
         ${description
           ? html`
               <ha-markdown
-                allowsvg
+                allow-svg
                 breaks
                 .content=${description}
               ></ha-markdown>

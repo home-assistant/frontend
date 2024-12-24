@@ -5,7 +5,7 @@ import type { CloudStatus } from "../../../../data/cloud";
 export interface GenerateBackupDialogParams {
   submit?: (response: GenerateBackupParams) => void;
   cancel?: () => void;
-  cloudStatus: CloudStatus;
+  cloudStatus?: CloudStatus;
 }
 
 export const loadGenerateBackupDialog = () =>
