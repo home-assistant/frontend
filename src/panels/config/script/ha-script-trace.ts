@@ -200,7 +200,7 @@ export class HaScriptTrace extends LitElement {
                 </select>
                 <ha-icon-button
                   .disabled=${this._traces[0].run_id === this._runId}
-                  label=${this.hass!.localize(
+                  .label=${this.hass!.localize(
                     "ui.panel.config.automation.trace.newer_trace"
                   )}
                   @click=${this._pickNewerTrace}
