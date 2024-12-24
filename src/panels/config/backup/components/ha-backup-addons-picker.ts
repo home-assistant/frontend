@@ -4,6 +4,7 @@ import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../components/ha-checkbox";
 import "../../../../components/ha-formfield";
