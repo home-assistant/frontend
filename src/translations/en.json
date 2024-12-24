@@ -4491,7 +4491,7 @@
             "latitude": "Latitude",
             "longitude": "Longitude",
             "passive": "Passive",
-            "passive_note": "Passive zones are hidden in the frontend and are not used as location for device trackers. This is useful if you just want to use it for automations.",
+            "passive_note": "Passive zones are hidden in the frontend and not shown as a location of people or device trackers. This is useful if you just want to use them for automations.",
             "required_error_msg": "This field is required",
             "delete": "Delete",
             "create": "Create",
