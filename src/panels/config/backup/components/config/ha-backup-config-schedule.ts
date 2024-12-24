@@ -129,9 +129,6 @@ class HaBackupConfigSchedule extends LitElement {
       <ha-md-list>
         <ha-md-list-item>
           <span slot="headline">Use automatic backups</span>
-          <span slot="supporting-text">
-            How often you want to create a backup.
-          </span>
 
           <ha-switch
             slot="end"
@@ -181,7 +178,8 @@ class HaBackupConfigSchedule extends LitElement {
               <ha-md-list-item>
                 <span slot="headline">Backups to keep</span>
                 <span slot="supporting-text">
-                  The number of backups that are saved
+                  Based on the maximum number of backups or how many days they
+                  should be kept.
                 </span>
                 <ha-md-select
                   slot="end"
