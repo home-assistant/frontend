@@ -950,6 +950,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
               automation: this._entityRegistryUpdate.category || null,
             },
             labels: this._entityRegistryUpdate.labels || [],
+            area_id: this._entityRegistryUpdate.area || null,
           });
         }
       }

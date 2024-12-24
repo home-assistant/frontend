@@ -13,6 +13,7 @@ interface BaseRenameDialogParams {
 }
 
 export interface EntityRegistryUpdate {
+  area: string;
   labels: string[];
   category: string;
 }
