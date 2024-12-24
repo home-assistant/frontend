@@ -301,10 +301,6 @@ export class SystemLogCard extends LitElement {
         border-top: 1px solid var(--divider-color);
       }
 
-      .card-actions,
-      .empty-content {
-      }
-
       .row-secondary {
         text-align: left;
       }
