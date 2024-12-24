@@ -31,12 +31,9 @@ class HaBackupOverviewBackups extends LitElement {
 
   @property({ type: Boolean }) public fetching = false;
 
-  private _lastBackup = memoizeOne((backups: BackupContent[]) => {
+  private _lastSuccessfulBackup = memoizeOne((backups: BackupContent[]) => {
     const sortedBackups = backups
-      .filter(
-        (backup) =>
-          backup.with_automatic_settings && !backup.failed_agent_ids?.length
-      )
+      .filter((backup) => backup.with_automatic_settings)
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     return sortedBackups[0] as BackupContent | undefined;
@@ -85,37 +82,27 @@ class HaBackupOverviewBackups extends LitElement {
       `;
     }
 
-    const lastBackup = this._lastBackup(this.backups);
+    const lastSuccessfulBackup = this._lastSuccessfulBackup(this.backups);
 
-    if (!lastBackup) {
-      return html`
-        <ha-backup-summary-card
-          heading="No automatic backup available"
-          description="You have no automatic backups yet."
-          status="warning"
-        >
-        </ha-backup-summary-card>
-      `;
-    }
-
-    const lastBackupDate = new Date(lastBackup.date);
-
-    const now = new Date();
-
-    const lastBackupDescription = `Last successful backup ${relativeTime(lastBackupDate, this.hass.locale, now, true)} and stored to ${lastBackup.agent_ids?.length} locations.`;
-    const nextBackupDescription = this._nextBackupDescription(
-      this.config.schedule.state
-    );
+    const lastSuccessfulBackupDate = lastSuccessfulBackup
+      ? new Date(lastSuccessfulBackup.date)
+      : new Date(0);
 
     const lastAttempt = this.config.last_attempted_automatic_backup
       ? new Date(this.config.last_attempted_automatic_backup)
       : undefined;
 
-    if (lastAttempt && lastAttempt > lastBackupDate) {
+    const now = new Date();
+
+    const lastBackupDescription = lastSuccessfulBackup
+      ? `Last successful backup ${relativeTime(lastSuccessfulBackupDate, this.hass.locale, now, true)} and stored to ${lastSuccessfulBackup.agent_ids?.length} locations.`
+      : "You have no successful backups.";
+
+    if (lastAttempt && lastAttempt > lastSuccessfulBackupDate) {
       const lastAttemptDescription = `The last automatic backup trigged ${relativeTime(lastAttempt, this.hass.locale, now, true)} wasn't successful.`;
       return html`
         <ha-backup-summary-card
-          heading=${`Last automatic backup failed`}
+          heading="Last automatic backup failed"
           status="error"
         >
           <ha-md-list>
@@ -132,10 +119,25 @@ class HaBackupOverviewBackups extends LitElement {
       `;
     }
 
+    if (!lastSuccessfulBackup) {
+      return html`
+        <ha-backup-summary-card
+          heading="No automatic backup available"
+          description="You have no automatic backups yet."
+          status="warning"
+        >
+        </ha-backup-summary-card>
+      `;
+    }
+
+    const nextBackupDescription = this._nextBackupDescription(
+      this.config.schedule.state
+    );
+
     const numberOfDays = differenceInDays(
       // Subtract a few hours to avoid showing as overdue if it's just a few hours (e.g. daylight saving)
       addHours(now, -OVERDUE_MARGIN_HOURS),
-      lastBackupDate
+      lastSuccessfulBackupDate
     );
 
     const isOverdue =
