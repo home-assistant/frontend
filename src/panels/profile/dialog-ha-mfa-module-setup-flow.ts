@@ -88,7 +88,7 @@ class HaMfaModuleSetupFlow extends LitElement {
               </div>`
             : html`${this._step.type === "abort"
                 ? html` <ha-markdown
-                    allowsvg
+                    allow-svg
                     breaks
                     .content=${this.hass.localize(
                       `component.auth.mfa_setup.${this._step.handler}.abort.${this._step.reason}`
@@ -103,7 +103,7 @@ class HaMfaModuleSetupFlow extends LitElement {
                     </p>`
                   : this._step.type === "form"
                     ? html`<ha-markdown
-                          allowsvg
+                          allow-svg
                           breaks
                           .content=${this.hass.localize(
                             `component.auth.mfa_setup.${

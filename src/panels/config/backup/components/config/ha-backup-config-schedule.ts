@@ -3,18 +3,21 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { clamp } from "../../../../../common/number/clamp";
 import type { HaCheckbox } from "../../../../../components/ha-checkbox";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-md-select";
-import "../../../../../components/ha-md-textfield";
 import type { HaMdSelect } from "../../../../../components/ha-md-select";
 import "../../../../../components/ha-md-select-option";
+import "../../../../../components/ha-md-textfield";
 import "../../../../../components/ha-switch";
 import type { BackupConfig } from "../../../../../data/backup";
-import { BackupScheduleState } from "../../../../../data/backup";
+import {
+  BackupScheduleState,
+  getFormattedBackupTime,
+} from "../../../../../data/backup";
 import type { HomeAssistant } from "../../../../../types";
-import { clamp } from "../../../../../common/number/clamp";
 
 export type BackupConfigSchedule = Pick<BackupConfig, "schedule" | "retention">;
 
@@ -120,13 +123,12 @@ class HaBackupConfigSchedule extends LitElement {
   protected render() {
     const data = this._getData(this.value);
 
+    const time = getFormattedBackupTime(this.hass.locale, this.hass.config);
+
     return html`
       <ha-md-list>
         <ha-md-list-item>
           <span slot="headline">Use automatic backups</span>
-          <span slot="supporting-text">
-            How often you want to create a backup.
-          </span>
 
           <ha-switch
             slot="end"
@@ -148,35 +150,36 @@ class HaBackupConfigSchedule extends LitElement {
                   .value=${data.schedule}
                 >
                   <ha-md-select-option .value=${BackupScheduleState.DAILY}>
-                    <div slot="headline">Daily at 04:45</div>
+                    <div slot="headline">Daily at ${time}</div>
                   </ha-md-select-option>
                   <ha-md-select-option .value=${BackupScheduleState.MONDAY}>
-                    <div slot="headline">Monday at 04:45</div>
+                    <div slot="headline">Monday at ${time}</div>
                   </ha-md-select-option>
                   <ha-md-select-option .value=${BackupScheduleState.TUESDAY}>
-                    <div slot="headline">Tuesday at 04:45</div>
+                    <div slot="headline">Tuesday at ${time}</div>
                   </ha-md-select-option>
                   <ha-md-select-option .value=${BackupScheduleState.WEDNESDAY}>
-                    <div slot="headline">Wednesday at 04:45</div>
+                    <div slot="headline">Wednesday at ${time}</div>
                   </ha-md-select-option>
                   <ha-md-select-option .value=${BackupScheduleState.THURSDAY}>
-                    <div slot="headline">Thursday at 04:45</div>
+                    <div slot="headline">Thursday at ${time}</div>
                   </ha-md-select-option>
                   <ha-md-select-option .value=${BackupScheduleState.FRIDAY}>
-                    <div slot="headline">Friday at 04:45</div>
+                    <div slot="headline">Friday at ${time}</div>
                   </ha-md-select-option>
                   <ha-md-select-option .value=${BackupScheduleState.SATURDAY}>
-                    <div slot="headline">Saturday at 04:45</div>
+                    <div slot="headline">Saturday at ${time}</div>
                   </ha-md-select-option>
                   <ha-md-select-option .value=${BackupScheduleState.SUNDAY}>
-                    <div slot="headline">Sunday at 04:45</div>
+                    <div slot="headline">Sunday at ${time}</div>
                   </ha-md-select-option>
                 </ha-md-select>
               </ha-md-list-item>
               <ha-md-list-item>
                 <span slot="headline">Backups to keep</span>
                 <span slot="supporting-text">
-                  The number of backups that are saved
+                  Based on the maximum number of backups or how many days they
+                  should be kept.
                 </span>
                 <ha-md-select
                   slot="end"
@@ -326,16 +329,13 @@ class HaBackupConfigSchedule extends LitElement {
     @media all and (max-width: 450px) {
       ha-md-select {
         min-width: 160px;
-        width: 160px;
       }
     }
     ha-md-textfield#value {
       min-width: 70px;
-      width: 70px;
     }
     ha-md-select#type {
       min-width: 100px;
-      width: 100px;
     }
   `;
 }

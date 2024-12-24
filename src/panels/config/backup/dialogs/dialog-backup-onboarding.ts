@@ -24,6 +24,7 @@ import {
   BackupScheduleState,
   CLOUD_AGENT,
   CORE_LOCAL_AGENT,
+  downloadEmergencyKit,
   generateEncryptionKey,
   HASSIO_LOCAL_AGENT,
   updateBackupConfig,
@@ -31,7 +32,6 @@ import {
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import { fileDownload } from "../../../../util/file_download";
 import { showToast } from "../../../../util/toast";
 import "../components/config/ha-backup-config-agents";
 import "../components/config/ha-backup-config-data";
@@ -101,7 +101,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
       agents.push(CORE_LOCAL_AGENT);
     }
     // Enable cloud location if logged in
-    if (this._params.cloudStatus.logged_in) {
+    if (this._params.cloudStatus?.logged_in) {
       agents.push(CLOUD_AGENT);
     }
 
@@ -327,12 +327,6 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
         `;
       case "setup":
         return html`
-          <p>
-            It is recommended that you create a backup every day. You should
-            keep three backups in at least two different locations, one of which
-            should be off-site. Once you make your selection, your first backup
-            will begin.
-          </p>
           <ha-md-list class="full">
             <ha-md-list-item type="button" @click=${this._done}>
               <span slot="headline">Recommended settings</span>
@@ -398,14 +392,11 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
     if (!key) {
       return;
     }
-    fileDownload(
-      "data:text/plain;charset=utf-8," + encodeURIComponent(key),
-      "emergency_kit.txt"
-    );
+    downloadEmergencyKit(this.hass, key);
   }
 
-  private _copyKeyToClipboard() {
-    copyToClipboard(this._config!.create_backup.password!);
+  private async _copyKeyToClipboard() {
+    await copyToClipboard(this._config!.create_backup.password!);
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
     });
@@ -471,6 +462,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
           width: 90vw;
           max-width: 560px;
           --dialog-content-padding: 8px 24px;
+          max-height: min(605px, 100% - 48px);
         }
         ha-md-list {
           background: none;

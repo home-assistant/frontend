@@ -139,7 +139,8 @@ export class HaScriptEditor extends SubscribeMixin(
       changedProps.has("entityRegistry")
     ) {
       const script = this.entityRegistry.find(
-        (entity: EntityRegistryEntry) => entity.unique_id === this._newScriptId
+        (entity: EntityRegistryEntry) =>
+          entity.platform === "script" && entity.unique_id === this._newScriptId
       );
       if (script) {
         this._entityRegCreated(script);
@@ -164,7 +165,8 @@ export class HaScriptEditor extends SubscribeMixin(
         .narrow=${this.narrow}
         .route=${this.route}
         .backCallback=${this._backTapped}
-        .header=${!this._config.alias ? "" : this._config.alias}
+        .header=${this._config.alias ||
+        this.hass.localize("ui.panel.config.script.editor.default_name")}
       >
         ${this.scriptId && !this.narrow
           ? html`
@@ -487,9 +489,7 @@ export class HaScriptEditor extends SubscribeMixin(
     if (changedProps.has("scriptId") && !this.scriptId && this.hass) {
       const initData = getScriptEditorInitData();
       this._dirty = !!initData;
-      const baseConfig: Partial<ScriptConfig> = {
-        alias: this.hass.localize("ui.panel.config.script.editor.default_name"),
-      };
+      const baseConfig: Partial<ScriptConfig> = {};
       if (!initData || !("use_blueprint" in initData)) {
         baseConfig.sequence = [];
       }
@@ -894,6 +894,15 @@ export class HaScriptEditor extends SubscribeMixin(
     const id = this.scriptId || this._entityId || Date.now();
 
     this._saving = true;
+
+    let entityRegPromise: Promise<EntityRegistryEntry> | undefined;
+    if (this._entityRegistryUpdate !== undefined && !this.scriptId) {
+      this._newScriptId = id.toString();
+      entityRegPromise = new Promise<EntityRegistryEntry>((resolve) => {
+        this._entityRegCreated = resolve;
+      });
+    }
+
     try {
       await this.hass!.callApi(
         "POST",
@@ -902,23 +911,20 @@ export class HaScriptEditor extends SubscribeMixin(
       );
 
       if (this._entityRegistryUpdate !== undefined) {
-        let entityId = id.toString().startsWith("script.")
-          ? id.toString()
-          : `script.${id}`;
+        let entityId = this._entityId;
 
         // wait for new script to appear in entity registry
-        if (!this.scriptId) {
-          const script = await new Promise<EntityRegistryEntry>((resolve) => {
-            this._entityRegCreated = resolve;
-          });
+        if (entityRegPromise) {
+          const script = await entityRegPromise;
           entityId = script.entity_id;
         }
 
-        await updateEntityRegistryEntry(this.hass, entityId, {
+        await updateEntityRegistryEntry(this.hass, entityId!, {
           categories: {
             script: this._entityRegistryUpdate.category || null,
           },
           labels: this._entityRegistryUpdate.labels || [],
+          area_id: this._entityRegistryUpdate.area || null,
         });
       }
 

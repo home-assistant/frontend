@@ -115,14 +115,24 @@ export class HuiViewBackgroundEditor extends LitElement {
       };
     }
 
-    background = {
-      transparency: 100,
-      alignment: "center",
-      size: "auto",
-      repeat: "no-repeat",
-      attachment: "scroll",
-      ...background,
-    };
+    if (!background) {
+      background = {
+        transparency: 33,
+        alignment: "center",
+        size: "cover",
+        repeat: "repeat",
+        attachment: "fixed",
+      };
+    } else {
+      background = {
+        transparency: 100,
+        alignment: "center",
+        size: "cover",
+        repeat: "no-repeat",
+        attachment: "scroll",
+        ...background,
+      };
+    }
 
     return html`
       <ha-form
