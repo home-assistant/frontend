@@ -2826,12 +2826,14 @@
           "expose": {
             "caption": "Expose",
             "headers": {
+              "icon": "Icon",
               "name": "Name",
               "entity_id": "Entity ID",
               "area": "Area",
               "domain": "Domain",
               "assistants": "Assistants",
-              "aliases": "Aliases"
+              "aliases": "Aliases",
+              "remove": "[%key:ui::common::remove%]"
             },
             "aliases": "{count} aliases",
             "expose": "Expose",
