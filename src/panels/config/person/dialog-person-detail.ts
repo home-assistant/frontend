@@ -180,7 +180,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
             </ha-settings-row>
 
             ${this._renderUserFields()}
-            ${!this._deviceTrackersAvailable(this.hass)
+            ${this._deviceTrackersAvailable(this.hass)
               ? html`
                   <p>
                     ${this.hass.localize(
