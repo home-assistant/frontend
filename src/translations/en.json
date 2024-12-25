@@ -4333,7 +4333,7 @@
             "show_less": "Show less",
             "disabled_entities": "+{count} disabled {count, plural,\n  one {entity}\n  other {entities}\n}",
             "hidden": "Hidden"
-          }
+          },
           "confirm_rename_entity_ids": "Do you also want to rename the entity IDs of your entities?",
           "confirm_rename_entity_ids_warning": "This will not change any configuration (like automations, scripts, scenes, dashboards) that is currently using these entities! You will have to manually edit them yourself to use the new entity IDs!",
           "confirm_rename_entity_will_rename": "{count} {count, plural,\n  one {entity ID}\n  other {entity IDs}\n} will be renamed",
