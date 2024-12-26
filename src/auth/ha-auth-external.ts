@@ -22,21 +22,14 @@ export class HaAuthExternal extends HaForm {
       <div class="content">
         ${this.localize("ui.panel.page-authorize.external.description")}
         ${this.blocked
-          ? html` <ha-alert alert-type="error">
+          ? html`<ha-alert alert-type="error">
               ${this.localize("ui.panel.page-authorize.external.popup_blocked")}
             </ha-alert>`
           : ""}
         <div class="open-button">
-          <a
-            href=${this.step.url}
-            target="_blank"
-            rel="opener"
-            @click=${this._openExternalStep}
-          >
-            <mwc-button raised>
-              ${this.localize("ui.panel.page-authorize.external.open_site")}
-            </mwc-button>
-          </a>
+          <mwc-button raised @click=${this._openExternalStep}>
+            ${this.localize("ui.panel.page-authorize.external.open_site")}
+          </mwc-button>
         </div>
       </div>
     `;
