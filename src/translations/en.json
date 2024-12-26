@@ -7147,7 +7147,8 @@
         },
         "external": {
           "description": "This step requires you to visit an external website to be completed.",
-          "open_site": "Open website"
+          "open_site": "Open website",
+          "popup_blocked": "Could not open external website because a popup was blocked. Please allow to continue."
         }
       },
       "page-demo": {

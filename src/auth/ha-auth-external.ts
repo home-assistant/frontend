@@ -14,13 +14,25 @@ export class HaAuthExternal extends HaForm {
 
   @property({ attribute: false }) public step!: DataEntryFlowStepExternal;
 
+  @property({ attribute: false }) public blocked = false;
+
   protected render(): TemplateResult {
     return html`
       <h2>${this.stepTitle}</h2>
       <div class="content">
         ${this.localize("ui.panel.page-authorize.external.description")}
+        ${this.blocked
+          ? html` <ha-alert alert-type="error">
+              ${this.localize("ui.panel.page-authorize.external.popup_blocked")}
+            </ha-alert>`
+          : ""}
         <div class="open-button">
-          <a href=${this.step.url} target="_blank" rel="opener">
+          <a
+            href=${this.step.url}
+            target="_blank"
+            rel="opener"
+            @click=${this._openExternalStep}
+          >
             <mwc-button raised>
               ${this.localize("ui.panel.page-authorize.external.open_site")}
             </mwc-button>
@@ -32,11 +44,19 @@ export class HaAuthExternal extends HaForm {
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    const source = window.open(this.step.url);
+    this._openExternalStep();
+  }
+
+  private _openExternalStep() {
+    const externalWindow = window.open(this.step.url);
+    this.blocked = externalWindow == null;
+    if (this.blocked) {
+      return;
+    }
     window.addEventListener("message", async (message: MessageEvent) => {
       if (
         message.origin === window.location.origin &&
-        message.source === source &&
+        message.source === externalWindow &&
         message.data.type === "externalCallback"
       ) {
         fireEvent(this, "step-finished");
