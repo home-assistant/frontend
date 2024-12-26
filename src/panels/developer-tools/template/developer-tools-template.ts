@@ -271,9 +271,10 @@ ${type === "object"
       haStyle,
       css`
         :host {
-          -ms-user-select: initial;
-          -webkit-user-select: initial;
-          -moz-user-select: initial;
+          -ms-user-select: none;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          user-select: none;
         }
 
         .content {
@@ -334,6 +335,10 @@ ${type === "object"
           margin-top: 0;
           margin-bottom: 0;
           direction: ltr;
+          -ms-user-select: text;
+          -webkit-user-select: text;
+          -moz-user-select: text;
+          user-select: text;
         }
 
         p,
