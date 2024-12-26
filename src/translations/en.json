@@ -4331,7 +4331,7 @@
             "add_entities_lovelace": "Add to dashboard",
             "none": "This device has no entities",
             "show_less": "Show less",
-            "hidden_entities": "+{count} {count, plural,\n  one {entity}\n  other {entities}\n} not shown",
+            "disabled_entities": "+{count} disabled {count, plural,\n  one {entity}\n  other {entities}\n}",
             "hidden": "Hidden"
           },
           "confirm_rename_entity_ids": "Do you also want to rename the entity IDs of your entities?",
