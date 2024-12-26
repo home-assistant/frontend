@@ -4,13 +4,14 @@ import {
   mdiRefresh,
 } from "@mdi/js";
 import { addHours } from "date-fns";
-import {
+import type {
   HassEntities,
   HassEntity,
   HassEntityAttributeBase,
 } from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
@@ -31,7 +32,7 @@ import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import "../../../components/search-input";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 
 @customElement("developer-tools-state")
 class HaPanelDevState extends LitElement {
@@ -323,10 +324,10 @@ class HaPanelDevState extends LitElement {
     `;
   }
 
-  private _copyEntity(ev) {
+  private async _copyEntity(ev) {
     ev.preventDefault();
     const entity = (ev.currentTarget! as any).entity;
-    copyToClipboard(entity.entity_id);
+    await copyToClipboard(entity.entity_id);
   }
 
   private _entitySelected(ev) {

@@ -1,4 +1,4 @@
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 
 interface ValidConfig {
   valid: true;
@@ -10,7 +10,7 @@ interface InvalidConfig {
   error: string;
 }
 
-type ValidKeys = "trigger" | "action" | "condition";
+type ValidKeys = "triggers" | "actions" | "conditions";
 
 export const validateConfig = <
   T extends Partial<{ [key in ValidKeys]: unknown }>,

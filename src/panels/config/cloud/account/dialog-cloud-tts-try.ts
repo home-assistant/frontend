@@ -1,7 +1,8 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import { mdiPlayCircleOutline, mdiRobot } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -18,8 +19,8 @@ import { MediaPlayerEntityFeature } from "../../../../data/media-player";
 import { convertTextToSpeech } from "../../../../data/tts";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../../../resources/styles";
-import { HomeAssistant } from "../../../../types";
-import { TryTtsDialogParams } from "./show-dialog-cloud-tts-try";
+import type { HomeAssistant } from "../../../../types";
+import type { TryTtsDialogParams } from "./show-dialog-cloud-tts-try";
 
 @customElement("dialog-cloud-try-tts")
 export class DialogTryTts extends LitElement {
@@ -74,7 +75,9 @@ export class DialogTryTts extends LitElement {
           <ha-textarea
             autogrow
             id="message"
-            label="Message"
+            .label=${this.hass.localize(
+              "ui.panel.config.cloud.account.tts.dialog.message"
+            )}
             .value=${this._message ||
             this.hass.localize(
               "ui.panel.config.cloud.account.tts.dialog.example_message",

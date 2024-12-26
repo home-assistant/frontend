@@ -1,5 +1,6 @@
 import { dump } from "js-yaml";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 
@@ -7,7 +8,8 @@ import { classMap } from "lit/directives/class-map";
 class MQTTDiscoveryPayload extends LitElement {
   @property({ attribute: false }) public payload!: Record<string, unknown>;
 
-  @property({ type: Boolean }) public showAsYaml = false;
+  @property({ attribute: "show-as-yaml", type: Boolean })
+  public showAsYaml = false;
 
   @property() public summary!: string;
 

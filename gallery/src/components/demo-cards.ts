@@ -3,7 +3,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../src/common/dom/apply_themes_on_element";
 import "../../../src/components/ha-formfield";
 import "../../../src/components/ha-switch";
-import { HomeAssistant } from "../../../src/types";
+import type { HomeAssistant } from "../../../src/types";
 import "./demo-card";
 import type { DemoCardConfig } from "./demo-card";
 import "../ha-demo-options";
@@ -44,11 +44,11 @@ class DemoCards extends LitElement {
     `;
   }
 
-  _showConfigToggled(ev) {
+  private _showConfigToggled(ev) {
     this._showConfig = ev.target.checked;
   }
 
-  _darkThemeToggled(ev) {
+  private _darkThemeToggled(ev) {
     applyThemesOnElement(this._container, { themes: {} } as any, "default", {
       dark: ev.target.checked,
     });

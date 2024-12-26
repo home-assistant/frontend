@@ -1,6 +1,5 @@
 // Compat needs to be first import
 import "../../src/resources/compatibility";
-import "../../src/resources/safari-14-attachshadow-patch";
 import "./hassio-main";
 
 import("../../src/resources/ha-style");

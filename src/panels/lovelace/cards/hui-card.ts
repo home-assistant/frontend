@@ -1,10 +1,12 @@
-import { PropertyValueMap, PropertyValues, ReactiveElement } from "lit";
+import type { PropertyValues } from "lit";
+import { ReactiveElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { MediaQueriesListener } from "../../../common/dom/media_query";
+import type { MediaQueriesListener } from "../../../common/dom/media_query";
 import "../../../components/ha-svg-icon";
-import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../types";
+import { migrateLayoutToGridOptions } from "../common/compute-card-grid-size";
 import { computeCardSize } from "../common/compute-card-size";
 import {
   attachConditionMediaQueriesListeners,
@@ -12,7 +14,7 @@ import {
 } from "../common/validate-condition";
 import { createCardElement } from "../create-element/create-card-element";
 import { createErrorCardConfig } from "../create-element/create-element-base";
-import type { LovelaceCard, LovelaceLayoutOptions } from "../types";
+import type { LovelaceCard, LovelaceGridOptions } from "../types";
 
 declare global {
   interface HASSDomEvents {
@@ -23,29 +25,22 @@ declare global {
 
 @customElement("hui-card")
 export class HuiCard extends ReactiveElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ type: Boolean }) public preview = false;
 
-  @property({ type: Boolean }) public isPanel = false;
+  @property({ attribute: false }) public config?: LovelaceCardConfig;
 
-  set config(config: LovelaceCardConfig | undefined) {
-    if (!config) return;
-    if (config.type !== this._config?.type) {
-      this._buildElement(config);
-    } else if (config !== this.config) {
-      this._element?.setConfig(config);
-      fireEvent(this, "card-updated");
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property({ attribute: false }) public layout?: string;
+
+  private _elementConfig?: LovelaceCardConfig;
+
+  public load() {
+    if (!this.config) {
+      throw new Error("Cannot build card without config");
     }
-    this._config = config;
+    this._loadElement(this.config);
   }
-
-  @property({ attribute: false })
-  public get config() {
-    return this._config;
-  }
-
-  private _config?: LovelaceCardConfig;
 
   private _element?: LovelaceCard;
 
@@ -74,67 +69,129 @@ export class HuiCard extends ReactiveElement {
     return 1;
   }
 
-  public getLayoutOptions(): LovelaceLayoutOptions {
-    const configOptions = this.config?.layout_options ?? {};
-    if (this._element) {
-      const cardOptions = this._element.getLayoutOptions?.() ?? {};
-      return {
-        ...cardOptions,
-        ...configOptions,
-      };
-    }
-    return configOptions;
+  public getGridOptions(): LovelaceGridOptions {
+    const elementOptions = this.getElementGridOptions();
+    const configOptions = this.getConfigGridOptions();
+    return {
+      ...elementOptions,
+      ...configOptions,
+    };
   }
 
-  private _createElement(config: LovelaceCardConfig) {
-    const element = createCardElement(config);
-    element.hass = this.hass;
-    element.preview = this.preview;
+  // options provided by the element
+  public getElementGridOptions(): LovelaceGridOptions {
+    if (!this._element) return {};
+
+    if (this._element.getGridOptions) {
+      return this._element.getGridOptions();
+    }
+    if (this._element.getLayoutOptions) {
+      // Disabled for now to avoid spamming the console, need to be re-enabled when hui-card performance are fixed
+
+      // console.warn(
+      //   `This card (${this.config?.type}) is using "getLayoutOptions" and it is deprecated, contact the developer to suggest to use "getGridOptions" instead`
+      // );
+      const options = migrateLayoutToGridOptions(
+        this._element.getLayoutOptions()
+      );
+      return options;
+    }
+    return {};
+  }
+
+  // options provided by the config
+  public getConfigGridOptions(): LovelaceGridOptions {
+    if (this.config?.grid_options) {
+      return this.config.grid_options;
+    }
+    if (this.config?.layout_options) {
+      return migrateLayoutToGridOptions(this.config.layout_options);
+    }
+    return {};
+  }
+
+  private _updateElement(config: LovelaceCardConfig) {
+    if (!this._element) {
+      return;
+    }
+    this._element.setConfig(config);
+    this._elementConfig = config;
+    fireEvent(this, "card-updated");
+  }
+
+  private _loadElement(config: LovelaceCardConfig) {
+    this._element = createCardElement(config);
+    this._elementConfig = config;
+    if (this.hass) {
+      this._element.hass = this.hass;
+    }
+    this._element.layout = this.layout;
+    this._element.preview = this.preview;
     // For backwards compatibility
-    (element as any).editMode = this.preview;
+    (this._element as any).editMode = this.preview;
     // Update element when the visibility of the card changes (e.g. conditional card or filter card)
-    element.addEventListener("card-visibility-changed", (ev: Event) => {
+    this._element.addEventListener("card-visibility-changed", (ev: Event) => {
       ev.stopPropagation();
       this._updateVisibility();
     });
-    element.addEventListener(
+    this._element.addEventListener(
       "ll-upgrade",
       (ev: Event) => {
         ev.stopPropagation();
+        if (this.hass) {
+          this._element!.hass = this.hass;
+        }
         fireEvent(this, "card-updated");
       },
       { once: true }
     );
-    element.addEventListener(
+    this._element.addEventListener(
       "ll-rebuild",
       (ev: Event) => {
         ev.stopPropagation();
-        this._buildElement(config);
+        this._loadElement(config);
         fireEvent(this, "card-updated");
       },
       { once: true }
     );
-    return element;
-  }
-
-  private _buildElement(config: LovelaceCardConfig) {
-    this._element = this._createElement(config);
-
     while (this.lastChild) {
       this.removeChild(this.lastChild);
     }
     this._updateVisibility();
   }
 
+  protected willUpdate(changedProps: PropertyValues<typeof this>): void {
+    super.willUpdate(changedProps);
+
+    if (!this._element) {
+      this.load();
+    }
+  }
+
   protected update(changedProps: PropertyValues<typeof this>) {
     super.update(changedProps);
 
     if (this._element) {
+      if (changedProps.has("config")) {
+        const elementConfig = this._elementConfig;
+        if (this.config !== elementConfig && this.config) {
+          const typeChanged =
+            this.config?.type !== elementConfig?.type || this.preview;
+          // Rebuild the card if the type of the card has changed or if we are in preview mode
+          if (typeChanged || this.preview) {
+            this._loadElement(this.config);
+          } else {
+            this._updateElement(this.config);
+          }
+        }
+      }
       if (changedProps.has("hass")) {
         try {
-          this._element.hass = this.hass;
+          if (this.hass) {
+            this._element.hass = this.hass;
+          }
         } catch (e: any) {
-          this._buildElement(createErrorCardConfig(e.message, null));
+          this._loadElement(createErrorCardConfig(e.message, null));
         }
       }
       if (changedProps.has("preview")) {
@@ -143,19 +200,21 @@ export class HuiCard extends ReactiveElement {
           // For backwards compatibility
           (this._element as any).editMode = this.preview;
         } catch (e: any) {
-          this._buildElement(createErrorCardConfig(e.message, null));
+          this._loadElement(createErrorCardConfig(e.message, null));
         }
       }
-      if (changedProps.has("isPanel")) {
-        this._element.isPanel = this.isPanel;
+      if (changedProps.has("layout")) {
+        try {
+          this._element.layout = this.layout;
+          // For backwards compatibility
+          (this._element as any).isPanel = this.layout === "panel";
+        } catch (e: any) {
+          this._loadElement(createErrorCardConfig(e.message, null));
+        }
       }
     }
-  }
 
-  protected willUpdate(
-    changedProps: PropertyValueMap<any> | Map<PropertyKey, unknown>
-  ): void {
-    if (changedProps.has("hass") || changedProps.has("lovelace")) {
+    if (changedProps.has("hass") || changedProps.has("preview")) {
       this._updateVisibility();
     }
   }

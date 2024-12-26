@@ -1,4 +1,4 @@
-import { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -7,13 +7,15 @@ import { computeAttributeNameDisplay } from "../../../common/entity/compute_attr
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import { CoverEntity, CoverEntityFeature } from "../../../data/cover";
+import type { CoverEntity } from "../../../data/cover";
+import { CoverEntityFeature } from "../../../data/cover";
 import { UNAVAILABLE } from "../../../data/entity";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity_attributes";
 import { generateTiltSliderTrackBackgroundGradient } from "../../../state-control/cover/ha-state-control-cover-tilt-position";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCardFeature } from "../types";
-import { CoverTiltPositionCardFeatureConfig } from "./types";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardFeature } from "../types";
+import { cardFeatureStyles } from "./common/card-feature-styles";
+import type { CoverTiltPositionCardFeatureConfig } from "./types";
 
 const GRADIENT = generateTiltSliderTrackBackgroundGradient();
 
@@ -72,33 +74,32 @@ class HuiCoverTiltPositionCardFeature
       : stateColorCss(this.stateObj);
 
     const style = {
-      "--color": color,
+      "--feature-color": color,
       // Use open color for inactive state to avoid grey slider that looks disabled
       "--state-cover-inactive-color": openColor,
     };
 
     return html`
-      <div class="container" style=${styleMap(style)}>
-        <ha-control-slider
-          .value=${value}
-          min="0"
-          max="100"
-          mode="cursor"
-          inverted
-          @value-changed=${this._valueChanged}
-          .ariaLabel=${computeAttributeNameDisplay(
-            this.hass.localize,
-            this.stateObj,
-            this.hass.entities,
-            "current_tilt_position"
-          )}
-          .disabled=${this.stateObj!.state === UNAVAILABLE}
-          .unit=${DOMAIN_ATTRIBUTES_UNITS.cover.current_tilt_position}
-          .locale=${this.hass.locale}
-        >
-          <div slot="background" class="gradient"></div
-        ></ha-control-slider>
-      </div>
+      <ha-control-slider
+        style=${styleMap(style)}
+        .value=${value}
+        min="0"
+        max="100"
+        mode="cursor"
+        inverted
+        @value-changed=${this._valueChanged}
+        .ariaLabel=${computeAttributeNameDisplay(
+          this.hass.localize,
+          this.stateObj,
+          this.hass.entities,
+          "current_tilt_position"
+        )}
+        .disabled=${this.stateObj!.state === UNAVAILABLE}
+        .unit=${DOMAIN_ATTRIBUTES_UNITS.cover.current_tilt_position}
+        .locale=${this.hass.locale}
+      >
+        <div slot="background" class="gradient"></div
+      ></ha-control-slider>
     `;
   }
 
@@ -113,24 +114,15 @@ class HuiCoverTiltPositionCardFeature
   }
 
   static get styles() {
-    return css`
-      ha-control-slider {
-        /* Force inactive state to be colored for the slider */
-        --control-slider-color: var(--color);
-        --control-slider-background: var(--color);
-        --control-slider-background-opacity: 0.2;
-        --control-slider-thickness: 40px;
-        --control-slider-border-radius: 10px;
-      }
-      .container {
-        padding: 0 12px 12px 12px;
-        width: auto;
-      }
-      .gradient {
-        background: -webkit-linear-gradient(left, ${GRADIENT});
-        opacity: 0.6;
-      }
-    `;
+    return [
+      cardFeatureStyles,
+      css`
+        .gradient {
+          background: -webkit-linear-gradient(left, ${GRADIENT});
+          opacity: 0.6;
+        }
+      `,
+    ];
   }
 }
 

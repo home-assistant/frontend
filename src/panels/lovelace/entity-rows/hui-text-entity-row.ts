@@ -1,14 +1,16 @@
-import { css, html, LitElement, PropertyValues, nothing } from "lit";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-textfield";
 import { isUnavailableState, UNAVAILABLE } from "../../../data/entity";
-import { setValue, TextEntity } from "../../../data/text";
-import { HomeAssistant } from "../../../types";
+import type { TextEntity } from "../../../data/text";
+import { setValue } from "../../../data/text";
+import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import { EntityConfig, LovelaceRow } from "./types";
+import type { EntityConfig, LovelaceRow } from "./types";
 
 @customElement("hui-text-entity-row")
 class HuiTextEntityRow extends LitElement implements LovelaceRow {
@@ -48,7 +50,7 @@ class HuiTextEntityRow extends LitElement implements LovelaceRow {
       <hui-generic-entity-row
         .hass=${this.hass}
         .config=${this._config}
-        hideName
+        hide-name
       >
         <ha-textfield
           .label=${this._config.name || computeStateName(stateObj)}

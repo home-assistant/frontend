@@ -1,21 +1,22 @@
 import "@material/mwc-list/mwc-list-item";
 import { mdiDownload } from "@mdi/js";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultArray, html, LitElement } from "lit";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultArray } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { capitalizeFirstLetter } from "../../../../../common/string/capitalize-first-letter";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-select";
+import type { ZWaveJSLogConfig } from "../../../../../data/zwave_js";
 import {
   fetchZWaveJSLogConfig,
   setZWaveJSLogLevel,
   subscribeZWaveJSLogs,
-  ZWaveJSLogConfig,
 } from "../../../../../data/zwave_js";
 import "../../../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
-import { HomeAssistant, Route } from "../../../../../types";
+import type { HomeAssistant, Route } from "../../../../../types";
 import { fileDownload } from "../../../../../util/file_download";
 import { configTabs } from "./zwave_js-config-router";
 
@@ -27,7 +28,7 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property() public configEntryId!: string;
+  @property({ attribute: false }) public configEntryId!: string;
 
   @state() private _logConfig?: ZWaveJSLogConfig;
 

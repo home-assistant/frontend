@@ -1,5 +1,6 @@
 import { mdiContentCopy, mdiEye, mdiEyeOff, mdiHelpCircle } from "@mdi/js";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
@@ -11,11 +12,12 @@ import "../../../../components/ha-formfield";
 import "../../../../components/ha-radio";
 import "../../../../components/ha-settings-row";
 import "../../../../components/ha-switch";
-// eslint-disable-next-line
+import "../../../../components/ha-textfield";
+
 import { formatDate } from "../../../../common/datetime/format_date";
 import type { HaSwitch } from "../../../../components/ha-switch";
+import type { CloudStatusLoggedIn } from "../../../../data/cloud";
 import {
-  CloudStatusLoggedIn,
   connectCloudRemote,
   disconnectCloudRemote,
   updateCloudPref,
@@ -23,6 +25,7 @@ import {
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import { showCloudCertificateDialog } from "../dialog-cloud-certificate/show-dialog-cloud-certificate";
+import { obfuscateUrl } from "../../../../util/url";
 
 @customElement("cloud-remote-pref")
 export class CloudRemotePref extends LitElement {
@@ -142,7 +145,7 @@ export class CloudRemotePref extends LitElement {
               <ha-textfield
                 .value=${this._unmaskedUrl
                   ? `https://${remote_domain}`
-                  : "https://•••••••••••••••••.ui.nabu.casa"}
+                  : obfuscateUrl(`https://${remote_domain}`)}
                 readonly
                 .suffix=${
                   // reserve some space for the icon.
@@ -153,7 +156,7 @@ export class CloudRemotePref extends LitElement {
                 class="toggle-unmasked-url"
                 toggles
                 .label=${this.hass.localize(
-                  `ui.panel.config.cloud.account.remote.${this._unmaskedUrl ? "hide" : "show"}_url`
+                  `ui.panel.config.common.${this._unmaskedUrl ? "hide" : "show"}_url`
                 )}
                 @click=${this._toggleUnmaskedUrl}
                 .path=${this._unmaskedUrl ? mdiEyeOff : mdiEye}
@@ -165,9 +168,7 @@ export class CloudRemotePref extends LitElement {
               unelevated
             >
               <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
-              ${this.hass.localize(
-                "ui.panel.config.cloud.account.remote.copy_link"
-              )}
+              ${this.hass.localize("ui.panel.config.common.copy_link")}
             </ha-button>
           </div>
 
@@ -249,7 +250,7 @@ export class CloudRemotePref extends LitElement {
       }
       fireEvent(this, "ha-refresh-cloud-status");
     } catch (err: any) {
-      alert(err.message);
+      showToast(this, { message: err.message });
       toggle.checked = !toggle.checked;
     }
   }
@@ -263,7 +264,7 @@ export class CloudRemotePref extends LitElement {
       });
       fireEvent(this, "ha-refresh-cloud-status");
     } catch (err: any) {
-      alert(err.message);
+      showToast(this, { message: err.message });
       toggle.checked = !toggle.checked;
     }
   }

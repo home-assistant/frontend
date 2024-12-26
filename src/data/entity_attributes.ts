@@ -1,5 +1,5 @@
-import { formatDuration } from "../common/datetime/duration";
-import { FrontendLocaleData } from "./translation";
+import { formatDurationDigital } from "../common/datetime/format_duration";
+import type { FrontendLocaleData } from "./translation";
 
 export const STATE_ATTRIBUTES = [
   "entity_id",
@@ -23,6 +23,7 @@ export const STATE_ATTRIBUTES = [
   "state_class",
   "supported_features",
   "unit_of_measurement",
+  "available_tones",
 ];
 
 export const TEMPERATURE_ATTRIBUTES = new Set([
@@ -98,6 +99,11 @@ export const DOMAIN_ATTRIBUTES_FORMATERS: Record<
   },
   media_player: {
     volume_level: (value) => Math.round(value * 100).toString(),
-    media_duration: (value) => formatDuration(value.toString(), "s"),
+    media_duration: (value, locale) => {
+      const hours = Math.floor(value / 3600);
+      const minutes = Math.floor((value % 3600) / 60);
+      const seconds = value % 60;
+      return formatDurationDigital(locale, { hours, minutes, seconds })!;
+    },
   },
 };

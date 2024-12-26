@@ -47,6 +47,8 @@ export const computeInitialHaFormData = (
         data[field.name] = selector.entity?.multiple ? [] : "";
       } else if ("area" in selector) {
         data[field.name] = selector.area?.multiple ? [] : "";
+      } else if ("label" in selector) {
+        data[field.name] = selector.label?.multiple ? [] : "";
       } else if ("boolean" in selector) {
         data[field.name] = false;
       } else if (
@@ -94,9 +96,11 @@ export const computeInitialHaFormData = (
         data[field.name] = selector.color_temp?.min_mireds ?? 153;
       } else if (
         "action" in selector ||
-        "media" in selector ||
-        "target" in selector
+        "trigger" in selector ||
+        "condition" in selector
       ) {
+        data[field.name] = [];
+      } else if ("media" in selector || "target" in selector) {
         data[field.name] = {};
       } else {
         throw new Error(

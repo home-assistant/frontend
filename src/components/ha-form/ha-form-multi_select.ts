@@ -1,23 +1,19 @@
 import { mdiMenuDown, mdiMenuUp } from "@mdi/js";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-button-menu";
 import "../ha-check-list-item";
-import type { HaCheckListItem } from "../ha-check-list-item";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-formfield";
-import "../ha-svg-icon";
+import "../ha-icon-button";
 import "../ha-textfield";
-import {
+import "../ha-md-button-menu";
+import "../ha-md-menu-item";
+
+import type {
   HaFormElement,
   HaFormMultiSelectData,
   HaFormMultiSelectSchema,
@@ -79,13 +75,10 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
     }
 
     return html`
-      <ha-button-menu
+      <ha-md-button-menu
         .disabled=${this.disabled}
-        fixed
-        @opened=${this._handleOpen}
-        @closed=${this._handleClose}
-        multi
-        activatable
+        @opening=${this._handleOpen}
+        @closing=${this._handleClose}
       >
         <ha-textfield
           slot="trigger"
@@ -100,26 +93,54 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
           .disabled=${this.disabled}
           tabindex="-1"
         ></ha-textfield>
-        <ha-svg-icon
+        <ha-icon-button
           slot="trigger"
+          .label=${this.label}
           .path=${this._opened ? mdiMenuUp : mdiMenuDown}
-        ></ha-svg-icon>
+        ></ha-icon-button>
         ${options.map((item: string | [string, string]) => {
           const value = optionValue(item);
           const selected = data.includes(value);
-          return html`<ha-check-list-item
-            left
-            .selected=${selected}
-            .activated=${selected}
-            @request-selected=${this._selectedChanged}
+          return html`<ha-md-menu-item
+            type="option"
+            aria-checked=${selected}
             .value=${value}
-            .disabled=${this.disabled}
+            .action=${selected ? "remove" : "add"}
+            .activated=${selected}
+            @click=${this._toggleItem}
+            @keydown=${this._keydown}
+            keep-open
           >
+            <ha-checkbox
+              slot="start"
+              tabindex="-1"
+              .checked=${selected}
+            ></ha-checkbox>
             ${optionLabel(item)}
-          </ha-check-list-item>`;
+          </ha-md-menu-item>`;
         })}
-      </ha-button-menu>
+      </ha-md-button-menu>
     `;
+  }
+
+  protected _keydown(ev) {
+    if (ev.code === "Space" || ev.code === "Enter") {
+      ev.preventDefault();
+      this._toggleItem(ev);
+    }
+  }
+
+  protected _toggleItem(ev) {
+    const oldData = this.data || [];
+    let newData: string[];
+    if (ev.currentTarget.action === "add") {
+      newData = [...oldData, ev.currentTarget.value];
+    } else {
+      newData = oldData.filter((d) => d !== ev.currentTarget.value);
+    }
+    fireEvent(this, "value-changed", {
+      value: newData,
+    });
   }
 
   protected firstUpdated() {
@@ -143,17 +164,6 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
           !!this.schema.required
       );
     }
-  }
-
-  private _selectedChanged(ev: CustomEvent): void {
-    ev.stopPropagation();
-    if (ev.detail.source === "property") {
-      return;
-    }
-    this._handleValueChanged(
-      (ev.target as HaCheckListItem).value,
-      ev.detail.selected
-    );
   }
 
   private _valueChanged(ev: CustomEvent): void {
@@ -201,7 +211,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
       :host([own-margin]) {
         margin-bottom: 5px;
       }
-      ha-button-menu {
+      ha-md-button-menu {
         display: block;
         cursor: pointer;
       }
@@ -214,22 +224,23 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
       }
       ha-textfield {
         display: block;
+        width: 100%;
         pointer-events: none;
       }
-      ha-svg-icon {
+      ha-icon-button {
         color: var(--input-dropdown-icon-color);
         position: absolute;
         right: 1em;
-        top: 1em;
+        top: 4px;
         cursor: pointer;
         inset-inline-end: 1em;
         inset-inline-start: initial;
         direction: var(--direction);
       }
-      :host([opened]) ha-svg-icon {
+      :host([opened]) ha-icon-button {
         color: var(--primary-color);
       }
-      :host([opened]) ha-button-menu {
+      :host([opened]) ha-md-button-menu {
         --mdc-text-field-idle-line-color: var(--input-hover-line-color);
         --mdc-text-field-label-ink-color: var(--primary-color);
       }

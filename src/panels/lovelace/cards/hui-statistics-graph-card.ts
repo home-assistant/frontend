@@ -1,32 +1,27 @@
-import { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { subHours } from "date-fns";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import "../../../components/ha-card";
-import { EnergyData, getEnergyDataCollection } from "../../../data/energy";
-import {
-  fetchStatistics,
-  getDisplayUnit,
-  getStatisticMetadata,
+import type {
   Statistics,
   StatisticsMetaData,
   StatisticType,
 } from "../../../data/recorder";
+import {
+  fetchStatistics,
+  getDisplayUnit,
+  getStatisticMetadata,
+} from "../../../data/recorder";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
-import { LovelaceCard } from "../types";
-import { StatisticsGraphCardConfig } from "./types";
+import type { LovelaceCard } from "../types";
+import type { StatisticsGraphCardConfig } from "./types";
 
 export const DEFAULT_DAYS_TO_SHOW = 30;
 
@@ -219,6 +214,9 @@ export class HuiStatisticsGraphCard
             .statTypes=${this._statTypes!}
             .names=${this._names}
             .unit=${this._unit}
+            .minYAxis=${this._config.min_y_axis}
+            .maxYAxis=${this._config.max_y_axis}
+            .fitYData=${this._config.fit_y_data || false}
             .hideLegend=${this._config.hide_legend || false}
             .logarithmicScale=${this._config.logarithmic_scale || false}
           ></statistics-chart>

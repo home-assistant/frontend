@@ -1,5 +1,6 @@
 import { mdiDrag } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -10,8 +11,8 @@ import type {
 } from "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-sortable";
-import { HomeAssistant } from "../../../types";
-import { EntityConfig } from "../entity-rows/types";
+import type { HomeAssistant } from "../../../types";
+import type { EntityConfig } from "../entity-rows/types";
 
 @customElement("hui-entity-editor")
 export class HuiEntityEditor extends LitElement {

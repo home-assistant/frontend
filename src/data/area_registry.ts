@@ -1,11 +1,12 @@
 import { stringCompare } from "../common/string/compare";
-import { HomeAssistant } from "../types";
-import { DeviceRegistryEntry } from "./device_registry";
-import { EntityRegistryEntry } from "./entity_registry";
+import type { HomeAssistant } from "../types";
+import type { DeviceRegistryEntry } from "./device_registry";
+import type { EntityRegistryEntry } from "./entity_registry";
+import type { RegistryEntry } from "./registry";
 
 export { subscribeAreaRegistry } from "./ws-area_registry";
 
-export interface AreaRegistryEntry {
+export interface AreaRegistryEntry extends RegistryEntry {
   area_id: string;
   floor_id: string | null;
   name: string;

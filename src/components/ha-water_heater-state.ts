@@ -1,9 +1,10 @@
 import { customElement, property } from "lit/decorators";
-import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
-import { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { LitElement, css, html } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { formatNumber } from "../common/number/format_number";
 import { haStyle } from "../resources/styles";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 
 @customElement("ha-water_heater-state")
 export class HaWaterHeaterState extends LitElement {
@@ -48,10 +49,6 @@ export class HaWaterHeaterState extends LitElement {
     }
 
     return "";
-  }
-
-  _localizeState(stateObj) {
-    return this.hass.formatEntityState(stateObj);
   }
 
   static get styles(): CSSResultGroup {

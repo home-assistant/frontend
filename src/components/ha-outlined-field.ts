@@ -22,12 +22,6 @@ export class HaOutlinedField extends MdOutlinedField {
         border-end-start-radius: var(--_container-shape-end-start);
         border-end-end-radius: var(--_container-shape-end-end);
       }
-      .with-start .start {
-        margin-inline-end: var(--ha-outlined-field-start-margin, 4px);
-      }
-      .with-end .end {
-        margin-inline-start: var(--ha-outlined-field-end-margin, 4px);
-      }
     `,
   ];
 }

@@ -1,12 +1,6 @@
 import { mdiPlus } from "@mdi/js";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { nextRender } from "../../../common/util/render-status";
@@ -15,9 +9,11 @@ import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
-import { HuiCard } from "../cards/hui-card";
+import type { HuiBadge } from "../badges/hui-badge";
+import "../badges/hui-view-badges";
+import type { HuiCard } from "../cards/hui-card";
 import { computeCardSize } from "../common/compute-card-size";
-import type { Lovelace, LovelaceBadge } from "../types";
+import type { Lovelace } from "../types";
 
 // Find column with < 5 size, else smallest column
 const getColumnIndex = (columnSizes: number[], size: number) => {
@@ -46,11 +42,11 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
   @property({ type: Number }) public index?: number;
 
-  @property({ type: Boolean }) public isStrategy = false;
+  @property({ attribute: false }) public isStrategy = false;
 
   @property({ attribute: false }) public cards: HuiCard[] = [];
 
-  @property({ attribute: false }) public badges: LovelaceBadge[] = [];
+  @property({ attribute: false }) public badges: HuiBadge[] = [];
 
   @state() private _columns?: number;
 
@@ -78,9 +74,12 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
   protected render(): TemplateResult {
     return html`
-      ${this.badges.length > 0
-        ? html`<div class="badges">${this.badges}</div>`
-        : ""}
+      <hui-view-badges
+        .hass=${this.hass}
+        .badges=${this.badges}
+        .lovelace=${this.lovelace}
+        .viewIndex=${this.index}
+      ></hui-view-badges>
       <div
         id="columns"
         class=${this.lovelace?.editMode ? "edit-mode" : ""}
@@ -289,10 +288,10 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
         padding-top: 4px;
       }
 
-      .badges {
-        margin: 8px 16px;
+      hui-view-badges {
+        display: block;
+        margin: 4px 8px 4px 8px;
         font-size: 85%;
-        text-align: center;
       }
 
       #columns {

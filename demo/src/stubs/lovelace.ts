@@ -7,16 +7,25 @@ import {
 } from "../configs/demo-configs";
 import "../custom-cards/cast-demo-row";
 import "../custom-cards/ha-demo-card";
+import { mapEntities } from "./entities";
 
 export const mockLovelace = (
   hass: MockHomeAssistant,
   localizePromise: Promise<LocalizeFunc>
 ) => {
-  hass.mockWS("lovelace/config", () =>
-    Promise.all([selectedDemoConfig, localizePromise]).then(
+  hass.mockWS("lovelace/config", ({ url_path }) => {
+    if (url_path === "map") {
+      hass.addEntities(mapEntities());
+      return {
+        strategy: {
+          type: "map",
+        },
+      };
+    }
+    return Promise.all([selectedDemoConfig, localizePromise]).then(
       ([config, localize]) => config.lovelace(localize)
-    )
-  );
+    );
+  });
 
   hass.mockWS("lovelace/config/save", () => Promise.resolve());
   hass.mockWS("lovelace/resources", () => Promise.resolve([]));

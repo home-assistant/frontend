@@ -6,7 +6,7 @@ import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
-import {
+import type {
   LovelaceCardFeatureContext,
   UpdateActionsCardFeatureConfig,
 } from "../../card-features/types";
@@ -38,7 +38,7 @@ export class HuiUpdateActionsCardFeatureEditor
           disabled: !supportsBackup,
           selector: {
             select: {
-              default: "yes",
+              default: "no",
               mode: "dropdown",
               options: ["ask", "yes", "no"].map((option) => ({
                 value: option,

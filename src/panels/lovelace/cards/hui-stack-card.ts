@@ -1,12 +1,13 @@
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
-import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import "./hui-card";
 import type { HuiCard } from "./hui-card";
-import { StackCardConfig } from "./types";
+import type { StackCardConfig } from "./types";
 
 export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
   extends LitElement
@@ -29,8 +30,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
 
   @state() protected _config?: T;
 
-  @property({ type: Boolean, reflect: true })
-  public isPanel = false;
+  @property({ attribute: false }) public layout?: string;
 
   public getCardSize(): number | Promise<number> {
     return 1;
@@ -56,11 +56,15 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
           card.hass = this.hass;
         });
       }
-      if (changedProperties.has("editMode")) {
+      if (changedProperties.has("preview")) {
         this._cards.forEach((card) => {
           card.preview = this.preview;
         });
       }
+    }
+
+    if (changedProperties.has("layout")) {
+      this.toggleAttribute("ispanel", this.layout === "panel");
     }
   }
 
@@ -69,6 +73,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
     element.hass = this.hass;
     element.preview = this.preview;
     element.config = cardConfig;
+    element.load();
     return element;
   }
 
@@ -105,7 +110,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
       :host([ispanel]) #root {
         --ha-card-border-radius: var(--restore-card-border-radius);
         --ha-card-border-width: var(--restore-card-border-width);
-        --ha-card-box-shadow: var(--restore-card-border-shadow);
+        --ha-card-box-shadow: var(--restore-card-box-shadow);
       }
     `;
   }

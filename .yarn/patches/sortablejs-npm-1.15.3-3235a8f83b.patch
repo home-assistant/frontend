@@ -1,0 +1,60 @@
+diff --git a/modular/sortable.core.esm.js b/modular/sortable.core.esm.js
+index 8b5e49b011713c8859c669069fbe85ce53974e1d..6a0afc92787157b8a31c38cc5f67dfa526090a00 100644
+--- a/modular/sortable.core.esm.js
++++ b/modular/sortable.core.esm.js
+@@ -1781,11 +1781,16 @@ Sortable.prototype = /** @lends Sortable.prototype */{
+         }
+         if (_onMove(rootEl, el, dragEl, dragRect, target, targetRect, evt, !!target) !== false) {
+           capture();
+-          if (elLastChild && elLastChild.nextSibling) {
+-            // the last draggable element is not the last node
+-            el.insertBefore(dragEl, elLastChild.nextSibling);
+-          } else {
+-            el.appendChild(dragEl);
++          try {
++            if (elLastChild && elLastChild.nextSibling) {
++              // the last draggable element is not the last node
++              el.insertBefore(dragEl, elLastChild.nextSibling);
++            } else {
++              el.appendChild(dragEl);
++            }
++          }
++          catch(err) {
++            return completed(false);
+           }
+           parentEl = el; // actualization
+ 
+@@ -1802,7 +1807,12 @@ Sortable.prototype = /** @lends Sortable.prototype */{
+         targetRect = getRect(target);
+         if (_onMove(rootEl, el, dragEl, dragRect, target, targetRect, evt, false) !== false) {
+           capture();
+-          el.insertBefore(dragEl, firstChild);
++          try {
++            el.insertBefore(dragEl, firstChild);
++          }
++          catch(err) {
++            return completed(false);
++          }
+           parentEl = el; // actualization
+ 
+           changed();
+@@ -1849,10 +1859,15 @@ Sortable.prototype = /** @lends Sortable.prototype */{
+           _silent = true;
+           setTimeout(_unsilent, 30);
+           capture();
+-          if (after && !nextSibling) {
+-            el.appendChild(dragEl);
+-          } else {
+-            target.parentNode.insertBefore(dragEl, after ? nextSibling : target);
++          try {
++            if (after && !nextSibling) {
++              el.appendChild(dragEl);
++            } else {
++              target.parentNode.insertBefore(dragEl, after ? nextSibling : target);
++            }
++          }
++          catch(err) {
++            return completed(false);
+           }
+ 
+           // Undo chrome's scroll adjustment (has no effect on other browsers)

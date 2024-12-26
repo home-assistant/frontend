@@ -1,10 +1,11 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/entity/state-info";
 import "../components/ha-water_heater-state";
 import { haStyle } from "../resources/styles";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 
 @customElement("state-card-water_heater")
 class StateCardWaterHeater extends LitElement {
@@ -12,7 +13,7 @@ class StateCardWaterHeater extends LitElement {
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
-  @property({ type: Boolean }) public inDialog = false;
+  @property({ attribute: "in-dialog", type: Boolean }) public inDialog = false;
 
   protected render(): TemplateResult {
     return html`

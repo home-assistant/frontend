@@ -7,16 +7,18 @@ import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_date_time";
-import {
+import type {
   PipelineRunEvent,
-  assistRunListing,
+  AssistRunListing,
+} from "../../../../data/assist_pipeline";
+import {
   getAssistPipelineRun,
   listAssistPipelineRuns,
 } from "../../../../data/assist_pipeline";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
-import { HomeAssistant, Route } from "../../../../types";
+import type { HomeAssistant, Route } from "../../../../types";
 import "./assist-render-pipeline-events";
 
 @customElement("assist-pipeline-debug")
@@ -27,11 +29,11 @@ export class AssistPipelineDebug extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property() public pipelineId!: string;
+  @property({ attribute: false }) public pipelineId!: string;
 
   @state() private _runId?: string;
 
-  @state() private _runs?: assistRunListing[];
+  @state() private _runs?: AssistRunListing[];
 
   @state() private _events?: PipelineRunEvent[];
 

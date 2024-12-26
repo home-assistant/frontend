@@ -1,11 +1,5 @@
-import {
-  CSSResultGroup,
-  html,
-  css,
-  LitElement,
-  TemplateResult,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { html, css, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 
 @customElement("ha-tile-info")
@@ -33,7 +27,7 @@ export class HaTileInfo extends LitElement {
         flex-direction: column;
         align-items: flex-start;
         justify-content: center;
-        min-height: 40px;
+        height: 36px;
       }
       span {
         text-overflow: ellipsis;

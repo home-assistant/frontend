@@ -1,5 +1,55 @@
 import { convertEntities } from "../../../src/fake_data/entity";
 
+export const mapEntities = () =>
+  convertEntities({
+    "zone.home": {
+      entity_id: "zone.home",
+      state: "zoning",
+      attributes: {
+        hidden: true,
+        latitude: 52.3631339,
+        longitude: 4.8903147,
+        radius: 200,
+        friendly_name: "Home",
+        icon: "hademo:home",
+      },
+    },
+    "zone.uva": {
+      entity_id: "zone.buckhead",
+      state: "zoning",
+      attributes: {
+        hidden: true,
+        radius: 400,
+        friendly_name: "UvA",
+        icon: "hademo:school",
+        latitude: 52.3558182,
+        longitude: 4.9535376,
+      },
+    },
+    "person.arsaboo": {
+      entity_id: "person.arsaboo",
+      state: "not_home",
+      attributes: {
+        radius: 50,
+        friendly_name: "Arsaboo",
+        latitude: 52.3579946,
+        longitude: 4.8664597,
+        entity_picture: "/assets/arsaboo/images/arsaboo.jpg",
+      },
+    },
+    "person.melody": {
+      entity_id: "person.melody",
+      state: "not_home",
+      attributes: {
+        radius: 50,
+        friendly_name: "Melody",
+        latitude: 52.3408927,
+        longitude: 4.8711073,
+        entity_picture: "/assets/arsaboo/images/melody.jpg",
+      },
+    },
+  });
+
 export const energyEntities = () =>
   convertEntities({
     "sensor.grid_fossil_fuel_percentage": {

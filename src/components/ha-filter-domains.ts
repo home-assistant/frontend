@@ -1,5 +1,7 @@
+import "@material/mwc-list/mwc-list";
 import { mdiFilterVariantRemove } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
@@ -9,6 +11,8 @@ import { domainToName } from "../data/integration";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-domain-icon";
+import "./ha-expansion-panel";
+import "./ha-check-list-item";
 import "./search-input-outlined";
 import { computeDomain } from "../common/entity/compute_domain";
 
@@ -71,7 +75,7 @@ export class HaFilterDomains extends LitElement {
                         slot="graphic"
                         .hass=${this.hass}
                         .domain=${domain}
-                        brandFallback
+                        brand-fallback
                       ></ha-domain-icon>
                       ${domainToName(this.hass.localize, domain)}
                     </ha-check-list-item>`

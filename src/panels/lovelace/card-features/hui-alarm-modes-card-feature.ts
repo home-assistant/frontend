@@ -1,6 +1,7 @@
 import { mdiShieldOff } from "@mdi/js";
-import { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues, TemplateResult } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
@@ -11,18 +12,21 @@ import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../components/ha-control-select";
 import "../../../components/ha-control-slider";
-import {
-  ALARM_MODES,
+import type {
   AlarmControlPanelEntity,
   AlarmMode,
+} from "../../../data/alarm_control_panel";
+import {
+  ALARM_MODES,
   setProtectedAlarmControlPanelMode,
   supportedAlarmModes,
 } from "../../../data/alarm_control_panel";
 import { UNAVAILABLE } from "../../../data/entity";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
+import { cardFeatureStyles } from "./common/card-feature-styles";
 import { filterModes } from "./common/filter-modes";
-import { AlarmModesCardFeatureConfig } from "./types";
+import type { AlarmModesCardFeatureConfig } from "./types";
 
 export const supportsAlarmModesCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -95,7 +99,12 @@ class HuiAlarmModeCardFeature
   }
 
   private async _setMode(mode: AlarmMode) {
-    setProtectedAlarmControlPanelMode(this, this.hass!, this.stateObj!, mode);
+    await setProtectedAlarmControlPanelMode(
+      this,
+      this.hass!,
+      this.stateObj!,
+      mode
+    );
   }
 
   protected render(): TemplateResult | null {
@@ -135,44 +144,26 @@ class HuiAlarmModeCardFeature
     }
 
     return html`
-      <div class="container">
-        <ha-control-select
-          .options=${options}
-          .value=${this._currentMode}
-          @value-changed=${this._valueChanged}
-          hide-label
-          .ariaLabel=${this.hass.localize(
-            "ui.card.alarm_control_panel.modes_label"
-          )}
-          style=${styleMap({
-            "--control-select-color": color,
-            "--modes-count": options.length.toString(),
-          })}
-          .disabled=${this.stateObj!.state === UNAVAILABLE}
-        >
-        </ha-control-select>
-      </div>
+      <ha-control-select
+        .options=${options}
+        .value=${this._currentMode}
+        @value-changed=${this._valueChanged}
+        hide-label
+        .ariaLabel=${this.hass.localize(
+          "ui.card.alarm_control_panel.modes_label"
+        )}
+        style=${styleMap({
+          "--control-select-color": color,
+          "--modes-count": options.length.toString(),
+        })}
+        .disabled=${this.stateObj!.state === UNAVAILABLE}
+      >
+      </ha-control-select>
     `;
   }
 
   static get styles() {
-    return css`
-      ha-control-select {
-        --control-select-color: var(--feature-color);
-        --control-select-padding: 0;
-        --control-select-thickness: 40px;
-        --control-select-border-radius: 10px;
-        --control-select-button-border-radius: 10px;
-      }
-      ha-control-button-group {
-        margin: 0 12px 12px 12px;
-        --control-button-group-spacing: 12px;
-      }
-      .container {
-        padding: 0 12px 12px 12px;
-        width: auto;
-      }
-    `;
+    return cardFeatureStyles;
   }
 }
 

@@ -1,4 +1,5 @@
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
 import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
@@ -11,6 +12,10 @@ const ENTITIES = [
   }),
   getEntity("light", "bed_light", "off", {
     friendly_name: "Bed Light",
+  }),
+  getEntity("person", "paulus", "home", {
+    friendly_name: "Paulus",
+    entity_picture: "/images/paulus.jpg",
   }),
 ];
 
@@ -48,6 +53,13 @@ const CONFIGS = [
     config: `
 - type: picture-entity
   entity: camera.demo_camera
+    `,
+  },
+  {
+    heading: "Person entity",
+    config: `
+- type: picture-entity
+  entity: person.paulus
     `,
   },
   {

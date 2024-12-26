@@ -23,18 +23,18 @@ jobs:
       contents: write # Required to upload release assets
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v4.1.7
-
-      - name: Verify version
-        uses: home-assistant/actions/helpers/verify-version@master
+        uses: actions/checkout@v4.2.2
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      - name: Verify version
+        uses: home-assistant/actions/helpers/verify-version@master
+
       - name: Setup Node
-        uses: actions/setup-node@v4.0.2
+        uses: actions/setup-node@v4.1.0
         with:
           node-version-file: ".nvmrc"
           cache: yarn
@@ -55,7 +55,7 @@ jobs:
           script/release
 
       - name: Upload release assets
-        uses: softprops/action-gh-release@v2.0.6
+        uses: softprops/action-gh-release@v2.1.0
         with:
           files: |
             dist/*.whl
@@ -74,10 +74,68 @@ jobs:
           echo "home-assistant-frontend==$version" > ./requirements.txt
 
       - name: Build wheels
-        uses: home-assistant/wheels@2024.01.0
+        uses: home-assistant/wheels@2024.11.0
         with:
-          abi: cp311
+          abi: cp312
           tag: musllinux_1_2
           arch: amd64
           wheels-key: ${{ secrets.WHEELS_KEY }}
           requirements: "requirements.txt"
+
+  release-landing-page:
+    name: Release landing-page frontend
+    if: github.event.release.prerelease == false
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required to upload release assets
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4.2.2
+      - name: Setup Node
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version-file: ".nvmrc"
+          cache: yarn
+      - name: Install dependencies
+        run: yarn install
+      - name: Download Translations
+        run: ./script/translations_download
+        env:
+          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+      - name: Build landing-page
+        run: landing-page/script/build_landing_page
+      - name: Tar folder
+        run: tar -czf landing-page/home_assistant_frontend_landingpage-${{ github.event.release.tag_name }}.tar.gz -C landing-page/dist .
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v2.1.0
+        with:
+          files: landing-page/home_assistant_frontend_landingpage-${{ github.event.release.tag_name }}.tar.gz
+
+  release-supervisor:
+    name: Release supervisor frontend
+    if: github.event.release.prerelease == false
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required to upload release assets
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4.2.2
+      - name: Setup Node
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version-file: ".nvmrc"
+          cache: yarn
+      - name: Install dependencies
+        run: yarn install
+      - name: Download Translations
+        run: ./script/translations_download
+        env:
+          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+      - name: Build supervisor
+        run: hassio/script/build_hassio
+      - name: Tar folder
+        run: tar -czf hassio/home_assistant_frontend_supervisor-${{ github.event.release.tag_name }}.tar.gz -C hassio/build .
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v2.1.0
+        with:
+          files: hassio/home_assistant_frontend_supervisor-${{ github.event.release.tag_name }}.tar.gz

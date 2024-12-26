@@ -1,7 +1,8 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list";
 import { mdiTextureBox } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
@@ -16,13 +17,14 @@ import "../../../components/ha-picture-upload";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
-import {
+import "../../../components/ha-area-picker";
+import type {
   FloorRegistryEntry,
   FloorRegistryEntryMutableParams,
 } from "../../../data/floor_registry";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
-import { FloorRegistryDetailDialogParams } from "./show-dialog-floor-registry-detail";
+import type { HomeAssistant } from "../../../types";
+import type { FloorRegistryDetailDialogParams } from "./show-dialog-floor-registry-detail";
 import { showAreaRegistryDetailDialog } from "./show-dialog-area-registry-detail";
 import { updateAreaRegistryEntry } from "../../../data/area_registry";
 
@@ -235,7 +237,7 @@ class DialogFloorDetail extends LitElement {
         >
           ${entry
             ? this.hass.localize("ui.common.save")
-            : this.hass.localize("ui.common.add")}
+            : this.hass.localize("ui.common.create")}
         </mwc-button>
       </ha-dialog>
     `;

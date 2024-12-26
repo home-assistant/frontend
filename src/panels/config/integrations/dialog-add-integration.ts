@@ -1,15 +1,10 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list";
-import Fuse, { IFuseOptions } from "fuse.js";
-import { HassConfig } from "home-assistant-js-websocket";
-import {
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { IFuseOptions } from "fuse.js";
+import Fuse from "fuse.js";
+import type { HassConfig } from "home-assistant-js-websocket";
+import type { PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
@@ -22,21 +17,23 @@ import {
 } from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
-import { LocalizeFunc } from "../../../common/translations/localize";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-icon-button-prev";
 import "../../../components/search-input";
 import { fetchConfigFlowInProgress } from "../../../data/config_flow";
-import { DataEntryFlowProgress } from "../../../data/data_entry_flow";
+import type { DataEntryFlowProgress } from "../../../data/data_entry_flow";
 import {
   domainToName,
   fetchIntegrationManifest,
 } from "../../../data/integration";
-import {
+import type {
   Brand,
   Brands,
   Integration,
   Integrations,
+} from "../../../data/integrations";
+import {
   findIntegration,
   getIntegrationDescriptions,
 } from "../../../data/integrations";
@@ -50,11 +47,11 @@ import { loadVirtualizer } from "../../../resources/virtualizer";
 import type { HomeAssistant } from "../../../types";
 import "./ha-domain-integrations";
 import "./ha-integration-list-item";
-import {
-  AddIntegrationDialogParams,
-  showYamlIntegrationDialog,
-} from "./show-add-integration-dialog";
+import type { AddIntegrationDialogParams } from "./show-add-integration-dialog";
+import { showYamlIntegrationDialog } from "./show-add-integration-dialog";
 import { getConfigEntries } from "../../../data/config_entries";
+import { stripDiacritics } from "../../../common/string/strip-diacritics";
+import { getStripDiacriticsFn } from "../../../util/fuse";
 
 export interface IntegrationListItem {
   name: string;
@@ -67,6 +64,7 @@ export interface IntegrationListItem {
   supported_by?: string;
   cloud?: boolean;
   is_built_in?: boolean;
+  overwrites_built_in?: boolean;
   is_add?: boolean;
   single_config_entry?: boolean;
 }
@@ -209,6 +207,7 @@ class AddIntegrationDialog extends LitElement {
             iot_standards: supportedIntegration.iot_standards,
             supported_by: integration.supported_by,
             is_built_in: supportedIntegration.is_built_in !== false,
+            overwrites_built_in: integration.overwrites_built_in,
             cloud: supportedIntegration.iot_class?.startsWith("cloud_"),
             single_config_entry: integration.single_config_entry,
           });
@@ -230,6 +229,7 @@ class AddIntegrationDialog extends LitElement {
               ? Object.keys(integration.integrations)
               : undefined,
             is_built_in: integration.is_built_in !== false,
+            overwrites_built_in: integration.overwrites_built_in,
           });
         } else if (filter && "integration_type" in integration) {
           // Integration without a config flow
@@ -238,6 +238,7 @@ class AddIntegrationDialog extends LitElement {
             name: integration.name || domainToName(localize, domain),
             config_flow: integration.config_flow,
             is_built_in: integration.is_built_in !== false,
+            overwrites_built_in: integration.overwrites_built_in,
             cloud: integration.iot_class?.startsWith("cloud_"),
           });
         }
@@ -255,6 +256,7 @@ class AddIntegrationDialog extends LitElement {
           isCaseSensitive: false,
           minMatchCharLength: Math.min(filter.length, 2),
           threshold: 0.2,
+          getFn: getStripDiacriticsFn,
         };
         const helpers = Object.entries(h).map(([domain, integration]) => ({
           domain,
@@ -264,15 +266,16 @@ class AddIntegrationDialog extends LitElement {
           is_built_in: integration.is_built_in !== false,
           cloud: integration.iot_class?.startsWith("cloud_"),
         }));
+        const normalizedFilter = stripDiacritics(filter);
         return [
           ...new Fuse(integrations, options)
-            .search(filter)
+            .search(normalizedFilter)
             .map((result) => result.item),
           ...new Fuse(yamlIntegrations, options)
-            .search(filter)
+            .search(normalizedFilter)
             .map((result) => result.item),
           ...new Fuse(helpers, options)
-            .search(filter)
+            .search(normalizedFilter)
             .map((result) => result.item),
         ];
       }
@@ -581,6 +584,10 @@ class AddIntegrationDialog extends LitElement {
       });
       if (configEntries.length > 0) {
         this.closeDialog();
+        const localize = await this.hass.loadBackendTranslation(
+          "title",
+          integration.name
+        );
         showAlertDialog(this, {
           title: this.hass.localize(
             "ui.panel.config.integrations.config_flow.single_config_entry_title"
@@ -588,7 +595,7 @@ class AddIntegrationDialog extends LitElement {
           text: this.hass.localize(
             "ui.panel.config.integrations.config_flow.single_config_entry",
             {
-              integration_name: integration.name,
+              integration_name: domainToName(localize, integration.name),
             }
           ),
         });

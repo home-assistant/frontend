@@ -18,9 +18,9 @@ export class HaFormfield extends FormfieldBase {
 
     return html` <div class="mdc-form-field ${classMap(classes)}">
       <slot></slot>
-      <label class="mdc-label" @click=${this._labelClick}
-        ><slot name="label">${this.label}</slot></label
-      >
+      <label class="mdc-label" @click=${this._labelClick}>
+        <slot name="label">${this.label}</slot>
+      </label>
     </div>`;
   }
 
@@ -57,13 +57,13 @@ export class HaFormfield extends FormfieldBase {
       }
       .mdc-form-field {
         align-items: var(--ha-formfield-align-items, center);
+        gap: 4px;
       }
       .mdc-form-field > label {
         direction: var(--direction);
         margin-inline-start: 0;
         margin-inline-end: auto;
-        padding-inline-start: 4px;
-        padding-inline-end: 0;
+        padding: 0;
       }
       :host([disabled]) label {
         color: var(--disabled-text-color);

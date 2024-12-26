@@ -1,32 +1,25 @@
 import "@material/mwc-button";
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import {
   mdiContentCopy,
   mdiContentCut,
-  mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
   mdiFileMoveOutline,
   mdiMinus,
   mdiPlus,
+  mdiPlusCircleMultipleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  css,
-  html,
-  nothing,
-} from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, queryAssignedNodes } from "lit/decorators";
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
-import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { saveConfig } from "../../../data/lovelace/config/types";
 import { isStrategyView } from "../../../data/lovelace/config/view";
 import {
@@ -34,8 +27,7 @@ import {
   showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
-import { showSaveSuccessToast } from "../../../util/toast-saved-success";
+import type { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import {
@@ -45,14 +37,14 @@ import {
   moveCardToIndex,
 } from "../editor/config-util";
 import {
-  LovelaceCardPath,
-  findLovelaceCards,
+  type LovelaceCardPath,
+  type LovelaceContainerPath,
+  findLovelaceItems,
   getLovelaceContainerPath,
   parseLovelaceCardPath,
 } from "../editor/lovelace-path";
 import { showSelectViewDialog } from "../editor/select-view/show-select-view-dialog";
-import { Lovelace, LovelaceCard } from "../types";
-import { SECTION_VIEW_LAYOUT } from "../views/const";
+import type { Lovelace, LovelaceCard } from "../types";
 
 @customElement("hui-card-options")
 export class HuiCardOptions extends LitElement {
@@ -64,10 +56,11 @@ export class HuiCardOptions extends LitElement {
 
   @queryAssignedNodes() private _assignedNodes?: NodeListOf<LovelaceCard>;
 
-  @property({ type: Boolean }) public hidePosition = false;
+  @property({ attribute: "hide-position", type: Boolean })
+  public hidePosition = false;
 
   @storage({
-    key: "lovelaceClipboard",
+    key: "dashboardCardClipboard",
     state: false,
     subscribe: false,
     storage: "sessionStorage",
@@ -91,7 +84,7 @@ export class HuiCardOptions extends LitElement {
 
   private get _cards() {
     const containerPath = getLovelaceContainerPath(this.path!);
-    return findLovelaceCards(this.lovelace!.config, containerPath)!;
+    return findLovelaceItems("cards", this.lovelace!.config, containerPath)!;
   }
 
   protected render(): TemplateResult {
@@ -158,7 +151,7 @@ export class HuiCardOptions extends LitElement {
               <ha-list-item graphic="icon">
                 <ha-svg-icon
                   slot="graphic"
-                  .path=${mdiContentDuplicate}
+                  .path=${mdiPlusCircleMultipleOutline}
                 ></ha-svg-icon>
                 ${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.duplicate"
@@ -274,7 +267,7 @@ export class HuiCardOptions extends LitElement {
         this._cutCard();
         break;
       case 4:
-        this._deleteCard(true);
+        this._deleteCard({ silent: false });
         break;
     }
   }
@@ -297,7 +290,7 @@ export class HuiCardOptions extends LitElement {
 
   private _cutCard(): void {
     this._copyCard();
-    this._deleteCard(false);
+    this._deleteCard({ silent: true });
   }
 
   private _copyCard(): void {
@@ -353,50 +346,80 @@ export class HuiCardOptions extends LitElement {
       allowDashboardChange: true,
       header: this.hass!.localize("ui.panel.lovelace.editor.move_card.header"),
       viewSelectedCallback: async (urlPath, selectedDashConfig, viewIndex) => {
-        const view = selectedDashConfig.views[viewIndex];
+        if (!this.lovelace) return;
+        const toView = selectedDashConfig.views[viewIndex];
+        const newConfig = selectedDashConfig;
 
-        if (!isStrategyView(view) && view.type === SECTION_VIEW_LAYOUT) {
+        const undoAction = async () => {
+          this.lovelace!.saveConfig(selectedDashConfig);
+        };
+
+        if (isStrategyView(toView)) {
           showAlertDialog(this, {
             title: this.hass!.localize(
               "ui.panel.lovelace.editor.move_card.error_title"
             ),
             text: this.hass!.localize(
-              "ui.panel.lovelace.editor.move_card.error_text_section"
+              "ui.panel.lovelace.editor.move_card.error_text_strategy"
             ),
             warning: true,
           });
           return;
         }
 
+        const toPath: LovelaceContainerPath = [viewIndex];
+
         if (urlPath === this.lovelace!.urlPath) {
           this.lovelace!.saveConfig(
-            moveCardToContainer(this.lovelace!.config, this.path!, [viewIndex])
+            moveCardToContainer(newConfig, this.path!, toPath)
           );
-          showSaveSuccessToast(this, this.hass!);
+          this.lovelace.showToast({
+            message: this.hass!.localize(
+              "ui.panel.lovelace.editor.move_card.success"
+            ),
+            duration: 4000,
+            action: {
+              action: undoAction,
+              text: this.hass!.localize("ui.common.undo"),
+            },
+          });
           return;
         }
         try {
           const { cardIndex } = parseLovelaceCardPath(this.path!);
+          const card = this._cards[cardIndex];
           await saveConfig(
             this.hass!,
             urlPath,
-            addCard(selectedDashConfig, [viewIndex], this._cards[cardIndex])
+            addCard(newConfig, toPath, card)
           );
           this.lovelace!.saveConfig(
             deleteCard(this.lovelace!.config, this.path!)
           );
-          showSaveSuccessToast(this, this.hass!);
+
+          this.lovelace.showToast({
+            message: this.hass!.localize(
+              "ui.panel.lovelace.editor.move_card.success"
+            ),
+            duration: 4000,
+            action: {
+              action: undoAction,
+              text: this.hass!.localize("ui.common.undo"),
+            },
+          });
         } catch (err: any) {
-          showAlertDialog(this, {
-            text: `Moving failed: ${err.message}`,
+          this.lovelace.showToast({
+            message: this.hass!.localize(
+              "ui.panel.lovelace.editor.move_card.error"
+            ),
           });
         }
       },
     });
   }
 
-  private _deleteCard(confirm: boolean): void {
-    fireEvent(this, "ll-delete-card", { path: this.path!, confirm });
+  private _deleteCard({ silent }: { silent: boolean }): void {
+    fireEvent(this, "ll-delete-card", { path: this.path!, silent });
   }
 }
 

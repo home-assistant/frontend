@@ -1,5 +1,6 @@
-import { HassEntity } from "home-assistant-js-websocket";
-import { CSSResultGroup, LitElement, html } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup } from "lit";
+import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/entity/state-info";
 import "../components/ha-lawn_mower-action-button";
@@ -12,7 +13,7 @@ class StateCardLawnMower extends LitElement {
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
-  @property({ type: Boolean }) public inDialog = false;
+  @property({ attribute: "in-dialog", type: Boolean }) public inDialog = false;
 
   public render() {
     const stateObj = this.stateObj;

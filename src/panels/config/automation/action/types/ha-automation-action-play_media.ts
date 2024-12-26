@@ -3,10 +3,10 @@ import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-selector/ha-selector-media";
-import { PlayMediaAction } from "../../../../../data/script";
+import type { PlayMediaAction } from "../../../../../data/script";
 import type { MediaSelectorValue } from "../../../../../data/selector";
 import type { HomeAssistant } from "../../../../../types";
-import { ActionElement } from "../ha-automation-action-row";
+import type { ActionElement } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-play_media")
 export class HaPlayMediaAction extends LitElement implements ActionElement {
@@ -20,7 +20,7 @@ export class HaPlayMediaAction extends LitElement implements ActionElement {
 
   public static get defaultConfig(): PlayMediaAction {
     return {
-      service: "media_player.play_media",
+      action: "media_player.play_media",
       target: { entity_id: "" },
       data: { media_content_id: "", media_content_type: "" },
       metadata: {},
@@ -52,7 +52,7 @@ export class HaPlayMediaAction extends LitElement implements ActionElement {
     fireEvent(this, "value-changed", {
       value: {
         ...this.action,
-        service: "media_player.play_media",
+        action: "media_player.play_media",
         target: { entity_id: ev.detail.value.entity_id },
         data: {
           media_content_id: ev.detail.value.media_content_id,

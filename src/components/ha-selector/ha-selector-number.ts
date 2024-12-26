@@ -1,9 +1,10 @@
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../common/dom/fire_event";
-import { NumberSelector } from "../../data/selector";
-import { HomeAssistant } from "../../types";
+import type { NumberSelector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
 import "../ha-input-helper-text";
 import "../ha-slider";
 import "../ha-textfield";
@@ -60,12 +61,12 @@ export class HaNumberSelector extends LitElement {
     }
 
     return html`
+      ${this.label && !isBox
+        ? html`${this.label}${this.required ? "*" : ""}`
+        : nothing}
       <div class="input">
         ${!isBox
           ? html`
-              ${this.label
-                ? html`${this.label}${this.required ? "*" : ""}`
-                : ""}
               <ha-slider
                 labeled
                 .min=${this.selector.number!.min}
@@ -75,10 +76,11 @@ export class HaNumberSelector extends LitElement {
                 .disabled=${this.disabled}
                 .required=${this.required}
                 @change=${this._handleSliderChange}
+                .ticks=${this.selector.number?.slider_ticks}
               >
               </ha-slider>
             `
-          : ""}
+          : nothing}
         <ha-textfield
           .inputMode=${this.selector.number?.step === "any" ||
           (this.selector.number?.step ?? 1) % 1 !== 0
@@ -105,7 +107,7 @@ export class HaNumberSelector extends LitElement {
       </div>
       ${!isBox && this.helper
         ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
-        : ""}
+        : nothing}
     `;
   }
 
@@ -141,6 +143,9 @@ export class HaNumberSelector extends LitElement {
       }
       ha-slider {
         flex: 1;
+        margin-right: 16px;
+        margin-inline-end: 16px;
+        margin-inline-start: 0;
       }
       ha-textfield {
         --ha-textfield-input-width: 40px;

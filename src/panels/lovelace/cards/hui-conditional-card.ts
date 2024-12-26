@@ -1,10 +1,10 @@
 import { customElement } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { computeCardSize } from "../common/compute-card-size";
 import { HuiConditionalBase } from "../components/hui-conditional-base";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { ConditionalCardConfig } from "./types";
+import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type { ConditionalCardConfig } from "./types";
 
 @customElement("hui-conditional-card")
 class HuiConditionalCard extends HuiConditionalBase implements LovelaceCard {
@@ -41,6 +41,7 @@ class HuiConditionalCard extends HuiConditionalBase implements LovelaceCard {
     element.hass = this.hass;
     element.preview = this.preview;
     element.config = cardConfig;
+    element.load();
     return element;
   }
 

@@ -1,5 +1,5 @@
-/* eslint-disable lit/no-template-arrow */
-import { LitElement, TemplateResult, html, css } from "lit";
+import type { TemplateResult } from "lit";
+import { LitElement, html, css } from "lit";
 import { customElement, state } from "lit/decorators";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import type { HomeAssistant } from "../../../../src/types";
@@ -14,11 +14,10 @@ import { HaDelayAction } from "../../../../src/panels/config/automation/action/t
 import { HaDeviceAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-device_id";
 import { HaEventAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-event";
 import { HaRepeatAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-repeat";
-import { HaSceneAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-activate_scene";
 import { HaServiceAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-service";
 import { HaWaitForTriggerAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-wait_for_trigger";
 import { HaWaitAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-wait_template";
-import { Action } from "../../../../src/data/script";
+import type { Action } from "../../../../src/data/script";
 import { HaConditionAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-condition";
 import { HaSequenceAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-sequence";
 import { HaParallelAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-parallel";
@@ -32,7 +31,6 @@ const SCHEMAS: { name: string; actions: Action[] }[] = [
   { name: "Service", actions: [HaServiceAction.defaultConfig] },
   { name: "Condition", actions: [HaConditionAction.defaultConfig] },
   { name: "Delay", actions: [HaDelayAction.defaultConfig] },
-  { name: "Scene", actions: [HaSceneAction.defaultConfig] },
   { name: "Play media", actions: [HaPlayMediaAction.defaultConfig] },
   { name: "Wait", actions: [HaWaitAction.defaultConfig] },
   { name: "WaitForTrigger", actions: [HaWaitForTriggerAction.defaultConfig] },
@@ -65,11 +63,6 @@ class DemoHaAutomationEditorAction extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const valueChanged = (ev) => {
-      const sampleIdx = ev.target.sampleIdx;
-      this.data[sampleIdx] = ev.detail.value;
-      this.requestUpdate();
-    };
     return html`
       <div class="options">
         <ha-formfield label="Disabled">
@@ -94,7 +87,7 @@ class DemoHaAutomationEditorAction extends LitElement {
                   .actions=${this.data[sampleIdx]}
                   .sampleIdx=${sampleIdx}
                   .disabled=${this._disabled}
-                  @value-changed=${valueChanged}
+                  @value-changed=${this._handleValueChange}
                 ></ha-automation-action>
               `
             )}
@@ -102,6 +95,12 @@ class DemoHaAutomationEditorAction extends LitElement {
         `
       )}
     `;
+  }
+
+  private _handleValueChange(ev) {
+    const sampleIdx = ev.target.sampleIdx;
+    this.data[sampleIdx] = ev.detail.value;
+    this.requestUpdate();
   }
 
   private _handleOptionChange(ev) {

@@ -1,10 +1,11 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/entity/state-info";
 import "../components/ha-slider";
 import "../components/ha-textfield";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import { haStyle } from "../resources/styles";
 import { isUnavailableState } from "../data/entity";
 import { debounce } from "../common/util/debounce";
@@ -15,7 +16,7 @@ class StateCardNumber extends LitElement {
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
-  @property({ type: Boolean }) public inDialog = false;
+  @property({ attribute: "in-dialog", type: Boolean }) public inDialog = false;
 
   private _loaded?: boolean;
 

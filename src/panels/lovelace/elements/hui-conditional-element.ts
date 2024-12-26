@@ -1,16 +1,24 @@
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { createStyledHuiElement } from "../cards/picture-elements/create-styled-hui-element";
 import {
   checkConditionsMet,
   validateConditionalConfig,
 } from "../common/validate-condition";
-import {
+import type { LovelacePictureElementEditor } from "../types";
+import type {
   ConditionalElementConfig,
   LovelaceElement,
   LovelaceElementConfig,
 } from "./types";
 
 class HuiConditionalElement extends HTMLElement implements LovelaceElement {
+  public static async getConfigElement(): Promise<LovelacePictureElementEditor> {
+    await import(
+      "../editor/config-elements/elements/hui-conditional-element-editor"
+    );
+    return document.createElement("hui-conditional-element-editor");
+  }
+
   public _hass?: HomeAssistant;
 
   private _config?: ConditionalElementConfig;
@@ -44,16 +52,16 @@ class HuiConditionalElement extends HTMLElement implements LovelaceElement {
       this._elements.push(createStyledHuiElement(elementConfig));
     });
 
-    this.updateElements();
+    this._updateElements();
   }
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
 
-    this.updateElements();
+    this._updateElements();
   }
 
-  private updateElements() {
+  private _updateElements() {
     if (!this._hass || !this._config) {
       return;
     }

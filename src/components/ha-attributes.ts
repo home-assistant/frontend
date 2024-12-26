@@ -1,17 +1,11 @@
-import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeAttributeNameDisplay } from "../common/entity/compute_attribute_display";
 import { STATE_ATTRIBUTES } from "../data/entity_attributes";
 import { haStyle } from "../resources/styles";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "./ha-attribute-value";
 import "./ha-expansion-panel";
 
@@ -26,7 +20,7 @@ class HaAttributes extends LitElement {
   @state() private _expanded = false;
 
   private get _filteredAttributes() {
-    return this.computeDisplayAttributes(
+    return this._computeDisplayAttributes(
       STATE_ATTRIBUTES.concat(
         this.extraFilters ? this.extraFilters.split(",") : []
       )
@@ -59,7 +53,7 @@ class HaAttributes extends LitElement {
           "ui.components.attributes.expansion_header"
         )}
         outlined
-        @expanded-will-change=${this.expandedChanged}
+        @expanded-will-change=${this._expandedChanged}
       >
         <div class="attribute-container">
           ${this._expanded
@@ -134,7 +128,7 @@ class HaAttributes extends LitElement {
     ];
   }
 
-  private computeDisplayAttributes(filtersArray: string[]): string[] {
+  private _computeDisplayAttributes(filtersArray: string[]): string[] {
     if (!this.stateObj) {
       return [];
     }
@@ -143,7 +137,7 @@ class HaAttributes extends LitElement {
     );
   }
 
-  private expandedChanged(ev) {
+  private _expandedChanged(ev) {
     this._expanded = ev.detail.expanded;
   }
 }
