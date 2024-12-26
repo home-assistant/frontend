@@ -7119,7 +7119,7 @@
         "create_list": "Create list",
         "delete_list": "Delete list",
         "add_item": "Add item",
-        "information": "Information",
+        "information": "More info",
         "delete_confirm_title": "Remove {name}?",
         "delete_confirm_text": "Are you sure you want to remove this list and all of its items?",
         "restart_confirm": "Restart Home Assistant to finish removing this to-do list"
