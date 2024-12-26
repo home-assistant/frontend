@@ -304,6 +304,13 @@ ${type === "object"
           direction: var(--direction);
         }
 
+        .edit-pane .card-content {
+          -ms-user-select: initial;
+          -webkit-user-select: initial;
+          -moz-user-select: initial;
+          user-select: initial;
+        }
+
         .edit-pane a {
           color: var(--primary-color);
         }
