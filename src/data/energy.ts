@@ -401,7 +401,11 @@ const getEnergyData = async (
 
   const dayDifference = differenceInDays(end || new Date(), start);
   const period =
-    dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour";
+    isFirstDayOfMonth(start) && isLastDayOfMonth(end) && dayDifference > 35
+      ? "month"
+      : dayDifference > 2
+        ? "day"
+        : "hour";
 
   const lengthUnit = hass.config.unit_system.length || "";
   const energyUnits: StatisticsUnitConfiguration = {
