@@ -402,7 +402,7 @@ const getEnergyData = async (
   const dayDifference = differenceInDays(end || new Date(), start);
   const period =
     isFirstDayOfMonth(start) &&
-    isLastDayOfMonth(end || new Date()) &&
+    (!end || isLastDayOfMonth(end)) &&
     dayDifference > 35
       ? "month"
       : dayDifference > 2
