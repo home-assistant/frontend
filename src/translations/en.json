@@ -1903,7 +1903,7 @@
       "log_in": "Log in"
     },
     "notification_drawer": {
-      "click_to_configure": "Click button to configure {entity}",
+      "click_to_configure": "Press button to configure {entity}",
       "empty": "No notifications",
       "title": "Notifications",
       "close": "Close",
@@ -2120,7 +2120,7 @@
           "manage_labels": "Manage labels",
           "no_labels": "You don't have any labels",
           "introduction": "Labels can help you organize your areas, devices and entities. They can be used to filter in the UI, or use them as a target in automations.",
-          "introduction2": "Go to the area, device or entity you want to add a label to, and click on the edit button to assign labels to them.",
+          "introduction2": "Go to the area, device or entity you want to add a label to, and press the edit button to assign labels to them.",
           "confirm_remove_title": "Remove label?",
           "confirm_remove": "Are you sure you want to remove label {label}? It will be removed from all areas, devices and entities.",
           "detail": {
@@ -4087,8 +4087,8 @@
             "password_error_msg": "Passwords are at least 8 characters",
             "start_trial": "Start trial",
             "resend_confirm_email": "Resend confirmation email",
-            "clicked_confirm": "I clicked the confirmation link",
-            "confirm_email": "Check the email we just sent to {email} and click the confirmation link to continue.",
+            "clicked_confirm": "I opened the confirmation link",
+            "confirm_email": "Check the email we just sent to {email} and open the confirmation link to continue.",
             "account_created": "Account created! Check your email for instructions on how to activate your account."
           },
           "account": {
@@ -4230,7 +4230,7 @@
           }
         },
         "devices": {
-          "add_prompt": "No {name} have been added using this {type} yet. You can add one by clicking the + button above.",
+          "add_prompt": "No {name} have been added using this {type} yet. You can add one by pressing the + button above.",
           "add_device": "Add device",
           "caption": "Devices",
           "description": "Manage configured devices",
@@ -4513,7 +4513,7 @@
           "new": "Select brand",
           "confirm_new": "Do you want to set up {integration}?",
           "add_integration": "Add integration",
-          "no_integrations": "Seems like you don't have any integrations configured yet. Click on the button below to add your first integration!",
+          "no_integrations": "Seems like you don't have any integrations configured yet. Press the button below to add your first integration!",
           "no_disabled_integrations": "No disabled integrations",
           "no_ignored_integrations": "No ignored integrations",
           "note_about_integrations": "No integrations matched your search, the integration you want to set up might not be available to set up via the UI yet.",
@@ -4544,7 +4544,7 @@
           "ignore": {
             "ignore": "Ignore",
             "confirm_ignore_title": "Ignore discovery of {name}?",
-            "confirm_ignore": "Are you sure you don't want to set up this integration? You can undo this by clicking the 'Show ignored integrations' in the overflow menu on the top right.",
+            "confirm_ignore": "Are you sure you don't want to set up this integration? You can undo this by selecting 'Show ignored integrations' in the overflow menu on the top right.",
             "show_ignored": "Show ignored integrations",
             "ignored": "Ignored",
             "confirm_delete_ignore_title": "Stop ignoring {name}?",
@@ -5853,7 +5853,7 @@
         "unused_entities": {
           "title": "Unused entities",
           "available_entities": "These are the entities that you have available, but are not in your dashboard yet.",
-          "select_to_add": "Select the entities you want to add to a card and then click the add card button.",
+          "select_to_add": "Select the entities you want to add to a card and then press the add card button.",
           "state_icon": "State",
           "entity": "Entity",
           "entity_id": "Entity ID",
@@ -6263,7 +6263,7 @@
               "toggle": "Toggle entities.",
               "description": "The Entities card is the most common type of card. It groups items together into lists.",
               "special_row": "special row",
-              "edit_special_row": "View the details of this row by clicking the edit button",
+              "edit_special_row": "View the details of this row by pressing the edit button",
               "entity_row_editor": "Entity row editor",
               "secondary_info_values": {
                 "none": "No secondary info",
@@ -7073,7 +7073,7 @@
         },
         "refresh_tokens": {
           "header": "Refresh tokens",
-          "description": "Each refresh token represents a login session. Refresh tokens will be automatically deleted when you click log out. Unused refresh tokens will be automatically deleted after 90 days. The following refresh tokens are currently active for your account.",
+          "description": "Each refresh token represents a login session. Refresh tokens will be automatically deleted when you log out. Unused refresh tokens will be automatically deleted after 90 days. The following refresh tokens are currently active for your account.",
           "ios_app": "iOS app",
           "android_app": "Android app",
           "current_session": "Your current session",
@@ -7513,7 +7513,7 @@
               "reloading": {
                 "all": "All YAML configuration",
                 "heading": "YAML configuration reloading",
-                "introduction": "Some parts of Home Assistant can reload without requiring a restart. Clicking one of the options below will unload their current YAML configuration and load the new one.",
+                "introduction": "Some parts of Home Assistant can reload without requiring a restart. Selecting one of the options below will unload their current YAML configuration and load the new one.",
                 "reload": "{domain}",
                 "core": "Location & customizations",
                 "group": "Groups, group entities, and notify services",
@@ -7993,7 +7993,7 @@
       "update_name": "Update {name}",
       "open_release_notes": "Open release notes",
       "create_backup": "Create backup before updating",
-      "description": "You have {version} installed. Click update to update to version {newest_version}",
+      "description": "You have {version} installed. Press update to update to version {newest_version}",
       "updating": "Updating {name} to version {version}",
       "no_update": "No update available for {name}"
     },
@@ -8064,9 +8064,9 @@
         "failed_to_reload": "Failed to reload the Supervisor",
         "failed_to_update": "Failed to update the Supervisor",
         "unsupported_title": "You are running an unsupported installation",
-        "unsupported_description": "Below is a list of issues found with your installation, click on the links to learn how you can resolve the issues.",
+        "unsupported_description": "Below is a list of issues found with your installation, open the links to learn how you can resolve the issues.",
         "unhealthy_title": "Your installation is unhealthy",
-        "unhealthy_description": "Running an unhealthy installation will cause issues. Below is a list of issues found with your installation, click on the links to learn how you can resolve the issues.",
+        "unhealthy_description": "Running an unhealthy installation will cause issues. Below is a list of issues found with your installation, open the links to learn how you can resolve the issues.",
         "update_supervisor": "Update the Supervisor",
         "channel": "Channel",
         "leave_beta_action": "Leave beta channel",
