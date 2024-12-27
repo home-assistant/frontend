@@ -173,6 +173,10 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       return;
     }
 
+    const oldConfig = changedProps.get("_config") as
+      | StatisticsGraphCardConfig
+      | undefined;
+
     if (this.hass) {
       if (this._config.energy_date_selection && !this._energySub) {
         this._subscribeEnergy();
@@ -183,11 +187,16 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
         this._setFetchStatisticsTimer();
         return;
       }
+      if (
+        this._config.energy_date_selection &&
+        this._energySub &&
+        changedProps.has("_config") &&
+        oldConfig?.collection_key !== this._config.collection_key
+      ) {
+        this._unsubscribeEnergy();
+        this._subscribeEnergy();
+      }
     }
-
-    const oldConfig = changedProps.get("_config") as
-      | StatisticsGraphCardConfig
-      | undefined;
 
     if (
       changedProps.has("_config") &&
