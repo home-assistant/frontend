@@ -307,6 +307,9 @@ export class HaChartBase extends LitElement {
                 class="zoom-reset"
                 .path=${mdiRestart}
                 @click=${this._handleZoomReset}
+                title=${this.hass.localize(
+                  "ui.components.history_charts.zoom_reset"
+                )}
               ></ha-icon-button>`
             : nothing}
           ${this._tooltip
