@@ -6938,8 +6938,8 @@
           "description": "Enable or disable keyboard shortcuts for performing various actions in the UI."
         },
         "suspend": {
-          "header": "Automatically close connection",
-          "description": "Should we close the connection to the server after being hidden for 5 minutes?"
+          "header": "Suspend background connections",
+          "description": "For hidden windows or background tabs close the server connection after 5 minutes."
         },
         "push_notifications": {
           "header": "Receive notifications",
