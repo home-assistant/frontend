@@ -1,10 +1,12 @@
-import type { HassEntity } from "home-assistant-js-websocket";
-import { subHours } from "date-fns";
+import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import { subHours, differenceInDays } from "date-fns";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import "../../../components/ha-card";
+import { getEnergyDataCollection } from "../../../data/energy";
+import { getSuggestedPeriod } from "./energy/common/energy-chart-options";
 import type {
   Statistics,
   StatisticsMetaData,
@@ -15,7 +17,6 @@ import {
   getDisplayUnit,
   getStatisticMetadata,
 } from "../../../data/recorder";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntitiesChanged } from "../common/has-changed";
@@ -26,10 +27,7 @@ import type { StatisticsGraphCardConfig } from "./types";
 export const DEFAULT_DAYS_TO_SHOW = 30;
 
 @customElement("hui-statistics-graph-card")
-export class HuiStatisticsGraphCard
-  extends SubscribeMixin(LitElement)
-  implements LovelaceCard
-{
+export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
   public static async getConfigElement() {
     await import("../editor/config-elements/hui-statistics-graph-card-editor");
     return document.createElement("hui-statistics-graph-card-editor");
@@ -74,22 +72,15 @@ export class HuiStatisticsGraphCard
 
   private _statTypes?: Array<StatisticType>;
 
-  public hassSubscribe() {
-    if (!this._config?.energy_date_selection) {
-      return [];
-    }
+  private _energySub?: UnsubscribeFunc;
 
-    return [
-      getEnergyDataCollection(this.hass!, {
-        key: this._config?.collection_key,
-      }).subscribe((data) => {
-        this._setFetchStatisticsTimer(data);
-      }),
-    ];
-  }
+  @state() private _energyStart?: Date;
+
+  @state() private _energyEnd?: Date;
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    this._unsubscribeEnergy();
     if (this._interval) {
       clearInterval(this._interval);
       this._interval = undefined;
@@ -101,7 +92,32 @@ export class HuiStatisticsGraphCard
     if (!this.hasUpdated) {
       return;
     }
-    this._setFetchStatisticsTimer();
+    if (this._config?.energy_date_selection) {
+      this._subscribeEnergy();
+    } else {
+      this._setFetchStatisticsTimer();
+    }
+  }
+
+  private _subscribeEnergy() {
+    if (!this._energySub) {
+      this._energySub = getEnergyDataCollection(this.hass!, {
+        key: this._config?.collection_key,
+      }).subscribe((data) => {
+        this._energyStart = data.start;
+        this._energyEnd = data.end;
+        this._getStatistics();
+      });
+    }
+  }
+
+  private _unsubscribeEnergy() {
+    if (this._energySub) {
+      this._energySub();
+      this._energySub = undefined;
+    }
+    this._energyStart = undefined;
+    this._energyEnd = undefined;
   }
 
   public getCardSize(): number {
@@ -157,6 +173,18 @@ export class HuiStatisticsGraphCard
       return;
     }
 
+    if (this.hass) {
+      if (this._config.energy_date_selection && !this._energySub) {
+        this._subscribeEnergy();
+        return;
+      }
+      if (!this._config.energy_date_selection && this._energySub) {
+        this._unsubscribeEnergy();
+        this._setFetchStatisticsTimer();
+        return;
+      }
+    }
+
     const oldConfig = changedProps.get("_config") as
       | StatisticsGraphCardConfig
       | undefined;
@@ -182,13 +210,26 @@ export class HuiStatisticsGraphCard
     }
   }
 
-  private _setFetchStatisticsTimer(data?) {
-    this._getStatistics(data);
+  private _setFetchStatisticsTimer() {
+    this._getStatistics();
     // statistics are created every hour
     clearInterval(this._interval);
-    this._interval = window.setInterval(
-      () => this._getStatistics(),
-      this._intervalTimeout
+    if (!this._config?.energy_date_selection) {
+      this._interval = window.setInterval(
+        () => this._getStatistics(),
+        this._intervalTimeout
+      );
+    }
+  }
+
+  private get _period() {
+    return (
+      this._config?.period ??
+      (this._energyStart && this._energyEnd
+        ? getSuggestedPeriod(
+            differenceInDays(this._energyEnd, this._energyStart)
+          )
+        : undefined)
     );
   }
 
@@ -209,7 +250,7 @@ export class HuiStatisticsGraphCard
             .isLoadingData=${!this._statistics}
             .statisticsData=${this._statistics}
             .metadata=${this._metadata}
-            .period=${this._config.period}
+            .period=${this._period}
             .chartType=${this._config.chart_type || "line"}
             .statTypes=${this._statTypes!}
             .names=${this._names}
@@ -241,18 +282,14 @@ export class HuiStatisticsGraphCard
     this._metadata = statisticsMetaData;
   }
 
-  private async _getStatistics(energyData?: EnergyData): Promise<void> {
-    let startDate: Date;
-
-    if (energyData) {
-      startDate = energyData.start;
-    } else {
-      startDate = subHours(
+  private async _getStatistics(): Promise<void> {
+    const startDate =
+      this._energyStart ??
+      subHours(
         new Date(),
         24 * (this._config!.days_to_show || DEFAULT_DAYS_TO_SHOW) + 1
       );
-    }
-    const endDate = energyData ? energyData.end : undefined;
+    const endDate = this._energyEnd;
     try {
       let unitClass;
       if (this._config!.unit && this._metadata) {
@@ -280,7 +317,7 @@ export class HuiStatisticsGraphCard
         startDate,
         endDate,
         this._entities,
-        this._config!.period,
+        this._period,
         unitconfig,
         this._statTypes
       );
