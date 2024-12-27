@@ -2948,7 +2948,7 @@
             "edit_automation": "Edit automation",
             "dev_automation": "Debug automation",
             "show_info_automation": "Show info about automation",
-            "show_settings": "Show settings",
+            "show_settings": "Settings",
             "delete": "[%key:ui::common::delete%]",
             "delete_confirm_title": "Delete automation?",
             "delete_confirm_text": "{name} will be permanently deleted.",
