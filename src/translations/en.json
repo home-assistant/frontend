@@ -6939,7 +6939,7 @@
         },
         "suspend": {
           "header": "Suspend background connections",
-          "description": "For hidden windows or background tabs close the server connection after 5 minutes."
+          "description": "For hidden windows or background tabs, close the server connection after 5 minutes."
         },
         "push_notifications": {
           "header": "Receive notifications",
