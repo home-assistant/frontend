@@ -1138,7 +1138,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
               domain: domainToName(
                 this.hass.localize,
                 this._switchAsDomain
-              ).toLowerCase(),
+              ),
             }
           ),
         })
@@ -1180,7 +1180,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
                     domain: domainToName(
                       this.hass.localize,
                       domain
-                    ).toLowerCase(),
+                    ),
                   }
                 )
               : this.hass!.localize(
@@ -1189,11 +1189,11 @@ export class EntityRegistrySettingsEditor extends LitElement {
                     domain_1: domainToName(
                       this.hass.localize,
                       domain
-                    ).toLowerCase(),
+                    ),
                     domain_2: domainToName(
                       this.hass.localize,
                       this._switchAsDomain
-                    ).toLowerCase(),
+                    ),
                   }
                 ),
         })
