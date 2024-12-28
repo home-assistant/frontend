@@ -177,7 +177,7 @@ export class HaConfigLovelaceRescources extends LitElement {
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
         @row-click=${this._editResource}
-        hasFab
+        has-fab
         clickable
       >
         <ha-fab
