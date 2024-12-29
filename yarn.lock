@@ -5219,6 +5219,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vibrant/color@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@vibrant/color@npm:4.0.0"
+  checksum: 10/deaa1f29140363208f7d210af31320c9cb8fa45f8db08a9d889260b4af7d420031b7bfc53a7731d847fdbb5778a05a7a78cacf56e5f8bfce28db74beed88acfd
+  languageName: node
+  linkType: hard
+
 "@vibrant/core@npm:3.2.1-alpha.1, @vibrant/core@npm:^3.2.1-alpha.1":
   version: 3.2.1-alpha.1
   resolution: "@vibrant/core@npm:3.2.1-alpha.1"
@@ -5284,7 +5291,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vibrant/quantizer-mmcq@npm:3.2.1-alpha.1, @vibrant/quantizer-mmcq@npm:^3.2.1-alpha.1":
+"@vibrant/image@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@vibrant/image@npm:4.0.0"
+  dependencies:
+    "@vibrant/color": "npm:^4.0.0"
+  checksum: 10/b2eb6a6147fd783e2ea25572a19089ac39c701bf3e94677a059bfb887ee066f8654857e573cc25f5f98de4ad73f916e9af49d465ebfc8d6e443261b37c2f9a4a
+  languageName: node
+  linkType: hard
+
+"@vibrant/quantizer-mmcq@npm:4.0.0":
+  version: 4.0.0
+  resolution: "@vibrant/quantizer-mmcq@npm:4.0.0"
+  dependencies:
+    "@vibrant/color": "npm:^4.0.0"
+    "@vibrant/image": "npm:^4.0.0"
+    "@vibrant/quantizer": "npm:^4.0.0"
+  checksum: 10/bc165c5819b472926bf19a13efc9c2fe85da6b05a9fb4f0c7052a3ee3aa88ba551775a2985ef89cb1fc3431d8831c217f87abb4f6b510d888395ce3fd1c06139
+  languageName: node
+  linkType: hard
+
+"@vibrant/quantizer-mmcq@npm:^3.2.1-alpha.1":
   version: 3.2.1-alpha.1
   resolution: "@vibrant/quantizer-mmcq@npm:3.2.1-alpha.1"
   dependencies:
@@ -5306,10 +5333,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vibrant/quantizer@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@vibrant/quantizer@npm:4.0.0"
+  dependencies:
+    "@vibrant/color": "npm:^4.0.0"
+    "@vibrant/image": "npm:^4.0.0"
+    "@vibrant/types": "npm:^4.0.0"
+  checksum: 10/ec658b17cd1bdcc17624897e73e8f0add8be8dd50bebc3abb7776062d978910355f8320f514431fb128142307510620df74aa2715e01fd653d4d0b02ecc9bd9a
+  languageName: node
+  linkType: hard
+
 "@vibrant/types@npm:^3.2.1-alpha.1":
   version: 3.2.1-alpha.1
   resolution: "@vibrant/types@npm:3.2.1-alpha.1"
   checksum: 10/950aa05f2bd00b7897a6f80d89ced8db5855e4d00fee1bebc766aa292c48b15fdb9436085e2604b9fde7fb55f750d4b97c4ab61c976331fe2441aa6150ae5794
+  languageName: node
+  linkType: hard
+
+"@vibrant/types@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@vibrant/types@npm:4.0.0"
+  checksum: 10/7e04b385469a3be1be37d5e43e988fd718a1477c1bf65d79d8ef0cd96d4f2b41941393efc6b10a12f1616fe5738010d5fab9593f8c6e0cf48c26782a6a24246f
   languageName: node
   linkType: hard
 
@@ -9212,7 +9257,7 @@ __metadata:
     "@vaadin/vaadin-themable-mixin": "npm:24.6.0"
     "@vibrant/color": "npm:3.2.1-alpha.1"
     "@vibrant/core": "npm:3.2.1-alpha.1"
-    "@vibrant/quantizer-mmcq": "npm:3.2.1-alpha.1"
+    "@vibrant/quantizer-mmcq": "npm:4.0.0"
     "@vitest/coverage-v8": "npm:2.1.8"
     "@vue/web-component-wrapper": "npm:1.3.0"
     "@webcomponents/scoped-custom-element-registry": "npm:0.0.9"
