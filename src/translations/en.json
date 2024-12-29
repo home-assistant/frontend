@@ -6451,7 +6451,8 @@
               "search": "Search",
               "state_color": "Show state color",
               "suggested_cards": "Suggested cards",
-              "other_cards": "Other cards",
+              "core_cards": "Core cards",
+              "energy_cards": "Energy cards",
               "custom_cards": "Custom cards",
               "features": "Features"
             },
@@ -6591,6 +6592,46 @@
               "daily": "Daily",
               "hourly": "Hourly",
               "twice_daily": "Twice daily"
+            },
+            "energy-date-selection": {
+              "name": "Energy date selection",
+              "description": "A date picker for energy cards"
+            },
+            "energy-usage-graph": {
+              "name": "Energy usage graph"
+            },
+            "energy-solar-graph": {
+              "name": "Energy solar graph"
+            },
+            "energy-gas-graph": {
+              "name": "Energy gas graph"
+            },
+            "energy-water-graph": {
+              "name": "Energy water graph"
+            },
+            "energy-distribution": {
+              "name": "Energy distribution"
+            },
+            "energy-sources-table": {
+              "name": "Energy sources table"
+            },
+            "energy-grid-neutrality-gauge": {
+              "name": "Energy grid neutrality gauge"
+            },
+            "energy-solar-consumed-gauge": {
+              "name": "Energy solar consumed gauge"
+            },
+            "energy-carbon-consumed-gauge": {
+              "name": "Energy carbon consumed gauge"
+            },
+            "energy-self-sufficiency-gauge": {
+              "name": "Energy self-sufficiency gauge"
+            },
+            "energy-devices-graph": {
+              "name": "Energy devices graph"
+            },
+            "energy-devices-detail-graph": {
+              "name": "Energy devices detail graph"
             }
           },
           "elements": {

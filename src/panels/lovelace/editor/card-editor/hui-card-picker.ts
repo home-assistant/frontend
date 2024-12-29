@@ -12,6 +12,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
 import { stripDiacritics } from "../../../../common/string/strip-diacritics";
 import "../../../../components/ha-circular-progress";
+import "../../../../components/ha-expansion-panel";
 import "../../../../components/search-input";
 import { isUnavailableState } from "../../../../data/entity";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
@@ -31,7 +32,7 @@ import {
 import { tryCreateCardElement } from "../../create-element/create-card-element";
 import type { LovelaceCard } from "../../types";
 import { getCardStubConfig } from "../get-card-stub-config";
-import { coreCards } from "../lovelace-cards";
+import { coreCards, energyCards } from "../lovelace-cards";
 import type { Card, CardPickTarget } from "../types";
 
 interface CardElement {
@@ -121,7 +122,16 @@ export class HuiCardPicker extends LitElement {
     (cardElements: CardElement[]): CardElement[] =>
       cardElements.filter(
         (cardElement: CardElement) =>
-          !cardElement.card.isSuggested && !cardElement.card.isCustom
+          !cardElement.card.isSuggested &&
+          !cardElement.card.isCustom &&
+          !cardElement.card.isEnergy
+      )
+  );
+
+  private _energyCards = memoizeOne(
+    (cardElements: CardElement[]): CardElement[] =>
+      cardElements.filter(
+        (cardElement: CardElement) => cardElement.card.isEnergy
       )
   );
 
@@ -137,6 +147,7 @@ export class HuiCardPicker extends LitElement {
 
     const suggestedCards = this._suggestedCards(this._cards);
     const othersCards = this._otherCards(this._cards);
+    const energyCardsItems = this._energyCards(this._cards);
     const customCardsItems = this._customCards(this._cards);
 
     return html`
@@ -155,51 +166,72 @@ export class HuiCardPicker extends LitElement {
           height: this._height ? `${this._height}px` : "auto",
         })}
       >
-        <div class="cards-container">
-          ${this._filter
-            ? this._filterCards(this._cards, this._filter).map(
+        ${this._filter
+          ? html`<div class="cards-container">
+              ${this._filterCards(this._cards, this._filter).map(
                 (cardElement: CardElement) => cardElement.element
-              )
-            : html`
-                ${suggestedCards.length > 0
-                  ? html`
-                      <div class="cards-container-header">
-                        ${this.hass!.localize(
-                          `ui.panel.lovelace.editor.card.generic.suggested_cards`
-                        )}
-                      </div>
-                    `
-                  : nothing}
-                ${this._renderClipboardCard()}
-                ${suggestedCards.map(
-                  (cardElement: CardElement) => cardElement.element
-                )}
-                ${suggestedCards.length > 0
-                  ? html`
-                      <div class="cards-container-header">
-                        ${this.hass!.localize(
-                          `ui.panel.lovelace.editor.card.generic.other_cards`
-                        )}
-                      </div>
-                    `
-                  : nothing}
-                ${othersCards.map(
-                  (cardElement: CardElement) => cardElement.element
-                )}
-                ${customCardsItems.length > 0
-                  ? html`
-                      <div class="cards-container-header">
+              )}
+            </div>`
+          : html`
+              ${suggestedCards.length > 0
+                ? html` <ha-expansion-panel expanded>
+                    <div slot="header" class="cards-container-header">
+                      ${this.hass!.localize(
+                        `ui.panel.lovelace.editor.card.generic.suggested_cards`
+                      )}
+                    </div>
+                    <div class="cards-container">
+                      ${this._renderClipboardCard()}
+                      ${suggestedCards.map(
+                        (cardElement: CardElement) => cardElement.element
+                      )}
+                    </div>
+                  </ha-expansion-panel>`
+                : nothing}
+              <ha-expansion-panel expanded>
+                <div slot="header" class="cards-container-header">
+                  ${this.hass!.localize(
+                    `ui.panel.lovelace.editor.card.generic.core_cards`
+                  )}
+                </div>
+                <div class="cards-container">
+                  ${suggestedCards.length === 0
+                    ? this._renderClipboardCard()
+                    : nothing}
+                  ${othersCards.map(
+                    (cardElement: CardElement) => cardElement.element
+                  )}
+                </div>
+              </ha-expansion-panel>
+              <ha-expansion-panel>
+                <div slot="header" class="cards-container-header">
+                  ${this.hass!.localize(
+                    `ui.panel.lovelace.editor.card.generic.energy_cards`
+                  )}
+                </div>
+                <div class="cards-container">
+                  ${energyCardsItems.map(
+                    (cardElement: CardElement) => cardElement.element
+                  )}
+                </div>
+              </ha-expansion-panel>
+              ${customCardsItems.length > 0
+                ? html`
+                    <ha-expansion-panel expanded>
+                      <div slot="header" class="cards-container-header">
                         ${this.hass!.localize(
                           `ui.panel.lovelace.editor.card.generic.custom_cards`
                         )}
                       </div>
-                    `
-                  : nothing}
-                ${customCardsItems.map(
-                  (cardElement: CardElement) => cardElement.element
-                )}
-              `}
-        </div>
+                      <div class="cards-container">
+                        ${customCardsItems.map(
+                          (cardElement: CardElement) => cardElement.element
+                        )}
+                      </div>
+                    </ha-expansion-panel>
+                  `
+                : nothing}
+            `}
         <div class="cards-container">
           <div
             class="card manual"
@@ -282,6 +314,19 @@ export class HuiCardPicker extends LitElement {
         this.hass?.language
       );
     });
+
+    cards = cards.concat(
+      energyCards.map((card: Card) => ({
+        name: this.hass!.localize(
+          `ui.panel.lovelace.editor.card.${card.type}.name`
+        ),
+        description: this.hass!.localize(
+          `ui.panel.lovelace.editor.card.${card.type}.description`
+        ),
+        isEnergy: true,
+        ...card,
+      }))
+    );
 
     if (customCards.length > 0) {
       cards = cards.concat(
