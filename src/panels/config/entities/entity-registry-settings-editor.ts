@@ -1181,10 +1181,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
                   "ui.dialogs.entity_registry.editor.switch_as_x_change_confirm",
                   {
                     domain_1: domainToName(this.hass.localize, domain),
-                    domain_2: domainToName(
-                      this.hass.localize,
-                      this._switchAsDomain
-                    ),
+                    domain_2: domainToName(this.hass.localize, this._switchAsDomain),
                   }
                 ),
         })
