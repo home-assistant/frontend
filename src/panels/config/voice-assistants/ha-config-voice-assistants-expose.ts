@@ -242,7 +242,9 @@ export class VoiceAssistantsExpose extends LitElement {
       },
       remove: {
         title: "",
-        label: localize("ui.panel.config.voice_assistants.expose.headers.remove"),
+        label: localize(
+          "ui.panel.config.voice_assistants.expose.headers.remove"
+        ),
         type: "icon-button",
         hidden: narrow,
         template: () =>
