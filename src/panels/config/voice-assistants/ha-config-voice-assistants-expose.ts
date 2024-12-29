@@ -146,9 +146,7 @@ export class VoiceAssistantsExpose extends LitElement {
     ): DataTableColumnContainer => ({
       icon: {
         title: "",
-        label: localize(
-          "ui.panel.config.voice_assistants.expose.headers.icon"
-        ),
+        label: localize("ui.panel.config.voice_assistants.expose.headers.icon"),
         type: "icon",
         moveable: false,
         hidden: narrow,
@@ -162,9 +160,7 @@ export class VoiceAssistantsExpose extends LitElement {
       },
       name: {
         main: true,
-        title: localize(
-          "ui.panel.config.voice_assistants.expose.headers.name"
-        ),
+        title: localize("ui.panel.config.voice_assistants.expose.headers.name"),
         sortable: true,
         filterable: true,
         direction: "asc",
