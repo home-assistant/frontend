@@ -212,8 +212,8 @@ class DialogMediaManage extends LitElement {
                   >
                     ${this.hass.localize(
                       "ui.components.media-browser.file_management.tip_storage_panel"
-                    )}
-                  </a>`,
+                    )}</a
+                  >`,
                 }
               )}
             </ha-tip>`
