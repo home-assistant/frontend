@@ -16,7 +16,7 @@ import { getSensorNumericDeviceClasses } from "../../../data/sensor";
 import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
-import type { LovelaceCard } from "../types";
+import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import type { HistoryGraphCardConfig } from "./types";
 import { createSearchParam } from "../../../common/url/search-params";
 
@@ -54,6 +54,14 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   public getCardSize(): number {
     return this._config?.title ? 2 : 0 + 2 * (this._entityIds?.length || 1);
+  }
+
+  getGridOptions(): LovelaceGridOptions {
+    return {
+      columns: 12,
+      min_columns: 6,
+      min_rows: (this._config?.entities?.length || 1) * 2,
+    };
   }
 
   public setConfig(config: HistoryGraphCardConfig): void {
