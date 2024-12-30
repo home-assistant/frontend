@@ -200,7 +200,8 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
             ? html`
                 <ha-button
                   @click=${this._submit}
-                  .disabled=${!selectedAgents.length}
+                  .disabled=${this._formData.agents_mode === "custom" &&
+                  !selectedAgents.length}
                 >
                   Create backup
                 </ha-button>
