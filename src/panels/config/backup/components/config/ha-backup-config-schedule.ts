@@ -323,9 +323,6 @@ class HaBackupConfigSchedule extends LitElement {
     ha-md-select {
       min-width: 210px;
     }
-    ha-md-list-item {
-      --md-item-overflow: visible;
-    }
     @media all and (max-width: 450px) {
       ha-md-select {
         min-width: 160px;
