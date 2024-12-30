@@ -67,8 +67,8 @@ export class HUIViewBackground extends LitElement {
     background?: string | LovelaceViewBackgroundConfig
   ) {
     if (typeof background === "object" && background.image) {
-      if (background.transparency) {
-        return `${background.transparency}%`;
+      if (background.opacity) {
+        return `${background.opacity}%`;
       }
     }
     return null;
