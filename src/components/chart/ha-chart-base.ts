@@ -10,11 +10,13 @@ import { css, html, nothing, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import { mdiRestart } from "@mdi/js";
 import { fireEvent } from "../../common/dom/fire_event";
 import { clamp } from "../../common/number/clamp";
 import type { HomeAssistant } from "../../types";
 import { debounce } from "../../common/util/debounce";
 import { isMac } from "../../util/is_mac";
+import "../ha-icon-button";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 
@@ -300,6 +302,16 @@ export class HaChartBase extends LitElement {
                 : this.hass.localize("ui.components.history_charts.zoom_hint")}
             </div>
           </div>
+          ${this._isZoomed && this.chartType !== "timeline"
+            ? html`<ha-icon-button
+                class="zoom-reset"
+                .path=${mdiRestart}
+                @click=${this._handleZoomReset}
+                title=${this.hass.localize(
+                  "ui.components.history_charts.zoom_reset"
+                )}
+              ></ha-icon-button>`
+            : nothing}
           ${this._tooltip
             ? html`<div
                 class="chart-tooltip ${classMap({
@@ -420,7 +432,8 @@ export class HaChartBase extends LitElement {
               modifierKey,
               speed: 0.05,
             },
-            mode: "x",
+            mode:
+              (this.options?.scales?.y as any)?.type === "category" ? "y" : "x",
             onZoomComplete: () => {
               const isZoomed = this.chart?.isZoomedOrPanned() ?? false;
               if (this._isZoomed && !isZoomed) {
@@ -541,6 +554,10 @@ export class HaChartBase extends LitElement {
     }
   }
 
+  private _handleZoomReset() {
+    this.chart?.resetZoom();
+  }
+
   static get styles(): CSSResultGroup {
     return css`
       :host {
@@ -551,6 +568,9 @@ export class HaChartBase extends LitElement {
         overflow: hidden;
         height: 0;
         transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .chart-container {
+        position: relative;
       }
       canvas {
         max-height: var(--chart-max-height, 400px);
@@ -669,6 +689,16 @@ export class HaChartBase extends LitElement {
         border-radius: 8px;
         background: rgba(0, 0, 0, 0.3);
         box-shadow: 0 0 32px 32px rgba(0, 0, 0, 0.3);
+      }
+      .zoom-reset {
+        position: absolute;
+        top: 16px;
+        right: 4px;
+        background: var(--card-background-color);
+        border-radius: 4px;
+        --mdc-icon-button-size: 32px;
+        color: var(--primary-color);
+        border: 1px solid var(--divider-color);
       }
     `;
   }
