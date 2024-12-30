@@ -18,7 +18,7 @@ import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
-import type { LovelaceCard } from "../types";
+import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import type { StatisticsGraphCardConfig } from "./types";
 
 export const DEFAULT_DAYS_TO_SHOW = 30;
@@ -91,6 +91,14 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       (this._config?.title ? 2 : 0) +
       (!this._config?.hide_legend ? this._entities?.length || 0 : 0)
     );
+  }
+
+  getGridOptions(): LovelaceGridOptions {
+    return {
+      columns: 12,
+      min_columns: 9,
+      min_rows: 4,
+    };
   }
 
   public setConfig(config: StatisticsGraphCardConfig): void {
