@@ -396,7 +396,10 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
   }
 
   private async _copyKeyToClipboard() {
-    await copyToClipboard(this._config!.create_backup.password!);
+    await copyToClipboard(
+      this._config!.create_backup.password!,
+      this.renderRoot.querySelector("div")!
+    );
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
     });
