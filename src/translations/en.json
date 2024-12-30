@@ -2624,8 +2624,8 @@
               "header": "Add dashboard",
               "create_empty": "New dashboard from scratch",
               "create_empty_description": "Start with an empty dashboard from scratch",
-              "default": "Default dashboard",
-              "default_description": "Display your devices grouped by area",
+              "default": "Automatic dashboard",
+              "default_description": "Display all your devices and services grouped by area",
               "strategy": {
                 "map": {
                   "title": "[%key:panel::map%]",
@@ -6142,7 +6142,7 @@
           },
           "save_config": {
             "header": "Take control of your dashboard",
-            "para": "This dashboard is currently being maintained by Home Assistant. It is automatically updated when new entities or dashboard components become available. If you take control, this dashboard will no longer be automatically updated. You can always create a new dashboard in configuration to play around with.",
+            "para": "This dashboard is currently being maintained by Home Assistant. It is automatically updated when new entities or dashboard components become available. If you take control, this dashboard will no longer be automatically updated. You can always create a new dashboard in settings to play around with.",
             "para_sure": "Are you sure you want to take control of your user interface?",
             "yaml_mode": "You are using YAML mode for this dashboard, which means you cannot change your dashboard config from the UI. If you want to manage this dashboard from the UI, remove 'mode: yaml' from your dashboard configuration in 'configuration.yaml.'.",
             "yaml_control": "To take control in YAML mode, create a YAML file with the name you specified in your config for this dashboard, or the default 'ui-lovelace.yaml'.",
