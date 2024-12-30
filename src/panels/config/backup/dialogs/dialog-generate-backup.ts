@@ -198,7 +198,6 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
             : nothing}
           ${isLastStep
             ? html`
-                ${this._formData.agents_mode} ${selectedAgents.length}
                 <ha-button
                   @click=${this._submit}
                   .disabled=${this._formData.agents_mode === "custom" &&
