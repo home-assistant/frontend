@@ -830,7 +830,8 @@
         "source_history": "Source: History",
         "source_stats": "Source: Long term statistics",
         "zoom_hint": "Use ctrl + scroll to zoom in/out",
-        "zoom_hint_mac": "Use ⌘ + scroll to zoom in/out"
+        "zoom_hint_mac": "Use ⌘ + scroll to zoom in/out",
+        "zoom_reset": "Reset zoom"
       },
       "map": {
         "error": "Unable to load map"
