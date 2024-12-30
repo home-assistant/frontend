@@ -5955,7 +5955,7 @@
                   "bottom right": "Bottom right"
                 }
               },
-              "transparency": "Background transparency",
+              "opacity": "Background opacity",
               "repeat": {
                 "name": "Background repeat",
                 "options": {
