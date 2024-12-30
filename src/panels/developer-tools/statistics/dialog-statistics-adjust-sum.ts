@@ -7,7 +7,7 @@ import memoizeOne from "memoize-one";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-circular-progress";
-import "../../../components/ha-dialog";
+import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-form/ha-form";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list-item";
@@ -107,8 +107,11 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         scrimClickAction
         escapeKeyAction
         @closed=${this.closeDialog}
-        .heading=${this.hass.localize(
-          "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.title"
+        .heading=${createCloseHeading(
+          this.hass,
+          this.hass.localize(
+            "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.title"
+          )
         )}
       >
         ${content}
