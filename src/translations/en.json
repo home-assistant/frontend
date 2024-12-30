@@ -651,6 +651,7 @@
         "no_devices": "You don't have any devices",
         "no_match": "No matching devices found",
         "device": "Device",
+        "unnamed_device": "Unnamed device",
         "no_area": "No area"
       },
       "category-picker": {
