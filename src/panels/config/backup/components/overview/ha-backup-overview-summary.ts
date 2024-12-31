@@ -119,6 +119,10 @@ class HaBackupOverviewBackups extends LitElement {
       `;
     }
 
+    const nextBackupDescription = this._nextBackupDescription(
+      this.config.schedule.state
+    );
+
     if (!lastSuccessfulBackup) {
       return html`
         <ha-backup-summary-card
@@ -126,18 +130,20 @@ class HaBackupOverviewBackups extends LitElement {
           description="You have no automatic backups yet."
           status="warning"
         >
+          <ha-md-list>
+            <ha-md-list-item>
+              <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
+              <span slot="headline">${nextBackupDescription}</span>
+            </ha-md-list-item>
+          </ha-md-list>
         </ha-backup-summary-card>
       `;
     }
 
-    const nextBackupDescription = this._nextBackupDescription(
-      this.config.schedule.state
-    );
-
     const numberOfDays = differenceInDays(
       // Subtract a few hours to avoid showing as overdue if it's just a few hours (e.g. daylight saving)
       addHours(now, -OVERDUE_MARGIN_HOURS),
-      lastSuccessfulBackupDate
+      new Date(lastSuccessfulBackup.date)
     );
 
     const isOverdue =
