@@ -26,6 +26,7 @@ import { navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { afterNextRender } from "../../../common/util/render-status";
+import { promiseTimeout } from "../../../common/util/promise-timeout";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-fab";
 
@@ -915,17 +916,49 @@ export class HaScriptEditor extends SubscribeMixin(
 
         // wait for new script to appear in entity registry
         if (entityRegPromise) {
-          const script = await entityRegPromise;
-          entityId = script.entity_id;
+          try {
+            const script = await promiseTimeout(2000, entityRegPromise);
+            entityId = script.entity_id;
+          } catch (e) {
+            entityId = undefined;
+            if (e instanceof Error && e.name === "TimeoutError") {
+              showAlertDialog(this, {
+                title: this.hass.localize(
+                  "ui.panel.config.automation.editor.new_automation_setup_failed_title",
+                  {
+                    type: this.hass.localize(
+                      "ui.panel.config.automation.editor.type_script"
+                    ),
+                  }
+                ),
+                text: this.hass.localize(
+                  "ui.panel.config.automation.editor.new_automation_setup_failed_text",
+                  {
+                    type: this.hass.localize(
+                      "ui.panel.config.automation.editor.type_script"
+                    ),
+                    types: this.hass.localize(
+                      "ui.panel.config.automation.editor.type_script_plural"
+                    ),
+                  }
+                ),
+                warning: true,
+              });
+            } else {
+              throw e;
+            }
+          }
         }
 
-        await updateEntityRegistryEntry(this.hass, entityId!, {
-          categories: {
-            script: this._entityRegistryUpdate.category || null,
-          },
-          labels: this._entityRegistryUpdate.labels || [],
-          area_id: this._entityRegistryUpdate.area || null,
-        });
+        if (entityId) {
+          await updateEntityRegistryEntry(this.hass, entityId, {
+            categories: {
+              script: this._entityRegistryUpdate.category || null,
+            },
+            labels: this._entityRegistryUpdate.labels || [],
+            area_id: this._entityRegistryUpdate.area || null,
+          });
+        }
       }
 
       this._dirty = false;
@@ -934,9 +967,9 @@ export class HaScriptEditor extends SubscribeMixin(
         navigate(`/config/script/edit/${id}`, { replace: true });
       }
     } catch (errors: any) {
-      this._errors = errors.body.message || errors.error || errors.body;
+      this._errors = errors.body?.message || errors.error || errors.body;
       showToast(this, {
-        message: errors.body.message || errors.error || errors.body,
+        message: errors.body?.message || errors.error || errors.body,
       });
       throw errors;
     } finally {
