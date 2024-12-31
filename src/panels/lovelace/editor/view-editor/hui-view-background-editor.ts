@@ -37,7 +37,7 @@ export class HuiViewBackgroundEditor extends LitElement {
             type: "expandable" as const,
             schema: [
               {
-                name: "transparency",
+                name: "opacity",
                 selector: {
                   number: { min: 1, max: 100, mode: "slider" },
                 },
@@ -117,7 +117,7 @@ export class HuiViewBackgroundEditor extends LitElement {
 
     if (!background) {
       background = {
-        transparency: 33,
+        opacity: 33,
         alignment: "center",
         size: "cover",
         repeat: "repeat",
@@ -125,7 +125,7 @@ export class HuiViewBackgroundEditor extends LitElement {
       };
     } else {
       background = {
-        transparency: 100,
+        opacity: 100,
         alignment: "center",
         size: "cover",
         repeat: "no-repeat",
@@ -162,9 +162,9 @@ export class HuiViewBackgroundEditor extends LitElement {
         return this.hass.localize(
           "ui.panel.lovelace.editor.edit_view.background.image"
         );
-      case "transparency":
+      case "opacity":
         return this.hass.localize(
-          "ui.panel.lovelace.editor.edit_view.background.transparency"
+          "ui.panel.lovelace.editor.edit_view.background.opacity"
         );
       case "alignment":
         return this.hass.localize(

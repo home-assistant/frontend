@@ -194,8 +194,9 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
         this._userPassword || this._backupEncryptionKey
       );
     } catch (e: any) {
-      this._unsubscribe();
+      await this._unsubscribe();
       if (e.code === "password_incorrect") {
+        this._error = undefined;
         this._step = "encryption";
       } else {
         this._error = e.message;
@@ -229,9 +230,11 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
   private _unsubscribe() {
     window.removeEventListener("connection-status", this._connectionStatus);
     if (this._unsub) {
-      this._unsub.then((unsub) => unsub());
+      const prom = this._unsub.then((unsub) => unsub());
       this._unsub = undefined;
+      return prom;
     }
+    return undefined;
   }
 
   private _restoreState() {
