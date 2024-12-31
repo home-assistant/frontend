@@ -20,7 +20,6 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showAlertDialog } from "../../../lovelace/custom-card-helpers";
-import "../components/ha-backup-agents-picker";
 import type { UploadBackupDialogParams } from "./show-dialog-upload-backup";
 
 const SUPPORTED_FORMAT = "application/x-tar";
