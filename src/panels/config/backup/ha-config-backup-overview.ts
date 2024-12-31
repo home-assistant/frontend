@@ -127,7 +127,7 @@ class HaConfigBackupOverview extends LitElement {
   }
 
   private get _needsOnboarding() {
-    return !this.config?.create_backup.password;
+    return this.config && !this.config.create_backup.password;
   }
 
   protected render(): TemplateResult {
