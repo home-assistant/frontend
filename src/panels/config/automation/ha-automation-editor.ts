@@ -307,12 +307,13 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
           <ha-list-item
             .disabled=${this._blueprintConfig ||
+            this._saving ||
             (!this._readOnly && !this.automationId)}
             graphic="icon"
             @click=${this._duplicate}
           >
             ${this.hass.localize(
-              this._readOnly
+              this._readOnly && !this._saving
                 ? "ui.panel.config.automation.editor.migrate"
                 : "ui.panel.config.automation.editor.duplicate"
             )}
@@ -423,7 +424,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                   >
                 </div>
               </ha-alert>`
-            : this._readOnly
+            : this._readOnly && !this._saving
               ? html`<ha-alert alert-type="warning" dismissable
                   >${this.hass.localize(
                     "ui.panel.config.automation.editor.read_only"
@@ -496,7 +497,9 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           class=${classMap({
             dirty: !this._readOnly && this._dirty,
           })}
-          .label=${this.hass.localize("ui.panel.config.automation.editor.save")}
+          .label=${this._saving
+            ? this.hass.localize("ui.panel.config.automation.editor.saving")
+            : this.hass.localize("ui.panel.config.automation.editor.save")}
           .disabled=${this._saving}
           extended
           @click=${this._saveAutomation}
@@ -944,7 +947,31 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
         // wait for automation to appear in entity registry when creating a new automation
         if (entityRegPromise) {
+          const timeout = setTimeout(() => {
+            this._readOnly = true;
+            this._dirty = false;
+            showAlertDialog(this, {
+              title: this.hass.localize(
+                "ui.panel.config.automation.editor.new_automation_setup_failed_title",
+                {
+                  type: this.hass.localize(
+                    "ui.panel.config.automation.editor.type_automation"
+                  ),
+                }
+              ),
+              text: this.hass.localize(
+                "ui.panel.config.automation.editor.new_automation_setup_failed_text",
+                {
+                  type: this.hass.localize(
+                    "ui.panel.config.automation.editor.type_automation"
+                  ),
+                }
+              ),
+              warning: true,
+            });
+          }, 5000);
           const automation = await entityRegPromise;
+          clearTimeout(timeout);
           entityId = automation.entity_id;
         }
 
