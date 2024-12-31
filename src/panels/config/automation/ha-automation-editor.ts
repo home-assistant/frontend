@@ -143,8 +143,6 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
   @state() private _saving = false;
 
-  @state() private _saveFailed = false;
-
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityRegistry!: EntityRegistryEntry[];
@@ -310,13 +308,12 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
           <ha-list-item
             .disabled=${this._blueprintConfig ||
-            this._saveFailed ||
             (!this._readOnly && !this.automationId)}
             graphic="icon"
             @click=${this._duplicate}
           >
             ${this.hass.localize(
-              this._readOnly && !this._saveFailed
+              this._readOnly
                 ? "ui.panel.config.automation.editor.migrate"
                 : "ui.panel.config.automation.editor.duplicate"
             )}
@@ -427,7 +424,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                   >
                 </div>
               </ha-alert>`
-            : this._readOnly && !this._saveFailed
+            : this._readOnly
               ? html`<ha-alert alert-type="warning" dismissable
                   >${this.hass.localize(
                     "ui.panel.config.automation.editor.read_only"
@@ -500,9 +497,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           class=${classMap({
             dirty: !this._readOnly && this._dirty,
           })}
-          .label=${this._saving
-            ? this.hass.localize("ui.panel.config.automation.editor.saving")
-            : this.hass.localize("ui.panel.config.automation.editor.save")}
+          .label=${this.hass.localize("ui.panel.config.automation.editor.save")}
           .disabled=${this._saving}
           extended
           @click=${this._saveAutomation}
@@ -955,9 +950,6 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
             entityId = automation.entity_id;
           } catch (e) {
             if (e instanceof Error && e.name === "TimeoutError") {
-              this._readOnly = true;
-              this._saveFailed = true;
-              this._dirty = false;
               showAlertDialog(this, {
                 title: this.hass.localize(
                   "ui.panel.config.automation.editor.new_automation_setup_failed_title",
@@ -977,9 +969,9 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                 ),
                 warning: true,
               });
-              return;
+            } else {
+              throw e;
             }
-            throw e;
           }
         }
 
