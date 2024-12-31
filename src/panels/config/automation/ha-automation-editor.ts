@@ -27,6 +27,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { afterNextRender } from "../../../common/util/render-status";
+import { promiseTimeout } from "../../../common/util/promise-timeout";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon";
@@ -141,6 +142,8 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
   private _registryEntry?: EntityRegistryEntry;
 
   @state() private _saving = false;
+
+  @state() private _saveFailed = false;
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -307,13 +310,13 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
           <ha-list-item
             .disabled=${this._blueprintConfig ||
-            this._saving ||
+            this._saveFailed ||
             (!this._readOnly && !this.automationId)}
             graphic="icon"
             @click=${this._duplicate}
           >
             ${this.hass.localize(
-              this._readOnly && !this._saving
+              this._readOnly && !this._saveFailed
                 ? "ui.panel.config.automation.editor.migrate"
                 : "ui.panel.config.automation.editor.duplicate"
             )}
@@ -424,7 +427,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                   >
                 </div>
               </ha-alert>`
-            : this._readOnly && !this._saving
+            : this._readOnly && !this._saveFailed
               ? html`<ha-alert alert-type="warning" dismissable
                   >${this.hass.localize(
                     "ui.panel.config.automation.editor.read_only"
@@ -947,32 +950,37 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
         // wait for automation to appear in entity registry when creating a new automation
         if (entityRegPromise) {
-          const timeout = setTimeout(() => {
-            this._readOnly = true;
-            this._dirty = false;
-            showAlertDialog(this, {
-              title: this.hass.localize(
-                "ui.panel.config.automation.editor.new_automation_setup_failed_title",
-                {
-                  type: this.hass.localize(
-                    "ui.panel.config.automation.editor.type_automation"
-                  ),
-                }
-              ),
-              text: this.hass.localize(
-                "ui.panel.config.automation.editor.new_automation_setup_failed_text",
-                {
-                  type: this.hass.localize(
-                    "ui.panel.config.automation.editor.type_automation"
-                  ),
-                }
-              ),
-              warning: true,
-            });
-          }, 5000);
-          const automation = await entityRegPromise;
-          clearTimeout(timeout);
-          entityId = automation.entity_id;
+          try {
+            const automation = await promiseTimeout(2000, entityRegPromise);
+            entityId = automation.entity_id;
+          } catch (e) {
+            if (e instanceof Error && e.name === "TimeoutError") {
+              this._readOnly = true;
+              this._saveFailed = true;
+              this._dirty = false;
+              showAlertDialog(this, {
+                title: this.hass.localize(
+                  "ui.panel.config.automation.editor.new_automation_setup_failed_title",
+                  {
+                    type: this.hass.localize(
+                      "ui.panel.config.automation.editor.type_automation"
+                    ),
+                  }
+                ),
+                text: this.hass.localize(
+                  "ui.panel.config.automation.editor.new_automation_setup_failed_text",
+                  {
+                    type: this.hass.localize(
+                      "ui.panel.config.automation.editor.type_automation"
+                    ),
+                  }
+                ),
+                warning: true,
+              });
+              return;
+            }
+            throw e;
+          }
         }
 
         if (entityId) {
