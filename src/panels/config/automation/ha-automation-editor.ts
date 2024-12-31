@@ -965,6 +965,9 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                     type: this.hass.localize(
                       "ui.panel.config.automation.editor.type_automation"
                     ),
+                    types: this.hass.localize(
+                      "ui.panel.config.automation.editor.type_automation_plural"
+                    ),
                   }
                 ),
                 warning: true,
