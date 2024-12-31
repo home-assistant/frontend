@@ -84,22 +84,22 @@ class HaBackupOverviewBackups extends LitElement {
 
     const lastSuccessfulBackup = this._lastSuccessfulBackup(this.backups);
 
-    const lastSuccessfulBackupDate = lastSuccessfulBackup
-      ? new Date(lastSuccessfulBackup.date)
-      : new Date(0);
-
     const lastAttempt = this.config.last_attempted_automatic_backup
       ? new Date(this.config.last_attempted_automatic_backup)
+      : undefined;
+
+    const lastCompletedBackupDate = this.config.last_completed_automatic_backup
+      ? new Date(this.config.last_completed_automatic_backup)
       : undefined;
 
     const now = new Date();
 
     const lastBackupDescription = lastSuccessfulBackup
-      ? `Last successful backup ${relativeTime(lastSuccessfulBackupDate, this.hass.locale, now, true)} and stored in ${lastSuccessfulBackup.agent_ids?.length} locations.`
+      ? `Last successful backup ${relativeTime(new Date(lastSuccessfulBackup.date), this.hass.locale, now, true)} and stored in ${lastSuccessfulBackup.agent_ids?.length} locations.`
       : "You have no successful backups.";
 
-    if (lastAttempt && lastAttempt > lastSuccessfulBackupDate) {
-      const lastAttemptDescription = `The last automatic backup triggered ${relativeTime(lastAttempt, this.hass.locale, now, true)} wasn't successful.`;
+    if (lastAttempt && lastAttempt > (lastCompletedBackupDate || 0)) {
+      const lastAttemptDescription = `The last automatic backup trigged ${relativeTime(lastAttempt, this.hass.locale, now, true)} wasn't successful.`;
       return html`
         <ha-backup-summary-card
           heading="Last automatic backup failed"
