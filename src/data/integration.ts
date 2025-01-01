@@ -10,6 +10,7 @@ export const integrationsWithPanel = {
   thread: "config/thread",
   zha: "config/zha/dashboard",
   zwave_js: "config/zwave_js/dashboard",
+  bluetooth: "config/bluetooth",
 };
 
 export type IntegrationType =

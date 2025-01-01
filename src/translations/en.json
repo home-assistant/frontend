@@ -4819,6 +4819,13 @@
           "qos": "QoS",
           "retain": "Retain"
         },
+        "bluetooth": {
+          "title": "Bluetooth",
+          "address": "Address",
+          "name": "Name",
+          "source": "Source",
+          "rssi": "RSSI"
+        },
         "thread": {
           "other_networks": "Other networks",
           "my_network": "Preferred network",
