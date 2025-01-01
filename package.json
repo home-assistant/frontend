@@ -243,5 +243,5 @@
     "@fullcalendar/daygrid": "6.1.15",
     "globals": "15.14.0"
   },
-  "packageManager": "yarn@4.5.3"
+  "packageManager": "yarn@4.6.0"
 }
