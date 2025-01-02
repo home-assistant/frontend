@@ -37,10 +37,7 @@ class HaBackupOverviewBackups extends LitElement {
           <p>
             Backups are essential for a reliable smart home. They help protect
             the work you've put into setting up your smart home, and if the
-            worst happens, you can get back up and running quickly. It is
-            recommended that you create a backup every day. You should keep
-            three backups in at least two different locations, one of which
-            should be off-site.
+            worst happens, you can get back up and running quickly.
           </p>
         </div>
         <div class="card-actions">

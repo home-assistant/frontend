@@ -143,6 +143,14 @@ class HaConfigBackupDetails extends LitElement {
                           )}
                           <span slot="supporting-text">Created</span>
                         </ha-md-list-item>
+                        <ha-md-list-item>
+                          <span slot="headline">
+                            ${this._backup.protected
+                              ? "Encrypted AES-128"
+                              : "Not encrypted"}
+                          </span>
+                          <span slot="supporting-text">Protected</span>
+                        </ha-md-list-item>
                       </ha-md-list>
                     </div>
                   </ha-card>

@@ -91,7 +91,7 @@ class HaConfigBackupSettings extends LitElement {
         back-path="/config/backup"
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .header=${"Automatic backups"}
+        .header=${"Backup settings"}
       >
         <div class="content">
           <ha-card id="schedule">
