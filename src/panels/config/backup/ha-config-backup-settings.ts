@@ -8,6 +8,7 @@ import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-alert";
 import "../../../components/ha-password-field";
 import type { BackupConfig } from "../../../data/backup";
 import { updateBackupConfig } from "../../../data/backup";
@@ -128,6 +129,14 @@ class HaConfigBackupSettings extends LitElement {
                 Your backup will be stored on these locations when this default
                 backup is created. You can use all locations for custom backups.
               </p>
+              ${!this._config.create_backup.agent_ids.length
+                ? html` <ha-alert
+                    alert-type="warning"
+                    title="No location selected"
+                    >You have to select at least one location to create a
+                    backup.</ha-alert
+                  >`
+                : nothing}
               <ha-backup-config-agents
                 .hass=${this.hass}
                 .value=${this._config.create_backup.agent_ids}
