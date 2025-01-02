@@ -4240,7 +4240,7 @@
           "add_device": "Add device",
           "caption": "Devices",
           "description": "Manage configured devices",
-          "filtering_by_config_entry": "[%key:ui::panel::config::entities::picker::filtering_by_config_entry%]"
+          "filtering_by_config_entry": "[%key:ui::panel::config::entities::picker::filtering_by_config_entry%]",
           "device_info": "{type} info",
           "edit_settings": "Edit settings",
           "unnamed_device": "Unnamed {type}",
