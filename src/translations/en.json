@@ -754,7 +754,7 @@
       },
       "picture-upload": {
         "label": "Add picture",
-        "change_picture": "Change picture",
+        "clear_picture": "Clear picture",
         "current_image_alt": "Current picture",
         "supported_formats": "Supports JPEG, PNG, or GIF image.",
         "unsupported_format": "Unsupported format, please choose a JPEG, PNG, or GIF image."
