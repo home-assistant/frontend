@@ -129,20 +129,20 @@ class HaConfigBackupSettings extends LitElement {
                 Your backup will be stored on these locations when this default
                 backup is created. You can use all locations for custom backups.
               </p>
-              ${!this._config.create_backup.agent_ids.length
-                ? html` <ha-alert
-                    alert-type="warning"
-                    title="No location selected"
-                    >You have to select at least one location to create a
-                    backup.</ha-alert
-                  >`
-                : nothing}
               <ha-backup-config-agents
                 .hass=${this.hass}
                 .value=${this._config.create_backup.agent_ids}
                 .cloudStatus=${this.cloudStatus}
                 @value-changed=${this._agentsConfigChanged}
               ></ha-backup-config-agents>
+              ${!this._config.create_backup.agent_ids.length
+                ? html`<ha-alert
+                      alert-type="warning"
+                      title="No location selected"
+                      >You have to select at least one location to create a
+                      backup.</ha-alert
+                    ><br />`
+                : nothing}
             </div>
           </ha-card>
           <ha-card>
