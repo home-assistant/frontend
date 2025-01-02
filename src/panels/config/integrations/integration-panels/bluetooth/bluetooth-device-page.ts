@@ -68,7 +68,7 @@ export class BluetoothDevicePage extends LitElement {
     if (this.hass && this._firstUpdatedCalled) {
       this._unsub = subscribeBluetoothAdvertisements(
         this.hass,
-        this._handleIncomingEventDataMessage
+        this._handleIncomingEventDataMessage.bind(this)
       );
     }
   }
@@ -80,8 +80,8 @@ export class BluetoothDevicePage extends LitElement {
         this.hass,
         this._handleIncomingEventDataMessage.bind(this)
       );
+      this._firstUpdatedCalled = true;
     }
-    this._firstUpdatedCalled = true;
   }
 
   private _handleIncomingEventDataMessage(event: EventDataMessage) {
