@@ -965,6 +965,9 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                     type: this.hass.localize(
                       "ui.panel.config.automation.editor.type_automation"
                     ),
+                    types: this.hass.localize(
+                      "ui.panel.config.automation.editor.type_automation_plural"
+                    ),
                   }
                 ),
                 warning: true,
@@ -992,9 +995,9 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
         navigate(`/config/automation/edit/${id}`, { replace: true });
       }
     } catch (errors: any) {
-      this._errors = errors.body.message || errors.error || errors.body;
+      this._errors = errors.body?.message || errors.error || errors.body;
       showToast(this, {
-        message: errors.body.message || errors.error || errors.body,
+        message: errors.body?.message || errors.error || errors.body,
       });
       throw errors;
     } finally {
