@@ -189,22 +189,24 @@ class HaConfigBackupOverview extends LitElement {
                   >
                   </ha-backup-overview-onboarding>
                 `
-              : html`
-                  <ha-backup-overview-summary
-                    .hass=${this.hass}
-                    .backups=${this.backups}
-                    .config=${this.config}
-                    .fetching=${this.fetching}
-                  >
-                  </ha-backup-overview-summary>
-                `}
+              : this.config
+                ? html`
+                    <ha-backup-overview-summary
+                      .hass=${this.hass}
+                      .backups=${this.backups}
+                      .config=${this.config}
+                      .fetching=${this.fetching}
+                    >
+                    </ha-backup-overview-summary>
+                  `
+                : nothing}
 
           <ha-backup-overview-backups
             .hass=${this.hass}
             .backups=${this.backups}
           ></ha-backup-overview-backups>
 
-          ${!this._needsOnboarding
+          ${!this._needsOnboarding && this.config
             ? html`
                 <ha-backup-overview-settings
                   .hass=${this.hass}
