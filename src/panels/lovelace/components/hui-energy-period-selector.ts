@@ -18,6 +18,7 @@ import {
   startOfWeek,
   startOfYear,
   subDays,
+  subHours,
 } from "date-fns";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
@@ -129,6 +130,8 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
             weekStartsOn,
           }),
         ],
+        [this.hass.localize("ui.components.date-range-picker.ranges.now-24h")]:
+          [subHours(today, 24), today],
         [this.hass.localize(
           "ui.components.date-range-picker.ranges.yesterday"
         )]: [
@@ -173,12 +176,16 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
           calcDate(today, startOfQuarter, this.hass.locale, this.hass.config),
           calcDate(today, endOfQuarter, this.hass.locale, this.hass.config),
         ],
+        [this.hass.localize("ui.components.date-range-picker.ranges.now-30d")]:
+          [subHours(today, 24 * 30), today],
         [this.hass.localize(
           "ui.components.date-range-picker.ranges.this_year"
         )]: [
           calcDate(today, startOfYear, this.hass.locale, this.hass.config),
           calcDate(today, endOfYear, this.hass.locale, this.hass.config),
         ],
+        [this.hass.localize("ui.components.date-range-picker.ranges.now-365d")]:
+          [subDays(today, 365), today],
       };
     }
   }
