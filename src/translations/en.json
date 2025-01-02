@@ -3068,8 +3068,10 @@
             "switch_ui_yaml_error": "There are currently YAML errors in the automation, and it cannot be parsed. Switching to UI mode may cause pending changes to be lost. Press cancel to correct any errors before proceeding to prevent loss of pending changes, or continue if you are sure.",
             "type_automation": "automation",
             "type_script": "script",
+            "type_automation_plural": "[%key:ui::panel::config::blueprint::overview::types_plural::automation%]",
+            "type_script_plural": "[%key:ui::panel::config::blueprint::overview::types_plural::script%]",
             "new_automation_setup_failed_title": "New {type} setup failed",
-            "new_automation_setup_failed_text": "Your new {type} has saved, but waiting for it to setup has timed out. This could be due to errors parsing your configuration.yaml, please check the configuration in developer tools. Your {type} will not be visible until this is corrected, and automations are reloaded. Changes to area, category, or labels were not saved and must be reapplied.",
+            "new_automation_setup_failed_text": "Your new {type} has saved, but waiting for it to setup has timed out. This could be due to errors parsing your configuration.yaml, please check the configuration in developer tools. Your {type} will not be visible until this is corrected, and {types} are reloaded. Changes to area, category, or labels were not saved and must be reapplied.",
             "triggers": {
               "name": "Triggers",
               "header": "When",
