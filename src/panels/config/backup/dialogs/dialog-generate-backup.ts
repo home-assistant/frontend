@@ -209,10 +209,28 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
                   Create backup
                 </ha-button>
               `
-            : html`<ha-button @click=${this._nextStep}>Next</ha-button>`}
+            : html`<ha-button
+                @click=${this._nextStep}
+                .disabled=${this._step === "data" && this._noDataSelected}
+                >Next</ha-button
+              >`}
         </div>
       </ha-md-dialog>
     `;
+  }
+
+  private get _noDataSelected() {
+    const hassio = isComponentLoaded(this.hass, "hassio");
+    if (
+      this._formData?.data.include_homeassistant ||
+      this._formData?.data.include_database ||
+      (hassio && this._formData?.data.include_folders?.length) ||
+      (hassio && this._formData?.data.include_all_addons) ||
+      (hassio && this._formData?.data.include_addons?.length)
+    ) {
+      return false;
+    }
+    return true;
   }
 
   private _renderData() {
