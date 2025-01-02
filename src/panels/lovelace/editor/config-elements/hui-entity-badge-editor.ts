@@ -33,6 +33,7 @@ import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceBadgeConfig } from "../structs/base-badge-struct";
 import { configElementStyle } from "./config-elements-style";
 import "./hui-card-features-editor";
+import { TIMESTAMP_RENDERING_FORMATS } from "../../components/types";
 
 const badgeConfigStruct = assign(
   baseLovelaceBadgeConfig,
@@ -49,6 +50,7 @@ const badgeConfigStruct = assign(
     show_entity_picture: optional(boolean()),
     tap_action: optional(actionConfigStruct),
     image: optional(string()), // For old badge config support
+    format: optional(enums(TIMESTAMP_RENDERING_FORMATS)),
   })
 );
 
