@@ -78,7 +78,7 @@ export class BluetoothDevicePage extends LitElement {
     if (this.hass) {
       this._unsub = subscribeBluetoothAdvertisements(
         this.hass,
-        this._handleIncomingEventDataMessage
+        this._handleIncomingEventDataMessage.bind(this)
       );
     }
     this._firstUpdatedCalled = true;
