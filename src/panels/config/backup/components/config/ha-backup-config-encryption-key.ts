@@ -9,6 +9,7 @@ import { showChangeBackupEncryptionKeyDialog } from "../../dialogs/show-dialog-c
 import { showSetBackupEncryptionKeyDialog } from "../../dialogs/show-dialog-set-backup-encryption-key";
 
 import { downloadEmergencyKit } from "../../../../../data/backup";
+import { showShowBackupEncryptionKeyDialog } from "../../dialogs/show-dialog-show-backup-encryption-key";
 
 @customElement("ha-backup-config-encryption-key")
 class HaBackupConfigEncryptionKey extends LitElement {
@@ -34,7 +35,13 @@ class HaBackupConfigEncryptionKey extends LitElement {
               Download
             </ha-button>
           </ha-md-list-item>
-
+          <ha-md-list-item>
+            <span slot="headline">Show my encryption key</span>
+            <span slot="supporting-text">
+              Please keep your encryption key private.
+            </span>
+            <ha-button slot="end" @click=${this._show}>Show</ha-button>
+          </ha-md-list-item>
           <ha-md-list-item>
             <span slot="headline">Change encryption key</span>
             <span slot="supporting-text">
@@ -66,6 +73,10 @@ class HaBackupConfigEncryptionKey extends LitElement {
       return;
     }
     downloadEmergencyKit(this.hass, this._value);
+  }
+
+  private _show() {
+    showShowBackupEncryptionKeyDialog(this, { currentKey: this._value });
   }
 
   private _change() {
