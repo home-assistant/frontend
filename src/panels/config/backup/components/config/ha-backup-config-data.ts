@@ -138,7 +138,8 @@ class HaBackupConfigData extends LitElement {
     const include_addons = data.addons_mode === "custom" ? data.addons : [];
 
     this.value = {
-      include_homeassistant: data.homeassistant || this.forceHomeAssistant,
+      include_homeassistant:
+        data.homeassistant || data.database || this.forceHomeAssistant,
       include_addons: include_addons.length ? include_addons : undefined,
       include_all_addons: data.addons_mode === "all",
       include_database: data.database,
@@ -168,7 +169,7 @@ class HaBackupConfigData extends LitElement {
             slot="end"
             @change=${this._switchChanged}
             .checked=${data.homeassistant}
-            .disabled=${this.forceHomeAssistant}
+            .disabled=${this.forceHomeAssistant || data.database}
           ></ha-switch>
         </ha-md-list-item>
 
@@ -296,7 +297,6 @@ class HaBackupConfigData extends LitElement {
       ...data,
       [target.id]: target.checked,
     });
-    fireEvent(this, "value-changed", { value: this.value });
   }
 
   private _selectChanged(ev: Event) {
@@ -309,7 +309,6 @@ class HaBackupConfigData extends LitElement {
     if (target.id === "addons_mode") {
       this._showAddons = target.value === "custom";
     }
-    fireEvent(this, "value-changed", { value: this.value });
   }
 
   private _addonsChanged(ev: CustomEvent) {
@@ -320,7 +319,6 @@ class HaBackupConfigData extends LitElement {
       ...data,
       addons,
     });
-    fireEvent(this, "value-changed", { value: this.value });
   }
 
   static styles = css`
