@@ -117,7 +117,7 @@ class DialogMediaManage extends LitElement {
             : html`
                 <ha-button
                   class="danger"
-                  slot="title"
+                  slot="navigationIcon"
                   .disabled=${this._deleting}
                   .label=${this.hass.localize(
                     `ui.components.media-browser.file_management.${
