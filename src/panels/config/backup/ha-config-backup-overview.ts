@@ -73,12 +73,13 @@ class HaConfigBackupOverview extends LitElement {
 
   private _handleOnboardingButtonClick(ev) {
     ev.stopPropagation();
-    this._setupAutomaticBackup();
+    this._setupAutomaticBackup(true);
   }
 
-  private async _setupAutomaticBackup() {
+  private async _setupAutomaticBackup(skipWelcome = false) {
     const success = await showBackupOnboardingDialog(this, {
       cloudStatus: this.cloudStatus,
+      skipWelcome,
     });
     if (!success) {
       return;
