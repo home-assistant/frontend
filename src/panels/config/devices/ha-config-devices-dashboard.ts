@@ -751,7 +751,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
           ? html`<ha-alert slot="filter-pane">
               ${this.hass.localize(
                 "ui.panel.config.devices.filtering_by_config_entry"
-              )
+              )}
               ${this.entries?.find(
                 (entry) =>
                   entry.entry_id === this._filters.config_entry!.value![0]
