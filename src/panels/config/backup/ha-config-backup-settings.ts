@@ -8,6 +8,7 @@ import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-alert";
 import "../../../components/ha-password-field";
 import type { BackupConfig } from "../../../data/backup";
 import { updateBackupConfig } from "../../../data/backup";
@@ -134,6 +135,14 @@ class HaConfigBackupSettings extends LitElement {
                 .cloudStatus=${this.cloudStatus}
                 @value-changed=${this._agentsConfigChanged}
               ></ha-backup-config-agents>
+              ${!this._config.create_backup.agent_ids.length
+                ? html`<ha-alert
+                      alert-type="warning"
+                      title="No location selected"
+                      >You have to select at least one location to create a
+                      backup.</ha-alert
+                    ><br />`
+                : nothing}
             </div>
           </ha-card>
           <ha-card>
