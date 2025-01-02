@@ -433,7 +433,10 @@ export class HaChartBase extends LitElement {
               speed: 0.05,
             },
             mode:
-              (this.options?.scales?.y as any)?.type === "category" ? "y" : "x",
+              this.chartType !== "timeline" &&
+              (this.options?.scales?.y as any)?.type === "category"
+                ? "y"
+                : "x",
             onZoomComplete: () => {
               const isZoomed = this.chart?.isZoomedOrPanned() ?? false;
               if (this._isZoomed && !isZoomed) {
