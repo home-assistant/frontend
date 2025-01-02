@@ -31,9 +31,6 @@ type CheckBoxItem = {
   version?: string;
 };
 
-const SELF_CREATED_ADDONS_FOLDER = "addons/local";
-const SELF_CREATED_ADDONS_NAME = "___LOCAL_ADDONS___";
-
 const ITEM_ICONS = {
   config: mdiCog,
   database: mdiChartBox,
@@ -80,24 +77,14 @@ export class HaBackupDataPicker extends LitElement {
 
       if (data.homeassistant_included) {
         items.push({
-          label: "Settings",
+          label: `Settings${data.database_included ? " and history" : ""}`,
           id: "config",
           version: data.homeassistant_version,
         });
       }
-      if (data.database_included) {
-        items.push({
-          label: "History",
-          id: "database",
-        });
-      }
-      // Filter out the local add-ons folder
-      const folders = data.folders.filter(
-        (folder) => folder !== SELF_CREATED_ADDONS_FOLDER
-      );
       items.push(
-        ...folders.map<CheckBoxItem>((folder) => ({
-          label: capitalizeFirstLetter(folder),
+        ...data.folders.map<CheckBoxItem>((folder) => ({
+          label: this._localizeFolder(folder),
           id: folder,
         }))
       );
@@ -105,30 +92,25 @@ export class HaBackupDataPicker extends LitElement {
     }
   );
 
+  private _localizeFolder(folder: string): string {
+    if (folder === "addons/local") {
+      return "Local addons";
+    }
+    return capitalizeFirstLetter(folder);
+  }
+
   private _addonsItems = memoizeOne(
     (
       data: BackupData,
       _localize: LocalizeFunc,
       addonIcons: Record<string, boolean>
-    ) => {
-      const items = data.addons.map<BackupAddonItem>((addon) => ({
+    ) =>
+      data.addons.map<BackupAddonItem>((addon) => ({
         name: addon.name,
         slug: addon.slug,
         version: addon.version,
         icon: addonIcons[addon.slug],
-      }));
-
-      // Add local add-ons folder in addons items
-      if (data.folders.includes(SELF_CREATED_ADDONS_FOLDER)) {
-        items.push({
-          name: "Self created add-ons",
-          slug: SELF_CREATED_ADDONS_NAME,
-          iconPath: mdiFolder,
-        });
-      }
-
-      return items;
-    }
+      }))
   );
 
   private _parseValue = memoizeOne((value?: BackupData): SelectedItems => {
@@ -144,17 +126,10 @@ export class HaBackupDataPicker extends LitElement {
     if (value.homeassistant_included) {
       homeassistant.push("config");
     }
-    if (value.database_included) {
-      homeassistant.push("database");
-    }
 
-    let folders = [...value.folders];
-    const addonsList = value.addons.map((addon) => addon.slug);
-    if (folders.includes(SELF_CREATED_ADDONS_FOLDER)) {
-      folders = folders.filter((f) => f !== SELF_CREATED_ADDONS_FOLDER);
-      addonsList.push(SELF_CREATED_ADDONS_NAME);
-    }
+    const folders = value.folders;
     homeassistant.push(...folders);
+    const addonsList = value.addons.map((addon) => addon.slug);
     addons.push(...addonsList);
 
     return {
@@ -167,15 +142,14 @@ export class HaBackupDataPicker extends LitElement {
     (selectedItems: SelectedItems, data: BackupData): BackupData => ({
       homeassistant_version: data.homeassistant_version,
       homeassistant_included: selectedItems.homeassistant.includes("config"),
-      database_included: selectedItems.homeassistant.includes("database"),
+      database_included:
+        data.database_included &&
+        selectedItems.homeassistant.includes("config"),
       addons: data.addons.filter((addon) =>
         selectedItems.addons.includes(addon.slug)
       ),
-      folders: data.folders.filter(
-        (folder) =>
-          selectedItems.homeassistant.includes(folder) ||
-          (selectedItems.addons.includes(folder) &&
-            folder === SELF_CREATED_ADDONS_FOLDER)
+      folders: data.folders.filter((folder) =>
+        selectedItems.homeassistant.includes(folder)
       ),
     })
   );
@@ -319,22 +293,22 @@ export class HaBackupDataPicker extends LitElement {
   static get styles(): CSSResultGroup {
     return css`
       .section {
-        margin-inline-start: -16px;
-        margin-inline-end: 0;
         margin-left: -16px;
+        margin-inline-start: -16px;
+        margin-inline-end: initial;
       }
       .items {
-        padding-inline-start: 40px;
-        padding-inline-end: 0;
         padding-left: 40px;
+        padding-inline-start: 40px;
+        padding-inline-end: initial;
         display: flex;
         flex-direction: column;
       }
       ha-backup-addons-picker {
         display: block;
-        padding-inline-start: 40px;
-        padding-inline-end: 0;
         padding-left: 40px;
+        padding-inline-start: 40px;
+        padding-inline-end: initial;
       }
     `;
   }

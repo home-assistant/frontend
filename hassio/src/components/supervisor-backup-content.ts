@@ -65,7 +65,7 @@ const _computeAddons = (addons): AddonCheckboxItem[] =>
 
 @customElement("supervisor-backup-content")
 export class SupervisorBackupContent extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public localize?: LocalizeFunc;
 
@@ -186,12 +186,13 @@ export class SupervisorBackupContent extends LitElement {
                     .iconPath=${mdiHomeAssistant}
                     .version=${this.backup
                       ? this.backup.homeassistant
-                      : this.hass.config.version}
+                      : this.hass?.config.version}
                   >
                   </supervisor-formfield-label>`}
                 >
                   <ha-checkbox
-                    .checked=${this.homeAssistant}
+                    .checked=${this.onboarding || this.homeAssistant}
+                    .disabled=${this.onboarding}
                     @change=${this._toggleHomeAssistant}
                   >
                   </ha-checkbox>
@@ -334,7 +335,7 @@ export class SupervisorBackupContent extends LitElement {
     | HassioFullBackupCreateParams {
     const data: any = {};
 
-    if (!this.backup) {
+    if (!this.backup && this.hass) {
       data.name =
         this.backupName ||
         formatDate(new Date(), this.hass.locale, this.hass.config);
@@ -364,7 +365,9 @@ export class SupervisorBackupContent extends LitElement {
     if (folders?.length) {
       data.folders = folders;
     }
-    data.homeassistant = this.homeAssistant;
+
+    // onboarding needs at least homeassistant to restore
+    data.homeassistant = this.onboarding || this.homeAssistant;
 
     return data;
   }
@@ -386,6 +389,7 @@ export class SupervisorBackupContent extends LitElement {
             .iconPath=${section === "addons" ? mdiPuzzle : mdiFolder}
             .imageUrl=${section === "addons" &&
             !this.onboarding &&
+            this.hass &&
             atLeastVersion(this.hass.config.version, 0, 105) &&
             addons?.get(item.slug)?.icon
               ? `/api/hassio/addons/${item.slug}/icon`

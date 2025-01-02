@@ -1,3 +1,4 @@
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { HaDurationData } from "../../../components/ha-duration-input";
 import type { ActionConfig } from "../../../data/lovelace/config/action";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
@@ -195,6 +196,12 @@ export interface EnergyCarbonGaugeCardConfig extends EnergyCardBaseConfig {
   title?: string;
 }
 
+export interface EnergySankeyCardConfig extends EnergyCardBaseConfig {
+  type: "energy-sankey";
+  title?: string;
+  layout?: "vertical" | "horizontal";
+}
+
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
   type: "entity-filter";
   entities: Array<EntityFilterEntityConfig | string>;
@@ -296,7 +303,11 @@ export interface LightCardConfig extends LovelaceCardConfig {
 
 export interface LogbookCardConfig extends LovelaceCardConfig {
   type: "logbook";
-  entities: string[];
+  /**
+   * @deprecated Use target instead
+   */
+  entities?: string[];
+  target: HassServiceTarget;
   title?: string;
   hours_to_show?: number;
   theme?: string;
@@ -304,6 +315,7 @@ export interface LogbookCardConfig extends LovelaceCardConfig {
 
 interface GeoLocationSourceConfig {
   source: string;
+  label_mode?: "name" | "state" | "icon";
   focus?: boolean;
 }
 

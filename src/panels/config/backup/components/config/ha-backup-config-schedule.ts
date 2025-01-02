@@ -2,19 +2,22 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import type { HaCheckbox } from "../../../../components/ha-checkbox";
-import "../../../../components/ha-md-list";
-import "../../../../components/ha-md-list-item";
-import "../../../../components/ha-md-select";
-import "../../../../components/ha-md-textfield";
-import type { HaMdSelect } from "../../../../components/ha-md-select";
-import "../../../../components/ha-md-select-option";
-import "../../../../components/ha-switch";
-import type { BackupConfig } from "../../../../data/backup";
-import { BackupScheduleState } from "../../../../data/backup";
-import type { HomeAssistant } from "../../../../types";
-import { clamp } from "../../../../common/number/clamp";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { clamp } from "../../../../../common/number/clamp";
+import type { HaCheckbox } from "../../../../../components/ha-checkbox";
+import "../../../../../components/ha-md-list";
+import "../../../../../components/ha-md-list-item";
+import "../../../../../components/ha-md-select";
+import type { HaMdSelect } from "../../../../../components/ha-md-select";
+import "../../../../../components/ha-md-select-option";
+import "../../../../../components/ha-md-textfield";
+import "../../../../../components/ha-switch";
+import type { BackupConfig } from "../../../../../data/backup";
+import {
+  BackupScheduleState,
+  getFormattedBackupTime,
+} from "../../../../../data/backup";
+import type { HomeAssistant } from "../../../../../types";
 
 export type BackupConfigSchedule = Pick<BackupConfig, "schedule" | "retention">;
 
@@ -23,8 +26,7 @@ const MAX_VALUE = 50;
 
 enum RetentionPreset {
   COPIES_3 = "copies_3",
-  DAYS_7 = "days_7",
-  FOREOVER = "forever",
+  FOREVER = "forever",
   CUSTOM = "custom",
 }
 
@@ -38,7 +40,6 @@ const RETENTION_PRESETS: Record<
   RetentionData
 > = {
   copies_3: { type: "copies", value: 3 },
-  days_7: { type: "days", value: 7 },
   forever: { type: "days", value: 0 },
 };
 
@@ -122,13 +123,12 @@ class HaBackupConfigSchedule extends LitElement {
   protected render() {
     const data = this._getData(this.value);
 
+    const time = getFormattedBackupTime(this.hass.locale, this.hass.config);
+
     return html`
       <ha-md-list>
         <ha-md-list-item>
           <span slot="headline">Use automatic backups</span>
-          <span slot="supporting-text">
-            How often you want to create a backup.
-          </span>
 
           <ha-switch
             slot="end"
@@ -150,35 +150,36 @@ class HaBackupConfigSchedule extends LitElement {
                   .value=${data.schedule}
                 >
                   <ha-md-select-option .value=${BackupScheduleState.DAILY}>
-                    <div slot="headline">Daily at 04:45</div>
+                    <div slot="headline">Daily at ${time}</div>
                   </ha-md-select-option>
                   <ha-md-select-option .value=${BackupScheduleState.MONDAY}>
-                    <div slot="headline">Monday at 04:45</div>
+                    <div slot="headline">Monday at ${time}</div>
                   </ha-md-select-option>
                   <ha-md-select-option .value=${BackupScheduleState.TUESDAY}>
-                    <div slot="headline">Tuesday at 04:45</div>
+                    <div slot="headline">Tuesday at ${time}</div>
                   </ha-md-select-option>
                   <ha-md-select-option .value=${BackupScheduleState.WEDNESDAY}>
-                    <div slot="headline">Wednesday at 04:45</div>
+                    <div slot="headline">Wednesday at ${time}</div>
                   </ha-md-select-option>
                   <ha-md-select-option .value=${BackupScheduleState.THURSDAY}>
-                    <div slot="headline">Thursday at 04:45</div>
+                    <div slot="headline">Thursday at ${time}</div>
                   </ha-md-select-option>
                   <ha-md-select-option .value=${BackupScheduleState.FRIDAY}>
-                    <div slot="headline">Friday at 04:45</div>
+                    <div slot="headline">Friday at ${time}</div>
                   </ha-md-select-option>
                   <ha-md-select-option .value=${BackupScheduleState.SATURDAY}>
-                    <div slot="headline">Saturday at 04:45</div>
+                    <div slot="headline">Saturday at ${time}</div>
                   </ha-md-select-option>
                   <ha-md-select-option .value=${BackupScheduleState.SUNDAY}>
-                    <div slot="headline">Sunday at 04:45</div>
+                    <div slot="headline">Sunday at ${time}</div>
                   </ha-md-select-option>
                 </ha-md-select>
               </ha-md-list-item>
               <ha-md-list-item>
-                <span slot="headline">Maximum copies</span>
+                <span slot="headline">Backups to keep</span>
                 <span slot="supporting-text">
-                  The number of backups that are saved
+                  Based on the maximum number of backups or how many days they
+                  should be kept.
                 </span>
                 <ha-md-select
                   slot="end"
@@ -186,13 +187,10 @@ class HaBackupConfigSchedule extends LitElement {
                   .value=${this._retentionPreset}
                 >
                   <ha-md-select-option .value=${RetentionPreset.COPIES_3}>
-                    <div slot="headline">Latest 3 copies</div>
+                    <div slot="headline">3 backups</div>
                   </ha-md-select-option>
-                  <ha-md-select-option .value=${RetentionPreset.DAYS_7}>
-                    <div slot="headline">Keep 7 days</div>
-                  </ha-md-select-option>
-                  <ha-md-select-option .value=${RetentionPreset.FOREOVER}>
-                    <div slot="headline">Keep forever</div>
+                  <ha-md-select-option .value=${RetentionPreset.FOREVER}>
+                    <div slot="headline">All backups</div>
                   </ha-md-select-option>
                   <ha-md-select-option .value=${RetentionPreset.CUSTOM}>
                     <div slot="headline">Custom</div>
@@ -223,7 +221,7 @@ class HaBackupConfigSchedule extends LitElement {
                           <div slot="headline">days</div>
                         </ha-md-select-option>
                         <ha-md-select-option .value=${"copies"}>
-                          <div slot="headline">copies</div>
+                          <div slot="headline">backups</div>
                         </ha-md-select-option>
                       </ha-md-select>
                     </ha-md-list-item>
@@ -270,7 +268,9 @@ class HaBackupConfigSchedule extends LitElement {
       const data = this._getData(this.value);
       const retention = RETENTION_PRESETS[value];
       // Ensure we have at least 1 in defaut value because user can't select 0
-      retention.value = Math.max(retention.value, 1);
+      if (value !== RetentionPreset.FOREVER) {
+        retention.value = Math.max(retention.value, 1);
+      }
       this._setData({
         ...data,
         retention: RETENTION_PRESETS[value],
@@ -323,22 +323,16 @@ class HaBackupConfigSchedule extends LitElement {
     ha-md-select {
       min-width: 210px;
     }
-    ha-md-list-item {
-      --md-item-overflow: visible;
-    }
     @media all and (max-width: 450px) {
       ha-md-select {
         min-width: 160px;
-        width: 160px;
       }
     }
     ha-md-textfield#value {
       min-width: 70px;
-      width: 70px;
     }
     ha-md-select#type {
       min-width: 100px;
-      width: 100px;
     }
   `;
 }

@@ -145,7 +145,6 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
   protected willUpdate(): void {
     if (!this.hasUpdated) {
       this._chartOptions = {
-        animation: false,
         responsive: true,
         scales: {
           y: {

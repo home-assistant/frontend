@@ -1,8 +1,10 @@
 import { mdiClose } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-expansion-panel";
@@ -16,20 +18,21 @@ import "../../../../components/ha-md-select";
 import "../../../../components/ha-md-select-option";
 import "../../../../components/ha-textfield";
 import type {
-  BackupAgent,
   BackupConfig,
   GenerateBackupParams,
 } from "../../../../data/backup";
 import {
+  CLOUD_AGENT,
+  compareAgents,
   fetchBackupAgentsInfo,
   fetchBackupConfig,
 } from "../../../../data/backup";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import "../components/config/ha-backup-config-data";
+import type { BackupConfigData } from "../components/config/ha-backup-config-data";
 import "../components/ha-backup-agents-picker";
-import "../components/ha-backup-config-data";
-import type { BackupConfigData } from "../components/ha-backup-config-data";
 import type { GenerateBackupDialogParams } from "./show-dialog-generate-backup";
 
 type FormData = {
@@ -53,13 +56,15 @@ const INITIAL_DATA: FormData = {
 
 const STEPS = ["data", "sync"] as const;
 
+const DISALLOWED_AGENTS_NO_HA = [CLOUD_AGENT];
+
 @customElement("ha-dialog-generate-backup")
 class DialogGenerateBackup extends LitElement implements HassDialog {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _step?: "data" | "sync";
 
-  @state() private _agents: BackupAgent[] = [];
+  @state() private _agentIds: string[] = [];
 
   @state() private _backupConfig?: BackupConfig;
 
@@ -73,6 +78,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     this._step = STEPS[0];
     this._formData = INITIAL_DATA;
     this._params = _params;
+
     this._fetchAgents();
     this._fetchBackupConfig();
   }
@@ -83,7 +89,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     }
     this._step = undefined;
     this._formData = undefined;
-    this._agents = [];
+    this._agentIds = [];
     this._backupConfig = undefined;
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -91,7 +97,15 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
 
   private async _fetchAgents() {
     const { agents } = await fetchBackupAgentsInfo(this.hass);
-    this._agents = agents;
+    this._agentIds = agents
+      .map((agent) => agent.agent_id)
+      .filter(
+        (id) =>
+          id !== CLOUD_AGENT ||
+          (this._params?.cloudStatus?.logged_in &&
+            this._params?.cloudStatus?.active_subscription)
+      )
+      .sort(compareAgents);
   }
 
   private async _fetchBackupConfig() {
@@ -119,6 +133,32 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     this._step = STEPS[index + 1];
   }
 
+  protected willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has("_step")) {
+      if (this._step === "sync" && this._formData) {
+        const disallowedAgents = this._disabledAgentIds();
+        if (disallowedAgents.length) {
+          // Remove disallowed agents from the list
+          const agentsIds =
+            this._formData.agents_mode === "all"
+              ? this._agentIds
+              : this._formData.agent_ids;
+
+          const filteredAgents = agentsIds.filter(
+            (agentId) => !disallowedAgents.includes(agentId)
+          );
+          this._formData = {
+            ...this._formData,
+            agents_mode: "custom",
+            agent_ids: filteredAgents,
+          };
+        }
+      }
+    }
+  }
+
   protected render() {
     if (!this._step || !this._formData) {
       return nothing;
@@ -129,6 +169,8 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
 
     const isFirstStep = this._step === STEPS[0];
     const isLastStep = this._step === STEPS[STEPS.length - 1];
+
+    const selectedAgents = this._formData.agent_ids;
 
     return html`
       <ha-md-dialog open disable-cancel-action @closed=${this._dialogClosed}>
@@ -158,11 +200,37 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
             ? html`<ha-button @click=${this.closeDialog}>Cancel</ha-button>`
             : nothing}
           ${isLastStep
-            ? html`<ha-button @click=${this._submit}>Create backup</ha-button>`
-            : html`<ha-button @click=${this._nextStep}>Next</ha-button>`}
+            ? html`
+                <ha-button
+                  @click=${this._submit}
+                  .disabled=${this._formData.agents_mode === "custom" &&
+                  !selectedAgents.length}
+                >
+                  Create backup
+                </ha-button>
+              `
+            : html`<ha-button
+                @click=${this._nextStep}
+                .disabled=${this._step === "data" && this._noDataSelected}
+                >Next</ha-button
+              >`}
         </div>
       </ha-md-dialog>
     `;
+  }
+
+  private get _noDataSelected() {
+    const hassio = isComponentLoaded(this.hass, "hassio");
+    if (
+      this._formData?.data.include_homeassistant ||
+      this._formData?.data.include_database ||
+      (hassio && this._formData?.data.include_folders?.length) ||
+      (hassio && this._formData?.data.include_all_addons) ||
+      (hassio && this._formData?.data.include_addons?.length)
+    ) {
+      return false;
+    }
+    return true;
   }
 
   private _renderData() {
@@ -193,6 +261,8 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
       return nothing;
     }
 
+    const disabledAgentIds = this._disabledAgentIds();
+
     return html`
       <ha-textfield
         name="name"
@@ -213,8 +283,11 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
             @change=${this._selectChanged}
             .value=${this._formData.agents_mode}
           >
-            <ha-md-select-option value="all">
-              <div slot="headline">All (${this._agents.length})</div>
+            <ha-md-select-option
+              value="all"
+              .disabled=${disabledAgentIds.length}
+            >
+              <div slot="headline">All (${this._agentIds.length})</div>
             </ha-md-select-option>
             <ha-md-select-option value="custom">
               <div slot="headline">Custom</div>
@@ -222,6 +295,17 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
           </ha-md-select>
         </ha-md-list-item>
       </ha-md-list>
+      ${disabledAgentIds.length
+        ? html`
+            <ha-alert
+              alert-type="info"
+              .title=${"Home Assistant Cloud cannot synchronize"}
+            >
+              Add Home Assistant settings data to synchronize this backup to
+              Home Assistant Cloud.
+            </ha-alert>
+          `
+        : nothing}
       ${this._formData.agents_mode === "custom"
         ? html`
             <ha-expansion-panel .header=${"Locations"} outlined expanded>
@@ -229,7 +313,8 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
                 .hass=${this.hass}
                 .value=${this._formData.agent_ids}
                 @value-changed=${this._agentsChanged}
-                .agents=${this._agents}
+                .agentIds=${this._agentIds}
+                .disabledAgentIds=${disabledAgentIds}
               ></ha-backup-agents-picker>
             </ha-expansion-panel>
           `
@@ -259,6 +344,16 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     };
   }
 
+  private _disabledAgentIds() {
+    if (!this._formData) {
+      return [];
+    }
+    const allAgents = this._agentIds;
+    return !this._formData.data.include_homeassistant
+      ? DISALLOWED_AGENTS_NO_HA.filter((agentId) => allAgents.includes(agentId))
+      : [];
+  }
+
   private async _submit() {
     if (!this._formData) {
       return;
@@ -268,20 +363,28 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
 
     const password = this._backupConfig?.create_backup.password || undefined;
 
-    const ALL_AGENT_IDS = this._agents.map((agent) => agent.agent_id);
-
     const params: GenerateBackupParams = {
       name,
       password,
-      agent_ids: agents_mode === "all" ? ALL_AGENT_IDS : agent_ids,
+      agent_ids: agents_mode === "all" ? this._agentIds : agent_ids,
       // We always include homeassistant if we include database
       include_homeassistant:
         data.include_homeassistant || data.include_database,
       include_database: data.include_database,
-      include_addons: data.include_addons,
-      include_folders: data.include_folders,
-      include_all_addons: data.include_all_addons,
     };
+
+    if (isComponentLoaded(this.hass, "hassio")) {
+      params.include_folders = data.include_folders;
+      params.include_all_addons = data.include_all_addons;
+      params.include_addons = data.include_addons;
+    }
+
+    // Ensure we don't upload to disallowed agents if we are not including homeassistant
+    if (!params.include_homeassistant) {
+      params.agent_ids = params.agent_ids.filter(
+        (agentId) => !DISALLOWED_AGENTS_NO_HA.includes(agentId)
+      );
+    }
 
     this._params!.submit?.(params);
     this.closeDialog();
@@ -328,6 +431,10 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
         }
         .content {
           padding-top: 0;
+        }
+        ha-alert {
+          margin-bottom: 16px;
+          display: block;
         }
       `,
     ];

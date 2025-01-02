@@ -11,7 +11,10 @@ import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
 import { cloudLogin } from "../../../data/cloud";
 import type { HomeAssistant } from "../../../types";
-import { showAlertDialog } from "../../generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showPromptDialog,
+} from "../../generic/show-dialog-box";
 import { AssistantSetupStyles } from "../styles";
 
 @customElement("cloud-step-signin")
@@ -106,11 +109,35 @@ export class CloudStepSignin extends LitElement {
 
     this._requestInProgress = true;
 
-    const doLogin = async (username: string) => {
+    const doLogin = async (username: string, code?: string) => {
       try {
-        await cloudLogin(this.hass, username, password);
+        await cloudLogin({
+          hass: this.hass,
+          email: username,
+          ...(code ? { code } : { password }),
+        });
       } catch (err: any) {
         const errCode = err && err.body && err.body.code;
+
+        if (errCode === "mfarequired") {
+          const totpCode = await showPromptDialog(this, {
+            title: this.hass.localize(
+              "ui.panel.config.cloud.login.totp_code_prompt_title"
+            ),
+            inputLabel: this.hass.localize(
+              "ui.panel.config.cloud.login.totp_code"
+            ),
+            inputType: "text",
+            defaultValue: "",
+            confirmText: this.hass.localize(
+              "ui.panel.config.cloud.login.submit"
+            ),
+          });
+          if (totpCode !== null && totpCode !== "") {
+            await doLogin(username, totpCode);
+            return;
+          }
+        }
 
         if (errCode === "usernotfound" && username !== username.toLowerCase()) {
           await doLogin(username.toLowerCase());
@@ -130,15 +157,33 @@ export class CloudStepSignin extends LitElement {
 
         this._requestInProgress = false;
 
-        if (errCode === "UserNotConfirmed") {
-          this._error = this.hass.localize(
-            "ui.panel.config.cloud.login.alert_email_confirm_necessary"
-          );
-        } else {
-          this._error =
-            err && err.body && err.body.message
-              ? err.body.message
-              : "Unknown error";
+        switch (errCode) {
+          case "UserNotConfirmed":
+            this._error = this.hass.localize(
+              "ui.panel.config.cloud.login.alert_email_confirm_necessary"
+            );
+            break;
+          case "mfarequired":
+            this._error = this.hass.localize(
+              "ui.panel.config.cloud.login.alert_mfa_code_required"
+            );
+            break;
+          case "mfaexpiredornotstarted":
+            this._error = this.hass.localize(
+              "ui.panel.config.cloud.login.alert_mfa_expired_or_not_started"
+            );
+            break;
+          case "invalidtotpcode":
+            this._error = this.hass.localize(
+              "ui.panel.config.cloud.login.alert_totp_code_invalid"
+            );
+            break;
+          default:
+            this._error =
+              err && err.body && err.body.message
+                ? err.body.message
+                : "Unknown error";
+            break;
         }
 
         emailField.focus();

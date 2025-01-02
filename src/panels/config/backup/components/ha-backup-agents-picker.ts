@@ -1,7 +1,7 @@
-import { mdiDatabase } from "@mdi/js";
+import { mdiHarddisk, mdiNas } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import memoizeOne from "memoize-one";
+import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import "../../../../components/ha-checkbox";
@@ -10,7 +10,7 @@ import "../../../../components/ha-svg-icon";
 import {
   computeBackupAgentName,
   isLocalAgent,
-  type BackupAgent,
+  isNetworkMountAgent,
 } from "../../../../data/backup";
 import type { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
@@ -24,22 +24,18 @@ class HaBackupAgentsPicker extends LitElement {
   public disabled = false;
 
   @property({ attribute: false })
-  public agents!: BackupAgent[];
+  public agentIds!: string[];
 
   @property({ attribute: false })
-  public disabledAgents?: string[];
+  public disabledAgentIds?: string[];
 
   @property({ attribute: false })
   public value!: string[];
 
-  private _agentIds = memoizeOne((agents: BackupAgent[]) =>
-    agents.map((agent) => agent.agent_id)
-  );
-
   render() {
     return html`
       <div class="agents">
-        ${this._agentIds(this.agents).map((agent) => this._renderAgent(agent))}
+        ${this.agentIds.map((agent) => this._renderAgent(agent))}
       </div>
     `;
   }
@@ -49,33 +45,35 @@ class HaBackupAgentsPicker extends LitElement {
     const name = computeBackupAgentName(
       this.hass.localize,
       agentId,
-      this._agentIds(this.agents)
+      this.agentIds
     );
 
     const disabled =
-      this.disabled || this.disabledAgents?.includes(agentId) || false;
+      this.disabled || this.disabledAgentIds?.includes(agentId) || false;
 
     return html`
       <ha-formfield>
-        <span class="label" slot="label">
+        <span class="label ${classMap({ disabled })}" slot="label">
           ${isLocalAgent(agentId)
             ? html`
-                <ha-svg-icon .path=${mdiDatabase} slot="start"> </ha-svg-icon>
+                <ha-svg-icon .path=${mdiHarddisk} slot="start"> </ha-svg-icon>
               `
-            : html`
-                <img
-                  .src=${brandsUrl({
-                    domain,
-                    type: "icon",
-                    useFallback: true,
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
-                  crossorigin="anonymous"
-                  referrerpolicy="no-referrer"
-                  alt=""
-                  slot="start"
-                />
-              `}
+            : isNetworkMountAgent(agentId)
+              ? html` <ha-svg-icon .path=${mdiNas} slot="start"></ha-svg-icon> `
+              : html`
+                  <img
+                    .src=${brandsUrl({
+                      domain,
+                      type: "icon",
+                      useFallback: true,
+                      darkOptimized: this.hass.themes?.darkMode,
+                    })}
+                    crossorigin="anonymous"
+                    referrerpolicy="no-referrer"
+                    alt=""
+                    slot="start"
+                  />
+                `}
           ${name}
         </span>
         <ha-checkbox
@@ -125,6 +123,12 @@ class HaBackupAgentsPicker extends LitElement {
       font-weight: 400;
       line-height: 24px;
       letter-spacing: 0.5px;
+    }
+    span.disabled {
+      color: var(--disabled-text-color);
+    }
+    span.disabled ha-svg-icon {
+      color: var(--disabled-text-color);
     }
   `;
 }

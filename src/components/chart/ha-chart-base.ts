@@ -10,11 +10,13 @@ import { css, html, nothing, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import { mdiRestart } from "@mdi/js";
 import { fireEvent } from "../../common/dom/fire_event";
 import { clamp } from "../../common/number/clamp";
 import type { HomeAssistant } from "../../types";
 import { debounce } from "../../common/util/debounce";
 import { isMac } from "../../util/is_mac";
+import "../ha-icon-button";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 
@@ -61,11 +63,15 @@ export class HaChartBase extends LitElement {
 
   @state() private _chartHeight?: number;
 
+  @state() private _legendHeight?: number;
+
   @state() private _tooltip?: Tooltip;
 
   @state() private _hiddenDatasets: Set<number> = new Set();
 
   @state() private _showZoomHint = false;
+
+  @state() private _isZoomed = false;
 
   private _paddingUpdateCount = 0;
 
@@ -212,10 +218,22 @@ export class HaChartBase extends LitElement {
     this.chart.update("none");
   }
 
+  protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+    if (changedProperties.has("data") || changedProperties.has("options")) {
+      if (this.options?.plugins?.legend?.display) {
+        this._legendHeight =
+          this.renderRoot.querySelector(".chart-legend")?.clientHeight;
+      } else {
+        this._legendHeight = 0;
+      }
+    }
+  }
+
   protected render() {
     return html`
       ${this.options?.plugins?.legend?.display === true
-        ? html`<div class="chartLegend">
+        ? html`<div class="chart-legend">
             <ul>
               ${this._datasetOrder.map((index) => {
                 const dataset = this.data.datasets[index];
@@ -247,7 +265,7 @@ export class HaChartBase extends LitElement {
           </div>`
         : ""}
       <div
-        class="animationContainer"
+        class="animation-container"
         style=${styleMap({
           height: `${this.height || this._chartHeight || 0}px`,
           overflow: this._chartHeight ? "initial" : "hidden",
@@ -266,7 +284,11 @@ export class HaChartBase extends LitElement {
           })}
           @wheel=${this._handleChartScroll}
         >
-          <canvas></canvas>
+          <canvas
+            class=${classMap({
+              "not-zoomed": !this._isZoomed,
+            })}
+          ></canvas>
           <div
             class="zoom-hint ${classMap({
               visible: this._showZoomHint,
@@ -280,9 +302,19 @@ export class HaChartBase extends LitElement {
                 : this.hass.localize("ui.components.history_charts.zoom_hint")}
             </div>
           </div>
+          ${this._isZoomed && this.chartType !== "timeline"
+            ? html`<ha-icon-button
+                class="zoom-reset"
+                .path=${mdiRestart}
+                @click=${this._handleZoomReset}
+                title=${this.hass.localize(
+                  "ui.components.history_charts.zoom_reset"
+                )}
+              ></ha-icon-button>`
+            : nothing}
           ${this._tooltip
             ? html`<div
-                class="chartTooltip ${classMap({
+                class="chart-tooltip ${classMap({
                   [this._tooltip.yAlign]: true,
                 })}"
                 style=${styleMap({
@@ -292,7 +324,7 @@ export class HaChartBase extends LitElement {
               >
                 <div class="title">${this._tooltip.title}</div>
                 ${this._tooltip.beforeBody
-                  ? html`<div class="beforeBody">
+                  ? html`<div class="before-body">
                       ${this._tooltip.beforeBody}
                     </div>`
                   : ""}
@@ -366,6 +398,9 @@ export class HaChartBase extends LitElement {
     const modifierKey = isMac ? "meta" : "ctrl";
     return {
       maintainAspectRatio: false,
+      animation: {
+        duration: 500,
+      },
       ...this.options,
       plugins: {
         ...this.options?.plugins,
@@ -390,17 +425,34 @@ export class HaChartBase extends LitElement {
             drag: {
               enabled: true,
               modifierKey,
+              threshold: 2,
             },
             wheel: {
               enabled: true,
               modifierKey,
+              speed: 0.05,
             },
-            mode: "x",
+            mode:
+              this.chartType !== "timeline" &&
+              (this.options?.scales?.y as any)?.type === "category"
+                ? "y"
+                : "x",
+            onZoomComplete: () => {
+              const isZoomed = this.chart?.isZoomedOrPanned() ?? false;
+              if (this._isZoomed && !isZoomed) {
+                setTimeout(() => {
+                  // make sure the scales are properly reset after full zoom out
+                  // they get bugged when zooming in/out multiple times and panning
+                  this.chart?.resetZoom();
+                });
+              }
+              this._isZoomed = isZoomed;
+            },
           },
           limits: {
             x: {
               min: "original",
-              max: "original",
+              max: (this.options?.scales?.x as any)?.max ?? "original",
             },
             y: {
               min: "original",
@@ -434,6 +486,7 @@ export class HaChartBase extends LitElement {
 
   private _handleChartScroll(ev: MouseEvent) {
     const modifier = isMac ? "metaKey" : "ctrlKey";
+    this._tooltip = undefined;
     if (!ev[modifier] && !this._showZoomHint) {
       this._showZoomHint = true;
       setTimeout(() => {
@@ -476,15 +529,20 @@ export class HaChartBase extends LitElement {
       this._tooltip = undefined;
       return;
     }
+    const boundingBox = this.getBoundingClientRect();
     this._tooltip = {
       ...context.tooltip,
-      top: this.chart!.canvas.offsetTop + context.tooltip.caretY + 12 + "px",
+      top:
+        boundingBox.y +
+        (this._legendHeight || 0) +
+        context.tooltip.caretY +
+        12 +
+        "px",
       left:
-        this.chart!.canvas.offsetLeft +
         clamp(
-          context.tooltip.caretX,
-          100,
-          this.clientWidth - 100 - this._paddingYAxisInternal
+          boundingBox.x + context.tooltip.caretX,
+          boundingBox.x + 100,
+          boundingBox.x + boundingBox.width - 100
         ) -
         100 +
         "px",
@@ -499,13 +557,17 @@ export class HaChartBase extends LitElement {
     }
   }
 
+  private _handleZoomReset() {
+    this.chart?.resetZoom();
+  }
+
   static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;
-        position: var(--chart-base-position, relative);
+        position: relative;
       }
-      .animationContainer {
+      .animation-container {
         overflow: hidden;
         height: 0;
         transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -516,10 +578,14 @@ export class HaChartBase extends LitElement {
       canvas {
         max-height: var(--chart-max-height, 400px);
       }
-      .chartLegend {
+      canvas.not-zoomed {
+        /* allow scrolling if the chart is not zoomed */
+        touch-action: pan-y !important;
+      }
+      .chart-legend {
         text-align: center;
       }
-      .chartLegend li {
+      .chart-legend li {
         cursor: pointer;
         display: inline-grid;
         grid-auto-flow: column;
@@ -528,16 +594,16 @@ export class HaChartBase extends LitElement {
         align-items: center;
         color: var(--secondary-text-color);
       }
-      .chartLegend .hidden {
+      .chart-legend .hidden {
         text-decoration: line-through;
       }
-      .chartLegend .label {
+      .chart-legend .label {
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
       }
-      .chartLegend .bullet,
-      .chartTooltip .bullet {
+      .chart-legend .bullet,
+      .chart-tooltip .bullet {
         border-width: 1px;
         border-style: solid;
         border-radius: 50%;
@@ -551,13 +617,13 @@ export class HaChartBase extends LitElement {
         margin-inline-start: initial;
         direction: var(--direction);
       }
-      .chartTooltip .bullet {
+      .chart-tooltip .bullet {
         align-self: baseline;
       }
-      .chartTooltip {
+      .chart-tooltip {
         padding: 8px;
         font-size: 90%;
-        position: absolute;
+        position: fixed;
         background: rgba(80, 80, 80, 0.9);
         color: white;
         border-radius: 4px;
@@ -570,17 +636,17 @@ export class HaChartBase extends LitElement {
         box-sizing: border-box;
         direction: var(--direction);
       }
-      .chartLegend ul,
-      .chartTooltip ul {
+      .chart-legend ul,
+      .chart-tooltip ul {
         display: inline-block;
         padding: 0 0px;
         margin: 8px 0 0 0;
         width: 100%;
       }
-      .chartTooltip ul {
+      .chart-tooltip ul {
         margin: 0 4px;
       }
-      .chartTooltip li {
+      .chart-tooltip li {
         display: flex;
         white-space: pre-line;
         word-break: break-word;
@@ -588,16 +654,16 @@ export class HaChartBase extends LitElement {
         line-height: 16px;
         padding: 4px 0;
       }
-      .chartTooltip .title {
+      .chart-tooltip .title {
         text-align: center;
         font-weight: 500;
         word-break: break-word;
         direction: ltr;
       }
-      .chartTooltip .footer {
+      .chart-tooltip .footer {
         font-weight: 500;
       }
-      .chartTooltip .beforeBody {
+      .chart-tooltip .before-body {
         text-align: center;
         font-weight: 300;
         word-break: break-all;
@@ -626,6 +692,16 @@ export class HaChartBase extends LitElement {
         border-radius: 8px;
         background: rgba(0, 0, 0, 0.3);
         box-shadow: 0 0 32px 32px rgba(0, 0, 0, 0.3);
+      }
+      .zoom-reset {
+        position: absolute;
+        top: 16px;
+        right: 4px;
+        background: var(--card-background-color);
+        border-radius: 4px;
+        --mdc-icon-button-size: 32px;
+        color: var(--primary-color);
+        border: 1px solid var(--divider-color);
       }
     `;
   }

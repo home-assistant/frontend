@@ -26,6 +26,7 @@ import { navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { afterNextRender } from "../../../common/util/render-status";
+import { promiseTimeout } from "../../../common/util/promise-timeout";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-fab";
 
@@ -35,7 +36,10 @@ import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
 import { validateConfig } from "../../../data/config";
 import { UNAVAILABLE } from "../../../data/entity";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
+import {
+  type EntityRegistryEntry,
+  updateEntityRegistryEntry,
+} from "../../../data/entity_registry";
 import type { BlueprintScriptConfig, ScriptConfig } from "../../../data/script";
 import {
   deleteScript,
@@ -58,6 +62,7 @@ import { haStyle } from "../../../resources/styles";
 import type { Entries, HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import { showAutomationModeDialog } from "../automation/automation-mode-dialog/show-dialog-automation-mode";
+import type { EntityRegistryUpdate } from "../automation/automation-rename-dialog/show-dialog-automation-rename";
 import { showAutomationRenameDialog } from "../automation/automation-rename-dialog/show-dialog-automation-rename";
 import "./blueprint-script-editor";
 import "./manual-script-editor";
@@ -116,6 +121,35 @@ export class HaScriptEditor extends SubscribeMixin(
 
   @state() private _blueprintConfig?: BlueprintScriptConfig;
 
+  @state() private _saving = false;
+
+  private _entityRegistryUpdate?: EntityRegistryUpdate;
+
+  private _newScriptId?: string;
+
+  private _entityRegCreated?: (
+    value: PromiseLike<EntityRegistryEntry> | EntityRegistryEntry
+  ) => void;
+
+  protected willUpdate(changedProps) {
+    super.willUpdate(changedProps);
+
+    if (
+      this._entityRegCreated &&
+      this._newScriptId &&
+      changedProps.has("entityRegistry")
+    ) {
+      const script = this.entityRegistry.find(
+        (entity: EntityRegistryEntry) =>
+          entity.platform === "script" && entity.unique_id === this._newScriptId
+      );
+      if (script) {
+        this._entityRegCreated(script);
+        this._entityRegCreated = undefined;
+      }
+    }
+  }
+
   protected render(): TemplateResult | typeof nothing {
     if (!this._config) {
       return nothing;
@@ -132,7 +166,8 @@ export class HaScriptEditor extends SubscribeMixin(
         .narrow=${this.narrow}
         .route=${this.route}
         .backCallback=${this._backTapped}
-        .header=${!this._config.alias ? "" : this._config.alias}
+        .header=${this._config.alias ||
+        this.hass.localize("ui.panel.config.script.editor.default_name")}
       >
         ${this.scriptId && !this.narrow
           ? html`
@@ -410,11 +445,12 @@ export class HaScriptEditor extends SubscribeMixin(
         <ha-fab
           slot="fab"
           class=${classMap({
-            dirty: this._dirty,
+            dirty: !this._readOnly && this._dirty,
           })}
           .label=${this.hass.localize(
             "ui.panel.config.script.editor.save_script"
           )}
+          .disabled=${this._saving}
           extended
           @click=${this._saveScript}
         >
@@ -454,9 +490,7 @@ export class HaScriptEditor extends SubscribeMixin(
     if (changedProps.has("scriptId") && !this.scriptId && this.hass) {
       const initData = getScriptEditorInitData();
       this._dirty = !!initData;
-      const baseConfig: Partial<ScriptConfig> = {
-        alias: this.hass.localize("ui.panel.config.script.editor.default_name"),
-      };
+      const baseConfig: Partial<ScriptConfig> = {};
       if (!initData || !("use_blueprint" in initData)) {
         baseConfig.sequence = [];
       }
@@ -812,13 +846,18 @@ export class HaScriptEditor extends SubscribeMixin(
       showAutomationRenameDialog(this, {
         config: this._config!,
         domain: "script",
-        updateConfig: (config) => {
+        updateConfig: (config, entityRegistryUpdate) => {
           this._config = config;
+          this._entityRegistryUpdate = entityRegistryUpdate;
           this._dirty = true;
           this.requestUpdate();
           resolve(true);
         },
         onClose: () => resolve(false),
+        entityRegistryUpdate: this._entityRegistryUpdate,
+        entityRegistryEntry: this.entityRegistry.find(
+          (entry) => entry.unique_id === this.scriptId
+        ),
       });
     });
   }
@@ -855,24 +894,86 @@ export class HaScriptEditor extends SubscribeMixin(
     }
     const id = this.scriptId || this._entityId || Date.now();
 
+    this._saving = true;
+
+    let entityRegPromise: Promise<EntityRegistryEntry> | undefined;
+    if (this._entityRegistryUpdate !== undefined && !this.scriptId) {
+      this._newScriptId = id.toString();
+      entityRegPromise = new Promise<EntityRegistryEntry>((resolve) => {
+        this._entityRegCreated = resolve;
+      });
+    }
+
     try {
       await this.hass!.callApi(
         "POST",
         "config/script/config/" + id,
         this._config
       );
+
+      if (this._entityRegistryUpdate !== undefined) {
+        let entityId = this._entityId;
+
+        // wait for new script to appear in entity registry
+        if (entityRegPromise) {
+          try {
+            const script = await promiseTimeout(2000, entityRegPromise);
+            entityId = script.entity_id;
+          } catch (e) {
+            entityId = undefined;
+            if (e instanceof Error && e.name === "TimeoutError") {
+              showAlertDialog(this, {
+                title: this.hass.localize(
+                  "ui.panel.config.automation.editor.new_automation_setup_failed_title",
+                  {
+                    type: this.hass.localize(
+                      "ui.panel.config.automation.editor.type_script"
+                    ),
+                  }
+                ),
+                text: this.hass.localize(
+                  "ui.panel.config.automation.editor.new_automation_setup_failed_text",
+                  {
+                    type: this.hass.localize(
+                      "ui.panel.config.automation.editor.type_script"
+                    ),
+                    types: this.hass.localize(
+                      "ui.panel.config.automation.editor.type_script_plural"
+                    ),
+                  }
+                ),
+                warning: true,
+              });
+            } else {
+              throw e;
+            }
+          }
+        }
+
+        if (entityId) {
+          await updateEntityRegistryEntry(this.hass, entityId, {
+            categories: {
+              script: this._entityRegistryUpdate.category || null,
+            },
+            labels: this._entityRegistryUpdate.labels || [],
+            area_id: this._entityRegistryUpdate.area || null,
+          });
+        }
+      }
+
+      this._dirty = false;
+
+      if (!this.scriptId) {
+        navigate(`/config/script/edit/${id}`, { replace: true });
+      }
     } catch (errors: any) {
-      this._errors = errors.body.message || errors.error || errors.body;
+      this._errors = errors.body?.message || errors.error || errors.body;
       showToast(this, {
-        message: errors.body.message || errors.error || errors.body,
+        message: errors.body?.message || errors.error || errors.body,
       });
       throw errors;
-    }
-
-    this._dirty = false;
-
-    if (!this.scriptId) {
-      navigate(`/config/script/edit/${id}`, { replace: true });
+    } finally {
+      this._saving = false;
     }
   }
 

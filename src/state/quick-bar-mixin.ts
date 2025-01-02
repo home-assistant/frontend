@@ -150,9 +150,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
 
       const myPanel = await import("../panels/my/ha-panel-my");
 
-      for (const [slug, redirect] of Object.entries(
-        myPanel.getMyRedirects(isHassio)
-      )) {
+      for (const [slug, redirect] of Object.entries(myPanel.getMyRedirects())) {
         if (targetPath.startsWith(redirect.redirect)) {
           myParams.append("redirect", slug);
           if (redirect.params) {

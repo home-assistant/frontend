@@ -11,11 +11,13 @@ import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-password-field";
-import { generateEncryptionKey } from "../../../../data/backup";
+import {
+  downloadEmergencyKit,
+  generateEncryptionKey,
+} from "../../../../data/backup";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import { fileDownload } from "../../../../util/file_download";
 import type { SetBackupEncryptionKeyDialogParams } from "./show-dialog-set-backup-encryption-key";
 
 const STEPS = ["new", "save"] as const;
@@ -162,11 +164,7 @@ class DialogSetBackupEncryptionKey extends LitElement implements HassDialog {
     if (!this._newEncryptionKey) {
       return;
     }
-    fileDownload(
-      "data:text/plain;charset=utf-8," +
-        encodeURIComponent(this._newEncryptionKey),
-      "emergency_kit.txt"
-    );
+    downloadEmergencyKit(this.hass, this._newEncryptionKey);
   }
 
   private _encryptionKeyChanged(ev) {
@@ -193,9 +191,7 @@ class DialogSetBackupEncryptionKey extends LitElement implements HassDialog {
         ha-md-dialog {
           width: 90vw;
           max-width: 500px;
-        }
-        div[slot="content"] {
-          margin-top: -16px;
+          --dialog-content-padding: 8px 24px;
         }
         ha-md-list {
           background: none;

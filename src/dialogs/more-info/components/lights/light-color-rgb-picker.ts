@@ -13,7 +13,6 @@ import {
 } from "../../../../common/color/convert-color";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { throttle } from "../../../../common/util/throttle";
-import "../../../../components/ha-button-toggle-group";
 import "../../../../components/ha-hs-color-picker";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-icon-button-prev";
