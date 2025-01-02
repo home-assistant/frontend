@@ -34,7 +34,7 @@ class HaBackupBackupsSummary extends LitElement {
     const { state: schedule } = config.schedule;
 
     if (schedule === BackupScheduleState.NEVER) {
-      return "Automatic backups are disabled";
+      return "Automatic backups are not scheduled";
     }
 
     let copiesText = "and keep all backups";
@@ -116,7 +116,7 @@ class HaBackupBackupsSummary extends LitElement {
 
     return html`
       <ha-card class="my-backups">
-        <div class="card-header">Automatic backups</div>
+        <div class="card-header">Backup settings</div>
         <div class="card-content">
           <ha-md-list>
             <ha-md-list-item
@@ -128,7 +128,7 @@ class HaBackupBackupsSummary extends LitElement {
                 ${this._scheduleDescription(this.config)}
               </div>
               <div slot="supporting-text">
-                Schedule and number of backups to keep
+                Automatic backup schedule and retention
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
@@ -174,7 +174,7 @@ class HaBackupBackupsSummary extends LitElement {
         </div>
         <div class="card-actions">
           <ha-button @click=${this._configure}>
-            Configure automatic backups
+            Configure backup settings
           </ha-button>
         </div>
       </ha-card>
