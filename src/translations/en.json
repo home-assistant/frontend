@@ -2216,7 +2216,7 @@
           },
           "dialogs": {
             "local_backup_location": {
-              "title": "Change local backup location",
+              "title": "Change default local backup location",
               "description": "Change the default location where local backups are stored on your Home Assistant instance.",
               "note": "This location will be used when you create a backup using the supervisor actions in an automation for example.",
               "options": {
