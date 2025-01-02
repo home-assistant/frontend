@@ -137,6 +137,7 @@ export class BluetoothDevicePage extends LitElement {
         rssi: {
           title: localize("ui.panel.config.bluetooth.rssi"),
           type: "numeric",
+          sortable: true,
         },
       };
 
