@@ -90,7 +90,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
 
   public showDialog(params: BackupOnboardingDialogParams): void {
     this._params = params;
-    this._step = STEPS[0];
+    this._step = params.skipWelcome ? STEPS[1] : STEPS[0];
     this._config = RECOMMENDED_CONFIG;
 
     const agents: string[] = [];

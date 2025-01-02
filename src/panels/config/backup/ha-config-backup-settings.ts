@@ -13,6 +13,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list-item";
+import "../../../components/ha-alert";
 import "../../../components/ha-password-field";
 import "../../../components/ha-svg-icon";
 import type { BackupConfig } from "../../../data/backup";
@@ -98,7 +99,7 @@ class HaConfigBackupSettings extends LitElement {
         back-path="/config/backup"
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .header=${"Automatic backups"}
+        .header=${"Backup settings"}
       >
         ${isComponentLoaded(this.hass, "hassio")
           ? html`
@@ -163,6 +164,14 @@ class HaConfigBackupSettings extends LitElement {
                 .cloudStatus=${this.cloudStatus}
                 @value-changed=${this._agentsConfigChanged}
               ></ha-backup-config-agents>
+              ${!this._config.create_backup.agent_ids.length
+                ? html`<ha-alert
+                      alert-type="warning"
+                      title="No location selected"
+                      >You have to select at least one location to create a
+                      backup.</ha-alert
+                    ><br />`
+                : nothing}
             </div>
           </ha-card>
           <ha-card>
