@@ -515,7 +515,7 @@ export class HaDataTable extends LitElement {
       return html`<div class="mdc-data-table__row">${row.content}</div>`;
     }
     if (row.empty) {
-      return html`<div class="mdc-data-table__row"></div>`;
+      return html`<div class="mdc-data-table__row empty-row"></div>`;
     }
     return html`
       <div
@@ -958,6 +958,13 @@ export class HaDataTable extends LitElement {
           display: flex;
           height: var(--data-table-row-height, 52px);
           width: var(--table-row-width, 100%);
+        }
+
+        .mdc-data-table__row.empty-row {
+          height: var(
+            --data-table-empty-row-height,
+            var(--data-table-row-height, 52px)
+          );
         }
 
         .mdc-data-table__row ~ .mdc-data-table__row {
