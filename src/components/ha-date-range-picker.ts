@@ -402,19 +402,20 @@ export class HaDateRangePicker extends LitElement {
           this.hass.config
         ),
       ];
-    } else {
+    } else if (
+      diff / 2 > hoursToMilliseconds(1) &&
+      this.startDate < addHours(new Date(), 1)
+    ) {
       dateRange = [
         calcDate(
-          this.startDate > new Date()
-            ? subHours(new Date(), 1)
-            : addMilliseconds(this.startDate, diff / 3),
+          addMilliseconds(this.startDate, diff / 3),
           roundToNearestHours,
           this.hass.locale,
           this.hass.config
         ),
         calcDate(
           this.endDate > new Date()
-            ? new Date()
+            ? addHours(new Date(), 1)
             : diff < hoursToMilliseconds(1)
               ? addHours(this.startDate, 1)
               : subMilliseconds(subMilliseconds(this.endDate, diff / 3), 1),
