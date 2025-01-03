@@ -106,6 +106,10 @@ export const getMyRedirects = (): Redirects => ({
     component: "matter",
     redirect: "/config/matter/add",
   },
+  config_bluetooth: {
+    component: "bluetooth",
+    redirect: "/config/bluetooth",
+  },
   config_energy: {
     component: "energy",
     redirect: "/config/energy/dashboard",
