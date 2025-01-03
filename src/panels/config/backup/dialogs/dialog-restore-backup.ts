@@ -23,7 +23,10 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { RestoreBackupDialogParams } from "./show-dialog-restore-backup";
-import type { RestoreBackupStage } from "../../../../data/backup_manager";
+import type {
+  RestoreBackupStage,
+  RestoreBackupState,
+} from "../../../../data/backup_manager";
 import { subscribeBackupEvents } from "../../../../data/backup_manager";
 
 type FormData = {
@@ -54,6 +57,8 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
 
   @state() private _error?: string;
 
+  @state() private _state?: RestoreBackupState;
+
   @state() private _stage?: RestoreBackupStage | null;
 
   @state() private _unsub?: Promise<UnsubscribeFunc>;
@@ -64,6 +69,10 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
     this._params = params;
 
     this._formData = INITIAL_DATA;
+    this._userPassword = undefined;
+    this._error = undefined;
+    this._state = undefined;
+    this._stage = undefined;
     if (this._params.backup.protected) {
       this._backupEncryptionKey = await this._fetchEncryptionKey();
       if (!this._backupEncryptionKey) {
@@ -86,6 +95,7 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
     this._backupEncryptionKey = undefined;
     this._userPassword = undefined;
     this._error = undefined;
+    this._state = undefined;
     this._stage = undefined;
     this._step = undefined;
     this._unsubscribe();
@@ -188,7 +198,6 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
     this._unsubscribe();
     try {
       this._step = "progress";
-      window.addEventListener("connection-status", this._connectionStatus);
       this._subscribeBackupEvents();
       await this._doRestoreBackup(
         this._userPassword || this._backupEncryptionKey
@@ -204,20 +213,15 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
     }
   }
 
-  private _connectionStatus = (ev) => {
-    if (ev.detail === "connected") {
-      this.closeDialog();
-    }
-  };
-
   private _subscribeBackupEvents() {
     this._unsub = subscribeBackupEvents(this.hass!, (event) => {
-      if (!this._error && event.manager_state === "idle") {
+      if (event.manager_state === "idle" && this._state === "in_progress") {
         this.closeDialog();
       }
       if (event.manager_state !== "restore_backup") {
         return;
       }
+      this._state = event.state;
       if (event.state === "completed") {
         this.closeDialog();
       }
@@ -231,7 +235,6 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
   }
 
   private _unsubscribe() {
-    window.removeEventListener("connection-status", this._connectionStatus);
     if (this._unsub) {
       const prom = this._unsub.then((unsub) => unsub());
       this._unsub = undefined;
