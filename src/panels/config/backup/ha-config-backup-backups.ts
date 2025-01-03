@@ -301,10 +301,10 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
 
     return html`
       <hass-tabs-subpage-data-table
-        hasFab
+        has-fab
         .tabs=${[
           {
-            translationKey: "ui.panel.config.backup.caption",
+            name: "My backups",
             path: `/config/backup/list`,
           },
         ]}

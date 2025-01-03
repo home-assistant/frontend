@@ -27,6 +27,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { afterNextRender } from "../../../common/util/render-status";
+import { promiseTimeout } from "../../../common/util/promise-timeout";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon";
@@ -944,8 +945,37 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
         // wait for automation to appear in entity registry when creating a new automation
         if (entityRegPromise) {
-          const automation = await entityRegPromise;
-          entityId = automation.entity_id;
+          try {
+            const automation = await promiseTimeout(2000, entityRegPromise);
+            entityId = automation.entity_id;
+          } catch (e) {
+            if (e instanceof Error && e.name === "TimeoutError") {
+              showAlertDialog(this, {
+                title: this.hass.localize(
+                  "ui.panel.config.automation.editor.new_automation_setup_failed_title",
+                  {
+                    type: this.hass.localize(
+                      "ui.panel.config.automation.editor.type_automation"
+                    ),
+                  }
+                ),
+                text: this.hass.localize(
+                  "ui.panel.config.automation.editor.new_automation_setup_failed_text",
+                  {
+                    type: this.hass.localize(
+                      "ui.panel.config.automation.editor.type_automation"
+                    ),
+                    types: this.hass.localize(
+                      "ui.panel.config.automation.editor.type_automation_plural"
+                    ),
+                  }
+                ),
+                warning: true,
+              });
+            } else {
+              throw e;
+            }
+          }
         }
 
         if (entityId) {
@@ -965,9 +995,9 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
         navigate(`/config/automation/edit/${id}`, { replace: true });
       }
     } catch (errors: any) {
-      this._errors = errors.body.message || errors.error || errors.body;
+      this._errors = errors.body?.message || errors.error || errors.body;
       showToast(this, {
-        message: errors.body.message || errors.error || errors.body,
+        message: errors.body?.message || errors.error || errors.body,
       });
       throw errors;
     } finally {

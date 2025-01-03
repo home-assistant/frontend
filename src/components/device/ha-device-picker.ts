@@ -222,7 +222,9 @@ export class HaDevicePicker extends LitElement {
 
         return {
           id: device.id,
-          name: name,
+          name:
+            name ||
+            this.hass.localize("ui.components.device-picker.unnamed_device"),
           area:
             device.area_id && areas[device.area_id]
               ? areas[device.area_id].name

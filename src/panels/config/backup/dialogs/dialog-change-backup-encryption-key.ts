@@ -92,7 +92,9 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
         ? "Save current encryption key"
         : this._step === "new"
           ? "New encryption key"
-          : "";
+          : this._step === "done"
+            ? "Save new encryption key"
+            : "";
 
     return html`
       <ha-md-dialog disable-cancel-action open @closed=${this.closeDialog}>
@@ -166,10 +168,22 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
       case "new":
         return html`
           <p>
-            Keep this encryption key in a safe place, as you will need it to
-            access your backup, allowing it to be restored. Either record the
+            All next backups will use the new encryption key. Encryption keeps
+            your backups private and secure.
+          </p>
+          <div class="encryption-key">
+            <p>${this._newEncryptionKey}</p>
+            <ha-icon-button
+              .path=${mdiContentCopy}
+              @click=${this._copyKeyToClipboard}
+            ></ha-icon-button>
+          </div>
+        `;
+      case "done":
+        return html`<p>
+            Keep this new encryption key in a safe place, as you will need it to
+            access your backups, allowing it to be restored. Either record the
             characters below or download them as an emergency kit file.
-            Encryption keeps your backups private and secure.
           </p>
           <div class="encryption-key">
             <p>${this._newEncryptionKey}</p>
@@ -189,24 +203,16 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
                 Download
               </ha-button>
             </ha-md-list-item>
-          </ha-md-list>
-        `;
-      case "done":
-        return html`
-          <div class="done">
-            <img
-              src="/static/images/voice-assistant/hi.png"
-              alt="Casita Home Assistant logo"
-            />
-            <p>Encryption key changed</p>
-          </div>
-        `;
+          </ha-md-list>`;
     }
     return nothing;
   }
 
   private async _copyKeyToClipboard() {
-    await copyToClipboard(this._newEncryptionKey);
+    await copyToClipboard(
+      this._newEncryptionKey,
+      this.renderRoot.querySelector("div")!
+    );
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
     });
@@ -216,7 +222,10 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
     if (!this._params?.currentKey) {
       return;
     }
-    await copyToClipboard(this._params.currentKey);
+    await copyToClipboard(
+      this._params.currentKey,
+      this.renderRoot.querySelector("div")!
+    );
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
     });
@@ -296,13 +305,6 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
         }
         p {
           margin-top: 0;
-        }
-        .done {
-          text-align: center;
-          font-size: 22px;
-          font-style: normal;
-          font-weight: 400;
-          line-height: 28px;
         }
       `,
     ];
