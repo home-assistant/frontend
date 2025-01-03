@@ -3,6 +3,7 @@ import "@material/mwc-button";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { isNavigationClick } from "../../common/dom/is-navigation-click";
@@ -39,6 +40,13 @@ class StepFlowForm extends LitElement {
     this.removeEventListener("keydown", this._handleKeyDown);
   }
 
+  private handleReadOnlyFields = memoizeOne((schema) =>
+    schema?.map((field) => ({
+      ...field,
+      ...(field?.description?.read_only ? { disabled: true } : {}),
+    }))
+  );
+
   protected render(): TemplateResult {
     const step = this.step;
     const stepData = this._stepDataProcessed;
@@ -55,7 +63,9 @@ class StepFlowForm extends LitElement {
           .data=${stepData}
           .disabled=${this._loading}
           @value-changed=${this._stepDataChanged}
-          .schema=${autocompleteLoginFields(step.data_schema)}
+          .schema=${autocompleteLoginFields(
+            this.handleReadOnlyFields(step.data_schema)
+          )}
           .error=${step.errors}
           .computeLabel=${this._labelCallback}
           .computeHelper=${this._helperCallback}
@@ -173,8 +183,9 @@ class StepFlowForm extends LitElement {
     Object.keys(stepData).forEach((key) => {
       const value = stepData[key];
       const isEmpty = [undefined, ""].includes(value);
+      const field = this.step.data_schema?.find((f) => f.name === key);
 
-      if (!isEmpty) {
+      if (!isEmpty && !field?.description?.read_only) {
         toSendData[key] = value;
       }
     });
