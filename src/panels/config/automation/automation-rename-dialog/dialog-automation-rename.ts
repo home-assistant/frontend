@@ -328,8 +328,7 @@ class DialogAutomationRename extends LitElement implements HassDialog {
         ha-icon-picker,
         ha-category-picker,
         ha-labels-picker,
-        ha-area-picker,
-        ha-chip-set {
+        ha-area-picker {
           display: block;
         }
         ha-icon-picker,

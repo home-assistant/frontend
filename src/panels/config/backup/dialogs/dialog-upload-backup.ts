@@ -20,7 +20,6 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showAlertDialog } from "../../../lovelace/custom-card-helpers";
-import "../components/ha-backup-agents-picker";
 import type { UploadBackupDialogParams } from "./show-dialog-upload-backup";
 
 const SUPPORTED_FORMAT = "application/x-tar";
@@ -90,6 +89,9 @@ export class DialogUploadBackup
           <span slot="title">Upload backup</span>
         </ha-dialog-header>
         <div slot="content">
+          ${this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing}
           <ha-file-upload
             .hass=${this.hass}
             .uploading=${this._uploading}
@@ -99,9 +101,6 @@ export class DialogUploadBackup
             supports="Supports .tar files"
             @file-picked=${this._filePicked}
           ></ha-file-upload>
-          ${this._error
-            ? html`<ha-alert alertType="error">${this._error}</ha-alert>`
-            : nothing}
         </div>
         <div slot="actions">
           <ha-button @click=${this.closeDialog}>Cancel</ha-button>
@@ -160,6 +159,10 @@ export class DialogUploadBackup
           width: 100%;
           max-width: 500px;
           max-height: 100%;
+        }
+        ha-alert {
+          display: block;
+          margin-bottom: 16px;
         }
       `,
     ];

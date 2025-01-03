@@ -117,7 +117,7 @@ class DialogMediaManage extends LitElement {
             : html`
                 <ha-button
                   class="danger"
-                  slot="title"
+                  slot="navigationIcon"
                   .disabled=${this._deleting}
                   .label=${this.hass.localize(
                     `ui.components.media-browser.file_management.${
@@ -212,8 +212,8 @@ class DialogMediaManage extends LitElement {
                   >
                     ${this.hass.localize(
                       "ui.components.media-browser.file_management.tip_storage_panel"
-                    )}
-                  </a>`,
+                    )}</a
+                  >`,
                 }
               )}
             </ha-tip>`

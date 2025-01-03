@@ -179,8 +179,8 @@ class HassioBackupDialog
   }
 
   private async _restoreClicked() {
-    this._restoringBackup = true;
     const backupDetails = this._backupContent.backupDetails();
+    this._restoringBackup = true;
 
     const supervisor = this._dialogParams?.supervisor;
     if (supervisor !== undefined && supervisor.info.state !== "running") {
@@ -196,12 +196,12 @@ class HassioBackupDialog
     if (
       !(await showConfirmationDialog(this, {
         title: this._localize(
-          this._backupContent.backupType === "full"
+          this._backup!.type === "full"
             ? "confirm_restore_full_backup_title"
             : "confirm_restore_partial_backup_title"
         ),
         text: this._localize(
-          this._backupContent.backupType === "full"
+          this._backup!.type === "full"
             ? "confirm_restore_full_backup_text"
             : "confirm_restore_partial_backup_text"
         ),
@@ -216,9 +216,9 @@ class HassioBackupDialog
     try {
       await restoreBackup(
         this.hass,
-        this._backupContent.backupType,
+        this._backup!.type,
         this._backup!.slug,
-        backupDetails,
+        { ...backupDetails, background: this._dialogParams?.onboarding },
         !!this.hass && atLeastVersion(this.hass.config.version, 2021, 9)
       );
 
