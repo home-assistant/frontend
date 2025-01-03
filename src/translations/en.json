@@ -5775,6 +5775,8 @@
             "description": "Home Assistant is starting, please wait…"
           },
           "map": {
+            "zoom_in": "Zoom in",
+            "zoom_out": "Zoom out",
             "reset_focus": "Reset focus"
           },
           "energy": {
