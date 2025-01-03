@@ -130,3 +130,20 @@ export const coreCards: Card[] = [
     showElement: true,
   },
 ];
+
+export const energyCards: Card[] = [
+  { type: "energy-date-selection" },
+  { type: "energy-usage-graph" },
+  { type: "energy-solar-graph" },
+  { type: "energy-solar-graph" },
+  { type: "energy-gas-graph" },
+  { type: "energy-water-graph" },
+  { type: "energy-distribution" },
+  { type: "energy-sources-table" },
+  { type: "energy-grid-neutrality-gauge" },
+  { type: "energy-solar-consumed-gauge" },
+  { type: "energy-carbon-consumed-gauge" },
+  { type: "energy-self-sufficiency-gauge" },
+  { type: "energy-devices-graph" },
+  { type: "energy-devices-detail-graph" },
+];
