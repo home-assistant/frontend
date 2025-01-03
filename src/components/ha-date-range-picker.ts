@@ -382,7 +382,6 @@ export class HaDateRangePicker extends LitElement {
     if (ev && ev.stopPropagation) ev.stopPropagation();
     let dateRange: [Date, Date];
     const diff = differenceInMilliseconds(this.endDate, this.startDate);
-
     if (diff > 24 * hoursToMilliseconds(3)) {
       dateRange = [
         calcDate(
@@ -424,6 +423,8 @@ export class HaDateRangePicker extends LitElement {
           this.hass.config
         ),
       ];
+    } else {
+      return;
     }
     const dateRangePicker = this._dateRangePicker;
     dateRangePicker.clickRange(dateRange);
