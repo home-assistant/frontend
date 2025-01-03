@@ -55,6 +55,8 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
 
   @state() private _userPassword?: string;
 
+  @state() private _usedUserInput = false;
+
   @state() private _error?: string;
 
   @state() private _state?: RestoreBackupState;
@@ -70,6 +72,7 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
 
     this._formData = INITIAL_DATA;
     this._userPassword = undefined;
+    this._usedUserInput = false;
     this._error = undefined;
     this._state = undefined;
     this._stage = undefined;
@@ -94,6 +97,7 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
     this._params = undefined;
     this._backupEncryptionKey = undefined;
     this._userPassword = undefined;
+    this._usedUserInput = false;
     this._error = undefined;
     this._state = undefined;
     this._stage = undefined;
@@ -159,15 +163,24 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
   }
 
   private _renderEncryption() {
-    return html`<p>
-        ${this._userPassword
-          ? "The provided encryption key was incorrect, please try again."
-          : this._backupEncryptionKey
-            ? "The backup is encrypted with a different key or password than that is saved on this system. Please enter the key for this backup."
-            : "The backup is encrypted. Provide the encryption key to decrypt the backup."}
-      </p>
+    return html`${this._usedUserInput
+        ? "The provided encryption key was incorrect, please try again."
+        : this._backupEncryptionKey
+          ? html`The Backup is encrypted with a different encryption key than
+              that is saved on this system. Please enter the encryption key for
+              this backup.<br />
+              ${this._params!.selectedData.homeassistant_included
+                ? html`<ha-alert alert-type="warning"
+                    >After restoring the backup, your new backups will be
+                    encrypted with the encryption key that was present during
+                    the time of this backup.</ha-alert
+                  >`
+                : nothing}`
+          : "The backup is encrypted. Provide the encryption key to decrypt the backup."}
+
       <ha-password-field
-        @change=${this._passwordChanged}
+        @input=${this._passwordChanged}
+        label="Encryption key"
         .value=${this._userPassword || ""}
       ></ha-password-field>`;
   }
@@ -196,6 +209,9 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
 
   private async _restoreBackup() {
     this._unsubscribe();
+    this._state = undefined;
+    this._stage = undefined;
+    this._error = undefined;
     try {
       this._step = "progress";
       this._subscribeBackupEvents();
@@ -206,6 +222,9 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
       await this._unsubscribe();
       if (e.code === "password_incorrect") {
         this._error = undefined;
+        if (this._userPassword) {
+          this._usedUserInput = true;
+        }
         this._step = "encryption";
       } else {
         this._error = e.message;
@@ -314,6 +333,14 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
         }
         ha-circular-progress {
           margin-bottom: 16px;
+        }
+        ha-alert[alert-type="warning"] {
+          display: block;
+          margin-top: 16px;
+        }
+        ha-password-field {
+          display: block;
+          margin-top: 16px;
         }
       `,
     ];
