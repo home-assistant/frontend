@@ -19,7 +19,7 @@ import {
   roundToNearestHours,
   subMilliseconds,
   addMilliseconds,
-  hoursToMilliseconds,
+  isToday,
 } from "date-fns";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -333,60 +333,37 @@ export class HaDateRangePicker extends LitElement {
     dateRangePicker.clickedApply();
   }
 
-  private _handleZoomOut(ev: MouseEvent): void {
-    if (ev && ev.stopPropagation) ev.stopPropagation();
-    let dateRange: [Date, Date];
-    if (
-      differenceInMilliseconds(this.endDate, this.startDate) <
-      24 * hoursToMilliseconds(1) - 1
-    ) {
-      dateRange = [
-        calcDate(
-          this.startDate,
-          startOfDay,
-          this.hass.locale,
-          this.hass.config
-        ),
-        calcDate(
-          this.startDate,
-          endOfDay,
-          this.hass.locale,
-          this.hass.config,
-          24 * hoursToMilliseconds(1)
-        ),
-      ];
-    } else {
-      const diff = differenceInMilliseconds(this.endDate, this.startDate);
-      dateRange = [
-        calcDate(
-          subMilliseconds(this.startDate, diff),
-          startOfDay,
-          this.hass.locale,
-          this.hass.config
-        ),
-        this.endDate,
-      ];
-    }
-    const dateRangePicker = this._dateRangePicker;
-    dateRangePicker.clickRange(dateRange);
-    dateRangePicker.clickedApply();
-  }
-
   private _handleZoomIn(ev: MouseEvent): void {
     if (ev && ev.stopPropagation) ev.stopPropagation();
-    if (this.startDate > subHours(new Date(), 1)) {
-      this.startDate = subHours(new Date(), 1);
-    }
-    const diff = differenceInMilliseconds(this.endDate, this.startDate);
+    this._handleZoom(true);
+  }
+
+  private _handleZoomOut(ev: MouseEvent): void {
+    if (ev && ev.stopPropagation) ev.stopPropagation();
+    this._handleZoom(false);
+  }
+
+  private _handleZoom(isZoomIn: boolean): void {
+    const diff = differenceInMilliseconds(
+      isToday(this.startDate) ? subHours(new Date(), 1) : this.endDate,
+      this.startDate
+    );
     const dateRange = [
-      calcDate(
-        addMilliseconds(this.startDate, diff / 2) > new Date()
-          ? subHours(new Date(), 0.5)
-          : addMilliseconds(this.startDate, diff / 2),
-        roundToNearestHours,
-        this.hass.locale,
-        this.hass.config
-      ),
+      isZoomIn
+        ? calcDate(
+            addMilliseconds(this.startDate, diff / 2) > new Date()
+              ? subHours(new Date(), 0.5)
+              : addMilliseconds(this.startDate, diff / 2),
+            roundToNearestHours,
+            this.hass.locale,
+            this.hass.config
+          )
+        : calcDate(
+            subMilliseconds(this.startDate, diff),
+            startOfDay,
+            this.hass.locale,
+            this.hass.config
+          ),
       this.endDate,
     ];
     const dateRangePicker = this._dateRangePicker;
