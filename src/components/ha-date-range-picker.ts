@@ -5,7 +5,6 @@ import "@material/mwc-list/mwc-list-item";
 import { mdiCalendar, mdiMagnifyPlus, mdiMagnifyMinus } from "@mdi/js";
 import {
   addDays,
-  addHours,
   subHours,
   endOfDay,
   endOfMonth,
@@ -365,12 +364,7 @@ export class HaDateRangePicker extends LitElement {
           this.hass.locale,
           this.hass.config
         ),
-        calcDate(
-          addMilliseconds(this.endDate, diff - 1),
-          endOfDay,
-          this.hass.locale,
-          this.hass.config
-        ),
+        this.endDate,
       ];
     }
     const dateRangePicker = this._dateRangePicker;
@@ -380,52 +374,21 @@ export class HaDateRangePicker extends LitElement {
 
   private _handleZoomIn(ev: MouseEvent): void {
     if (ev && ev.stopPropagation) ev.stopPropagation();
-    let dateRange: [Date, Date];
-    const diff = differenceInMilliseconds(this.endDate, this.startDate);
-    if (diff > 24 * hoursToMilliseconds(3)) {
-      dateRange = [
-        calcDate(
-          this.startDate > new Date()
-            ? subHours(new Date(), 1)
-            : addMilliseconds(this.startDate, diff / 3 + 1),
-          startOfDay,
-          this.hass.locale,
-          this.hass.config
-        ),
-        calcDate(
-          this.startDate > new Date()
-            ? new Date()
-            : subMilliseconds(this.endDate, diff / 3),
-          endOfDay,
-          this.hass.locale,
-          this.hass.config
-        ),
-      ];
-    } else if (
-      diff / 2 > hoursToMilliseconds(1) &&
-      this.startDate < addHours(new Date(), 1)
-    ) {
-      dateRange = [
-        calcDate(
-          addMilliseconds(this.startDate, diff / 3),
-          roundToNearestHours,
-          this.hass.locale,
-          this.hass.config
-        ),
-        calcDate(
-          this.endDate > new Date()
-            ? addHours(new Date(), 1)
-            : diff < hoursToMilliseconds(1)
-              ? addHours(this.startDate, 1)
-              : subMilliseconds(subMilliseconds(this.endDate, diff / 3), 1),
-          roundToNearestHours,
-          this.hass.locale,
-          this.hass.config
-        ),
-      ];
-    } else {
-      return;
+    if (this.startDate > subHours(new Date(), 1)) {
+      this.startDate = subHours(new Date(), 1);
     }
+    const diff = differenceInMilliseconds(this.endDate, this.startDate);
+    const dateRange = [
+      calcDate(
+        addMilliseconds(this.startDate, diff / 2) > new Date()
+          ? subHours(new Date(), 0.5)
+          : addMilliseconds(this.startDate, diff / 2),
+        roundToNearestHours,
+        this.hass.locale,
+        this.hass.config
+      ),
+      this.endDate,
+    ];
     const dateRangePicker = this._dateRangePicker;
     dateRangePicker.clickRange(dateRange);
     dateRangePicker.clickedApply();
