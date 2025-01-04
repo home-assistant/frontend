@@ -345,7 +345,9 @@ export class HaDateRangePicker extends LitElement {
 
   private _handleZoom(isZoomIn: boolean): void {
     const diff = differenceInMilliseconds(
-      isToday(this.startDate) ? subHours(new Date(), 1) : this.endDate,
+      isToday(this.startDate) && this.endDate > new Date()
+        ? subHours(new Date(), 1)
+        : this.endDate,
       this.startDate
     );
     const dateRange = [
@@ -353,7 +355,7 @@ export class HaDateRangePicker extends LitElement {
         ? calcDate(
             addMilliseconds(this.startDate, diff / 2) > new Date()
               ? subHours(new Date(), 0.5)
-              : addMilliseconds(this.startDate, diff / 2),
+              : subHours(addMilliseconds(this.startDate, diff / 2), 0.5),
             roundToNearestHours,
             this.hass.locale,
             this.hass.config
