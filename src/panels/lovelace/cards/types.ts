@@ -478,6 +478,7 @@ export interface TodoListCardConfig extends LovelaceCardConfig {
   theme?: string;
   entity?: string;
   hide_completed?: boolean;
+  sort?: string;
 }
 
 export interface StackCardConfig extends LovelaceCardConfig {
