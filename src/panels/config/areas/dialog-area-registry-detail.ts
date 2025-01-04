@@ -140,6 +140,7 @@ class DialogAreaDetail extends LitElement {
               .hass=${this.hass}
               .value=${this._picture}
               crop
+              select-media
               .cropOptions=${cropOptions}
               @change=${this._pictureChanged}
             ></ha-picture-upload>
@@ -172,7 +173,7 @@ class DialogAreaDetail extends LitElement {
         >
           ${entry
             ? this.hass.localize("ui.common.save")
-            : this.hass.localize("ui.common.add")}
+            : this.hass.localize("ui.common.create")}
         </mwc-button>
       </ha-dialog>
     `;

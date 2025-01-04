@@ -1,6 +1,16 @@
+import { setHours, setMinutes } from "date-fns";
+import type { HassConfig } from "home-assistant-js-websocket";
+import memoizeOne from "memoize-one";
+import { formatTime } from "../common/datetime/format_time";
 import type { LocalizeFunc } from "../common/translations/localize";
 import type { HomeAssistant } from "../types";
 import { domainToName } from "./integration";
+import type { FrontendLocaleData } from "./translation";
+import {
+  formatDateTime,
+  formatDateTimeNumeric,
+} from "../common/datetime/format_date_time";
+import { fileDownload } from "../util/file_download";
 
 export const enum BackupScheduleState {
   NEVER = "never",
@@ -15,8 +25,8 @@ export const enum BackupScheduleState {
 }
 
 export interface BackupConfig {
-  last_attempted_strategy_backup: string | null;
-  last_completed_strategy_backup: string | null;
+  last_attempted_automatic_backup: string | null;
+  last_completed_automatic_backup: string | null;
   create_backup: {
     agent_ids: string[];
     include_addons: string[] | null;
@@ -64,7 +74,7 @@ export interface BackupContent {
   size: number;
   agent_ids?: string[];
   failed_agent_ids?: string[];
-  with_strategy_settings: boolean;
+  with_automatic_settings: boolean;
 }
 
 export interface BackupData {
@@ -164,11 +174,11 @@ export const generateBackup = (
     ...params,
   });
 
-export const generateBackupWithStrategySettings = (
+export const generateBackupWithAutomaticSettings = (
   hass: HomeAssistant
 ): Promise<void> =>
   hass.callWS({
-    type: "backup/generate_with_strategy_settings",
+    type: "backup/generate_with_automatic_settings",
   });
 
 export const restoreBackup = (
@@ -214,11 +224,16 @@ export const getPreferredAgentForDownload = (agents: string[]) => {
 };
 
 export const CORE_LOCAL_AGENT = "backup.local";
-export const HASSIO_LOCAL_AGENT = "backup.hassio";
+export const HASSIO_LOCAL_AGENT = "hassio.local";
 export const CLOUD_AGENT = "cloud.cloud";
 
 export const isLocalAgent = (agentId: string) =>
   [CORE_LOCAL_AGENT, HASSIO_LOCAL_AGENT].includes(agentId);
+
+export const isNetworkMountAgent = (agentId: string) => {
+  const [domain, name] = agentId.split(".");
+  return domain === "hassio" && name !== "local";
+};
 
 export const computeBackupAgentName = (
   localize: LocalizeFunc,
@@ -229,6 +244,11 @@ export const computeBackupAgentName = (
     return "This system";
   }
   const [domain, name] = agentId.split(".");
+
+  if (isNetworkMountAgent(agentId)) {
+    return name;
+  }
+
   const domainName = domainToName(localize, domain);
 
   // If there are multiple agents for a domain, show the name
@@ -242,7 +262,23 @@ export const computeBackupAgentName = (
 export const compareAgents = (a: string, b: string) => {
   const isLocalA = isLocalAgent(a);
   const isLocalB = isLocalAgent(b);
-  return isLocalA === isLocalB ? a.localeCompare(b) : isLocalA ? -1 : 1;
+  const isNetworkMountAgentA = isNetworkMountAgent(a);
+  const isNetworkMountAgentB = isNetworkMountAgent(b);
+
+  const getPriority = (isLocal: boolean, isNetworkMount: boolean) => {
+    if (isLocal) return 1;
+    if (isNetworkMount) return 2;
+    return 3;
+  };
+
+  const priorityA = getPriority(isLocalA, isNetworkMountAgentA);
+  const priorityB = getPriority(isLocalB, isNetworkMountAgentB);
+
+  if (priorityA !== priorityB) {
+    return priorityA - priorityB;
+  }
+
+  return a.localeCompare(b);
 };
 
 export const generateEncryptionKey = () => {
@@ -256,3 +292,49 @@ export const generateEncryptionKey = () => {
   });
   return result;
 };
+
+export const generateEmergencyKit = (
+  hass: HomeAssistant,
+  encryptionKey: string
+) =>
+  "data:text/plain;charset=utf-8," +
+  encodeURIComponent(`Home Assistant Backup Emergency Kit
+
+This emergency kit contains your backup encryption key. You need this key
+to be able to restore your Home Assistant backups.
+
+Date: ${formatDateTime(new Date(), hass.locale, hass.config)}
+
+Instance:
+${hass.config.location_name}
+
+URL:
+${hass.auth.data.hassUrl}
+
+Encryption key:
+${encryptionKey}
+
+For more information visit: https://www.home-assistant.io/more-info/backup-emergency-kit`);
+
+export const geneateEmergencyKitFileName = (
+  hass: HomeAssistant,
+  append?: string
+) =>
+  `home_assistant_backup_emergency_kit_${append ? `${append}_` : ""}${formatDateTimeNumeric(new Date(), hass.locale, hass.config).replace(",", "").replace(" ", "_")}.txt`;
+
+export const downloadEmergencyKit = (
+  hass: HomeAssistant,
+  key: string,
+  appendFileName?: string
+) =>
+  fileDownload(
+    generateEmergencyKit(hass, key),
+    geneateEmergencyKitFileName(hass, appendFileName)
+  );
+
+export const getFormattedBackupTime = memoizeOne(
+  (locale: FrontendLocaleData, config: HassConfig) => {
+    const date = setMinutes(setHours(new Date(), 4), 45);
+    return formatTime(date, locale, config);
+  }
+);

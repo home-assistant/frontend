@@ -1,23 +1,24 @@
-import { mdiDatabase } from "@mdi/js";
+import { mdiHarddisk, mdiNas } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeDomain } from "../../../../common/entity/compute_domain";
-import "../../../../components/ha-md-list";
-import "../../../../components/ha-md-list-item";
-import "../../../../components/ha-svg-icon";
-import "../../../../components/ha-switch";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { computeDomain } from "../../../../../common/entity/compute_domain";
+import "../../../../../components/ha-md-list";
+import "../../../../../components/ha-md-list-item";
+import "../../../../../components/ha-svg-icon";
+import "../../../../../components/ha-switch";
 import {
   CLOUD_AGENT,
   compareAgents,
   computeBackupAgentName,
   fetchBackupAgentsInfo,
   isLocalAgent,
-} from "../../../../data/backup";
-import type { CloudStatus } from "../../../../data/cloud";
-import type { HomeAssistant } from "../../../../types";
-import { brandsUrl } from "../../../../util/brands-url";
+  isNetworkMountAgent,
+} from "../../../../../data/backup";
+import type { CloudStatus } from "../../../../../data/cloud";
+import type { HomeAssistant } from "../../../../../types";
+import { brandsUrl } from "../../../../../util/brands-url";
 
 const DEFAULT_AGENTS = [];
 
@@ -48,6 +49,19 @@ class HaBackupConfigAgents extends LitElement {
     return this.value ?? DEFAULT_AGENTS;
   }
 
+  private _description(agentId: string) {
+    if (agentId === CLOUD_AGENT) {
+      if (this.cloudStatus.logged_in && !this.cloudStatus.active_subscription) {
+        return "You currently do not have an active Home Assistant Cloud subscription.";
+      }
+      return "Note: It stores only one backup with a maximum size of 5 GB, regardless of your settings.";
+    }
+    if (isNetworkMountAgent(agentId)) {
+      return "Network storage";
+    }
+    return "";
+  }
+
   protected render() {
     return html`
       ${this._agentIds.length > 0
@@ -60,40 +74,49 @@ class HaBackupConfigAgents extends LitElement {
                   agentId,
                   this._agentIds
                 );
+                const description = this._description(agentId);
+                const noCloudSubscription =
+                  agentId === CLOUD_AGENT &&
+                  this.cloudStatus.logged_in &&
+                  !this.cloudStatus.active_subscription;
                 return html`
                   <ha-md-list-item>
                     ${isLocalAgent(agentId)
                       ? html`
-                          <ha-svg-icon .path=${mdiDatabase} slot="start">
+                          <ha-svg-icon .path=${mdiHarddisk} slot="start">
                           </ha-svg-icon>
                         `
-                      : html`
-                          <img
-                            .src=${brandsUrl({
-                              domain,
-                              type: "icon",
-                              useFallback: true,
-                              darkOptimized: this.hass.themes?.darkMode,
-                            })}
-                            crossorigin="anonymous"
-                            referrerpolicy="no-referrer"
-                            alt=""
-                            slot="start"
-                          />
-                        `}
+                      : isNetworkMountAgent(agentId)
+                        ? html`
+                            <ha-svg-icon
+                              .path=${mdiNas}
+                              slot="start"
+                            ></ha-svg-icon>
+                          `
+                        : html`
+                            <img
+                              .src=${brandsUrl({
+                                domain,
+                                type: "icon",
+                                useFallback: true,
+                                darkOptimized: this.hass.themes?.darkMode,
+                              })}
+                              crossorigin="anonymous"
+                              referrerpolicy="no-referrer"
+                              alt=""
+                              slot="start"
+                            />
+                          `}
                     <div slot="headline">${name}</div>
-                    ${agentId === CLOUD_AGENT
-                      ? html`
-                          <div slot="supporting-text">
-                            It stores one backup. The oldest backups are
-                            deleted.
-                          </div>
-                        `
+                    ${description
+                      ? html`<div slot="supporting-text">${description}</div>`
                       : nothing}
                     <ha-switch
                       slot="end"
                       id=${agentId}
-                      .checked=${this._value.includes(agentId)}
+                      .checked=${!noCloudSubscription &&
+                      this._value.includes(agentId)}
+                      .disabled=${noCloudSubscription}
                       @change=${this._agentToggled}
                     ></ha-switch>
                   </ha-md-list-item>
@@ -116,10 +139,15 @@ class HaBackupConfigAgents extends LitElement {
       this.value = this._value.filter((agent) => agent !== agentId);
     }
 
-    // Ensure agents exist in the list
-    this.value = this.value
+    // Ensure we don't have duplicates, agents exist in the list and cloud is logged in
+    this.value = [...new Set(this.value)]
       .filter((agent) => this._agentIds.some((id) => id === agent))
-      .filter((id) => id !== CLOUD_AGENT || this.cloudStatus);
+      .filter(
+        (id) =>
+          id !== CLOUD_AGENT ||
+          (this.cloudStatus.logged_in && this.cloudStatus.active_subscription)
+      );
+
     fireEvent(this, "value-changed", { value: this.value });
   }
 
@@ -128,9 +156,6 @@ class HaBackupConfigAgents extends LitElement {
       background: none;
       --md-list-item-leading-space: 0;
       --md-list-item-trailing-space: 0;
-    }
-    ha-md-list-item {
-      --md-item-overflow: visible;
     }
     ha-md-list-item img {
       width: 48px;

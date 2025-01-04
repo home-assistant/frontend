@@ -153,6 +153,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
               .hass=${this.hass}
               .value=${this._picture}
               crop
+              select-media
               .cropOptions=${cropOptions}
               @change=${this._pictureChanged}
             ></ha-picture-upload>
@@ -179,7 +180,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
             </ha-settings-row>
 
             ${this._renderUserFields()}
-            ${!this._deviceTrackersAvailable(this.hass)
+            ${this._deviceTrackersAvailable(this.hass)
               ? html`
                   <p>
                     ${this.hass.localize(

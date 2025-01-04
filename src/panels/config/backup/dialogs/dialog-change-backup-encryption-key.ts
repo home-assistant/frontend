@@ -13,11 +13,13 @@ import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-password-field";
-import { generateEncryptionKey } from "../../../../data/backup";
+import {
+  downloadEmergencyKit,
+  generateEncryptionKey,
+} from "../../../../data/backup";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import { fileDownload } from "../../../../util/file_download";
 import { showToast } from "../../../../util/toast";
 import type { ChangeBackupEncryptionKeyDialogParams } from "./show-dialog-change-backup-encryption-key";
 
@@ -90,7 +92,9 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
         ? "Save current encryption key"
         : this._step === "new"
           ? "New encryption key"
-          : "";
+          : this._step === "done"
+            ? "Save new encryption key"
+            : "";
 
     return html`
       <ha-md-dialog disable-cancel-action open @closed=${this.closeDialog}>
@@ -141,11 +145,18 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
             have access to all your current backups. All next backups will use
             the new encryption key.
           </p>
+          <div class="encryption-key">
+            <p>${this._params?.currentKey}</p>
+            <ha-icon-button
+              .path=${mdiContentCopy}
+              @click=${this._copyOldKeyToClipboard}
+            ></ha-icon-button>
+          </div>
           <ha-md-list>
             <ha-md-list-item>
               <span slot="headline">Download old emergency kit</span>
               <span slot="supporting-text">
-                We recommend to save this encryption key somewhere secure.
+                We recommend saving this encryption key file somewhere secure.
               </span>
               <ha-button slot="end" @click=${this._downloadOld}>
                 <ha-svg-icon .path=${mdiDownload} slot="icon"></ha-svg-icon>
@@ -157,9 +168,22 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
       case "new":
         return html`
           <p>
-            All next backups will use the new encryption key. We recommend to
-            save this key somewhere secure. As you can only restore your data
-            with the backup encryption key.
+            All next backups will use the new encryption key. Encryption keeps
+            your backups private and secure.
+          </p>
+          <div class="encryption-key">
+            <p>${this._newEncryptionKey}</p>
+            <ha-icon-button
+              .path=${mdiContentCopy}
+              @click=${this._copyKeyToClipboard}
+            ></ha-icon-button>
+          </div>
+        `;
+      case "done":
+        return html`<p>
+            Keep this new encryption key in a safe place, as you will need it to
+            access your backups, allowing it to be restored. Either record the
+            characters below or download them as an emergency kit file.
           </p>
           <div class="encryption-key">
             <p>${this._newEncryptionKey}</p>
@@ -172,31 +196,36 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
             <ha-md-list-item>
               <span slot="headline">Download new emergency kit</span>
               <span slot="supporting-text">
-                We recommend to save this encryption key somewhere secure.
+                We recommend saving this encryption key file somewhere secure.
               </span>
               <ha-button slot="end" @click=${this._downloadNew}>
                 <ha-svg-icon .path=${mdiDownload} slot="icon"></ha-svg-icon>
                 Download
               </ha-button>
             </ha-md-list-item>
-          </ha-md-list>
-        `;
-      case "done":
-        return html`
-          <div class="done">
-            <img
-              src="/static/images/voice-assistant/hi.png"
-              alt="Casita Home Assistant logo"
-            />
-            <p>Encryption key changed</p>
-          </div>
-        `;
+          </ha-md-list>`;
     }
     return nothing;
   }
 
-  private _copyKeyToClipboard() {
-    copyToClipboard(this._newEncryptionKey);
+  private async _copyKeyToClipboard() {
+    await copyToClipboard(
+      this._newEncryptionKey,
+      this.renderRoot.querySelector("div")!
+    );
+    showToast(this, {
+      message: this.hass.localize("ui.common.copied_clipboard"),
+    });
+  }
+
+  private async _copyOldKeyToClipboard() {
+    if (!this._params?.currentKey) {
+      return;
+    }
+    await copyToClipboard(
+      this._params.currentKey,
+      this.renderRoot.querySelector("div")!
+    );
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
     });
@@ -206,22 +235,14 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
     if (!this._params?.currentKey) {
       return;
     }
-    fileDownload(
-      "data:text/plain;charset=utf-8," +
-        encodeURIComponent(this._params.currentKey),
-      "emergency_kit_old.txt"
-    );
+    downloadEmergencyKit(this.hass, this._params.currentKey, "old");
   }
 
   private _downloadNew() {
     if (!this._newEncryptionKey) {
       return;
     }
-    fileDownload(
-      "data:text/plain;charset=utf-8," +
-        encodeURIComponent(this._newEncryptionKey),
-      "emergency_kit.txt"
-    );
+    downloadEmergencyKit(this.hass, this._newEncryptionKey);
   }
 
   private async _submit() {
@@ -240,9 +261,7 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
         ha-md-dialog {
           width: 90vw;
           max-width: 560px;
-        }
-        div[slot="content"] {
-          margin-top: -16px;
+          --dialog-content-padding: 8px 24px;
         }
         ha-md-list {
           background: none;
@@ -286,13 +305,6 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
         }
         p {
           margin-top: 0;
-        }
-        .done {
-          text-align: center;
-          font-size: 22px;
-          font-style: normal;
-          font-weight: 400;
-          line-height: 28px;
         }
       `,
     ];

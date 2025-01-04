@@ -23,7 +23,7 @@ export class HuiGenericEntityRow extends LitElement {
 
   @property({ attribute: false }) public config?: EntitiesCardEntityConfig;
 
-  @property({ attribute: false }) public secondaryText?: string;
+  @property({ attribute: "secondary-text" }) public secondaryText?: string;
 
   @property({ attribute: "hide-name", type: Boolean }) public hideName = false;
 

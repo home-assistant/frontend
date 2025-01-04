@@ -1,7 +1,7 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { BackupConfig } from "../../../../data/backup";
 
-export type NewBackupType = "strategy" | "custom";
+export type NewBackupType = "automatic" | "manual";
 
 export interface NewBackupDialogParams {
   config: BackupConfig;

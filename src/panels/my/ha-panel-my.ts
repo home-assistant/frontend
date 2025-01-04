@@ -16,7 +16,7 @@ import "../../layouts/hass-error-screen";
 import type { HomeAssistant, Route } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 
-export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
+export const getMyRedirects = (): Redirects => ({
   application_credentials: {
     redirect: "/config/application_credentials",
   },
@@ -244,16 +244,24 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
     redirect: "/media-browser",
   },
   backup: {
-    component: hasSupervisor ? "hassio" : "backup",
-    redirect: hasSupervisor ? "/hassio/backups" : "/config/backup",
+    component: "backup",
+    redirect: "/config/backup",
+  },
+  backup_list: {
+    component: "backup",
+    redirect: "/config/backup/backups",
+  },
+  backup_config: {
+    component: "backup",
+    redirect: "/config/backup/settings",
   },
   supervisor_snapshots: {
-    component: hasSupervisor ? "hassio" : "backup",
-    redirect: hasSupervisor ? "/hassio/backups" : "/config/backup",
+    component: "backup",
+    redirect: "/config/backup",
   },
   supervisor_backups: {
-    component: hasSupervisor ? "hassio" : "backup",
-    redirect: hasSupervisor ? "/hassio/backups" : "/config/backup",
+    component: "backup",
+    redirect: "/config/backup",
   },
   supervisor_system: {
     // Moved from Supervisor panel in 2022.5
@@ -278,10 +286,8 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
   },
 });
 
-const getRedirect = (
-  path: string,
-  hasSupervisor: boolean
-): Redirect | undefined => getMyRedirects(hasSupervisor)?.[path];
+const getRedirect = (path: string): Redirect | undefined =>
+  getMyRedirects()?.[path];
 
 export type ParamType = "url" | "string" | "string?";
 
@@ -314,7 +320,7 @@ class HaPanelMy extends LitElement {
     const path = this.route.path.substring(1);
     const hasSupervisor = isComponentLoaded(this.hass, "hassio");
 
-    this._redirect = getRedirect(path, hasSupervisor);
+    this._redirect = getRedirect(path);
 
     if (path.startsWith("supervisor") && this._redirect === undefined) {
       if (!hasSupervisor) {

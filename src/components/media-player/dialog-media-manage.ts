@@ -117,7 +117,7 @@ class DialogMediaManage extends LitElement {
             : html`
                 <ha-button
                   class="danger"
-                  slot="title"
+                  slot="navigationIcon"
                   .disabled=${this._deleting}
                   .label=${this.hass.localize(
                     `ui.components.media-browser.file_management.${
@@ -135,7 +135,9 @@ class DialogMediaManage extends LitElement {
                   : html`
                       <ha-button
                         slot="actionItems"
-                        .label=${`Deselect all`}
+                        .label=${this.hass.localize(
+                          `ui.components.media-browser.file_management.deselect_all`
+                        )}
                         @click=${this._handleDeselectAll}
                       >
                         <ha-svg-icon
@@ -210,12 +212,10 @@ class DialogMediaManage extends LitElement {
                     href="/config/storage"
                     @click=${this.closeDialog}
                   >
-                    ${this.hass
-                      .localize(
-                        "ui.components.media-browser.file_management.tip_storage_panel"
-                      )
-                      .toLowerCase()}
-                  </a>`,
+                    ${this.hass.localize(
+                      "ui.components.media-browser.file_management.tip_storage_panel"
+                    )}</a
+                  >`,
                 }
               )}
             </ha-tip>`

@@ -51,7 +51,6 @@ class StepFlowAbort extends LitElement {
   }
 
   private async _handleMissingCreds() {
-    this._flowDone();
     // Prompt to enter credentials and restart integration setup
     showAddApplicationCredentialDialog(this.params.dialogParentElement!, {
       selectedDomain: this.domain,
@@ -64,6 +63,7 @@ class StepFlowAbort extends LitElement {
         });
       },
     });
+    this._flowDone();
   }
 
   private _flowDone(): void {
