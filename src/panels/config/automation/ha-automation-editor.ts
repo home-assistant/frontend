@@ -19,7 +19,7 @@ import {
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { consume } from "@lit-labs/context";
@@ -70,8 +70,8 @@ import "../ha-config-section";
 import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-automation-mode";
 import {
   type EntityRegistryUpdate,
-  showAutomationRenameDialog,
-} from "./automation-rename-dialog/show-dialog-automation-rename";
+  showAutomationSaveDialog,
+} from "./automation-save-dialog/show-dialog-automation-save";
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
@@ -500,7 +500,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           .label=${this.hass.localize("ui.panel.config.automation.editor.save")}
           .disabled=${this._saving}
           extended
-          @click=${this._saveAutomation}
+          @click=${this._handleSaveAutomation}
         >
           <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
         </ha-fab>
@@ -743,20 +743,48 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
   }
 
   private async _confirmUnsavedChanged(): Promise<boolean> {
-    if (this._dirty) {
-      return showConfirmationDialog(this, {
-        title: this.hass!.localize(
-          "ui.panel.config.automation.editor.unsaved_confirm_title"
-        ),
-        text: this.hass!.localize(
-          "ui.panel.config.automation.editor.unsaved_confirm_text"
-        ),
-        confirmText: this.hass!.localize("ui.common.leave"),
-        dismissText: this.hass!.localize("ui.common.stay"),
-        destructive: true,
-      });
+    if (!this._dirty) {
+      return true;
     }
-    return true;
+
+    return new Promise<boolean>((resolve) => {
+      showAutomationSaveDialog(this, {
+        config: this._config!,
+        domain: "automation",
+        updateConfig: async (config, entityRegistryUpdate) => {
+          this._config = config;
+          this._entityRegistryUpdate = entityRegistryUpdate;
+          this._dirty = true;
+          this.requestUpdate();
+
+          const id = this.automationId || String(Date.now());
+          try {
+            await this._saveAutomation(id);
+          } catch (err: any) {
+            this.requestUpdate();
+            resolve(false);
+            return;
+          }
+
+          resolve(true);
+        },
+        onClose: () => resolve(false),
+        onDiscard: () => resolve(true),
+        entityRegistryUpdate: this._entityRegistryUpdate,
+        entityRegistryEntry: this._registryEntry,
+        title: this.hass.localize(
+          this.automationId
+            ? "ui.panel.config.automation.editor.leave.unsaved_confirm_title"
+            : "ui.panel.config.automation.editor.leave.unsaved_new_title"
+        ),
+        description: this.hass.localize(
+          this.automationId
+            ? "ui.panel.config.automation.editor.leave.unsaved_confirm_text"
+            : "ui.panel.config.automation.editor.leave.unsaved_new_text"
+        ),
+        hideInputs: this.automationId !== null,
+      });
+    });
   }
 
   private _backTapped = async () => {
@@ -878,10 +906,10 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
   private async _promptAutomationAlias(): Promise<boolean> {
     return new Promise((resolve) => {
-      showAutomationRenameDialog(this, {
+      showAutomationSaveDialog(this, {
         config: this._config!,
         domain: "automation",
-        updateConfig: (config, entityRegistryUpdate) => {
+        updateConfig: async (config, entityRegistryUpdate) => {
           this._config = config;
           this._entityRegistryUpdate = entityRegistryUpdate;
           this._dirty = true;
@@ -910,7 +938,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
     });
   }
 
-  private async _saveAutomation(): Promise<void> {
+  private async _handleSaveAutomation(): Promise<void> {
     if (this._yamlErrors) {
       showToast(this, {
         message: this._yamlErrors,
@@ -926,6 +954,13 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       }
     }
 
+    await this._saveAutomation(id);
+    if (!this.automationId) {
+      navigate(`/config/automation/edit/${id}`, { replace: true });
+    }
+  }
+
+  private async _saveAutomation(id): Promise<void> {
     this._saving = true;
     this._validationErrors = undefined;
 
@@ -990,10 +1025,6 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       }
 
       this._dirty = false;
-
-      if (!this.automationId) {
-        navigate(`/config/automation/edit/${id}`, { replace: true });
-      }
     } catch (errors: any) {
       this._errors = errors.body?.message || errors.error || errors.body;
       showToast(this, {
@@ -1016,7 +1047,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
   protected supportedShortcuts(): SupportedShortcuts {
     return {
-      s: () => this._saveAutomation(),
+      s: () => this._handleSaveAutomation(),
     };
   }
 

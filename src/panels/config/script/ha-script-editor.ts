@@ -62,8 +62,8 @@ import { haStyle } from "../../../resources/styles";
 import type { Entries, HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import { showAutomationModeDialog } from "../automation/automation-mode-dialog/show-dialog-automation-mode";
-import type { EntityRegistryUpdate } from "../automation/automation-rename-dialog/show-dialog-automation-rename";
-import { showAutomationRenameDialog } from "../automation/automation-rename-dialog/show-dialog-automation-rename";
+import type { EntityRegistryUpdate } from "../automation/automation-save-dialog/show-dialog-automation-save";
+import { showAutomationSaveDialog } from "../automation/automation-save-dialog/show-dialog-automation-save";
 import "./blueprint-script-editor";
 import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
@@ -843,10 +843,10 @@ export class HaScriptEditor extends SubscribeMixin(
 
   private async _promptScriptAlias(): Promise<boolean> {
     return new Promise((resolve) => {
-      showAutomationRenameDialog(this, {
+      showAutomationSaveDialog(this, {
         config: this._config!,
         domain: "script",
-        updateConfig: (config, entityRegistryUpdate) => {
+        updateConfig: async (config, entityRegistryUpdate) => {
           this._config = config;
           this._entityRegistryUpdate = entityRegistryUpdate;
           this._dirty = true;

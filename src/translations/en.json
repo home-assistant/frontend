@@ -369,7 +369,8 @@
       "copied_clipboard": "Copied to clipboard",
       "name": "Name",
       "optional": "optional",
-      "default": "Default"
+      "default": "Default",
+      "dont_save": "Don't save"
     },
     "components": {
       "selectors": {
@@ -3429,6 +3430,12 @@
               "label": "Description",
               "placeholder": "Optional description",
               "add": "Add description"
+            },
+            "leave": {
+              "unsaved_new_title": "Save new automation?",
+              "unsaved_new_text": "You can save your changes, or delete this automation. You can't undo this action.",
+              "unsaved_confirm_title": "Save changes?",
+              "unsaved_confirm_text": "You have made some changes in this automation. You can save these changes, or discard them and leave. You can't undo this action."
             },
             "icon": "Icon",
             "blueprint": {

@@ -3,13 +3,18 @@ import type { AutomationConfig } from "../../../../data/automation";
 import type { ScriptConfig } from "../../../../data/script";
 import type { EntityRegistryEntry } from "../../../../data/entity_registry";
 
-export const loadAutomationRenameDialog = () =>
-  import("./dialog-automation-rename");
+export const loadAutomationSaveDialog = () =>
+  import("./dialog-automation-save");
 
 interface BaseRenameDialogParams {
   entityRegistryUpdate?: EntityRegistryUpdate;
   entityRegistryEntry?: EntityRegistryEntry;
   onClose: () => void;
+  onDiscard?: () => void;
+  saveText?: string;
+  description?: string;
+  title?: string;
+  hideInputs?: boolean;
 }
 
 export interface EntityRegistryUpdate {
@@ -18,31 +23,35 @@ export interface EntityRegistryUpdate {
   category: string;
 }
 
-export interface AutomationRenameDialogParams extends BaseRenameDialogParams {
+export interface AutomationSaveDialogParams extends BaseRenameDialogParams {
   config: AutomationConfig;
   domain: "automation";
   updateConfig: (
     config: AutomationConfig,
     entityRegistryUpdate: EntityRegistryUpdate
-  ) => void;
+  ) => Promise<void>;
 }
 
-export interface ScriptRenameDialogParams extends BaseRenameDialogParams {
+export interface ScriptSaveDialogParams extends BaseRenameDialogParams {
   config: ScriptConfig;
   domain: "script";
   updateConfig: (
     config: ScriptConfig,
     entityRegistryUpdate: EntityRegistryUpdate
-  ) => void;
+  ) => Promise<void>;
 }
 
-export const showAutomationRenameDialog = (
+export type SaveDialogParams =
+  | AutomationSaveDialogParams
+  | ScriptSaveDialogParams;
+
+export const showAutomationSaveDialog = (
   element: HTMLElement,
-  dialogParams: AutomationRenameDialogParams | ScriptRenameDialogParams
+  dialogParams: SaveDialogParams
 ): void => {
   fireEvent(element, "show-dialog", {
-    dialogTag: "ha-dialog-automation-rename",
-    dialogImport: loadAutomationRenameDialog,
+    dialogTag: "ha-dialog-automation-save",
+    dialogImport: loadAutomationSaveDialog,
     dialogParams,
   });
 };
