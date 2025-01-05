@@ -90,7 +90,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
 
   public showDialog(params: BackupOnboardingDialogParams): void {
     this._params = params;
-    this._step = STEPS[0];
+    this._step = this._firstStep;
     this._config = RECOMMENDED_CONFIG;
 
     const agents: string[] = [];
@@ -127,6 +127,10 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
     this._step = undefined;
     this._config = undefined;
     this._params = undefined;
+  }
+
+  private get _firstStep(): Step {
+    return this._params?.skipWelcome ? STEPS[1] : STEPS[0];
   }
 
   private async _done() {
@@ -187,7 +191,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
     }
 
     const isLastStep = this._step === STEPS[STEPS.length - 1];
-    const isFirstStep = this._step === STEPS[0];
+    const isFirstStep = this._step === this._firstStep;
 
     return html`
       <ha-md-dialog disable-cancel-action open @closed=${this.closeDialog}>

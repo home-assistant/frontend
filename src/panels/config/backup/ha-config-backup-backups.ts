@@ -304,7 +304,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         has-fab
         .tabs=${[
           {
-            translationKey: "ui.panel.config.backup.caption",
+            name: "My backups",
             path: `/config/backup/list`,
           },
         ]}

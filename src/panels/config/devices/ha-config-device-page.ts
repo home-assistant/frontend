@@ -1081,7 +1081,9 @@ export class HaConfigDevicePage extends LitElement {
     ) {
       deviceActions.push({
         action: this._voiceAssistantSetup,
-        label: "Set up voice assistant",
+        label: this.hass.localize(
+          "ui.panel.config.devices.set_up_voice_assistant"
+        ),
         icon: mdiMicrophone,
       });
     }

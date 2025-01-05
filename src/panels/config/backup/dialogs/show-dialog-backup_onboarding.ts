@@ -5,6 +5,7 @@ export interface BackupOnboardingDialogParams {
   submit?: (value: boolean) => void;
   cancel?: () => void;
   cloudStatus?: CloudStatus;
+  skipWelcome?: boolean;
 }
 
 const loadDialog = () => import("./dialog-backup-onboarding");

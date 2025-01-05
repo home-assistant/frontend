@@ -77,15 +77,9 @@ export class HaBackupDataPicker extends LitElement {
 
       if (data.homeassistant_included) {
         items.push({
-          label: "Settings",
+          label: `Settings${data.database_included ? " and history" : ""}`,
           id: "config",
           version: data.homeassistant_version,
-        });
-      }
-      if (data.database_included) {
-        items.push({
-          label: "History",
-          id: "database",
         });
       }
       items.push(
@@ -132,9 +126,6 @@ export class HaBackupDataPicker extends LitElement {
     if (value.homeassistant_included) {
       homeassistant.push("config");
     }
-    if (value.database_included) {
-      homeassistant.push("database");
-    }
 
     const folders = value.folders;
     homeassistant.push(...folders);
@@ -151,7 +142,9 @@ export class HaBackupDataPicker extends LitElement {
     (selectedItems: SelectedItems, data: BackupData): BackupData => ({
       homeassistant_version: data.homeassistant_version,
       homeassistant_included: selectedItems.homeassistant.includes("config"),
-      database_included: selectedItems.homeassistant.includes("database"),
+      database_included:
+        data.database_included &&
+        selectedItems.homeassistant.includes("config"),
       addons: data.addons.filter((addon) =>
         selectedItems.addons.includes(addon.slug)
       ),

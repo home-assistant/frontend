@@ -23,7 +23,10 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { RestoreBackupDialogParams } from "./show-dialog-restore-backup";
-import type { RestoreBackupStage } from "../../../../data/backup_manager";
+import type {
+  RestoreBackupStage,
+  RestoreBackupState,
+} from "../../../../data/backup_manager";
 import { subscribeBackupEvents } from "../../../../data/backup_manager";
 
 type FormData = {
@@ -52,7 +55,11 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
 
   @state() private _userPassword?: string;
 
+  @state() private _usedUserInput = false;
+
   @state() private _error?: string;
+
+  @state() private _state?: RestoreBackupState;
 
   @state() private _stage?: RestoreBackupStage | null;
 
@@ -64,6 +71,11 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
     this._params = params;
 
     this._formData = INITIAL_DATA;
+    this._userPassword = undefined;
+    this._usedUserInput = false;
+    this._error = undefined;
+    this._state = undefined;
+    this._stage = undefined;
     if (this._params.backup.protected) {
       this._backupEncryptionKey = await this._fetchEncryptionKey();
       if (!this._backupEncryptionKey) {
@@ -85,7 +97,9 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
     this._params = undefined;
     this._backupEncryptionKey = undefined;
     this._userPassword = undefined;
+    this._usedUserInput = false;
     this._error = undefined;
+    this._state = undefined;
     this._stage = undefined;
     this._step = undefined;
     this._unsubscribe();
@@ -149,15 +163,24 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
   }
 
   private _renderEncryption() {
-    return html`<p>
-        ${this._userPassword
-          ? "The provided encryption key was incorrect, please try again."
-          : this._backupEncryptionKey
-            ? "The backup is encrypted with a different key or password than that is saved on this system. Please enter the key for this backup."
-            : "The backup is encrypted. Provide the encryption key to decrypt the backup."}
-      </p>
+    return html`${this._usedUserInput
+        ? "The provided encryption key was incorrect, please try again."
+        : this._backupEncryptionKey
+          ? html`The Backup is encrypted with a different encryption key than
+              that is saved on this system. Please enter the encryption key for
+              this backup.<br />
+              ${this._params!.selectedData.homeassistant_included
+                ? html`<ha-alert alert-type="warning"
+                    >After restoring the backup, your new backups will be
+                    encrypted with the encryption key that was present during
+                    the time of this backup.</ha-alert
+                  >`
+                : nothing}`
+          : "The backup is encrypted. Provide the encryption key to decrypt the backup."}
+
       <ha-password-field
-        @change=${this._passwordChanged}
+        @input=${this._passwordChanged}
+        label="Encryption key"
         .value=${this._userPassword || ""}
       ></ha-password-field>`;
   }
@@ -186,16 +209,22 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
 
   private async _restoreBackup() {
     this._unsubscribe();
+    this._state = undefined;
+    this._stage = undefined;
+    this._error = undefined;
     try {
       this._step = "progress";
-      window.addEventListener("connection-status", this._connectionStatus);
       this._subscribeBackupEvents();
       await this._doRestoreBackup(
         this._userPassword || this._backupEncryptionKey
       );
     } catch (e: any) {
-      this._unsubscribe();
+      await this._unsubscribe();
       if (e.code === "password_incorrect") {
+        this._error = undefined;
+        if (this._userPassword) {
+          this._usedUserInput = true;
+        }
         this._step = "encryption";
       } else {
         this._error = e.message;
@@ -203,17 +232,15 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
     }
   }
 
-  private _connectionStatus = (ev) => {
-    if (ev.detail === "connected") {
-      this.closeDialog();
-    }
-  };
-
   private _subscribeBackupEvents() {
     this._unsub = subscribeBackupEvents(this.hass!, (event) => {
+      if (event.manager_state === "idle" && this._state === "in_progress") {
+        this.closeDialog();
+      }
       if (event.manager_state !== "restore_backup") {
         return;
       }
+      this._state = event.state;
       if (event.state === "completed") {
         this.closeDialog();
       }
@@ -227,11 +254,12 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
   }
 
   private _unsubscribe() {
-    window.removeEventListener("connection-status", this._connectionStatus);
     if (this._unsub) {
-      this._unsub.then((unsub) => unsub());
+      const prom = this._unsub.then((unsub) => unsub());
       this._unsub = undefined;
+      return prom;
     }
+    return undefined;
   }
 
   private _restoreState() {
@@ -305,6 +333,14 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
         }
         ha-circular-progress {
           margin-bottom: 16px;
+        }
+        ha-alert[alert-type="warning"] {
+          display: block;
+          margin-top: 16px;
+        }
+        ha-password-field {
+          display: block;
+          margin-top: 16px;
         }
       `,
     ];
