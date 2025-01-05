@@ -6464,7 +6464,8 @@
               "heading_style": "Heading style",
               "heading_style_options": {
                 "title": "Title",
-                "subtitle": "Subtitle"
+                "subtitle": "Subtitle",
+                "image": "Image"
               },
               "entities": "Entities",
               "entity_config": {

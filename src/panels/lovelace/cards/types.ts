@@ -530,9 +530,10 @@ export interface TileCardConfig extends LovelaceCardConfig {
 }
 
 export interface HeadingCardConfig extends LovelaceCardConfig {
-  heading_style?: "title" | "subtitle";
+  heading_style?: "title" | "subtitle" | "image";
   heading?: string;
   icon?: string;
+  image?: string;
   tap_action?: ActionConfig;
   badges?: LovelaceHeadingBadgeConfig[];
   /** @deprecated Use `badges` instead */

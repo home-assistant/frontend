@@ -42,9 +42,10 @@ const actions: UiAction[] = ["navigate", "url", "perform-action", "none"];
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
-    heading_style: optional(enums(["title", "subtitle"])),
+    heading_style: optional(enums(["title", "subtitle", "image"])),
     heading: optional(string()),
     icon: optional(string()),
+    image: optional(string()),
     tap_action: optional(actionConfigStruct),
     badges: optional(array(any())),
   })
@@ -72,7 +73,7 @@ export class HuiHeadingCardEditor
           selector: {
             select: {
               mode: "list",
-              options: ["title", "subtitle"].map((value) => ({
+              options: ["title", "subtitle", "image"].map((value) => ({
                 label: localize(
                   `ui.panel.lovelace.editor.card.heading.heading_style_options.${value}`
                 ),
@@ -88,6 +89,7 @@ export class HuiHeadingCardEditor
             icon: {},
           },
         },
+        { name: "image", selector: { image: {} } },
         {
           name: "interactions",
           type: "expandable",

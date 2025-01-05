@@ -98,10 +98,16 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
             role=${ifDefined(actionable ? "button" : undefined)}
             tabindex=${ifDefined(actionable ? "0" : undefined)}
           >
-            ${this._config.icon
+            ${style === "image" && this._config.image
+              ? html`<img
+                  src=${this.hass.hassUrl(this._config.image)}
+                  alt=${this._config.heading || ""}
+                />`
+              : nothing}
+            ${style !== "image" && this._config.icon
               ? html`<ha-icon .icon=${this._config.icon}></ha-icon>`
               : nothing}
-            ${this._config.heading
+            ${style !== "image" && this._config.heading
               ? html`<p>${this._config.heading}</p>`
               : nothing}
             ${actionable ? html`<ha-icon-next></ha-icon-next>` : nothing}
@@ -166,6 +172,15 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       }
       .container .content:not(:has(p)) {
         min-width: fit-content;
+      }
+      .container .content.image {
+        overflow: hidden;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+      }
+      .container .content.image img {
+        max-height: var(--row-height, 56px);
       }
       .container .badges {
         flex: 0 0;
