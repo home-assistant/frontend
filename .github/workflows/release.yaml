@@ -6,7 +6,7 @@ on:
       - published
 
 env:
-  PYTHON_VERSION: "3.12"
+  PYTHON_VERSION: "3.13"
   NODE_OPTIONS: --max_old_space_size=6144
 
 # Set default workflow permissions
@@ -76,7 +76,7 @@ jobs:
       - name: Build wheels
         uses: home-assistant/wheels@2024.11.0
         with:
-          abi: cp312
+          abi: cp313
           tag: musllinux_1_2
           arch: amd64
           wheels-key: ${{ secrets.WHEELS_KEY }}
