@@ -8,7 +8,8 @@ const HEADERS = {
 export const createSubConfigFlow = (
   hass: HomeAssistant,
   configEntryId: string,
-  subFlowType: string
+  subFlowType: string,
+  subentry_id?: string
 ) =>
   hass.callApi<DataEntryFlowStep>(
     "POST",
@@ -16,6 +17,8 @@ export const createSubConfigFlow = (
     {
       handler: [configEntryId, subFlowType],
       show_advanced_options: Boolean(hass.userData?.showAdvanced),
+      subentry_id,
+      source: subentry_id ? "reconfigure" : "user",
     },
     HEADERS
   );

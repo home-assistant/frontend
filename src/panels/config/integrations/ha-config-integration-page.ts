@@ -940,7 +940,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
             )}
           </ha-md-menu-item>
 
-          ${item.supported_subentries.map(
+          ${Object.keys(item.supported_subentry_flows).map(
             (flowType) =>
               html`<ha-md-menu-item
                 @click=${this._addSubEntry}
@@ -1065,6 +1065,15 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           subEntry
         )}</span
       >
+      ${configEntry.supported_subentry_flows.add_entity?.supports_reconfigure
+        ? html`
+            <ha-button slot="end" @click=${this._handleReconfigureSub}>
+              ${this.hass.localize(
+                "ui.panel.config.integrations.config_entry.configure"
+              )}
+            </ha-button>
+          `
+        : nothing}
       <ha-md-button-menu positioning="popover" slot="end">
         <ha-icon-button
           slot="trigger"
@@ -1288,6 +1297,26 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   private _handleDelete(ev: Event): void {
     this._removeIntegration(
       ((ev.target as HTMLElement).closest(".config_entry") as any).configEntry
+    );
+  }
+
+  private async _handleReconfigureSub(ev: Event): Promise<void> {
+    const configEntry = (
+      (ev.target as HTMLElement).closest(".sub-entry") as any
+    ).configEntry;
+    const subEntry = ((ev.target as HTMLElement).closest(".sub-entry") as any)
+      .subConfigEntry;
+
+    // const flow = configEntry.supported_subentry_flows[subEntry.subentry_id];
+
+    showSubConfigFlowDialog(
+      this,
+      configEntry,
+      subEntry.flowType || "add_entity",
+      {
+        startFlowHandler: configEntry.entry_id,
+        subEntryId: subEntry.subentry_id,
+      }
     );
   }
 

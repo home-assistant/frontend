@@ -19,14 +19,16 @@ export const showSubConfigFlowDialog = (
   element: HTMLElement,
   configEntry: ConfigEntry,
   flowType: string,
-  dialogParams: Omit<DataEntryFlowDialogParams, "flowConfig">
+  dialogParams: Omit<DataEntryFlowDialogParams, "flowConfig"> & {
+    subEntryId?: string;
+  }
 ): void =>
   showFlowDialog(element, dialogParams, {
     flowType: "config_subentries_flow",
     showDevices: true,
     createFlow: async (hass, handler) => {
       const [step] = await Promise.all([
-        createSubConfigFlow(hass, handler, flowType),
+        createSubConfigFlow(hass, handler, flowType, dialogParams.subEntryId),
         hass.loadFragmentTranslation("config"),
         hass.loadBackendTranslation("config_subentries", configEntry.domain),
         hass.loadBackendTranslation("selector", configEntry.domain),

@@ -19,7 +19,9 @@ export interface ConfigEntry {
   supports_remove_device: boolean;
   supports_unload: boolean;
   supports_reconfigure: boolean;
-  supported_subentries: string[];
+  supported_subentry_flows: {
+    [key: string]: { supports_reconfigure: boolean };
+  };
   num_subentries: number;
   pref_disable_new_entities: boolean;
   pref_disable_polling: boolean;
