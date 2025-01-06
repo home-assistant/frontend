@@ -1055,7 +1055,7 @@
             },
             "end_after": {
               "label": "End after",
-              "ocurrences": "ocurrences"
+              "ocurrences": "occurrences"
             }
           },
           "rrule": {
@@ -2498,7 +2498,7 @@
           "enable_remote": "[%key:ui::common::enable%]",
           "internal_url_automatic": "Automatic",
           "internal_url_https_error_title": "Invalid local network URL",
-          "internal_url_https_error_description": "You have configured an HTTPS certificate in Home Assistant. This means that your internal URL needs to be set to a domain covered by the certficate.",
+          "internal_url_https_error_description": "You have configured an HTTPS certificate in Home Assistant. This means that your internal URL needs to be set to a domain covered by the certificate.",
           "internal_url_automatic_description": "Use the configured network settings",
           "internal_url_placeholder": "http://<some IP address>:8123"
         },
@@ -3881,8 +3881,8 @@
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
             "assign_category": "[%key:ui::panel::config::automation::picker::assign_category%]",
-            "no_category_support": "You can't assign an category to this script",
-            "no_category_entity_reg": "To assign an category to an script it needs to have a unique ID.",
+            "no_category_support": "You can't assign a category to this script",
+            "no_category_entity_reg": "To assign a category to a script it needs to have a unique ID.",
             "delete": "[%key:ui::common::delete%]",
             "duplicate": "[%key:ui::common::duplicate%]",
             "empty_header": "Create your first script",
@@ -3997,8 +3997,8 @@
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
             "assign_category": "[%key:ui::panel::config::automation::picker::assign_category%]",
-            "no_category_support": "You can't assign an category to this scene",
-            "no_category_entity_reg": "To assign an category to an scene it needs to have a unique ID.",
+            "no_category_support": "You can't assign a category to this scene",
+            "no_category_entity_reg": "To assign a category to an scene it needs to have a unique ID.",
             "empty_header": "Create your first scene",
             "empty_text": "Scenes capture entities' states, so you can re-experience the same scene later on. For example, a ''Watching TV'' scene that dims the living room lights, sets a warm white color and turns on the TV.",
             "search": "Search {number} scenes"
@@ -4588,7 +4588,7 @@
             "application_credentials": {
               "delete_title": "Application credentials",
               "delete_prompt": "Would you like to also delete Application Credentials for this integration?",
-              "delete_detail": "If you delete them, you will need to enter credentials when setting up the integration again. If you keep them, they will be used automatically when setting up the integration again or may be acccessed from the Application Credentials menu.",
+              "delete_detail": "If you delete them, you will need to enter credentials when setting up the integration again. If you keep them, they will be used automatically when setting up the integration again or may be accessed from the Application Credentials menu.",
               "delete_error_title": "Deleting application credentials failed",
               "dismiss": "Keep",
               "learn_more": "Learn more about application credentials"
@@ -5515,7 +5515,7 @@
           "ping_node": {
             "title": "Ping a Matter device",
             "introduction": "Perform a (server-side) ping on your Matter device on all its (known) IP-addresses.",
-            "battery_device_warning": "Note that especially for battery powered devices this can take a a while. You may need to wake up battery powered devices before starting the pinging to speed up the process. Refer to your device's manual for instructions on how to wake the device.",
+            "battery_device_warning": "Note that especially for battery powered devices this can take a while. You may need to wake up battery powered devices before starting the pinging to speed up the process. Refer to your device's manual for instructions on how to wake the device.",
             "start_ping": "Start ping",
             "in_progress": "The device is being pinged. This may take some time.",
             "ping_failed": "The device ping failed. Additional information may be available in the logs.",
@@ -5684,7 +5684,7 @@
               },
               "version": {
                 "title": "Samba/Windows (CIFS) version",
-                "description": "This choses the version of the protocol to use"
+                "description": "This chooses the version of the protocol to use"
               },
               "username": {
                 "title": "Username",

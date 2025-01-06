@@ -267,7 +267,7 @@ class HaBackupConfigSchedule extends LitElement {
     if (value !== RetentionPreset.CUSTOM) {
       const data = this._getData(this.value);
       const retention = RETENTION_PRESETS[value];
-      // Ensure we have at least 1 in defaut value because user can't select 0
+      // Ensure we have at least 1 in default value because user can't select 0
       if (value !== RetentionPreset.FOREVER) {
         retention.value = Math.max(retention.value, 1);
       }

@@ -288,7 +288,7 @@ class HaHLSPlayer extends LitElement {
     hls.on(Hls.Events.ERROR, (_event, data: any) => {
       // Some errors are recovered automatically by the hls player itself, and the others handled
       // in this function require special actions to recover. Errors retried in this function
-      // are done with backoff to not cause unecessary failures.
+      // are done with backoff to not cause unnecessary failures.
       if (!data.fatal) {
         return;
       }

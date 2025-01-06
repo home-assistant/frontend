@@ -315,7 +315,7 @@ export class SankeyChart extends LitElement {
       } else {
         totalSize = section.nodes.reduce((sum, b) => sum + b.size, 0);
       }
-      // calc margin betwee boxes
+      // calc margin between boxes
       const emptySpace = sectionSize - totalSize;
       const spacerSize = emptySpace / (section.nodes.length - 1);
 
