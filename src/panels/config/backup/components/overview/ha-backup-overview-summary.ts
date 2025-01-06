@@ -31,12 +31,22 @@ class HaBackupOverviewBackups extends LitElement {
 
   @property({ type: Boolean }) public fetching = false;
 
-  private _lastSuccessfulBackup = memoizeOne((backups: BackupContent[]) => {
-    const sortedBackups = backups
+  private _sortedBackups = memoizeOne((backups: BackupContent[]) =>
+    backups
       .filter((backup) => backup.with_automatic_settings)
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  );
 
+  private _lastBackup = memoizeOne((backups: BackupContent[]) => {
+    const sortedBackups = this._sortedBackups(backups);
     return sortedBackups[0] as BackupContent | undefined;
+  });
+
+  private _lastUploadedBackup = memoizeOne((backups: BackupContent[]) => {
+    const sortedBackups = this._sortedBackups(backups);
+    return sortedBackups.find(
+      (backup) => backup.failed_agent_ids?.length === 0
+    );
   });
 
   private _nextBackupDescription(schedule: BackupScheduleState) {
@@ -65,6 +75,8 @@ class HaBackupOverviewBackups extends LitElement {
   }
 
   protected render() {
+    const now = new Date();
+
     if (this.fetching) {
       return html`
         <ha-backup-summary-card heading="Loading backups" status="loading">
@@ -82,24 +94,28 @@ class HaBackupOverviewBackups extends LitElement {
       `;
     }
 
-    const lastSuccessfulBackup = this._lastSuccessfulBackup(this.backups);
+    const lastBackup = this._lastBackup(this.backups);
 
-    const lastAttempt = this.config.last_attempted_automatic_backup
+    const nextBackupDescription = this._nextBackupDescription(
+      this.config.schedule.state
+    );
+
+    const lastAttemptDate = this.config.last_attempted_automatic_backup
       ? new Date(this.config.last_attempted_automatic_backup)
-      : undefined;
+      : new Date(0);
 
-    const lastCompletedBackupDate = this.config.last_completed_automatic_backup
+    const lastCompletedDate = this.config.last_completed_automatic_backup
       ? new Date(this.config.last_completed_automatic_backup)
-      : undefined;
+      : new Date(0);
 
-    const now = new Date();
+    // If last attempt is after last completed backup, show error
+    if (lastAttemptDate > lastCompletedDate) {
+      const description = `The last automatic backup triggered ${relativeTime(lastAttemptDate, this.hass.locale, now, true)} wasn't successful.`;
+      const lastUploadedBackup = this._lastUploadedBackup(this.backups);
+      const secondaryDescription = lastUploadedBackup
+        ? `Last successful backup ${relativeTime(new Date(lastUploadedBackup.date), this.hass.locale, now, true)} and stored in ${lastUploadedBackup.agent_ids?.length} locations.`
+        : nextBackupDescription;
 
-    const lastBackupDescription = lastSuccessfulBackup
-      ? `Last successful backup ${relativeTime(new Date(lastSuccessfulBackup.date), this.hass.locale, now, true)} and stored in ${lastSuccessfulBackup.agent_ids?.length} locations.`
-      : "You have no successful backups.";
-
-    if (lastAttempt && lastAttempt > (lastCompletedBackupDate || 0)) {
-      const lastAttemptDescription = `The last automatic backup triggered ${relativeTime(lastAttempt, this.hass.locale, now, true)} wasn't successful.`;
       return html`
         <ha-backup-summary-card
           heading="Last automatic backup failed"
@@ -108,29 +124,30 @@ class HaBackupOverviewBackups extends LitElement {
           <ha-md-list>
             <ha-md-list-item>
               <ha-svg-icon slot="start" .path=${mdiBackupRestore}></ha-svg-icon>
-              <span slot="headline">${lastAttemptDescription}</span>
+              <span slot="headline">${description}</span>
             </ha-md-list-item>
             <ha-md-list-item>
               <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
-              <span slot="headline">${lastBackupDescription}</span>
+              <span slot="headline">${secondaryDescription}</span>
             </ha-md-list-item>
           </ha-md-list>
         </ha-backup-summary-card>
       `;
     }
 
-    const nextBackupDescription = this._nextBackupDescription(
-      this.config.schedule.state
-    );
-
-    if (!lastSuccessfulBackup) {
+    // If no backups yet, show warning
+    if (!lastBackup) {
+      const description = "You have no automatic backups yet.";
       return html`
         <ha-backup-summary-card
           heading="No automatic backup available"
-          description="You have no automatic backups yet."
           status="warning"
         >
           <ha-md-list>
+            <ha-md-list-item>
+              <ha-svg-icon slot="start" .path=${mdiBackupRestore}></ha-svg-icon>
+              <span slot="headline">${description}</span>
+            </ha-md-list-item>
             <ha-md-list-item>
               <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
               <span slot="headline">${nextBackupDescription}</span>
@@ -140,10 +157,41 @@ class HaBackupOverviewBackups extends LitElement {
       `;
     }
 
+    const lastBackupDate = new Date(lastBackup.date);
+
+    // If last backup
+    if (lastBackup.failed_agent_ids?.length) {
+      const description = `The last automatic backup created ${relativeTime(lastBackupDate, this.hass.locale, now, true)} wasn't stored in all locations.`;
+      const lastUploadedBackup = this._lastUploadedBackup(this.backups);
+      const secondaryDescription = lastUploadedBackup
+        ? `Last successful backup ${relativeTime(new Date(lastUploadedBackup.date), this.hass.locale, now, true)} and stored in ${lastUploadedBackup.agent_ids?.length} locations.`
+        : nextBackupDescription;
+
+      return html`
+        <ha-backup-summary-card
+          heading="Last automatic backup failed"
+          status="error"
+        >
+          <ha-md-list>
+            <ha-md-list-item>
+              <ha-svg-icon slot="start" .path=${mdiBackupRestore}></ha-svg-icon>
+              <span slot="headline">${description}</span>
+            </ha-md-list-item>
+            <ha-md-list-item>
+              <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
+              <span slot="headline">${secondaryDescription}</span>
+            </ha-md-list-item>
+          </ha-md-list>
+        </ha-backup-summary-card>
+      `;
+    }
+
+    const description = `Last successful backup ${relativeTime(lastBackupDate, this.hass.locale, now, true)} and stored in ${lastBackup.agent_ids?.length} locations.`;
+
     const numberOfDays = differenceInDays(
       // Subtract a few hours to avoid showing as overdue if it's just a few hours (e.g. daylight saving)
       addHours(now, -OVERDUE_MARGIN_HOURS),
-      new Date(lastSuccessfulBackup.date)
+      lastBackupDate
     );
 
     const isOverdue =
@@ -160,7 +208,7 @@ class HaBackupOverviewBackups extends LitElement {
           <ha-md-list>
             <ha-md-list-item>
               <ha-svg-icon slot="start" .path=${mdiBackupRestore}></ha-svg-icon>
-              <span slot="headline">${lastBackupDescription}</span>
+              <span slot="headline">${description}</span>
             </ha-md-list-item>
             <ha-md-list-item>
               <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
@@ -170,12 +218,13 @@ class HaBackupOverviewBackups extends LitElement {
         </ha-backup-summary-card>
       `;
     }
+
     return html`
       <ha-backup-summary-card heading=${`Backed up`} status="success">
         <ha-md-list>
           <ha-md-list-item>
             <ha-svg-icon slot="start" .path=${mdiBackupRestore}></ha-svg-icon>
-            <span slot="headline">${lastBackupDescription}</span>
+            <span slot="headline">${description}</span>
           </ha-md-list-item>
           <ha-md-list-item>
             <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
