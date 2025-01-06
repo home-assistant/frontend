@@ -7,7 +7,7 @@ import {
 import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 
-// workaround to be able to overlay an dialog with another dialog
+// workaround to be able to overlay a dialog with another dialog
 MdDialog.addInitializer(async (instance) => {
   await instance.updateComplete;
 
@@ -197,7 +197,7 @@ export class HaMdDialog extends MdDialog {
 }
 
 // by default the dialog open/close animation will be from/to the top
-// but if we have a special mobile dialog which is at the bottom of the screen, an from bottom animation can be used:
+// but if we have a special mobile dialog which is at the bottom of the screen, a from bottom animation can be used:
 const OPEN_FROM_BOTTOM_ANIMATION: DialogAnimation = {
   ...DIALOG_DEFAULT_OPEN_ANIMATION,
   dialog: [

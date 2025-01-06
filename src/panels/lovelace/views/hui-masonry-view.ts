@@ -231,7 +231,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
         // An other create columns is started, abort this one
         return;
       }
-      // Calculate in wich column the card should go based on the size and the cards already in there
+      // Calculate in which column the card should go based on the size and the cards already in there
       this._addCardToColumn(
         columnElements[getColumnIndex(columnSizes, cardSize as number)],
         index,

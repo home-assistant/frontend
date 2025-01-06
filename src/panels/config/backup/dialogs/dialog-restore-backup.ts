@@ -198,7 +198,7 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
       <p>
         ${this.hass.connected
           ? this._restoreState()
-          : "Restarting Home Asssistant"}
+          : "Restarting Home Assistant"}
       </p>
     </div>`;
   }

@@ -65,7 +65,7 @@ export const computeAttributeValueDisplay = (
     return formattedValue;
   }
 
-  // Special handling in case this is a string with an known format
+  // Special handling in case this is a string with a known format
   if (typeof attributeValue === "string") {
     // Date handling
     if (isDate(attributeValue, true)) {
