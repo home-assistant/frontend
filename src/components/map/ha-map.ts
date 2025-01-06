@@ -527,16 +527,14 @@ export class HaMap extends ReactiveElement {
       entityMarker.hass = this.hass;
       entityMarker.showIcon =
         typeof entity !== "string" && entity.label_mode === "icon";
-      entityMarker.setAttribute("entity-id", getEntityId(entity));
-      entityMarker.setAttribute("entity-name", entityName);
-      entityMarker.setAttribute(
-        "entity-picture",
+      entityMarker.entityId = getEntityId(entity);
+      entityMarker.entityName = entityName;
+      entityMarker.entityPicture =
         entityPicture && (typeof entity === "string" || !entity.label_mode)
           ? this.hass.hassUrl(entityPicture)
-          : ""
-      );
+          : "";
       if (typeof entity !== "string") {
-        entityMarker.setAttribute("entity-color", entity.color);
+        entityMarker.entityColor = entity.color;
       }
 
       // create marker with the icon
