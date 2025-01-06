@@ -78,7 +78,7 @@ function checkStateCondition(
       : UNAVAILABLE;
   let value = condition.state ?? condition.state_not;
 
-  // Handle entity_id, UI should be updated for conditionnal card (filters does not have UI for now)
+  // Handle entity_id, UI should be updated for conditional card (filters does not have UI for now)
   if (Array.isArray(value)) {
     const entityValues = value
       .map((v) => getValueFromEntityId(hass, v))
@@ -106,7 +106,7 @@ function checkStateNumericCondition(
   let above = condition.above;
   let below = condition.below;
 
-  // Handle entity_id, UI should be updated for conditionnal card (filters does not have UI for now)
+  // Handle entity_id, UI should be updated for conditional card (filters does not have UI for now)
   if (typeof above === "string") {
     above = getValueFromEntityId(hass, above) ?? above;
   }

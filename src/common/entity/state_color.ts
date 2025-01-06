@@ -1,4 +1,4 @@
-/** Return an color representing a state. */
+/** Return a color representing a state. */
 import type { HassEntity } from "home-assistant-js-websocket";
 import { UNAVAILABLE } from "../../data/entity";
 import type { GroupEntity } from "../../data/group";
