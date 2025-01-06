@@ -100,28 +100,6 @@ class HaBackupOverviewBackups extends LitElement {
       this.config.schedule.state
     );
 
-    // If no backups yet, show warning
-    if (!lastBackup) {
-      const description = "You have no automatic backups yet.";
-      return html`
-        <ha-backup-summary-card
-          heading="No automatic backup available"
-          status="warning"
-        >
-          <ha-md-list>
-            <ha-md-list-item>
-              <ha-svg-icon slot="start" .path=${mdiBackupRestore}></ha-svg-icon>
-              <span slot="headline">${description}</span>
-            </ha-md-list-item>
-            <ha-md-list-item>
-              <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
-              <span slot="headline">${nextBackupDescription}</span>
-            </ha-md-list-item>
-          </ha-md-list>
-        </ha-backup-summary-card>
-      `;
-    }
-
     const lastAttemptDate = this.config.last_attempted_automatic_backup
       ? new Date(this.config.last_attempted_automatic_backup)
       : new Date(0);
@@ -151,6 +129,28 @@ class HaBackupOverviewBackups extends LitElement {
             <ha-md-list-item>
               <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
               <span slot="headline">${secondaryDescription}</span>
+            </ha-md-list-item>
+          </ha-md-list>
+        </ha-backup-summary-card>
+      `;
+    }
+
+    // If no backups yet, show warning
+    if (!lastBackup) {
+      const description = "You have no automatic backups yet.";
+      return html`
+        <ha-backup-summary-card
+          heading="No automatic backup available"
+          status="warning"
+        >
+          <ha-md-list>
+            <ha-md-list-item>
+              <ha-svg-icon slot="start" .path=${mdiBackupRestore}></ha-svg-icon>
+              <span slot="headline">${description}</span>
+            </ha-md-list-item>
+            <ha-md-list-item>
+              <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
+              <span slot="headline">${nextBackupDescription}</span>
             </ha-md-list-item>
           </ha-md-list>
         </ha-backup-summary-card>
