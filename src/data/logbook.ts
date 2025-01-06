@@ -19,7 +19,7 @@ export interface LogbookStreamMessage {
   events: LogbookEntry[];
   start_time?: number; // Start time of this historical chunk
   end_time?: number; // End time of this historical chunk
-  partial?: boolean; // Indiciates more historical chunks are coming
+  partial?: boolean; // Indicates more historical chunks are coming
 }
 
 export interface LogbookEntry {

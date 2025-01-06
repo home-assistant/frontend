@@ -25,7 +25,7 @@ Home Assistant Cast is made up of two separate applications:
 
 ### Setting dev variables
 
-Open `src/cast/dev_const.ts` and change `CAST_DEV_APP_ID` to the ID of the app you just created. And set the `CAST_DEV_HASS_URL` to the url of you development machine.
+Open `src/cast/dev_const.ts` and change `CAST_DEV_APP_ID` to the ID of the app you just created. And set the `CAST_DEV_HASS_URL` to the url of your development machine.
 
 ### Changing configuration
 

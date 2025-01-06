@@ -7,7 +7,7 @@ body:
       value: |
         Make sure you are running the [latest version of Home Assistant][releases] before reporting an issue.
 
-        If you have a feature or enhancement request for the frontend, please [start an discussion][fr] instead of creating an issue.
+        If you have a feature or enhancement request for the frontend, please [start a discussion][fr] instead of creating an issue.
 
         **Please do not report issues for custom cards.**
 
