@@ -2,7 +2,7 @@ blank_issues_enabled: false
 contact_links:
   - name: Request a feature for the UI / Dashboards
     url: https://github.com/home-assistant/frontend/discussions/category_choices
-    about: Request an new feature for the Home Assistant frontend.
+    about: Request a new feature for the Home Assistant frontend.
   - name: Report a bug that is NOT related to the UI / Dashboards
     url: https://github.com/home-assistant/core/issues
     about: This is the issue tracker for our frontend. Please report other issues in the backend ("core") repository.

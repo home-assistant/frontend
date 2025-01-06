@@ -864,7 +864,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     }
 
     if (integration?.supported_by) {
-      // Integration is a alias, so we can just create a flow
+      // Integration is an alias, so we can just create a flow
       const localize = await this.hass.loadBackendTranslation(
         "title",
         domain,

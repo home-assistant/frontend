@@ -390,7 +390,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       this.hass.locale
     );
 
-    // Show the supervisor as beeing part of configuration
+    // Show the supervisor as being part of configuration
     const selectedPanel = this.route.path?.startsWith("/hassio/")
       ? "config"
       : this.hass.panelUrl;
@@ -632,7 +632,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     return html`<a
       class=${classMap({
         profile: true,
-        // Mimick behavior that paper-listbox provides
+        // Mimic behavior that paper-listbox provides
         "iron-selected": this.hass.panelUrl === "profile",
       })}
       href="/profile"
