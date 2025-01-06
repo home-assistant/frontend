@@ -444,7 +444,7 @@ const getEnergyData = async (
         hass.config
       ) as boolean)
     ) {
-      // When comparing a month (or multiple), we want to start at the begining of the month
+      // When comparing a month (or multiple), we want to start at the beginning of the month
       startCompare = calcDate(
         start,
         addMonths,
