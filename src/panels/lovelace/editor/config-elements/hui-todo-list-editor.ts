@@ -27,7 +27,7 @@ const cardConfigStruct = assign(
     theme: optional(string()),
     entity: optional(string()),
     hide_completed: optional(boolean()),
-    hide_create: optional(boolean()),    
+    hide_create: optional(boolean()),
     sort: optional(string()),
   })
 );
