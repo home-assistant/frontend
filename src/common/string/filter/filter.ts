@@ -406,7 +406,7 @@ function _doScore(
     // this would be the beginning of a new match (i.e. there would be a gap before this location)
     score += isGapLocation ? 2 : 0;
   } else {
-    // this is part of a contiguous match, so give it a slight bonus, but do so only if it would not be a prefered gap location
+    // this is part of a contiguous match, so give it a slight bonus, but do so only if it would not be a preferred gap location
     score += isGapLocation ? 0 : 1;
   }
 

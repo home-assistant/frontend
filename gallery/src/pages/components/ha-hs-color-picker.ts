@@ -76,7 +76,7 @@ export class DemoHaHsColorPicker extends LitElement {
             @change=${this._saturationChanged}
           >
           </ha-slider>
-          <p>Color Brighness : ${this.brightness}</p>
+          <p>Color Brightness : ${this.brightness}</p>
           <ha-slider
             labeled
             step="1"
