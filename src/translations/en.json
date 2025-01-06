@@ -1270,7 +1270,6 @@
           "clear_skipped": "Clear skipped",
           "install": "Install",
           "update": "Update",
-          "create_backup": "Create backup before updating",
           "auto_update_enabled_title": "Can not skip version",
           "auto_update_enabled_text": "Automatic updates for this item have been enabled; skipping it is, therefore, unavailable. You can either install this update now or wait for Home Assistant to do it automatically."
         },
@@ -8006,7 +8005,6 @@
     "update_available": {
       "update_name": "Update {name}",
       "open_release_notes": "Open release notes",
-      "create_backup": "Create backup before updating",
       "description": "You have {version} installed. Press update to update to version {newest_version}",
       "updating": "Updating {name} to version {version}",
       "no_update": "No update available for {name}"
