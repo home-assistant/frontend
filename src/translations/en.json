@@ -4245,6 +4245,7 @@
           "add_device": "Add device",
           "caption": "Devices",
           "description": "Manage configured devices",
+          "filtering_by_config_entry": "[%key:ui::panel::config::entities::picker::filtering_by_config_entry%]",
           "device_info": "{type} info",
           "edit_settings": "Edit settings",
           "unnamed_device": "Unnamed {type}",
@@ -4392,6 +4393,7 @@
             "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant.",
             "search": "Search {number} entities",
             "unnamed_entity": "Unnamed entity",
+            "filtering_by_config_entry": "Filtering by config entry",
             "status": {
               "available": "Available",
               "unavailable": "Unavailable",
