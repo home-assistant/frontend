@@ -37,7 +37,7 @@ class HaBackupOverviewBackups extends LitElement {
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
   );
 
-  private _lastCompletedBackup = memoizeOne((backups: BackupContent[]) => {
+  private _lastBackup = memoizeOne((backups: BackupContent[]) => {
     const sortedBackups = this._sortedBackups(backups);
     return sortedBackups[0] as BackupContent | undefined;
   });
@@ -94,18 +94,14 @@ class HaBackupOverviewBackups extends LitElement {
       `;
     }
 
-    const lastCompletedBackup = this._lastCompletedBackup(this.backups);
+    const lastBackup = this._lastBackup(this.backups);
 
     const nextBackupDescription = this._nextBackupDescription(
       this.config.schedule.state
     );
 
-    const lastAttemptDate = this.config.last_attempted_automatic_backup
-      ? new Date(this.config.last_attempted_automatic_backup)
-      : new Date(0);
-
     // If no backups yet, show warning
-    if (!lastCompletedBackup) {
+    if (!lastBackup) {
       const description = "You have no automatic backups yet.";
       return html`
         <ha-backup-summary-card
@@ -126,7 +122,13 @@ class HaBackupOverviewBackups extends LitElement {
       `;
     }
 
-    const lastCompletedDate = new Date(lastCompletedBackup.date);
+    const lastAttemptDate = this.config.last_attempted_automatic_backup
+      ? new Date(this.config.last_attempted_automatic_backup)
+      : new Date(0);
+
+    const lastCompletedDate = this.config.last_attempted_automatic_backup
+      ? new Date(this.config.last_attempted_automatic_backup)
+      : new Date(0);
 
     // If last attempt is after last completed backup, show error
     if (lastAttemptDate > lastCompletedDate) {
@@ -151,9 +153,11 @@ class HaBackupOverviewBackups extends LitElement {
       `;
     }
 
+    const lastBackupDate = new Date(lastBackup.date);
+
     // If last backup
-    if (lastCompletedBackup.failed_agent_ids?.length) {
-      const description = `The last automatic backup created ${relativeTime(lastCompletedDate, this.hass.locale, now, true)} wasn't stored to all locations.`;
+    if (lastBackup.failed_agent_ids?.length) {
+      const description = `The last automatic backup created ${relativeTime(lastBackupDate, this.hass.locale, now, true)} wasn't stored in all locations.`;
 
       const lastUploadedBackup = this._lastUploadedBackup(this.backups);
       const secondaryDescription = lastUploadedBackup
@@ -179,12 +183,12 @@ class HaBackupOverviewBackups extends LitElement {
       `;
     }
 
-    const description = `Last successful backup ${relativeTime(new Date(lastCompletedBackup.date), this.hass.locale, now, true)} and stored in ${lastCompletedBackup.agent_ids?.length} locations.`;
+    const description = `Last successful backup ${relativeTime(lastBackupDate, this.hass.locale, now, true)} and stored in ${lastBackup.agent_ids?.length} locations.`;
 
     const numberOfDays = differenceInDays(
       // Subtract a few hours to avoid showing as overdue if it's just a few hours (e.g. daylight saving)
       addHours(now, -OVERDUE_MARGIN_HOURS),
-      new Date(lastCompletedBackup.date)
+      lastBackupDate
     );
 
     const isOverdue =
