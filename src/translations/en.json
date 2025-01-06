@@ -2113,6 +2113,7 @@
           "description": "Group devices and entities",
           "headers": {
             "name": "Name",
+            "description": "Description",
             "icon": "Icon",
             "color": "Color"
           },
