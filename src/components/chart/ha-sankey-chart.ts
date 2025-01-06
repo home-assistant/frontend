@@ -49,8 +49,8 @@ const NODE_WIDTH = 15;
 const FONT_SIZE = 12;
 const MIN_DISTANCE = FONT_SIZE / 2;
 
-@customElement("sankey-chart")
-export class SankeyChart extends LitElement {
+@customElement("ha-sankey-chart")
+export class HaSankeyChart extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public data: SankeyChartData = {
@@ -539,6 +539,6 @@ export class SankeyChart extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "sankey-chart": SankeyChart;
+    "ha-sankey-chart": HaSankeyChart;
   }
 }
