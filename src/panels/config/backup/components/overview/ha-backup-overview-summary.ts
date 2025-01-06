@@ -126,13 +126,17 @@ class HaBackupOverviewBackups extends LitElement {
       ? new Date(this.config.last_attempted_automatic_backup)
       : new Date(0);
 
-    const lastCompletedDate = this.config.last_attempted_automatic_backup
-      ? new Date(this.config.last_attempted_automatic_backup)
+    const lastCompletedDate = this.config.last_completed_automatic_backup
+      ? new Date(this.config.last_completed_automatic_backup)
       : new Date(0);
 
     // If last attempt is after last completed backup, show error
     if (lastAttemptDate > lastCompletedDate) {
       const description = `The last automatic backup triggered ${relativeTime(lastAttemptDate, this.hass.locale, now, true)} wasn't successful.`;
+      const lastUploadedBackup = this._lastUploadedBackup(this.backups);
+      const secondaryDescription = lastUploadedBackup
+        ? `Last successful backup ${relativeTime(new Date(lastUploadedBackup.date), this.hass.locale, now, true)} and stored in ${lastUploadedBackup.agent_ids?.length} locations.`
+        : nextBackupDescription;
 
       return html`
         <ha-backup-summary-card
@@ -146,7 +150,7 @@ class HaBackupOverviewBackups extends LitElement {
             </ha-md-list-item>
             <ha-md-list-item>
               <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
-              <span slot="headline">${nextBackupDescription}</span>
+              <span slot="headline">${secondaryDescription}</span>
             </ha-md-list-item>
           </ha-md-list>
         </ha-backup-summary-card>
@@ -158,7 +162,6 @@ class HaBackupOverviewBackups extends LitElement {
     // If last backup
     if (lastBackup.failed_agent_ids?.length) {
       const description = `The last automatic backup created ${relativeTime(lastBackupDate, this.hass.locale, now, true)} wasn't stored in all locations.`;
-
       const lastUploadedBackup = this._lastUploadedBackup(this.backups);
       const secondaryDescription = lastUploadedBackup
         ? `Last successful backup ${relativeTime(new Date(lastUploadedBackup.date), this.hass.locale, now, true)} and stored in ${lastUploadedBackup.agent_ids?.length} locations.`

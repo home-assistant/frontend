@@ -47,19 +47,22 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    this._fetching = true;
-    Promise.all([this._fetchBackupInfo(), this._fetchBackupConfig()]).finally(
-      () => {
-        this._fetching = false;
-      }
-    );
-
+    this._fetchAll();
     this.addEventListener("ha-refresh-backup-info", () => {
       this._fetchBackupInfo();
     });
     this.addEventListener("ha-refresh-backup-config", () => {
       this._fetchBackupConfig();
     });
+  }
+
+  private _fetchAll() {
+    this._fetching = true;
+    Promise.all([this._fetchBackupInfo(), this._fetchBackupConfig()]).finally(
+      () => {
+        this._fetching = false;
+      }
+    );
   }
 
   public connectedCallback() {
@@ -135,8 +138,7 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
           event.manager_state === "idle" &&
           event.manager_state !== curState
         ) {
-          this._fetchBackupConfig();
-          this._fetchBackupInfo();
+          this._fetchAll();
         }
         if ("state" in event) {
           if (event.state === "failed") {
