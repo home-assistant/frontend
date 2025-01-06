@@ -2438,7 +2438,7 @@
             },
             "create_helper": "Create helper",
             "no_helpers": "Looks like you don't have any helpers yet!",
-            "search": "Search {number} helpers",
+            "search": "Search {number} {number, plural,\n  one {helper}\n  other {helpers}\n}",
             "error_information": "Error information"
           },
           "dialog": {
@@ -2965,7 +2965,7 @@
             "assign_category": "Assign category",
             "no_category_support": "You can't assign a category to this automation",
             "no_category_entity_reg": "To assign a category to an automation it needs to have a unique ID.",
-            "search": "Search {number} automations",
+            "search": "Search {number} {number, plural,\n  one {automation}\n  other {automations}\n}",
             "headers": {
               "toggle": "Enable/disable",
               "name": "Name",
@@ -3886,7 +3886,7 @@
             "duplicate": "[%key:ui::common::duplicate%]",
             "empty_header": "Create your first script",
             "empty_text": "A script is a sequence of actions that can be run from a dashboard, an automation, or be triggered by voice. For example, a ''Wake-up routine''' script that gradually turns on the light in the bedroom and opens the blinds after a delay.",
-            "search": "Search {number} scripts",
+            "search": "Search {number} {number, plural,\n  one {script}\n  other {scripts}\n}",
             "migrate_script": "Migrate script?",
             "migrate_script_description": "You can migrate this script, so it can be edited from the UI. After it is migrated and you have saved it, you will have to manually delete your old script from your configuration. Do you want to migrate this script?"
           },
@@ -4000,7 +4000,7 @@
             "no_category_entity_reg": "To assign a category to an scene it needs to have a unique ID.",
             "empty_header": "Create your first scene",
             "empty_text": "Scenes capture entities' states, so you can re-experience the same scene later on. For example, a ''Watching TV'' scene that dims the living room lights, sets a warm white color and turns on the TV.",
-            "search": "Search {number} scenes"
+            "search": "Search {number} {number, plural,\n  one {scene}\n  other {scenes}\n}"
           },
           "editor": {
             "review_mode": "Review Mode",
@@ -4374,7 +4374,7 @@
           "confirm_delete_integration": "Are you sure you want to remove this device from {integration}?",
           "error_delete": "Error deleting device",
           "picker": {
-            "search": "Search {number} devices",
+            "search": "Search {number} {number, plural,\n  one {device}\n  other {devices}\n}",
             "state": "Status",
             "bulk_actions": {
               "move_area": "Move to area",
@@ -4390,7 +4390,7 @@
             "header": "Entities",
             "introduction": "Home Assistant keeps a registry of every entity it has ever seen that can be uniquely identified. Each of these entities will have an entity ID assigned which will be reserved for just this entity.",
             "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant.",
-            "search": "Search {number} entities",
+            "search": "Search {number} {number, plural,\n  one {entity}\n  other {entities}\n}",
             "unnamed_entity": "Unnamed entity",
             "filtering_by_config_entry": "Filtering by config entry",
             "status": {
