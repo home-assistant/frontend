@@ -436,9 +436,8 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
       >
         ${this.narrow
           ? html`
-              <div slot="header">
+              <div slot="header" class="header">
                 <search-input-outlined
-                  class="header"
                   .hass=${this.hass}
                   .filter=${this._filter}
                   @value-changed=${this._handleSearchChange}
@@ -457,7 +456,6 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
               ></ha-integration-overflow-menu>
               <div class="search">
                 <search-input-outlined
-                  class="header"
                   .hass=${this.hass}
                   .filter=${this._filter}
                   @value-changed=${this._handleSearchChange}
@@ -866,7 +864,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     }
 
     if (integration?.supported_by) {
-      // Integration is a alias, so we can just create a flow
+      // Integration is an alias, so we can just create a flow
       const localize = await this.hass.loadBackendTranslation(
         "title",
         domain,
@@ -981,6 +979,9 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
         }
         search-input-outlined {
           flex: 1;
+        }
+        .header {
+          display: flex;
         }
         .search {
           display: flex;

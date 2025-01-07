@@ -105,6 +105,9 @@ export class HaConfigLovelaceRescources extends LitElement {
       },
       delete: {
         title: "",
+        label: localize(
+          "ui.panel.config.lovelace.resources.picker.headers.delete"
+        ),
         type: "icon-button",
         minWidth: "48px",
         maxWidth: "48px",
@@ -174,7 +177,7 @@ export class HaConfigLovelaceRescources extends LitElement {
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
         @row-click=${this._editResource}
-        hasFab
+        has-fab
         clickable
       >
         <ha-fab

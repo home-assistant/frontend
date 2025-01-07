@@ -196,6 +196,12 @@ export interface EnergyCarbonGaugeCardConfig extends EnergyCardBaseConfig {
   title?: string;
 }
 
+export interface EnergySankeyCardConfig extends EnergyCardBaseConfig {
+  type: "energy-sankey";
+  title?: string;
+  layout?: "vertical" | "horizontal";
+}
+
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
   type: "entity-filter";
   entities: Array<EntityFilterEntityConfig | string>;
@@ -309,6 +315,7 @@ export interface LogbookCardConfig extends LovelaceCardConfig {
 
 interface GeoLocationSourceConfig {
   source: string;
+  label_mode?: "name" | "state" | "icon";
   focus?: boolean;
 }
 
@@ -471,6 +478,7 @@ export interface TodoListCardConfig extends LovelaceCardConfig {
   theme?: string;
   entity?: string;
   hide_completed?: boolean;
+  hide_create?: boolean;
 }
 
 export interface StackCardConfig extends LovelaceCardConfig {

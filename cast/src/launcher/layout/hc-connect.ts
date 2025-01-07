@@ -252,7 +252,7 @@ export class HcConnect extends LitElement {
       this.loading = false;
       return;
     } finally {
-      // Clear url if we have a auth callback in url.
+      // Clear url if we have an auth callback in url.
       if (location.search.includes("auth_callback=1")) {
         history.replaceState(null, "", location.pathname);
       }

@@ -218,7 +218,7 @@ const _lazyCreate = <T extends keyof CreateElementConfigTypes>(
       // @ts-ignore
       element.setConfig(config);
     } catch (err: any) {
-      // We let it rebuild and the error wil be handled by _createElement
+      // We let it rebuild and the error will be handled by _createElement
       fireEvent(element, "ll-rebuild");
     }
   });

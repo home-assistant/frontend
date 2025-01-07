@@ -3,13 +3,13 @@ import {
   mdiDotsVertical,
   mdiDownload,
   mdiHarddisk,
+  mdiNas,
   mdiPlus,
   mdiUpload,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { storage } from "../../../common/decorators/storage";
@@ -44,6 +44,7 @@ import {
   getBackupDownloadUrl,
   getPreferredAgentForDownload,
   isLocalAgent,
+  isNetworkMountAgent,
 } from "../../../data/backup";
 import type { ManagerStateEvent } from "../../../data/backup_manager";
 import type { CloudStatus } from "../../../data/cloud";
@@ -77,7 +78,7 @@ const TYPE_ORDER: Array<BackupType> = ["automatic", "manual", "imported"];
 class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public cloudStatus!: CloudStatus;
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -166,7 +167,6 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         title: "Locations",
         showNarrow: true,
         minWidth: "60px",
-        maxWidth: "120px",
         template: (backup) => html`
           <div style="display: flex; gap: 4px;">
             ${(backup.agent_ids || []).map((agentId) => {
@@ -180,7 +180,16 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
                   <ha-svg-icon
                     .path=${mdiHarddisk}
                     title=${name}
-                    slot="graphic"
+                    style="flex-shrink: 0;"
+                  ></ha-svg-icon>
+                `;
+              }
+              if (isNetworkMountAgent(agentId)) {
+                return html`
+                  <ha-svg-icon
+                    .path=${mdiNas}
+                    title=${name}
+                    style="flex-shrink: 0;"
                   ></ha-svg-icon>
                 `;
               }
@@ -199,6 +208,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
                   referrerpolicy="no-referrer"
                   alt=${name}
                   slot="graphic"
+                  style="flex-shrink: 0;"
                 />
               `;
             })}
@@ -291,10 +301,10 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
 
     return html`
       <hass-tabs-subpage-data-table
-        hasFab
+        has-fab
         .tabs=${[
           {
-            translationKey: "ui.panel.config.backup.caption",
+            name: "My backups",
             path: `/config/backup/list`,
           },
         ]}
@@ -346,39 +356,27 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
           </ha-button-menu>
         </div>
 
-        ${this._selected.length
-          ? html`<div
-              class=${classMap({
-                "header-toolbar": this.narrow,
-                "table-header": !this.narrow,
-              })}
-              slot="header"
-            >
-              <p class="selected-txt">
-                ${this._selected.length} backups selected
-              </p>
-              <div class="header-btns">
-                ${!this.narrow
-                  ? html`
-                      <ha-button @click=${this._deleteSelected} class="warning">
-                        Delete selected
-                      </ha-button>
-                    `
-                  : html`
-                      <ha-icon-button
-                        .label=${"Delete selected"}
-                        .path=${mdiDelete}
-                        id="delete-btn"
-                        class="warning"
-                        @click=${this._deleteSelected}
-                      ></ha-icon-button>
-                      <simple-tooltip animation-delay="0" for="delete-btn">
-                        Delete selected
-                      </simple-tooltip>
-                    `}
-              </div>
-            </div> `
-          : nothing}
+        <div slot="selection-bar">
+          ${!this.narrow
+            ? html`
+                <ha-button @click=${this._deleteSelected} class="warning">
+                  Delete selected
+                </ha-button>
+              `
+            : html`
+                <ha-icon-button
+                  .label=${"Delete selected"}
+                  .path=${mdiDelete}
+                  id="delete-btn"
+                  class="warning"
+                  @click=${this._deleteSelected}
+                ></ha-icon-button>
+                <simple-tooltip animation-delay="0" for="delete-btn">
+                  Delete selected
+                </simple-tooltip>
+              `}
+        </div>
+
         <ha-filter-states
           .hass=${this.hass}
           label="Type"
@@ -502,6 +500,9 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     }
 
     await deleteBackup(this.hass, backup.backup_id);
+    if (this._selected.includes(backup.backup_id)) {
+      this._selected = this._selected.filter((id) => id !== backup.backup_id);
+    }
     fireEvent(this, "ha-refresh-backup-info");
   }
 
@@ -533,69 +534,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      haStyle,
-      css`
-        .header {
-          padding: 16px 16px 0 16px;
-          display: flex;
-          flex-direction: row;
-          gap: 16px;
-          background-color: var(--primary-background-color);
-        }
-        @media (max-width: 1000px) {
-          .header {
-            flex-direction: column;
-          }
-        }
-        .header > * {
-          flex: 1;
-          min-width: 0;
-        }
-
-        ha-fab[disabled] {
-          --mdc-theme-secondary: var(--disabled-text-color) !important;
-        }
-
-        .table-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          height: var(--header-height);
-          box-sizing: border-box;
-        }
-        .header-toolbar {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          color: var(--secondary-text-color);
-          position: relative;
-          top: -4px;
-        }
-        .selected-txt {
-          font-weight: bold;
-          padding-left: 16px;
-          padding-inline-start: 16px;
-          padding-inline-end: initial;
-          color: var(--primary-text-color);
-        }
-        .table-header .selected-txt {
-          margin-top: 20px;
-        }
-        .header-toolbar .selected-txt {
-          font-size: 16px;
-        }
-        .header-toolbar .header-btns {
-          margin-right: -12px;
-          margin-inline-end: -12px;
-          margin-inline-start: initial;
-        }
-        .header-btns > ha-button,
-        .header-btns > ha-icon-button {
-          margin: 8px;
-        }
-      `,
-    ];
+    return haStyle;
   }
 }
 

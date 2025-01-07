@@ -6,7 +6,7 @@ on:
     - cron: "0 1 * * *"
 
 env:
-  PYTHON_VERSION: "3.12"
+  PYTHON_VERSION: "3.13"
   NODE_OPTIONS: --max_old_space_size=6144
 
 permissions:
@@ -57,14 +57,14 @@ jobs:
         run: tar -czvf translations.tar.gz translations
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v4.4.3
+        uses: actions/upload-artifact@v4.5.0
         with:
           name: wheels
           path: dist/home_assistant_frontend*.whl
           if-no-files-found: error
 
       - name: Upload translations
-        uses: actions/upload-artifact@v4.4.3
+        uses: actions/upload-artifact@v4.5.0
         with:
           name: translations
           path: translations.tar.gz

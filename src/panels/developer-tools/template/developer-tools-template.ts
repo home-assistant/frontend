@@ -271,9 +271,7 @@ ${type === "object"
       haStyle,
       css`
         :host {
-          -ms-user-select: initial;
-          -webkit-user-select: initial;
-          -moz-user-select: initial;
+          user-select: none;
         }
 
         .content {
@@ -301,6 +299,10 @@ ${type === "object"
 
         .edit-pane {
           direction: var(--direction);
+        }
+
+        .edit-pane .card-content {
+          user-select: initial;
         }
 
         .edit-pane a {
@@ -334,6 +336,7 @@ ${type === "object"
           margin-top: 0;
           margin-bottom: 0;
           direction: ltr;
+          user-select: text;
         }
 
         p,

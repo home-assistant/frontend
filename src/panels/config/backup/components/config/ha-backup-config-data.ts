@@ -138,7 +138,8 @@ class HaBackupConfigData extends LitElement {
     const include_addons = data.addons_mode === "custom" ? data.addons : [];
 
     this.value = {
-      include_homeassistant: data.homeassistant || this.forceHomeAssistant,
+      include_homeassistant:
+        data.homeassistant || data.database || this.forceHomeAssistant,
       include_addons: include_addons.length ? include_addons : undefined,
       include_all_addons: data.addons_mode === "all",
       include_database: data.database,
@@ -157,24 +158,19 @@ class HaBackupConfigData extends LitElement {
       <ha-md-list>
         <ha-md-list-item>
           <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
-          <span slot="headline">
-            ${this.forceHomeAssistant
-              ? "Home Assistant settings are always included"
-              : "Home Assistant settings"}
-          </span>
+          <span slot="headline"> Home Assistant settings </span>
           <span slot="supporting-text">
-            The bare minimum needed to restore your system.
+            ${this.forceHomeAssistant
+              ? "The bare minimum needed to restore the system. It is always included in automatic backup data."
+              : "The bare minimum needed to restore your system."}
           </span>
-          ${this.forceHomeAssistant
-            ? nothing
-            : html`
-                <ha-switch
-                  id="homeassistant"
-                  slot="end"
-                  @change=${this._switchChanged}
-                  .checked=${data.homeassistant}
-                ></ha-switch>
-              `}
+          <ha-switch
+            id="homeassistant"
+            slot="end"
+            @change=${this._switchChanged}
+            .checked=${data.homeassistant}
+            .disabled=${this.forceHomeAssistant || data.database}
+          ></ha-switch>
         </ha-md-list-item>
 
         <ha-md-list-item>
@@ -200,7 +196,7 @@ class HaBackupConfigData extends LitElement {
                 ></ha-svg-icon>
                 <span slot="headline">Media</span>
                 <span slot="supporting-text">
-                  For example, camera recordings.
+                  This can include large filesize camera recordings.
                 </span>
                 <ha-switch
                   id="media"
@@ -214,7 +210,7 @@ class HaBackupConfigData extends LitElement {
                 <ha-svg-icon slot="start" .path=${mdiFolder}></ha-svg-icon>
                 <span slot="headline">Share folder</span>
                 <span slot="supporting-text">
-                  Folder that is often used for advanced or older
+                  Folder that is often used by add-ons for advanced or older
                   configurations.
                 </span>
                 <ha-switch
@@ -301,7 +297,6 @@ class HaBackupConfigData extends LitElement {
       ...data,
       [target.id]: target.checked,
     });
-    fireEvent(this, "value-changed", { value: this.value });
   }
 
   private _selectChanged(ev: Event) {
@@ -314,7 +309,6 @@ class HaBackupConfigData extends LitElement {
     if (target.id === "addons_mode") {
       this._showAddons = target.value === "custom";
     }
-    fireEvent(this, "value-changed", { value: this.value });
   }
 
   private _addonsChanged(ev: CustomEvent) {
@@ -325,7 +319,6 @@ class HaBackupConfigData extends LitElement {
       ...data,
       addons,
     });
-    fireEvent(this, "value-changed", { value: this.value });
   }
 
   static styles = css`
@@ -336,9 +329,6 @@ class HaBackupConfigData extends LitElement {
     }
     ha-md-select {
       min-width: 210px;
-    }
-    ha-md-list-item {
-      --md-item-overflow: visible;
     }
     @media all and (max-width: 450px) {
       ha-md-select {

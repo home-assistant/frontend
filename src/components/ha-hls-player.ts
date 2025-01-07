@@ -181,7 +181,15 @@ class HaHLSPlayer extends LitElement {
     let playlist_url: string;
     if (match !== null && matchTwice === null) {
       // Only send the regular playlist url if we match exactly once
-      playlist_url = new URL(match[3], this._url).href;
+      // In case we arrive here with a relative URL, we need to provide a valid
+      // base/absolute URL to avoid the URL() constructor throwing an error.
+      let base_url: string;
+      try {
+        base_url = new URL(this._url).href;
+      } catch (error) {
+        base_url = new URL(this._url, window.location.href).href;
+      }
+      playlist_url = new URL(match[3], base_url).href;
     } else {
       playlist_url = this._url;
     }
@@ -280,7 +288,7 @@ class HaHLSPlayer extends LitElement {
     hls.on(Hls.Events.ERROR, (_event, data: any) => {
       // Some errors are recovered automatically by the hls player itself, and the others handled
       // in this function require special actions to recover. Errors retried in this function
-      // are done with backoff to not cause unecessary failures.
+      // are done with backoff to not cause unnecessary failures.
       if (!data.fatal) {
         return;
       }

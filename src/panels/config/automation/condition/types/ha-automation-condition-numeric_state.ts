@@ -67,8 +67,8 @@ export default class HaNumericStateCondition extends LitElement {
       inputBelowIsEntity: boolean,
       condition: NumericStateCondition
     ) => ({
-      mode_above: inputAboveIsEntity ? "input" : "value",
-      mode_below: inputBelowIsEntity ? "input" : "value",
+      lower_limit: inputAboveIsEntity ? "input" : "value",
+      upper_limit: inputBelowIsEntity ? "input" : "value",
       ...condition,
     })
   );
@@ -158,7 +158,7 @@ export default class HaNumericStateCondition extends LitElement {
           },
         },
         {
-          name: "mode_above",
+          name: "lower_limit",
           type: "select",
           required: true,
           options: [
@@ -199,7 +199,7 @@ export default class HaNumericStateCondition extends LitElement {
               },
             ] as const)),
         {
-          name: "mode_below",
+          name: "upper_limit",
           type: "select",
           required: true,
           options: [
@@ -290,11 +290,11 @@ export default class HaNumericStateCondition extends LitElement {
     ev.stopPropagation();
     const newCondition = { ...ev.detail.value };
 
-    this._inputAboveIsEntity = newCondition.mode_above === "input";
-    this._inputBelowIsEntity = newCondition.mode_below === "input";
+    this._inputAboveIsEntity = newCondition.lower_limit === "input";
+    this._inputBelowIsEntity = newCondition.upper_limit === "input";
 
-    delete newCondition.mode_above;
-    delete newCondition.mode_below;
+    delete newCondition.lower_limit;
+    delete newCondition.upper_limit;
 
     if (newCondition.value_template === "") {
       delete newCondition.value_template;

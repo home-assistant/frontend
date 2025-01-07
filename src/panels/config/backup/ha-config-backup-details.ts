@@ -1,5 +1,11 @@
 import type { ActionDetail } from "@material/mwc-list";
-import { mdiDelete, mdiDotsVertical, mdiDownload, mdiHarddisk } from "@mdi/js";
+import {
+  mdiDelete,
+  mdiDotsVertical,
+  mdiDownload,
+  mdiHarddisk,
+  mdiNas,
+} from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
@@ -24,6 +30,7 @@ import {
   getBackupDownloadUrl,
   getPreferredAgentForDownload,
   isLocalAgent,
+  isNetworkMountAgent,
 } from "../../../data/backup";
 import type { HassioAddonInfo } from "../../../data/hassio/addon";
 import "../../../layouts/hass-subpage";
@@ -118,7 +125,8 @@ class HaConfigBackupDetails extends LitElement {
             : !this._backup
               ? html`<ha-circular-progress active></ha-circular-progress>`
               : html`
-                  <ha-card header="Backup">
+                  <ha-card>
+                    <div class="card-header">Backup</div>
                     <div class="card-content">
                       <ha-md-list>
                         <ha-md-list-item>
@@ -135,10 +143,19 @@ class HaConfigBackupDetails extends LitElement {
                           )}
                           <span slot="supporting-text">Created</span>
                         </ha-md-list-item>
+                        <ha-md-list-item>
+                          <span slot="headline">
+                            ${this._backup.protected
+                              ? "Encrypted AES-128"
+                              : "Not encrypted"}
+                          </span>
+                          <span slot="supporting-text">Protected</span>
+                        </ha-md-list-item>
                       </ha-md-list>
                     </div>
                   </ha-card>
-                  <ha-card header="Select what to restore">
+                  <ha-card>
+                    <div class="card-header">Select what to restore</div>
                     <div class="card-content">
                       <ha-backup-data-picker
                         .hass=${this.hass}
@@ -159,7 +176,8 @@ class HaConfigBackupDetails extends LitElement {
                       </ha-button>
                     </div>
                   </ha-card>
-                  <ha-card header="Locations">
+                  <ha-card>
+                    <div class="card-header">Locations</div>
                     <div class="card-content">
                       <ha-md-list>
                         ${this._agents.map((agent) => {
@@ -184,21 +202,28 @@ class HaConfigBackupDetails extends LitElement {
                                     >
                                     </ha-svg-icon>
                                   `
-                                : html`
-                                    <img
-                                      .src=${brandsUrl({
-                                        domain,
-                                        type: "icon",
-                                        useFallback: true,
-                                        darkOptimized:
-                                          this.hass.themes?.darkMode,
-                                      })}
-                                      crossorigin="anonymous"
-                                      referrerpolicy="no-referrer"
-                                      alt=""
-                                      slot="start"
-                                    />
-                                  `}
+                                : isNetworkMountAgent(agentId)
+                                  ? html`
+                                      <ha-svg-icon
+                                        .path=${mdiNas}
+                                        slot="start"
+                                      ></ha-svg-icon>
+                                    `
+                                  : html`
+                                      <img
+                                        .src=${brandsUrl({
+                                          domain,
+                                          type: "icon",
+                                          useFallback: true,
+                                          darkOptimized:
+                                            this.hass.themes?.darkMode,
+                                        })}
+                                        crossorigin="anonymous"
+                                        referrerpolicy="no-referrer"
+                                        alt=""
+                                        slot="start"
+                                      />
+                                    `}
                               <div slot="headline">${name}</div>
                               <div slot="supporting-text">
                                 <span
@@ -338,9 +363,10 @@ class HaConfigBackupDetails extends LitElement {
       margin: 0 auto;
       gap: 24px;
       display: grid;
+      margin-bottom: 24px;
     }
     .card-content {
-      padding: 0 20px 8px 20px;
+      padding: 0 20px;
     }
     .card-actions {
       display: flex;
@@ -353,6 +379,7 @@ class HaConfigBackupDetails extends LitElement {
     ha-md-list-item {
       --md-list-item-leading-space: 0;
       --md-list-item-trailing-space: 0;
+      --md-list-item-two-line-container-height: 64px;
     }
     ha-md-list-item img {
       width: 48px;
@@ -394,6 +421,9 @@ class HaConfigBackupDetails extends LitElement {
     }
     .dot.error {
       background-color: var(--error-color);
+    }
+    .card-header {
+      padding-bottom: 8px;
     }
   `;
 }

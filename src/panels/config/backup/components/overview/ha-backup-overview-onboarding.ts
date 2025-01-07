@@ -31,21 +31,17 @@ class HaBackupOverviewBackups extends LitElement {
           <div class="icon">
             <ha-svg-icon .path=${mdiInformationOutline}></ha-svg-icon>
           </div>
-          Set up automatic backups
+          Set up backups
         </div>
         <div class="card-content">
           <p>
-            Backups are essential to a reliable smart home. They protect your
-            setup against failures and allows you to quickly have a working
-            system again. It is recommended to create a daily backup and keep
-            backups of the last 3 days on two different locations. And one of
-            them is off-site.
+            Backups are essential for a reliable smart home. They help protect
+            the work you've put into setting up your smart home, and if the
+            worst happens, you can get back up and running quickly.
           </p>
         </div>
         <div class="card-actions">
-          <ha-button @click=${this._setup}>
-            Set up automatic backups
-          </ha-button>
+          <ha-button @click=${this._setup}>Set up backups</ha-button>
         </div>
       </ha-card>
     `;

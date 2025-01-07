@@ -6,8 +6,10 @@ import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import type { HomeAssistant } from "../../../../../types";
 import { showChangeBackupEncryptionKeyDialog } from "../../dialogs/show-dialog-change-backup-encryption-key";
-import { fileDownload } from "../../../../../util/file_download";
 import { showSetBackupEncryptionKeyDialog } from "../../dialogs/show-dialog-set-backup-encryption-key";
+
+import { downloadEmergencyKit } from "../../../../../data/backup";
+import { showShowBackupEncryptionKeyDialog } from "../../dialogs/show-dialog-show-backup-encryption-key";
 
 @customElement("ha-backup-config-encryption-key")
 class HaBackupConfigEncryptionKey extends LitElement {
@@ -33,7 +35,13 @@ class HaBackupConfigEncryptionKey extends LitElement {
               Download
             </ha-button>
           </ha-md-list-item>
-
+          <ha-md-list-item>
+            <span slot="headline">Show my encryption key</span>
+            <span slot="supporting-text">
+              Please keep your encryption key private.
+            </span>
+            <ha-button slot="end" @click=${this._show}>Show</ha-button>
+          </ha-md-list-item>
           <ha-md-list-item>
             <span slot="headline">Change encryption key</span>
             <span slot="supporting-text">
@@ -64,10 +72,11 @@ class HaBackupConfigEncryptionKey extends LitElement {
     if (!this._value) {
       return;
     }
-    fileDownload(
-      "data:text/plain;charset=utf-8," + encodeURIComponent(this._value),
-      "emergency_kit.txt"
-    );
+    downloadEmergencyKit(this.hass, this._value);
+  }
+
+  private _show() {
+    showShowBackupEncryptionKeyDialog(this, { currentKey: this._value });
   }
 
   private _change() {

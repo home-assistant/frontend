@@ -75,8 +75,10 @@ export class HaButtonToggleGroup extends LitElement {
         direction: ltr;
       }
       mwc-button {
+        flex: 1;
         --mdc-shape-small: 0;
         --mdc-button-outline-width: 1px 0 1px 1px;
+        --mdc-button-outline-color: var(--primary-color);
       }
       ha-icon-button {
         border: 1px solid var(--primary-color);
@@ -94,7 +96,7 @@ export class HaButtonToggleGroup extends LitElement {
         width: 100%;
         height: 100%;
         position: absolute;
-        background-color: currentColor;
+        background-color: var(--primary-color);
         opacity: 0;
         pointer-events: none;
         content: "";
@@ -104,11 +106,21 @@ export class HaButtonToggleGroup extends LitElement {
       }
       ha-icon-button[active]::before,
       mwc-button[active]::before {
-        opacity: var(--mdc-icon-button-ripple-opacity, 0.12);
+        opacity: 1;
+      }
+      ha-icon-button[active] {
+        --icon-primary-color: var(--text-primary-color);
+      }
+      mwc-button[active] {
+        --mdc-theme-primary: var(--text-primary-color);
       }
       ha-icon-button:first-child,
       mwc-button:first-child {
         --mdc-shape-small: 4px 0 0 4px;
+        border-radius: 4px 0 0 4px;
+        --mdc-button-outline-width: 1px;
+      }
+      mwc-button:first-child::before {
         border-radius: 4px 0 0 4px;
       }
       ha-icon-button:last-child,
@@ -117,6 +129,9 @@ export class HaButtonToggleGroup extends LitElement {
         border-right-width: 1px;
         --mdc-shape-small: 0 4px 4px 0;
         --mdc-button-outline-width: 1px;
+      }
+      mwc-button:last-child::before {
+        border-radius: 0 4px 4px 0;
       }
       ha-icon-button:only-child,
       mwc-button:only-child {

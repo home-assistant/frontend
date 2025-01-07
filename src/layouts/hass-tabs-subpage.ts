@@ -322,6 +322,13 @@ class HassTabsSubpage extends LitElement {
           -webkit-overflow-scrolling: touch;
         }
 
+        :host([narrow]) .content {
+          height: calc(100% - var(--header-height));
+          height: calc(
+            100% - var(--header-height) - env(safe-area-inset-bottom)
+          );
+        }
+
         :host([narrow]) .content.tabs {
           height: calc(100% - 2 * var(--header-height));
           height: calc(

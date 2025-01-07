@@ -3,7 +3,6 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
@@ -34,10 +33,6 @@ class HaBackupOverviewBackups extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public backups: BackupContent[] = [];
-
-  private _showAll() {
-    navigate("/config/backup/backups");
-  }
 
   private _automaticStats = memoizeOne((backups: BackupContent[]) => {
     const automaticBackups = backups.filter(
@@ -89,12 +84,9 @@ class HaBackupOverviewBackups extends LitElement {
           </ha-md-list>
         </div>
         <div class="card-actions">
-          <ha-button
-            href="/config/backup/backups?type=all"
-            @click=${this._showAll}
-          >
-            Show all backups
-          </ha-button>
+          <a href="/config/backup/backups?type=all">
+            <ha-button>Show all backups</ha-button>
+          </a>
         </div>
       </ha-card>
     `;
@@ -117,9 +109,13 @@ class HaBackupOverviewBackups extends LitElement {
           display: flex;
           justify-content: flex-end;
         }
+        .card-header {
+          padding-bottom: 8px;
+        }
         .card-content {
           padding-left: 0;
           padding-right: 0;
+          padding-bottom: 0;
         }
       `,
     ];
