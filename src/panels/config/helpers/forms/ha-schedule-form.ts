@@ -293,6 +293,7 @@ class HaScheduleForm extends LitElement {
     const [day, index] = id.split("-");
     const value = this[`_${day}`][parseInt(index)];
     const newValue = { ...this._item };
+    const eventData = this._item![day][index].data;
 
     const endFormatted = formatTime24h(end, this.hass.locale, this.hass.config);
     newValue[day][index] = {
@@ -301,6 +302,7 @@ class HaScheduleForm extends LitElement {
         !isSameDay(start, end) || endFormatted === "0:00"
           ? "24:00"
           : endFormatted,
+      ...(eventData ? { data: eventData } : undefined),
     };
 
     fireEvent(this, "value-changed", {
@@ -319,6 +321,7 @@ class HaScheduleForm extends LitElement {
     const [day, index] = id.split("-");
     const newDay = weekdays[start.getDay()];
     const newValue = { ...this._item };
+    const eventData = this._item![day][index].data;
 
     const endFormatted = formatTime24h(end, this.hass.locale, this.hass.config);
     const event = {
@@ -327,6 +330,7 @@ class HaScheduleForm extends LitElement {
         !isSameDay(start, end) || endFormatted === "0:00"
           ? "24:00"
           : endFormatted,
+      ...(eventData ? { data: eventData } : undefined),
     };
 
     if (newDay === day) {
