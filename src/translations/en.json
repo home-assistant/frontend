@@ -2312,6 +2312,42 @@
               "no_backup_description": "You have no automatic backups yet.",
               "backup_too_old_heading": "No backup for {count} {count, plural,\n one {day}\n other {days}\n}",
               "backup_success_heading": "Backed up"
+            },
+            "backups": {
+              "title": "My backups",
+              "automatic": "{count} automatic {count, plural,\n one {backup}\n other {backups}\n}",
+              "manual": "{count} manual {count, plural,\n one {backup}\n other {backups}\n}",
+              "total_size": "{size} in total",
+              "show_all": "Show all backups"
+            },
+            "settings": {
+              "title": "Backup settings",
+              "configure": "Configure backup settings",
+              "schedule": "Automatic backup schedule and retention",
+              "schedule_copies_all": "and keep all backups",
+              "schedule_copies_backups": "and keep {count} {count, plural,\n one {backup}\n other {backups}\n}",
+              "schedule_copies_days": "and keep {count} {count, plural,\n one {day}\n other {days}\n}",
+              "schedule_daily": "Daily at {time}",
+              "schedule_mon": "Weekly on Mondays at {time}",
+              "schedule_tue": "Weekly on Tuesdays at {time}",
+              "schedule_wed": "Weekly on Wednesdays at {time}",
+              "schedule_thu": "Weekly on Thursdays at {time}",
+              "schedule_fri": "Weekly on Fridays at {time}",
+              "schedule_sat": "Weekly on Saturdays at {time}",
+              "schedule_sun": "Weekly on Sundays at {time}",
+              "schedule_never": "Automatic backups are not scheduled",
+              "data": "Home Assistant data that is included",
+              "data_settings_history": "Settings and history",
+              "data_settings_only": "Settings only",
+              "addons": "Add-ons that are included",
+              "addons_all": "All add-ons",
+              "addons_many": "{count} {count, plural,\n one {add-on}\n other {add-ons}\n}",
+              "addons_none": "No add-ons",
+              "locations": "Locations where backup is stored to",
+              "locations_one": "Store in {name}",
+              "locations_many": "Store in {count} off-site {count, plural,\n one {location}\n other {locations}\n}",
+              "locations_local_only": "Local backup only",
+              "locations_none": "No locations configured"
             }
           }
         },
