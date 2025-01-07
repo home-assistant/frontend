@@ -83,11 +83,13 @@ export class HaChartBase extends LitElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    window.removeEventListener("scroll", this._handleScroll, true);
     this._releaseCanvas();
   }
 
   public connectedCallback() {
     super.connectedCallback();
+    window.addEventListener("scroll", this._handleScroll, true);
     if (this.hasUpdated) {
       this._releaseCanvas();
       this._setupChart();
@@ -560,6 +562,10 @@ export class HaChartBase extends LitElement {
   private _handleZoomReset() {
     this.chart?.resetZoom();
   }
+
+  private _handleScroll = () => {
+    this._tooltip = undefined;
+  };
 
   static get styles(): CSSResultGroup {
     return css`
