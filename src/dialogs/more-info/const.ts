@@ -106,7 +106,7 @@ export const computeShowLogBookComponent = (
   }
 
   const stateObj = hass.states[entityId];
-  if (!stateObj || stateObj.attributes.unit_of_measurement) {
+  if (!stateObj) {
     return false;
   }
 
