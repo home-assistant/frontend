@@ -51,6 +51,12 @@ export class MoreInfoHistory extends LitElement {
 
   private _metadata?: Record<string, StatisticsMetaData>;
 
+  private _chartHeight?: number;
+
+  protected firstUpdated() {
+    this._chartHeight = this.clientWidth / 2;
+  }
+
   protected render() {
     if (!this.entityId) {
       return nothing;
@@ -81,7 +87,7 @@ export class MoreInfoHistory extends LitElement {
                   .names=${this._statNames}
                   hide-legend
                   .clickForMoreInfo=${false}
-                  .height=${this.clientWidth / 2}
+                  .height=${this._chartHeight}
                 ></statistics-chart>`
               : html`<state-history-charts
                   up-to-now
@@ -90,7 +96,7 @@ export class MoreInfoHistory extends LitElement {
                   .isLoadingData=${!this._stateHistory}
                   .showNames=${false}
                   .clickForMoreInfo=${false}
-                  .height=${this.clientWidth / 2}
+                  .height=${this._chartHeight}
                 ></state-history-charts>`}`
       : ""}`;
   }
