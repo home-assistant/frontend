@@ -98,10 +98,6 @@ export class HaChartBase extends LitElement {
         this._hiddenDatasets.add(index);
       }
     });
-    if (!this.height) {
-      // lock the height so it doesn't change when the parent element resizes
-      this.height = this._getDefaultHeight();
-    }
   }
 
   public shouldUpdate(changedProps: PropertyValues): boolean {
@@ -346,7 +342,7 @@ export class HaChartBase extends LitElement {
         type: this.chartType,
         data: this.data,
         options: this._createOptions(),
-        plugins: this.plugins,
+        plugins: this._createPlugins(),
       });
     } finally {
       this._loading = false;
@@ -421,6 +417,26 @@ export class HaChartBase extends LitElement {
         },
       },
     };
+  }
+
+  private _createPlugins() {
+    return [
+      ...(this.plugins || []),
+      {
+        id: "resizeHook",
+        resize: (chart: Chart) => {
+          if (!this.height) {
+            // lock the height
+            // this removes empty space below the chart
+            this.height = chart.height;
+          }
+        },
+        legend: {
+          ...this.options?.plugins?.legend,
+          display: false,
+        },
+      },
+    ];
   }
 
   private _getDefaultHeight() {
