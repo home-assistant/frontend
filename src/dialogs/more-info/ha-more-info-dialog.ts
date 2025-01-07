@@ -12,7 +12,7 @@ import {
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -47,9 +47,7 @@ import {
 } from "./const";
 import "./controls/more-info-default";
 import "./ha-more-info-history-and-logbook";
-import type { MoreInfoHistoryAndLogbook } from "./ha-more-info-history-and-logbook";
 import "./ha-more-info-info";
-import type { MoreInfoInfo } from "./ha-more-info-info";
 import "./ha-more-info-settings";
 import "./more-info-content";
 
@@ -97,9 +95,6 @@ export class MoreInfoDialog extends LitElement {
   @state() private _entry?: ExtEntityRegistryEntry | null;
 
   @state() private _infoEditMode = false;
-
-  @query("ha-more-info-info, ha-more-info-history-and-logbook")
-  private _history?: MoreInfoInfo | MoreInfoHistoryAndLogbook;
 
   public showDialog(params: MoreInfoDialogParams) {
     this._entityId = params.entityId;
