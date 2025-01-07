@@ -87,6 +87,10 @@ export class HaButtonToggleSelector extends LitElement {
   static styles = css`
     :host {
       position: relative;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
     }
   `;
 }

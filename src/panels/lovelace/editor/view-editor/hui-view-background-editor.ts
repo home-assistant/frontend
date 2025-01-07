@@ -196,7 +196,6 @@ export class HuiViewBackgroundEditor extends LitElement {
     return css`
       :host {
         display: block;
-        --toggle-button-group-justify-content: flex-end;
       }
     `;
   }
