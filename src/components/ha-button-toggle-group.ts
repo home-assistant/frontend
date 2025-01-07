@@ -73,6 +73,7 @@ export class HaButtonToggleGroup extends LitElement {
         --mdc-icon-button-size: var(--button-toggle-size, 36px);
         --mdc-icon-size: var(--button-toggle-icon-size, 20px);
         direction: ltr;
+        justify-content: var(--toggle-button-group-justify-content);
       }
       mwc-button {
         --mdc-shape-small: 0;
