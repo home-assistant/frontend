@@ -2451,6 +2451,30 @@
               "title": "Encryption key",
               "description": "Keep this encryption key in a safe place, as you will need it to access your backup, allowing it to be restored. Download them as an emergency kit file and store it somewhere safe. Encryption keeps your backups private and secure."
             }
+          },
+          "details": {
+            "header": "Backup",
+            "not_found": "Not found",
+            "not_found_description": "Backup matching ''{backupId}'' not found",
+            "error": "Could not fetch backup details",
+            "summary": {
+              "title": "Backup",
+              "size": "Size",
+              "created": "Created",
+              "protected": "Protected",
+              "protected_encrypted_aes_128": "Encrypted AES-128",
+              "protected_not_encrypted": "Not encrypted"
+            },
+            "restore": {
+              "title": "Selected what to restore",
+              "action": "Restore"
+            },
+            "locations": {
+              "title": "Locations",
+              "backup_stored": "Backup stored",
+              "backup_failed": "Backup failed",
+              "download": "Download from this location"
+            }
           }
         },
         "tag": {

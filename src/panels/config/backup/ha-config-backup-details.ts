@@ -97,7 +97,8 @@ class HaConfigBackupDetails extends LitElement {
         back-path="/config/backup/backups"
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .header=${this._backup?.name || "Backup"}
+        .header=${this._backup?.name ||
+        this.hass.localize("ui.panel.config.backup.details.header")}
       >
         <ha-button-menu slot="toolbar-icon" @action=${this._handleAction}>
           <ha-icon-button
@@ -119,22 +120,38 @@ class HaConfigBackupDetails extends LitElement {
           html`<ha-alert alert-type="error">${this._error}</ha-alert>`}
           ${this._backup === null
             ? html`
-                <ha-alert alert-type="warning" title="Not found">
-                  Backup matching ${this.backupId} not found
+                <ha-alert
+                  alert-type="warning"
+                  .title=${this.hass.localize(
+                    "ui.panel.config.backup.details.not_found"
+                  )}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.backup.details.not_found_description",
+                    { backupId: this.backupId }
+                  )}
                 </ha-alert>
               `
             : !this._backup
               ? html`<ha-circular-progress active></ha-circular-progress>`
               : html`
                   <ha-card>
-                    <div class="card-header">Backup</div>
+                    <div class="card-header">
+                      ${this.hass.localize(
+                        "ui.panel.config.backup.details.summary.title"
+                      )}
+                    </div>
                     <div class="card-content">
                       <ha-md-list>
                         <ha-md-list-item>
                           <span slot="headline">
                             ${bytesToString(this._backup.size)}
                           </span>
-                          <span slot="supporting-text">Size</span>
+                          <span slot="supporting-text">
+                            ${this.hass.localize(
+                              "ui.panel.config.backup.details.summary.size"
+                            )}
+                          </span>
                         </ha-md-list-item>
                         <ha-md-list-item>
                           ${formatDateTime(
@@ -142,21 +159,37 @@ class HaConfigBackupDetails extends LitElement {
                             this.hass.locale,
                             this.hass.config
                           )}
-                          <span slot="supporting-text">Created</span>
+                          <span slot="supporting-text">
+                            ${this.hass.localize(
+                              "ui.panel.config.backup.details.summary.created"
+                            )}
+                          </span>
                         </ha-md-list-item>
                         <ha-md-list-item>
                           <span slot="headline">
                             ${this._backup.protected
-                              ? "Encrypted AES-128"
-                              : "Not encrypted"}
+                              ? this.hass.localize(
+                                  "ui.panel.config.backup.details.summary.protected_encrypted_aes_128"
+                                )
+                              : this.hass.localize(
+                                  "ui.panel.config.backup.details.summary.protected_not_encrypted"
+                                )}
                           </span>
-                          <span slot="supporting-text">Protected</span>
+                          <span slot="supporting-text">
+                            ${this.hass.localize(
+                              "ui.panel.config.backup.details.summary.protected"
+                            )}
+                          </span>
                         </ha-md-list-item>
                       </ha-md-list>
                     </div>
                   </ha-card>
                   <ha-card>
-                    <div class="card-header">Select what to restore</div>
+                    <div class="card-header">
+                      ${this.hass.localize(
+                        "ui.panel.config.backup.details.restore.title"
+                      )}
+                    </div>
                     <div class="card-content">
                       <ha-backup-data-picker
                         .hass=${this.hass}
@@ -173,12 +206,18 @@ class HaConfigBackupDetails extends LitElement {
                         .disabled=${this._isRestoreDisabled()}
                         class="danger"
                       >
-                        Restore
+                        ${this.hass.localize(
+                          "ui.panel.config.backup.details.restore.action"
+                        )}
                       </ha-button>
                     </div>
                   </ha-card>
                   <ha-card>
-                    <div class="card-header">Locations</div>
+                    <div class="card-header">
+                      ${this.hass.localize(
+                        "ui.panel.config.backup.details.locations.title"
+                      )}
+                    </div>
                     <div class="card-content">
                       <ha-md-list>
                         ${this._agents.map((agent) => {
@@ -188,10 +227,8 @@ class HaConfigBackupDetails extends LitElement {
                           const name = computeBackupAgentName(
                             this.hass.localize,
                             agentId,
-                            this._backup!.agent_ids!
+                            this._backup!.agent_ids
                           );
-
-                          const isLocal = isLocalAgent(agentId);
 
                           return html`
                             <ha-md-list-item>
@@ -233,10 +270,12 @@ class HaConfigBackupDetails extends LitElement {
                                 </span>
                                 <span>
                                   ${success
-                                    ? isLocal
-                                      ? "Backup created"
-                                      : "Backup uploaded"
-                                    : "Backup failed"}
+                                    ? this.hass.localize(
+                                        "ui.panel.config.backup.details.locations.backup_stored"
+                                      )
+                                    : this.hass.localize(
+                                        "ui.panel.config.backup.details.locations.backup_failed"
+                                      )}
                                 </span>
                               </div>
                               ${success
@@ -258,7 +297,9 @@ class HaConfigBackupDetails extends LitElement {
                                         slot="graphic"
                                         .path=${mdiDownload}
                                       ></ha-svg-icon>
-                                      Download from this location
+                                      ${this.hass.localize(
+                                        "ui.panel.config.backup.details.locations.download"
+                                      )}
                                     </ha-list-item>
                                   </ha-button-menu>`
                                 : nothing}
@@ -310,7 +351,9 @@ class HaConfigBackupDetails extends LitElement {
         response.backup.failed_agent_ids || []
       );
     } catch (err: any) {
-      this._error = err?.message || "Could not fetch backup details";
+      this._error =
+        err?.message ||
+        this.hass.localize("ui.panel.config.backup.details.error");
     }
   }
 
