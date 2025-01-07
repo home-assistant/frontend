@@ -298,7 +298,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         }
         const resources = await getHassTranslationsPre109(this.hass!, language);
 
-        // Ignore the repsonse if user switched languages before we got response
+        // Ignore the response if user switched languages before we got response
         if (this.hass!.language !== language) {
           return this.hass!.localize;
         }
@@ -359,7 +359,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         configFlow
       );
 
-      // Ignore the repsonse if user switched languages before we got response
+      // Ignore the response if user switched languages before we got response
       if (this.hass!.language !== language) {
         return this.hass!.localize;
       }

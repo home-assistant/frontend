@@ -1055,7 +1055,7 @@
             },
             "end_after": {
               "label": "End after",
-              "ocurrences": "ocurrences"
+              "ocurrences": "occurrences"
             }
           },
           "rrule": {
@@ -1270,7 +1270,6 @@
           "clear_skipped": "Clear skipped",
           "install": "Install",
           "update": "Update",
-          "create_backup": "Create backup before updating",
           "auto_update_enabled_title": "Can not skip version",
           "auto_update_enabled_text": "Automatic updates for this item have been enabled; skipping it is, therefore, unavailable. You can either install this update now or wait for Home Assistant to do it automatically."
         },
@@ -2439,7 +2438,7 @@
             },
             "create_helper": "Create helper",
             "no_helpers": "Looks like you don't have any helpers yet!",
-            "search": "Search {number} helpers",
+            "search": "Search {number} {number, plural,\n  one {helper}\n  other {helpers}\n}",
             "error_information": "Error information"
           },
           "dialog": {
@@ -2498,7 +2497,7 @@
           "enable_remote": "[%key:ui::common::enable%]",
           "internal_url_automatic": "Automatic",
           "internal_url_https_error_title": "Invalid local network URL",
-          "internal_url_https_error_description": "You have configured an HTTPS certificate in Home Assistant. This means that your internal URL needs to be set to a domain covered by the certficate.",
+          "internal_url_https_error_description": "You have configured an HTTPS certificate in Home Assistant. This means that your internal URL needs to be set to a domain covered by the certificate.",
           "internal_url_automatic_description": "Use the configured network settings",
           "internal_url_placeholder": "http://<some IP address>:8123"
         },
@@ -2966,7 +2965,7 @@
             "assign_category": "Assign category",
             "no_category_support": "You can't assign a category to this automation",
             "no_category_entity_reg": "To assign a category to an automation it needs to have a unique ID.",
-            "search": "Search {number} automations",
+            "search": "Search {number} {number, plural,\n  one {automation}\n  other {automations}\n}",
             "headers": {
               "toggle": "Enable/disable",
               "name": "Name",
@@ -3881,13 +3880,13 @@
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
             "assign_category": "[%key:ui::panel::config::automation::picker::assign_category%]",
-            "no_category_support": "You can't assign an category to this script",
-            "no_category_entity_reg": "To assign an category to an script it needs to have a unique ID.",
+            "no_category_support": "You can't assign a category to this script",
+            "no_category_entity_reg": "To assign a category to a script it needs to have a unique ID.",
             "delete": "[%key:ui::common::delete%]",
             "duplicate": "[%key:ui::common::duplicate%]",
             "empty_header": "Create your first script",
             "empty_text": "A script is a sequence of actions that can be run from a dashboard, an automation, or be triggered by voice. For example, a ''Wake-up routine''' script that gradually turns on the light in the bedroom and opens the blinds after a delay.",
-            "search": "Search {number} scripts",
+            "search": "Search {number} {number, plural,\n  one {script}\n  other {scripts}\n}",
             "migrate_script": "Migrate script?",
             "migrate_script_description": "You can migrate this script, so it can be edited from the UI. After it is migrated and you have saved it, you will have to manually delete your old script from your configuration. Do you want to migrate this script?"
           },
@@ -3997,11 +3996,11 @@
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
             "assign_category": "[%key:ui::panel::config::automation::picker::assign_category%]",
-            "no_category_support": "You can't assign an category to this scene",
-            "no_category_entity_reg": "To assign an category to an scene it needs to have a unique ID.",
+            "no_category_support": "You can't assign a category to this scene",
+            "no_category_entity_reg": "To assign a category to an scene it needs to have a unique ID.",
             "empty_header": "Create your first scene",
             "empty_text": "Scenes capture entities' states, so you can re-experience the same scene later on. For example, a ''Watching TV'' scene that dims the living room lights, sets a warm white color and turns on the TV.",
-            "search": "Search {number} scenes"
+            "search": "Search {number} {number, plural,\n  one {scene}\n  other {scenes}\n}"
           },
           "editor": {
             "review_mode": "Review Mode",
@@ -4375,7 +4374,7 @@
           "confirm_delete_integration": "Are you sure you want to remove this device from {integration}?",
           "error_delete": "Error deleting device",
           "picker": {
-            "search": "Search {number} devices",
+            "search": "Search {number} {number, plural,\n  one {device}\n  other {devices}\n}",
             "state": "Status",
             "bulk_actions": {
               "move_area": "Move to area",
@@ -4391,7 +4390,7 @@
             "header": "Entities",
             "introduction": "Home Assistant keeps a registry of every entity it has ever seen that can be uniquely identified. Each of these entities will have an entity ID assigned which will be reserved for just this entity.",
             "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant.",
-            "search": "Search {number} entities",
+            "search": "Search {number} {number, plural,\n  one {entity}\n  other {entities}\n}",
             "unnamed_entity": "Unnamed entity",
             "filtering_by_config_entry": "Filtering by config entry",
             "status": {
@@ -4590,7 +4589,7 @@
             "application_credentials": {
               "delete_title": "Application credentials",
               "delete_prompt": "Would you like to also delete Application Credentials for this integration?",
-              "delete_detail": "If you delete them, you will need to enter credentials when setting up the integration again. If you keep them, they will be used automatically when setting up the integration again or may be acccessed from the Application Credentials menu.",
+              "delete_detail": "If you delete them, you will need to enter credentials when setting up the integration again. If you keep them, they will be used automatically when setting up the integration again or may be accessed from the Application Credentials menu.",
               "delete_error_title": "Deleting application credentials failed",
               "dismiss": "Keep",
               "learn_more": "Learn more about application credentials"
@@ -5517,7 +5516,7 @@
           "ping_node": {
             "title": "Ping a Matter device",
             "introduction": "Perform a (server-side) ping on your Matter device on all its (known) IP-addresses.",
-            "battery_device_warning": "Note that especially for battery powered devices this can take a a while. You may need to wake up battery powered devices before starting the pinging to speed up the process. Refer to your device's manual for instructions on how to wake the device.",
+            "battery_device_warning": "Note that especially for battery powered devices this can take a while. You may need to wake up battery powered devices before starting the pinging to speed up the process. Refer to your device's manual for instructions on how to wake the device.",
             "start_ping": "Start ping",
             "in_progress": "The device is being pinged. This may take some time.",
             "ping_failed": "The device ping failed. Additional information may be available in the logs.",
@@ -5686,7 +5685,7 @@
               },
               "version": {
                 "title": "Samba/Windows (CIFS) version",
-                "description": "This choses the version of the protocol to use"
+                "description": "This chooses the version of the protocol to use"
               },
               "username": {
                 "title": "Username",
@@ -8006,7 +8005,6 @@
     "update_available": {
       "update_name": "Update {name}",
       "open_release_notes": "Open release notes",
-      "create_backup": "Create backup before updating",
       "description": "You have {version} installed. Press update to update to version {newest_version}",
       "updating": "Updating {name} to version {version}",
       "no_update": "No update available for {name}"
