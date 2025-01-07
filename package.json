@@ -56,7 +56,7 @@
     "@lit-labs/motion": "1.0.7",
     "@lit-labs/observers": "2.0.4",
     "@lit-labs/virtualizer": "2.0.14",
-    "@lrnwebcomponents/simple-tooltip": "8.0.2",
+    "@lrnwebcomponents/simple-tooltip": "patch:@lrnwebcomponents/simple-tooltip@npm%3A8.0.2#~/.yarn/patches/@lrnwebcomponents-simple-tooltip-npm-8.0.2-2a2fb93b10.patch",
     "@material/chips": "=14.0.0-canary.53b3cad2f.0",
     "@material/data-table": "=14.0.0-canary.53b3cad2f.0",
     "@material/mwc-base": "0.27.0",

@@ -1,0 +1,35 @@
+diff --git a/package.json b/package.json
+index 758458649c45955d82602448490a5b0aafe3b335..4ec8059ff1c09a059543ffa4ec824361d05d3569 100755
+--- a/package.json
++++ b/package.json
+@@ -60,5 +60,6 @@
+     "web-components",
+     "html"
+   ],
+-  "gitHead": "6e322873c1da195972880b7c146cbadb1e7e84c7"
++  "gitHead": "6e322873c1da195972880b7c146cbadb1e7e84c7",
++  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+ }
+diff --git a/simple-tooltip.js b/simple-tooltip.js
+index 2b6b930b1ea7858fb55b952d4b4b397cdfb1e44e..d167aafb7de3c37dfdf9d7836294b8ce9e6c1a27 100644
+--- a/simple-tooltip.js
++++ b/simple-tooltip.js
+@@ -195,13 +195,16 @@ class SimpleTooltip extends LitElement {
+         .hidden {
+           position: absolute;
+           left: -10000px;
+-          inset-inline-start: -10000px;
+-          inset-inline-end: initial;
+           top: auto;
+           width: 1px;
+           height: 1px;
+           overflow: hidden;
+         }
++
++        :host([dir="rtl"]) .hidden {
++          inset-inline-start: -10000px;
++          inset-inline-end: initial;
++        }
+       `,
+     ];
+   }
