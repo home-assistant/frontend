@@ -1065,7 +1065,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           subEntry
         )}</span
       >
-      ${configEntry.supported_subentry_flows.add_entity?.supports_reconfigure
+      ${configEntry.supported_subentry_flows[subEntry.subentry_type]
+        ?.supports_reconfigure
         ? html`
             <ha-button slot="end" @click=${this._handleReconfigureSub}>
               ${this.hass.localize(
@@ -1307,12 +1308,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     const subEntry = ((ev.target as HTMLElement).closest(".sub-entry") as any)
       .subConfigEntry;
 
-    // const flow = configEntry.supported_subentry_flows[subEntry.subentry_id];
-
     showSubConfigFlowDialog(
       this,
       configEntry,
-      subEntry.flowType || "add_entity",
+      subEntry.flowType || subEntry.subentry_type,
       {
         startFlowHandler: configEntry.entry_id,
         subEntryId: subEntry.subentry_id,

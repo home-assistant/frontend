@@ -18,7 +18,6 @@ export const createSubConfigFlow = (
       handler: [configEntryId, subFlowType],
       show_advanced_options: Boolean(hass.userData?.showAdvanced),
       subentry_id,
-      source: subentry_id ? "reconfigure" : "user",
     },
     HEADERS
   );

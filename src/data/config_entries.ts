@@ -33,6 +33,7 @@ export interface ConfigEntry {
 
 export interface SubConfigEntry {
   subentry_id: string;
+  subentry_type: string;
   title: string;
   unique_id: string;
 }
