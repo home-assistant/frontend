@@ -43,6 +43,23 @@ const RETENTION_PRESETS: Record<
   forever: { type: "days", value: 0 },
 };
 
+const SCHEDULE_OPTIONS = [
+  BackupScheduleState.DAILY,
+  BackupScheduleState.MONDAY,
+  BackupScheduleState.TUESDAY,
+  BackupScheduleState.WEDNESDAY,
+  BackupScheduleState.THURSDAY,
+  BackupScheduleState.FRIDAY,
+  BackupScheduleState.SATURDAY,
+  BackupScheduleState.SUNDAY,
+] as const satisfies BackupScheduleState[];
+
+const RETENTION_PRESETS_OPTIONS = [
+  RetentionPreset.COPIES_3,
+  RetentionPreset.FOREVER,
+  RetentionPreset.CUSTOM,
+] as const satisfies RetentionPreset[];
+
 const computeRetentionPreset = (
   data: RetentionData
 ): RetentionPreset | undefined => {
@@ -128,7 +145,11 @@ class HaBackupConfigSchedule extends LitElement {
     return html`
       <ha-md-list>
         <ha-md-list-item>
-          <span slot="headline">Use automatic backups</span>
+          <span slot="headline">
+            ${this.hass.localize(
+              "ui.panel.config.backup.schedule.use_automatic_backups"
+            )}
+          </span>
 
           <ha-switch
             slot="end"
@@ -139,9 +160,15 @@ class HaBackupConfigSchedule extends LitElement {
         ${data.enabled
           ? html`
               <ha-md-list-item>
-                <span slot="headline">Schedule</span>
+                <span slot="headline">
+                  ${this.hass.localize(
+                    "ui.panel.config.backup.schedule.schedule"
+                  )}
+                </span>
                 <span slot="supporting-text">
-                  How often you want to create a backup.
+                  ${this.hass.localize(
+                    "ui.panel.config.backup.schedule.schedule_description"
+                  )}
                 </span>
 
                 <ha-md-select
@@ -149,30 +176,18 @@ class HaBackupConfigSchedule extends LitElement {
                   @change=${this._scheduleChanged}
                   .value=${data.schedule}
                 >
-                  <ha-md-select-option .value=${BackupScheduleState.DAILY}>
-                    <div slot="headline">Daily at ${time}</div>
-                  </ha-md-select-option>
-                  <ha-md-select-option .value=${BackupScheduleState.MONDAY}>
-                    <div slot="headline">Monday at ${time}</div>
-                  </ha-md-select-option>
-                  <ha-md-select-option .value=${BackupScheduleState.TUESDAY}>
-                    <div slot="headline">Tuesday at ${time}</div>
-                  </ha-md-select-option>
-                  <ha-md-select-option .value=${BackupScheduleState.WEDNESDAY}>
-                    <div slot="headline">Wednesday at ${time}</div>
-                  </ha-md-select-option>
-                  <ha-md-select-option .value=${BackupScheduleState.THURSDAY}>
-                    <div slot="headline">Thursday at ${time}</div>
-                  </ha-md-select-option>
-                  <ha-md-select-option .value=${BackupScheduleState.FRIDAY}>
-                    <div slot="headline">Friday at ${time}</div>
-                  </ha-md-select-option>
-                  <ha-md-select-option .value=${BackupScheduleState.SATURDAY}>
-                    <div slot="headline">Saturday at ${time}</div>
-                  </ha-md-select-option>
-                  <ha-md-select-option .value=${BackupScheduleState.SUNDAY}>
-                    <div slot="headline">Sunday at ${time}</div>
-                  </ha-md-select-option>
+                  ${SCHEDULE_OPTIONS.map(
+                    (option) => html`
+                      <ha-md-select-option .value=${option}>
+                        <div slot="headline">
+                          ${this.hass.localize(
+                            `ui.panel.config.backup.schedule.schedule_options.${option}`,
+                            { time }
+                          )}
+                        </div>
+                      </ha-md-select-option>
+                    `
+                  )}
                 </ha-md-select>
               </ha-md-list-item>
               <ha-md-list-item>
@@ -186,15 +201,17 @@ class HaBackupConfigSchedule extends LitElement {
                   @change=${this._retentionPresetChanged}
                   .value=${this._retentionPreset}
                 >
-                  <ha-md-select-option .value=${RetentionPreset.COPIES_3}>
-                    <div slot="headline">3 backups</div>
-                  </ha-md-select-option>
-                  <ha-md-select-option .value=${RetentionPreset.FOREVER}>
-                    <div slot="headline">All backups</div>
-                  </ha-md-select-option>
-                  <ha-md-select-option .value=${RetentionPreset.CUSTOM}>
-                    <div slot="headline">Custom</div>
-                  </ha-md-select-option>
+                  ${RETENTION_PRESETS_OPTIONS.map(
+                    (option) => html`
+                      <ha-md-select-option .value=${option}>
+                        <div slot="headline">
+                          ${this.hass.localize(
+                            `ui.panel.config.backup.schedule.retention_presets.${option}`
+                          )}
+                        </div>
+                      </ha-md-select-option>
+                    `
+                  )}
                 </ha-md-select>
               </ha-md-list-item>
               ${this._retentionPreset === RetentionPreset.CUSTOM
@@ -217,11 +234,17 @@ class HaBackupConfigSchedule extends LitElement {
                         .value=${data.retention.type}
                         id="type"
                       >
-                        <ha-md-select-option .value=${"days"}>
-                          <div slot="headline">days</div>
+                        <ha-md-select-option value="days">
+                          <div slot="headline">
+                            ${this.hass.localize(
+                              "ui.panel.config.backup.schedule.retention_units.days"
+                            )}
+                          </div>
                         </ha-md-select-option>
-                        <ha-md-select-option .value=${"copies"}>
-                          <div slot="headline">backups</div>
+                        <ha-md-select-option value="copies">
+                          ${this.hass.localize(
+                            "ui.panel.config.backup.schedule.retention_units.copies"
+                          )}
                         </ha-md-select-option>
                       </ha-md-select>
                     </ha-md-list-item>
@@ -319,6 +342,9 @@ class HaBackupConfigSchedule extends LitElement {
       background: none;
       --md-list-item-leading-space: 0;
       --md-list-item-trailing-space: 0;
+    }
+    ha-md-list-item {
+      --md-item-overflow: visible;
     }
     ha-md-select {
       min-width: 210px;

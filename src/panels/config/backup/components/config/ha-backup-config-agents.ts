@@ -113,7 +113,7 @@ class HaBackupConfigAgents extends LitElement {
                               slot="start"
                             />
                           `}
-                    <div slot="headline">${name}</div>
+                    <div slot="headline" class="name">${name}</div>
                     ${description
                       ? html`<div slot="supporting-text">${description}</div>`
                       : nothing}
@@ -164,6 +164,12 @@ class HaBackupConfigAgents extends LitElement {
       background: none;
       --md-list-item-leading-space: 0;
       --md-list-item-trailing-space: 0;
+    }
+    ha-md-list-item {
+      --md-item-overflow: visible;
+    }
+    ha-md-list-item .name {
+      word-break: break-word;
     }
     ha-md-list-item img {
       width: 48px;

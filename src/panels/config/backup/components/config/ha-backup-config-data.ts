@@ -370,6 +370,9 @@ class HaBackupConfigData extends LitElement {
       --md-list-item-leading-space: 0;
       --md-list-item-trailing-space: 0;
     }
+    ha-md-list-item {
+      --md-item-overflow: visible;
+    }
     ha-md-select {
       min-width: 210px;
     }

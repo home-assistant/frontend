@@ -2246,7 +2246,8 @@
             "cloud_agent_description": "Note: It stores only one backup with a maximum size of 5 GB, regardless of your settings.",
             "cloud_agent_no_subcription": "You currently do not have an active Home Assistant Cloud subscription.",
             "network_mount_agent_description": "Network storage",
-            "no_agents": "No locations configured"
+            "no_agents": "No locations configured",
+            "local_agent": "This system"
           },
           "data": {
             "ha_settings": "Home Assistant settings",
@@ -2265,6 +2266,55 @@
             "addons_all": "All",
             "addons_none": "None",
             "addons_custom": "Custom"
+          },
+          "schedule": {
+            "use_automatic_backups": "Use automatic backups",
+            "schedule": "Schedule",
+            "schedule_description": " How often you want to create a backup.",
+            "schedule_options": {
+              "daily": "Daily at {time}",
+              "mon": "Monday at {time}",
+              "tue": "Tuesday at {time}",
+              "wed": "Wednesday at {time}",
+              "thu": "Thursday at {time}",
+              "fri": "Friday at {time}",
+              "sat": "Saturday at {time}",
+              "sun": "Sunday at {time}"
+            },
+            "retention": "Retention",
+            "retention_description": "Based on the maximum number of backups or how many days they should be kept.",
+            "retention_presets": {
+              "copies_3": "3 backups",
+              "forever": "Forever",
+              "custom": "Custom"
+            },
+            "retention_units": {
+              "copies": "backups",
+              "days": "days"
+            }
+          },
+          "encryption_key": {
+            "download_emergency_kit": "Download emergency kit",
+            "download_emergency_kit_description": "We recommend to save this encryption key somewhere secure.",
+            "download_emergency_kit_action": "Download",
+            "show_encryption_key": "Show my encryption key",
+            "show_encryption_key_description": "Please keep your encryption key private.",
+            "show_encryption_key_action": "Show",
+            "change_encryption_key": "Change encryption key",
+            "change_encryption_key_description": "All next backups will use this encryption key.",
+            "change_encryption_key_action": "Change",
+            "set_encryption_key": "Set encryption key",
+            "set_encryption_key_description": " Set an encryption key for your backups.",
+            "set_encryption_key_action": "Set"
+          },
+          "emergency_kit_file": {
+            "title": "Home Assistant Backup Emergency Kit",
+            "description": "This emergency kit contains your backup encryption key. You need this key to be able to restore your Home Assistant backups.",
+            "date": "Date:",
+            "instance": "Instance:",
+            "url": "URL:",
+            "encryption_key": "Encryption key:",
+            "more_info": "For more information, visit {link}"
           },
           "overview": {
             "header": "Backup",
@@ -2378,6 +2428,29 @@
             },
             "delete_selected": "Delete selected",
             "new_backup": "[%key:ui::panel::config::backup::overview::new_backup%]"
+          },
+          "settings": {
+            "header": "Backup settings",
+            "menu": {
+              "change_default_location": "Change default action location"
+            },
+            "schedule": {
+              "title": "Automatic backups",
+              "description": "Let Home Assistant take care of your backups by creating a scheduled backup that also removes older backups."
+            },
+            "data": {
+              "title": "Backup data"
+            },
+            "locations": {
+              "title": "Locations",
+              "description": "Your backup will be stored on these locations when this default backup is created. You can use all locations for custom backups.",
+              "no_location": "No location selected",
+              "no_location_description": "You have to select at least one location to create a backup."
+            },
+            "encryption_key": {
+              "title": "Encryption key",
+              "description": "Keep this encryption key in a safe place, as you will need it to access your backup, allowing it to be restored. Download them as an emergency kit file and store it somewhere safe. Encryption keeps your backups private and secure."
+            }
           }
         },
         "tag": {
