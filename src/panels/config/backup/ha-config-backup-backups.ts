@@ -371,7 +371,9 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
               `
             : html`
                 <ha-icon-button
-                  .label=${"Delete selected"}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.backup.backups.delete_selected"
+                  )}
                   .path=${mdiDelete}
                   id="delete-btn"
                   class="warning"

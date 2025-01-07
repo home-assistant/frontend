@@ -386,8 +386,8 @@ class HaConfigBackupDetails extends LitElement {
 
   private async _deleteBackup(): Promise<void> {
     const confirm = await showConfirmationDialog(this, {
-      title: "Delete backup",
-      text: "This backup will be permanently deleted.",
+      title: this.hass.localize("ui.panel.config.backup.dialogs.delete.title"),
+      text: this.hass.localize("ui.panel.config.backup.dialogs.delete.text"),
       confirmText: this.hass.localize("ui.common.delete"),
       destructive: true,
     });
