@@ -2267,6 +2267,14 @@
             "addons_none": "None",
             "addons_custom": "Custom"
           },
+          "data_picker": {
+            "settings": "Settings",
+            "settings_and_history": "Settings and history",
+            "media": "Media",
+            "share_folder": "Share folder",
+            "local_addons": "Local addons folder",
+            "addons": "Add-ons"
+          },
           "schedule": {
             "use_automatic_backups": "Use automatic backups",
             "schedule": "Schedule",
