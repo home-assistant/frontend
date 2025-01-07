@@ -68,17 +68,11 @@ export class HaButtonToggleGroup extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      @media all and (max-width: 600px) {
-        :host {
-          flex: 1;
-        }
-      }
       div {
         display: flex;
         --mdc-icon-button-size: var(--button-toggle-size, 36px);
         --mdc-icon-size: var(--button-toggle-icon-size, 20px);
         direction: ltr;
-        justify-content: flex-end;
       }
       mwc-button {
         flex: 1;
