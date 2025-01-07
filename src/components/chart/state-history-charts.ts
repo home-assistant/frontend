@@ -45,7 +45,7 @@ declare global {
 export class StateHistoryCharts extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public historyData!: HistoryResult;
+  @property({ attribute: false }) public historyData?: HistoryResult;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -119,12 +119,12 @@ export class StateHistoryCharts extends LitElement {
         ${this.hass.localize("ui.components.history_charts.no_history_found")}
       </div>`;
     }
-    const combinedItems = this.historyData.timeline.length
+    const combinedItems = this.historyData!.timeline.length
       ? (this.virtualize
-          ? chunkData(this.historyData.timeline, CANVAS_TIMELINE_ROWS_CHUNK)
-          : [this.historyData.timeline]
-        ).concat(this.historyData.line)
-      : this.historyData.line;
+          ? chunkData(this.historyData!.timeline, CANVAS_TIMELINE_ROWS_CHUNK)
+          : [this.historyData!.timeline]
+        ).concat(this.historyData!.line)
+      : this.historyData!.line;
 
     // eslint-disable-next-line lit/no-this-assign-in-render
     this._chartCount = combinedItems.length;
