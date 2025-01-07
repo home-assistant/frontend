@@ -1503,7 +1503,7 @@
         "expose_header": "Expose",
         "aliases_header": "Aliases",
         "aliases_description": "Aliases are supported by Assist and Google Assistant.",
-        "aliases_no_unique_id": "Aliases are not supported for entities without an unique id. See the {faq_link} for more detail.",
+        "aliases_no_unique_id": "Aliases are not supported for entities without a unique ID. See the {faq_link} for more detail.",
         "ask_pin": "Ask for PIN",
         "manual_config": "Managed in configuration.yaml",
         "unsupported": "Unsupported",
@@ -3997,7 +3997,7 @@
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
             "assign_category": "[%key:ui::panel::config::automation::picker::assign_category%]",
             "no_category_support": "You can't assign a category to this scene",
-            "no_category_entity_reg": "To assign a category to an scene it needs to have a unique ID.",
+            "no_category_entity_reg": "To assign a category to a scene it needs to have a unique ID.",
             "empty_header": "Create your first scene",
             "empty_text": "Scenes capture entities' states, so you can re-experience the same scene later on. For example, a ''Watching TV'' scene that dims the living room lights, sets a warm white color and turns on the TV.",
             "search": "Search {number} {number, plural,\n  one {scene}\n  other {scenes}\n}"
@@ -7504,7 +7504,7 @@
             "data_table": {
               "select_all_issues": "Select all with issues",
               "name": "Name",
-              "statistic_id": "Statistic id",
+              "statistic_id": "Statistic ID",
               "statistics_unit": "Statistics unit",
               "source": "Source",
               "issue": "Issue",
