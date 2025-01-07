@@ -41,6 +41,7 @@ import { fileDownload } from "../../../util/file_download";
 import { showConfirmationDialog } from "../../lovelace/custom-card-helpers";
 import "./components/ha-backup-data-picker";
 import { showRestoreBackupDialog } from "./dialogs/show-dialog-restore-backup";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 type Agent = {
   id: string;
@@ -353,6 +354,7 @@ class HaConfigBackupDetails extends LitElement {
     }
 
     await deleteBackup(this.hass, this._backup!.backup_id);
+    fireEvent(this, "ha-refresh-backup-info");
     navigate("/config/backup");
   }
 

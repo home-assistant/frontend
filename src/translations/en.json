@@ -2249,6 +2249,70 @@
             "addons_all": "All",
             "addons_none": "None",
             "addons_custom": "Custom"
+          },
+          "overview": {
+            "header": "Backup",
+            "menu": {
+              "upload_backup": "Upload backup"
+            },
+            "new_backup": "Backup now",
+            "progress": {
+              "heading": {
+                "create_backup": "Creating backup",
+                "restore_backup": "Restoring backup",
+                "receive_backup": "Receiving backup"
+              },
+              "description": {
+                "create_backup": {
+                  "addon_repositories": "Backing up add-ons repositories",
+                  "addons": "Backing up add-ons",
+                  "await_addon_restarts": "Waiting for add-ons to restart",
+                  "docker_config": "Backing up Docker configuration",
+                  "finishing_file": "Finishing backup file",
+                  "folders": "Backing up folders",
+                  "home_assistant": "Backing up Home Assistant",
+                  "upload_to_agents": "Uploading to locations"
+                },
+                "restore_backup": {
+                  "addon_repositories": "Restoring add-ons repositories",
+                  "addons": "Restoring add-ons",
+                  "await_addon_restarts": "Waiting for add-ons to restart",
+                  "await_home_assistant_restart": "Waiting for Home Assistant to restart",
+                  "check_home_assistant": "Checking Home Assistant",
+                  "docker_config": "Restoring Docker configuration",
+                  "download_from_agent": "Downloading from location",
+                  "folders": "Restoring folders",
+                  "home_assistant": "Restoring Home Assistant",
+                  "remove_delta_addons": "Removing delta add-ons"
+                },
+                "receive_backup": {
+                  "receive_file": "Receiving file",
+                  "upload_to_agents": "Uploading to locations"
+                }
+              }
+            },
+            "summary": {
+              "next_backup_description": {
+                "daily": "Next automatic backup tomorrow at {time}",
+                "mon": "Next automatic backup next Monday at {time}",
+                "tue": "Next automatic backup next Tuesday at {time}",
+                "wed": "Next automatic backup next Wednesday at {time}",
+                "thu": "Next automatic backup next Thursday at {time}",
+                "fri": "Next automatic backup next Friday at {time}",
+                "sat": "Next automatic backup next Saturday at {time}",
+                "sun": "Next automatic backup next Sunday at {time}",
+                "never": "No automatic backups scheduled"
+              },
+              "loading": "Loading backups...",
+              "last_backup_failed_heading": "Last automatic backup failed",
+              "last_backup_failed_description": "The last automatic backup triggered {relative_time} wasn't successful.",
+              "last_backup_failed_locations_description": "The last automatic backup created {relative_time} wasn't stored in all locations.",
+              "last_successful_backup_description": "Last successful backup {relative_time} and stored in {count} {count, plural,\n one {location}\n other {locations}\n}.",
+              "no_backup_heading": "No automatic backup available",
+              "no_backup_description": "You have no automatic backups yet.",
+              "backup_too_old_heading": "No backup for {count} {count, plural,\n one {day}\n other {days}\n}",
+              "backup_success_heading": "Backed up"
+            }
           }
         },
         "tag": {
