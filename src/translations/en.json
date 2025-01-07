@@ -3013,7 +3013,7 @@
             "run": "Run actions",
             "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
             "show_trace": "Traces",
-            "show_info": "Information",
+            "show_info": "More info",
             "default_name": "New automation",
             "missing_name": "Cannot save automation without a name",
             "traces_not_available": "Automations need an ID for history to be tracked. Add an ID to your automation to make it available in traces.",
