@@ -283,7 +283,6 @@ export class MoreInfoDialog extends LitElement {
       <ha-dialog
         open
         @closed=${this.closeDialog}
-        @opened=${this._handleOpened}
         .heading=${title}
         hideActions
         flexContent
@@ -531,10 +530,6 @@ export class MoreInfoDialog extends LitElement {
 
   private _enlarge() {
     this.large = !this.large;
-  }
-
-  private _handleOpened() {
-    this._history?.resize({ aspectRatio: 2 });
   }
 
   static get styles() {

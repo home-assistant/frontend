@@ -1,7 +1,7 @@
 import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
 import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
-import { property, query, state } from "lit/decorators";
+import { property, state } from "lit/decorators";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTL } from "../../common/util/compute_rtl";
@@ -12,7 +12,6 @@ import {
 } from "../../common/number/format_number";
 import type { LineChartEntity, LineChartState } from "../../data/history";
 import type { HomeAssistant } from "../../types";
-import type { ChartResizeOptions, HaChartBase } from "./ha-chart-base";
 import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
 import { clickIsTouch } from "./click_is_touch";
 
@@ -55,6 +54,8 @@ export class StateHistoryChartLine extends LitElement {
 
   @property({ attribute: "fit-y-data", type: Boolean }) public fitYData = false;
 
+  @property({ attribute: false, type: Number }) public height?: number;
+
   @state() private _chartData?: ChartData<"line">;
 
   @state() private _entityIds: string[] = [];
@@ -67,12 +68,6 @@ export class StateHistoryChartLine extends LitElement {
 
   private _chartTime: Date = new Date();
 
-  @query("ha-chart-base") private _chart?: HaChartBase;
-
-  public resize = (options?: ChartResizeOptions): void => {
-    this._chart?.resize(options);
-  };
-
   protected render() {
     return html`
       <ha-chart-base
@@ -81,6 +76,7 @@ export class StateHistoryChartLine extends LitElement {
         .options=${this._chartOptions}
         .paddingYAxis=${this.paddingYAxis - this._yWidth}
         chart-type="line"
+        .height=${this.height}
       ></ha-chart-base>
     `;
   }

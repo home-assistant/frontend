@@ -6,7 +6,7 @@ import type {
 } from "chart.js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
@@ -30,11 +30,7 @@ import {
 } from "../../data/recorder";
 import type { HomeAssistant } from "../../types";
 import "./ha-chart-base";
-import type {
-  ChartResizeOptions,
-  ChartDatasetExtra,
-  HaChartBase,
-} from "./ha-chart-base";
+import type { ChartDatasetExtra } from "./ha-chart-base";
 import { clickIsTouch } from "./click_is_touch";
 
 export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
@@ -88,6 +84,8 @@ export class StatisticsChart extends LitElement {
 
   @property() public period?: string;
 
+  @property({ attribute: false, type: Number }) public height?: number;
+
   @state() private _chartData: ChartData = { datasets: [] };
 
   @state() private _chartDatasetExtra: ChartDatasetExtra[] = [];
@@ -98,13 +96,7 @@ export class StatisticsChart extends LitElement {
 
   @state() private _hiddenStats = new Set<string>();
 
-  @query("ha-chart-base") private _chart?: HaChartBase;
-
   private _computedStyle?: CSSStyleDeclaration;
-
-  public resize = (options?: ChartResizeOptions): void => {
-    this._chart?.resize(options);
-  };
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return changedProps.size > 1 || !changedProps.has("hass");
@@ -175,6 +167,7 @@ export class StatisticsChart extends LitElement {
         .chartType=${this.chartType}
         @dataset-hidden=${this._datasetHidden}
         @dataset-unhidden=${this._datasetUnhidden}
+        .height=${this.height}
       ></ha-chart-base>
     `;
   }

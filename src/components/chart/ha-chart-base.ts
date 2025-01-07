@@ -108,22 +108,6 @@ export class HaChartBase extends LitElement {
     this.chart?.update(mode);
   };
 
-  public resize = (options?: ChartResizeOptions): void => {
-    if (options?.aspectRatio && !options.height) {
-      options.height = Math.round(
-        (options.width ?? this.clientWidth) / options.aspectRatio
-      );
-    } else if (options?.aspectRatio && !options.width) {
-      options.width = Math.round(
-        (options.height ?? this.clientHeight) * options.aspectRatio
-      );
-    }
-    this.chart?.resize(
-      options?.width ?? this.clientWidth,
-      options?.height ?? this.clientHeight
-    );
-  };
-
   protected firstUpdated() {
     this._setupChart();
     this.data.datasets.forEach((dataset, index) => {
