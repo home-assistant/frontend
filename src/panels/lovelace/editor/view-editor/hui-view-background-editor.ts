@@ -54,6 +54,7 @@ export class HuiViewBackgroundEditor extends LitElement {
               },
               {
                 name: "size",
+                required: true,
                 selector: {
                   select: {
                     translation_key:
@@ -65,6 +66,7 @@ export class HuiViewBackgroundEditor extends LitElement {
               },
               {
                 name: "alignment",
+                required: true,
                 selector: {
                   select: {
                     translation_key:
@@ -86,6 +88,7 @@ export class HuiViewBackgroundEditor extends LitElement {
               },
               {
                 name: "repeat",
+                required: true,
                 selector: {
                   select: {
                     translation_key:
