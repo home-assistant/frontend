@@ -54,8 +54,6 @@ export class StateHistoryChartLine extends LitElement {
 
   @property({ attribute: "fit-y-data", type: Boolean }) public fitYData = false;
 
-  @property({ attribute: false, type: Number }) public height?: number;
-
   @state() private _chartData?: ChartData<"line">;
 
   @state() private _entityIds: string[] = [];
@@ -76,7 +74,6 @@ export class StateHistoryChartLine extends LitElement {
         .options=${this._chartOptions}
         .paddingYAxis=${this.paddingYAxis - this._yWidth}
         chart-type="line"
-        .height=${this.height}
       ></ha-chart-base>
     `;
   }

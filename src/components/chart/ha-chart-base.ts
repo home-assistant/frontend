@@ -98,6 +98,10 @@ export class HaChartBase extends LitElement {
         this._hiddenDatasets.add(index);
       }
     });
+    if (!this.height) {
+      // lock the height so it doesn't change when the parent element resizes
+      this.height = this._getDefaultHeight();
+    }
   }
 
   public shouldUpdate(changedProps: PropertyValues): boolean {
@@ -234,7 +238,7 @@ export class HaChartBase extends LitElement {
       <div
         class="chart-container"
         style=${styleMap({
-          height: `${this.height ?? this.clientWidth / 2}px`,
+          height: `${this.height ?? this._getDefaultHeight()}px`,
           "padding-left": `${this._paddingYAxisInternal}px`,
           "padding-right": 0,
           "padding-inline-start": `${this._paddingYAxisInternal}px`,
@@ -417,6 +421,10 @@ export class HaChartBase extends LitElement {
         },
       },
     };
+  }
+
+  private _getDefaultHeight() {
+    return this.clientWidth / 2;
   }
 
   private _handleChartScroll(ev: MouseEvent) {

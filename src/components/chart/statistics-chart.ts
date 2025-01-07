@@ -84,8 +84,6 @@ export class StatisticsChart extends LitElement {
 
   @property() public period?: string;
 
-  @property({ attribute: false, type: Number }) public height?: number;
-
   @state() private _chartData: ChartData = { datasets: [] };
 
   @state() private _chartDatasetExtra: ChartDatasetExtra[] = [];
@@ -167,7 +165,6 @@ export class StatisticsChart extends LitElement {
         .chartType=${this.chartType}
         @dataset-hidden=${this._datasetHidden}
         @dataset-unhidden=${this._datasetUnhidden}
-        .height=${this.height}
       ></ha-chart-base>
     `;
   }

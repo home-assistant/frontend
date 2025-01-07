@@ -69,8 +69,6 @@ export class StateHistoryCharts extends LitElement {
 
   @property({ attribute: "fit-y-data", type: Boolean }) public fitYData = false;
 
-  @property({ attribute: false, type: Number }) public height?: number;
-
   private _computedStartTime!: Date;
 
   private _computedEndTime!: Date;
@@ -153,7 +151,6 @@ export class StateHistoryCharts extends LitElement {
           .maxYAxis=${this.maxYAxis}
           .fitYData=${this.fitYData}
           @y-width-changed=${this._yWidthChanged}
-          .height=${this.height}
         ></state-history-chart-line>
       </div> `;
     }
