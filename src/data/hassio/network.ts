@@ -117,7 +117,9 @@ export const accesspointScan = async (
 };
 
 export const parseAddress = (address: string) => {
-  const [ip, cidr] = address.split("/");
+  const matches = address.match(/([0-9a-fA-F:.]+?)(\/\d+)?$/);
+  const ip = matches?.[1] ?? address;
+  const cidr = matches?.[2] ? matches[2].substring(1) : null;
   const isIPv6 = ip.includes(":");
   const mask = cidr ? cidrToNetmask(cidr, isIPv6) : null;
   return { ip, mask };
