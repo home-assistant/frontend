@@ -2201,6 +2201,12 @@
           "size": "[%key:supervisor::backup::size%]",
           "created": "[%key:supervisor::backup::created%]",
           "no_backups": "[%key:supervisor::backup::no_backups%]",
+          "backup_type": "Type",
+          "type": {
+            "manual": "Manual",
+            "automatic": "Automatic"
+          },
+          "locations": "Locations",
           "create": {
             "title": "Create backup",
             "description": "Create a backup of your current configuration directory, this will take some time.",
@@ -2224,6 +2230,16 @@
                   "name": "Default location"
                 }
               }
+            },
+            "delete_selected": {
+              "title": "Delete selected backups",
+              "text": "These backups will be permanently deleted.",
+              "failed": "Failed to delete selected backups"
+            },
+            "delete": {
+              "title": "Delete backup",
+              "text": "This backup will be permanently deleted.",
+              "failed": "Failed to delete backup"
             }
           },
           "agents": {
@@ -2255,7 +2271,7 @@
             "menu": {
               "upload_backup": "Upload backup"
             },
-            "new_backup": "Backup now",
+            "new_backup": "Backup now!",
             "progress": {
               "heading": {
                 "create_backup": "Creating backup",
@@ -2349,6 +2365,14 @@
               "locations_local_only": "Local backup only",
               "locations_none": "No locations configured"
             }
+          },
+          "backups": {
+            "header": "My backups",
+            "menu": {
+              "upload_backup": "[%key:ui::panel::config::backup::overview::menu::upload_backup%]"
+            },
+            "delete_selected": "Delete selected",
+            "new_backup": "[%key:ui::panel::config::backup::overview::new_backup%]"
           }
         },
         "tag": {

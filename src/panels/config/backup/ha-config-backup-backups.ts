@@ -17,7 +17,6 @@ import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../../common/navigate";
-import { capitalizeFirstLetter } from "../../../common/string/capitalize-first-letter";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type {
   DataTableColumnContainer,
@@ -70,9 +69,9 @@ interface BackupRow extends DataTableRowData, BackupContent {
   formatted_type: string;
 }
 
-type BackupType = "automatic" | "manual" | "imported";
+type BackupType = "automatic" | "manual";
 
-const TYPE_ORDER: Array<BackupType> = ["automatic", "manual", "imported"];
+const TYPE_ORDER: Array<BackupType> = ["automatic", "manual"];
 
 @customElement("ha-config-backup-backups")
 class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
@@ -158,13 +157,13 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
           relativeTime(new Date(backup.date), this.hass.locale),
       },
       formatted_type: {
-        title: "Type",
+        title: localize("ui.panel.config.backup.backup_type"),
         filterable: true,
         sortable: true,
         groupable: true,
       },
       locations: {
-        title: "Locations",
+        title: localize("ui.panel.config.backup.locations"),
         showNarrow: true,
         minWidth: "60px",
         template: (backup) => html`
@@ -246,10 +245,13 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     })
   );
 
-  private _groupOrder = memoizeOne((activeGrouping: string | undefined) =>
-    activeGrouping === "formatted_type"
-      ? TYPE_ORDER.map((type) => this._formatBackupType(type))
-      : undefined
+  private _groupOrder = memoizeOne(
+    (activeGrouping: string | undefined, localize: LocalizeFunc) =>
+      activeGrouping === "formatted_type"
+        ? TYPE_ORDER.map((type) =>
+            localize(`ui.panel.config.backup.type.${type}`)
+          )
+        : undefined
   );
 
   private _handleGroupingChanged(ev: CustomEvent) {
@@ -266,15 +268,11 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     this._selected = ev.detail.value;
   }
 
-  private _formatBackupType(type: BackupType): string {
-    // Todo translate
-    return capitalizeFirstLetter(type);
-  }
-
   private _data = memoizeOne(
     (
       backups: BackupContent[],
-      filters: DataTableFiltersValues
+      filters: DataTableFiltersValues,
+      localize: LocalizeFunc
     ): BackupRow[] => {
       const typeFilter = filters["ha-filter-states"] as string[] | undefined;
       let filteredBackups = backups;
@@ -286,12 +284,13 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
             (!backup.with_automatic_settings && typeFilter.includes("manual"))
         );
       }
-      return filteredBackups.map((backup) => ({
-        ...backup,
-        formatted_type: this._formatBackupType(
-          backup.with_automatic_settings ? "automatic" : "manual"
-        ),
-      }));
+      return filteredBackups.map((backup) => {
+        const type = backup.with_automatic_settings ? "automatic" : "manual";
+        return {
+          ...backup,
+          formatted_type: localize(`ui.panel.config.backup.type.${type}`),
+        };
+      });
     }
   );
 
@@ -304,7 +303,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         has-fab
         .tabs=${[
           {
-            name: "My backups",
+            name: this.hass.localize("ui.panel.config.backup.backups.header"),
             path: `/config/backup/list`,
           },
         ]}
@@ -326,14 +325,17 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         .selected=${this._selected.length}
         .initialGroupColumn=${this._activeGrouping}
         .initialCollapsedGroups=${this._activeCollapsed}
-        .groupOrder=${this._groupOrder(this._activeGrouping)}
+        .groupOrder=${this._groupOrder(
+          this._activeGrouping,
+          this.hass.localize
+        )}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
         @selection-changed=${this._handleSelectionChanged}
         .route=${this.route}
         @row-click=${this._showBackupDetails}
         .columns=${this._columns(this.hass.localize)}
-        .data=${this._data(this.backups, this._filters)}
+        .data=${this._data(this.backups, this._filters, this.hass.localize)}
         .noDataText=${this.hass.localize("ui.panel.config.backup.no_backups")}
         .searchLabel=${this.hass.localize(
           "ui.panel.config.backup.picker.search"
@@ -351,7 +353,9 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
               @request-selected=${this._uploadBackup}
             >
               <ha-svg-icon slot="graphic" .path=${mdiUpload}></ha-svg-icon>
-              Upload backup
+              ${this.hass.localize(
+                "ui.panel.config.backup.backups.menu.upload_backup"
+              )}
             </ha-list-item>
           </ha-button-menu>
         </div>
@@ -360,7 +364,9 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
           ${!this.narrow
             ? html`
                 <ha-button @click=${this._deleteSelected} class="warning">
-                  Delete selected
+                  ${this.hass.localize(
+                    "ui.panel.config.backup.backups.delete_selected"
+                  )}
                 </ha-button>
               `
             : html`
@@ -372,7 +378,9 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
                   @click=${this._deleteSelected}
                 ></ha-icon-button>
                 <simple-tooltip animation-delay="0" for="delete-btn">
-                  Delete selected
+                  ${this.hass.localize(
+                    "ui.panel.config.backup.backups.delete_selected"
+                  )}
                 </simple-tooltip>
               `}
         </div>
@@ -392,7 +400,9 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
               <ha-fab
                 slot="fab"
                 ?disabled=${backupInProgress}
-                .label=${"Backup now"}
+                .label=${this.hass.localize(
+                  "ui.panel.config.backup.backups.new_backup"
+                )}
                 extended
                 @click=${this._newBackup}
               >
@@ -404,16 +414,12 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     `;
   }
 
-  private _states = memoizeOne((_localize: LocalizeFunc) => [
-    {
-      value: "automatic",
-      label: "Automatic",
-    },
-    {
-      value: "manual",
-      label: "Manual",
-    },
-  ]);
+  private _states = memoizeOne((localize: LocalizeFunc) =>
+    TYPE_ORDER.map((type) => ({
+      value: type,
+      label: localize(`ui.panel.config.backup.type.${type}`),
+    }))
+  );
 
   private _filterChanged(ev) {
     const type = ev.target.localName;
@@ -489,8 +495,8 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
 
   private async _deleteBackup(backup: BackupContent): Promise<void> {
     const confirm = await showConfirmationDialog(this, {
-      title: "Delete backup",
-      text: "This backup will be permanently deleted.",
+      title: this.hass.localize("ui.panel.config.backup.dialogs.delete.title"),
+      text: this.hass.localize("ui.panel.config.backup.dialogs.delete.text"),
       confirmText: this.hass.localize("ui.common.delete"),
       destructive: true,
     });
@@ -499,17 +505,31 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
       return;
     }
 
-    await deleteBackup(this.hass, backup.backup_id);
-    if (this._selected.includes(backup.backup_id)) {
-      this._selected = this._selected.filter((id) => id !== backup.backup_id);
+    try {
+      await deleteBackup(this.hass, backup.backup_id);
+      if (this._selected.includes(backup.backup_id)) {
+        this._selected = this._selected.filter((id) => id !== backup.backup_id);
+      }
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.backup.dialogs.delete.failed"
+        ),
+        text: extractApiErrorMessage(err),
+      });
+      return;
     }
     fireEvent(this, "ha-refresh-backup-info");
   }
 
   private async _deleteSelected() {
     const confirm = await showConfirmationDialog(this, {
-      title: "Delete selected backups",
-      text: "These backups will be permanently deleted.",
+      title: this.hass.localize(
+        "ui.panel.config.backup.dialogs.delete_selected.title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.backup.dialogs.delete_selected.text"
+      ),
       confirmText: this.hass.localize("ui.common.delete"),
       destructive: true,
     });
@@ -524,7 +544,9 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
       );
     } catch (err: any) {
       showAlertDialog(this, {
-        title: "Failed to delete backups",
+        title: this.hass.localize(
+          "ui.panel.config.backup.dialogs.delete_selected.failed"
+        ),
         text: extractApiErrorMessage(err),
       });
       return;
