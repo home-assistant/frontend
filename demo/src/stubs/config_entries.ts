@@ -11,7 +11,7 @@ export const mockConfigEntries = (hass: MockHomeAssistant) => {
     supports_remove_device: false,
     supports_unload: true,
     supports_reconfigure: true,
-    supported_subentry_flows: [],
+    supported_subentry_types: {},
     pref_disable_new_entities: false,
     pref_disable_polling: false,
     disabled_by: null,

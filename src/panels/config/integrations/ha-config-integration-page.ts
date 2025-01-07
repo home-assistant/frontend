@@ -940,7 +940,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
             )}
           </ha-md-menu-item>
 
-          ${Object.keys(item.supported_subentry_flows).map(
+          ${Object.keys(item.supported_subentry_types).map(
             (flowType) =>
               html`<ha-md-menu-item
                 @click=${this._addSubEntry}
@@ -1065,7 +1065,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           subEntry
         )}</span
       >
-      ${configEntry.supported_subentry_flows[subEntry.subentry_type]
+      ${configEntry.supported_subentry_types[subEntry.subentry_type]
         ?.supports_reconfigure
         ? html`
             <ha-button slot="end" @click=${this._handleReconfigureSub}>
