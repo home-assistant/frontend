@@ -55,12 +55,17 @@ class DialogShowBackupEncryptionKey extends LitElement implements HassDialog {
             .path=${mdiClose}
             @click=${this._closeDialog}
           ></ha-icon-button>
-          <span slot="title">Encryption key</span>
+          <span slot="title">
+            ${this.hass.localize(
+              "ui.panel.config.backup.dialogs.show_encryption_key.title"
+            )}
+          </span>
         </ha-dialog-header>
         <div slot="content">
           <p>
-            Make sure you save the encryption key in a secure place so always
-            have access to your backups.
+            ${this.hass.localize(
+              "ui.panel.config.backup.dialogs.show_encryption_key.description"
+            )}
           </p>
           <div class="encryption-key">
             <p>${this._params?.currentKey}</p>
@@ -71,19 +76,29 @@ class DialogShowBackupEncryptionKey extends LitElement implements HassDialog {
           </div>
           <ha-md-list>
             <ha-md-list-item>
-              <span slot="headline">Download emergency kit</span>
+              <span slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.backup.encryption_key.download_emergency_kit"
+                )}
+              </span>
               <span slot="supporting-text">
-                We recommend saving this encryption key file somewhere secure.
+                ${this.hass.localize(
+                  "ui.panel.config.backup.encryption_key.download_emergency_kit_description"
+                )}
               </span>
               <ha-button slot="end" @click=${this._download}>
                 <ha-svg-icon .path=${mdiDownload} slot="icon"></ha-svg-icon>
-                Download
+                ${this.hass.localize(
+                  "ui.panel.config.backup.encryption_key.download_emergency_kit_action"
+                )}
               </ha-button>
             </ha-md-list-item>
           </ha-md-list>
         </div>
         <div slot="actions">
-          <ha-button @click=${this._closeDialog}>Close</ha-button>
+          <ha-button @click=${this._closeDialog}>
+            ${this.hass.localize("ui.dialogs.generic.close")}
+          </ha-button>
         </div>
       </ha-md-dialog>
     `;
@@ -123,9 +138,6 @@ class DialogShowBackupEncryptionKey extends LitElement implements HassDialog {
           background: none;
           --md-list-item-leading-space: 0;
           --md-list-item-trailing-space: 0;
-        }
-        ha-button.danger {
-          --mdc-theme-primary: var(--error-color);
         }
         .encryption-key {
           border: 1px solid var(--divider-color);
