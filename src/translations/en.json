@@ -2241,6 +2241,55 @@
               "text": "This backup will be permanently deleted.",
               "failed": "Failed to delete backup"
             },
+            "upload": {
+              "title": "Upload backup",
+              "action": "Upload backup",
+              "input_label": "Select backup file",
+              "supports_tar": "Supports .tar files",
+              "unsupported": {
+                "title": "Unsupported file format",
+                "text": "Please choose a Home Assistant backup file (.tar)"
+              }
+            },
+            "generate": {
+              "sync": {
+                "title": "Synchonization",
+                "name": "Backup name",
+                "locations": "Locations",
+                "locations_description": "What locations you want to automatically backup to.",
+                "locations_options": {
+                  "all": "All ({count})",
+                  "custom": "Custom"
+                },
+                "ha_cloud_alert": {
+                  "title": "Home Assistant Cloud cannot synchronize",
+                  "description": "Add Home Assistant settings data to synchronize this backup to Home Assistant Cloud."
+                }
+              },
+              "data": {
+                "title": "Backup data"
+              },
+              "actions": {
+                "create": "Create backup"
+              }
+            },
+            "new": {
+              "title": "Backup now",
+              "options": "Backup options",
+              "automatic": {
+                "title": "Automatic backup",
+                "description": "Create a backup with the data and locations you have configured."
+              },
+              "manual": {
+                "title": "Manual backup",
+                "description": "Select data and locations for a manual backup."
+              }
+            },
+            "restore": {
+              "title": "Restore backup",
+              "description": "Restore your Home Assistant to a previous state by selecting a backup.",
+              "action": "Restore"
+            },
             "onboarding": {
               "welcome": {
                 "title": "[%key:ui::panel::config::backup::overview::onboarding::title%]",
