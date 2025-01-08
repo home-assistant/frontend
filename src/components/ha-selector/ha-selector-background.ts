@@ -2,7 +2,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { ImageSelector } from "../../data/selector";
+import type { BackgroundSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import "../ha-picture-upload";
 import "../ha-alert";
@@ -15,7 +15,7 @@ export class HaBackgroundSelector extends LitElement {
 
   @property() public value?: any;
 
-  @property({ attribute: false }) public selector!: ImageSelector;
+  @property({ attribute: false }) public selector!: BackgroundSelector;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -51,8 +51,8 @@ export class HaBackgroundSelector extends LitElement {
               <ha-picture-upload
                 .hass=${this.hass}
                 .value=${this.value?.startsWith(URL_PREFIX) ? this.value : null}
-                .original=${this.selector.image?.original}
-                .cropOptions=${this.selector.image?.crop}
+                .original=${this.selector.background?.original}
+                .cropOptions=${this.selector.background?.crop}
                 select-media
                 @change=${this._pictureChanged}
               ></ha-picture-upload>
