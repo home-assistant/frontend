@@ -94,12 +94,12 @@ class ZWaveJSProvisioned extends LitElement {
       },
       unprovision: {
         showNarrow: true,
-        title: localize("ui.panel.config.zwave_js.provisioned.unprovison"),
+        title: localize("ui.panel.config.zwave_js.provisioned.unprovision"),
         type: "icon-button",
         template: (entry) => html`
           <ha-icon-button
             .label=${this.hass.localize(
-              "ui.panel.config.zwave_js.provisioned.unprovison"
+              "ui.panel.config.zwave_js.provisioned.unprovision"
             )}
             .path=${mdiDelete}
             .provisioningEntry=${entry}
