@@ -191,10 +191,15 @@ class HaBackupConfigSchedule extends LitElement {
                 </ha-md-select>
               </ha-md-list-item>
               <ha-md-list-item>
-                <span slot="headline">Backups to keep</span>
+                <span slot="headline">
+                  ${this.hass.localize(
+                    `ui.panel.config.backup.schedule.retention`
+                  )}
+                </span>
                 <span slot="supporting-text">
-                  Based on the maximum number of backups or how many days they
-                  should be kept.
+                  ${this.hass.localize(
+                    `ui.panel.config.backup.schedule.retention_description`
+                  )}
                 </span>
                 <ha-md-select
                   slot="end"

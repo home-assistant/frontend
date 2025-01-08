@@ -389,7 +389,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
 
         <ha-filter-states
           .hass=${this.hass}
-          label="Type"
+          .label=${this.hass.localize("ui.panel.config.backup.backup_type")}
           .value=${this._filters["ha-filter-states"]}
           .states=${this._states(this.hass.localize)}
           @data-table-filter-changed=${this._filterChanged}
