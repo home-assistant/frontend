@@ -2201,6 +2201,12 @@
           "size": "[%key:supervisor::backup::size%]",
           "created": "[%key:supervisor::backup::created%]",
           "no_backups": "[%key:supervisor::backup::no_backups%]",
+          "backup_type": "Type",
+          "type": {
+            "manual": "Manual",
+            "automatic": "Automatic"
+          },
+          "locations": "Locations",
           "create": {
             "title": "Create backup",
             "description": "Create a backup of your current configuration directory, this will take some time.",
@@ -2224,6 +2230,390 @@
                   "name": "Default location"
                 }
               }
+            },
+            "delete_selected": {
+              "title": "Delete selected backups",
+              "text": "These backups will be permanently deleted.",
+              "failed": "Failed to delete selected backups"
+            },
+            "delete": {
+              "title": "Delete backup",
+              "text": "This backup will be permanently deleted.",
+              "failed": "Failed to delete backup"
+            },
+            "upload": {
+              "title": "Upload backup",
+              "action": "Upload backup",
+              "input_label": "Select backup file",
+              "supports_tar": "Supports .tar files",
+              "unsupported": {
+                "title": "Unsupported file format",
+                "text": "Please choose a Home Assistant backup file (.tar)"
+              }
+            },
+            "generate": {
+              "sync": {
+                "title": "Synchonization",
+                "name": "Backup name",
+                "locations": "Locations",
+                "locations_description": "What locations you want to automatically backup to.",
+                "locations_options": {
+                  "all": "All ({count})",
+                  "custom": "Custom"
+                },
+                "ha_cloud_alert": {
+                  "title": "Home Assistant Cloud cannot synchronize",
+                  "description": "Add Home Assistant settings data to synchronize this backup to Home Assistant Cloud."
+                }
+              },
+              "data": {
+                "title": "Backup data"
+              },
+              "actions": {
+                "create": "Create backup"
+              }
+            },
+            "new": {
+              "title": "Backup now",
+              "options": "Backup options",
+              "automatic": {
+                "title": "Automatic backup",
+                "description": "Create a backup with the data and locations you have configured."
+              },
+              "manual": {
+                "title": "Manual backup",
+                "description": "Select data and locations for a manual backup."
+              }
+            },
+            "restore": {
+              "title": "Restore backup",
+              "restore_failed": "Backup restore failed",
+              "confirm": {
+                "description": "Your backup will be restored and all current data will be overwritten. Depending on the size of the backup, this can take a while."
+              },
+              "encryption": {
+                "different_key": "The backup is encrypted. Provide the encryption key to decrypt the backup.",
+                "incorrect_key": "The provided encryption key was incorrect, please try again.",
+                "description": "The Backup is encrypted with a different encryption key than that is saved on this system. Please enter the encryption key for this backup.",
+                "warning": "After restoring the backup, your new backups will be encrypted with the encryption key that was present during the time of this backup.",
+                "input_label": "Encryption key"
+              },
+              "progress": {
+                "restarting": "Restarting Home Assistant",
+                "restoring": "Restoring backup"
+              },
+              "actions": {
+                "restore": "Restore"
+              }
+            },
+            "onboarding": {
+              "welcome": {
+                "title": "[%key:ui::panel::config::backup::overview::onboarding::title%]",
+                "description": "[%key:ui::panel::config::backup::overview::onboarding::description%]"
+              },
+              "key": {
+                "title": "Encryption key",
+                "description": "All your backups are encrypted to keep your data private and secure. We recommend to save this key somewhere secure. As you can only restore your data with the backup encryption key."
+              },
+              "setup": {
+                "title": "Set up automatic backups",
+                "recommended_heading": "Recommended",
+                "recommended_description": "Backup everything daily, keeping three days of backups",
+                "custom_heading": "Custom",
+                "custom_description": "Select when, where, and what to backup"
+              },
+              "schedule": {
+                "title": "Automatic backups",
+                "description": "Let Home Assistant take care of your backups by creating a scheduled backup that also removes older backups."
+              },
+              "data": {
+                "title": "Backup data",
+                "description": "Choose what data to include in your backups. You can always change this later."
+              },
+              "locations": {
+                "title": "Locations",
+                "description": "Home Assistant will upload to these locations when an automatic backup is made. You can use all locations for manual backups."
+              },
+              "save_and_create": "Save and create backup"
+            },
+            "change_encryption_key": {
+              "current": {
+                "title": "Save current encryption key",
+                "description": "Make sure you have saved the current encryption key to make sure you have access to all your current backups. All next backups will use the new encryption key."
+              },
+              "new": {
+                "title": "New encryption key",
+                "description": "All next backups will use the new encryption key. Encryption keeps your backups private and secure."
+              },
+              "done": {
+                "title": "Encryption key changed"
+              },
+              "actions": {
+                "change": "Change encryption key",
+                "done": "Done"
+              }
+            },
+            "set_encryption_key": {
+              "key": {
+                "title": "Set encryption key",
+                "description": "All your backups are encrypted to keep your data private and secure. We recommend to save this key somewhere secure. As you can only restore your data with the backup encryption key."
+              },
+              "done": {
+                "title": "Encryption key set"
+              },
+              "actions": {
+                "set": "Set encryption key",
+                "done": "[%key:ui::panel::config::backup::dialogs::change_encryption_key::actions::done%]"
+              }
+            },
+            "show_encryption_key": {
+              "title": "Encryption key",
+              "description": "Make sure you save the encryption key in a secure place so always have access to your backups."
+            }
+          },
+          "agents": {
+            "cloud_agent_description": "Note: It stores only one backup with a maximum size of 5 GB, regardless of your settings.",
+            "cloud_agent_no_subcription": "You currently do not have an active Home Assistant Cloud subscription.",
+            "network_mount_agent_description": "Network storage",
+            "no_agents": "No locations configured",
+            "local_agent": "This system"
+          },
+          "data": {
+            "ha_settings": "Home Assistant settings",
+            "ha_settings_description": "The bare minimum needed to restore the system.",
+            "ha_settings_included_description": "The bare minimum needed to restore the system. It is always included in automatic backup data.",
+            "history": "History",
+            "history_description": "This can include large filesize camera recordings.",
+            "media": "Media",
+            "media_description": "For example, camera recordings.",
+            "share_folder": "Share folder",
+            "share_folder_description": "Folder that is often used by add-ons for advanced or older configurations.",
+            "local_addons": "Local add-ons folder",
+            "local_addons_description": "Folder that contains the data of your local add-ons.",
+            "addons": "Add-ons",
+            "addons_description": "Select what add-ons you want to include.",
+            "addons_all": "All",
+            "addons_none": "None",
+            "addons_custom": "Custom"
+          },
+          "data_picker": {
+            "settings": "Settings",
+            "settings_and_history": "Settings and history",
+            "media": "Media",
+            "share_folder": "Share folder",
+            "local_addons": "Local add-ons folder",
+            "addons": "Add-ons"
+          },
+          "schedule": {
+            "use_automatic_backups": "Use automatic backups",
+            "schedule": "Schedule",
+            "schedule_description": "How often you want to create a backup.",
+            "schedule_options": {
+              "daily": "Daily at {time}",
+              "mon": "Monday at {time}",
+              "tue": "Tuesday at {time}",
+              "wed": "Wednesday at {time}",
+              "thu": "Thursday at {time}",
+              "fri": "Friday at {time}",
+              "sat": "Saturday at {time}",
+              "sun": "Sunday at {time}"
+            },
+            "retention": "Retention",
+            "retention_description": "Based on the maximum number of backups or how many days they should be kept.",
+            "retention_presets": {
+              "copies_3": "3 backups",
+              "forever": "Forever",
+              "custom": "Custom"
+            },
+            "retention_units": {
+              "copies": "backups",
+              "days": "days"
+            }
+          },
+          "encryption_key": {
+            "download_emergency_kit": "Download emergency kit",
+            "download_emergency_kit_description": "We recommend to save this encryption key somewhere secure.",
+            "download_emergency_kit_action": "Download",
+            "download_old_emergency_kit": "Download old emergency kit",
+            "download_old_emergency_kit_description": "[%key:ui::panel::config::backup::encryption_key::download_emergency_kit_description%]",
+            "download_old_emergency_kit_action": "[%key:ui::panel::config::backup::encryption_key::download_emergency_kit_action%]",
+            "show_encryption_key": "Show my encryption key",
+            "show_encryption_key_description": "Please keep your encryption key private.",
+            "show_encryption_key_action": "Show",
+            "change_encryption_key": "Change encryption key",
+            "change_encryption_key_description": "All next backups will use this encryption key.",
+            "change_encryption_key_action": "Change",
+            "set_encryption_key": "Set encryption key",
+            "set_encryption_key_description": "Set an encryption key for your backups.",
+            "set_encryption_key_action": "Set"
+          },
+          "emergency_kit_file": {
+            "title": "Home Assistant Backup Emergency Kit",
+            "description": "This emergency kit contains your backup encryption key. You need this key to be able to restore your Home Assistant backups.",
+            "date": "Date:",
+            "instance": "Instance:",
+            "url": "URL:",
+            "encryption_key": "Encryption key:",
+            "more_info": "For more information, visit {link}"
+          },
+          "overview": {
+            "header": "Backup",
+            "menu": {
+              "upload_backup": "Upload backup"
+            },
+            "new_backup": "Backup now!",
+            "onboarding": {
+              "title": "Set up backups",
+              "description": "Backups are essential for a reliable smart home. They help protect the work you've put into setting up your smart home, and if the worst happens, you can get back up and running quickly.",
+              "setup": "Set up backups"
+            },
+            "progress": {
+              "heading": {
+                "create_backup": "Creating backup",
+                "restore_backup": "Restoring backup",
+                "receive_backup": "Receiving backup"
+              },
+              "description": {
+                "create_backup": {
+                  "addon_repositories": "Backing up add-ons repositories",
+                  "addons": "Backing up add-ons",
+                  "await_addon_restarts": "Waiting for add-ons to restart",
+                  "docker_config": "Backing up Docker configuration",
+                  "finishing_file": "Finishing backup file",
+                  "folders": "Backing up folders",
+                  "home_assistant": "Backing up Home Assistant",
+                  "upload_to_agents": "Uploading to locations"
+                },
+                "restore_backup": {
+                  "addon_repositories": "Restoring add-ons repositories",
+                  "addons": "Restoring add-ons",
+                  "await_addon_restarts": "Waiting for add-ons to restart",
+                  "await_home_assistant_restart": "Waiting for Home Assistant to restart",
+                  "check_home_assistant": "Checking Home Assistant",
+                  "docker_config": "Restoring Docker configuration",
+                  "download_from_agent": "Downloading from location",
+                  "folders": "Restoring folders",
+                  "home_assistant": "Restoring Home Assistant",
+                  "remove_delta_addons": "Removing delta add-ons"
+                },
+                "receive_backup": {
+                  "receive_file": "Receiving file",
+                  "upload_to_agents": "Uploading to locations"
+                }
+              }
+            },
+            "summary": {
+              "next_backup_description": {
+                "daily": "Next automatic backup tomorrow at {time}",
+                "mon": "Next automatic backup next Monday at {time}",
+                "tue": "Next automatic backup next Tuesday at {time}",
+                "wed": "Next automatic backup next Wednesday at {time}",
+                "thu": "Next automatic backup next Thursday at {time}",
+                "fri": "Next automatic backup next Friday at {time}",
+                "sat": "Next automatic backup next Saturday at {time}",
+                "sun": "Next automatic backup next Sunday at {time}",
+                "never": "No automatic backups scheduled"
+              },
+              "loading": "Loading backups...",
+              "last_backup_failed_heading": "Last automatic backup failed",
+              "last_backup_failed_description": "The last automatic backup triggered {relative_time} wasn't successful.",
+              "last_backup_failed_locations_description": "The last automatic backup created {relative_time} wasn't stored in all locations.",
+              "last_successful_backup_description": "Last successful backup {relative_time} and stored in {count} {count, plural,\n one {location}\n other {locations}\n}.",
+              "no_backup_heading": "No automatic backup available",
+              "no_backup_description": "You have no automatic backups yet.",
+              "backup_too_old_heading": "No backup for {count} {count, plural,\n one {day}\n other {days}\n}",
+              "backup_success_heading": "Backed up"
+            },
+            "backups": {
+              "title": "My backups",
+              "automatic": "{count} automatic {count, plural,\n one {backup}\n other {backups}\n}",
+              "manual": "{count} manual {count, plural,\n one {backup}\n other {backups}\n}",
+              "total_size": "{size} in total",
+              "show_all": "Show all backups"
+            },
+            "settings": {
+              "title": "Backup settings",
+              "configure": "Configure backup settings",
+              "schedule": "Automatic backup schedule and retention",
+              "schedule_copies_all": "and keep all backups",
+              "schedule_copies_backups": "and keep {count} {count, plural,\n one {backup}\n other {backups}\n}",
+              "schedule_copies_days": "and keep {count} {count, plural,\n one {day}\n other {days}\n}",
+              "schedule_daily": "Daily at {time}",
+              "schedule_mon": "Weekly on Mondays at {time}",
+              "schedule_tue": "Weekly on Tuesdays at {time}",
+              "schedule_wed": "Weekly on Wednesdays at {time}",
+              "schedule_thu": "Weekly on Thursdays at {time}",
+              "schedule_fri": "Weekly on Fridays at {time}",
+              "schedule_sat": "Weekly on Saturdays at {time}",
+              "schedule_sun": "Weekly on Sundays at {time}",
+              "schedule_never": "Automatic backups are not scheduled",
+              "data": "Home Assistant data that is included",
+              "data_settings_history": "Settings and history",
+              "data_settings_only": "Settings only",
+              "addons": "Add-ons that are included",
+              "addons_all": "All add-ons",
+              "addons_many": "{count} {count, plural,\n one {add-on}\n other {add-ons}\n}",
+              "addons_none": "No add-ons",
+              "locations": "Locations where backup is stored to",
+              "locations_one": "Store in {name}",
+              "locations_many": "Store in {count} off-site {count, plural,\n one {location}\n other {locations}\n}",
+              "locations_local_only": "Local backup only",
+              "locations_none": "No locations configured"
+            }
+          },
+          "backups": {
+            "header": "My backups",
+            "menu": {
+              "upload_backup": "[%key:ui::panel::config::backup::overview::menu::upload_backup%]"
+            },
+            "delete_selected": "Delete selected",
+            "new_backup": "[%key:ui::panel::config::backup::overview::new_backup%]"
+          },
+          "settings": {
+            "header": "Backup settings",
+            "menu": {
+              "change_default_location": "Change default action location"
+            },
+            "schedule": {
+              "title": "Automatic backups",
+              "description": "Let Home Assistant take care of your backups by creating a scheduled backup that also removes older backups."
+            },
+            "data": {
+              "title": "Backup data"
+            },
+            "locations": {
+              "title": "Locations",
+              "description": "Your backup will be stored on these locations when this default backup is created. You can use all locations for custom backups.",
+              "no_location": "No location selected",
+              "no_location_description": "You have to select at least one location to create a backup."
+            },
+            "encryption_key": {
+              "title": "Encryption key",
+              "description": "Keep this encryption key in a safe place, as you will need it to access your backup, allowing it to be restored. Download them as an emergency kit file and store it somewhere safe. Encryption keeps your backups private and secure."
+            }
+          },
+          "details": {
+            "header": "Backup",
+            "not_found": "Not found",
+            "not_found_description": "Backup matching ''{backupId}'' not found",
+            "error": "Could not fetch backup details",
+            "summary": {
+              "title": "Backup",
+              "size": "Size",
+              "created": "Created",
+              "protected": "Protected",
+              "protected_encrypted_aes_128": "Encrypted AES-128",
+              "protected_not_encrypted": "Not encrypted"
+            },
+            "restore": {
+              "title": "Selected what to restore",
+              "action": "Restore"
+            },
+            "locations": {
+              "title": "Locations",
+              "backup_stored": "Backup stored",
+              "backup_failed": "Backup failed",
+              "download": "Download from this location"
             }
           }
         },
@@ -2775,7 +3165,7 @@
                   },
                   "wakeword": {
                     "title": "Streaming wake word engine",
-                    "description": " If a device supports streaming wake word engines, you can activate Assist by saying this word.",
+                    "description": "If a device supports streaming wake word engines, you can activate Assist by saying this word.",
                     "note": "Most recent devices support on-device wake word engines and are configured on their device page."
                   }
                 },
@@ -2796,7 +3186,7 @@
                 },
                 "remote_access": {
                   "title": "Remote access",
-                  "text": " Secure remote access to your system while supporting the development of Home Assistant."
+                  "text": "Secure remote access to your system while supporting the development of Home Assistant."
                 }
               },
               "and_more": "And more",

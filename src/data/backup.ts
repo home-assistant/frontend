@@ -241,7 +241,7 @@ export const computeBackupAgentName = (
   agentIds?: string[]
 ) => {
   if (isLocalAgent(agentId)) {
-    return "This system";
+    return localize("ui.panel.config.backup.agents.local_agent");
   }
   const [domain, name] = agentId.split(".");
 
@@ -298,23 +298,22 @@ export const generateEmergencyKit = (
   encryptionKey: string
 ) =>
   "data:text/plain;charset=utf-8," +
-  encodeURIComponent(`Home Assistant Backup Emergency Kit
+  encodeURIComponent(`${hass.localize("ui.panel.config.backup.emergency_kit_file.title")}
 
-This emergency kit contains your backup encryption key. You need this key
-to be able to restore your Home Assistant backups.
+${hass.localize("ui.panel.config.backup.emergency_kit_file.description")}
 
-Date: ${formatDateTime(new Date(), hass.locale, hass.config)}
+${hass.localize("ui.panel.config.backup.emergency_kit_file.date")} ${formatDateTime(new Date(), hass.locale, hass.config)}
 
-Instance:
+${hass.localize("ui.panel.config.backup.emergency_kit_file.instance")}
 ${hass.config.location_name}
 
-URL:
+${hass.localize("ui.panel.config.backup.emergency_kit_file.url")}
 ${hass.auth.data.hassUrl}
 
-Encryption key:
+${hass.localize("ui.panel.config.backup.emergency_kit_file.encryption_key")}
 ${encryptionKey}
 
-For more information visit: https://www.home-assistant.io/more-info/backup-emergency-kit`);
+${hass.localize("ui.panel.config.backup.emergency_kit_file.more_info", { link: "https://www.home-assistant.io/more-info/backup-emergency-kit" })}`);
 
 export const geneateEmergencyKitFileName = (
   hass: HomeAssistant,

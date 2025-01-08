@@ -77,7 +77,11 @@ export class HaBackupDataPicker extends LitElement {
 
       if (data.homeassistant_included) {
         items.push({
-          label: `Settings${data.database_included ? " and history" : ""}`,
+          label: data.database_included
+            ? this.hass.localize(
+                "ui.panel.config.backup.data_picker.settings_and_history"
+              )
+            : this.hass.localize("ui.panel.config.backup.data_picker.settings"),
           id: "config",
           version: data.homeassistant_version,
         });
@@ -93,8 +97,17 @@ export class HaBackupDataPicker extends LitElement {
   );
 
   private _localizeFolder(folder: string): string {
-    if (folder === "addons/local") {
-      return "Local addons";
+    switch (folder) {
+      case "media":
+        return this.hass.localize("ui.panel.config.backup.data_picker.media");
+      case "share":
+        return this.hass.localize(
+          "ui.panel.config.backup.data_picker.share_folder"
+        );
+      case "addons/local":
+        return this.hass.localize(
+          "ui.panel.config.backup.data_picker.local_addons"
+        );
     }
     return capitalizeFirstLetter(folder);
   }
@@ -219,7 +232,7 @@ export class HaBackupDataPicker extends LitElement {
               <ha-formfield>
                 <ha-backup-formfield-label
                   slot="label"
-                  .label=${"Home Assistant"}
+                  label="Home Assistant"
                   .iconPath=${mdiHomeAssistant}
                 >
                 </ha-backup-formfield-label>
@@ -265,7 +278,9 @@ export class HaBackupDataPicker extends LitElement {
               <ha-formfield>
                 <ha-backup-formfield-label
                   slot="label"
-                  .label=${"Add-ons"}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.backup.data_picker.local_addons"
+                  )}
                   .iconPath=${mdiPuzzle}
                 >
                 </ha-backup-formfield-label>
