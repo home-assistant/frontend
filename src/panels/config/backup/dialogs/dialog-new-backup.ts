@@ -60,13 +60,17 @@ class DialogNewBackup extends LitElement implements HassDialog {
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
-          <span slot="title">Backup now</span>
+          <span slot="title">
+            ${this.hass.localize("ui.panel.config.backup.dialogs.new.title")}
+          </span>
         </ha-dialog-header>
         <div slot="content">
           <ha-md-list
             innerRole="listbox"
             itemRoles="option"
-            innerAriaLabel="Backup options"
+            .innerAriaLabel=${this.hass.localize(
+              "ui.panel.config.backup.dialogs.new.options"
+            )}
             rootTabbable
             dialogInitialFocus
           >
@@ -76,17 +80,29 @@ class DialogNewBackup extends LitElement implements HassDialog {
               .disabled=${!this._params.config.create_backup.password}
             >
               <ha-svg-icon slot="start" .path=${mdiCalendarSync}></ha-svg-icon>
-              <span slot="headline">Automatic backup</span>
+              <span slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.backup.dialogs.new.automatic.description"
+                )}
+              </span>
               <span slot="supporting-text">
-                Create a backup with the data and locations you have configured.
+                ${this.hass.localize(
+                  "ui.panel.config.backup.dialogs.new.automatic.description"
+                )}
               </span>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
             <ha-md-list-item @click=${this._manual} type="button">
               <ha-svg-icon slot="start" .path=${mdiGestureTap}></ha-svg-icon>
-              <span slot="headline">Manual backup</span>
+              <span slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.backup.dialogs.new.manual.title"
+                )}
+              </span>
               <span slot="supporting-text">
-                Select data and locations for a manual backup.
+                ${this.hass.localize(
+                  "ui.panel.config.backup.dialogs.new.manual.description"
+                )}
               </span>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
