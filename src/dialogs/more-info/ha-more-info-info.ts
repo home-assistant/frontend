@@ -1,6 +1,6 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../common/entity/compute_domain";
 import type { ExtEntityRegistryEntry } from "../../data/entity_registry";
 import type { HomeAssistant } from "../../types";
