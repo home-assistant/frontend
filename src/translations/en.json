@@ -2461,7 +2461,7 @@
             "menu": {
               "upload_backup": "Upload backup"
             },
-            "new_backup": "Backup now!",
+            "new_backup": "Backup now",
             "onboarding": {
               "title": "Set up backups",
               "description": "Backups are essential for a reliable smart home. They help protect the work you've put into setting up your smart home, and if the worst happens, you can get back up and running quickly.",
