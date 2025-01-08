@@ -99,7 +99,8 @@ export const computeShowHistoryComponent = (
 
 export const computeShowLogBookComponent = (
   hass: HomeAssistant,
-  entityId: string
+  entityId: string,
+  sensorNumericalDeviceClasses: string[] = []
 ): boolean => {
   if (!isComponentLoaded(hass, "logbook")) {
     return false;
@@ -113,7 +114,12 @@ export const computeShowLogBookComponent = (
   const domain = computeDomain(entityId);
   if (
     (CONTINUOUS_DOMAINS.includes(domain) &&
-      isNumericEntity(domain, stateObj, undefined, [], false)) ||
+      isNumericEntity(
+        domain,
+        stateObj,
+        undefined,
+        sensorNumericalDeviceClasses
+      )) ||
     DOMAINS_MORE_INFO_NO_HISTORY.includes(domain)
   ) {
     return false;

@@ -1,6 +1,6 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import type { ChartResizeOptions } from "../../components/chart/ha-chart-base";
 import type { HomeAssistant } from "../../types";
 import {
@@ -10,6 +10,7 @@ import {
 import "./ha-more-info-history";
 import type { MoreInfoHistory } from "./ha-more-info-history";
 import "./ha-more-info-logbook";
+import { getSensorNumericDeviceClasses } from "../../data/sensor";
 
 @customElement("ha-more-info-history-and-logbook")
 export class MoreInfoHistoryAndLogbook extends LitElement {
@@ -19,6 +20,18 @@ export class MoreInfoHistoryAndLogbook extends LitElement {
 
   @query("ha-more-info-history")
   private _history?: MoreInfoHistory;
+
+  @state() private _sensorNumericDeviceClasses?: string[] = [];
+
+  private async _loadNumericDeviceClasses() {
+    const deviceClasses = await getSensorNumericDeviceClasses(this.hass);
+    this._sensorNumericDeviceClasses = deviceClasses.numeric_device_classes;
+  }
+
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    this._loadNumericDeviceClasses();
+  }
 
   public resize(options?: ChartResizeOptions) {
     this._history?.resize(options);
@@ -34,7 +47,11 @@ export class MoreInfoHistoryAndLogbook extends LitElement {
             ></ha-more-info-history>
           `
         : ""}
-      ${computeShowLogBookComponent(this.hass, this.entityId)
+      ${computeShowLogBookComponent(
+        this.hass,
+        this.entityId,
+        this._sensorNumericDeviceClasses
+      )
         ? html`
             <ha-more-info-logbook
               .hass=${this.hass}
