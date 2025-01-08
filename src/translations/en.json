@@ -2259,7 +2259,7 @@
             "media_description": "For example, camera recordings.",
             "share_folder": "Share folder",
             "share_folder_description": "Folder that is often used by add-ons for advanced or older configurations.",
-            "local_addons": "Local addons folder",
+            "local_addons": "Local add-ons folder",
             "local_addons_description": "Folder that contains the data of your local add-ons.",
             "addons": "Add-ons",
             "addons_description": "Select what add-ons you want to include.",
@@ -2272,7 +2272,7 @@
             "settings_and_history": "Settings and history",
             "media": "Media",
             "share_folder": "Share folder",
-            "local_addons": "Local addons folder",
+            "local_addons": "Local add-ons folder",
             "addons": "Add-ons"
           },
           "schedule": {
