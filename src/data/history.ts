@@ -518,15 +518,13 @@ export const computeHistory = (
 
     let unit: string | undefined;
 
-    const isNumeric =
-      forceNumeric ||
-      isNumericFromDomain(domain) ||
-      (currentState != null &&
-        isNumericFromAttributes(currentState.attributes)) ||
-      (currentState != null &&
-        domain === "sensor" &&
-        isNumericSensorEntity(currentState, sensorNumericalDeviceClasses)) ||
-      numericStateFromHistory != null;
+    const isNumeric = isNumericEntity(
+      domain,
+      currentState,
+      numericStateFromHistory,
+      sensorNumericalDeviceClasses,
+      forceNumeric
+    );
 
     if (isNumeric) {
       unit =
@@ -600,6 +598,21 @@ export const computeGroupKey = (
   device_class: string | undefined,
   splitDeviceClasses: boolean
 ) => (splitDeviceClasses ? `${unit}_${device_class || ""}` : unit);
+
+export const isNumericEntity = (
+  domain: string,
+  currentState: HassEntity | undefined,
+  numericStateFromHistory: EntityHistoryState | undefined,
+  sensorNumericalDeviceClasses: string[],
+  forceNumeric = false
+): boolean =>
+  forceNumeric ||
+  isNumericFromDomain(domain) ||
+  (currentState != null && isNumericFromAttributes(currentState.attributes)) ||
+  (currentState != null &&
+    domain === "sensor" &&
+    isNumericSensorEntity(currentState, sensorNumericalDeviceClasses)) ||
+  numericStateFromHistory != null;
 
 export const mergeHistoryResults = (
   historyResult: HistoryResult,
