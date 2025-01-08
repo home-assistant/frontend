@@ -97,9 +97,6 @@ export class MoreInfoDialog extends LitElement {
 
   @state() private _infoEditMode = false;
 
-  @query("ha-more-info-info, ha-more-info-history-and-logbook")
-  private _history?: MoreInfoInfo | MoreInfoHistoryAndLogbook;
-
   @state() private _sensorNumericDeviceClasses?: string[] = [];
 
   public showDialog(params: MoreInfoDialogParams) {
