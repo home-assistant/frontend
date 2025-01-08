@@ -51,6 +51,7 @@ export class HaTextSelector extends LitElement {
           .inputType=${this.selector.text?.type}
           .inputSuffix=${this.selector.text?.suffix}
           .inputPrefix=${this.selector.text?.prefix}
+          .helper=${this.helper}
           .autocomplete=${this.selector.text?.autocomplete}
           @value-changed=${this._handleChange}
         >
