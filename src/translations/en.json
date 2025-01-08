@@ -4862,7 +4862,7 @@
           "operational_dataset": "Operational dataset",
           "change_channel": "Change channel",
           "change_channel_initiated_title": "Channel change in progress",
-          "change_channel_initiated_text": "The channel change has been initiated and will complete in {delay} minutes.",
+          "change_channel_initiated_text": "The channel change has been initiated and will complete in {delay} {delay, plural,\n  one {minute}\n  other {minutes}\n}.",
           "change_channel_invalid": "Invalid channel",
           "change_channel_label": "Channel",
           "change_channel_multiprotocol_enabled_title": "The Thread radio has multiprotocol enabled",
