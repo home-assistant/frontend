@@ -66,14 +66,6 @@ class DialogSetBackupEncryptionKey extends LitElement implements HassDialog {
     this._dialog.close();
   }
 
-  private _previousStep() {
-    const index = STEPS.indexOf(this._step!);
-    if (index === 0) {
-      return;
-    }
-    this._step = STEPS[index - 1];
-  }
-
   private _nextStep() {
     const index = STEPS.indexOf(this._step!);
     if (index === STEPS.length - 1) {
