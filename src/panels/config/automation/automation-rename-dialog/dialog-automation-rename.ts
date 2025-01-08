@@ -323,6 +323,14 @@ class DialogAutomationRename extends LitElement implements HassDialog {
         ha-dialog {
           --dialog-content-padding: 0 24px 24px 24px;
         }
+
+        @media all and (min-width: 500px) {
+          ha-dialog {
+            --mdc-dialog-min-width: min(500px, 95vw);
+            --mdc-dialog-max-width: min(500px, 95vw);
+          }
+        }
+
         ha-textfield,
         ha-textarea,
         ha-icon-picker,

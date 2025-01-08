@@ -1,6 +1,6 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import type { HomeAssistant } from "../../types";
 import {
   computeShowHistoryComponent,
@@ -8,12 +8,25 @@ import {
 } from "./const";
 import "./ha-more-info-history";
 import "./ha-more-info-logbook";
+import { getSensorNumericDeviceClasses } from "../../data/sensor";
 
 @customElement("ha-more-info-history-and-logbook")
 export class MoreInfoHistoryAndLogbook extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public entityId!: string;
+
+  @state() private _sensorNumericDeviceClasses?: string[] = [];
+
+  private async _loadNumericDeviceClasses() {
+    const deviceClasses = await getSensorNumericDeviceClasses(this.hass);
+    this._sensorNumericDeviceClasses = deviceClasses.numeric_device_classes;
+  }
+
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    this._loadNumericDeviceClasses();
+  }
 
   protected render() {
     return html`
@@ -25,7 +38,11 @@ export class MoreInfoHistoryAndLogbook extends LitElement {
             ></ha-more-info-history>
           `
         : ""}
-      ${computeShowLogBookComponent(this.hass, this.entityId)
+      ${computeShowLogBookComponent(
+        this.hass,
+        this.entityId,
+        this._sensorNumericDeviceClasses
+      )
         ? html`
             <ha-more-info-logbook
               .hass=${this.hass}
