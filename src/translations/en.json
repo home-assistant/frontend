@@ -2240,6 +2240,70 @@
               "title": "Delete backup",
               "text": "This backup will be permanently deleted.",
               "failed": "Failed to delete backup"
+            },
+            "onboarding": {
+              "welcome": {
+                "title": "[%key:ui::panel::config::backup::overview::onboarding::title%]",
+                "description": "[%key:ui::panel::config::backup::overview::onboarding::description%]"
+              },
+              "key": {
+                "title": "Encryption key",
+                "description": "All your backups are encrypted to keep your data private and secure. We recommend to save this key somewhere secure. As you can only restore your data with the backup encryption key."
+              },
+              "setup": {
+                "title": "Set up automatic backups",
+                "recommended_heading": "Recommended",
+                "recommended_description": "Backup everything daily, keeping three days of backups",
+                "custom_heading": "Custom",
+                "custom_description": "Select when, where, and what to backup"
+              },
+              "schedule": {
+                "title": "Automatic backups",
+                "description": "Let Home Assistant take care of your backups by creating a scheduled backup that also removes older backups."
+              },
+              "data": {
+                "title": "Backup data",
+                "description": "Choose what data to include in your backups. You can always change this later."
+              },
+              "locations": {
+                "title": "Locations",
+                "description": "Home Assistant will upload to these locations when an automatic backup is made. You can use all locations for manual backups."
+              },
+              "save_and_create": "Save and create backup"
+            },
+            "change_encryption_key": {
+              "current": {
+                "title": "Save current encryption key",
+                "description": "Make sure you have saved the current encryption key to make sure you have access to all your current backups. All next backups will use the new encryption key."
+              },
+              "new": {
+                "title": "New encryption key",
+                "description": "All next backups will use the new encryption key. Encryption keeps your backups private and secure."
+              },
+              "done": {
+                "title": "Encryption key changed"
+              },
+              "actions": {
+                "change": "Change encryption key",
+                "done": "Done"
+              }
+            },
+            "set_encryption_key": {
+              "key": {
+                "title": "Set encryption key",
+                "description": "All your backups are encrypted to keep your data private and secure. We recommend to save this key somewhere secure. As you can only restore your data with the backup encryption key."
+              },
+              "done": {
+                "title": "Encryption key set"
+              },
+              "actions": {
+                "set": "Set encryption key",
+                "done": "[%key:ui::panel::config::backup::dialogs::change_encryption_key::actions::done%]"
+              }
+            },
+            "show_encryption_key": {
+              "title": "Encryption key",
+              "description": "Make sure you save the encryption key in a secure place so always have access to your backups."
             }
           },
           "agents": {
@@ -2278,7 +2342,7 @@
           "schedule": {
             "use_automatic_backups": "Use automatic backups",
             "schedule": "Schedule",
-            "schedule_description": " How often you want to create a backup.",
+            "schedule_description": "How often you want to create a backup.",
             "schedule_options": {
               "daily": "Daily at {time}",
               "mon": "Monday at {time}",
@@ -2305,6 +2369,9 @@
             "download_emergency_kit": "Download emergency kit",
             "download_emergency_kit_description": "We recommend to save this encryption key somewhere secure.",
             "download_emergency_kit_action": "Download",
+            "download_old_emergency_kit": "Download old emergency kit",
+            "download_old_emergency_kit_description": "[%key:ui::panel::config::backup::encryption_key::download_emergency_kit_description%]",
+            "download_old_emergency_kit_action": "[%key:ui::panel::config::backup::encryption_key::download_emergency_kit_action%]",
             "show_encryption_key": "Show my encryption key",
             "show_encryption_key_description": "Please keep your encryption key private.",
             "show_encryption_key_action": "Show",
@@ -2312,7 +2379,7 @@
             "change_encryption_key_description": "All next backups will use this encryption key.",
             "change_encryption_key_action": "Change",
             "set_encryption_key": "Set encryption key",
-            "set_encryption_key_description": " Set an encryption key for your backups.",
+            "set_encryption_key_description": "Set an encryption key for your backups.",
             "set_encryption_key_action": "Set"
           },
           "emergency_kit_file": {
@@ -3033,7 +3100,7 @@
                   },
                   "wakeword": {
                     "title": "Streaming wake word engine",
-                    "description": " If a device supports streaming wake word engines, you can activate Assist by saying this word.",
+                    "description": "If a device supports streaming wake word engines, you can activate Assist by saying this word.",
                     "note": "Most recent devices support on-device wake word engines and are configured on their device page."
                   }
                 },
@@ -3054,7 +3121,7 @@
                 },
                 "remote_access": {
                   "title": "Remote access",
-                  "text": " Secure remote access to your system while supporting the development of Home Assistant."
+                  "text": "Secure remote access to your system while supporting the development of Home Assistant."
                 }
               },
               "and_more": "And more",
