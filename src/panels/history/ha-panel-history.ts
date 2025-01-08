@@ -36,17 +36,13 @@ import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
 import "../../components/ha-target-picker";
 import "../../components/ha-top-app-bar-fixed";
-import type {
-  EntityHistoryState,
-  HistoryResult,
-  HistoryStates,
-} from "../../data/history";
+import type { HistoryResult } from "../../data/history";
 import {
   computeHistory,
   subscribeHistory,
   mergeHistoryResults,
+  convertStatisticsToHistory,
 } from "../../data/history";
-import type { Statistics } from "../../data/recorder";
 import { fetchStatistics } from "../../data/recorder";
 import { resolveEntityIDs } from "../../data/selector";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
@@ -322,45 +318,16 @@ class HaPanelHistory extends LitElement {
       ["mean", "state"]
     );
 
-    // Maintain the statistic id ordering
-    const orderedStatistics: Statistics = {};
-    statisticIds.forEach((id) => {
-      if (id in statistics) {
-        orderedStatistics[id] = statistics[id];
-      }
-    });
-
-    // Convert statistics to HistoryResult format
-    const statsHistoryStates: HistoryStates = {};
-    Object.entries(orderedStatistics).forEach(([key, value]) => {
-      const entityHistoryStates: EntityHistoryState[] = value.map((e) => ({
-        s: e.mean != null ? e.mean.toString() : e.state!.toString(),
-        lc: e.start / 1000,
-        a: {},
-        lu: e.start / 1000,
-      }));
-      statsHistoryStates[key] = entityHistoryStates;
-    });
-
     const { numeric_device_classes: sensorNumericDeviceClasses } =
       await getSensorNumericDeviceClasses(this.hass);
 
-    this._statisticsHistory = computeHistory(
-      this.hass,
-      statsHistoryStates,
-      [],
-      this.hass.localize,
+    this._statisticsHistory = convertStatisticsToHistory(
+      this.hass!,
+      statistics,
+      statisticIds,
       sensorNumericDeviceClasses,
-      true,
       true
     );
-    // remap states array to statistics array
-    (this._statisticsHistory?.line || []).forEach((item) => {
-      item.data.forEach((data) => {
-        data.statistics = data.states;
-        data.states = [];
-      });
-    });
   }
 
   private async _getHistory() {

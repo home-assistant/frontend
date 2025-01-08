@@ -10,6 +10,7 @@ import { computeStateNameFromEntityAttributes } from "../common/entity/compute_s
 import type { LocalizeFunc } from "../common/translations/localize";
 import type { HomeAssistant } from "../types";
 import type { FrontendLocaleData } from "./translation";
+import type { Statistics } from "./recorder";
 
 const DOMAINS_USE_LAST_UPDATED = ["climate", "humidifier", "water_heater"];
 const NEED_ATTRIBUTE_DOMAINS = [
@@ -416,6 +417,54 @@ const isNumericSensorEntity = (
   sensorNumericalDeviceClasses.includes(stateObj.attributes.device_class);
 
 const BLANK_UNIT = " ";
+
+export const convertStatisticsToHistory = (
+  hass: HomeAssistant,
+  statistics: Statistics,
+  statisticIds: string[],
+  sensorNumericDeviceClasses: string[],
+  splitDeviceClasses = false
+): HistoryResult => {
+  // Maintain the statistic id ordering
+  const orderedStatistics: Statistics = {};
+  statisticIds.forEach((id) => {
+    if (id in statistics) {
+      orderedStatistics[id] = statistics[id];
+    }
+  });
+
+  // Convert statistics to HistoryResult format
+  const statsHistoryStates: HistoryStates = {};
+  Object.entries(orderedStatistics).forEach(([key, value]) => {
+    const entityHistoryStates: EntityHistoryState[] = value.map((e) => ({
+      s: e.mean != null ? e.mean.toString() : e.state!.toString(),
+      lc: e.start / 1000,
+      a: {},
+      lu: e.start / 1000,
+    }));
+    statsHistoryStates[key] = entityHistoryStates;
+  });
+
+  const statisticsHistory = computeHistory(
+    hass,
+    statsHistoryStates,
+    [],
+    hass.localize,
+    sensorNumericDeviceClasses,
+    splitDeviceClasses,
+    true
+  );
+
+  // remap states array to statistics array
+  (statisticsHistory?.line || []).forEach((item) => {
+    item.data.forEach((data) => {
+      data.statistics = data.states;
+      data.states = [];
+    });
+  });
+
+  return statisticsHistory;
+};
 
 export const computeHistory = (
   hass: HomeAssistant,

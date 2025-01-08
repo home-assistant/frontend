@@ -11,8 +11,7 @@ import {
   computeHistory,
   subscribeHistoryStatesTimeWindow,
   type HistoryResult,
-  type HistoryStates,
-  type EntityHistoryState,
+  convertStatisticsToHistory,
   mergeHistoryResults,
 } from "../../../data/history";
 import { getSensorNumericDeviceClasses } from "../../../data/sensor";
@@ -166,34 +165,13 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       ["mean", "state"]
     );
 
-    // Convert statistics to HistoryResult format
-    const statsHistoryStates: HistoryStates = {};
-    Object.entries(statistics).forEach(([key, value]) => {
-      const entityHistoryStates: EntityHistoryState[] = value.map((e) => ({
-        s: e.mean != null ? e.mean.toString() : e.state!.toString(),
-        lc: e.start / 1000,
-        a: {},
-        lu: e.start / 1000,
-      }));
-      statsHistoryStates[key] = entityHistoryStates;
-    });
-
-    this._statisticsHistory = computeHistory(
+    this._statisticsHistory = convertStatisticsToHistory(
       this.hass!,
-      statsHistoryStates,
-      [],
-      this.hass!.localize,
+      statistics,
+      this._entityIds,
       sensorNumericDeviceClasses,
       this._config?.split_device_classes
     );
-
-    // remap states array to statistics array
-    (this._statisticsHistory?.line || []).forEach((item) => {
-      item.data.forEach((data) => {
-        data.statistics = data.states;
-        data.states = [];
-      });
-    });
   }
 
   private _redrawGraph() {
