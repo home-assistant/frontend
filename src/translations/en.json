@@ -2287,8 +2287,24 @@
             },
             "restore": {
               "title": "Restore backup",
-              "description": "Restore your Home Assistant to a previous state by selecting a backup.",
-              "action": "Restore"
+              "restore_failed": "Backup restore failed",
+              "confirm": {
+                "description": "Your backup will be restored and all current data will be overwritten. Depending on the size of the backup, this can take a while."
+              },
+              "encryption": {
+                "different_key": "The backup is encrypted. Provide the encryption key to decrypt the backup.",
+                "incorrect_key": "The provided encryption key was incorrect, please try again.",
+                "description": "The Backup is encrypted with a different encryption key than that is saved on this system. Please enter the encryption key for this backup.",
+                "warning": "After restoring the backup, your new backups will be encrypted with the encryption key that was present during the time of this backup.",
+                "input_label": "Encryption key"
+              },
+              "progress": {
+                "restarting": "Restarting Home Assistant",
+                "restoring": "Restoring backup"
+              },
+              "actions": {
+                "restore": "Restore"
+              }
             },
             "onboarding": {
               "welcome": {
