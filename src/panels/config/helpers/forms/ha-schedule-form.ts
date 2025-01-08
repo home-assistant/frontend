@@ -296,6 +296,7 @@ class HaScheduleForm extends LitElement {
 
     const endFormatted = formatTime24h(end, this.hass.locale, this.hass.config);
     newValue[day][index] = {
+      ...newValue[day][index],
       from: value.from,
       to:
         !isSameDay(start, end) || endFormatted === "0:00"
@@ -322,6 +323,7 @@ class HaScheduleForm extends LitElement {
 
     const endFormatted = formatTime24h(end, this.hass.locale, this.hass.config);
     const event = {
+      ...newValue[day][index],
       from: formatTime24h(start, this.hass.locale, this.hass.config),
       to:
         !isSameDay(start, end) || endFormatted === "0:00"

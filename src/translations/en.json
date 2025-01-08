@@ -5256,7 +5256,7 @@
           "provisioned": {
             "dsk": "DSK",
             "security_classes": "Security classes",
-            "unprovison": "Unprovison",
+            "unprovision": "Unprovision",
             "included": "Included",
             "not_included": "Not Included",
             "confirm_unprovision_title": "Are you sure you want to unprovision the device?",
