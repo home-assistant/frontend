@@ -392,6 +392,9 @@
           "upload": "Upload picture",
           "url": "Local path or web URL"
         },
+        "background": {
+          "yaml_info": "Background image is set via yaml editor."
+        },
         "location": {
           "latitude": "[%key:ui::panel::config::zone::detail::latitude%]",
           "longitude": "[%key:ui::panel::config::zone::detail::longitude%]",

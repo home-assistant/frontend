@@ -6,7 +6,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
-import "../../../../components/ha-selector/ha-selector-image";
+import "../../../../components/ha-selector/ha-selector-background";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 
@@ -26,7 +26,7 @@ export class HuiViewBackgroundEditor extends LitElement {
   private _schema = memoizeOne((showSettings: boolean) => [
     {
       name: "image",
-      selector: { image: { original: true } },
+      selector: { background: { original: true } },
     },
     ...(showSettings
       ? ([
