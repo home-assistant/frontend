@@ -2604,7 +2604,7 @@
               "title": "Backup",
               "size": "Size",
               "created": "Created",
-              "protected": "Protected",
+              "protection": "Protection",
               "protected_encrypted_aes_128": "Encrypted AES-128",
               "protected_not_encrypted": "Not encrypted"
             },
