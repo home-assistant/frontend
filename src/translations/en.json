@@ -2346,7 +2346,7 @@
               },
               "new": {
                 "title": "New encryption key",
-                "description": "All future backups will use the new encryption key. Encryption keeps your backups private and secure.
+                "description": "All future backups will use the new encryption key. Encryption keeps your backups private and secure."
               },
               "done": {
                 "title": "Encryption key changed"
