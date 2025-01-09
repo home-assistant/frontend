@@ -54,7 +54,9 @@ class HaBackupOverviewBackups extends LitElement {
 
     return html`
       <ha-card class="my-backups">
-        <div class="card-header">My backups</div>
+        <div class="card-header">
+          ${this.hass.localize("ui.panel.config.backup.overview.backups.title")}
+        </div>
         <div class="card-content">
           <ha-md-list>
             <ha-md-list-item
@@ -63,10 +65,16 @@ class HaBackupOverviewBackups extends LitElement {
             >
               <ha-svg-icon slot="start" .path=${mdiCalendarSync}></ha-svg-icon>
               <div slot="headline">
-                ${automaticStats.count} automatic backups
+                ${this.hass.localize(
+                  "ui.panel.config.backup.overview.backups.automatic",
+                  { count: automaticStats.count }
+                )}
               </div>
               <div slot="supporting-text">
-                ${bytesToString(automaticStats.size, 1)} in total
+                ${this.hass.localize(
+                  "ui.panel.config.backup.overview.backups.total_size",
+                  { size: bytesToString(automaticStats.size, 1) }
+                )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
@@ -75,9 +83,17 @@ class HaBackupOverviewBackups extends LitElement {
               href="/config/backup/backups?type=manual"
             >
               <ha-svg-icon slot="start" .path=${mdiGestureTap}></ha-svg-icon>
-              <div slot="headline">${manualStats.count} manual backups</div>
+              <div slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.backup.overview.backups.automatic",
+                  { count: manualStats.count }
+                )}
+              </div>
               <div slot="supporting-text">
-                ${bytesToString(manualStats.size, 1)} in total
+                ${this.hass.localize(
+                  "ui.panel.config.backup.overview.backups.total_size",
+                  { size: bytesToString(manualStats.size, 1) }
+                )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
@@ -85,7 +101,11 @@ class HaBackupOverviewBackups extends LitElement {
         </div>
         <div class="card-actions">
           <a href="/config/backup/backups?type=all">
-            <ha-button>Show all backups</ha-button>
+            <ha-button>
+              ${this.hass.localize(
+                "ui.panel.config.backup.overview.backups.show_all"
+              )}
+            </ha-button>
           </a>
         </div>
       </ha-card>
