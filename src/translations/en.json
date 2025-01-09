@@ -2297,8 +2297,8 @@
               "encryption": {
                 "different_key": "The backup is encrypted. Provide the encryption key to decrypt the backup.",
                 "incorrect_key": "The provided encryption key was incorrect, please try again.",
-                "description": "The Backup is encrypted with a different encryption key than that is saved on this system. Please enter the encryption key for this backup.",
-                "warning": "After restoring the backup, your new backups will be encrypted with the encryption key that was present during the time of this backup.",
+                "description": "The backup is encrypted with a different encryption key than the one stored on this system. Please enter the encryption key for this backup.",
+                "warning": "After restoring this backup, all new backups will be encrypted using the same key that was used to restore this backup.",
                 "input_label": "Encryption key"
               },
               "progress": {
@@ -2316,7 +2316,7 @@
               },
               "key": {
                 "title": "Encryption key",
-                "description": "All your backups are encrypted to keep your data private and secure. We recommend to save this key somewhere secure. As you can only restore your data with the backup encryption key."
+                "description": "All your backups are encrypted to keep your data private and secure. We recommend saving this key somewhere secure. As you can only restore your data with this encryption key."
               },
               "setup": {
                 "title": "Set up automatic backups",
@@ -2342,11 +2342,11 @@
             "change_encryption_key": {
               "current": {
                 "title": "Save current encryption key",
-                "description": "Make sure you have saved the current encryption key to make sure you have access to all your current backups. All next backups will use the new encryption key."
+                "description": "Backups made before this new encryption key was issued will continue to use the old key. Be sure to save the old key along with the new key to ensure that you can access all backups."
               },
               "new": {
                 "title": "New encryption key",
-                "description": "All next backups will use the new encryption key. Encryption keeps your backups private and secure."
+                "description": "All future backups will use the new encryption key. Encryption keeps your backups private and secure."
               },
               "done": {
                 "title": "Encryption key changed"
@@ -2359,7 +2359,7 @@
             "set_encryption_key": {
               "key": {
                 "title": "Set encryption key",
-                "description": "All your backups are encrypted to keep your data private and secure. We recommend to save this key somewhere secure. As you can only restore your data with the backup encryption key."
+                "description": "All your backups are encrypted to keep your data private and secure. We recommend saving this key somewhere secure. As you can only restore your data with the backup encryption key."
               },
               "done": {
                 "title": "Encryption key set"
@@ -2371,11 +2371,11 @@
             },
             "show_encryption_key": {
               "title": "Encryption key",
-              "description": "Make sure you save the encryption key in a secure place so always have access to your backups."
+              "description": "Make sure you save the encryption key in a secure place so you always have access to your backups."
             }
           },
           "agents": {
-            "cloud_agent_description": "Note: It stores only one backup with a maximum size of 5 GB, regardless of your settings.",
+            "cloud_agent_description": "Note: It stores only the most recent backup, regardless of your retention settings, with a maximum size of 5 GB.",
             "cloud_agent_no_subcription": "You currently do not have an active Home Assistant Cloud subscription.",
             "network_mount_agent_description": "Network storage",
             "no_agents": "No locations configured",
@@ -2444,7 +2444,7 @@
             "show_encryption_key_description": "Please keep your encryption key private.",
             "show_encryption_key_action": "Show",
             "change_encryption_key": "Change encryption key",
-            "change_encryption_key_description": "All next backups will use this encryption key.",
+            "change_encryption_key_description": "All future backups will use this encryption key.",
             "change_encryption_key_action": "Change",
             "set_encryption_key": "Set encryption key",
             "set_encryption_key_description": "Set an encryption key for your backups.",
@@ -2592,7 +2592,7 @@
             },
             "encryption_key": {
               "title": "Encryption key",
-              "description": "Keep this encryption key in a safe place, as you will need it to access your backup, allowing it to be restored. Download them as an emergency kit file and store it somewhere safe. Encryption keeps your backups private and secure."
+              "description": "Keep this encryption key in a safe place, as you will need it to access your backup, allowing it to be restored. Download it as an emergency kit file and store it somewhere safe. Encryption keeps your backups private and secure."
             }
           },
           "details": {
