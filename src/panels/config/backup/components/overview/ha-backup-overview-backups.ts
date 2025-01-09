@@ -85,7 +85,7 @@ class HaBackupOverviewBackups extends LitElement {
               <ha-svg-icon slot="start" .path=${mdiGestureTap}></ha-svg-icon>
               <div slot="headline">
                 ${this.hass.localize(
-                  "ui.panel.config.backup.overview.backups.automatic",
+                  "ui.panel.config.backup.overview.backups.manual",
                   { count: manualStats.count }
                 )}
               </div>
