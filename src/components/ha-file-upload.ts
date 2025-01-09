@@ -1,7 +1,7 @@
 import "@material/mwc-linear-progress/mwc-linear-progress";
 import { mdiDelete, mdiFileUpload } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
@@ -76,7 +76,7 @@ export class HaFileUpload extends LitElement {
     return html`
       ${this.uploading
         ? html`<div class="container">
-            <div class="row">
+            <div class="uploading">
               <span class="header"
                 >${this.value
                   ? this.hass?.localize(
@@ -88,12 +88,10 @@ export class HaFileUpload extends LitElement {
                     )}</span
               >
               ${this.progress
-                ? html`<span class="progress"
-                    >${this.progress}${blankBeforePercent(
-                      this.hass!.locale
-                    )}%</span
-                  >`
-                : ""}
+                ? html`<div class="progress">
+                    ${this.progress}${blankBeforePercent(this.hass!.locale)}%
+                  </div>`
+                : nothing}
             </div>
             <mwc-linear-progress
               .indeterminate=${!this.progress}
@@ -246,8 +244,20 @@ export class HaFileUpload extends LitElement {
           var(--mdc-text-field-idle-line-color, rgba(0, 0, 0, 0.42));
         cursor: pointer;
       }
+      .container .uploading {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        align-items: flex-start;
+        padding: 0 32px;
+        box-sizing: border-box;
+      }
       :host([disabled]) .container {
         border-color: var(--disabled-color);
+      }
+      label:hover,
+      label.dragged {
+        border-style: solid;
       }
       label.dragged {
         border-color: var(--primary-color);
@@ -273,14 +283,6 @@ export class HaFileUpload extends LitElement {
       }
       .highlight {
         color: var(--primary-color);
-      }
-      .row {
-        display: flex;
-        width: 100%;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 16px;
-        box-sizing: border-box;
       }
       ha-button {
         margin-bottom: 4px;
@@ -313,7 +315,7 @@ export class HaFileUpload extends LitElement {
       }
       mwc-linear-progress {
         width: 100%;
-        padding: 16px;
+        padding: 8px 32px;
         box-sizing: border-box;
       }
       .header {
