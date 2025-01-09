@@ -8,7 +8,7 @@ import "../ha-state-icon";
 class HaEntityMarker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: "entity-id" }) public entityId?: string;
+  @property({ attribute: "entity-id", reflect: true }) public entityId?: string;
 
   @property({ attribute: "entity-name" }) public entityName?: string;
 
