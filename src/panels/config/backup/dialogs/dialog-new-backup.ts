@@ -82,7 +82,7 @@ class DialogNewBackup extends LitElement implements HassDialog {
               <ha-svg-icon slot="start" .path=${mdiCalendarSync}></ha-svg-icon>
               <span slot="headline">
                 ${this.hass.localize(
-                  "ui.panel.config.backup.dialogs.new.automatic.description"
+                  "ui.panel.config.backup.dialogs.new.automatic.title"
                 )}
               </span>
               <span slot="supporting-text">
