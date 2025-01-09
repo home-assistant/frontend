@@ -142,31 +142,38 @@ class HaConfigBackupDetails extends LitElement {
                       )}
                     </div>
                     <div class="card-content">
-                      <ha-md-list>
+                      <ha-md-list class="summary">
                         <ha-md-list-item>
                           <span slot="headline">
-                            ${bytesToString(this._backup.size)}
-                          </span>
-                          <span slot="supporting-text">
                             ${this.hass.localize(
                               "ui.panel.config.backup.details.summary.size"
                             )}
                           </span>
+                          <span slot="supporting-text">
+                            ${bytesToString(this._backup.size)}
+                          </span>
                         </ha-md-list-item>
                         <ha-md-list-item>
-                          ${formatDateTime(
-                            new Date(this._backup.date),
-                            this.hass.locale,
-                            this.hass.config
-                          )}
-                          <span slot="supporting-text">
+                          <span slot="headline">
                             ${this.hass.localize(
                               "ui.panel.config.backup.details.summary.created"
+                            )}
+                          </span>
+                          <span slot="supporting-text">
+                            ${formatDateTime(
+                              new Date(this._backup.date),
+                              this.hass.locale,
+                              this.hass.config
                             )}
                           </span>
                         </ha-md-list-item>
                         <ha-md-list-item>
                           <span slot="headline">
+                            ${this.hass.localize(
+                              "ui.panel.config.backup.details.summary.protected"
+                            )}
+                          </span>
+                          <span slot="supporting-text">
                             ${this._backup.protected
                               ? this.hass.localize(
                                   "ui.panel.config.backup.details.summary.protected_encrypted_aes_128"
@@ -174,11 +181,6 @@ class HaConfigBackupDetails extends LitElement {
                               : this.hass.localize(
                                   "ui.panel.config.backup.details.summary.protected_not_encrypted"
                                 )}
-                          </span>
-                          <span slot="supporting-text">
-                            ${this.hass.localize(
-                              "ui.panel.config.backup.details.summary.protected"
-                            )}
                           </span>
                         </ha-md-list-item>
                       </ha-md-list>
@@ -432,6 +434,13 @@ class HaConfigBackupDetails extends LitElement {
     ha-md-list-item ha-svg-icon[slot="start"] {
       --mdc-icon-size: 48px;
       color: var(--primary-text-color);
+    }
+    ha-md-list.summary ha-md-list-item {
+      --md-list-item-supporting-text-size: 1rem;
+      --md-list-item-label-text-size: 0.875rem;
+
+      --md-list-item-label-text-color: var(--secondary-text-color);
+      --md-list-item-supporting-text-color: var(--primary-text-color);
     }
     .warning {
       color: var(--error-color);
