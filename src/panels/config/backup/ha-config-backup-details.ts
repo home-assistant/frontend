@@ -170,7 +170,7 @@ class HaConfigBackupDetails extends LitElement {
                         <ha-md-list-item>
                           <span slot="headline">
                             ${this.hass.localize(
-                              "ui.panel.config.backup.details.summary.protected"
+                              "ui.panel.config.backup.details.summary.protection"
                             )}
                           </span>
                           <span slot="supporting-text">
