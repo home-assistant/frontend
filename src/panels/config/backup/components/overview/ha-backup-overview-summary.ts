@@ -255,7 +255,8 @@ class HaBackupOverviewBackups extends LitElement {
       return html`
         <ha-backup-summary-card
           .heading=${this.hass.localize(
-            "ui.panel.config.backup.overview.summary.backup_too_old_heading"
+            "ui.panel.config.backup.overview.summary.backup_too_old_heading",
+            { count: numberOfDays }
           )}
           status="warning"
         >
