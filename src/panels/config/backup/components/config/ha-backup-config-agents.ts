@@ -52,12 +52,18 @@ class HaBackupConfigAgents extends LitElement {
   private _description(agentId: string) {
     if (agentId === CLOUD_AGENT) {
       if (this.cloudStatus.logged_in && !this.cloudStatus.active_subscription) {
-        return "You currently do not have an active Home Assistant Cloud subscription.";
+        return this.hass.localize(
+          "ui.panel.config.backup.agents.cloud_agent_no_subcription"
+        );
       }
-      return "Note: It stores only one backup with a maximum size of 5 GB, regardless of your settings.";
+      return this.hass.localize(
+        "ui.panel.config.backup.agents.cloud_agent_description"
+      );
     }
     if (isNetworkMountAgent(agentId)) {
-      return "Network storage";
+      return this.hass.localize(
+        "ui.panel.config.backup.agents.network_mount_agent_description"
+      );
     }
     return "";
   }
@@ -107,7 +113,7 @@ class HaBackupConfigAgents extends LitElement {
                               slot="start"
                             />
                           `}
-                    <div slot="headline">${name}</div>
+                    <div slot="headline" class="name">${name}</div>
                     ${description
                       ? html`<div slot="supporting-text">${description}</div>`
                       : nothing}
@@ -124,7 +130,9 @@ class HaBackupConfigAgents extends LitElement {
               })}
             </ha-md-list>
           `
-        : html`<p>No sync agents configured</p>`}
+        : html`<p>
+            ${this.hass.localize("ui.panel.config.backup.agents.no_agents")}
+          </p>`}
     `;
   }
 
@@ -156,6 +164,12 @@ class HaBackupConfigAgents extends LitElement {
       background: none;
       --md-list-item-leading-space: 0;
       --md-list-item-trailing-space: 0;
+    }
+    ha-md-list-item {
+      --md-item-overflow: visible;
+    }
+    ha-md-list-item .name {
+      word-break: break-word;
     }
     ha-md-list-item img {
       width: 48px;
