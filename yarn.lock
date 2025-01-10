@@ -5222,7 +5222,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vibrant/color@npm:3.2.1-alpha.1, @vibrant/color@npm:^3.2.1-alpha.1":
+"@vibrant/color@npm:4.0.0":
+  version: 4.0.0
+  resolution: "@vibrant/color@npm:4.0.0"
+  checksum: 10/deaa1f29140363208f7d210af31320c9cb8fa45f8db08a9d889260b4af7d420031b7bfc53a7731d847fdbb5778a05a7a78cacf56e5f8bfce28db74beed88acfd
+  languageName: node
+  linkType: hard
+
+"@vibrant/color@npm:^3.2.1-alpha.1":
   version: 3.2.1-alpha.1
   resolution: "@vibrant/color@npm:3.2.1-alpha.1"
   checksum: 10/fcc40ca4b368ed2fbfcfc898a31527c34590a6275cef41da4ab2a51a638c8c577d61c42c4b9548e1600561bcb71eabc51774ca63835096c810923952d540606d
@@ -9249,7 +9256,7 @@ __metadata:
     "@typescript-eslint/parser": "npm:7.18.0"
     "@vaadin/combo-box": "npm:24.6.1"
     "@vaadin/vaadin-themable-mixin": "npm:24.6.1"
-    "@vibrant/color": "npm:3.2.1-alpha.1"
+    "@vibrant/color": "npm:4.0.0"
     "@vibrant/core": "npm:3.2.1-alpha.1"
     "@vibrant/quantizer-mmcq": "npm:3.2.1-alpha.1"
     "@vitest/coverage-v8": "npm:2.1.8"
