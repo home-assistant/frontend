@@ -7,7 +7,6 @@ import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type {
   DataTableColumnContainer,
-  DataTableRowData,
   RowClickedEvent,
 } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-fab";
@@ -15,37 +14,13 @@ import "../../../../../components/ha-icon-button";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
+import type {
+  DeviceRowData,
+  EventDataMessage,
+} from "../../../../../data/bluetooth";
 
-interface DeviceRowData extends DataTableRowData {
-  address: string;
-  connectable: boolean;
-  manufacturer_data: { [id: string]: any };
-  name: string;
-  rssi: number;
-  service_data: { [id: string]: any };
-  service_uuids: string[];
-  source: string;
-  time: number;
-  tx_power: number;
-}
-
-interface RemoveDeviceRowData {
-  address: string;
-}
-
-interface EventDataMessage {
-  add?: DeviceRowData[];
-  change?: DeviceRowData[];
-  remove?: RemoveDeviceRowData[];
-}
-
-const subscribeBluetoothAdvertisements = (
-  hass: HomeAssistant,
-  callback: (event: EventDataMessage) => void
-): Promise<UnsubscribeFunc> =>
-  hass.connection.subscribeMessage(callback, {
-    type: `bluetooth/subscribe_advertisements`,
-  });
+import { subscribeBluetoothAdvertisements } from "../../../../../data/bluetooth";
+import { showBluetoothDeviceInfoDialog } from "./show-dialog-bluetooth-device-info";
 
 @customElement("bluetooth-device-page")
 export class BluetoothDevicePage extends LitElement {
@@ -57,7 +32,7 @@ export class BluetoothDevicePage extends LitElement {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @state() private _rows: { [id: string]: DeviceRowData } = {};
+  @state() private _data: { [id: string]: DeviceRowData } = {};
 
   private _unsub?: Promise<UnsubscribeFunc>;
 
@@ -87,17 +62,17 @@ export class BluetoothDevicePage extends LitElement {
   private _handleIncomingEventDataMessage(event: EventDataMessage) {
     if (event.add) {
       for (const device_data of event.add) {
-        this._rows[device_data.address] = device_data;
+        this._data[device_data.address] = device_data;
       }
     }
     if (event.change) {
       for (const device_data of event.change) {
-        this._rows[device_data.address] = device_data;
+        this._data[device_data.address] = device_data;
       }
     }
     if (event.remove) {
       for (const device_data of event.remove) {
-        delete this._rows[device_data.address];
+        delete this._data[device_data.address];
       }
     }
   }
@@ -152,24 +127,21 @@ export class BluetoothDevicePage extends LitElement {
         .narrow=${this.narrow}
         .route=${this.route}
         .columns=${this._columns(this.hass.localize)}
-        .data=${Object.values(this._rows).map((row) => ({
+        .data=${Object.values(this._data).map((row) => ({
           ...row,
           id: row.address,
         }))}
         @row-click=${this._handleRowClicked}
         clickable
-        has-fab
       >
       </hass-tabs-subpage-data-table>
     `;
   }
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
-    // eslint-disable-next-line no-console
-    console.log(ev.detail.id);
-    /*
-      dialog?
-    */
+    showBluetoothDeviceInfoDialog(this, {
+      entry: this._data[ev.detail.id],
+    });
   }
 
   static get styles(): CSSResultGroup {
