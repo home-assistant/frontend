@@ -917,7 +917,7 @@ export class HaScriptEditor extends SubscribeMixin(
         // wait for new script to appear in entity registry
         if (entityRegPromise) {
           try {
-            const script = await promiseTimeout(2000, entityRegPromise);
+            const script = await promiseTimeout(5000, entityRegPromise);
             entityId = script.entity_id;
           } catch (e) {
             entityId = undefined;
