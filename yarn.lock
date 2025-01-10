@@ -3448,20 +3448,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/plugin-retry@npm:7.1.2":
-  version: 7.1.2
-  resolution: "@octokit/plugin-retry@npm:7.1.2"
+"@octokit/plugin-retry@npm:7.1.3":
+  version: 7.1.3
+  resolution: "@octokit/plugin-retry@npm:7.1.3"
   dependencies:
-    "@octokit/request-error": "npm:^6.0.0"
-    "@octokit/types": "npm:^13.0.0"
+    "@octokit/request-error": "npm:^6.1.6"
+    "@octokit/types": "npm:^13.6.2"
     bottleneck: "npm:^2.15.3"
   peerDependencies:
     "@octokit/core": ">=6"
-  checksum: 10/adb2caa0785a451f86c9a25709d8f5e53ba6fac922052329a420526bba59764ecf469edc03f90397a32e1156968fe6bc2fc897fa2371a2263bacba2e559ba249
+  checksum: 10/05ec7cd2ddf4f1423015d1033746ef40d8c68fae811e8616bea92bcd7f2bd15ab6ff04b60235cd5785d94ae0a18f9002d437eb1974a752ab588ec2a276b8831a
   languageName: node
   linkType: hard
 
-"@octokit/request-error@npm:^6.0.0, @octokit/request-error@npm:^6.0.1, @octokit/request-error@npm:^6.1.6":
+"@octokit/request-error@npm:^6.0.1, @octokit/request-error@npm:^6.1.6":
   version: 6.1.6
   resolution: "@octokit/request-error@npm:6.1.6"
   dependencies:
@@ -9217,7 +9217,7 @@ __metadata:
     "@mdi/js": "npm:7.4.47"
     "@mdi/svg": "npm:7.4.47"
     "@octokit/auth-oauth-device": "npm:7.1.2"
-    "@octokit/plugin-retry": "npm:7.1.2"
+    "@octokit/plugin-retry": "npm:7.1.3"
     "@octokit/rest": "npm:21.0.2"
     "@polymer/paper-item": "npm:3.0.1"
     "@polymer/paper-listbox": "npm:3.0.1"
