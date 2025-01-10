@@ -120,6 +120,13 @@ export class BluetoothDevicePage extends LitElement {
     }
   );
 
+  private _dataWithIds = memoizeOne(() =>
+    Object.values(this._data).map((row) => ({
+      ...row,
+      id: row.address,
+    }))
+  );
+
   protected render(): TemplateResult {
     return html`
       <hass-tabs-subpage-data-table
@@ -127,10 +134,7 @@ export class BluetoothDevicePage extends LitElement {
         .narrow=${this.narrow}
         .route=${this.route}
         .columns=${this._columns(this.hass.localize)}
-        .data=${Object.values(this._data).map((row) => ({
-          ...row,
-          id: row.address,
-        }))}
+        .data=${this._dataWithIds()}
         @row-click=${this._handleRowClicked}
         clickable
       >
