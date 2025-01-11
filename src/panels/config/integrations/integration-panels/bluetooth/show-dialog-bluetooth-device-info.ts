@@ -1,8 +1,8 @@
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import type { DeviceRowData } from "../../../../../data/bluetooth";
+import type { BluetoothDeviceData } from "../../../../../data/bluetooth";
 
 export interface BluetoothDeviceInfoDialogParams {
-  entry: DeviceRowData;
+  entry: BluetoothDeviceData;
 }
 
 export const loadBluetoothDeviceInfoDialog = () =>

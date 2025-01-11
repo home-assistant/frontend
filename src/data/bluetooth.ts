@@ -1,8 +1,12 @@
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { HomeAssistant } from "../types";
+import {
+  createCollection,
+  type Connection,
+  type UnsubscribeFunc,
+} from "home-assistant-js-websocket";
+import type { Store } from "home-assistant-js-websocket/dist/store";
 import type { DataTableRowData } from "../components/data-table/ha-data-table";
 
-export interface DeviceRowData extends DataTableRowData {
+export interface BluetoothDeviceData extends DataTableRowData {
   address: string;
   connectable: boolean;
   manufacturer_data: { [id: number]: string };
@@ -15,20 +19,26 @@ export interface DeviceRowData extends DataTableRowData {
   tx_power: number;
 }
 
-export interface RemoveDeviceRowData {
-  address: string;
-}
-
-export interface EventDataMessage {
-  add?: DeviceRowData[];
-  change?: DeviceRowData[];
-  remove?: RemoveDeviceRowData[];
-}
+const subscribeUpdates = (
+  connection: Connection,
+  store: Store<BluetoothDeviceData[]>
+): Promise<UnsubscribeFunc> =>
+  connection.subscribeEvents<BluetoothDeviceData[]>(
+    (data) => store.setState(data, true),
+    `bluetooth/subscribe_advertisements`
+  );
 
 export const subscribeBluetoothAdvertisements = (
-  hass: HomeAssistant,
-  callback: (event: EventDataMessage) => void
-): Promise<UnsubscribeFunc> =>
-  hass.connection.subscribeMessage(callback, {
-    type: `bluetooth/subscribe_advertisements`,
-  });
+  conn: Connection,
+  onChange: (bluetoothDeviceData: BluetoothDeviceData[]) => void
+) =>
+  createCollection<BluetoothDeviceData[]>(
+    "_bluetoothDeviceRows",
+    () =>
+      new Promise<BluetoothDeviceData[]>((resolve) => {
+        resolve([]);
+      }), // empty array as initial state
+    subscribeUpdates,
+    conn,
+    onChange
+  );

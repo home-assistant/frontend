@@ -38,7 +38,7 @@ class DialogBluetoothDeviceInfo extends LitElement implements HassDialog {
       return;
     }
 
-    await copyToClipboard(JSON.stringify(this._params.entry));
+    await copyToClipboard(JSON.stringify(this._params!.entry));
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
     });

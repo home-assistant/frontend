@@ -14,10 +14,7 @@ import "../../../../../components/ha-icon-button";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
-import type {
-  DeviceRowData,
-  EventDataMessage,
-} from "../../../../../data/bluetooth";
+import type { BluetoothDeviceData } from "../../../../../data/bluetooth";
 
 import { subscribeBluetoothAdvertisements } from "../../../../../data/bluetooth";
 import { showBluetoothDeviceInfoDialog } from "./show-dialog-bluetooth-device-info";
@@ -32,9 +29,9 @@ export class BluetoothDevicePage extends LitElement {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @state() private _data: { [id: string]: DeviceRowData } = {};
+  @state() private _data: BluetoothDeviceData[] = [];
 
-  private _unsub?: Promise<UnsubscribeFunc>;
+  private _unsub?: UnsubscribeFunc;
 
   private _firstUpdatedCalled = false;
 
@@ -42,8 +39,10 @@ export class BluetoothDevicePage extends LitElement {
     super.connectedCallback();
     if (this.hass && this._firstUpdatedCalled) {
       this._unsub = subscribeBluetoothAdvertisements(
-        this.hass,
-        this._handleIncomingEventDataMessage.bind(this)
+        this.hass.connection,
+        (data) => {
+          this._data = data;
+        }
       );
     }
   }
@@ -52,42 +51,26 @@ export class BluetoothDevicePage extends LitElement {
     super.firstUpdated(changedProperties);
     if (this.hass) {
       this._unsub = subscribeBluetoothAdvertisements(
-        this.hass,
-        this._handleIncomingEventDataMessage.bind(this)
+        this.hass.connection,
+        (data) => {
+          this._data = data;
+        }
       );
       this._firstUpdatedCalled = true;
-    }
-  }
-
-  private _handleIncomingEventDataMessage(event: EventDataMessage) {
-    if (event.add) {
-      for (const device_data of event.add) {
-        this._data[device_data.address] = device_data;
-      }
-    }
-    if (event.change) {
-      for (const device_data of event.change) {
-        this._data[device_data.address] = device_data;
-      }
-    }
-    if (event.remove) {
-      for (const device_data of event.remove) {
-        delete this._data[device_data.address];
-      }
     }
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     if (this._unsub) {
-      this._unsub.then((unsub) => unsub());
+      this._unsub();
       this._unsub = undefined;
     }
   }
 
   private _columns = memoizeOne(
     (localize: LocalizeFunc): DataTableColumnContainer => {
-      const columns: DataTableColumnContainer<DeviceRowData> = {
+      const columns: DataTableColumnContainer<BluetoothDeviceData> = {
         address: {
           title: localize("ui.panel.config.bluetooth.address"),
           sortable: true,
@@ -137,8 +120,7 @@ export class BluetoothDevicePage extends LitElement {
         .data=${this._dataWithIds()}
         @row-click=${this._handleRowClicked}
         clickable
-      >
-      </hass-tabs-subpage-data-table>
+      ></hass-tabs-subpage-data-table>
     `;
   }
 
@@ -148,9 +130,7 @@ export class BluetoothDevicePage extends LitElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return [haStyle];
-  }
+  static styles: CSSResultGroup = haStyle;
 }
 
 declare global {
