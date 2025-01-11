@@ -103,8 +103,8 @@ export class BluetoothDevicePage extends LitElement {
     }
   );
 
-  private _dataWithIds = memoizeOne(() =>
-    Object.values(this._data).map((row) => ({
+  private _dataWithIds = memoizeOne((data) =>
+    data.map((row) => ({
       ...row,
       id: row.address,
     }))
@@ -117,7 +117,7 @@ export class BluetoothDevicePage extends LitElement {
         .narrow=${this.narrow}
         .route=${this.route}
         .columns=${this._columns(this.hass.localize)}
-        .data=${this._dataWithIds()}
+        .data=${this._dataWithIds(this._data)}
         @row-click=${this._handleRowClicked}
         clickable
       ></hass-tabs-subpage-data-table>
@@ -125,8 +125,9 @@ export class BluetoothDevicePage extends LitElement {
   }
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
+    const entry = this._data.find((ent) => ent.address === ev.detail.id);
     showBluetoothDeviceInfoDialog(this, {
-      entry: this._data[ev.detail.id],
+      entry: entry!,
     });
   }
 

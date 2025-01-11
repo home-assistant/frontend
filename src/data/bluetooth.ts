@@ -20,13 +20,12 @@ export interface BluetoothDeviceData extends DataTableRowData {
 }
 
 const subscribeUpdates = (
-  connection: Connection,
+  conn: Connection,
   store: Store<BluetoothDeviceData[]>
 ): Promise<UnsubscribeFunc> =>
-  connection.subscribeEvents<BluetoothDeviceData[]>(
-    (data) => store.setState(data, true),
-    `bluetooth/subscribe_advertisements`
-  );
+  conn.subscribeEvents<BluetoothDeviceData[]>((data) => {
+    store.setState(data, true);
+  }, `bluetooth/subscribe_advertisements`);
 
 export const subscribeBluetoothAdvertisements = (
   conn: Connection,
