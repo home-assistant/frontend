@@ -35,7 +35,7 @@ jobs:
       - name: Check for duplicate dependencies
         run: yarn dedupe --check
       - name: Build resources
-        run: ./node_modules/.bin/gulp gen-icons-json build-translations build-locale-data gather-gallery-pages
+        run: npx gulp gen-icons-json build-translations build-locale-data gather-gallery-pages
       - name: Setup lint cache
         uses: actions/cache@v4.2.0
         with:
@@ -67,7 +67,7 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
       - name: Build resources
-        run: ./node_modules/.bin/gulp gen-icons-json build-translations build-locale-data
+        run: npx gulp gen-icons-json build-translations build-locale-data
       - name: Run Tests
         run: yarn run test
   build:
@@ -85,7 +85,7 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
       - name: Build Application
-        run: ./node_modules/.bin/gulp build-app
+        run: npx gulp build-app
         env:
           IS_TEST: "true"
       - name: Upload bundle stats
@@ -109,7 +109,7 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
       - name: Build Application
-        run: ./node_modules/.bin/gulp build-hassio
+        run: npx gulp build-hassio
         env:
           IS_TEST: "true"
       - name: Upload bundle stats

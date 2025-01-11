@@ -6,4 +6,4 @@ set -e
 
 cd "$(dirname "$0")/../.."
 
-./node_modules/.bin/gulp develop-demo
+npx gulp develop-demo

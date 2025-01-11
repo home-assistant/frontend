@@ -36,7 +36,7 @@ jobs:
         run: yarn install --immutable
 
       - name: Build Demo
-        run: ./node_modules/.bin/gulp build-demo
+        run: npx gulp build-demo
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -72,7 +72,7 @@ jobs:
         run: yarn install --immutable
 
       - name: Build Demo
-        run: ./node_modules/.bin/gulp build-demo
+        run: npx gulp build-demo
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

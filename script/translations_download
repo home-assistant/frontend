@@ -8,4 +8,4 @@ set -eu -o pipefail
 
 cd "$(dirname "$0")/.."
 
-./node_modules/.bin/gulp download-translations
+npx gulp download-translations
