@@ -84,7 +84,9 @@ export class AssistPref extends LitElement {
       this._preferred = pipelines.preferred_pipeline;
     });
     this._pipelineEntitiesCount = Object.values(this.hass.entities).filter(
-      (entity) => computeDomain(entity.entity_id) === "assist_satellite"
+      (entity) =>
+        computeDomain(entity.entity_id) === "assist_satellite" &&
+        this.hass.states[entity.entity_id].state !== "unavailable"
     ).length;
   }
 

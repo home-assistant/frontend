@@ -52,6 +52,7 @@ import "./ha-more-info-info";
 import type { MoreInfoInfo } from "./ha-more-info-info";
 import "./ha-more-info-settings";
 import "./more-info-content";
+import { getSensorNumericDeviceClasses } from "../../data/sensor";
 
 export interface MoreInfoDialogParams {
   entityId: string | null;
@@ -100,6 +101,8 @@ export class MoreInfoDialog extends LitElement {
 
   @query("ha-more-info-info, ha-more-info-history-and-logbook")
   private _history?: MoreInfoInfo | MoreInfoHistoryAndLogbook;
+
+  @state() private _sensorNumericDeviceClasses?: string[] = [];
 
   public showDialog(params: MoreInfoDialogParams) {
     this._entityId = params.entityId;
@@ -161,7 +164,11 @@ export class MoreInfoDialog extends LitElement {
     return (
       DOMAINS_WITH_MORE_INFO.includes(domain) &&
       (computeShowHistoryComponent(this.hass, this._entityId!) ||
-        computeShowLogBookComponent(this.hass, this._entityId!))
+        computeShowLogBookComponent(
+          this.hass,
+          this._entityId!,
+          this._sensorNumericDeviceClasses
+        ))
     );
   }
 
@@ -256,6 +263,11 @@ export class MoreInfoDialog extends LitElement {
   private _goToRelated(ev): void {
     if (!shouldHandleRequestSelectedEvent(ev)) return;
     this._setView("related");
+  }
+
+  private async _loadNumericDeviceClasses() {
+    const deviceClasses = await getSensorNumericDeviceClasses(this.hass);
+    this._sensorNumericDeviceClasses = deviceClasses.numeric_device_classes;
   }
 
   protected render() {
@@ -515,6 +527,7 @@ export class MoreInfoDialog extends LitElement {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this.addEventListener("close-dialog", () => this.closeDialog());
+    this._loadNumericDeviceClasses();
   }
 
   protected updated(changedProps: PropertyValues) {

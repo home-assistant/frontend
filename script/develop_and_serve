@@ -30,7 +30,7 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-# parse input paramters
+# parse input parameters
 if [ -n "$DEVCONTAINER" ]; then
     frontendPort=8123
 else

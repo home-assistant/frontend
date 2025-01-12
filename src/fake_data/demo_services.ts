@@ -644,7 +644,7 @@ export const demoServices: HassServices = {
           example: "25",
         },
         target_temp_high: {
-          description: "New target high tempereature for HVAC.",
+          description: "New target high temperature for HVAC.",
           example: "26",
         },
         target_temp_low: {

@@ -195,11 +195,10 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
           "has-header": "title" in this._config,
         })}
       >
-        <div class="addRow">
-          ${this._todoListSupportsFeature(
-            TodoListEntityFeature.CREATE_TODO_ITEM
-          )
-            ? html`
+        ${!this._config.hide_create &&
+        this._todoListSupportsFeature(TodoListEntityFeature.CREATE_TODO_ITEM)
+          ? html`
+              <div class="addRow">
                 <ha-textfield
                   class="addBox"
                   .placeholder=${this.hass!.localize(
@@ -218,9 +217,9 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                   @click=${this._addItem}
                 >
                 </ha-icon-button>
-              `
-            : nothing}
-        </div>
+              </div>
+            `
+          : nothing}
         <ha-sortable
           handle-selector="ha-svg-icon"
           draggable-selector=".draggable"

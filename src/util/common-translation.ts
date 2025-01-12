@@ -42,7 +42,7 @@ export function findAvailableLanguage(language: string) {
     return language;
   }
 
-  // Perform case-insenstive comparison since browser isn't required to
+  // Perform case-insensitive comparison since browser isn't required to
   // report languages with specific cases.
   const langLower = language.toLowerCase();
 

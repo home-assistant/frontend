@@ -38,12 +38,11 @@ class StateInfo extends LitElement {
         ${this.inDialog
           ? html`<div class="time-ago">
               <ha-relative-time
-                id="last_changed"
                 .hass=${this.hass}
                 .datetime=${this.stateObj.last_changed}
                 capitalize
               ></ha-relative-time>
-              <simple-tooltip animation-delay="0" for="last_changed">
+              <simple-tooltip animation-delay="0">
                 <div>
                   <div class="row">
                     <span class="column-name">
@@ -99,6 +98,7 @@ class StateInfo extends LitElement {
         height: 100%;
         min-width: 0;
         text-align: var(--float-start);
+        position: relative;
       }
 
       .name {

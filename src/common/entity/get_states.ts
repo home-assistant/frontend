@@ -166,7 +166,7 @@ const FIXED_DOMAIN_ATTRIBUTE_STATES = {
       "channel",
       "channels",
       "composer",
-      "contibuting_artist",
+      "contributing_artist",
       "episode",
       "game",
       "genre",

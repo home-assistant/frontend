@@ -46,6 +46,7 @@ export type Selector =
   | IconSelector
   | LabelSelector
   | ImageSelector
+  | BackgroundSelector
   | LanguageSelector
   | LocationSelector
   | MediaSelector
@@ -273,6 +274,10 @@ export interface IconSelector {
 
 export interface ImageSelector {
   image: { original?: boolean; crop?: CropOptions } | null;
+}
+
+export interface BackgroundSelector {
+  background: { original?: boolean; crop?: CropOptions } | null;
 }
 
 export interface LabelSelector {

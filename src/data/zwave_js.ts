@@ -42,7 +42,7 @@ export const enum InclusionStrategy {
    *
    * Issues a warning if Security S0 is not supported or the secure bootstrapping fails.
    *
-   * **Not recommended** because S0 should be used sparingly and S2 preferred whereever possible.
+   * **Not recommended** because S0 should be used sparingly and S2 preferred wherever possible.
    */
   Security_S0,
   /**

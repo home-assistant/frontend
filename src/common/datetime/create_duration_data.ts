@@ -22,7 +22,9 @@ export const createDurationData = (
         hours: Number(parts[0]) || 0,
         minutes: Number(parts[1]) || 0,
         seconds: seconds_whole,
-        milliseconds: Math.floor((seconds - seconds_whole) * 1000),
+        milliseconds: Math.floor(
+          Number((seconds - seconds_whole).toFixed(4)) * 1000
+        ),
       };
     }
     return { seconds: duration };

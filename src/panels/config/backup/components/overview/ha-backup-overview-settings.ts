@@ -34,42 +34,32 @@ class HaBackupBackupsSummary extends LitElement {
     const { state: schedule } = config.schedule;
 
     if (schedule === BackupScheduleState.NEVER) {
-      return "Automatic backups are not scheduled";
-    }
-
-    let copiesText = "and keep all backups";
-    if (copies) {
-      copiesText = `and keep the latest ${copies} backup(s)`;
-    } else if (days) {
-      copiesText = `and keep backups for ${days} day(s)`;
+      return this.hass.localize(
+        "ui.panel.config.backup.overview.settings.schedule_never"
+      );
     }
 
     const time = getFormattedBackupTime(this.hass.locale, this.hass.config);
 
-    let scheduleText = "";
-    if (schedule === BackupScheduleState.DAILY) {
-      scheduleText = `Daily at ${time}`;
-    }
-    if (schedule === BackupScheduleState.MONDAY) {
-      scheduleText = `Weekly on Mondays at ${time}`;
-    }
-    if (schedule === BackupScheduleState.TUESDAY) {
-      scheduleText = `Weekly on Tuesdays at ${time}`;
-    }
-    if (schedule === BackupScheduleState.WEDNESDAY) {
-      scheduleText = `Weekly on Wednesdays at ${time}`;
-    }
-    if (schedule === BackupScheduleState.THURSDAY) {
-      scheduleText = `Weekly on Thursdays at ${time}`;
-    }
-    if (schedule === BackupScheduleState.FRIDAY) {
-      scheduleText = `Weekly on Fridays at ${time}`;
-    }
-    if (schedule === BackupScheduleState.SATURDAY) {
-      scheduleText = `Weekly on Saturdays at ${time}`;
-    }
-    if (schedule === BackupScheduleState.SUNDAY) {
-      scheduleText = `Weekly on Sundays at ${time}`;
+    const scheduleText = this.hass.localize(
+      `ui.panel.config.backup.overview.settings.schedule_${schedule}`,
+      { time }
+    );
+
+    let copiesText = this.hass.localize(
+      `ui.panel.config.backup.overview.settings.schedule_copies_all`,
+      { time }
+    );
+    if (copies) {
+      copiesText = this.hass.localize(
+        `ui.panel.config.backup.overview.settings.schedule_copies_backups`,
+        { count: copies }
+      );
+    } else if (days) {
+      copiesText = this.hass.localize(
+        `ui.panel.config.backup.overview.settings.schedule_copies_days`,
+        { count: days }
+      );
     }
 
     return scheduleText + " " + copiesText;
@@ -77,15 +67,23 @@ class HaBackupBackupsSummary extends LitElement {
 
   private _addonsDescription(config: BackupConfig): string {
     if (config.create_backup.include_all_addons) {
-      return "All add-ons";
+      return this.hass.localize(
+        "ui.panel.config.backup.overview.settings.addons_all"
+      );
     }
-    if (config.create_backup.include_addons?.length) {
-      return `${config.create_backup.include_addons.length} add-ons`;
+    const count = config.create_backup.include_addons?.length;
+    if (count) {
+      return this.hass.localize(
+        "ui.panel.config.backup.overview.settings.addons_many",
+        { count }
+      );
     }
-    return "No add-ons";
+    return this.hass.localize(
+      "ui.panel.config.backup.overview.settings.addons_none"
+    );
   }
 
-  private _agentsDescription(config: BackupConfig): string {
+  private _locationsDescription(config: BackupConfig): string {
     const hasLocal = config.create_backup.agent_ids.some((a) =>
       isLocalAgent(a)
     );
@@ -101,14 +99,24 @@ class HaBackupBackupsSummary extends LitElement {
           offsiteLocations[0],
           offsiteLocations
         );
-        return `Upload to ${name}`;
+        return this.hass.localize(
+          "ui.panel.config.backup.overview.settings.locations_one",
+          { name }
+        );
       }
-      return `Upload to ${offsiteLocations.length} off-site locations`;
+      return this.hass.localize(
+        "ui.panel.config.backup.overview.settings.locations_many",
+        { count: offsiteLocations.length }
+      );
     }
     if (hasLocal) {
-      return "Local backup only";
+      return this.hass.localize(
+        "ui.panel.config.backup.overview.settings.locations_local_only"
+      );
     }
-    return "No location configured";
+    return this.hass.localize(
+      "ui.panel.config.backup.overview.settings.locations_none"
+    );
   }
 
   render() {
@@ -116,7 +124,11 @@ class HaBackupBackupsSummary extends LitElement {
 
     return html`
       <ha-card class="my-backups">
-        <div class="card-header">Backup settings</div>
+        <div class="card-header">
+          ${this.hass.localize(
+            "ui.panel.config.backup.overview.settings.title"
+          )}
+        </div>
         <div class="card-content">
           <ha-md-list>
             <ha-md-list-item
@@ -128,7 +140,9 @@ class HaBackupBackupsSummary extends LitElement {
                 ${this._scheduleDescription(this.config)}
               </div>
               <div slot="supporting-text">
-                Automatic backup schedule and retention
+                ${this.hass.localize(
+                  "ui.panel.config.backup.overview.settings.schedule"
+                )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
@@ -136,11 +150,17 @@ class HaBackupBackupsSummary extends LitElement {
               <ha-svg-icon slot="start" .path=${mdiDatabase}></ha-svg-icon>
               <div slot="headline">
                 ${this.config.create_backup.include_database
-                  ? "Settings and history"
-                  : "Settings only"}
+                  ? this.hass.localize(
+                      "ui.panel.config.backup.overview.settings.data_settings_history"
+                    )
+                  : this.hass.localize(
+                      "ui.panel.config.backup.overview.settings.data_settings_only"
+                    )}
               </div>
               <div slot="supporting-text">
-                Home Assistant data that is included
+                ${this.hass.localize(
+                  "ui.panel.config.backup.overview.settings.data"
+                )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
@@ -154,7 +174,11 @@ class HaBackupBackupsSummary extends LitElement {
                     <div slot="headline">
                       ${this._addonsDescription(this.config)}
                     </div>
-                    <div slot="supporting-text">Add-ons that are included</div>
+                    <div slot="supporting-text">
+                      ${this.hass.localize(
+                        "ui.panel.config.backup.overview.settings.addons"
+                      )}
+                    </div>
                     <ha-icon-next slot="end"></ha-icon-next>
                   </ha-md-list-item>
                 `
@@ -164,9 +188,13 @@ class HaBackupBackupsSummary extends LitElement {
               href="/config/backup/settings#locations"
             >
               <ha-svg-icon slot="start" .path=${mdiUpload}></ha-svg-icon>
-              <div slot="headline">${this._agentsDescription(this.config)}</div>
+              <div slot="headline">
+                ${this._locationsDescription(this.config)}
+              </div>
               <div slot="supporting-text">
-                Locations where backup is uploaded to
+                ${this.hass.localize(
+                  "ui.panel.config.backup.overview.settings.locations"
+                )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
@@ -174,7 +202,9 @@ class HaBackupBackupsSummary extends LitElement {
         </div>
         <div class="card-actions">
           <ha-button @click=${this._configure}>
-            Configure backup settings
+            ${this.hass.localize(
+              "ui.panel.config.backup.overview.settings.configure"
+            )}
           </ha-button>
         </div>
       </ha-card>

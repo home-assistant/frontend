@@ -33,6 +33,12 @@ export function getSuggestedMax(dayDifference: number, end: Date): number {
   return suggestedMax.getTime();
 }
 
+export function getSuggestedPeriod(
+  dayDifference: number
+): "month" | "day" | "hour" {
+  return dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour";
+}
+
 export function getCommonOptions(
   start: Date,
   end: Date,
@@ -91,8 +97,7 @@ export function getCommonOptions(
                   : dayDifference > 0
                     ? "datetime"
                     : "hour",
-          minUnit:
-            dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour",
+          minUnit: getSuggestedPeriod(dayDifference),
         },
       },
       y: {
