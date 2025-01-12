@@ -27,10 +27,10 @@ export const getMyRedirects = (): Redirects => ({
     redirect: "/developer-tools/state",
   },
   developer_services: {
-    redirect: "/developer-tools/service",
+    redirect: "/developer-tools/action",
   },
   developer_call_service: {
-    redirect: "/developer-tools/service",
+    redirect: "/developer-tools/action",
     params: {
       service: "string",
     },
