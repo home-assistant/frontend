@@ -21,7 +21,17 @@ class MoreInfoConversation extends LitElement {
   @state() private _errorLoadAssist?: "not_found" | "unknown";
 
   protected willUpdate(changedProperties: PropertyValues): void {
-    if (changedProperties.has("stateObj") && this.stateObj) {
+    super.willUpdate(changedProperties);
+
+    if (!changedProperties.has("stateObj") || !this.stateObj) {
+      return;
+    }
+
+    const oldStateObj = changedProperties.get("stateObj") as
+      | HassEntity
+      | undefined;
+
+    if (!oldStateObj || oldStateObj.entity_id !== this.stateObj.entity_id) {
       this._getPipeline();
     }
   }

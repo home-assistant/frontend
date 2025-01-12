@@ -43,6 +43,7 @@ export const DOMAINS_WITH_MORE_INFO = [
   "camera",
   "climate",
   "configurator",
+  "conversation",
   "counter",
   "cover",
   "date",
