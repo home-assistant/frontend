@@ -111,14 +111,13 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
   public getGridOptions(): LovelaceGridOptions {
     const columns = 6;
-    let min_columns = 6;
+    const min_columns = 3;
     let rows = 1;
     if (this._config?.features?.length) {
       rows += this._config.features.length;
     }
     if (this._config?.vertical) {
       rows++;
-      min_columns = 3;
     }
     return {
       columns,
