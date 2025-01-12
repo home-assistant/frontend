@@ -7181,6 +7181,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"detect-europe-js@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "detect-europe-js@npm:0.1.2"
+  checksum: 10/3d6dcf6ac451baa3050ff00e05cf1841e208bc4f27c69ec2c8df5fdf2375403cf2911f8059c9c18f258d7e176c8d308e4e0e8552500d0e30a9e95a514366ef13
+  languageName: node
+  linkType: hard
+
 "detect-file@npm:^1.0.0":
   version: 1.0.0
   resolution: "detect-file@npm:1.0.0"
@@ -9336,7 +9343,7 @@ __metadata:
     tsparticles-engine: "npm:2.12.0"
     tsparticles-preset-links: "npm:2.12.0"
     typescript: "npm:5.7.3"
-    ua-parser-js: "npm:1.0.40"
+    ua-parser-js: "npm:2.0.0"
     vis-data: "npm:7.1.9"
     vis-network: "npm:9.1.9"
     vitest: "npm:2.1.8"
@@ -10087,6 +10094,13 @@ __metadata:
   dependencies:
     call-bound: "npm:^1.0.3"
   checksum: 10/0380d7c60cc692856871526ffcd38a8133818a2ee42d47bb8008248a0cd2121d8c8b5f66b6da3cac24bc5784553cacb6faaf678f66bc88c6615b42af2825230e
+  languageName: node
+  linkType: hard
+
+"is-standalone-pwa@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "is-standalone-pwa@npm:0.1.1"
+  checksum: 10/bbd2ee7cbea985139f66fe8785e7699f52311e9c14d74190659885222b79dd1e8845b02f69b9221a23a2b4b00e8d4bea0a5a2603b2f26cb6d2071d46093ccf84
   languageName: node
   linkType: hard
 
@@ -14514,12 +14528,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ua-parser-js@npm:1.0.40":
-  version: 1.0.40
-  resolution: "ua-parser-js@npm:1.0.40"
+"ua-is-frozen@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "ua-is-frozen@npm:0.1.2"
+  checksum: 10/0113bed77d437a3752323175f01057dd01911506225e9d33799799188a89a230ab63d2445b096d4399ea8eb94e3163608f7ac2425fb8edd0844d891490607e14
+  languageName: node
+  linkType: hard
+
+"ua-parser-js@npm:2.0.0":
+  version: 2.0.0
+  resolution: "ua-parser-js@npm:2.0.0"
+  dependencies:
+    detect-europe-js: "npm:^0.1.2"
+    is-standalone-pwa: "npm:^0.1.1"
+    ua-is-frozen: "npm:^0.1.2"
   bin:
     ua-parser-js: script/cli.js
-  checksum: 10/7fced5f74ed570c83addffd4d367888d90c58803ff4bdd4a7b04b3f01d293263b8605e92ac560eb1c6a201ef3b11fcc46f3dbcbe764fbe54974924d542bc0135
+  checksum: 10/9f8f82509c5aad02d87c2a76a69c19d5a3079b8eb0156fa5a603f20db14727357922dba32647dde41b6bc3511b3e80ba563aa3093694e16dd2b8e10bd40ff8a9
   languageName: node
   linkType: hard
 
