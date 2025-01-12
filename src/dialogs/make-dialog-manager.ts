@@ -174,7 +174,9 @@ export const closeLastDialog = async () => {
 export const closeAllDialogs = async () => {
   for (let i = OPEN_DIALOG_STACK.length - 1; i >= 0; i--) {
     // eslint-disable-next-line no-await-in-loop
-    const closed = await closeDialog(OPEN_DIALOG_STACK[i].dialogTag);
+    const closed =
+      !OPEN_DIALOG_STACK[i] ||
+      (await closeDialog(OPEN_DIALOG_STACK[i].dialogTag));
     if (!closed) {
       return false;
     }
