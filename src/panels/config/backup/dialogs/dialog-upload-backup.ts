@@ -109,7 +109,9 @@ export class DialogUploadBackup
           ></ha-file-upload>
         </div>
         <div slot="actions">
-          <ha-button @click=${this.closeDialog}>Cancel</ha-button>
+          <ha-button @click=${this.closeDialog}
+            >${this.hass.localize("ui.common.cancel")}</ha-button
+          >
           <ha-button @click=${this._upload} .disabled=${!this._formValid()}>
             ${this.hass.localize(
               "ui.panel.config.backup.dialogs.upload.action"
