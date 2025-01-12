@@ -62,6 +62,7 @@ export class HaGauge extends LitElement {
     if (
       !this._updated ||
       (!changedProperties.has("value") &&
+        !changedProperties.has("valueText") &&
         !changedProperties.has("label") &&
         !changedProperties.has("_segment_label"))
     ) {

@@ -1,6 +1,12 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { BackupConfig, BackupContent } from "../../../data/backup";
+import {
+  compareAgents,
+  fetchBackupConfig,
+  fetchBackupInfo,
+} from "../../../data/backup";
 import type { ManagerStateEvent } from "../../../data/backup_manager";
 import {
   DEFAULT_MANAGER_STATE,
@@ -15,12 +21,6 @@ import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
 import "./ha-config-backup-backups";
 import "./ha-config-backup-overview";
-import type { BackupConfig, BackupContent } from "../../../data/backup";
-import {
-  compareAgents,
-  fetchBackupConfig,
-  fetchBackupInfo,
-} from "../../../data/backup";
 
 declare global {
   interface HASSDomEvents {
@@ -33,7 +33,7 @@ declare global {
 class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public cloudStatus!: CloudStatus;
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -47,19 +47,22 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    this._fetching = true;
-    Promise.all([this._fetchBackupInfo(), this._fetchBackupConfig()]).finally(
-      () => {
-        this._fetching = false;
-      }
-    );
-
+    this._fetchAll();
     this.addEventListener("ha-refresh-backup-info", () => {
       this._fetchBackupInfo();
     });
     this.addEventListener("ha-refresh-backup-config", () => {
       this._fetchBackupConfig();
     });
+  }
+
+  private _fetchAll() {
+    this._fetching = true;
+    Promise.all([this._fetchBackupInfo(), this._fetchBackupConfig()]).finally(
+      () => {
+        this._fetching = false;
+      }
+    );
   }
 
   public connectedCallback() {
@@ -128,11 +131,16 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
   public hassSubscribe(): Promise<UnsubscribeFunc>[] {
     return [
       subscribeBackupEvents(this.hass!, (event) => {
+        const curState = this._manager.manager_state;
+
         this._manager = event;
+        if (
+          event.manager_state === "idle" &&
+          event.manager_state !== curState
+        ) {
+          this._fetchAll();
+        }
         if ("state" in event) {
-          if (event.state === "completed" || event.state === "failed") {
-            this._fetchBackupInfo();
-          }
           if (event.state === "failed") {
             let message = "";
             switch (this._manager.manager_state) {

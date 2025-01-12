@@ -14,9 +14,16 @@ export interface NavigateOptions {
   data?: any;
 }
 
-export const navigate = async (path: string, options?: NavigateOptions) => {
+// max time to wait for dialogs to close before navigating
+const DIALOG_WAIT_TIMEOUT = 500;
+
+export const navigate = async (
+  path: string,
+  options?: NavigateOptions,
+  timestamp = Date.now()
+) => {
   const { history } = mainWindow;
-  if (history.state?.dialog) {
+  if (history.state?.dialog && Date.now() - timestamp < DIALOG_WAIT_TIMEOUT) {
     const closed = await closeAllDialogs();
     if (!closed) {
       // eslint-disable-next-line no-console
@@ -26,7 +33,7 @@ export const navigate = async (path: string, options?: NavigateOptions) => {
     return new Promise<boolean>((resolve) => {
       // need to wait for history state to be updated in case a dialog was closed
       setTimeout(() => {
-        navigate(path, options).then(resolve);
+        navigate(path, options, timestamp).then(resolve);
       });
     });
   }

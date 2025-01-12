@@ -32,6 +32,7 @@ import { brandsUrl } from "../../../util/brands-url";
 import type { Helper, HelperDomain } from "./const";
 import { isHelperDomain } from "./const";
 import type { ShowDialogHelperDetailParams } from "./show-dialog-helper-detail";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 type HelperCreators = {
   [domain in HelperDomain]: {
@@ -129,6 +130,7 @@ export class DialogHelperDetail extends LitElement {
     this._error = undefined;
     this._domain = undefined;
     this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render() {

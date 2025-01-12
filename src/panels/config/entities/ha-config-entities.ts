@@ -904,7 +904,9 @@ ${
           Array.isArray(this._filters.config_entry) &&
           this._filters.config_entry?.length
             ? html`<ha-alert slot="filter-pane">
-                Filtering by config entry
+                ${this.hass.localize(
+                  "ui.panel.config.entities.picker.filtering_by_config_entry"
+                )}
                 ${this._entries?.find(
                   (entry) => entry.entry_id === this._filters.config_entry![0]
                 )?.title || this._filters.config_entry[0]}

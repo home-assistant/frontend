@@ -4,8 +4,8 @@ import type { CloudStatus } from "../../../../data/cloud";
 export interface BackupOnboardingDialogParams {
   submit?: (value: boolean) => void;
   cancel?: () => void;
-  showIntro?: boolean;
-  cloudStatus: CloudStatus;
+  cloudStatus?: CloudStatus;
+  skipWelcome?: boolean;
 }
 
 const loadDialog = () => import("./dialog-backup-onboarding");

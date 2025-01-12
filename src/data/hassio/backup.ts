@@ -46,6 +46,7 @@ export interface HassioFullBackupCreateParams {
   name: string;
   password?: string;
   confirm_password?: string;
+  background?: boolean;
 }
 export interface HassioPartialBackupCreateParams
   extends HassioFullBackupCreateParams {

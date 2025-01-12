@@ -91,7 +91,7 @@ export class HatScriptGraph extends LitElement {
     }
     return html`
       <hat-graph-node
-        graphStart
+        graph-start
         ?track=${track}
         @focus=${this._selectNode(config, path)}
         ?active=${this.selected === path}
@@ -354,8 +354,8 @@ export class HatScriptGraph extends LitElement {
         ></hat-graph-node>
         <div
           style=${`width: ${NODE_SIZE + SPACING}px;`}
-          graphStart
-          graphEnd
+          graph-start
+          graph-end
         ></div>
         <div ?track=${trackPass}></div>
         <hat-graph-node

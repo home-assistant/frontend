@@ -53,12 +53,21 @@ export type BackupConfigData = {
   include_addons?: string[];
 };
 
+declare global {
+  interface HASSDomEvents {
+    "backup-addons-fetched": void;
+  }
+}
+
 @customElement("ha-backup-config-data")
 class HaBackupConfigData extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, attribute: "force-home-assistant" })
   public forceHomeAssistant = false;
+
+  @property({ attribute: "hide-addon-version", type: Boolean })
+  public hideAddonVersion = false;
 
   @state() private value?: BackupConfigData;
 
@@ -86,6 +95,7 @@ class HaBackupConfigData extends LitElement {
   private async _fetchAddons() {
     const { addons } = await fetchHassioAddonsInfo(this.hass);
     this._addons = addons;
+    fireEvent(this, "backup-addons-fetched");
   }
 
   private _hasLocalAddons(addons: BackupAddonItem[]): boolean {
@@ -128,7 +138,8 @@ class HaBackupConfigData extends LitElement {
     const include_addons = data.addons_mode === "custom" ? data.addons : [];
 
     this.value = {
-      include_homeassistant: data.homeassistant || this.forceHomeAssistant,
+      include_homeassistant:
+        data.homeassistant || data.database || this.forceHomeAssistant,
       include_addons: include_addons.length ? include_addons : undefined,
       include_all_addons: data.addons_mode === "all",
       include_database: data.database,
@@ -148,30 +159,35 @@ class HaBackupConfigData extends LitElement {
         <ha-md-list-item>
           <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
           <span slot="headline">
-            ${this.forceHomeAssistant
-              ? "Home Assistant settings are always included"
-              : "Home Assistant settings"}
+            ${this.hass.localize("ui.panel.config.backup.data.ha_settings")}
           </span>
           <span slot="supporting-text">
-            The bare minimum needed to restore your system.
+            ${this.forceHomeAssistant
+              ? this.hass.localize(
+                  "ui.panel.config.backup.data.ha_settings_included_description"
+                )
+              : this.hass.localize(
+                  "ui.panel.config.backup.data.ha_settings_description"
+                )}
           </span>
-          ${this.forceHomeAssistant
-            ? html`<ha-button slot="end">Learn more</ha-button>`
-            : html`
-                <ha-switch
-                  id="homeassistant"
-                  slot="end"
-                  @change=${this._switchChanged}
-                  .checked=${data.homeassistant}
-                ></ha-switch>
-              `}
+          <ha-switch
+            id="homeassistant"
+            slot="end"
+            @change=${this._switchChanged}
+            .checked=${data.homeassistant}
+            .disabled=${this.forceHomeAssistant || data.database}
+          ></ha-switch>
         </ha-md-list-item>
 
         <ha-md-list-item>
           <ha-svg-icon slot="start" .path=${mdiChartBox}></ha-svg-icon>
-          <span slot="headline">History</span>
+          <span slot="headline">
+            ${this.hass.localize("ui.panel.config.backup.data.history")}
+          </span>
           <span slot="supporting-text">
-            Historical data of your sensors, including your energy dashboard.
+            ${this.hass.localize(
+              "ui.panel.config.backup.data.history_description"
+            )}
           </span>
           <ha-switch
             id="database"
@@ -188,9 +204,13 @@ class HaBackupConfigData extends LitElement {
                   slot="start"
                   .path=${mdiPlayBoxMultiple}
                 ></ha-svg-icon>
-                <span slot="headline">Media</span>
+                <span slot="headline">
+                  ${this.hass.localize("ui.panel.config.backup.data.media")}
+                </span>
                 <span slot="supporting-text">
-                  For example, camera recordings.
+                  ${this.hass.localize(
+                    "ui.panel.config.backup.data.media_description"
+                  )}
                 </span>
                 <ha-switch
                   id="media"
@@ -202,10 +222,15 @@ class HaBackupConfigData extends LitElement {
 
               <ha-md-list-item>
                 <ha-svg-icon slot="start" .path=${mdiFolder}></ha-svg-icon>
-                <span slot="headline">Share folder</span>
+                <span slot="headline">
+                  ${this.hass.localize(
+                    "ui.panel.config.backup.data.share_folder"
+                  )}
+                </span>
                 <span slot="supporting-text">
-                  Folder that is often used for advanced or older
-                  configurations.
+                  ${this.hass.localize(
+                    "ui.panel.config.backup.data.share_folder_description"
+                  )}
                 </span>
                 <ha-switch
                   id="share"
@@ -222,9 +247,15 @@ class HaBackupConfigData extends LitElement {
                         slot="start"
                         .path=${mdiFolder}
                       ></ha-svg-icon>
-                      <span slot="headline">Local addons folder</span>
+                      <span slot="headline">
+                        ${this.hass.localize(
+                          "ui.panel.config.backup.data.local_addons"
+                        )}
+                      </span>
                       <span slot="supporting-text">
-                        Folder that contains the data of your local add-ons.
+                        ${this.hass.localize(
+                          "ui.panel.config.backup.data.local_addons_description"
+                        )}
                       </span>
                       <ha-switch
                         id="local_addons"
@@ -242,9 +273,15 @@ class HaBackupConfigData extends LitElement {
                         slot="start"
                         .path=${mdiPuzzle}
                       ></ha-svg-icon>
-                      <span slot="headline">Add-ons</span>
+                      <span slot="headline">
+                        ${this.hass.localize(
+                          "ui.panel.config.backup.data.addons"
+                        )}
+                      </span>
                       <span slot="supporting-text">
-                        Select what add-ons you want to include.
+                        ${this.hass.localize(
+                          "ui.panel.config.backup.data.addons_description"
+                        )}
                       </span>
                       <ha-md-select
                         slot="end"
@@ -253,13 +290,25 @@ class HaBackupConfigData extends LitElement {
                         .value=${data.addons_mode}
                       >
                         <ha-md-select-option value="all">
-                          <div slot="headline">All, including new</div>
+                          <div slot="headline">
+                            ${this.hass.localize(
+                              "ui.panel.config.backup.data.addons_all"
+                            )}
+                          </div>
                         </ha-md-select-option>
                         <ha-md-select-option value="none">
-                          <div slot="headline">None</div>
+                          <div slot="headline">
+                            ${this.hass.localize(
+                              "ui.panel.config.backup.data.addons_none"
+                            )}
+                          </div>
                         </ha-md-select-option>
                         <ha-md-select-option value="custom">
-                          <div slot="headline">Custom</div>
+                          <div slot="headline">
+                            ${this.hass.localize(
+                              "ui.panel.config.backup.data.addons_custom"
+                            )}
+                          </div>
                         </ha-md-select-option>
                       </ha-md-select>
                     </ha-md-list-item>
@@ -276,6 +325,7 @@ class HaBackupConfigData extends LitElement {
                 .value=${data.addons}
                 @value-changed=${this._addonsChanged}
                 .addons=${this._addons}
+                .hideVersion=${this.hideAddonVersion}
               ></ha-backup-addons-picker>
             </ha-expansion-panel>
           `
@@ -290,7 +340,6 @@ class HaBackupConfigData extends LitElement {
       ...data,
       [target.id]: target.checked,
     });
-    fireEvent(this, "value-changed", { value: this.value });
   }
 
   private _selectChanged(ev: Event) {
@@ -303,7 +352,6 @@ class HaBackupConfigData extends LitElement {
     if (target.id === "addons_mode") {
       this._showAddons = target.value === "custom";
     }
-    fireEvent(this, "value-changed", { value: this.value });
   }
 
   private _addonsChanged(ev: CustomEvent) {
@@ -314,7 +362,6 @@ class HaBackupConfigData extends LitElement {
       ...data,
       addons,
     });
-    fireEvent(this, "value-changed", { value: this.value });
   }
 
   static styles = css`
@@ -323,11 +370,11 @@ class HaBackupConfigData extends LitElement {
       --md-list-item-leading-space: 0;
       --md-list-item-trailing-space: 0;
     }
-    ha-md-select {
-      min-width: 210px;
-    }
     ha-md-list-item {
       --md-item-overflow: visible;
+    }
+    ha-md-select {
+      min-width: 210px;
     }
     @media all and (max-width: 450px) {
       ha-md-select {

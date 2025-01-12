@@ -225,6 +225,7 @@ export const makeDialogManager = (
 };
 
 const _handleClosedFocus = async (ev: HASSDomEvent<DialogClosedParams>) => {
+  if (!LOADED[ev.detail.dialog]) return;
   const closedFocusTargets = LOADED[ev.detail.dialog].closedFocusTargets;
   delete LOADED[ev.detail.dialog].closedFocusTargets;
   if (!closedFocusTargets) return;

@@ -102,10 +102,10 @@ export class HaDialog extends DialogBase {
         align-items: var(--vertical-align-dialog, center);
       }
       .mdc-dialog__title {
-        padding: 12px 12px 0;
+        padding: 24px 24px 0 24px;
       }
-      .mdc-dialog--scrollable .mdc-dialog__title {
-        padding: 12px;
+      .mdc-dialog__title:has(span) {
+        padding: 12px 12px 0;
       }
       .mdc-dialog__actions {
         padding: 12px 24px 12px 24px;

@@ -5,7 +5,7 @@ import Fuse from "fuse.js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -70,6 +70,7 @@ import "./ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
 import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
 import type { ImprovDiscoveredDevice } from "../../../external_app/external_messaging";
+import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 
 export interface ConfigEntryExtended extends Omit<ConfigEntry, "entry_id"> {
   entry_id?: string;
@@ -90,7 +91,9 @@ const groupByIntegration = (
   return result;
 };
 @customElement("ha-config-integrations-dashboard")
-class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
+class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
+  SubscribeMixin(LitElement)
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
@@ -134,6 +137,8 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
   @state() private _logInfos?: {
     [integration: string]: IntegrationLogInfo;
   };
+
+  @query("search-input-outlined") private _searchInput!: HTMLElement;
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
@@ -436,9 +441,8 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
       >
         ${this.narrow
           ? html`
-              <div slot="header">
+              <div slot="header" class="header">
                 <search-input-outlined
-                  class="header"
                   .hass=${this.hass}
                   .filter=${this._filter}
                   @value-changed=${this._handleSearchChange}
@@ -457,7 +461,6 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
               ></ha-integration-overflow-menu>
               <div class="search">
                 <search-input-outlined
-                  class="header"
                   .hass=${this.hass}
                   .filter=${this._filter}
                   @value-changed=${this._handleSearchChange}
@@ -866,7 +869,7 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     }
 
     if (integration?.supported_by) {
-      // Integration is a alias, so we can just create a flow
+      // Integration is an alias, so we can just create a flow
       const localize = await this.hass.loadBackendTranslation(
         "title",
         domain,
@@ -948,6 +951,12 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
     });
   }
 
+  protected supportedShortcuts(): SupportedShortcuts {
+    return {
+      f: () => this._searchInput.focus(),
+    };
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -981,6 +990,9 @@ class HaConfigIntegrationsDashboard extends SubscribeMixin(LitElement) {
         }
         search-input-outlined {
           flex: 1;
+        }
+        .header {
+          display: flex;
         }
         .search {
           display: flex;

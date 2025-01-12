@@ -1,6 +1,16 @@
+import { setHours, setMinutes } from "date-fns";
+import type { HassConfig } from "home-assistant-js-websocket";
+import memoizeOne from "memoize-one";
+import {
+  formatDateTime,
+  formatDateTimeNumeric,
+} from "../common/datetime/format_date_time";
+import { formatTime } from "../common/datetime/format_time";
 import type { LocalizeFunc } from "../common/translations/localize";
 import type { HomeAssistant } from "../types";
+import { fileDownload } from "../util/file_download";
 import { domainToName } from "./integration";
+import type { FrontendLocaleData } from "./translation";
 
 export const enum BackupScheduleState {
   NEVER = "never",
@@ -207,10 +217,16 @@ export const uploadBackup = async (
 };
 
 export const getPreferredAgentForDownload = (agents: string[]) => {
-  const localAgents = agents.filter(
-    (agent) => agent.split(".")[0] === "backup"
-  );
-  return localAgents[0] || agents[0];
+  const localAgent = agents.find(isLocalAgent);
+  if (localAgent) {
+    return localAgent;
+  }
+  const networkMountAgent = agents.find(isNetworkMountAgent);
+  if (networkMountAgent) {
+    return networkMountAgent;
+  }
+
+  return agents[0];
 };
 
 export const CORE_LOCAL_AGENT = "backup.local";
@@ -220,15 +236,25 @@ export const CLOUD_AGENT = "cloud.cloud";
 export const isLocalAgent = (agentId: string) =>
   [CORE_LOCAL_AGENT, HASSIO_LOCAL_AGENT].includes(agentId);
 
+export const isNetworkMountAgent = (agentId: string) => {
+  const [domain, name] = agentId.split(".");
+  return domain === "hassio" && name !== "local";
+};
+
 export const computeBackupAgentName = (
   localize: LocalizeFunc,
   agentId: string,
   agentIds?: string[]
 ) => {
   if (isLocalAgent(agentId)) {
-    return "This system";
+    return localize("ui.panel.config.backup.agents.local_agent");
   }
   const [domain, name] = agentId.split(".");
+
+  if (isNetworkMountAgent(agentId)) {
+    return name;
+  }
+
   const domainName = domainToName(localize, domain);
 
   // If there are multiple agents for a domain, show the name
@@ -242,7 +268,23 @@ export const computeBackupAgentName = (
 export const compareAgents = (a: string, b: string) => {
   const isLocalA = isLocalAgent(a);
   const isLocalB = isLocalAgent(b);
-  return isLocalA === isLocalB ? a.localeCompare(b) : isLocalA ? -1 : 1;
+  const isNetworkMountAgentA = isNetworkMountAgent(a);
+  const isNetworkMountAgentB = isNetworkMountAgent(b);
+
+  const getPriority = (isLocal: boolean, isNetworkMount: boolean) => {
+    if (isLocal) return 1;
+    if (isNetworkMount) return 2;
+    return 3;
+  };
+
+  const priorityA = getPriority(isLocalA, isNetworkMountAgentA);
+  const priorityB = getPriority(isLocalB, isNetworkMountAgentB);
+
+  if (priorityA !== priorityB) {
+    return priorityA - priorityB;
+  }
+
+  return a.localeCompare(b);
 };
 
 export const generateEncryptionKey = () => {
@@ -256,3 +298,48 @@ export const generateEncryptionKey = () => {
   });
   return result;
 };
+
+export const generateEmergencyKit = (
+  hass: HomeAssistant,
+  encryptionKey: string
+) =>
+  "data:text/plain;charset=utf-8," +
+  encodeURIComponent(`${hass.localize("ui.panel.config.backup.emergency_kit_file.title")}
+
+${hass.localize("ui.panel.config.backup.emergency_kit_file.description")}
+
+${hass.localize("ui.panel.config.backup.emergency_kit_file.date")} ${formatDateTime(new Date(), hass.locale, hass.config)}
+
+${hass.localize("ui.panel.config.backup.emergency_kit_file.instance")}
+${hass.config.location_name}
+
+${hass.localize("ui.panel.config.backup.emergency_kit_file.url")}
+${hass.auth.data.hassUrl}
+
+${hass.localize("ui.panel.config.backup.emergency_kit_file.encryption_key")}
+${encryptionKey}
+
+${hass.localize("ui.panel.config.backup.emergency_kit_file.more_info", { link: "https://www.home-assistant.io/more-info/backup-emergency-kit" })}`);
+
+export const geneateEmergencyKitFileName = (
+  hass: HomeAssistant,
+  append?: string
+) =>
+  `home_assistant_backup_emergency_kit_${append ? `${append}_` : ""}${formatDateTimeNumeric(new Date(), hass.locale, hass.config).replace(",", "").replace(" ", "_")}.txt`;
+
+export const downloadEmergencyKit = (
+  hass: HomeAssistant,
+  key: string,
+  appendFileName?: string
+) =>
+  fileDownload(
+    generateEmergencyKit(hass, key),
+    geneateEmergencyKitFileName(hass, appendFileName)
+  );
+
+export const getFormattedBackupTime = memoizeOne(
+  (locale: FrontendLocaleData, config: HassConfig) => {
+    const date = setMinutes(setHours(new Date(), 4), 45);
+    return formatTime(date, locale, config);
+  }
+);

@@ -207,6 +207,9 @@ export class HaTextField extends TextFieldBase {
         .mdc-text-field__affix--prefix {
         color: var(--mdc-text-field-label-ink-color);
       }
+      #helper-text ha-markdown {
+        display: inline-block;
+      }
     `,
     // safari workaround - must be explicit
     mainWindow.document.dir === "rtl"

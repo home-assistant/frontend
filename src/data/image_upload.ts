@@ -80,3 +80,17 @@ export const deleteImage = (hass: HomeAssistant, id: string) =>
     type: "image/delete",
     image_id: id,
   });
+
+export const getImageData = async (url: string) => {
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch image: ${
+        response.statusText ? response.statusText : response.status
+      }`
+    );
+  }
+
+  return response.blob();
+};

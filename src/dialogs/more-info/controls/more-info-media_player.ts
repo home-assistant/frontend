@@ -213,9 +213,10 @@ class MoreInfoMediaPlayer extends LitElement {
 
       ha-icon-button[action="turn_off"],
       ha-icon-button[action="turn_on"] {
-        margin-inline-end: auto;
         margin-right: auto;
         margin-left: inherit;
+        margin-inline-start: inherit;
+        margin-inline-end: auto;
       }
 
       .controls {

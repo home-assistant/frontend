@@ -25,8 +25,6 @@ import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
-import "./components/ha-backup-summary-card";
-import "./components/ha-backup-summary-status";
 import "./components/overview/ha-backup-overview-backups";
 import "./components/overview/ha-backup-overview-onboarding";
 import "./components/overview/ha-backup-overview-progress";
@@ -41,7 +39,7 @@ import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
 class HaConfigBackupOverview extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public cloudStatus!: CloudStatus;
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -65,13 +63,13 @@ class HaConfigBackupOverview extends LitElement {
 
   private _handleOnboardingButtonClick(ev) {
     ev.stopPropagation();
-    this._setupAutomaticBackup(false);
+    this._setupAutomaticBackup(true);
   }
 
-  private async _setupAutomaticBackup(showIntro: boolean) {
+  private async _setupAutomaticBackup(skipWelcome = false) {
     const success = await showBackupOnboardingDialog(this, {
       cloudStatus: this.cloudStatus,
-      showIntro: showIntro,
+      skipWelcome,
     });
     if (!success) {
       return;
@@ -84,7 +82,7 @@ class HaConfigBackupOverview extends LitElement {
 
   private async _newBackup(): Promise<void> {
     if (this._needsOnboarding) {
-      this._setupAutomaticBackup(true);
+      this._setupAutomaticBackup();
       return;
     }
 
@@ -101,7 +99,9 @@ class HaConfigBackupOverview extends LitElement {
     }
 
     if (type === "manual") {
-      const params = await showGenerateBackupDialog(this, {});
+      const params = await showGenerateBackupDialog(this, {
+        cloudStatus: this.cloudStatus,
+      });
 
       if (!params) {
         return;
@@ -118,7 +118,7 @@ class HaConfigBackupOverview extends LitElement {
   }
 
   private get _needsOnboarding() {
-    return !this.config?.create_backup.password;
+    return this.config && !this.config.create_backup.password;
   }
 
   protected render(): TemplateResult {
@@ -130,24 +130,21 @@ class HaConfigBackupOverview extends LitElement {
         back-path="/config/system"
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .header=${"Backup"}
+        .header=${this.hass.localize("ui.panel.config.backup.overview.header")}
       >
-        <div slot="toolbar-icon">
-          <ha-button-menu>
-            <ha-icon-button
-              slot="trigger"
-              .label=${this.hass.localize("ui.common.menu")}
-              .path=${mdiDotsVertical}
-            ></ha-icon-button>
-            <ha-list-item
-              graphic="icon"
-              @request-selected=${this._uploadBackup}
-            >
-              <ha-svg-icon slot="graphic" .path=${mdiUpload}></ha-svg-icon>
-              Upload backup
-            </ha-list-item>
-          </ha-button-menu>
-        </div>
+        <ha-button-menu slot="toolbar-icon">
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+          <ha-list-item graphic="icon" @request-selected=${this._uploadBackup}>
+            <ha-svg-icon slot="graphic" .path=${mdiUpload}></ha-svg-icon>
+            ${this.hass.localize(
+              "ui.panel.config.backup.overview.menu.upload_backup"
+            )}
+          </ha-list-item>
+        </ha-button-menu>
         <div class="content">
           ${backupInProgress
             ? html`
@@ -157,38 +154,32 @@ class HaConfigBackupOverview extends LitElement {
                 >
                 </ha-backup-overview-progress>
               `
-            : this.fetching
+            : this._needsOnboarding
               ? html`
-                  <ha-backup-summary-card
-                    heading="Loading backups"
-                    description="Your backup information is being retrieved."
-                    status="loading"
+                  <ha-backup-overview-onboarding
+                    .hass=${this.hass}
+                    @button-click=${this._handleOnboardingButtonClick}
                   >
-                  </ha-backup-summary-card>
+                  </ha-backup-overview-onboarding>
                 `
-              : this._needsOnboarding
+              : this.config
                 ? html`
-                    <ha-backup-overview-onboarding
-                      .hass=${this.hass}
-                      @button-click=${this._handleOnboardingButtonClick}
-                    >
-                    </ha-backup-overview-onboarding>
-                  `
-                : html`
                     <ha-backup-overview-summary
                       .hass=${this.hass}
                       .backups=${this.backups}
                       .config=${this.config}
+                      .fetching=${this.fetching}
                     >
                     </ha-backup-overview-summary>
-                  `}
+                  `
+                : nothing}
 
           <ha-backup-overview-backups
             .hass=${this.hass}
             .backups=${this.backups}
           ></ha-backup-overview-backups>
 
-          ${!this._needsOnboarding
+          ${!this._needsOnboarding && this.config
             ? html`
                 <ha-backup-overview-settings
                   .hass=${this.hass}
@@ -201,7 +192,9 @@ class HaConfigBackupOverview extends LitElement {
         <ha-fab
           slot="fab"
           ?disabled=${backupInProgress}
-          .label=${"Backup now"}
+          .label=${this.hass.localize(
+            "ui.panel.config.backup.overview.new_backup"
+          )}
           extended
           @click=${this._newBackup}
         >
@@ -232,10 +225,6 @@ class HaConfigBackupOverview extends LitElement {
         .card-content {
           padding-left: 0;
           padding-right: 0;
-        }
-        ha-fab[disabled] {
-          --mdc-theme-secondary: var(--disabled-text-color) !important;
-          pointer-events: none;
         }
       `,
     ];

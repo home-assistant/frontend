@@ -52,7 +52,7 @@ export interface HaMapPaths {
 export interface HaMapEntity {
   entity_id: string;
   color: string;
-  label_mode?: "name" | "state";
+  label_mode?: "name" | "state" | "icon";
   name?: string;
   focus?: boolean;
 }
@@ -523,23 +523,24 @@ export class HaMap extends ReactiveElement {
               .join("")
               .substr(0, 3));
 
+      const entityMarker = document.createElement("ha-entity-marker");
+      entityMarker.hass = this.hass;
+      entityMarker.showIcon =
+        typeof entity !== "string" && entity.label_mode === "icon";
+      entityMarker.entityId = getEntityId(entity);
+      entityMarker.entityName = entityName;
+      entityMarker.entityPicture =
+        entityPicture && (typeof entity === "string" || !entity.label_mode)
+          ? this.hass.hassUrl(entityPicture)
+          : "";
+      if (typeof entity !== "string") {
+        entityMarker.entityColor = entity.color;
+      }
+
       // create marker with the icon
       const marker = Leaflet.marker([latitude, longitude], {
         icon: Leaflet.divIcon({
-          html: `
-              <ha-entity-marker
-                entity-id="${getEntityId(entity)}"
-                entity-name="${entityName}"
-                entity-picture="${
-                  entityPicture ? this.hass.hassUrl(entityPicture) : ""
-                }"
-                ${
-                  typeof entity !== "string"
-                    ? `entity-color="${entity.color}"`
-                    : ""
-                }
-              ></ha-entity-marker>
-            `,
+          html: entityMarker,
           iconSize: [48, 48],
           className: "",
         }),

@@ -1,5 +1,6 @@
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { LitElement, html } from "lit";
+import type { nothing, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { FlowType } from "../../../data/data_entry_flow";
 import type { GenericPreview } from "../../../data/preview";
@@ -11,7 +12,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 
 @customElement("flow-preview-generic")
-class FlowPreviewGeneric extends LitElement {
+export class FlowPreviewGeneric extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public flowType!: FlowType;
@@ -26,9 +27,9 @@ class FlowPreviewGeneric extends LitElement {
 
   @property({ attribute: false }) public stepData!: Record<string, any>;
 
-  @state() private _preview?: HassEntity;
+  @state() protected _preview?: HassEntity;
 
-  @state() private _error?: string;
+  @state() protected _error?: string;
 
   private _unsub?: Promise<UnsubscribeFunc>;
 
@@ -46,7 +47,7 @@ class FlowPreviewGeneric extends LitElement {
     }
   }
 
-  protected render() {
+  protected render(): TemplateResult | typeof nothing {
     if (this._error) {
       return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
     }

@@ -3,7 +3,6 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
@@ -35,10 +34,6 @@ class HaBackupOverviewBackups extends LitElement {
 
   @property({ attribute: false }) public backups: BackupContent[] = [];
 
-  private _showAll() {
-    navigate("/config/backup/backups");
-  }
-
   private _automaticStats = memoizeOne((backups: BackupContent[]) => {
     const automaticBackups = backups.filter(
       (backup) => backup.with_automatic_settings
@@ -59,33 +54,59 @@ class HaBackupOverviewBackups extends LitElement {
 
     return html`
       <ha-card class="my-backups">
-        <div class="card-header">My backups</div>
+        <div class="card-header">
+          ${this.hass.localize("ui.panel.config.backup.overview.backups.title")}
+        </div>
         <div class="card-content">
           <ha-md-list>
-            <ha-md-list-item type="link" href="/config/backup/backups">
+            <ha-md-list-item
+              type="link"
+              href="/config/backup/backups?type=automatic"
+            >
               <ha-svg-icon slot="start" .path=${mdiCalendarSync}></ha-svg-icon>
               <div slot="headline">
-                ${automaticStats.count} automatic backups
+                ${this.hass.localize(
+                  "ui.panel.config.backup.overview.backups.automatic",
+                  { count: automaticStats.count }
+                )}
               </div>
               <div slot="supporting-text">
-                ${bytesToString(automaticStats.size, 1)} in total
+                ${this.hass.localize(
+                  "ui.panel.config.backup.overview.backups.total_size",
+                  { size: bytesToString(automaticStats.size, 1) }
+                )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
-            <ha-md-list-item type="link" href="/config/backup/backups">
+            <ha-md-list-item
+              type="link"
+              href="/config/backup/backups?type=manual"
+            >
               <ha-svg-icon slot="start" .path=${mdiGestureTap}></ha-svg-icon>
-              <div slot="headline">${manualStats.count} manual backups</div>
+              <div slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.backup.overview.backups.manual",
+                  { count: manualStats.count }
+                )}
+              </div>
               <div slot="supporting-text">
-                ${bytesToString(manualStats.size, 1)} in total
+                ${this.hass.localize(
+                  "ui.panel.config.backup.overview.backups.total_size",
+                  { size: bytesToString(manualStats.size, 1) }
+                )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
           </ha-md-list>
         </div>
         <div class="card-actions">
-          <ha-button href="/config/backup/backups" @click=${this._showAll}>
-            Show all backups
-          </ha-button>
+          <a href="/config/backup/backups?type=all">
+            <ha-button>
+              ${this.hass.localize(
+                "ui.panel.config.backup.overview.backups.show_all"
+              )}
+            </ha-button>
+          </a>
         </div>
       </ha-card>
     `;
@@ -102,16 +123,19 @@ class HaBackupOverviewBackups extends LitElement {
           gap: 24px;
           display: flex;
           flex-direction: column;
-          margin-bottom: 24px;
-          margin-bottom: 72px;
+          margin-bottom: calc(72px + env(safe-area-inset-bottom));
         }
         .card-actions {
           display: flex;
           justify-content: flex-end;
         }
+        .card-header {
+          padding-bottom: 8px;
+        }
         .card-content {
           padding-left: 0;
           padding-right: 0;
+          padding-bottom: 0;
         }
       `,
     ];

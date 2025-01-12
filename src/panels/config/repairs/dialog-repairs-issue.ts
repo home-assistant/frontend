@@ -99,7 +99,7 @@ class DialogRepairsIssue extends LitElement {
             : ""}
           <ha-markdown
             id="dialog-repairs-issue-description"
-            allowsvg
+            allow-svg
             breaks
             @click=${this._clickHandler}
             .content=${this.hass.localize(

@@ -31,21 +31,23 @@ class HaBackupOverviewBackups extends LitElement {
           <div class="icon">
             <ha-svg-icon .path=${mdiInformationOutline}></ha-svg-icon>
           </div>
-          Set up automatic backups
+          ${this.hass.localize(
+            "ui.panel.config.backup.overview.onboarding.title"
+          )}
         </div>
         <div class="card-content">
           <p>
-            Backups are essential to a reliable smart home. They protect your
-            setup against failures and allows you to quickly have a working
-            system again. It is recommended to create a daily backup and keep
-            copies of the last 3 days on two different locations. And one of
-            them is off-site.
+            ${this.hass.localize(
+              "ui.panel.config.backup.overview.onboarding.description"
+            )}
           </p>
         </div>
         <div class="card-actions">
-          <ha-button @click=${this._setup}>
-            Set up automatic backups
-          </ha-button>
+          <ha-button @click=${this._setup}
+            >${this.hass.localize(
+              "ui.panel.config.backup.overview.onboarding.setup"
+            )}</ha-button
+          >
         </div>
       </ha-card>
     `;

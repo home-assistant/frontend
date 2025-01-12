@@ -24,6 +24,7 @@ import {
   BackupScheduleState,
   CLOUD_AGENT,
   CORE_LOCAL_AGENT,
+  downloadEmergencyKit,
   generateEncryptionKey,
   HASSIO_LOCAL_AGENT,
   updateBackupConfig,
@@ -31,7 +32,6 @@ import {
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import { fileDownload } from "../../../../util/file_download";
 import { showToast } from "../../../../util/toast";
 import "../components/config/ha-backup-config-agents";
 import "../components/config/ha-backup-config-data";
@@ -82,8 +82,6 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
 
   @state() private _step?: Step;
 
-  @state() private _steps: Step[] = [];
-
   @state() private _params?: BackupOnboardingDialogParams;
 
   @query("ha-md-dialog") private _dialog!: HaMdDialog;
@@ -92,8 +90,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
 
   public showDialog(params: BackupOnboardingDialogParams): void {
     this._params = params;
-    this._steps = params.showIntro ? STEPS.concat() : STEPS.slice(1);
-    this._step = this._steps[0];
+    this._step = this._firstStep;
     this._config = RECOMMENDED_CONFIG;
 
     const agents: string[] = [];
@@ -104,7 +101,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
       agents.push(CORE_LOCAL_AGENT);
     }
     // Enable cloud location if logged in
-    if (this._params.cloudStatus.logged_in) {
+    if (this._params.cloudStatus?.logged_in) {
       agents.push(CLOUD_AGENT);
     }
 
@@ -128,9 +125,12 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
     }
     this._opened = false;
     this._step = undefined;
-    this._steps = [];
     this._config = undefined;
     this._params = undefined;
+  }
+
+  private get _firstStep(): Step {
+    return this._params?.skipWelcome ? STEPS[1] : STEPS[0];
   }
 
   private async _done() {
@@ -170,19 +170,19 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
   }
 
   private _previousStep() {
-    const index = this._steps.indexOf(this._step!);
+    const index = STEPS.indexOf(this._step!);
     if (index === 0) {
       return;
     }
-    this._step = this._steps[index - 1];
+    this._step = STEPS[index - 1];
   }
 
   private _nextStep() {
-    const index = this._steps.indexOf(this._step!);
-    if (index === this._steps.length - 1) {
+    const index = STEPS.indexOf(this._step!);
+    if (index === STEPS.length - 1) {
       return;
     }
-    this._step = this._steps[index + 1];
+    this._step = STEPS[index + 1];
   }
 
   protected render() {
@@ -190,8 +190,8 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
       return nothing;
     }
 
-    const isLastStep = this._step === this._steps[this._steps.length - 1];
-    const isFirstStep = this._step === this._steps[0];
+    const isLastStep = this._step === STEPS[STEPS.length - 1];
+    const isFirstStep = this._step === this._firstStep;
 
     return html`
       <ha-md-dialog disable-cancel-action open @closed=${this.closeDialog}>
@@ -224,7 +224,9 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
                         @click=${this._done}
                         .disabled=${!this._isStepValid()}
                       >
-                        Save
+                        ${this.hass.localize(
+                          "ui.panel.config.backup.dialogs.onboarding.save_and_create"
+                        )}
                       </ha-button>
                     `
                   : html`
@@ -232,7 +234,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
                         @click=${this._nextStep}
                         .disabled=${!this._isStepValid()}
                       >
-                        Next
+                        ${this.hass.localize("ui.common.next")}
                       </ha-button>
                     `}
               </div>
@@ -244,18 +246,14 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
 
   private get _stepTitle(): string {
     switch (this._step) {
-      case "welcome":
-        return "";
       case "key":
-        return "Encryption key";
       case "setup":
-        return "Set up your automatic backups";
       case "schedule":
-        return "Automatic backups";
       case "data":
-        return "Backup data";
       case "locations":
-        return "Locations";
+        return this.hass.localize(
+          `ui.panel.config.backup.dialogs.onboarding.${this._step}.title`
+        );
       default:
         return "";
     }
@@ -291,22 +289,24 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
               src="/static/images/voice-assistant/hi.png"
               alt="Casita Home Assistant logo"
             />
-            <h1>Set up your automatic backups</h1>
+            <h1>
+              ${this.hass.localize(
+                "ui.panel.config.backup.dialogs.onboarding.welcome.title"
+              )}
+            </h1>
             <p class="secondary">
-              Backups are essential to a reliable smart home. They protect your
-              setup against failures and allows you to quickly have a working
-              system again. It is recommended to create a daily backup and keep
-              copies of the last 3 days on two different locations. And one of
-              them is off-site.
+              ${this.hass.localize(
+                "ui.panel.config.backup.dialogs.onboarding.welcome.description"
+              )}
             </p>
           </div>
         `;
       case "key":
         return html`
           <p>
-            All your backups are encrypted to keep your data private and secure.
-            We recommend to save this key somewhere secure. As you can only
-            restore your data with the backup encryption key.
+            ${this.hass.localize(
+              "ui.panel.config.backup.dialogs.onboarding.key.description"
+            )}
           </p>
           <div class="encryption-key">
             <p>${this._config.create_backup.password}</p>
@@ -317,35 +317,51 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
           </div>
           <ha-md-list>
             <ha-md-list-item>
-              <span slot="headline">Download emergency kit</span>
+              <span slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.backup.encryption_key.download_emergency_kit"
+                )}
+              </span>
               <span slot="supporting-text">
-                We recommend to save this encryption key somewhere secure.
+                ${this.hass.localize(
+                  "ui.panel.config.backup.encryption_key.download_emergency_kit_description"
+                )}
               </span>
               <ha-button slot="end" @click=${this._downloadKey}>
                 <ha-svg-icon .path=${mdiDownload} slot="icon"></ha-svg-icon>
-                Download
+                ${this.hass.localize(
+                  "ui.panel.config.backup.encryption_key.download_emergency_kit_action"
+                )}
               </ha-button>
             </ha-md-list-item>
           </ha-md-list>
         `;
       case "setup":
         return html`
-          <p>
-            It is recommended to create a daily backup and keep copies of the
-            last 3 days on two different locations. And one of them is off-site.
-          </p>
           <ha-md-list class="full">
             <ha-md-list-item type="button" @click=${this._done}>
-              <span slot="headline">Recommended settings</span>
+              <span slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.backup.dialogs.onboarding.setup.recommended_heading"
+                )}
+              </span>
               <span slot="supporting-text">
-                Set the proven settings of daily backup.
+                ${this.hass.localize(
+                  "ui.panel.config.backup.dialogs.onboarding.setup.recommended_description"
+                )}
               </span>
               <ha-icon-next slot="end"> </ha-icon-next>
             </ha-md-list-item>
             <ha-md-list-item type="button" @click=${this._nextStep}>
-              <span slot="headline">Custom settings</span>
+              <span slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.backup.dialogs.onboarding.setup.custom_heading"
+                )}
+              </span>
               <span slot="supporting-text">
-                Select your own automation, data and locations
+                ${this.hass.localize(
+                  "ui.panel.config.backup.dialogs.onboarding.setup.custom_description"
+                )}
               </span>
               <ha-icon-next slot="end"> </ha-icon-next>
             </ha-md-list-item>
@@ -354,8 +370,9 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
       case "schedule":
         return html`
           <p>
-            Let Home Assistant take care of your backups by creating a scheduled
-            backup that also removes older copies.
+            ${this.hass.localize(
+              "ui.panel.config.backup.dialogs.onboarding.schedule.description"
+            )}
           </p>
           <ha-backup-config-schedule
             .hass=${this.hass}
@@ -366,21 +383,24 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
       case "data":
         return html`
           <p>
-            Choose what data to include in your backups. You can always change
-            this later.
+            ${this.hass.localize(
+              "ui.panel.config.backup.dialogs.onboarding.data.description"
+            )}
           </p>
           <ha-backup-config-data
             .hass=${this.hass}
             .value=${this._dataConfig(this._config)}
             @value-changed=${this._dataChanged}
             force-home-assistant
+            hide-addon-version
           ></ha-backup-config-data>
         `;
       case "locations":
         return html`
           <p>
-            Home Assistant will upload to these locations when an automatic
-            backup is made. You can use all locations for manual backups.
+            ${this.hass.localize(
+              "ui.panel.config.backup.dialogs.onboarding.locations.description"
+            )}
           </p>
           <ha-backup-config-agents
             .hass=${this.hass}
@@ -398,14 +418,14 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
     if (!key) {
       return;
     }
-    fileDownload(
-      "data:text/plain;charset=utf-8," + encodeURIComponent(key),
-      "emergency_kit.txt"
-    );
+    downloadEmergencyKit(this.hass, key);
   }
 
-  private _copyKeyToClipboard() {
-    copyToClipboard(this._config!.create_backup.password!);
+  private async _copyKeyToClipboard() {
+    await copyToClipboard(
+      this._config!.create_backup.password!,
+      this.renderRoot.querySelector("div")!
+    );
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
     });
@@ -470,9 +490,8 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
         ha-md-dialog {
           width: 90vw;
           max-width: 560px;
-        }
-        div[slot="content"] {
-          margin-top: -16px;
+          --dialog-content-padding: 8px 24px;
+          max-height: min(605px, 100% - 48px);
         }
         ha-md-list {
           background: none;
