@@ -66,6 +66,7 @@ class MoreInfoConversation extends LitElement {
             <ha-assist-chat
               .hass=${this.hass}
               .pipeline=${this._pipeline}
+              disable-speech
             ></ha-assist-chat>
           `
         : html`<div class="pipelines-loading">
