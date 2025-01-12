@@ -1,20 +1,17 @@
-import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
+import type { ChartData, ChartDataset } from "chart.js";
 import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
 import { property, query, state } from "lit/decorators";
 import { getGraphColorByIndex } from "../../common/color/colors";
-import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTL } from "../../common/util/compute_rtl";
-import {
-  formatNumber,
-  numberFormatToLocale,
-  getNumberFormatOptions,
-} from "../../common/number/format_number";
+
 import type { LineChartEntity, LineChartState } from "../../data/history";
 import type { HomeAssistant } from "../../types";
 import type { ChartResizeOptions, HaChartBase } from "./ha-chart-base";
 import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
-import { clickIsTouch } from "./click_is_touch";
+import type { ECOption } from "../../resources/echarts";
+import { formatDateVeryShort } from "../../common/datetime/format_date";
+import { formatTime } from "../../common/datetime/format_time";
 
 const safeParseFloat = (value) => {
   const parsed = parseFloat(value);
@@ -61,7 +58,7 @@ export class StateHistoryChartLine extends LitElement {
 
   private _datasetToDataIndex: number[] = [];
 
-  @state() private _chartOptions?: ChartOptions;
+  @state() private _chartOptions?: ECOption;
 
   @state() private _yWidth = 0;
 
@@ -87,164 +84,6 @@ export class StateHistoryChartLine extends LitElement {
 
   public willUpdate(changedProps: PropertyValues) {
     if (
-      !this.hasUpdated ||
-      changedProps.has("showNames") ||
-      changedProps.has("startTime") ||
-      changedProps.has("endTime") ||
-      changedProps.has("unit") ||
-      changedProps.has("logarithmicScale") ||
-      changedProps.has("minYAxis") ||
-      changedProps.has("maxYAxis") ||
-      changedProps.has("fitYData")
-    ) {
-      this._chartOptions = {
-        parsing: false,
-        interaction: {
-          mode: "nearest",
-          axis: "xy",
-        },
-        scales: {
-          x: {
-            type: "time",
-            adapters: {
-              date: {
-                locale: this.hass.locale,
-                config: this.hass.config,
-              },
-            },
-            min: this.startTime,
-            max: this.endTime,
-            ticks: {
-              maxRotation: 0,
-              sampleSize: 5,
-              autoSkipPadding: 20,
-              major: {
-                enabled: true,
-              },
-              font: (context) =>
-                context.tick && context.tick.major
-                  ? ({ weight: "bold" } as any)
-                  : {},
-            },
-            time: {
-              tooltipFormat: "datetimeseconds",
-            },
-          },
-          y: {
-            suggestedMin: this.fitYData ? this.minYAxis : null,
-            suggestedMax: this.fitYData ? this.maxYAxis : null,
-            min: this.fitYData ? null : this.minYAxis,
-            max: this.fitYData ? null : this.maxYAxis,
-            ticks: {
-              maxTicksLimit: 7,
-            },
-            title: {
-              display: true,
-              text: this.unit,
-            },
-            afterUpdate: (y) => {
-              if (this._yWidth !== Math.floor(y.width)) {
-                this._yWidth = Math.floor(y.width);
-                fireEvent(this, "y-width-changed", {
-                  value: this._yWidth,
-                  chartIndex: this.chartIndex,
-                });
-              }
-            },
-            position: computeRTL(this.hass) ? "right" : "left",
-            type: this.logarithmicScale ? "logarithmic" : "linear",
-          },
-        },
-        plugins: {
-          tooltip: {
-            callbacks: {
-              label: (context) => {
-                let label = `${context.dataset.label}: ${formatNumber(
-                  context.parsed.y,
-                  this.hass.locale,
-                  getNumberFormatOptions(
-                    undefined,
-                    this.hass.entities[this._entityIds[context.datasetIndex]]
-                  )
-                )} ${this.unit}`;
-                const dataIndex =
-                  this._datasetToDataIndex[context.datasetIndex];
-                const data = this.data[dataIndex];
-                if (data.statistics && data.statistics.length > 0) {
-                  const source =
-                    data.states.length === 0 ||
-                    context.parsed.x < data.states[0].last_changed
-                      ? `\n${this.hass.localize(
-                          "ui.components.history_charts.source_stats"
-                        )}`
-                      : `\n${this.hass.localize(
-                          "ui.components.history_charts.source_history"
-                        )}`;
-                  label += source;
-                }
-                return label;
-              },
-            },
-          },
-          filler: {
-            propagate: true,
-          },
-          legend: {
-            display: this.showNames,
-            labels: {
-              usePointStyle: true,
-            },
-          },
-        },
-        elements: {
-          line: {
-            tension: 0.1,
-            borderWidth: 1.5,
-          },
-          point: {
-            hitRadius: 50,
-          },
-        },
-        segment: {
-          borderColor: (context) => {
-            // render stat data with a slightly transparent line
-            const dataIndex = this._datasetToDataIndex[context.datasetIndex];
-            const data = this.data[dataIndex];
-            return data.statistics &&
-              data.statistics.length > 0 &&
-              (data.states.length === 0 ||
-                context.p0.parsed.x < data.states[0].last_changed)
-              ? this._chartData!.datasets[dataIndex].borderColor + "7F"
-              : undefined;
-          },
-        },
-        // @ts-expect-error
-        locale: numberFormatToLocale(this.hass.locale),
-        onClick: (e: any) => {
-          if (!this.clickForMoreInfo || clickIsTouch(e)) {
-            return;
-          }
-
-          const chart = e.chart;
-
-          const points = chart.getElementsAtEventForMode(
-            e,
-            "nearest",
-            { intersect: true },
-            true
-          );
-
-          if (points.length) {
-            const firstPoint = points[0];
-            fireEvent(this, "hass-more-info", {
-              entityId: this._entityIds[firstPoint.datasetIndex],
-            });
-            chart.canvas.dispatchEvent(new Event("mouseout")); // to hide tooltip
-          }
-        },
-      };
-    }
-    if (
       changedProps.has("data") ||
       changedProps.has("startTime") ||
       changedProps.has("endTime") ||
@@ -254,6 +93,239 @@ export class StateHistoryChartLine extends LitElement {
       // If the line is more than 5 minutes old, re-gen it
       // so the X axis grows even if there is no new data
       this._generateData();
+    }
+
+    if (
+      !this.hasUpdated ||
+      changedProps.has("showNames") ||
+      changedProps.has("startTime") ||
+      changedProps.has("endTime") ||
+      changedProps.has("unit") ||
+      changedProps.has("logarithmicScale") ||
+      changedProps.has("minYAxis") ||
+      changedProps.has("maxYAxis") ||
+      changedProps.has("fitYData") ||
+      changedProps.has("_chartData")
+    ) {
+      this._chartOptions = {
+        xAxis: {
+          type: "time",
+          min: this.startTime,
+          max: this.endTime,
+          axisLabel: {
+            formatter: (value: number) => {
+              const date = new Date(value);
+              // show only date for the beginning of the day
+              if (
+                date.getHours() === 0 &&
+                date.getMinutes() === 0 &&
+                date.getSeconds() === 0
+              ) {
+                return `{day|${formatDateVeryShort(date, this.hass.locale, this.hass.config)}}`;
+              }
+              return formatTime(date, this.hass.locale, this.hass.config);
+            },
+            rich: {
+              day: {
+                fontWeight: "bold",
+              },
+            },
+          },
+          splitLine: {
+            show: true,
+          },
+        },
+        yAxis: {
+          type: this.logarithmicScale ? "log" : "value",
+          name: this.unit,
+          min: this.fitYData ? this.minYAxis : undefined,
+          max: this.fitYData ? this.maxYAxis : undefined,
+          scale: true,
+          position: computeRTL(this.hass) ? "right" : "left",
+        },
+        series: this._chartData?.datasets.map((dataset) => ({
+          data: dataset.data.map((item) =>
+            item && typeof item === "object" ? [item.x, item.y] : item
+          ),
+          type: "line",
+          name: dataset.label,
+          symbol: "circle",
+          step: "before",
+          symbolSize: dataset.pointRadius ? Number(dataset.pointRadius) : 1,
+          itemStyle: {
+            color: dataset.borderColor as string,
+          },
+          areaStyle: dataset.fill
+            ? {
+                color: dataset.backgroundColor as string,
+              }
+            : undefined,
+        })),
+        legend: {
+          // data: this._chartData?.datasets.map((dataset) => dataset.label),
+          show: true,
+          icon: "circle",
+        },
+        grid: {
+          left: 20,
+          right: 0,
+          bottom: 0,
+          containLabel: true,
+        },
+        visualMap: {
+          show: false,
+          dimension: 0,
+          pieces: [
+            {
+              lte: 1736565344366,
+              color: "green",
+            },
+            {
+              gte: 1736565344367,
+              color: "purple",
+            },
+          ],
+        },
+        // scales: {
+        //   x: {
+        //     type: "time",
+        //     adapters: {
+        //       date: {
+        //         locale: this.hass.locale,
+        //         config: this.hass.config,
+        //       },
+        //     },
+        //     min: this.startTime,
+        //     max: this.endTime,
+        //     ticks: {
+        //       maxRotation: 0,
+        //       sampleSize: 5,
+        //       autoSkipPadding: 20,
+        //       major: {
+        //         enabled: true,
+        //       },
+        //       font: (context) =>
+        //         context.tick && context.tick.major
+        //           ? ({ weight: "bold" } as any)
+        //           : {},
+        //     },
+        //     time: {
+        //       tooltipFormat: "datetimeseconds",
+        //     },
+        //   },
+        //   y: {
+        //     suggestedMin: this.fitYData ? this.minYAxis : null,
+        //     suggestedMax: this.fitYData ? this.maxYAxis : null,
+        //     min: this.fitYData ? null : this.minYAxis,
+        //     max: this.fitYData ? null : this.maxYAxis,
+        //     ticks: {
+        //       maxTicksLimit: 7,
+        //     },
+        //     title: {
+        //       display: true,
+        //       text: this.unit,
+        //     },
+        //     afterUpdate: (y) => {
+        //       if (this._yWidth !== Math.floor(y.width)) {
+        //         this._yWidth = Math.floor(y.width);
+        //         fireEvent(this, "y-width-changed", {
+        //           value: this._yWidth,
+        //           chartIndex: this.chartIndex,
+        //         });
+        //       }
+        //     },
+        //     position: computeRTL(this.hass) ? "right" : "left",
+        //     type: this.logarithmicScale ? "logarithmic" : "linear",
+        //   },
+        // },
+        // plugins: {
+        //   tooltip: {
+        //     callbacks: {
+        //       label: (context) => {
+        //         let label = `${context.dataset.label}: ${formatNumber(
+        //           context.parsed.y,
+        //           this.hass.locale,
+        //           getNumberFormatOptions(
+        //             undefined,
+        //             this.hass.entities[this._entityIds[context.datasetIndex]]
+        //           )
+        //         )} ${this.unit}`;
+        //         const dataIndex =
+        //           this._datasetToDataIndex[context.datasetIndex];
+        //         const data = this.data[dataIndex];
+        //         if (data.statistics && data.statistics.length > 0) {
+        //           const source =
+        //             data.states.length === 0 ||
+        //             context.parsed.x < data.states[0].last_changed
+        //               ? `\n${this.hass.localize(
+        //                   "ui.components.history_charts.source_stats"
+        //                 )}`
+        //               : `\n${this.hass.localize(
+        //                   "ui.components.history_charts.source_history"
+        //                 )}`;
+        //           label += source;
+        //         }
+        //         return label;
+        //       },
+        //     },
+        //   },
+        //   filler: {
+        //     propagate: true,
+        //   },
+        //   legend: {
+        //     display: this.showNames,
+        //     labels: {
+        //       usePointStyle: true,
+        //     },
+        //   },
+        // },
+        // elements: {
+        //   line: {
+        //     tension: 0.1,
+        //     borderWidth: 1.5,
+        //   },
+        //   point: {
+        //     hitRadius: 50,
+        //   },
+        // },
+        // segment: {
+        //   borderColor: (context) => {
+        //     // render stat data with a slightly transparent line
+        //     const dataIndex = this._datasetToDataIndex[context.datasetIndex];
+        //     const data = this.data[dataIndex];
+        //     return data.statistics &&
+        //       data.statistics.length > 0 &&
+        //       (data.states.length === 0 ||
+        //         context.p0.parsed.x < data.states[0].last_changed)
+        //       ? this._chartData!.datasets[dataIndex].borderColor + "7F"
+        //       : undefined;
+        //   },
+        // },
+        // // @ts-expect-error
+        // locale: numberFormatToLocale(this.hass.locale),
+        // onClick: (e: any) => {
+        //   if (!this.clickForMoreInfo || clickIsTouch(e)) {
+        //     return;
+        //   }
+
+        //   const chart = e.chart;
+
+        //   const points = chart.getElementsAtEventForMode(
+        //     e,
+        //     "nearest",
+        //     { intersect: true },
+        //     true
+        //   );
+
+        //   if (points.length) {
+        //     const firstPoint = points[0];
+        //     fireEvent(this, "hass-more-info", {
+        //       entityId: this._entityIds[firstPoint.datasetIndex],
+        //     });
+        //     chart.canvas.dispatchEvent(new Event("mouseout")); // to hide tooltip
+        //   }
+        // },
+      };
     }
   }
 

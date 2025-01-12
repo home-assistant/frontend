@@ -1,8 +1,7 @@
 import type {
-  Chart,
+  // Chart,
   ChartType,
   ChartData,
-  ChartOptions,
   TooltipModel,
 } from "chart.js";
 import type { CSSResultGroup, PropertyValues } from "lit";
@@ -11,12 +10,15 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { mdiRestart } from "@mdi/js";
+import type { EChartsType } from "echarts/core";
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { fireEvent } from "../../common/dom/fire_event";
 import { clamp } from "../../common/number/clamp";
 import type { HomeAssistant } from "../../types";
 import { debounce } from "../../common/util/debounce";
 import { isMac } from "../../util/is_mac";
 import "../ha-icon-button";
+import type { ECOption } from "../../resources/echarts";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 
@@ -39,7 +41,7 @@ export interface ChartDatasetExtra {
 
 @customElement("ha-chart-base")
 export class HaChartBase extends LitElement {
-  public chart?: Chart;
+  public chart?: EChartsType;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -50,7 +52,7 @@ export class HaChartBase extends LitElement {
 
   @property({ attribute: false }) public extraData?: ChartDatasetExtra[];
 
-  @property({ attribute: false }) public options?: ChartOptions;
+  @property({ attribute: false }) public options?: ECOption;
 
   @property({ attribute: false }) public plugins?: any[];
 
@@ -72,6 +74,13 @@ export class HaChartBase extends LitElement {
   @state() private _showZoomHint = false;
 
   @state() private _isZoomed = false;
+
+  private _width = new ResizeController(this, {
+    callback: (entries) => {
+      this.chart?.resize();
+      return entries[0]?.contentRect.width ?? 0;
+    },
+  });
 
   private _paddingUpdateCount = 0;
 
@@ -113,7 +122,7 @@ export class HaChartBase extends LitElement {
   public resize = (options?: ChartResizeOptions): void => {
     if (options?.aspectRatio && !options.height) {
       options.height = Math.round(
-        (options.width ?? this.clientWidth) / options.aspectRatio
+        (options.width ?? this._width.value) / options.aspectRatio
       );
     } else if (options?.aspectRatio && !options.width) {
       options.width = Math.round(
@@ -121,7 +130,7 @@ export class HaChartBase extends LitElement {
       );
     }
     this.chart?.resize(
-      options?.width ?? this.clientWidth,
+      options?.width ?? this._width.value,
       options?.height ?? this.clientHeight
     );
   };
@@ -210,14 +219,15 @@ export class HaChartBase extends LitElement {
           dataset.hidden = this._hiddenDatasets.has(index);
         });
       }
-      this.chart.data = this.data;
+      this.chart?.setOption(this._createOptions());
+      // this.chart.data = this.data;
     }
-    if (changedProps.has("options") && !this.chart.isZoomedOrPanned()) {
-      // this resets the chart zoom because min/max scales changed
-      // so we only do it if the user is not zooming or panning
-      this.chart.options = this._createOptions();
-    }
-    this.chart.update("none");
+    // if (changedProps.has("options") && !this.chart.isZoomedOrPanned()) {
+    //   // this resets the chart zoom because min/max scales changed
+    //   // so we only do it if the user is not zooming or panning
+    //   this.chart.options = this._createOptions();
+    // }
+    // this.chart.update("none");
   }
 
   protected updated(changedProperties: PropertyValues): void {
@@ -269,28 +279,22 @@ export class HaChartBase extends LitElement {
       <div
         class="animation-container"
         style=${styleMap({
-          height: `${this.height || this._chartHeight || 0}px`,
-          overflow: this._chartHeight ? "initial" : "hidden",
+          // height: `${this.height || this._chartHeight || 0}px`,
+          // overflow: this._chartHeight ? "initial" : "hidden",
         })}
       >
         <div
           class="chart-container"
           style=${styleMap({
             height: `${
-              this.height ?? this._chartHeight ?? this.clientWidth / 2
+              this.height ?? this._chartHeight ?? this._width.value / 2
             }px`,
             "padding-left": `${this._paddingYAxisInternal}px`,
             "padding-right": 0,
             "padding-inline-start": `${this._paddingYAxisInternal}px`,
             "padding-inline-end": 0,
           })}
-          @wheel=${this._handleChartScroll}
         >
-          <canvas
-            class=${classMap({
-              "not-zoomed": !this._isZoomed,
-            })}
-          ></canvas>
           <div
             class="zoom-hint ${classMap({
               visible: this._showZoomHint,
@@ -365,38 +369,69 @@ export class HaChartBase extends LitElement {
 
   private async _setupChart() {
     if (this._loading) return;
-    const ctx: CanvasRenderingContext2D = this.renderRoot
-      .querySelector("canvas")!
-      .getContext("2d")!;
+    const container = this.renderRoot.querySelector(
+      ".chart-container"
+    ) as HTMLDivElement;
     this._loading = true;
     try {
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      const ChartConstructor = (await import("../../resources/chartjs")).Chart;
+      const echarts = (await import("../../resources/echarts")).default;
 
-      const computedStyles = getComputedStyle(this);
+      // const computedStyles = getComputedStyle(this);
 
-      ChartConstructor.defaults.borderColor =
-        computedStyles.getPropertyValue("--divider-color");
-      ChartConstructor.defaults.color = computedStyles.getPropertyValue(
-        "--secondary-text-color"
-      );
-      ChartConstructor.defaults.font.family =
-        computedStyles.getPropertyValue("--mdc-typography-body1-font-family") ||
-        computedStyles.getPropertyValue("--mdc-typography-font-family") ||
-        "Roboto, Noto, sans-serif";
-
-      this.chart = new ChartConstructor(ctx, {
-        type: this.chartType,
-        data: this.data,
-        options: this._createOptions(),
-        plugins: this._createPlugins(),
-      });
+      this.chart = echarts.init(container);
+      this.chart.setOption(this._createOptions());
+      // this.chart.setOption({
+      //   tooltip: {},
+      //   legend: {
+      //     data: this.data.datasets.map((dataset) => dataset.label),
+      //   },
+      //   xAxis: {
+      //     type: this.options?.scales?.x?.type,
+      //   },
+      //   yAxis: {
+      //     type: 'value',
+      //     name: this.options?.scales?.y?.title?.text,
+      //     min: this.options?.scales?.y?.min,
+      //     max: this.options?.scales?.y?.max,
+      //     position: this.options?.scales?.y?.position,
+      //   },
+      //   series: this.data.datasets.map((dataset) => ({
+      //     name: dataset.label,
+      //     type: 'line',
+      //     // symbol: 'none',
+      //     symbolSize: 1,
+      //     data: dataset.data.map((item) => item ? [item.x, item.y] : []),
+      //     itemStyle: {
+      //       color: dataset.backgroundColor as string
+      //     },
+      //     areaStyle: {
+      //       color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+      //         {
+      //           offset: 0,
+      //           color: dataset.backgroundColor as string
+      //         },
+      //         {
+      //           offset: 1,
+      //           color: 'rgba(0, 0, 0, 0)'
+      //         }
+      //       ])
+      //     },
+      //   })),
+      //   dataZoom: [
+      //     {
+      //       type: 'inside',
+      //       start: 0,
+      //       end: 100
+      //     },
+      //   ]
+      // });
     } finally {
       this._loading = false;
     }
   }
 
-  private _createOptions(): ChartOptions {
+  private _createOptions(): ECOption {
+    return this.options;
     const modifierKey = isMac ? "meta" : "ctrl";
     return {
       maintainAspectRatio: false,
@@ -466,37 +501,6 @@ export class HaChartBase extends LitElement {
     };
   }
 
-  private _createPlugins() {
-    return [
-      ...(this.plugins || []),
-      {
-        id: "resizeHook",
-        resize: (chart) => {
-          const change = chart.height - (this._chartHeight ?? 0);
-          if (!this._chartHeight || change > 12 || change < -12) {
-            // hysteresis to prevent infinite render loops
-            this._chartHeight = chart.height;
-          }
-        },
-        legend: {
-          ...this.options?.plugins?.legend,
-          display: false,
-        },
-      },
-    ];
-  }
-
-  private _handleChartScroll(ev: MouseEvent) {
-    const modifier = isMac ? "metaKey" : "ctrlKey";
-    this._tooltip = undefined;
-    if (!ev[modifier] && !this._showZoomHint) {
-      this._showZoomHint = true;
-      setTimeout(() => {
-        this._showZoomHint = false;
-      }, 1000);
-    }
-  }
-
   private _legendClick(ev) {
     if (!this.chart) {
       return;
@@ -555,12 +559,12 @@ export class HaChartBase extends LitElement {
     // release the canvas memory to prevent
     // safari from running out of memory.
     if (this.chart) {
-      this.chart.destroy();
+      // this.chart.destroy();
     }
   }
 
   private _handleZoomReset() {
-    this.chart?.resetZoom();
+    // this.chart?.resetZoom();
   }
 
   private _handleScroll = () => {
@@ -575,13 +579,11 @@ export class HaChartBase extends LitElement {
       }
       .animation-container {
         overflow: hidden;
-        height: 0;
+        /* height: 0; */
         transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
       }
       .chart-container {
         position: relative;
-      }
-      canvas {
         max-height: var(--chart-max-height, 400px);
       }
       canvas.not-zoomed {
