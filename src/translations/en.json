@@ -7120,6 +7120,7 @@
               "show_only_current": "Show only current Weather",
               "show_only_forecast": "Show only forecast",
               "forecast_type": "Select forecast type",
+              "forecast_slots": "How many forecast elements to show",
               "no_type": "No type",
               "daily": "Daily",
               "hourly": "Hourly",
