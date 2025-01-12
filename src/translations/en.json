@@ -2386,7 +2386,7 @@
             "ha_settings_description": "The bare minimum needed to restore the system.",
             "ha_settings_included_description": "The bare minimum needed to restore the system. It is always included in automatic backup data.",
             "history": "History",
-            "history_description": "This can include large filesize camera recordings.",
+            "history_description": "Historical data of your sensors, including your energy dashboard.",
             "media": "Media",
             "media_description": "For example, camera recordings.",
             "share_folder": "Share folder",
