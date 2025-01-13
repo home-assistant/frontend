@@ -128,7 +128,7 @@
     "luxon": "3.5.0",
     "marked": "15.0.6",
     "memoize-one": "6.0.0",
-    "node-vibrant": "3.2.1-alpha.1",
+    "node-vibrant": "4.0.0",
     "punycode": "2.3.1",
     "qr-scanner": "1.4.2",
     "qrcode": "1.5.4",
