@@ -1,7 +1,7 @@
 // We import the minified bundle because the unminified bundle
 // has some quirks that break wds. See #7784 for unminified version.
 import type { Swatch, Vec3 } from "@vibrant/color";
-import Vibrant from "node-vibrant/dist/vibrant";
+import { Vibrant } from "node-vibrant/browser";
 import { getRGBContrastRatio } from "../color/rgb";
 
 const CONTRAST_RATIO = 4.5;
@@ -111,7 +111,7 @@ const customGenerator = (colors: Swatch[]) => {
   };
 };
 
-// Set our custom generator as the default.
+// @ts-expect-error
 Vibrant._pipeline.generator.register("default", customGenerator);
 
 export const extractColors = (url: string, downsampleColors = 16) =>
