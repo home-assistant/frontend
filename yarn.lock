@@ -10500,7 +10500,7 @@ __metadata:
     map-stream: "npm:0.0.7"
     marked: "npm:15.0.6"
     memoize-one: "npm:6.0.0"
-    node-vibrant: "npm:4.0.0"
+    node-vibrant: "npm:4.0.1"
     object-hash: "npm:3.0.0"
     pinst: "npm:3.0.0"
     prettier: "npm:3.4.2"
@@ -12782,9 +12782,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-vibrant@npm:4.0.0":
-  version: 4.0.0
-  resolution: "node-vibrant@npm:4.0.0"
+"node-vibrant@npm:4.0.1":
+  version: 4.0.1
+  resolution: "node-vibrant@npm:4.0.1"
   dependencies:
     "@types/node": "npm:^18.15.3"
     "@vibrant/core": "npm:^4.0.0"
@@ -12792,7 +12792,7 @@ __metadata:
     "@vibrant/image-browser": "npm:^4.0.0"
     "@vibrant/image-node": "npm:^4.0.0"
     "@vibrant/quantizer-mmcq": "npm:^4.0.0"
-  checksum: 10/9b7fb116afa87c7ed35b00e5f665bbb2d5d4766762bf0f668da42ce09875587e260afb9ed8946eda19b411c48d756e52b9e669ef1daf167185b683094b1840a6
+  checksum: 10/065d05310af5ee4fa3339ccbc192583deb19d963b073b8a2d1f252019cd1e86da181548d9852caf9878abb332b4015ba4a09eac6c34c5156408103e7e25baea5
   languageName: node
   linkType: hard
 
