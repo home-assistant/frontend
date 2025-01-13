@@ -295,6 +295,7 @@ export class HaChartBase extends LitElement {
             "padding-inline-end": 0,
           })}
         >
+          <div class="chart"></div>
           <div
             class="zoom-hint ${classMap({
               visible: this._showZoomHint,
@@ -369,9 +370,7 @@ export class HaChartBase extends LitElement {
 
   private async _setupChart() {
     if (this._loading) return;
-    const container = this.renderRoot.querySelector(
-      ".chart-container"
-    ) as HTMLDivElement;
+    const container = this.renderRoot.querySelector(".chart") as HTMLDivElement;
     this._loading = true;
     try {
       const echarts = (await import("../../resources/echarts")).default;
@@ -589,6 +588,10 @@ export class HaChartBase extends LitElement {
       canvas.not-zoomed {
         /* allow scrolling if the chart is not zoomed */
         touch-action: pan-y !important;
+      }
+      .chart {
+        width: 100%;
+        height: 100%;
       }
       .chart-legend {
         text-align: center;

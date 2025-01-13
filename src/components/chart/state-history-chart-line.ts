@@ -2,6 +2,8 @@ import type { ChartData, ChartDataset } from "chart.js";
 import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
 import { property, query, state } from "lit/decorators";
+import type { VisualMapComponentOption } from "echarts/components";
+import type { OptionDataValue } from "echarts/types/src/util/types";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { computeRTL } from "../../common/util/compute_rtl";
 
@@ -12,6 +14,10 @@ import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
 import type { ECOption } from "../../resources/echarts";
 import { formatDateVeryShort } from "../../common/datetime/format_date";
 import { formatTime } from "../../common/datetime/format_time";
+import {
+  getNumberFormatOptions,
+  formatNumber,
+} from "../../common/number/format_number";
 
 const safeParseFloat = (value) => {
   const parsed = parseFloat(value);
@@ -140,8 +146,9 @@ export class StateHistoryChartLine extends LitElement {
           name: this.unit,
           min: this.fitYData ? this.minYAxis : undefined,
           max: this.fitYData ? this.maxYAxis : undefined,
-          scale: true,
           position: computeRTL(this.hass) ? "right" : "left",
+          // @ts-ignore this is a valid option
+          scale: true,
         },
         series: this._chartData?.datasets.map((dataset) => ({
           data: dataset.data.map((item) =>
@@ -152,15 +159,13 @@ export class StateHistoryChartLine extends LitElement {
           symbol: "circle",
           step: "before",
           symbolSize: dataset.pointRadius ? Number(dataset.pointRadius) : 1,
-          itemStyle: {
-            color: dataset.borderColor as string,
-          },
           areaStyle: dataset.fill
             ? {
                 color: dataset.backgroundColor as string,
               }
             : undefined,
         })),
+        color: this._chartData?.datasets.map((dataset) => dataset.borderColor),
         legend: {
           // data: this._chartData?.datasets.map((dataset) => dataset.label),
           show: true,
@@ -172,19 +177,47 @@ export class StateHistoryChartLine extends LitElement {
           bottom: 0,
           containLabel: true,
         },
-        visualMap: {
-          show: false,
-          dimension: 0,
-          pieces: [
-            {
-              lte: 1736565344366,
-              color: "green",
-            },
-            {
-              gte: 1736565344367,
-              color: "purple",
-            },
-          ],
+        visualMap: this._chartData?.datasets
+          .map((_, seriesIndex) => {
+            const dataIndex = this._datasetToDataIndex[seriesIndex];
+            const data = this.data[dataIndex];
+            if (!data.statistics || data.statistics.length === 0) {
+              return false;
+            }
+            // render stat data with a slightly transparent line
+            const firstStateTS =
+              data.states[0]?.last_changed ?? this.endTime.getTime();
+            return {
+              show: false,
+              seriesIndex,
+              dimension: 0,
+              pieces: [
+                {
+                  max: firstStateTS - 0.01,
+                  colorAlpha: 0.5,
+                },
+                {
+                  min: firstStateTS,
+                  colorAlpha: 1,
+                },
+              ],
+            };
+          })
+          .filter(Boolean) as VisualMapComponentOption[],
+        tooltip: {
+          trigger: "axis",
+          valueFormatter: (
+            value: OptionDataValue | OptionDataValue[],
+            datasetIndex: number
+          ) =>
+            `${formatNumber(
+              value as number,
+              this.hass.locale,
+              getNumberFormatOptions(
+                undefined,
+                this.hass.entities[this._entityIds[datasetIndex]]
+              )
+            )} ${this.unit}`,
         },
         // scales: {
         //   x: {

@@ -2,7 +2,7 @@
 import * as echarts from "echarts/core";
 
 // Import charts, all suffixed with Chart
-import { BarChart, LineChart } from "echarts/charts";
+import { BarChart, LineChart, CustomChart } from "echarts/charts";
 
 // Import the title, tooltip, rectangular coordinate system, dataset and transform components
 import {
@@ -26,6 +26,7 @@ import type {
   // The series option types are defined with the SeriesOption suffix
   BarSeriesOption,
   LineSeriesOption,
+  CustomSeriesOption,
 } from "echarts/charts";
 import type {
   // The component option types are defined with the ComponentOption suffix
@@ -42,6 +43,7 @@ import type { ComposeOption } from "echarts/core";
 export type ECOption = ComposeOption<
   | BarSeriesOption
   | LineSeriesOption
+  | CustomSeriesOption
   | TooltipComponentOption
   | DatasetComponentOption
   | LegendComponentOption
@@ -54,6 +56,7 @@ export type ECOption = ComposeOption<
 echarts.use([
   BarChart,
   LineChart,
+  CustomChart,
   TooltipComponent,
   DatasetComponent,
   LegendComponent,
