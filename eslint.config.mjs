@@ -18,10 +18,8 @@ const compat = new FlatCompat({
 export default [
   ...compat.extends(
     "airbnb-base",
-    // "airbnb-typescript/base",
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/strict",
-    // "plugin:@typescript-eslint/stylistic",
     "plugin:wc/recommended",
     "plugin:lit/all",
     "plugin:lit-a11y/recommended",
