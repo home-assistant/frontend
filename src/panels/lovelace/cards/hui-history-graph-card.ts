@@ -55,7 +55,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   private _interval?: number;
 
-  private _subscribed?: Promise<(() => Promise<void>) | void>;
+  private _subscribed?: Promise<(() => Promise<void>) | undefined>;
 
   public getCardSize(): number {
     return this._config?.title ? 2 : 0 + 2 * (this._entityIds?.length || 1);

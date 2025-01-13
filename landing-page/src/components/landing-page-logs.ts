@@ -230,7 +230,7 @@ class LandingPageLogs extends LitElement {
           this._startLogStream();
           return;
         }
-      } catch (err) {
+      } catch (_err) {
         // ignore and continue with observer logs
       }
       this._loadObserverLogs();

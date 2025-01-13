@@ -72,7 +72,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   @state() private _error?: { code: string; message: string };
 
-  private _subscribed?: Promise<(() => Promise<void>) | void>;
+  private _subscribed?: Promise<(() => Promise<void>) | undefined>;
 
   public setConfig(config: MapCardConfig): void {
     if (!config) {
@@ -260,7 +260,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         }
         this._stateHistory = combinedHistory;
       },
-      this._config!.hours_to_show! ?? DEFAULT_HOURS_TO_SHOW,
+      this._config!.hours_to_show ?? DEFAULT_HOURS_TO_SHOW,
       (this._configEntities || []).map((entity) => entity.entity)!,
       false,
       false,

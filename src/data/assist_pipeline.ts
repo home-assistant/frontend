@@ -366,7 +366,7 @@ export const setAssistPipelinePreferred = (
   });
 
 export const deleteAssistPipeline = (hass: HomeAssistant, pipelineId: string) =>
-  hass.callWS<void>({
+  hass.callWS({
     type: "assist_pipeline/pipeline/delete",
     pipeline_id: pipelineId,
   });

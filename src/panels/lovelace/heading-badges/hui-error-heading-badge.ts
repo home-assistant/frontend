@@ -37,7 +37,7 @@ export class HuiErrorHeadingBadge extends LitElement implements LovelaceBadge {
     if (this._config!.origConfig) {
       try {
         dumped = dump(this._config!.origConfig);
-      } catch (err: any) {
+      } catch (_err: any) {
         dumped = `[Error dumping ${this._config!.origConfig}]`;
       }
     }

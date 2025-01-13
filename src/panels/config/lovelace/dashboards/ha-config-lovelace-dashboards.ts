@@ -453,7 +453,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
             (res) => res !== dashboard
           );
           return true;
-        } catch (err: any) {
+        } catch (_err: any) {
           return false;
         }
       },

@@ -155,7 +155,7 @@ export const provideHass = (
     /states\/.+/,
     (
       // @ts-ignore
-      method,
+      _method,
       path,
       parameters
     ) => {

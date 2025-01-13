@@ -9,7 +9,7 @@ export default [
       "import/extensions": "off",
       "import/no-dynamic-require": "off",
       "global-require": "off",
-      "@typescript-eslint/no-var-requires": "off",
+      "@typescript-eslint/no-require-imports": "off",
       "prefer-arrow-callback": "off",
     },
   },

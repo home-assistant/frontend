@@ -268,7 +268,7 @@ export class HaConfigPerson extends LitElement {
             (ent) => ent !== entry
           );
           return true;
-        } catch (err: any) {
+        } catch (_err: any) {
           return false;
         }
       },

@@ -215,7 +215,7 @@ export class HcConnect extends LitElement {
     let url: URL;
     try {
       url = new URL(value);
-    } catch (err: any) {
+    } catch (_err: any) {
       this.error = "Invalid URL";
       return;
     }
@@ -288,7 +288,7 @@ export class HcConnect extends LitElement {
     try {
       saveTokens(null);
       location.reload();
-    } catch (err: any) {
+    } catch (_err: any) {
       alert("Unable to log out!");
     }
   }

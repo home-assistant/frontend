@@ -756,8 +756,8 @@ export type EnergyGasUnitClass = (typeof energyGasUnitClass)[number];
 
 export const getEnergyGasUnitClass = (
   prefs: EnergyPreferences,
-  statisticsMetaData: Record<string, StatisticsMetaData> = {},
-  excludeSource?: string
+  excludeSource?: string,
+  statisticsMetaData: Record<string, StatisticsMetaData> = {}
 ): EnergyGasUnitClass | undefined => {
   for (const source of prefs.energy_sources) {
     if (source.type !== "gas") {
@@ -783,7 +783,7 @@ export const getEnergyGasUnit = (
   prefs: EnergyPreferences,
   statisticsMetaData: Record<string, StatisticsMetaData> = {}
 ): string | undefined => {
-  const unitClass = getEnergyGasUnitClass(prefs, statisticsMetaData);
+  const unitClass = getEnergyGasUnitClass(prefs, undefined, statisticsMetaData);
   if (unitClass === undefined) {
     return undefined;
   }

@@ -69,7 +69,7 @@ export class HaLocationsEditor extends LitElement {
 
   private Leaflet?: LeafletModuleType;
 
-  private _loadPromise: Promise<boolean | void>;
+  private _loadPromise: Promise<boolean | undefined>;
 
   constructor() {
     super();

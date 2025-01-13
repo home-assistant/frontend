@@ -109,7 +109,7 @@ export interface StatisticsUnitConfiguration {
   volume?: "L" | "gal" | "ft³" | "m³";
 }
 
-const statisticTypes = [
+const _statisticTypes = [
   "change",
   "last_reset",
   "max",
@@ -118,7 +118,7 @@ const statisticTypes = [
   "state",
   "sum",
 ] as const;
-export type StatisticsTypes = (typeof statisticTypes)[number][];
+export type StatisticsTypes = (typeof _statisticTypes)[number][];
 
 export interface StatisticsValidationResults {
   [statisticId: string]: StatisticsValidationResult[];
@@ -152,6 +152,7 @@ export const fetchStatistics = (
   startTime: Date,
   endTime?: Date,
   statistic_ids?: string[],
+  // eslint-disable-next-line default-param-last
   period: "5minute" | "hour" | "day" | "week" | "month" = "hour",
   units?: StatisticsUnitConfiguration,
   types?: StatisticsTypes
@@ -206,14 +207,14 @@ export const updateStatisticsMetadata = (
   statistic_id: string,
   unit_of_measurement: string | null
 ) =>
-  hass.callWS<void>({
+  hass.callWS({
     type: "recorder/update_statistics_metadata",
     statistic_id,
     unit_of_measurement,
   });
 
 export const clearStatistics = (hass: HomeAssistant, statistic_ids: string[]) =>
-  hass.callWS<void>({
+  hass.callWS({
     type: "recorder/clear_statistics",
     statistic_ids,
   });

@@ -859,7 +859,7 @@ export class HaServiceControl extends LitElement {
     this._manifest = undefined;
     try {
       this._manifest = await fetchIntegrationManifest(this.hass, integration);
-    } catch (err: any) {
+    } catch (_err: any) {
       // Ignore if loading manifest fails. Probably bad JSON in manifest
     }
   }

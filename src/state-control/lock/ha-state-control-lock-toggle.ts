@@ -50,7 +50,7 @@ export class HaStateControlLockToggle extends LitElement {
     this._isOn = true;
     try {
       await this._callService(true);
-    } catch (err) {
+    } catch (_err) {
       this._isOn = false;
     }
   }
@@ -59,7 +59,7 @@ export class HaStateControlLockToggle extends LitElement {
     this._isOn = false;
     try {
       await this._callService(false);
-    } catch (err) {
+    } catch (_err) {
       this._isOn = true;
     }
   }

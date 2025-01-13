@@ -345,7 +345,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
           this._statistics![id] = statistics[id];
         }
       });
-    } catch (err) {
+    } catch (_err) {
       this._statistics = undefined;
     }
   }

@@ -48,7 +48,7 @@ export class MoreInfoHistory extends LitElement {
 
   private _interval?: number;
 
-  private _subscribed?: Promise<(() => Promise<void>) | void>;
+  private _subscribed?: Promise<(() => Promise<void>) | undefined>;
 
   private _error?: string;
 

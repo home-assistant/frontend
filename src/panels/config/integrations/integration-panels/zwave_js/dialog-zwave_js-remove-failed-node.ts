@@ -25,7 +25,7 @@ class DialogZWaveJSRemoveFailedNode extends LitElement {
 
   @state() private _node?: ZWaveJSRemovedNode;
 
-  private _subscribed?: Promise<UnsubscribeFunc | void>;
+  private _subscribed?: Promise<UnsubscribeFunc | undefined>;
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();

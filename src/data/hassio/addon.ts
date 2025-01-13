@@ -390,7 +390,7 @@ export const rebuildLocalAddon = async (
   slug: string
 ): Promise<void> => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS<void>({
+    return hass.callWS({
       type: "supervisor/api",
       endpoint: `/addons/${slug}/rebuild`,
       method: "post",

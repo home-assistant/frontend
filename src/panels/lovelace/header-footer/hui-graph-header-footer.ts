@@ -67,7 +67,7 @@ export class HuiGraphHeaderFooter
 
   private _interval?: number;
 
-  private _subscribed?: Promise<(() => Promise<void>) | void>;
+  private _subscribed?: Promise<(() => Promise<void>) | undefined>;
 
   public getCardSize(): number {
     return 3;

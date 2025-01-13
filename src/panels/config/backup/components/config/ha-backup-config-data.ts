@@ -55,7 +55,7 @@ export type BackupConfigData = {
 
 declare global {
   interface HASSDomEvents {
-    "backup-addons-fetched": void;
+    "backup-addons-fetched": undefined;
   }
 }
 

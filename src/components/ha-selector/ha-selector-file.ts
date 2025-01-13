@@ -85,7 +85,7 @@ export class HaFileSelector extends LitElement {
     this._busy = true;
     try {
       await removeFile(this.hass, this.value!);
-    } catch (err) {
+    } catch (_err) {
       // Not ideal if removal fails, but will be cleaned up later
     } finally {
       this._busy = false;

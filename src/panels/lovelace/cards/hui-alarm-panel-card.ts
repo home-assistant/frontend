@@ -204,7 +204,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
           }
         }
       );
-    } catch (e) {
+    } catch (_e) {
       this._entry = null;
     }
   }

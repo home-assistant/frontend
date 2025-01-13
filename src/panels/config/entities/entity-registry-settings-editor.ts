@@ -1160,7 +1160,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
             );
             showMoreInfoDialog(parent, { entityId: entry.entity_id });
             close = false;
-          } catch (err) {
+          } catch (_err) {
             // ignore
           }
         }
@@ -1226,7 +1226,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
               );
               showMoreInfoDialog(parent, { entityId: entry.entity_id });
               close = false;
-            } catch (err) {
+            } catch (_err) {
               // ignore
             }
           }

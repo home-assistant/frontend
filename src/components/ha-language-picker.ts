@@ -97,7 +97,7 @@ export class HaLanguagePicker extends LitElement {
                 type: "language",
                 fallback: "code",
               }).of(lang)!;
-            } catch (err) {
+            } catch (_err) {
               label = lang;
             }
           }

@@ -96,7 +96,7 @@ class DialogMatterManageFabrics extends LitElement {
         this.hass,
         this.device_id
       );
-    } catch (err: any) {
+    } catch (_err: any) {
       this._nodeDiagnostics = undefined;
     }
   }
@@ -127,7 +127,7 @@ class DialogMatterManageFabrics extends LitElement {
     try {
       await removeMatterFabric(this.hass, this.device_id!, fabric.fabric_index);
       this._fetchNodeDetails();
-    } catch (err: any) {
+    } catch (_err: any) {
       showAlertDialog(this, {
         title: this.hass.localize(
           "ui.panel.config.matter.manage_fabrics.remove_fabric_failed_header",

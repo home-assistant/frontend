@@ -58,7 +58,7 @@ export const deleteApplicationCredential = async (
   hass: HomeAssistant,
   applicationCredentialsId: string
 ) =>
-  hass.callWS<void>({
+  hass.callWS({
     type: "application_credentials/delete",
     application_credentials_id: applicationCredentialsId,
   });

@@ -23,7 +23,7 @@ class HassioSystem extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult | undefined {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}

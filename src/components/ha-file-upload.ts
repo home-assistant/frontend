@@ -15,7 +15,7 @@ import { bytesToString } from "../util/bytes-to-string";
 declare global {
   interface HASSDomEvents {
     "file-picked": { files: File[] };
-    "files-cleared": void;
+    "files-cleared": undefined;
   }
 }
 
