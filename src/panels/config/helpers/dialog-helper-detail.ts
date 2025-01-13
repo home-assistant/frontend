@@ -1,13 +1,13 @@
 import "@material/mwc-button/mwc-button";
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item-base";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
+import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import "../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-list-item";
@@ -108,6 +108,10 @@ export class DialogHelperDetail extends LitElement {
 
   @state() private _loading = false;
 
+  @state() private _filter?: string;
+
+  @state() private _narrow = false;
+
   private _params?: ShowDialogHelperDetailParams;
 
   public async showDialog(params: ShowDialogHelperDetailParams): Promise<void> {
@@ -124,6 +128,9 @@ export class DialogHelperDetail extends LitElement {
     await this.hass.loadBackendTranslation("title", flows, true);
     // Ensure the titles are loaded before we render the flows.
     this._helperFlows = flows;
+    this._narrow = matchMedia(
+      "all and (max-width: 450px), all and (max-height: 500px)"
+    ).matches;
   }
 
   public closeDialog(): void {
@@ -186,9 +193,16 @@ export class DialogHelperDetail extends LitElement {
         items.push([domain, domainToName(this.hass.localize, domain)]);
       }
 
-      items.sort((a, b) => a[1].localeCompare(b[1]));
-
       content = html`
+        <search-input
+          .hass=${this.hass}
+          dialogInitialFocus="true"
+          .filter=${this._filter}
+          @value-changed=${this._filterChanged}
+          .label=${this.hass.localize(
+            "ui.panel.config.integrations.search_helper"
+          )}
+        ></search-input>
         <mwc-list
           innerRole="listbox"
           itemRoles="option"
@@ -198,46 +212,18 @@ export class DialogHelperDetail extends LitElement {
           rootTabbable
           dialogInitialFocus
         >
-          ${items.map(([domain, label]) => {
-            // Only OG helpers need to be loaded prior adding one
-            const isLoaded =
-              !(domain in HELPERS) || isComponentLoaded(this.hass, domain);
-            return html`
-              <ha-list-item
-                .disabled=${!isLoaded}
-                hasmeta
-                .domain=${domain}
-                @request-selected=${this._domainPicked}
-                graphic="icon"
-              >
-                <img
-                  slot="graphic"
-                  loading="lazy"
-                  alt=""
-                  src=${brandsUrl({
-                    domain,
-                    type: "icon",
-                    useFallback: true,
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
-                  crossorigin="anonymous"
-                  referrerpolicy="no-referrer"
-                />
-                <span class="item-text"> ${label} </span>
-                <ha-icon-next slot="meta"></ha-icon-next>
-              </ha-list-item>
-              ${!isLoaded
-                ? html`
-                    <simple-tooltip animation-delay="0"
-                      >${this.hass.localize(
-                        "ui.dialogs.helper_settings.platform_not_loaded",
-                        { platform: domain }
-                      )}</simple-tooltip
-                    >
-                  `
-                : ""}
-            `;
-          })}
+          <lit-virtualizer
+            scroller
+            class="ha-scrollbar"
+            style=${styleMap({
+              height: this._narrow ? "calc(100vh - 184px)" : "500px",
+            })}
+            @click=${this._domainPicked}
+            .items=${this._filterHelpers(items, this._filter)}
+            .keyFunction=${this._keyFunction}
+            .renderItem=${this._renderRow}
+          >
+          </lit-virtualizer>
         </mwc-list>
       `;
     }
@@ -274,6 +260,67 @@ export class DialogHelperDetail extends LitElement {
     `;
   }
 
+  private _filterHelpers = memoizeOne(
+    (helpers: [string, string][], filter?: string) =>
+      helpers
+        .filter(([domain, label]) => {
+          if (filter) {
+            return (
+              label.toLowerCase().includes(filter.toLowerCase()) ||
+              domain.toLowerCase().includes(filter.toLowerCase())
+            );
+          }
+          return true;
+        })
+        .sort((a, b) => a[1].localeCompare(b[1]))
+  );
+
+  private _keyFunction = ([domain, _label]) => domain;
+
+  private _renderRow = (item: [string, string]) => {
+    const [domain, label] = item;
+    const isLoaded =
+      !(domain in HELPERS) || isComponentLoaded(this.hass, domain);
+    return html`
+      <ha-list-item
+        .disabled=${!isLoaded}
+        hasmeta
+        .domain=${domain}
+        graphic="icon"
+      >
+        <img
+          slot="graphic"
+          loading="lazy"
+          alt=""
+          src=${brandsUrl({
+            domain,
+            type: "icon",
+            useFallback: true,
+            darkOptimized: this.hass.themes?.darkMode,
+          })}
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer"
+        />
+        <span class="item-text"> ${label} </span>
+        <ha-icon-next slot="meta"></ha-icon-next>
+      </ha-list-item>
+      ${!isLoaded
+        ? html`
+            <simple-tooltip animation-delay="0"
+              >${this.hass.localize(
+                "ui.dialogs.helper_settings.platform_not_loaded",
+                { platform: domain }
+              )}</simple-tooltip
+            >
+          `
+        : ""}
+    `;
+  };
+
+  private async _filterChanged(e) {
+    this._filter = e.detail.value;
+  }
+
   private _valueChanged(ev: CustomEvent): void {
     this._item = ev.detail.value;
   }
@@ -303,13 +350,8 @@ export class DialogHelperDetail extends LitElement {
     }
   }
 
-  private async _domainPicked(
-    ev: CustomEvent<RequestSelectedDetail>
-  ): Promise<void> {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
-    const domain = (ev.currentTarget! as any).domain;
+  private async _domainPicked(ev): Promise<void> {
+    const domain = ev.target.closest("ha-list-item").domain;
 
     if (domain in HELPERS) {
       this._loading = true;
@@ -351,7 +393,6 @@ export class DialogHelperDetail extends LitElement {
         ha-dialog {
           --dialog-content-padding: 0;
           --dialog-scroll-divider-color: transparent;
-          --mdc-dialog-max-height: 60vh;
         }
         @media all and (min-width: 550px) {
           ha-dialog {
@@ -363,6 +404,13 @@ export class DialogHelperDetail extends LitElement {
         }
         .form {
           padding: 24px;
+        }
+        search-input {
+          display: block;
+          margin: 16px 16px 0;
+        }
+        ha-list-item {
+          width: 100%;
         }
       `,
     ];
