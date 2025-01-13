@@ -168,7 +168,7 @@ export class StateHistoryChartLine extends LitElement {
         color: this._chartData?.datasets.map((dataset) => dataset.borderColor),
         legend: {
           // data: this._chartData?.datasets.map((dataset) => dataset.label),
-          show: true,
+          show: this.showNames,
           icon: "circle",
         },
         grid: {
