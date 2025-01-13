@@ -104,6 +104,12 @@ export const showDialog = async (
         addHistory
       );
     }
+    const dialogIndex = OPEN_DIALOG_STACK.findIndex(
+      (state) => state.dialogTag === dialogTag
+    );
+    if (dialogIndex !== -1) {
+      OPEN_DIALOG_STACK.splice(dialogIndex, 1);
+    }
     OPEN_DIALOG_STACK.push({
       element,
       root,
