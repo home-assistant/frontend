@@ -223,7 +223,7 @@ export class HaDateRangePicker extends LitElement {
                         this.hass.locale,
                         this.hass.config
                       )) +
-                  " - \n" +
+                  (window.innerWidth >= 459 ? " - " : " - \n") +
                   (isThisYear(this.endDate)
                     ? formatShortDateTime(
                         this.endDate,
