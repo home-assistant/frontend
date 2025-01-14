@@ -13,10 +13,10 @@ import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { bytesToString } from "../../../../../util/bytes-to-string";
 
-type BackupStats = {
+interface BackupStats {
   count: number;
   size: number;
-};
+}
 
 const computeBackupStats = (backups: BackupContent[]): BackupStats =>
   backups.reduce(

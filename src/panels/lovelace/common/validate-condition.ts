@@ -188,7 +188,7 @@ export function checkConditionsMet(
 export function extractConditionEntityIds(
   conditions: Condition[]
 ): Set<string> {
-  const entityIds: Set<string> = new Set();
+  const entityIds = new Set<string>();
   for (const condition of conditions) {
     if (condition.condition === "numeric_state") {
       if (

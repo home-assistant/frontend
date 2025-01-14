@@ -61,12 +61,12 @@ export interface MoreInfoDialogParams {
 
 type View = "info" | "history" | "settings" | "related";
 
-type ChildView = {
+interface ChildView {
   viewTag: string;
   viewTitle?: string;
   viewImport?: () => Promise<unknown>;
   viewParams?: any;
-};
+}
 
 declare global {
   interface HASSDomEvents {

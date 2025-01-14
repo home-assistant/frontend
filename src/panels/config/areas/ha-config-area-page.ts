@@ -53,10 +53,10 @@ import {
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
 
-declare type NameAndEntity<EntityType extends HassEntity> = {
+declare interface NameAndEntity<EntityType extends HassEntity> {
   name: string;
   entity: EntityType;
-};
+}
 
 @customElement("ha-config-area-page")
 class HaConfigAreaPage extends LitElement {

@@ -1,6 +1,5 @@
 import "@material/mwc-button";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { formatDateTime } from "../../common/datetime/format_date_time";
@@ -49,25 +48,23 @@ export class HuiPersistentNotificationItem extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .time {
-        position: relative;
-        display: flex;
-        justify-content: flex-end;
-        margin-top: 6px;
-      }
-      ha-relative-time {
-        color: var(--secondary-text-color);
-      }
-      a {
-        color: var(--primary-color);
-      }
-      ha-markdown {
-        overflow-wrap: break-word;
-      }
-    `;
-  }
+  static styles = css`
+    .time {
+      position: relative;
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 6px;
+    }
+    ha-relative-time {
+      color: var(--secondary-text-color);
+    }
+    a {
+      color: var(--primary-color);
+    }
+    ha-markdown {
+      overflow-wrap: break-word;
+    }
+  `;
 
   private _handleDismiss(): void {
     this.hass!.callService("persistent_notification", "dismiss", {

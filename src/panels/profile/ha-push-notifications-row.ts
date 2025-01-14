@@ -57,13 +57,11 @@ class HaPushNotificationsRow extends LitElement {
     `;
   }
 
-  static get styles() {
-    return css`
-      a {
-        color: var(--primary-color);
-      }
-    `;
-  }
+  static styles = css`
+    a {
+      color: var(--primary-color);
+    }
+  `;
 }
 
 declare global {

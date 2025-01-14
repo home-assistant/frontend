@@ -6,7 +6,7 @@ import type {
 } from "chart.js";
 import { endOfToday, startOfToday } from "date-fns";
 import type { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -356,7 +356,7 @@ export class HuiEnergyDevicesDetailGraphCard
     consumptionData,
     compare: boolean
   ): { dataset; datasetExtra } {
-    const totalDeviceConsumption: { [start: number]: number } = {};
+    const totalDeviceConsumption: Record<number, number> = {};
 
     processedData.forEach((device) => {
       device.data.forEach((datapoint) => {
@@ -477,19 +477,17 @@ export class HuiEnergyDevicesDetailGraphCard
     return { data, dataExtras };
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .card-header {
-        padding-bottom: 0;
-      }
-      .content {
-        padding: 16px;
-      }
-      .has-header {
-        padding-top: 0;
-      }
-    `;
-  }
+  static styles = css`
+    .card-header {
+      padding-bottom: 0;
+    }
+    .content {
+      padding: 16px;
+    }
+    .has-header {
+      padding-top: 0;
+    }
+  `;
 }
 
 declare global {

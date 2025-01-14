@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -74,13 +74,11 @@ class HuiViewContainer extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: relative;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: relative;
+    }
+  `;
 }
 
 declare global {

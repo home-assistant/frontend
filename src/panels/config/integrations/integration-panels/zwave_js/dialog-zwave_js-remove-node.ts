@@ -32,7 +32,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
 
   private _removeNodeTimeoutHandle?: number;
 
-  private _subscribed?: Promise<UnsubscribeFunc>;
+  private _subscribed?: Promise<UnsubscribeFunc | undefined>;
 
   @state() private _error?: string;
 
@@ -167,7 +167,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
       .catch((err) => {
         this._status = "failed";
         this._error = err.message;
-        return () => {};
+        return undefined;
       });
     this._status = "started";
     this._removeNodeTimeoutHandle = window.setTimeout(
@@ -202,7 +202,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
 
   private _unsubscribe(): void {
     if (this._subscribed) {
-      this._subscribed.then((unsub) => unsub());
+      this._subscribed.then((unsub) => unsub && unsub());
       this._subscribed = undefined;
     }
     if (this._status === "started") {

@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import "../../../components/ha-camera-stream";
@@ -93,25 +92,23 @@ class MoreInfoCamera extends LitElement {
     button.actionSuccess();
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-      }
+  static styles = css`
+    :host {
+      display: block;
+    }
 
-      .actions {
-        width: 100%;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-        box-sizing: border-box;
-        padding: 12px;
-        z-index: 1;
-        gap: 8px;
-      }
-    `;
-  }
+    .actions {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      box-sizing: border-box;
+      padding: 12px;
+      z-index: 1;
+      gap: 8px;
+    }
+  `;
 }
 
 customElements.define("more-info-camera", MoreInfoCamera);

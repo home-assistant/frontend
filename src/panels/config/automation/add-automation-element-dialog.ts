@@ -70,9 +70,7 @@ interface ListItem {
   group: boolean;
 }
 
-interface DomainManifestLookup {
-  [domain: string]: IntegrationManifest;
-}
+type DomainManifestLookup = Record<string, IntegrationManifest>;
 
 const ENTITY_DOMAINS_OTHER = new Set([
   "date",

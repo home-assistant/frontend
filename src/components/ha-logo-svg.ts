@@ -1,4 +1,4 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, LitElement, html } from "lit";
 import { customElement } from "lit/decorators";
 
@@ -17,26 +17,24 @@ export class HaLogoSvg extends LitElement {
     </svg>`;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: var(--ha-icon-display, inline-flex);
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        vertical-align: middle;
-        fill: currentcolor;
-        width: var(--mdc-icon-size, 24px);
-        height: var(--mdc-icon-size, 24px);
-      }
-      svg {
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        display: block;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: var(--ha-icon-display, inline-flex);
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      vertical-align: middle;
+      fill: currentcolor;
+      width: var(--mdc-icon-size, 24px);
+      height: var(--mdc-icon-size, 24px);
+    }
+    svg {
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      display: block;
+    }
+  `;
 }
 declare global {
   interface HTMLElementTagNameMap {

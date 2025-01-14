@@ -456,25 +456,23 @@ export abstract class HuiElementEditor<
     ev.stopPropagation();
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: flex;
-      }
-      .wrapper {
-        width: 100%;
-      }
-      .gui-editor,
-      .yaml-editor {
-        padding: 8px 0px;
-      }
-      ha-code-editor {
-        --code-mirror-max-height: calc(100vh - 245px);
-      }
-      ha-circular-progress {
-        display: block;
-        margin: auto;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: flex;
+    }
+    .wrapper {
+      width: 100%;
+    }
+    .gui-editor,
+    .yaml-editor {
+      padding: 8px 0px;
+    }
+    ha-code-editor {
+      --code-mirror-max-height: calc(100vh - 245px);
+    }
+    ha-circular-progress {
+      display: block;
+      margin: auto;
+    }
+  ` as CSSResultGroup;
 }

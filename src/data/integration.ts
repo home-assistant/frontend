@@ -33,7 +33,7 @@ export interface IntegrationManifest {
   after_dependencies?: string[];
   codeowners?: string[];
   requirements?: string[];
-  ssdp?: Array<{ manufacturer?: string; modelName?: string; st?: string }>;
+  ssdp?: { manufacturer?: string; modelName?: string; st?: string }[];
   zeroconf?: string[];
   homekit?: { models: string[] };
   integration_type?: IntegrationType;

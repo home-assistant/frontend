@@ -16,7 +16,7 @@ export const SubscribeMixin = <T extends Constructor<ReactiveElement>>(
     // we wait with subscribing till these properties are set on the host element
     protected hassSubscribeRequiredHostProps?: string[];
 
-    private __unsubs?: Array<UnsubscribeFunc | Promise<UnsubscribeFunc>>;
+    private __unsubs?: (UnsubscribeFunc | Promise<UnsubscribeFunc>)[];
 
     public connectedCallback() {
       super.connectedCallback();
@@ -55,9 +55,7 @@ export const SubscribeMixin = <T extends Constructor<ReactiveElement>>(
       }
     }
 
-    protected hassSubscribe(): Array<
-      UnsubscribeFunc | Promise<UnsubscribeFunc>
-    > {
+    protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
       return [];
     }
 

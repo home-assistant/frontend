@@ -36,27 +36,27 @@ export type RestoreBackupStage =
 
 export type RestoreBackupState = "completed" | "failed" | "in_progress";
 
-type IdleEvent = {
+interface IdleEvent {
   manager_state: "idle";
-};
+}
 
-type CreateBackupEvent = {
+interface CreateBackupEvent {
   manager_state: "create_backup";
   stage: CreateBackupStage | null;
   state: CreateBackupState;
-};
+}
 
-type ReceiveBackupEvent = {
+interface ReceiveBackupEvent {
   manager_state: "receive_backup";
   stage: ReceiveBackupStage | null;
   state: ReceiveBackupState;
-};
+}
 
-type RestoreBackupEvent = {
+interface RestoreBackupEvent {
   manager_state: "restore_backup";
   stage: RestoreBackupStage | null;
   state: RestoreBackupState;
-};
+}
 
 export type ManagerStateEvent =
   | IdleEvent

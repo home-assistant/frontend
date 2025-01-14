@@ -1,4 +1,4 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -35,50 +35,45 @@ class HaMetric extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-settings-row {
-        padding: 0;
-        height: 54px;
-        width: 100%;
-      }
-      ha-settings-row > div[slot="description"] {
-        white-space: normal;
-        color: var(--secondary-text-color);
-        display: flex;
-        justify-content: space-between;
-      }
-      ha-bar {
-        --ha-bar-primary-color: var(
-          --metric-bar-ok-color,
-          var(--success-color)
-        );
-      }
-      .target-warning {
-        --ha-bar-primary-color: var(
-          --metric-bar-warning-color,
-          var(--warning-color)
-        );
-      }
-      .target-critical {
-        --ha-bar-primary-color: var(
-          --metric-bar-critical-color,
-          var(--error-color)
-        );
-      }
-      .value {
-        width: 48px;
-        padding-right: 4px;
-        padding-inline-end: 4px;
-        padding-inline-start: initial;
-        flex-shrink: 0;
-      }
-      .value > div {
-        direction: ltr;
-        text-align: var(--float-start);
-      }
-    `;
-  }
+  static styles = css`
+    ha-settings-row {
+      padding: 0;
+      height: 54px;
+      width: 100%;
+    }
+    ha-settings-row > div[slot="description"] {
+      white-space: normal;
+      color: var(--secondary-text-color);
+      display: flex;
+      justify-content: space-between;
+    }
+    ha-bar {
+      --ha-bar-primary-color: var(--metric-bar-ok-color, var(--success-color));
+    }
+    .target-warning {
+      --ha-bar-primary-color: var(
+        --metric-bar-warning-color,
+        var(--warning-color)
+      );
+    }
+    .target-critical {
+      --ha-bar-primary-color: var(
+        --metric-bar-critical-color,
+        var(--error-color)
+      );
+    }
+    .value {
+      width: 48px;
+      padding-right: 4px;
+      padding-inline-end: 4px;
+      padding-inline-start: initial;
+      flex-shrink: 0;
+    }
+    .value > div {
+      direction: ltr;
+      text-align: var(--float-start);
+    }
+  `;
 }
 
 declare global {

@@ -1,5 +1,4 @@
 import { mdiClose } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { ensureArray } from "../../../../../common/array/ensure-array";
@@ -145,47 +144,45 @@ export class HaConversationTrigger
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .layout {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        align-items: center;
-        justify-content: flex-start;
-      }
-      .option {
-        margin-top: 4px;
-      }
-      mwc-button {
-        margin-left: 8px;
-        margin-inline-start: 8px;
-        margin-inline-end: initial;
-      }
-      ha-textfield {
-        display: block;
-        margin-bottom: 8px;
-        --textfield-icon-trailing-padding: 0;
-      }
-      ha-textfield > ha-icon-button {
-        position: relative;
-        right: -8px;
-        --mdc-icon-button-size: 36px;
-        --mdc-icon-size: 20px;
-        color: var(--secondary-text-color);
-        inset-inline-start: initial;
-        inset-inline-end: -8px;
-        direction: var(--direction);
-      }
-      #option_input {
-        margin-top: 8px;
-      }
-      .header {
-        margin-top: 8px;
-        margin-bottom: 8px;
-      }
-    `;
-  }
+  static styles = css`
+    .layout {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .option {
+      margin-top: 4px;
+    }
+    mwc-button {
+      margin-left: 8px;
+      margin-inline-start: 8px;
+      margin-inline-end: initial;
+    }
+    ha-textfield {
+      display: block;
+      margin-bottom: 8px;
+      --textfield-icon-trailing-padding: 0;
+    }
+    ha-textfield > ha-icon-button {
+      position: relative;
+      right: -8px;
+      --mdc-icon-button-size: 36px;
+      --mdc-icon-size: 20px;
+      color: var(--secondary-text-color);
+      inset-inline-start: initial;
+      inset-inline-end: -8px;
+      direction: var(--direction);
+    }
+    #option_input {
+      margin-top: 8px;
+    }
+    .header {
+      margin-top: 8px;
+      margin-bottom: 8px;
+    }
+  `;
 }
 
 declare global {

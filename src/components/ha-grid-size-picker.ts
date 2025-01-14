@@ -30,7 +30,7 @@ export class HaGridSizeEditor extends LitElement {
 
   @property({ attribute: false }) public isDefault?: boolean;
 
-  @property({ attribute: false }) public step: number = 1;
+  @property({ attribute: false }) public step = 1;
 
   @state() public _localValue?: CardGridSize = { rows: 1, columns: 1 };
 

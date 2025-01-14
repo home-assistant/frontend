@@ -1,5 +1,5 @@
 import { mdiStop, mdiValveClosed, mdiValveOpen } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -115,21 +115,19 @@ export class HaStateControlValveButtons extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-control-button-group {
-        height: 45vh;
-        max-height: 320px;
-        min-height: 200px;
-        --control-button-group-spacing: 10px;
-        --control-button-group-thickness: 100px;
-      }
-      ha-control-button {
-        --control-button-border-radius: 36px;
-        --mdc-icon-size: 24px;
-      }
-    `;
-  }
+  static styles = css`
+    ha-control-button-group {
+      height: 45vh;
+      max-height: 320px;
+      min-height: 200px;
+      --control-button-group-spacing: 10px;
+      --control-button-group-thickness: 100px;
+    }
+    ha-control-button {
+      --control-button-border-radius: 36px;
+      --mdc-icon-size: 24px;
+    }
+  `;
 }
 
 declare global {

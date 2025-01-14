@@ -1,4 +1,4 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/ha-card";
@@ -32,38 +32,36 @@ class OnboardingWelcomeLink extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        cursor: pointer;
-      }
-      ha-card {
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        font-weight: 500;
-        padding: 32px 16px;
-        height: 100%;
-      }
-      ha-svg-icon {
-        color: var(--text-primary-color);
-        background: var(--welcome-link-color, var(--primary-color));
-        border-radius: 50%;
-        padding: 8px;
-        margin-bottom: 16px;
-      }
-      ha-card:focus-visible:before {
-        position: absolute;
-        display: block;
-        content: "";
-        inset: 0;
-        background-color: var(--secondary-text-color);
-        opacity: 0.08;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      cursor: pointer;
+    }
+    ha-card {
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      font-weight: 500;
+      padding: 32px 16px;
+      height: 100%;
+    }
+    ha-svg-icon {
+      color: var(--text-primary-color);
+      background: var(--welcome-link-color, var(--primary-color));
+      border-radius: 50%;
+      padding: 8px;
+      margin-bottom: 16px;
+    }
+    ha-card:focus-visible:before {
+      position: absolute;
+      display: block;
+      content: "";
+      inset: 0;
+      background-color: var(--secondary-text-color);
+      opacity: 0.08;
+    }
+  `;
 }
 
 declare global {

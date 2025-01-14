@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import type { HomeAssistant } from "../../../types";
@@ -35,28 +34,26 @@ class HuiSectionRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .label {
-        color: var(--section-header-text-color, var(--primary-text-color));
-        margin-left: 8px;
-        margin-inline-start: 8px;
-        margin-inline-end: initial;
-        margin-bottom: 8px;
-        margin-top: 16px;
-        font-weight: 500;
-      }
-      .divider {
-        height: 1px;
-        background-color: var(--entities-divider-color, var(--divider-color));
-        margin-left: -16px;
-        margin-right: -16px;
-        margin-inline-start: -16px;
-        margin-inline-end: -16px;
-        margin-top: 8px;
-      }
-    `;
-  }
+  static styles = css`
+    .label {
+      color: var(--section-header-text-color, var(--primary-text-color));
+      margin-left: 8px;
+      margin-inline-start: 8px;
+      margin-inline-end: initial;
+      margin-bottom: 8px;
+      margin-top: 16px;
+      font-weight: 500;
+    }
+    .divider {
+      height: 1px;
+      background-color: var(--entities-divider-color, var(--divider-color));
+      margin-left: -16px;
+      margin-right: -16px;
+      margin-inline-start: -16px;
+      margin-inline-end: -16px;
+      margin-top: 8px;
+    }
+  `;
 }
 
 declare global {

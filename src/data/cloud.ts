@@ -23,7 +23,7 @@ export interface CloudPreferences {
   remote_allow_remote_enable: boolean;
   strict_connection: StrictConnectionMode;
   google_secure_devices_pin: string | undefined;
-  cloudhooks: { [webhookId: string]: CloudWebhook };
+  cloudhooks: Record<string, CloudWebhook>;
   alexa_report_state: boolean;
   google_report_state: boolean;
   tts_default_voice: [string, string];

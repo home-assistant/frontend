@@ -7,7 +7,6 @@ import {
   mdiPlus,
 } from "@mdi/js";
 import {
-  type CSSResultGroup,
   LitElement,
   type PropertyValues,
   type TemplateResult,
@@ -442,82 +441,80 @@ export class HaConfigAreasDashboard extends LitElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .container {
-        padding: 8px 16px 16px;
-        margin: 0 auto 64px auto;
-      }
-      .header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        color: var(--secondary-text-color);
-        padding-inline-start: 8px;
-      }
-      .header h2 {
-        font-size: 14px;
-        font-weight: 500;
-        margin-top: 28px;
-      }
-      .header ha-icon {
-        margin-inline-end: 8px;
-      }
-      .areas {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        grid-gap: 16px 16px;
-        max-width: 2000px;
-        margin-bottom: 16px;
-      }
-      .areas > * {
-        max-width: 500px;
-      }
-      ha-card {
-        overflow: hidden;
-      }
-      a {
-        text-decoration: none;
-      }
-      h1 {
-        padding-bottom: 0;
-      }
-      .picture {
-        height: 150px;
-        width: 100%;
-        background-size: cover;
-        background-position: center;
-        position: relative;
-      }
-      .placeholder {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        --mdc-icon-size: 48px;
-      }
-      .picture.placeholder::before {
-        position: absolute;
-        content: "";
-        width: 100%;
-        height: 100%;
-        background-color: var(--sidebar-selected-icon-color);
-        opacity: 0.12;
-      }
-      .card-content {
-        min-height: 16px;
-        color: var(--secondary-text-color);
-      }
-      .card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        overflow-wrap: anywhere;
-      }
-      .warning {
-        color: var(--error-color);
-      }
-    `;
-  }
+  static styles = css`
+    .container {
+      padding: 8px 16px 16px;
+      margin: 0 auto 64px auto;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--secondary-text-color);
+      padding-inline-start: 8px;
+    }
+    .header h2 {
+      font-size: 14px;
+      font-weight: 500;
+      margin-top: 28px;
+    }
+    .header ha-icon {
+      margin-inline-end: 8px;
+    }
+    .areas {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      grid-gap: 16px 16px;
+      max-width: 2000px;
+      margin-bottom: 16px;
+    }
+    .areas > * {
+      max-width: 500px;
+    }
+    ha-card {
+      overflow: hidden;
+    }
+    a {
+      text-decoration: none;
+    }
+    h1 {
+      padding-bottom: 0;
+    }
+    .picture {
+      height: 150px;
+      width: 100%;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+    .placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      --mdc-icon-size: 48px;
+    }
+    .picture.placeholder::before {
+      position: absolute;
+      content: "";
+      width: 100%;
+      height: 100%;
+      background-color: var(--sidebar-selected-icon-color);
+      opacity: 0.12;
+    }
+    .card-content {
+      min-height: 16px;
+      color: var(--secondary-text-color);
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      overflow-wrap: anywhere;
+    }
+    .warning {
+      color: var(--error-color);
+    }
+  `;
 }
 
 declare global {
