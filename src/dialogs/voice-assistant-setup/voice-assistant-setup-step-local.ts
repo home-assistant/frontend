@@ -368,7 +368,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     let i = 1;
     while (
       pipelines.pipelines.find(
-        // eslint-disable-next-line @typescript-eslint/no-loop-func
+        // eslint-disable-next-line no-loop-func
         (pipeline) => pipeline.name === pipelineName
       )
     ) {

@@ -266,7 +266,7 @@ class ActionRenderer {
     let data;
     try {
       data = getDataFromPath(this.trace.config, path);
-    } catch (err: any) {
+    } catch (_err: any) {
       this._renderEntry(
         path,
         this.hass.localize(

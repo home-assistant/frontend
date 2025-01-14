@@ -113,7 +113,7 @@ export function getLocalLanguage() {
           return language;
         }
       }
-    } catch (err: any) {
+    } catch (_err: any) {
       // Ignore parsing error.
     }
   }

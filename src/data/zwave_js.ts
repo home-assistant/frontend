@@ -501,11 +501,11 @@ export const subscribeAddZwaveNode = (
   hass: HomeAssistant,
   entry_id: string,
   callbackFunction: (message: any) => void,
-  inclusion_strategy: InclusionStrategy = InclusionStrategy.Default,
   qr_provisioning_information?: QRProvisioningInformation,
   qr_code_string?: string,
   planned_provisioning_entry?: PlannedProvisioningEntry,
-  dsk?: string
+  dsk?: string,
+  inclusion_strategy: InclusionStrategy = InclusionStrategy.Default
 ): Promise<UnsubscribeFunc> =>
   hass.connection.subscribeMessage((message) => callbackFunction(message), {
     type: "zwave_js/add_node",

@@ -25,9 +25,10 @@ export class DialogJoinBeta
     this._dialogParams = dialogParams;
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     this._dialogParams = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+    return true;
   }
 
   protected render() {

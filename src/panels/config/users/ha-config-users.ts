@@ -271,7 +271,7 @@ export class HaConfigUsers extends LitElement {
           await deleteUser(this.hass!, entry!.id);
           this._users = this._users!.filter((ent) => ent !== entry);
           return true;
-        } catch (err: any) {
+        } catch (_err: any) {
           return false;
         }
       },

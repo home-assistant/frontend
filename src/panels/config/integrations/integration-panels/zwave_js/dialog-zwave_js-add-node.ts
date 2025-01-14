@@ -849,11 +849,11 @@ class DialogZWaveJSAddNode extends LitElement {
           }
         }
       },
-      this._inclusionStrategy,
       qrProvisioningInformation,
       undefined,
       undefined,
-      dsk
+      dsk,
+      this._inclusionStrategy
     ).catch((err) => {
       this._error = err.message;
       this._status = "failed";

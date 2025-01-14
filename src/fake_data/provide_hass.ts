@@ -151,23 +151,15 @@ export const provideHass = (
     restResponses.push([path, callback]);
   }
 
-  mockAPI(
-    /states\/.+/,
-    (
-      // @ts-ignore
-      method,
-      path,
-      parameters
-    ) => {
-      const [domain, objectId] = path.substr(7).split(".", 2);
-      if (!domain || !objectId) {
-        return;
-      }
-      addEntities(
-        getEntity(domain, objectId, parameters.state, parameters.attributes)
-      );
+  mockAPI(/states\/.+/, (_method, path, parameters) => {
+    const [domain, objectId] = path.substr(7).split(".", 2);
+    if (!domain || !objectId) {
+      return;
     }
-  );
+    addEntities(
+      getEntity(domain, objectId, parameters.state, parameters.attributes)
+    );
+  });
 
   const localLanguage = getLocalLanguage();
   const noop = () => undefined;

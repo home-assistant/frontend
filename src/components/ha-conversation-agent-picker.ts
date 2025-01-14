@@ -142,7 +142,7 @@ export class HaConversationAgentPicker extends LitElement {
       this._configEntry = (
         await getConfigEntry(this.hass, regEntry.config_entry_id)
       ).config_entry;
-    } catch (err) {
+    } catch (_err) {
       this._configEntry = undefined;
     }
   }

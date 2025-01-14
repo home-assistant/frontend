@@ -113,7 +113,7 @@ class MQTTMessages extends LitElement {
     if (typeof payload === "string") {
       try {
         o = JSON.parse(payload);
-      } catch (err: any) {
+      } catch (_err: any) {
         o = null;
       }
     }

@@ -109,7 +109,7 @@ export interface StatisticsUnitConfiguration {
   volume?: "L" | "gal" | "ft³" | "m³";
 }
 
-const statisticTypes = [
+const _statisticTypes = [
   "change",
   "last_reset",
   "max",
@@ -118,7 +118,7 @@ const statisticTypes = [
   "state",
   "sum",
 ] as const;
-export type StatisticsTypes = (typeof statisticTypes)[number][];
+export type StatisticsTypes = (typeof _statisticTypes)[number][];
 
 export interface StatisticsValidationResults {
   [statisticId: string]: StatisticsValidationResult[];
@@ -152,6 +152,7 @@ export const fetchStatistics = (
   startTime: Date,
   endTime?: Date,
   statistic_ids?: string[],
+  // eslint-disable-next-line default-param-last
   period: "5minute" | "hour" | "day" | "week" | "month" = "hour",
   units?: StatisticsUnitConfiguration,
   types?: StatisticsTypes
@@ -206,14 +207,14 @@ export const updateStatisticsMetadata = (
   statistic_id: string,
   unit_of_measurement: string | null
 ) =>
-  hass.callWS<void>({
+  hass.callWS<undefined>({
     type: "recorder/update_statistics_metadata",
     statistic_id,
     unit_of_measurement,
   });
 
 export const clearStatistics = (hass: HomeAssistant, statistic_ids: string[]) =>
-  hass.callWS<void>({
+  hass.callWS<undefined>({
     type: "recorder/clear_statistics",
     statistic_ids,
   });
@@ -295,7 +296,7 @@ export const adjustStatisticsSum = (
   adjustment_unit_of_measurement: string | null
 ): Promise<void> => {
   const start_time_iso = new Date(start_time).toISOString();
-  return hass.callWS({
+  return hass.callWS<undefined>({
     type: "recorder/adjust_sum_statistics",
     statistic_id,
     start_time: start_time_iso,
@@ -334,4 +335,4 @@ export const isExternalStatistic = (statisticsId: string): boolean =>
   statisticsId.includes(":");
 
 export const updateStatisticsIssues = (hass: HomeAssistant) =>
-  hass.callWS({ type: "recorder/update_statistics_issues" });
+  hass.callWS<undefined>({ type: "recorder/update_statistics_issues" });

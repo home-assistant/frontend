@@ -76,7 +76,7 @@ export class HaLogbook extends LitElement {
 
   @state() private _error?: string;
 
-  private _subscribed?: Promise<(() => Promise<void>) | void>;
+  private _subscribed?: Promise<(() => Promise<void>) | undefined>;
 
   private _liveUpdatesEnabled = true;
 
@@ -309,6 +309,7 @@ export class HaLogbook extends LitElement {
     ).catch((err) => {
       this._subscribed = undefined;
       this._error = err;
+      return undefined;
     });
     return true;
   }

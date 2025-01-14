@@ -57,12 +57,12 @@ function adjustRgb(
 
 function drawColorWheel(
   ctx: CanvasRenderingContext2D,
-  colorBrightness = 255,
   wv?: number,
   cw?: number,
   ww?: number,
   minKelvin?: number,
-  maxKelvin?: number
+  maxKelvin?: number,
+  colorBrightness = 255
 ) {
   const radius = ctx.canvas.width / 2;
 
@@ -160,12 +160,12 @@ class HaHsColorPicker extends LitElement {
     const ctx = this._canvas.getContext("2d")!;
     drawColorWheel(
       ctx,
-      this.colorBrightness,
       this.wv,
       this.cw,
       this.ww,
       this.minKelvin,
-      this.maxKelvin
+      this.maxKelvin,
+      this.colorBrightness
     );
   }
 

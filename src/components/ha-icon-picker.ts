@@ -60,7 +60,7 @@ const loadCustomIconItems = async (iconsetPrefix: string) => {
       keywords: icon.keywords ?? [],
     }));
     return customIconItems;
-  } catch (e) {
+  } catch (_err) {
     // eslint-disable-next-line no-console
     console.warn(`Unable to load icon list for ${iconsetPrefix} iconset`);
     return [];

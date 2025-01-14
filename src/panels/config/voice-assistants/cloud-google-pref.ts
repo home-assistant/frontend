@@ -271,7 +271,7 @@ export class CloudGooglePref extends LitElement {
         "cloud.google_assistant",
         toggle.checked
       );
-    } catch (err: any) {
+    } catch (_err: any) {
       toggle.checked = !toggle.checked;
     }
   }
@@ -281,7 +281,7 @@ export class CloudGooglePref extends LitElement {
     try {
       await updateCloudPref(this.hass, { google_enabled: toggle.checked! });
       fireEvent(this, "ha-refresh-cloud-status");
-    } catch (err: any) {
+    } catch (_err: any) {
       toggle.checked = !toggle.checked;
     }
   }

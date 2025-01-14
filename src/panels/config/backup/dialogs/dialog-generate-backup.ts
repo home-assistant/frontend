@@ -115,6 +115,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
 
   public closeDialog() {
     this._dialog?.close();
+    return true;
   }
 
   private _previousStep() {

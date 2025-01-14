@@ -266,7 +266,7 @@ export class AssistPref extends LitElement {
     }
     try {
       await setExposeNewEntities(this.hass, "conversation", toggle.checked);
-    } catch (err: any) {
+    } catch (_err: any) {
       toggle.checked = !toggle.checked;
     }
   }

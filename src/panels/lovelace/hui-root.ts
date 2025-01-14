@@ -815,7 +815,7 @@ class HUIRoot extends LitElement {
         try {
           await deleteDashboard(this.hass!, dashboard!.id);
           return true;
-        } catch (err: any) {
+        } catch (_err: any) {
           return false;
         }
       },

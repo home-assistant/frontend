@@ -246,7 +246,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
       const { auth, conn } = result;
       this._haVersion = conn.haVersion;
       this.initializeHass(auth, conn);
-    } catch (err: any) {
+    } catch (_err: any) {
       this._renderInitInfo(true);
     }
   }

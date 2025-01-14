@@ -90,7 +90,7 @@ class HuiSelectOptionsCardFeature
 
     try {
       await this._setOption(option);
-    } catch (err) {
+    } catch (_err) {
       this._currentOption = oldOption;
     }
   }

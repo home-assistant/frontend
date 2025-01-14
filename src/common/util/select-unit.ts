@@ -19,7 +19,7 @@ const SECS_PER_HOUR = SECS_PER_MIN * 60;
 // Adapted from https://github.com/formatjs/formatjs/blob/186cef62f980ec66252ee232f438a42d0b51b9f9/packages/intl-utils/src/diff.ts
 export function selectUnit(
   from: Date | number,
-  // eslint-disable-next-line @typescript-eslint/default-param-last
+  // eslint-disable-next-line default-param-last
   to: Date | number = Date.now(),
   locale: FrontendLocaleData,
   thresholds: Partial<Thresholds> = {}

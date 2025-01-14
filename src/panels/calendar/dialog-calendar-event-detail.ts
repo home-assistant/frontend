@@ -132,7 +132,7 @@ class DialogCalendarEventDetail extends LitElement {
         return html`<div id="text">${ruleText}</div>`;
       }
       return html`<div id="text">Cannot convert recurrence rule</div>`;
-    } catch (e) {
+    } catch (_e) {
       return "Error while processing the rule";
     }
   }

@@ -77,6 +77,7 @@ export class HuiDialogEditSection
     this._config = undefined;
     this._currTab = TABS[0];
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+    return true;
   }
 
   protected render() {

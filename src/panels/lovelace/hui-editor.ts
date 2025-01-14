@@ -47,7 +47,7 @@ class LovelaceFullConfigEditor extends LitElement {
 
   @state() private _changed?: boolean;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult | undefined {
     return html`
       <ha-top-app-bar-fixed>
         <ha-icon-button

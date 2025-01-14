@@ -90,6 +90,7 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
 
   public closeDialog() {
     this._dialog?.close();
+    return true;
   }
 
   private _dialogClosed() {

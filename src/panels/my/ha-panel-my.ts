@@ -374,7 +374,7 @@ class HaPanelMy extends LitElement {
     let url: string;
     try {
       url = this._createRedirectUrl();
-    } catch (err: any) {
+    } catch (_err: any) {
       this._error = "url_error";
       return;
     }

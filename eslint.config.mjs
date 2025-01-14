@@ -18,8 +18,8 @@ const compat = new FlatCompat({
 export default [
   ...compat.extends(
     "airbnb-base",
-    "airbnb-typescript/base",
     "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/strict",
     "plugin:wc/recommended",
     "plugin:lit/all",
     "plugin:lit-a11y/recommended",
@@ -50,8 +50,6 @@ export default [
         ecmaFeatures: {
           modules: true,
         },
-
-        project: "./tsconfig.json",
       },
     },
 
@@ -148,15 +146,15 @@ export default [
         },
       ],
 
-      "@typescript-eslint/no-unused-vars": "off",
-
-      "unused-imports/no-unused-vars": [
+      "@typescript-eslint/no-unused-vars": [
         "error",
         {
-          vars: "all",
-          varsIgnorePattern: "^_",
-          args: "after-used",
+          args: "all",
           argsIgnorePattern: "^_",
+          caughtErrors: "all",
+          caughtErrorsIgnorePattern: "^_",
+          destructuredArrayIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
           ignoreRestSiblings: true,
         },
       ],
@@ -174,6 +172,16 @@ export default [
       "lit-a11y/role-has-required-aria-attrs": "error",
       "@typescript-eslint/consistent-type-imports": "error",
       "@typescript-eslint/no-import-type-side-effects": "error",
+      camelcase: "off",
+      "@typescript-eslint/no-dynamic-delete": "off",
+      "@typescript-eslint/no-empty-object-type": [
+        "error",
+        {
+          allowInterfaces: "always",
+          allowObjectTypes: "always",
+        },
+      ],
+      "no-use-before-define": "off",
     },
   },
 ];

@@ -78,7 +78,7 @@ class MoreInfoCamera extends LitElement {
       const blob = await result.blob();
       const url = window.URL.createObjectURL(blob);
       fileDownload(url, filename);
-    } catch (err) {
+    } catch (_err) {
       this._waiting = false;
       button.actionError();
       showToast(this, {

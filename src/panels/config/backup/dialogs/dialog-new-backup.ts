@@ -31,8 +31,9 @@ class DialogNewBackup extends LitElement implements HassDialog {
     this._params = params;
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     this._dialog?.close();
+    return true;
   }
 
   private _dialogClosed() {

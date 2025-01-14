@@ -66,7 +66,7 @@ export function loadTokens() {
       } else {
         tokenCache.tokens = null;
       }
-    } catch (err: any) {
+    } catch (_err: any) {
       tokenCache.tokens = null;
     }
   }

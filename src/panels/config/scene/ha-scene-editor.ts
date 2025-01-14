@@ -1152,7 +1152,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
             scene = this.scenes.find(
               (entity: SceneEntity) => entity.attributes.id === id
             );
-          } catch (err) {
+          } catch (_err) {
             // We do nothing.
           } finally {
             this._scenesSet = undefined;
