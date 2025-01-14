@@ -1,4 +1,6 @@
+import memoizeOne from "memoize-one";
 import type { HomeAssistant } from "../types";
+import { caseInsensitiveStringCompare } from "../common/string/compare";
 
 export interface RelatedResult {
   area?: string[];
@@ -45,3 +47,17 @@ export const findRelated = (
     item_type: itemType,
     item_id: itemId,
   });
+
+export const sortRelated = memoizeOne(
+  (hass: HomeAssistant, entityIds: string[]) =>
+    entityIds
+      .map((entityId) => hass.states[entityId])
+      .filter((entity) => entity)
+      .sort((a, b) =>
+        caseInsensitiveStringCompare(
+          a.attributes.friendly_name ?? a.entity_id,
+          b.attributes.friendly_name ?? b.entity_id,
+          hass.language
+        )
+      )
+);

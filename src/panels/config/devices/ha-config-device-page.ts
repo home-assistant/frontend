@@ -63,7 +63,7 @@ import { domainToName } from "../../../data/integration";
 import type { SceneEntities } from "../../../data/scene";
 import { showSceneEditor } from "../../../data/scene";
 import type { RelatedResult } from "../../../data/search";
-import { findRelated } from "../../../data/search";
+import { sortRelated, findRelated } from "../../../data/search";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -441,38 +441,38 @@ export class HaConfigDevicePage extends LitElement {
             ${this._related?.automation?.length
               ? html`
                   <div class="items">
-                    ${this._related.automation.map((automation) => {
-                      const entityState = this.hass.states[automation];
-                      return entityState
-                        ? html`<div>
-                            <a
-                              href=${ifDefined(
-                                entityState.attributes.id
-                                  ? `/config/automation/edit/${encodeURIComponent(entityState.attributes.id)}`
-                                  : undefined
-                              )}
-                            >
-                              <ha-list-item
-                                hasMeta
-                                .automation=${entityState}
-                                .disabled=${!entityState.attributes.id}
+                    ${sortRelated(this.hass, this._related.automation).map(
+                      (automationState) =>
+                        automationState
+                          ? html`<div>
+                              <a
+                                href=${ifDefined(
+                                  automationState.attributes.id
+                                    ? `/config/automation/edit/${encodeURIComponent(automationState.attributes.id)}`
+                                    : undefined
+                                )}
                               >
-                                ${computeStateName(entityState)}
-                                <ha-icon-next slot="meta"></ha-icon-next>
-                              </ha-list-item>
-                            </a>
-                            ${!entityState.attributes.id
-                              ? html`
-                                  <simple-tooltip animation-delay="0">
-                                    ${this.hass.localize(
-                                      "ui.panel.config.devices.cant_edit"
-                                    )}
-                                  </simple-tooltip>
-                                `
-                              : ""}
-                          </div> `
-                        : "";
-                    })}
+                                <ha-list-item
+                                  hasMeta
+                                  .automation=${automationState}
+                                  .disabled=${!automationState.attributes.id}
+                                >
+                                  ${computeStateName(automationState)}
+                                  <ha-icon-next slot="meta"></ha-icon-next>
+                                </ha-list-item>
+                              </a>
+                              ${!automationState.attributes.id
+                                ? html`
+                                    <simple-tooltip animation-delay="0">
+                                      ${this.hass.localize(
+                                        "ui.panel.config.devices.cant_edit"
+                                      )}
+                                    </simple-tooltip>
+                                  `
+                                : ""}
+                            </div> `
+                          : ""
+                    )}
                   </div>
                 `
               : html`
@@ -532,40 +532,40 @@ export class HaConfigDevicePage extends LitElement {
               ${this._related?.scene?.length
                 ? html`
                     <div class="items">
-                      ${this._related.scene.map((scene) => {
-                        const entityState = this.hass.states[scene];
-                        return entityState
-                          ? html`
-                              <div>
-                                <a
-                                  href=${ifDefined(
-                                    entityState.attributes.id
-                                      ? `/config/scene/edit/${entityState.attributes.id}`
-                                      : undefined
-                                  )}
-                                >
-                                  <ha-list-item
-                                    hasMeta
-                                    .scene=${entityState}
-                                    .disabled=${!entityState.attributes.id}
+                      ${sortRelated(this.hass, this._related.scene).map(
+                        (sceneState) =>
+                          sceneState
+                            ? html`
+                                <div>
+                                  <a
+                                    href=${ifDefined(
+                                      sceneState.attributes.id
+                                        ? `/config/scene/edit/${sceneState.attributes.id}`
+                                        : undefined
+                                    )}
                                   >
-                                    ${computeStateName(entityState)}
-                                    <ha-icon-next slot="meta"></ha-icon-next>
-                                  </ha-list-item>
-                                </a>
-                                ${!entityState.attributes.id
-                                  ? html`
-                                      <simple-tooltip animation-delay="0">
-                                        ${this.hass.localize(
-                                          "ui.panel.config.devices.cant_edit"
-                                        )}
-                                      </simple-tooltip>
-                                    `
-                                  : ""}
-                              </div>
-                            `
-                          : "";
-                      })}
+                                    <ha-list-item
+                                      hasMeta
+                                      .scene=${sceneState}
+                                      .disabled=${!sceneState.attributes.id}
+                                    >
+                                      ${computeStateName(sceneState)}
+                                      <ha-icon-next slot="meta"></ha-icon-next>
+                                    </ha-list-item>
+                                  </a>
+                                  ${!sceneState.attributes.id
+                                    ? html`
+                                        <simple-tooltip animation-delay="0">
+                                          ${this.hass.localize(
+                                            "ui.panel.config.devices.cant_edit"
+                                          )}
+                                        </simple-tooltip>
+                                      `
+                                    : ""}
+                                </div>
+                              `
+                            : ""
+                      )}
                     </div>
                   `
                 : html`
@@ -626,26 +626,30 @@ export class HaConfigDevicePage extends LitElement {
             ${this._related?.script?.length
               ? html`
                   <div class="items">
-                    ${this._related.script.map((script) => {
-                      const entityState = this.hass.states[script];
-                      const entry = this._entityReg.find(
-                        (e) => e.entity_id === script
-                      );
-                      let url = `/config/script/show/${entityState.entity_id}`;
-                      if (entry) {
-                        url = `/config/script/edit/${entry.unique_id}`;
+                    ${sortRelated(this.hass, this._related.script).map(
+                      (scriptState) => {
+                        const entry = this._entityReg.find(
+                          (e) => e.entity_id === scriptState.entity_id
+                        );
+                        let url = `/config/script/show/${scriptState.entity_id}`;
+                        if (entry) {
+                          url = `/config/script/edit/${entry.unique_id}`;
+                        }
+                        return scriptState
+                          ? html`
+                              <a href=${url}>
+                                <ha-list-item
+                                  hasMeta
+                                  .script=${scriptState.entity_id}
+                                >
+                                  ${computeStateName(scriptState)}
+                                  <ha-icon-next slot="meta"></ha-icon-next>
+                                </ha-list-item>
+                              </a>
+                            `
+                          : "";
                       }
-                      return entityState
-                        ? html`
-                            <a href=${url}>
-                              <ha-list-item hasMeta .script=${script}>
-                                ${computeStateName(entityState)}
-                                <ha-icon-next slot="meta"></ha-icon-next>
-                              </ha-list-item>
-                            </a>
-                          `
-                        : "";
-                    })}
+                    )}
                   </div>
                 `
               : html`

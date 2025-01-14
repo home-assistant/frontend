@@ -11,13 +11,12 @@ import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
-import { caseInsensitiveStringCompare } from "../common/string/compare";
 import type { Blueprints } from "../data/blueprint";
 import { fetchBlueprints } from "../data/blueprint";
 import type { ConfigEntry } from "../data/config_entries";
 import { getConfigEntries } from "../data/config_entries";
 import type { ItemType, RelatedResult } from "../data/search";
-import { findRelated } from "../data/search";
+import { sortRelated, findRelated } from "../data/search";
 import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import { brandsUrl } from "../util/brands-url";
@@ -73,38 +72,6 @@ export class HaRelatedItems extends LitElement {
       this._findRelated();
     }
   }
-
-  private _relatedEntities = memoizeOne((entityIds: string[]) =>
-    this._toEntities(entityIds)
-  );
-
-  private _relatedAutomations = memoizeOne((automationEntityIds: string[]) =>
-    this._toEntities(automationEntityIds)
-  );
-
-  private _relatedScripts = memoizeOne((scriptEntityIds: string[]) =>
-    this._toEntities(scriptEntityIds)
-  );
-
-  private _relatedGroups = memoizeOne((groupEntityIds: string[]) =>
-    this._toEntities(groupEntityIds)
-  );
-
-  private _relatedScenes = memoizeOne((sceneEntityIds: string[]) =>
-    this._toEntities(sceneEntityIds)
-  );
-
-  private _toEntities = (entityIds: string[]) =>
-    entityIds
-      .map((entityId) => this.hass.states[entityId])
-      .filter((entity) => entity)
-      .sort((a, b) =>
-        caseInsensitiveStringCompare(
-          a.attributes.friendly_name ?? a.entity_id,
-          b.attributes.friendly_name ?? b.entity_id,
-          this.hass.language
-        )
-      );
 
   private _getConfigEntries = memoizeOne(
     (
@@ -275,7 +242,7 @@ export class HaRelatedItems extends LitElement {
         ? html`
             <h3>${this.hass.localize("ui.components.related-items.entity")}</h3>
             <mwc-list>
-              ${this._relatedEntities(this._related.entity).map(
+              ${sortRelated(this.hass, this._related.entity).map(
                 (entity) => html`
                   <ha-list-item
                     @click=${this._openMoreInfo}
@@ -300,7 +267,7 @@ export class HaRelatedItems extends LitElement {
         ? html`
             <h3>${this.hass.localize("ui.components.related-items.group")}</h3>
             <mwc-list>
-              ${this._relatedGroups(this._related.group).map(
+              ${sortRelated(this.hass, this._related.group).map(
                 (group) => html`
                   <ha-list-item
                     @click=${this._openMoreInfo}
@@ -325,7 +292,7 @@ export class HaRelatedItems extends LitElement {
         ? html`
             <h3>${this.hass.localize("ui.components.related-items.scene")}</h3>
             <mwc-list>
-              ${this._relatedScenes(this._related.scene).map(
+              ${sortRelated(this.hass, this._related.scene).map(
                 (scene) => html`
                   <ha-list-item
                     @click=${this._openMoreInfo}
@@ -378,7 +345,7 @@ export class HaRelatedItems extends LitElement {
               ${this.hass.localize("ui.components.related-items.automation")}
             </h3>
             <mwc-list>
-              ${this._relatedAutomations(this._related.automation).map(
+              ${sortRelated(this.hass, this._related.automation).map(
                 (automation) => html`
                   <ha-list-item
                     @click=${this._openMoreInfo}
@@ -430,7 +397,7 @@ export class HaRelatedItems extends LitElement {
         ? html`
             <h3>${this.hass.localize("ui.components.related-items.script")}</h3>
             <mwc-list>
-              ${this._relatedScripts(this._related.script).map(
+              ${sortRelated(this.hass, this._related.script).map(
                 (script) => html`
                   <ha-list-item
                     @click=${this._openMoreInfo}
