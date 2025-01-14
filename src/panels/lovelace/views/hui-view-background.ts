@@ -55,7 +55,7 @@ export class HUIViewBackground extends LitElement {
       const alignment = background.alignment ?? "center";
       const size = background.size ?? "cover";
       const repeat = background.repeat ?? "no-repeat";
-      return `${alignment} / ${size} ${repeat} url('${background.image}')`;
+      return `${alignment} / ${size} ${repeat} url('${this.hass.hassUrl(background.image)}')`;
     }
     if (typeof background === "string") {
       return background;
