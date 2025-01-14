@@ -26,7 +26,7 @@ export const showUploadBackupDialog = (
           }
         },
         submit: () => {
-          resolve();
+          resolve(undefined);
           if (origSubmit) {
             origSubmit();
           }

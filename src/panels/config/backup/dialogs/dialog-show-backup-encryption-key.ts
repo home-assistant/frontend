@@ -32,9 +32,10 @@ class DialogShowBackupEncryptionKey extends LitElement implements HassDialog {
     this._params = params;
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+    return true;
   }
 
   private _closeDialog() {

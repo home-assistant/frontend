@@ -22,7 +22,7 @@ declare global {
 export interface HassDialog<T = HASSDomEvents[ValidHassDomEvent]>
   extends HTMLElement {
   showDialog(params: T);
-  closeDialog?: () => boolean | undefined;
+  closeDialog?: () => boolean;
 }
 
 interface ShowDialogParams<T> {

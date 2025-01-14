@@ -69,7 +69,8 @@ export class HaLocationsEditor extends LitElement {
 
   private Leaflet?: LeafletModuleType;
 
-  private _loadPromise: Promise<boolean | undefined>;
+  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+  private _loadPromise: Promise<boolean | undefined | void>;
 
   constructor() {
     super();

@@ -46,10 +46,11 @@ export class DialogEnterCode
     await this.updateComplete;
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     this._dialogParams = undefined;
     this._showClearButton = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+    return true;
   }
 
   private _submit(): void {

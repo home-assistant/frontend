@@ -76,7 +76,8 @@ export class HaLogbook extends LitElement {
 
   @state() private _error?: string;
 
-  private _subscribed?: Promise<(() => Promise<void>) | undefined>;
+  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+  private _subscribed?: Promise<(() => Promise<void>) | void>;
 
   private _liveUpdatesEnabled = true;
 

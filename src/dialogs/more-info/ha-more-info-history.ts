@@ -48,7 +48,8 @@ export class MoreInfoHistory extends LitElement {
 
   private _interval?: number;
 
-  private _subscribed?: Promise<(() => Promise<void>) | undefined>;
+  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+  private _subscribed?: Promise<(() => Promise<void>) | void>;
 
   private _error?: string;
 
