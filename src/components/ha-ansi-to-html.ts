@@ -34,7 +34,7 @@ export class HaAnsiToHtml extends LitElement {
 
   @litState() private _filter = "";
 
-  protected render(): TemplateResult | undefined {
+  protected render(): TemplateResult {
     return html`<pre class=${classMap({ wrap: !this.wrapDisabled })}></pre>`;
   }
 
