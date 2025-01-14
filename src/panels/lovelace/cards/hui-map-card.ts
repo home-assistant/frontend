@@ -72,8 +72,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   @state() private _error?: { code: string; message: string };
 
-  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-  private _subscribed?: Promise<(() => Promise<void>) | void>;
+  private _subscribed?: Promise<(() => Promise<void>) | undefined>;
 
   public setConfig(config: MapCardConfig): void {
     if (!config) {
@@ -269,6 +268,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     ).catch((err) => {
       this._subscribed = undefined;
       this._error = err;
+      return undefined;
     });
   }
 

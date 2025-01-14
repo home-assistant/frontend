@@ -25,8 +25,7 @@ class DialogZWaveJSRemoveFailedNode extends LitElement {
 
   @state() private _node?: ZWaveJSRemovedNode;
 
-  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-  private _subscribed?: Promise<UnsubscribeFunc | void>;
+  private _subscribed?: Promise<UnsubscribeFunc | undefined>;
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
@@ -167,6 +166,7 @@ class DialogZWaveJSRemoveFailedNode extends LitElement {
     ).catch((error) => {
       this._status = "failed";
       this._error = error;
+      return undefined;
     });
   }
 
