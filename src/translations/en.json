@@ -4936,7 +4936,7 @@
           "rename_input_label": "Entry name",
           "search": "Search integrations",
           "search_brand": "Search for a brand name",
-          "search_helper": "Search for an helper",
+          "search_helper": "Search for a helper",
           "add_zwave_js_device": "Add Z-Wave device",
           "add_zha_device": "Add Zigbee device",
           "add_matter_device": "Add Matter device",
