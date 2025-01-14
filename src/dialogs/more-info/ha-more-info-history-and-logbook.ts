@@ -1,14 +1,12 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import type { ChartResizeOptions } from "../../components/chart/ha-chart-base";
+import { customElement, property, state } from "lit/decorators";
 import type { HomeAssistant } from "../../types";
 import {
   computeShowHistoryComponent,
   computeShowLogBookComponent,
 } from "./const";
 import "./ha-more-info-history";
-import type { MoreInfoHistory } from "./ha-more-info-history";
 import "./ha-more-info-logbook";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
 
@@ -17,9 +15,6 @@ export class MoreInfoHistoryAndLogbook extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public entityId!: string;
-
-  @query("ha-more-info-history")
-  private _history?: MoreInfoHistory;
 
   @state() private _sensorNumericDeviceClasses?: string[] = [];
 
@@ -31,10 +26,6 @@ export class MoreInfoHistoryAndLogbook extends LitElement {
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     this._loadNumericDeviceClasses();
-  }
-
-  public resize(options?: ChartResizeOptions) {
-    this._history?.resize(options);
   }
 
   protected render() {
