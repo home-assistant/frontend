@@ -37,6 +37,7 @@ class MoreInfoConversation extends LitElement {
   }
 
   private async _getPipeline() {
+    this._pipeline = undefined;
     const pipelineId = this.stateObj!.entity_id;
     try {
       const pipeline = await getAssistPipeline(this.hass, pipelineId);
@@ -45,6 +46,10 @@ class MoreInfoConversation extends LitElement {
         this._pipeline = pipeline;
       }
     } catch (e: any) {
+      if (this.stateObj && pipelineId !== this.stateObj.entity_id) {
+        return;
+      }
+
       if (e.code === "not_found") {
         this._errorLoadAssist = "not_found";
       } else {
@@ -61,27 +66,26 @@ class MoreInfoConversation extends LitElement {
     }
 
     return html`
-      ${this._pipeline
-        ? html`
-            <ha-assist-chat
-              .hass=${this.hass}
-              .pipeline=${this._pipeline}
-              disable-speech
-            ></ha-assist-chat>
-          `
-        : html`<div class="pipelines-loading">
-            <ha-circular-progress
-              indeterminate
-              size="large"
-            ></ha-circular-progress>
-          </div>`}
       ${this._errorLoadAssist
         ? html`<ha-alert alert-type="error">
             ${this.hass.localize(
               `ui.dialogs.voice_command.${this._errorLoadAssist}_error_load_assist`
             )}
           </ha-alert>`
-        : nothing}
+        : this._pipeline
+          ? html`
+              <ha-assist-chat
+                .hass=${this.hass}
+                .pipeline=${this._pipeline}
+                disable-speech
+              ></ha-assist-chat>
+            `
+          : html`<div class="pipelines-loading">
+              <ha-circular-progress
+                indeterminate
+                size="large"
+              ></ha-circular-progress>
+            </div>`}
     `;
   }
 }

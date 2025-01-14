@@ -164,28 +164,27 @@ export class HaVoiceCommandDialog extends LitElement {
           </a>
         </ha-dialog-header>
 
-        ${this._pipeline
-          ? html`
-              <ha-assist-chat
-                .hass=${this.hass}
-                .pipeline=${this._pipeline}
-                .startListening=${this._startListening}
-              >
-              </ha-assist-chat>
-            `
-          : html`<div class="pipelines-loading">
-              <ha-circular-progress
-                indeterminate
-                size="large"
-              ></ha-circular-progress>
-            </div>`}
         ${this._errorLoadAssist
           ? html`<ha-alert alert-type="error">
               ${this.hass.localize(
                 `ui.dialogs.voice_command.${this._errorLoadAssist}_error_load_assist`
               )}
             </ha-alert>`
-          : nothing}
+          : this._pipeline
+            ? html`
+                <ha-assist-chat
+                  .hass=${this.hass}
+                  .pipeline=${this._pipeline}
+                  .startListening=${this._startListening}
+                >
+                </ha-assist-chat>
+              `
+            : html`<div class="pipelines-loading">
+                <ha-circular-progress
+                  indeterminate
+                  size="large"
+                ></ha-circular-progress>
+              </div>`}
       </ha-dialog>
     `;
   }
@@ -218,9 +217,19 @@ export class HaVoiceCommandDialog extends LitElement {
   }
 
   private async _getPipeline() {
+    this._pipeline = undefined;
+    const pipelineId = this._pipelineId!;
     try {
-      this._pipeline = await getAssistPipeline(this.hass, this._pipelineId);
+      const pipeline = await getAssistPipeline(this.hass, pipelineId);
+      // Verify the pipeline is still the same.
+      if (pipelineId === this._pipelineId) {
+        this._pipeline = pipeline;
+      }
     } catch (e: any) {
+      if (pipelineId !== this._pipelineId) {
+        return;
+      }
+
       if (e.code === "not_found") {
         this._errorLoadAssist = "not_found";
       } else {
