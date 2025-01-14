@@ -35,7 +35,7 @@ export interface ThreadRouterDiscoveryEvent {
 }
 
 class DiscoveryStream {
-  routers: { [key: string]: ThreadRouter };
+  routers: Record<string, ThreadRouter>;
 
   constructor() {
     this.routers = {};

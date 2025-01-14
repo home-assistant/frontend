@@ -1,5 +1,5 @@
 import { DIRECTION_ALL, Manager, Pan, Tap } from "@egjs/hammerjs";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -359,285 +359,277 @@ export class HaControlSlider extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-        --control-slider-color: var(--primary-color);
-        --control-slider-background: var(--disabled-color);
-        --control-slider-background-opacity: 0.2;
-        --control-slider-thickness: 40px;
-        --control-slider-border-radius: 10px;
-        --control-slider-tooltip-font-size: 14px;
-        height: var(--control-slider-thickness);
-        width: 100%;
-        border-radius: var(--control-slider-border-radius);
-        outline: none;
-        transition: box-shadow 180ms ease-in-out;
-      }
-      :host(:focus-visible) {
-        box-shadow: 0 0 0 2px var(--control-slider-color);
-      }
-      :host([vertical]) {
-        width: var(--control-slider-thickness);
-        height: 100%;
-      }
-      .container {
-        position: relative;
-        height: 100%;
-        width: 100%;
-        --handle-size: 4px;
-        --handle-margin: calc(var(--control-slider-thickness) / 8);
-      }
-      .tooltip {
-        pointer-events: none;
-        user-select: none;
-        position: absolute;
-        background-color: var(--clear-background-color);
-        color: var(--primary-text-color);
-        font-size: var(--control-slider-tooltip-font-size);
-        border-radius: 0.8em;
-        padding: 0.2em 0.4em;
-        opacity: 0;
-        white-space: nowrap;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        transition:
-          opacity 180ms ease-in-out,
-          left 180ms ease-in-out,
-          bottom 180ms ease-in-out;
-        --handle-spacing: calc(2 * var(--handle-margin) + var(--handle-size));
-        --slider-tooltip-margin: -4px;
-        --slider-tooltip-range: 100%;
-        --slider-tooltip-offset: 0px;
-        --slider-tooltip-position: calc(
-          min(
-            max(
-              var(--value) * var(--slider-tooltip-range) +
-                var(--slider-tooltip-offset),
-              0%
-            ),
-            100%
-          )
-        );
-      }
-      .tooltip.start {
-        --slider-tooltip-offset: calc(-0.5 * (var(--handle-spacing)));
-      }
-      .tooltip.end {
-        --slider-tooltip-offset: calc(0.5 * (var(--handle-spacing)));
-      }
-      .tooltip.cursor {
-        --slider-tooltip-range: calc(100% - var(--handle-spacing));
-        --slider-tooltip-offset: calc(0.5 * (var(--handle-spacing)));
-      }
-      .tooltip.show-handle {
-        --slider-tooltip-range: calc(100% - var(--handle-spacing));
-        --slider-tooltip-offset: calc(0.5 * (var(--handle-spacing)));
-      }
-      .tooltip.visible {
-        opacity: 1;
-      }
-      .tooltip.top {
-        transform: translate3d(-50%, -100%, 0);
-        top: var(--slider-tooltip-margin);
-        left: 50%;
-      }
-      .tooltip.bottom {
-        transform: translate3d(-50%, 100%, 0);
-        bottom: var(--slider-tooltip-margin);
-        left: 50%;
-      }
-      .tooltip.left {
-        transform: translate3d(-100%, 50%, 0);
-        bottom: 50%;
-        left: var(--slider-tooltip-margin);
-      }
-      .tooltip.right {
-        transform: translate3d(100%, 50%, 0);
-        bottom: 50%;
-        right: var(--slider-tooltip-margin);
-      }
-      :host(:not([vertical])) .tooltip.top,
-      :host(:not([vertical])) .tooltip.bottom {
-        left: var(--slider-tooltip-position);
-      }
-      :host([vertical]) .tooltip.right,
-      :host([vertical]) .tooltip.left {
-        bottom: var(--slider-tooltip-position);
-      }
-      .slider {
-        position: relative;
-        height: 100%;
-        width: 100%;
-        border-radius: var(--control-slider-border-radius);
-        transform: translateZ(0);
-        overflow: hidden;
-        cursor: pointer;
-      }
-      .slider * {
-        pointer-events: none;
-      }
-      .slider .slider-track-background {
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 100%;
-        background: var(--control-slider-background);
-        opacity: var(--control-slider-background-opacity);
-      }
-      ::slotted([slot="background"]) {
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 100%;
-      }
-      .slider .slider-track-bar {
-        --border-radius: var(--control-slider-border-radius);
-        --slider-size: 100%;
-        position: absolute;
-        height: 100%;
-        width: 100%;
-        background-color: var(--control-slider-color);
-        transition:
-          transform 180ms ease-in-out,
-          background-color 180ms ease-in-out;
-      }
-      .slider .slider-track-bar.show-handle {
-        --slider-size: calc(
-          100% - 2 * var(--handle-margin) - var(--handle-size)
-        );
-      }
-      .slider .slider-track-bar::after {
-        display: block;
-        content: "";
-        position: absolute;
-        margin: auto;
-        border-radius: var(--handle-size);
-        background-color: white;
-      }
-      .slider .slider-track-bar {
-        top: 0;
-        left: 0;
-        transform: translate3d(
-          calc((var(--value, 0) - 1) * var(--slider-size)),
-          0,
-          0
-        );
-        border-radius: 0 8px 8px 0;
-      }
-      .slider .slider-track-bar:after {
-        top: 0;
-        bottom: 0;
-        right: var(--handle-margin);
-        height: 50%;
-        width: var(--handle-size);
-      }
-      .slider .slider-track-bar.end {
-        right: 0;
-        left: initial;
-        transform: translate3d(
-          calc(var(--value, 0) * var(--slider-size)),
-          0,
-          0
-        );
-        border-radius: 8px 0 0 8px;
-      }
-      .slider .slider-track-bar.end::after {
-        right: initial;
-        left: var(--handle-margin);
-      }
+  static styles = css`
+    :host {
+      display: block;
+      --control-slider-color: var(--primary-color);
+      --control-slider-background: var(--disabled-color);
+      --control-slider-background-opacity: 0.2;
+      --control-slider-thickness: 40px;
+      --control-slider-border-radius: 10px;
+      --control-slider-tooltip-font-size: 14px;
+      height: var(--control-slider-thickness);
+      width: 100%;
+      border-radius: var(--control-slider-border-radius);
+      outline: none;
+      transition: box-shadow 180ms ease-in-out;
+    }
+    :host(:focus-visible) {
+      box-shadow: 0 0 0 2px var(--control-slider-color);
+    }
+    :host([vertical]) {
+      width: var(--control-slider-thickness);
+      height: 100%;
+    }
+    .container {
+      position: relative;
+      height: 100%;
+      width: 100%;
+      --handle-size: 4px;
+      --handle-margin: calc(var(--control-slider-thickness) / 8);
+    }
+    .tooltip {
+      pointer-events: none;
+      user-select: none;
+      position: absolute;
+      background-color: var(--clear-background-color);
+      color: var(--primary-text-color);
+      font-size: var(--control-slider-tooltip-font-size);
+      border-radius: 0.8em;
+      padding: 0.2em 0.4em;
+      opacity: 0;
+      white-space: nowrap;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      transition:
+        opacity 180ms ease-in-out,
+        left 180ms ease-in-out,
+        bottom 180ms ease-in-out;
+      --handle-spacing: calc(2 * var(--handle-margin) + var(--handle-size));
+      --slider-tooltip-margin: -4px;
+      --slider-tooltip-range: 100%;
+      --slider-tooltip-offset: 0px;
+      --slider-tooltip-position: calc(
+        min(
+          max(
+            var(--value) * var(--slider-tooltip-range) +
+              var(--slider-tooltip-offset),
+            0%
+          ),
+          100%
+        )
+      );
+    }
+    .tooltip.start {
+      --slider-tooltip-offset: calc(-0.5 * (var(--handle-spacing)));
+    }
+    .tooltip.end {
+      --slider-tooltip-offset: calc(0.5 * (var(--handle-spacing)));
+    }
+    .tooltip.cursor {
+      --slider-tooltip-range: calc(100% - var(--handle-spacing));
+      --slider-tooltip-offset: calc(0.5 * (var(--handle-spacing)));
+    }
+    .tooltip.show-handle {
+      --slider-tooltip-range: calc(100% - var(--handle-spacing));
+      --slider-tooltip-offset: calc(0.5 * (var(--handle-spacing)));
+    }
+    .tooltip.visible {
+      opacity: 1;
+    }
+    .tooltip.top {
+      transform: translate3d(-50%, -100%, 0);
+      top: var(--slider-tooltip-margin);
+      left: 50%;
+    }
+    .tooltip.bottom {
+      transform: translate3d(-50%, 100%, 0);
+      bottom: var(--slider-tooltip-margin);
+      left: 50%;
+    }
+    .tooltip.left {
+      transform: translate3d(-100%, 50%, 0);
+      bottom: 50%;
+      left: var(--slider-tooltip-margin);
+    }
+    .tooltip.right {
+      transform: translate3d(100%, 50%, 0);
+      bottom: 50%;
+      right: var(--slider-tooltip-margin);
+    }
+    :host(:not([vertical])) .tooltip.top,
+    :host(:not([vertical])) .tooltip.bottom {
+      left: var(--slider-tooltip-position);
+    }
+    :host([vertical]) .tooltip.right,
+    :host([vertical]) .tooltip.left {
+      bottom: var(--slider-tooltip-position);
+    }
+    .slider {
+      position: relative;
+      height: 100%;
+      width: 100%;
+      border-radius: var(--control-slider-border-radius);
+      transform: translateZ(0);
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .slider * {
+      pointer-events: none;
+    }
+    .slider .slider-track-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: var(--control-slider-background);
+      opacity: var(--control-slider-background-opacity);
+    }
+    ::slotted([slot="background"]) {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+    }
+    .slider .slider-track-bar {
+      --border-radius: var(--control-slider-border-radius);
+      --slider-size: 100%;
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      background-color: var(--control-slider-color);
+      transition:
+        transform 180ms ease-in-out,
+        background-color 180ms ease-in-out;
+    }
+    .slider .slider-track-bar.show-handle {
+      --slider-size: calc(100% - 2 * var(--handle-margin) - var(--handle-size));
+    }
+    .slider .slider-track-bar::after {
+      display: block;
+      content: "";
+      position: absolute;
+      margin: auto;
+      border-radius: var(--handle-size);
+      background-color: white;
+    }
+    .slider .slider-track-bar {
+      top: 0;
+      left: 0;
+      transform: translate3d(
+        calc((var(--value, 0) - 1) * var(--slider-size)),
+        0,
+        0
+      );
+      border-radius: 0 8px 8px 0;
+    }
+    .slider .slider-track-bar:after {
+      top: 0;
+      bottom: 0;
+      right: var(--handle-margin);
+      height: 50%;
+      width: var(--handle-size);
+    }
+    .slider .slider-track-bar.end {
+      right: 0;
+      left: initial;
+      transform: translate3d(calc(var(--value, 0) * var(--slider-size)), 0, 0);
+      border-radius: 8px 0 0 8px;
+    }
+    .slider .slider-track-bar.end::after {
+      right: initial;
+      left: var(--handle-margin);
+    }
 
-      :host([vertical]) .slider .slider-track-bar {
-        bottom: 0;
-        left: 0;
-        transform: translate3d(
-          0,
-          calc((1 - var(--value, 0)) * var(--slider-size)),
-          0
-        );
-        border-radius: 8px 8px 0 0;
-      }
-      :host([vertical]) .slider .slider-track-bar:after {
-        top: var(--handle-margin);
-        right: 0;
-        left: 0;
-        bottom: initial;
-        width: 50%;
-        height: var(--handle-size);
-      }
-      :host([vertical]) .slider .slider-track-bar.end {
-        top: 0;
-        bottom: initial;
-        transform: translate3d(
-          0,
-          calc((0 - var(--value, 0)) * var(--slider-size)),
-          0
-        );
-        border-radius: 0 0 8px 8px;
-      }
-      :host([vertical]) .slider .slider-track-bar.end::after {
-        top: initial;
-        bottom: var(--handle-margin);
-      }
+    :host([vertical]) .slider .slider-track-bar {
+      bottom: 0;
+      left: 0;
+      transform: translate3d(
+        0,
+        calc((1 - var(--value, 0)) * var(--slider-size)),
+        0
+      );
+      border-radius: 8px 8px 0 0;
+    }
+    :host([vertical]) .slider .slider-track-bar:after {
+      top: var(--handle-margin);
+      right: 0;
+      left: 0;
+      bottom: initial;
+      width: 50%;
+      height: var(--handle-size);
+    }
+    :host([vertical]) .slider .slider-track-bar.end {
+      top: 0;
+      bottom: initial;
+      transform: translate3d(
+        0,
+        calc((0 - var(--value, 0)) * var(--slider-size)),
+        0
+      );
+      border-radius: 0 0 8px 8px;
+    }
+    :host([vertical]) .slider .slider-track-bar.end::after {
+      top: initial;
+      bottom: var(--handle-margin);
+    }
 
-      .slider .slider-track-cursor:after {
-        display: block;
-        content: "";
-        background-color: var(--secondary-text-color);
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        margin: auto;
-        border-radius: var(--handle-size);
-      }
+    .slider .slider-track-cursor:after {
+      display: block;
+      content: "";
+      background-color: var(--secondary-text-color);
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      margin: auto;
+      border-radius: var(--handle-size);
+    }
 
-      .slider .slider-track-cursor {
-        --cursor-size: calc(var(--control-slider-thickness) / 4);
-        position: absolute;
-        background-color: white;
-        border-radius: var(--handle-size);
-        transition:
-          left 180ms ease-in-out,
-          bottom 180ms ease-in-out;
-        top: 0;
-        bottom: 0;
-        left: calc(var(--value, 0) * (100% - var(--cursor-size)));
-        width: var(--cursor-size);
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-      }
-      .slider .slider-track-cursor:after {
-        height: 50%;
-        width: var(--handle-size);
-      }
+    .slider .slider-track-cursor {
+      --cursor-size: calc(var(--control-slider-thickness) / 4);
+      position: absolute;
+      background-color: white;
+      border-radius: var(--handle-size);
+      transition:
+        left 180ms ease-in-out,
+        bottom 180ms ease-in-out;
+      top: 0;
+      bottom: 0;
+      left: calc(var(--value, 0) * (100% - var(--cursor-size)));
+      width: var(--cursor-size);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    .slider .slider-track-cursor:after {
+      height: 50%;
+      width: var(--handle-size);
+    }
 
-      :host([vertical]) .slider .slider-track-cursor {
-        top: initial;
-        right: 0;
-        left: 0;
-        bottom: calc(var(--value, 0) * (100% - var(--cursor-size)));
-        height: var(--cursor-size);
-        width: 100%;
-      }
-      :host([vertical]) .slider .slider-track-cursor:after {
-        height: var(--handle-size);
-        width: 50%;
-      }
-      .pressed .tooltip {
-        transition: opacity 180ms ease-in-out;
-      }
-      .pressed .slider-track-bar,
-      .pressed .slider-track-cursor {
-        transition: none;
-      }
-      :host(:disabled) .slider {
-        cursor: not-allowed;
-      }
-    `;
-  }
+    :host([vertical]) .slider .slider-track-cursor {
+      top: initial;
+      right: 0;
+      left: 0;
+      bottom: calc(var(--value, 0) * (100% - var(--cursor-size)));
+      height: var(--cursor-size);
+      width: 100%;
+    }
+    :host([vertical]) .slider .slider-track-cursor:after {
+      height: var(--handle-size);
+      width: 50%;
+    }
+    .pressed .tooltip {
+      transition: opacity 180ms ease-in-out;
+    }
+    .pressed .slider-track-bar,
+    .pressed .slider-track-cursor {
+      transition: none;
+    }
+    :host(:disabled) .slider {
+      cursor: not-allowed;
+    }
+  `;
 }
 
 declare global {

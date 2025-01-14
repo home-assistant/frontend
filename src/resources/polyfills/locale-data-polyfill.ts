@@ -9,7 +9,7 @@ const INTL_POLYFILLS = [
   "RelativeTimeFormat",
 ] as const satisfies readonly (keyof typeof Intl)[];
 
-const loadedLocales: Set<string> = new Set();
+const loadedLocales = new Set<string>();
 
 const addData = async (
   obj: (typeof INTL_POLYFILLS)[number],

@@ -23,8 +23,8 @@ export interface ActionRowConfig extends ConfirmableRowConfig {
   action_name?: string;
 }
 export interface EntityFilterEntityConfig extends EntityConfig {
-  state_filter?: Array<LegacyStateFilter>;
-  conditions?: Array<Condition>;
+  state_filter?: LegacyStateFilter[];
+  conditions?: Condition[];
 }
 export interface DividerConfig {
   type: "divider";
@@ -76,7 +76,7 @@ export interface CastConfig {
 }
 export interface ButtonsRowConfig {
   type: "buttons";
-  entities: Array<string | EntityConfig>;
+  entities: (string | EntityConfig)[];
 }
 export type LovelaceRowConfig =
   | EntityConfig

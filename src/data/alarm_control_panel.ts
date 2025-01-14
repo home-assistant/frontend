@@ -63,11 +63,11 @@ export type AlarmMode =
   | "armed_custom_bypass"
   | "disarmed";
 
-type AlarmConfig = {
+interface AlarmConfig {
   service: string;
   feature?: AlarmControlPanelEntityFeature;
   path: string;
-};
+}
 export const ALARM_MODES: Record<AlarmMode, AlarmConfig> = {
   armed_home: {
     feature: AlarmControlPanelEntityFeature.ARM_HOME,

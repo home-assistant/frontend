@@ -69,12 +69,12 @@ interface EMOutgoingMessageImportThreadCredentials extends EMMessage {
   type: "thread/import_credentials";
 }
 
-type EMOutgoingMessageWithAnswer = {
+interface EMOutgoingMessageWithAnswer {
   "config/get": {
     request: EMOutgoingMessageConfigGet;
     response: ExternalConfig;
   };
-};
+}
 
 interface EMOutgoingMessageExoplayerPlayHLS extends EMMessage {
   type: "exoplayer/play_hls";
@@ -298,7 +298,7 @@ export interface ExternalConfig {
 export class ExternalMessaging {
   public config!: ExternalConfig;
 
-  public commands: { [msgId: number]: CommandInFlight } = {};
+  public commands: Record<number, CommandInFlight> = {};
 
   public msgId = 0;
 

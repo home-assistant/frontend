@@ -16,10 +16,10 @@ import type { NewDashboardDialogParams } from "./show-dialog-new-dashboard";
 
 const EMPTY_CONFIG: LovelaceRawConfig = { views: [{ title: "Home" }] };
 
-type Strategy = {
+interface Strategy {
   type: string;
   iconPath: string;
-};
+}
 
 const STRATEGIES = [
   {

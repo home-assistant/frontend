@@ -127,7 +127,7 @@ const resources: {
   };
   services: {
     all?: Promise<Record<string, ServiceIcons>>;
-    domains: { [domain: string]: ServiceIcons | Promise<ServiceIcons> };
+    domains: Record<string, ServiceIcons | Promise<ServiceIcons>>;
   };
 } = {
   entity: {},
@@ -141,8 +141,9 @@ interface IconResources<
   resources: Record<string, T>;
 }
 
-interface PlatformIcons {
-  [translation_key: string]: {
+type PlatformIcons = Record<
+  string,
+  {
     state: Record<string, string>;
     state_attributes: Record<
       string,
@@ -152,11 +153,12 @@ interface PlatformIcons {
       }
     >;
     default: string;
-  };
-}
+  }
+>;
 
-export interface ComponentIcons {
-  [device_class: string]: {
+export type ComponentIcons = Record<
+  string,
+  {
     state?: Record<string, string>;
     state_attributes?: Record<
       string,
@@ -166,20 +168,21 @@ export interface ComponentIcons {
       }
     >;
     default: string;
-  };
-}
+  }
+>;
 
-interface ServiceIcons {
-  [service: string]: { service: string; sections?: { [name: string]: string } };
-}
+type ServiceIcons = Record<
+  string,
+  { service: string; sections?: Record<string, string> }
+>;
 
 export type IconCategory = "entity" | "entity_component" | "services";
 
-type CategoryType = {
+interface CategoryType {
   entity: PlatformIcons;
   entity_component: ComponentIcons;
   services: ServiceIcons;
-};
+}
 
 export const getHassIcons = async <T extends IconCategory>(
   hass: HomeAssistant,

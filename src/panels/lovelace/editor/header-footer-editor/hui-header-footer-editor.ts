@@ -1,5 +1,5 @@
 import { mdiClose, mdiPencil, mdiPlus } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -97,35 +97,33 @@ export class HuiHeaderFooterEditor extends LitElement {
     fireEvent(this, "value-changed", { value: "" });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        font-size: 16px;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        align-items: center;
-        padding-bottom: 12px;
-      }
+  static styles = css`
+    :host {
+      font-size: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+    }
 
-      :host > div {
-        display: flex;
-        align-items: center;
-      }
+    :host > div {
+      display: flex;
+      align-items: center;
+    }
 
-      ha-icon-button,
-      .header-footer-icon {
-        --mdc-icon-button-size: 36px;
-        color: var(--secondary-text-color);
-      }
+    ha-icon-button,
+    .header-footer-icon {
+      --mdc-icon-button-size: 36px;
+      color: var(--secondary-text-color);
+    }
 
-      .header-footer-icon {
-        padding-right: 8px;
-        padding-inline-end: 8px;
-        padding-inline-start: initial;
-      }
-    `;
-  }
+    .header-footer-icon {
+      padding-right: 8px;
+      padding-inline-end: 8px;
+      padding-inline-start: initial;
+    }
+  `;
 }
 
 declare global {

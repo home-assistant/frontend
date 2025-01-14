@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { until } from "lit/directives/until";
@@ -50,7 +49,7 @@ export class HaDomainIcon extends LitElement {
   }
 
   private _renderFallback() {
-    if (this.domain! in FALLBACK_DOMAIN_ICONS) {
+    if (this.domain && this.domain in FALLBACK_DOMAIN_ICONS) {
       return html`
         <ha-svg-icon .path=${FALLBACK_DOMAIN_ICONS[this.domain!]}></ha-svg-icon>
       `;
@@ -73,13 +72,11 @@ export class HaDomainIcon extends LitElement {
     return html`<ha-svg-icon .path=${DEFAULT_DOMAIN_ICON}></ha-svg-icon>`;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      img {
-        width: var(--mdc-icon-size, 24px);
-      }
-    `;
-  }
+  static styles = css`
+    img {
+      width: var(--mdc-icon-size, 24px);
+    }
+  `;
 }
 
 declare global {

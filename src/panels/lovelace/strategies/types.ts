@@ -5,12 +5,12 @@ import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceGenericElementEditor } from "../types";
 
-export type LovelaceStrategy<T = any> = {
+export interface LovelaceStrategy<T = any> {
   generate(config: LovelaceStrategyConfig, hass: HomeAssistant): Promise<T>;
   getConfigElement?: () => LovelaceStrategyEditor;
   noEditor?: boolean;
   configRequired?: boolean;
-};
+}
 
 export interface LovelaceDashboardStrategy
   extends LovelaceStrategy<LovelaceConfig> {}

@@ -5,7 +5,7 @@ import {
   mdiWhiteBalanceSunny,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -159,92 +159,90 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-card {
-        height: 100%;
-        box-sizing: border-box;
-      }
-      .banner {
-        display: flex;
-        align-items: flex-end;
-        background-repeat: no-repeat;
-        background-size: cover;
-        background-position: center;
-        padding-top: 12px;
-      }
+  static styles = css`
+    ha-card {
+      height: 100%;
+      box-sizing: border-box;
+    }
+    .banner {
+      display: flex;
+      align-items: flex-end;
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+      padding-top: 12px;
+    }
 
-      .has-plant-image .banner {
-        padding-top: 30%;
-      }
+    .has-plant-image .banner {
+      padding-top: 30%;
+    }
 
-      .header {
-        /* start paper-font-headline style */
-        font-family: "Roboto", "Noto", sans-serif;
-        -webkit-font-smoothing: antialiased; /* OS X subpixel AA bleed bug */
-        text-rendering: optimizeLegibility;
-        font-size: 24px;
-        font-weight: 400;
-        letter-spacing: -0.012em;
-        /* end paper-font-headline style */
+    .header {
+      /* start paper-font-headline style */
+      font-family: "Roboto", "Noto", sans-serif;
+      -webkit-font-smoothing: antialiased; /* OS X subpixel AA bleed bug */
+      text-rendering: optimizeLegibility;
+      font-size: 24px;
+      font-weight: 400;
+      letter-spacing: -0.012em;
+      /* end paper-font-headline style */
 
-        line-height: 40px;
-        padding: 8px 16px;
-      }
+      line-height: 40px;
+      padding: 8px 16px;
+    }
 
-      .has-plant-image .header {
-        font-size: 16px;
-        font-weight: 500;
-        line-height: 16px;
-        padding: 16px;
-        color: white;
-        width: 100%;
-        background: rgba(0, 0, 0, var(--dark-secondary-opacity));
-      }
+    .has-plant-image .header {
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 16px;
+      padding: 16px;
+      color: white;
+      width: 100%;
+      background: rgba(0, 0, 0, var(--dark-secondary-opacity));
+    }
 
-      .content {
-        display: flex;
-        justify-content: space-between;
-        padding: 16px 32px 24px 32px;
-      }
+    .content {
+      display: flex;
+      justify-content: space-between;
+      padding: 16px 32px 24px 32px;
+    }
 
-      .has-plant-image .content {
-        padding-bottom: 16px;
-      }
+    .has-plant-image .content {
+      padding-bottom: 16px;
+    }
 
-      .icon {
-        margin-bottom: 8px;
-      }
+    .icon {
+      margin-bottom: 8px;
+    }
 
-      ha-icon,
-      ha-svg-icon {
-        color: var(--paper-item-icon-color);
-      }
+    ha-icon,
+    ha-svg-icon {
+      color: var(--paper-item-icon-color);
+    }
 
-      .attributes {
-        cursor: pointer;
-      }
+    .attributes {
+      cursor: pointer;
+    }
 
-      .attributes:focus {
-        outline: none;
-        background: var(--divider-color);
-        border-radius: 100%;
-      }
+    .attributes:focus {
+      outline: none;
+      background: var(--divider-color);
+      border-radius: 100%;
+    }
 
-      .attributes div {
-        text-align: center;
-      }
+    .attributes div {
+      text-align: center;
+    }
 
-      .problem {
-        color: var(--error-color);
-        font-weight: bold;
-      }
+    .problem {
+      color: var(--error-color);
+      font-weight: bold;
+    }
 
-      .uom {
-        color: var(--secondary-text-color);
-      }
-    `;
-  }
+    .uom {
+      color: var(--secondary-text-color);
+    }
+  `;
 
   private _computeAttributes(stateObj: HassEntity): string[] {
     return Object.keys(SENSOR_ICONS).filter(

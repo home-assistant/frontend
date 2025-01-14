@@ -123,7 +123,7 @@ class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
         { type: ["device", "hub", "service"] }
       ),
       subscribeConfigFlowInProgress(this.hass, async (flowsInProgress) => {
-        const integrations: Set<string> = new Set();
+        const integrations = new Set<string>();
         flowsInProgress.forEach((flow) => {
           // To render title placeholders
           if (flow.context.title_placeholders) {

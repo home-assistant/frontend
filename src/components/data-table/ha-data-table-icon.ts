@@ -33,31 +33,29 @@ class HaDataTableIcon extends LitElement {
     this.addEventListener("tap", hide);
   }
 
-  static get styles() {
-    return css`
-      :host {
-        display: inline-block;
-        position: relative;
-      }
-      ha-svg-icon {
-        color: var(--secondary-text-color);
-      }
-      div {
-        position: absolute;
-        right: 28px;
-        inset-inline-end: 28px;
-        inset-inline-start: initial;
-        z-index: 1002;
-        outline: none;
-        font-size: 10px;
-        line-height: 1;
-        background-color: var(--simple-tooltip-background, #616161);
-        color: var(--simple-tooltip-text-color, white);
-        padding: 8px;
-        border-radius: 2px;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: inline-block;
+      position: relative;
+    }
+    ha-svg-icon {
+      color: var(--secondary-text-color);
+    }
+    div {
+      position: absolute;
+      right: 28px;
+      inset-inline-end: 28px;
+      inset-inline-start: initial;
+      z-index: 1002;
+      outline: none;
+      font-size: 10px;
+      line-height: 1;
+      background-color: var(--simple-tooltip-background, #616161);
+      color: var(--simple-tooltip-text-color, white);
+      padding: 8px;
+      border-radius: 2px;
+    }
+  `;
 }
 
 declare global {

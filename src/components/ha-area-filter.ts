@@ -1,5 +1,5 @@
 import { mdiTextureBox } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
@@ -9,10 +9,10 @@ import "./ha-icon-next";
 import "./ha-svg-icon";
 import "./ha-textfield";
 
-export type AreaFilterValue = {
+export interface AreaFilterValue {
   hidden?: string[];
   order?: string[];
-};
+}
 
 @customElement("ha-area-filter")
 export class HaAreaPicker extends LitElement {
@@ -80,14 +80,12 @@ export class HaAreaPicker extends LitElement {
     fireEvent(this, "value-changed", { value });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-list-item {
-        --mdc-list-side-padding-left: 8px;
-        --mdc-list-side-padding-right: 8px;
-      }
-    `;
-  }
+  static styles = css`
+    ha-list-item {
+      --mdc-list-side-padding-left: 8px;
+      --mdc-list-side-padding-right: 8px;
+    }
+  `;
 }
 
 declare global {

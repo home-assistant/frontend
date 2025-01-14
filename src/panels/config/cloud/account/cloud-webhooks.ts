@@ -22,9 +22,7 @@ export class CloudWebhooks extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @state() private _cloudHooks?: {
-    [webhookId: string]: CloudWebhook;
-  };
+  @state() private _cloudHooks?: Record<string, CloudWebhook>;
 
   @state() private _localHooks?: Webhook[];
 

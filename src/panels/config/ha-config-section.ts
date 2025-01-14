@@ -34,104 +34,102 @@ export class HaConfigSection extends LitElement {
     `;
   }
 
-  static get styles() {
-    return css`
-      :host {
-        display: block;
-      }
-      .content {
-        padding: 28px 20px 0;
-        max-width: 1040px;
-        margin: 0 auto;
-      }
+  static styles = css`
+    :host {
+      display: block;
+    }
+    .content {
+      padding: 28px 20px 0;
+      max-width: 1040px;
+      margin: 0 auto;
+    }
 
-      .layout {
-        display: flex;
-      }
+    .layout {
+      display: flex;
+    }
 
-      .horizontal {
-        flex-direction: row;
-      }
+    .horizontal {
+      flex-direction: row;
+    }
 
-      .vertical {
-        flex-direction: column;
-      }
+    .vertical {
+      flex-direction: column;
+    }
 
-      .flex-auto {
-        flex: 1 1 auto;
-      }
+    .flex-auto {
+      flex: 1 1 auto;
+    }
 
-      .header {
-        font-family: var(--paper-font-headline_-_font-family);
-        -webkit-font-smoothing: var(
-          --paper-font-headline_-_-webkit-font-smoothing
-        );
-        font-size: var(--paper-font-headline_-_font-size);
-        font-weight: var(--paper-font-headline_-_font-weight);
-        letter-spacing: var(--paper-font-headline_-_letter-spacing);
-        line-height: var(--paper-font-headline_-_line-height);
-        opacity: var(--dark-primary-opacity);
-      }
+    .header {
+      font-family: var(--paper-font-headline_-_font-family);
+      -webkit-font-smoothing: var(
+        --paper-font-headline_-_-webkit-font-smoothing
+      );
+      font-size: var(--paper-font-headline_-_font-size);
+      font-weight: var(--paper-font-headline_-_font-weight);
+      letter-spacing: var(--paper-font-headline_-_letter-spacing);
+      line-height: var(--paper-font-headline_-_line-height);
+      opacity: var(--dark-primary-opacity);
+    }
 
-      .together {
-        margin-top: var(--config-section-content-together-margin-top, 32px);
-      }
+    .together {
+      margin-top: var(--config-section-content-together-margin-top, 32px);
+    }
 
-      .intro {
-        font-family: var(--paper-font-subhead_-_font-family);
-        -webkit-font-smoothing: var(
-          --paper-font-subhead_-_-webkit-font-smoothing
-        );
-        font-weight: var(--paper-font-subhead_-_font-weight);
-        line-height: var(--paper-font-subhead_-_line-height);
-        width: 100%;
-        opacity: var(--dark-primary-opacity);
-        font-size: 14px;
-        padding-bottom: 20px;
-      }
+    .intro {
+      font-family: var(--paper-font-subhead_-_font-family);
+      -webkit-font-smoothing: var(
+        --paper-font-subhead_-_-webkit-font-smoothing
+      );
+      font-weight: var(--paper-font-subhead_-_font-weight);
+      line-height: var(--paper-font-subhead_-_line-height);
+      width: 100%;
+      opacity: var(--dark-primary-opacity);
+      font-size: 14px;
+      padding-bottom: 20px;
+    }
 
-      .horizontal .intro {
-        max-width: 400px;
-        margin-right: 40px;
-        margin-inline-end: 40px;
-        margin-inline-start: initial;
-      }
+    .horizontal .intro {
+      max-width: 400px;
+      margin-right: 40px;
+      margin-inline-end: 40px;
+      margin-inline-start: initial;
+    }
 
-      .panel {
-        margin-top: -24px;
-      }
+    .panel {
+      margin-top: -24px;
+    }
 
-      .panel ::slotted(*) {
-        margin-top: 24px;
-        display: block;
-      }
+    .panel ::slotted(*) {
+      margin-top: 24px;
+      display: block;
+    }
 
-      .narrow.content {
-        max-width: 640px;
-      }
-      .narrow .together {
-        margin-top: var(
-          --config-section-narrow-content-together-margin-top,
-          var(--config-section-content-together-margin-top, 20px)
-        );
-      }
-      .narrow .intro {
-        padding-bottom: 20px;
-        margin-right: 0;
-        margin-inline-end: 0;
-        margin-inline-start: initial;
-        max-width: 500px;
-      }
+    .narrow.content {
+      max-width: 640px;
+    }
+    .narrow .together {
+      margin-top: var(
+        --config-section-narrow-content-together-margin-top,
+        var(--config-section-content-together-margin-top, 20px)
+      );
+    }
+    .narrow .intro {
+      padding-bottom: 20px;
+      margin-right: 0;
+      margin-inline-end: 0;
+      margin-inline-start: initial;
+      max-width: 500px;
+    }
 
-      .full-width {
-        padding: 0;
-      }
+    .full-width {
+      padding: 0;
+    }
 
-      .full-width .layout {
-        flex-direction: column;
-      }
-    `;
-  }
+    .full-width .layout {
+      flex-direction: column;
+    }
+  `;
 }
 
 declare global {

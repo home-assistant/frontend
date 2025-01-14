@@ -13,7 +13,7 @@ import {
   ERR_INVALID_HTTPS_TO_HTTP,
   getAuth,
 } from "home-assistant-js-websocket";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
 import type { CastManager } from "../../../../src/cast/cast_manager";
@@ -293,36 +293,34 @@ export class HcConnect extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .card-content a {
-        color: var(--primary-color);
-      }
-      .card-actions a {
-        text-decoration: none;
-      }
-      .error {
-        color: red;
-        font-weight: bold;
-      }
+  static styles = css`
+    .card-content a {
+      color: var(--primary-color);
+    }
+    .card-actions a {
+      text-decoration: none;
+    }
+    .error {
+      color: red;
+      font-weight: bold;
+    }
 
-      .error a {
-        color: darkred;
-      }
+    .error a {
+      color: darkred;
+    }
 
-      mwc-button ha-svg-icon {
-        margin-left: 8px;
-      }
+    mwc-button ha-svg-icon {
+      margin-left: 8px;
+    }
 
-      .spacer {
-        flex: 1;
-      }
+    .spacer {
+      flex: 1;
+    }
 
-      ha-textfield {
-        width: 100%;
-      }
-    `;
-  }
+    ha-textfield {
+      width: 100%;
+    }
+  `;
 }
 
 declare global {

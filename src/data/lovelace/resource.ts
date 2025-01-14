@@ -1,16 +1,16 @@
 import type { Connection } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../../types";
 
-export type LovelaceResource = {
+export interface LovelaceResource {
   id: string;
   type: "css" | "js" | "module" | "html";
   url: string;
-};
+}
 
-export type LovelaceResourcesMutableParams = {
+export interface LovelaceResourcesMutableParams {
   res_type: LovelaceResource["type"];
   url: string;
-};
+}
 
 export const fetchResources = (conn: Connection): Promise<LovelaceResource[]> =>
   conn.sendMessagePromise({

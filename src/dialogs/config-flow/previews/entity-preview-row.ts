@@ -1,5 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -45,63 +45,61 @@ class EntityPreviewRow extends LitElement {
       <div class="value">${this._renderEntityState(stateObj)}</div>`;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: flex;
-        align-items: center;
-        flex-direction: row;
-      }
-      .name {
-        margin-left: 16px;
-        margin-right: 8px;
-        margin-inline-start: 16px;
-        margin-inline-end: 8px;
-        flex: 1 1 30%;
-      }
-      .value {
-        direction: ltr;
-      }
-      .numberflex {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        flex-grow: 2;
-      }
-      .numberstate {
-        min-width: 45px;
-        text-align: end;
-      }
-      ha-textfield {
-        text-align: end;
-        direction: ltr !important;
-      }
-      ha-slider {
-        width: 100%;
-        max-width: 200px;
-      }
-      ha-time-input {
-        margin-left: 4px;
-        margin-inline-start: 4px;
-        margin-inline-end: initial;
-        direction: var(--direction);
-      }
-      .datetimeflex {
-        display: flex;
-        justify-content: flex-end;
-        width: 100%;
-      }
-      mwc-button {
-        margin-right: -0.57em;
-        margin-inline-end: -0.57em;
-        margin-inline-start: initial;
-      }
-      img {
-        display: block;
-        width: 100%;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+    }
+    .name {
+      margin-left: 16px;
+      margin-right: 8px;
+      margin-inline-start: 16px;
+      margin-inline-end: 8px;
+      flex: 1 1 30%;
+    }
+    .value {
+      direction: ltr;
+    }
+    .numberflex {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-grow: 2;
+    }
+    .numberstate {
+      min-width: 45px;
+      text-align: end;
+    }
+    ha-textfield {
+      text-align: end;
+      direction: ltr !important;
+    }
+    ha-slider {
+      width: 100%;
+      max-width: 200px;
+    }
+    ha-time-input {
+      margin-left: 4px;
+      margin-inline-start: 4px;
+      margin-inline-end: initial;
+      direction: var(--direction);
+    }
+    .datetimeflex {
+      display: flex;
+      justify-content: flex-end;
+      width: 100%;
+    }
+    mwc-button {
+      margin-right: -0.57em;
+      margin-inline-end: -0.57em;
+      margin-inline-start: initial;
+    }
+    img {
+      display: block;
+      width: 100%;
+    }
+  `;
 
   private _renderEntityState(stateObj: HassEntity): TemplateResult | string {
     const domain = stateObj.entity_id.split(".", 1)[0];

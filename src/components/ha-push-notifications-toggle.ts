@@ -24,7 +24,7 @@ class HaPushNotificationsToggle extends LitElement {
   @state() private _pushChecked: boolean =
     "Notification" in window && Notification.permission === "granted";
 
-  @state() private _loading: boolean = true;
+  @state() private _loading = true;
 
   protected render(): TemplateResult {
     return html`

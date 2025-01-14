@@ -296,12 +296,12 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         deviceEntityLookup[entity.device_id].push(entity);
       }
 
-      const entryLookup: { [entryId: string]: ConfigEntry } = {};
+      const entryLookup: Record<string, ConfigEntry> = {};
       for (const entry of entries) {
         entryLookup[entry.entry_id] = entry;
       }
 
-      const manifestLookup: { [domain: string]: IntegrationManifest } = {};
+      const manifestLookup: Record<string, IntegrationManifest> = {};
       for (const manifest of manifests) {
         manifestLookup[manifest.domain] = manifest;
       }
@@ -947,7 +947,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
 
     if (
       filteredDomains.size === 1 &&
-      (PROTOCOL_INTEGRATIONS as ReadonlyArray<string>).includes(
+      (PROTOCOL_INTEGRATIONS as readonly string[]).includes(
         [...filteredDomains][0]
       )
     ) {

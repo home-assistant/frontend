@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -77,18 +77,16 @@ export class HuiPictureHeaderFooter
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      img.clickable {
-        cursor: pointer;
-      }
+  static styles = css`
+    img.clickable {
+      cursor: pointer;
+    }
 
-      img {
-        display: block;
-        width: 100%;
-      }
-    `;
-  }
+    img {
+      display: block;
+      width: 100%;
+    }
+  `;
 
   private _handleAction(ev: ActionHandlerEvent) {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);

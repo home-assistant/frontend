@@ -1,6 +1,6 @@
 import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
 import { getRelativePosition } from "chart.js/helpers";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
@@ -319,13 +319,11 @@ export class StateHistoryChartTimeline extends LitElement {
     };
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-chart-base {
-        --chart-max-height: none;
-      }
-    `;
-  }
+  static styles = css`
+    ha-chart-base {
+      --chart-max-height: none;
+    }
+  `;
 }
 
 declare global {

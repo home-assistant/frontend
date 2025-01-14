@@ -34,8 +34,9 @@ import { isHelperDomain } from "./const";
 import type { ShowDialogHelperDetailParams } from "./show-dialog-helper-detail";
 import { fireEvent } from "../../../common/dom/fire_event";
 
-type HelperCreators = {
-  [domain in HelperDomain]: {
+type HelperCreators = Record<
+  HelperDomain,
+  {
     create: (
       hass: HomeAssistant,
       // Not properly typed because there is currently a mismatch for this._item between:
@@ -45,8 +46,8 @@ type HelperCreators = {
       params: any
     ) => Promise<Helper>;
     import: () => Promise<unknown>;
-  };
-};
+  }
+>;
 
 const HELPERS: HelperCreators = {
   input_boolean: {

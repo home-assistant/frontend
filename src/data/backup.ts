@@ -106,7 +106,7 @@ export interface BackupAgentsInfo {
   agents: BackupAgent[];
 }
 
-export type GenerateBackupParams = {
+export interface GenerateBackupParams {
   agent_ids: string[];
   include_addons?: string[];
   include_all_addons?: boolean;
@@ -115,9 +115,9 @@ export type GenerateBackupParams = {
   include_homeassistant?: boolean;
   name?: string;
   password?: string;
-};
+}
 
-export type RestoreBackupParams = {
+export interface RestoreBackupParams {
   backup_id: string;
   agent_id: string;
   password?: string;
@@ -125,7 +125,7 @@ export type RestoreBackupParams = {
   restore_database?: boolean;
   restore_folders?: string[];
   restore_homeassistant?: boolean;
-};
+}
 
 export const fetchBackupConfig = (hass: HomeAssistant) =>
   hass.callWS<{ config: BackupConfig }>({ type: "backup/config/info" });

@@ -15,9 +15,7 @@ export interface Integration {
   single_config_entry?: boolean;
 }
 
-export interface Integrations {
-  [domain: string]: Integration;
-}
+export type Integrations = Record<string, Integration>;
 
 export interface Brand {
   name?: string;
@@ -27,9 +25,7 @@ export interface Brand {
   overwrites_built_in?: boolean;
 }
 
-export interface Brands {
-  [domain: string]: Integration | Brand;
-}
+export type Brands = Record<string, Integration | Brand>;
 
 export interface IntegrationDescriptions {
   core: {
