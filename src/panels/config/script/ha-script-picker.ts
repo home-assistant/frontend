@@ -855,7 +855,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         Array.isArray(filter.value) &&
         filter.value.length
       ) {
-        const categoryItems: Set<string> = new Set();
+        const categoryItems = new Set<string>();
         this.scripts
           .filter(
             (script) =>
@@ -879,7 +879,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         Array.isArray(filter.value) &&
         filter.value.length
       ) {
-        const labelItems: Set<string> = new Set();
+        const labelItems = new Set<string>();
         this.scripts
           .filter((script) =>
             this._entityReg

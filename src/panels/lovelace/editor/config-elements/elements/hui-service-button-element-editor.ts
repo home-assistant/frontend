@@ -106,15 +106,13 @@ export class HuiServiceButtonElementEditor
     this.hass!.localize(`ui.panel.lovelace.editor.elements.${schema.name}`) ||
     schema.name;
 
-  static get styles() {
-    return css`
-      ha-service-control {
-        display: block;
-        margin-top: 16px;
-        --service-control-padding: 0;
-      }
-    `;
-  }
+  static styles = css`
+    ha-service-control {
+      display: block;
+      margin-top: 16px;
+      --service-control-padding: 0;
+    }
+  `;
 }
 
 declare global {

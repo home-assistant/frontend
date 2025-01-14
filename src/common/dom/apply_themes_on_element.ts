@@ -13,7 +13,7 @@ import { labBrighten, labDarken } from "../color/lab";
 import { rgbContrast } from "../color/rgb";
 
 interface ProcessedTheme {
-  keys: { [key: string]: "" };
+  keys: Record<string, "">;
   styles: Record<string, string>;
 }
 

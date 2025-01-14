@@ -31,11 +31,9 @@ class StorageClass {
 
   public storage: globalThis.Storage;
 
-  private _storage: { [storageKey: string]: any } = {};
+  private _storage: Record<string, any> = {};
 
-  private _listeners: {
-    [storageKey: string]: Callback[];
-  } = {};
+  private _listeners: Record<string, Callback[]> = {};
 
   public addFromStorage(storageKey: any): void {
     if (!this._storage[storageKey]) {

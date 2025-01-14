@@ -91,27 +91,25 @@ export class DemoHaHsColorPicker extends LitElement {
     `;
   }
 
-  static get styles() {
-    return css`
-      ha-card {
-        max-width: 600px;
-        margin: 24px auto;
-      }
-      .card-content {
-        display: flex;
-        align-items: center;
-        flex-direction: column;
-      }
-      ha-hs-color-picker {
-        width: 400px;
-      }
-      .value {
-        font-size: 22px;
-        font-weight: bold;
-        margin: 0 0 12px 0;
-      }
-    `;
-  }
+  static styles = css`
+    ha-card {
+      max-width: 600px;
+      margin: 24px auto;
+    }
+    .card-content {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+    }
+    ha-hs-color-picker {
+      width: 400px;
+    }
+    .value {
+      font-size: 22px;
+      font-weight: bold;
+      margin: 0 0 12px 0;
+    }
+  `;
 }
 
 declare global {

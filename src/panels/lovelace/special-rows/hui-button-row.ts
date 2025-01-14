@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { DOMAINS_TOGGLE } from "../../../common/const";
@@ -76,38 +75,36 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: flex;
-        align-items: center;
-      }
-      ha-state-icon {
-        padding: 8px;
-        color: var(--paper-item-icon-color);
-      }
-      .flex {
-        flex: 1;
-        overflow: hidden;
-        margin-left: 16px;
-        margin-inline-start: 16px;
-        margin-inline-end: initial;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .flex div {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      mwc-button {
-        margin-right: -0.57em;
-        margin-inline-end: -0.57em;
-        margin-inline-start: initial;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: flex;
+      align-items: center;
+    }
+    ha-state-icon {
+      padding: 8px;
+      color: var(--paper-item-icon-color);
+    }
+    .flex {
+      flex: 1;
+      overflow: hidden;
+      margin-left: 16px;
+      margin-inline-start: 16px;
+      margin-inline-end: initial;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .flex div {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    mwc-button {
+      margin-right: -0.57em;
+      margin-inline-end: -0.57em;
+      margin-inline-start: initial;
+    }
+  `;
 
   private _handleAction(ev: ActionHandlerEvent) {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);

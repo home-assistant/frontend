@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { HomeAssistant } from "../../types";
@@ -53,17 +52,15 @@ export class MoreInfoHistoryAndLogbook extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-more-info-history,
-      ha-more-info-logbook {
-        display: block;
-      }
-      ha-more-info-history + ha-more-info-logbook {
-        margin-top: 16px;
-      }
-    `;
-  }
+  static styles = css`
+    ha-more-info-history,
+    ha-more-info-logbook {
+      display: block;
+    }
+    ha-more-info-history + ha-more-info-logbook {
+      margin-top: 16px;
+    }
+  `;
 }
 
 declare global {

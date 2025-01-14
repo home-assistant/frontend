@@ -5,9 +5,9 @@ import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import type { MapCardConfig } from "../../cards/types";
 
-export type MapViewStrategyConfig = {
+export interface MapViewStrategyConfig {
   type: "map";
-};
+}
 
 const getMapEntities = (hass: HomeAssistant) => {
   const personSources = new Set<string>();

@@ -32,12 +32,12 @@ export interface HassioBackup {
 export interface HassioBackupDetail extends HassioBackup {
   size: number;
   homeassistant: string;
-  addons: Array<{
+  addons: {
     slug: "ADDON_SLUG";
     name: "NAME";
     version: "INSTALLED_VERSION";
     size: "SIZE_IN_MB";
-  }>;
+  }[];
   repositories: string[];
   folders: string[];
 }
@@ -59,9 +59,7 @@ export const fetchHassioBackups = async (
   hass: HomeAssistant
 ): Promise<HassioBackup[]> => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    const data: {
-      [key: string]: HassioBackup[];
-    } = await hass.callWS({
+    const data: Record<string, HassioBackup[]> = await hass.callWS({
       type: "supervisor/api",
       endpoint: `/${
         atLeastVersion(hass.config.version, 2021, 9) ? "backups" : "snapshots"

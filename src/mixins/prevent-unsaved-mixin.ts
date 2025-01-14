@@ -47,6 +47,7 @@ export const PreventUnsavedMixin = <T extends Constructor<LitElement>>(
       this._removeListeners();
     }
 
+    // eslint-disable-next-line @typescript-eslint/class-literal-property-style
     protected get isDirty(): boolean {
       return false;
     }

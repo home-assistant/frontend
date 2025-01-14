@@ -209,9 +209,10 @@ export interface ZWaveJSNodeStatus {
   has_firmware_update_cc: boolean;
 }
 
-export type ZWaveJSNodeCapabilities = {
-  [endpoint: number]: ZWaveJSEndpointCapability[];
-};
+export type ZWaveJSNodeCapabilities = Record<
+  number,
+  ZWaveJSEndpointCapability[]
+>;
 
 export interface ZWaveJSEndpointCapability {
   id: number;
@@ -235,9 +236,7 @@ export interface ZwaveJSNodeAlerts {
   is_embedded: boolean | null;
 }
 
-export interface ZWaveJSNodeConfigParams {
-  [key: string]: ZWaveJSNodeConfigParam;
-}
+export type ZWaveJSNodeConfigParams = Record<string, ZWaveJSNodeConfigParam>;
 
 export interface ZWaveJSNodeComment {
   level: "info" | "warning" | "error";
@@ -262,7 +261,7 @@ export interface ZWaveJSNodeConfigParamMetadata {
   writeable: boolean;
   type: string;
   unit: string;
-  states: { [key: number]: string };
+  states: Record<number, string>;
   default: any;
 }
 
@@ -302,7 +301,7 @@ export interface ZWaveJSRefreshNodeStatusMessage {
 
 export interface ZWaveJSRebuildRoutesStatusMessage {
   event: string;
-  rebuild_routes_status: { [key: number]: string };
+  rebuild_routes_status: Record<number, string>;
 }
 
 export interface ZWaveJSControllerStatisticsUpdatedMessage {

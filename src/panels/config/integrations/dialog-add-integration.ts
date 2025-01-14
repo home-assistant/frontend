@@ -564,7 +564,7 @@ class AddIntegrationDialog extends LitElement {
     }
 
     if (
-      (PROTOCOL_INTEGRATIONS as ReadonlyArray<string>).includes(
+      (PROTOCOL_INTEGRATIONS as readonly string[]).includes(
         integration.domain
       ) &&
       isComponentLoaded(this.hass, integration.domain)

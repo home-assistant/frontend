@@ -1,6 +1,5 @@
 import { consume } from "@lit-labs/context";
 import "@material/mwc-list/mwc-list-item";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -185,11 +184,9 @@ export abstract class HaDeviceAutomationPicker<
     fireEvent(this, "value-changed", { value });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-select {
-        display: block;
-      }
-    `;
-  }
+  static styles = css`
+    ha-select {
+      display: block;
+    }
+  `;
 }

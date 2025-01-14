@@ -1,6 +1,5 @@
 import { mdiExclamationThick, mdiHelp } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -336,145 +335,143 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        --tile-color: var(--state-inactive-color);
-        -webkit-tap-highlight-color: transparent;
-      }
-      ha-card:has(.background:focus-visible) {
-        --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
-        --shadow-focus: 0 0 0 1px var(--tile-color);
-        border-color: var(--tile-color);
-        box-shadow: var(--shadow-default), var(--shadow-focus);
-      }
-      ha-card {
-        --ha-ripple-color: var(--tile-color);
-        --ha-ripple-hover-opacity: 0.04;
-        --ha-ripple-pressed-opacity: 0.12;
-        height: 100%;
-        transition:
-          box-shadow 180ms ease-in-out,
-          border-color 180ms ease-in-out;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-      }
-      ha-card.active {
-        --tile-color: var(--state-icon-color);
-      }
-      [role="button"] {
-        cursor: pointer;
-      }
-      [role="button"]:focus {
-        outline: none;
-      }
-      .background {
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        border-radius: var(--ha-card-border-radius, 12px);
-        margin: calc(-1 * var(--ha-card-border-width, 1px));
-        overflow: hidden;
-      }
-      .container {
-        margin: calc(-1 * var(--ha-card-border-width, 1px));
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-      }
-      .content {
-        position: relative;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        padding: 10px;
-        flex: 1;
-        box-sizing: border-box;
-        pointer-events: none;
-      }
-      .vertical {
-        flex-direction: column;
-        text-align: center;
-        justify-content: center;
-      }
-      .vertical .icon-container {
-        margin-bottom: 10px;
-        margin-right: 0;
-        margin-inline-start: initial;
-        margin-inline-end: initial;
-      }
-      .vertical ha-tile-info {
-        width: 100%;
-        flex: none;
-      }
-      .icon-container {
-        position: relative;
-        flex: none;
-        margin-right: 10px;
-        margin-inline-start: initial;
-        margin-inline-end: 10px;
-        direction: var(--direction);
-        transition: transform 180ms ease-in-out;
-      }
-      .icon-container ha-tile-icon,
-      .icon-container ha-tile-image {
-        --tile-icon-color: var(--tile-color);
-        user-select: none;
-        -ms-user-select: none;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-      }
-      .icon-container ha-tile-badge {
-        position: absolute;
-        top: -3px;
-        right: -3px;
-        inset-inline-end: -3px;
-        inset-inline-start: initial;
-      }
-      .icon-container[role="button"] {
-        pointer-events: auto;
-      }
-      .icon-container[role="button"]:focus-visible,
-      .icon-container[role="button"]:active {
-        transform: scale(1.2);
-      }
-      ha-tile-info {
-        position: relative;
-        min-width: 0;
-        transition: background-color 180ms ease-in-out;
-        box-sizing: border-box;
-      }
-      hui-card-features {
-        --feature-color: var(--tile-color);
-      }
+  static styles = css`
+    :host {
+      --tile-color: var(--state-inactive-color);
+      -webkit-tap-highlight-color: transparent;
+    }
+    ha-card:has(.background:focus-visible) {
+      --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
+      --shadow-focus: 0 0 0 1px var(--tile-color);
+      border-color: var(--tile-color);
+      box-shadow: var(--shadow-default), var(--shadow-focus);
+    }
+    ha-card {
+      --ha-ripple-color: var(--tile-color);
+      --ha-ripple-hover-opacity: 0.04;
+      --ha-ripple-pressed-opacity: 0.12;
+      height: 100%;
+      transition:
+        box-shadow 180ms ease-in-out,
+        border-color 180ms ease-in-out;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    ha-card.active {
+      --tile-color: var(--state-icon-color);
+    }
+    [role="button"] {
+      cursor: pointer;
+    }
+    [role="button"]:focus {
+      outline: none;
+    }
+    .background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      border-radius: var(--ha-card-border-radius, 12px);
+      margin: calc(-1 * var(--ha-card-border-width, 1px));
+      overflow: hidden;
+    }
+    .container {
+      margin: calc(-1 * var(--ha-card-border-width, 1px));
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .content {
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      padding: 10px;
+      flex: 1;
+      box-sizing: border-box;
+      pointer-events: none;
+    }
+    .vertical {
+      flex-direction: column;
+      text-align: center;
+      justify-content: center;
+    }
+    .vertical .icon-container {
+      margin-bottom: 10px;
+      margin-right: 0;
+      margin-inline-start: initial;
+      margin-inline-end: initial;
+    }
+    .vertical ha-tile-info {
+      width: 100%;
+      flex: none;
+    }
+    .icon-container {
+      position: relative;
+      flex: none;
+      margin-right: 10px;
+      margin-inline-start: initial;
+      margin-inline-end: 10px;
+      direction: var(--direction);
+      transition: transform 180ms ease-in-out;
+    }
+    .icon-container ha-tile-icon,
+    .icon-container ha-tile-image {
+      --tile-icon-color: var(--tile-color);
+      user-select: none;
+      -ms-user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+    }
+    .icon-container ha-tile-badge {
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      inset-inline-end: -3px;
+      inset-inline-start: initial;
+    }
+    .icon-container[role="button"] {
+      pointer-events: auto;
+    }
+    .icon-container[role="button"]:focus-visible,
+    .icon-container[role="button"]:active {
+      transform: scale(1.2);
+    }
+    ha-tile-info {
+      position: relative;
+      min-width: 0;
+      transition: background-color 180ms ease-in-out;
+      box-sizing: border-box;
+    }
+    hui-card-features {
+      --feature-color: var(--tile-color);
+    }
 
-      ha-tile-icon[data-domain="alarm_control_panel"][data-state="pending"],
-      ha-tile-icon[data-domain="alarm_control_panel"][data-state="arming"],
-      ha-tile-icon[data-domain="alarm_control_panel"][data-state="triggered"],
-      ha-tile-icon[data-domain="lock"][data-state="jammed"] {
-        animation: pulse 1s infinite;
-      }
+    ha-tile-icon[data-domain="alarm_control_panel"][data-state="pending"],
+    ha-tile-icon[data-domain="alarm_control_panel"][data-state="arming"],
+    ha-tile-icon[data-domain="alarm_control_panel"][data-state="triggered"],
+    ha-tile-icon[data-domain="lock"][data-state="jammed"] {
+      animation: pulse 1s infinite;
+    }
 
-      ha-tile-badge.not-found {
-        --tile-badge-background-color: var(--red-color);
-      }
+    ha-tile-badge.not-found {
+      --tile-badge-background-color: var(--red-color);
+    }
 
-      @keyframes pulse {
-        0% {
-          opacity: 1;
-        }
-        50% {
-          opacity: 0;
-        }
-        100% {
-          opacity: 1;
-        }
+    @keyframes pulse {
+      0% {
+        opacity: 1;
       }
-    `;
-  }
+      50% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+  `;
 }
 
 declare global {

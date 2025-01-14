@@ -4,13 +4,9 @@ import { promiseTimeout } from "../common/util/promise-timeout";
 import { iconMetadata } from "../resources/icon-metadata";
 import type { IconMeta } from "../types";
 
-export interface Icons {
-  [key: string]: string;
-}
+export type Icons = Record<string, string>;
 
-export interface Chunks {
-  [key: string]: Promise<Icons>;
-}
+export type Chunks = Record<string, Promise<Icons>>;
 
 const getStore = memoizeOne(async () => {
   const iconStore = createStore("hass-icon-db", "mdi-icon-store");
@@ -32,9 +28,11 @@ const getStore = memoizeOne(async () => {
 
 export const MDI_PREFIXES = ["mdi", "hass", "hassio", "hademo"];
 
-let toRead: Array<
-  [string, (iconPath: string | undefined) => void, (e: any) => void]
-> = [];
+let toRead: [
+  string,
+  (iconPath: string | undefined) => void,
+  (e: any) => void,
+][] = [];
 
 // Queue up as many icon fetches in 1 transaction
 export const getIcon = (iconName: string) =>

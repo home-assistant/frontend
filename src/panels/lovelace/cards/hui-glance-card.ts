@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -156,79 +156,77 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-card {
-        height: 100%;
-      }
-      .entities {
-        display: flex;
-        padding: 0 16px 4px;
-        flex-wrap: wrap;
-        box-sizing: border-box;
-        align-items: center;
-        align-content: center;
-      }
-      .entities.no-header {
-        padding-top: 16px;
-      }
-      .entity {
-        box-sizing: border-box;
-        padding: 0 4px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-bottom: 12px;
-        width: var(--glance-column-width, 20%);
-      }
-      .entity.action {
-        cursor: pointer;
-      }
-      .entity:focus {
-        outline: none;
-        background: var(--divider-color);
-        border-radius: 14px;
-        padding: 4px;
-        margin-top: -4px;
-        margin-bottom: 8px;
-      }
-      .entity div {
-        width: 100%;
-        text-align: center;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .name {
-        min-height: var(--paper-font-body1_-_line-height, 20px);
-      }
-      .warning {
-        cursor: default;
-        position: relative;
-        padding: 8px;
-        width: calc(var(--glance-column-width, 20%) - 4px);
-        margin: 0 2px;
-      }
-      .warning::before {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        opacity: 0.12;
-        pointer-events: none;
-        content: "";
-        border-radius: 4px;
-        background-color: var(--warning-color);
-      }
-      state-badge {
-        margin: 8px 0;
-      }
-      hui-warning-element {
-        padding: 8px;
-      }
-    `;
-  }
+  static styles = css`
+    ha-card {
+      height: 100%;
+    }
+    .entities {
+      display: flex;
+      padding: 0 16px 4px;
+      flex-wrap: wrap;
+      box-sizing: border-box;
+      align-items: center;
+      align-content: center;
+    }
+    .entities.no-header {
+      padding-top: 16px;
+    }
+    .entity {
+      box-sizing: border-box;
+      padding: 0 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 12px;
+      width: var(--glance-column-width, 20%);
+    }
+    .entity.action {
+      cursor: pointer;
+    }
+    .entity:focus {
+      outline: none;
+      background: var(--divider-color);
+      border-radius: 14px;
+      padding: 4px;
+      margin-top: -4px;
+      margin-bottom: 8px;
+    }
+    .entity div {
+      width: 100%;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .name {
+      min-height: var(--paper-font-body1_-_line-height, 20px);
+    }
+    .warning {
+      cursor: default;
+      position: relative;
+      padding: 8px;
+      width: calc(var(--glance-column-width, 20%) - 4px);
+      margin: 0 2px;
+    }
+    .warning::before {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      opacity: 0.12;
+      pointer-events: none;
+      content: "";
+      border-radius: 4px;
+      background-color: var(--warning-color);
+    }
+    state-badge {
+      margin: 8px 0;
+    }
+    hui-warning-element {
+      padding: 8px;
+    }
+  `;
 
   private _renderEntity(entityConf: GlanceConfigEntity): TemplateResult {
     const stateObj = this.hass!.states[entityConf.entity];

@@ -1,5 +1,5 @@
 import { mdiEye, mdiEyeOff } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -131,31 +131,29 @@ export class HaFormString extends LitElement implements HaFormElement {
     return MASKED_FIELDS.some((field) => this.schema.name.includes(field));
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-        position: relative;
-      }
-      :host([own-margin]) {
-        margin-bottom: 5px;
-      }
-      ha-textfield {
-        display: block;
-      }
-      ha-icon-button {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        inset-inline-start: initial;
-        inset-inline-end: 8px;
-        --mdc-icon-button-size: 40px;
-        --mdc-icon-size: 20px;
-        color: var(--secondary-text-color);
-        direction: var(--direction);
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+      position: relative;
+    }
+    :host([own-margin]) {
+      margin-bottom: 5px;
+    }
+    ha-textfield {
+      display: block;
+    }
+    ha-icon-button {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      inset-inline-start: initial;
+      inset-inline-end: 8px;
+      --mdc-icon-button-size: 40px;
+      --mdc-icon-size: 20px;
+      color: var(--secondary-text-color);
+      direction: var(--direction);
+    }
+  `;
 }
 
 declare global {

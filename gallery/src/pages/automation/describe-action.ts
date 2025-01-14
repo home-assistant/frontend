@@ -177,26 +177,24 @@ export class DemoAutomationDescribeAction extends LitElement {
     this._action = ev.detail.isValid ? ev.detail.value : undefined;
   }
 
-  static get styles() {
-    return css`
-      ha-card {
-        max-width: 600px;
-        margin: 24px auto;
-      }
-      .action {
-        padding: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-      span {
-        margin-right: 16px;
-      }
-      ha-yaml-editor {
-        width: 50%;
-      }
-    `;
-  }
+  static styles = css`
+    ha-card {
+      max-width: 600px;
+      margin: 24px auto;
+    }
+    .action {
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    span {
+      margin-right: 16px;
+    }
+    ha-yaml-editor {
+      width: 50%;
+    }
+  `;
 }
 
 declare global {

@@ -391,7 +391,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     });
   }
 
-  private async _findEntitiesAndCreatePipeline(tryNo: number = 0) {
+  private async _findEntitiesAndCreatePipeline(tryNo = 0) {
     this._findLocalEntities();
     if (!this._localTts?.length || !this._localStt?.length) {
       if (tryNo > 3) {

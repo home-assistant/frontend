@@ -119,7 +119,6 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
     pageEl.config = this._config;
     pageEl.fetching = this._fetching;
 
-    pageEl.addEventListener("reload", () => {});
     if (
       (!changedProps || changedProps.has("route")) &&
       this._currentPage === "details"

@@ -1,5 +1,4 @@
 import { mdiTelevision } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import type { CastManager } from "../../../src/cast/cast_manager";
@@ -67,37 +66,35 @@ class CastDemoRow extends LitElement implements LovelaceRow {
     this.style.display = this._castManager ? "" : "none";
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: flex;
-        align-items: center;
-      }
-      ha-svg-icon {
-        padding: 8px;
-        color: var(--paper-item-icon-color);
-      }
-      .flex {
-        flex: 1;
-        overflow: hidden;
-        margin-left: 16px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .name {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      google-cast-launcher {
-        cursor: pointer;
-        display: inline-block;
-        height: 24px;
-        width: 24px;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: flex;
+      align-items: center;
+    }
+    ha-svg-icon {
+      padding: 8px;
+      color: var(--paper-item-icon-color);
+    }
+    .flex {
+      flex: 1;
+      overflow: hidden;
+      margin-left: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .name {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    google-cast-launcher {
+      cursor: pointer;
+      display: inline-block;
+      height: 24px;
+      width: 24px;
+    }
+  `;
 }
 
 declare global {

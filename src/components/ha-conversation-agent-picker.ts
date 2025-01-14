@@ -1,5 +1,5 @@
 import { mdiCog } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
@@ -190,20 +190,18 @@ export class HaConversationAgentPicker extends LitElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: flex;
-        align-items: center;
-      }
-      ha-select {
-        width: 100%;
-      }
-      ha-icon-button {
-        color: var(--secondary-text-color);
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: flex;
+      align-items: center;
+    }
+    ha-select {
+      width: 100%;
+    }
+    ha-icon-button {
+      color: var(--secondary-text-color);
+    }
+  `;
 
   private _changed(ev): void {
     const target = ev.target as HaSelect;

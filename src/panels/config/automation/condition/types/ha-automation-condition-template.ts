@@ -43,13 +43,11 @@ export class HaTemplateCondition extends LitElement {
     handleChangeEvent(this, ev);
   }
 
-  static get styles() {
-    return css`
-      p {
-        margin-top: 0;
-      }
-    `;
-  }
+  static styles = css`
+    p {
+      margin-top: 0;
+    }
+  `;
 }
 
 declare global {

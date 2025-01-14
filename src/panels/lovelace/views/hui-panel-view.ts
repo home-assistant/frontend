@@ -1,5 +1,5 @@
 import { mdiPlus } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -28,6 +28,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
 
   @state() private _card?: HuiCard | HuiWarning | HuiCardOptions;
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   public setConfig(_config: LovelaceViewConfig): void {}
 
   public willUpdate(changedProperties: PropertyValues): void {
@@ -117,33 +118,31 @@ export class PanelView extends LitElement implements LovelaceViewElement {
     this._card = wrapper;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-        height: 100%;
-        --restore-card-border-radius: var(--ha-card-border-radius, 12px);
-        --restore-card-border-width: var(--ha-card-border-width, 1px);
-        --restore-card-box-shadow: var(--ha-card-box-shadow, none);
-      }
+  static styles = css`
+    :host {
+      display: block;
+      height: 100%;
+      --restore-card-border-radius: var(--ha-card-border-radius, 12px);
+      --restore-card-border-width: var(--ha-card-border-width, 1px);
+      --restore-card-box-shadow: var(--ha-card-box-shadow, none);
+    }
 
-      * {
-        --ha-card-border-radius: 0;
-        --ha-card-border-width: 0;
-        --ha-card-box-shadow: none;
-      }
+    * {
+      --ha-card-border-radius: 0;
+      --ha-card-border-width: 0;
+      --ha-card-box-shadow: none;
+    }
 
-      ha-fab {
-        position: fixed;
-        right: calc(16px + env(safe-area-inset-right));
-        bottom: calc(16px + env(safe-area-inset-bottom));
-        z-index: 1;
-        float: var(--float-end);
-        inset-inline-end: calc(16px + env(safe-area-inset-right));
-        inset-inline-start: initial;
-      }
-    `;
-  }
+    ha-fab {
+      position: fixed;
+      right: calc(16px + env(safe-area-inset-right));
+      bottom: calc(16px + env(safe-area-inset-bottom));
+      z-index: 1;
+      float: var(--float-end);
+      inset-inline-end: calc(16px + env(safe-area-inset-right));
+      inset-inline-start: initial;
+    }
+  `;
 }
 
 declare global {

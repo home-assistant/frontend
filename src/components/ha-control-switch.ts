@@ -5,7 +5,7 @@ import {
   Swipe,
   Tap,
 } from "@egjs/hammerjs";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
@@ -147,105 +147,103 @@ export class HaControlSwitch extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-        --control-switch-on-color: var(--primary-color);
-        --control-switch-off-color: var(--disabled-color);
-        --control-switch-background-opacity: 0.2;
-        --control-switch-thickness: 40px;
-        --control-switch-border-radius: 12px;
-        --control-switch-padding: 4px;
-        --mdc-icon-size: 20px;
-        height: var(--control-switch-thickness);
-        width: 100%;
-        box-sizing: border-box;
-        user-select: none;
-        cursor: pointer;
-        border-radius: var(--control-switch-border-radius);
-        outline: none;
-        transition: box-shadow 180ms ease-in-out;
-        -webkit-tap-highlight-color: transparent;
-      }
-      :host(:focus-visible) {
-        box-shadow: 0 0 0 2px var(--control-switch-off-color);
-      }
-      :host([checked]:focus-visible) {
-        box-shadow: 0 0 0 2px var(--control-switch-on-color);
-      }
-      .switch {
-        box-sizing: border-box;
-        position: relative;
-        height: 100%;
-        width: 100%;
-        border-radius: var(--control-switch-border-radius);
-        overflow: hidden;
-        padding: var(--control-switch-padding);
-        display: flex;
-      }
-      .switch .background {
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 100%;
-        background-color: var(--control-switch-off-color);
-        transition: background-color 180ms ease-in-out;
-        opacity: var(--control-switch-background-opacity);
-      }
-      .switch .button {
-        width: 50%;
-        height: 100%;
-        background: lightgrey;
-        border-radius: calc(
-          var(--control-switch-border-radius) - var(--control-switch-padding)
-        );
-        transition:
-          transform 180ms ease-in-out,
-          background-color 180ms ease-in-out;
-        background-color: var(--control-switch-off-color);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      :host([checked]) .switch .background {
-        background-color: var(--control-switch-on-color);
-      }
-      :host([checked]) .switch .button {
-        transform: translateX(100%);
-        background-color: var(--control-switch-on-color);
-      }
-      :host([reversed]) .switch {
-        flex-direction: row-reverse;
-      }
-      :host([reversed][checked]) .switch .button {
-        transform: translateX(-100%);
-      }
-      :host([vertical]) {
-        width: var(--control-switch-thickness);
-        height: 100%;
-      }
-      :host([vertical][checked]) .switch .button {
-        transform: translateY(100%);
-      }
-      :host([vertical]) .switch .button {
-        width: 100%;
-        height: 50%;
-      }
-      :host([vertical][reversed]) .switch {
-        flex-direction: column-reverse;
-      }
-      :host([vertical][reversed][checked]) .switch .button {
-        transform: translateY(-100%);
-      }
-      :host([disabled]) {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+      --control-switch-on-color: var(--primary-color);
+      --control-switch-off-color: var(--disabled-color);
+      --control-switch-background-opacity: 0.2;
+      --control-switch-thickness: 40px;
+      --control-switch-border-radius: 12px;
+      --control-switch-padding: 4px;
+      --mdc-icon-size: 20px;
+      height: var(--control-switch-thickness);
+      width: 100%;
+      box-sizing: border-box;
+      user-select: none;
+      cursor: pointer;
+      border-radius: var(--control-switch-border-radius);
+      outline: none;
+      transition: box-shadow 180ms ease-in-out;
+      -webkit-tap-highlight-color: transparent;
+    }
+    :host(:focus-visible) {
+      box-shadow: 0 0 0 2px var(--control-switch-off-color);
+    }
+    :host([checked]:focus-visible) {
+      box-shadow: 0 0 0 2px var(--control-switch-on-color);
+    }
+    .switch {
+      box-sizing: border-box;
+      position: relative;
+      height: 100%;
+      width: 100%;
+      border-radius: var(--control-switch-border-radius);
+      overflow: hidden;
+      padding: var(--control-switch-padding);
+      display: flex;
+    }
+    .switch .background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background-color: var(--control-switch-off-color);
+      transition: background-color 180ms ease-in-out;
+      opacity: var(--control-switch-background-opacity);
+    }
+    .switch .button {
+      width: 50%;
+      height: 100%;
+      background: lightgrey;
+      border-radius: calc(
+        var(--control-switch-border-radius) - var(--control-switch-padding)
+      );
+      transition:
+        transform 180ms ease-in-out,
+        background-color 180ms ease-in-out;
+      background-color: var(--control-switch-off-color);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    :host([checked]) .switch .background {
+      background-color: var(--control-switch-on-color);
+    }
+    :host([checked]) .switch .button {
+      transform: translateX(100%);
+      background-color: var(--control-switch-on-color);
+    }
+    :host([reversed]) .switch {
+      flex-direction: row-reverse;
+    }
+    :host([reversed][checked]) .switch .button {
+      transform: translateX(-100%);
+    }
+    :host([vertical]) {
+      width: var(--control-switch-thickness);
+      height: 100%;
+    }
+    :host([vertical][checked]) .switch .button {
+      transform: translateY(100%);
+    }
+    :host([vertical]) .switch .button {
+      width: 100%;
+      height: 50%;
+    }
+    :host([vertical][reversed]) .switch {
+      flex-direction: column-reverse;
+    }
+    :host([vertical][reversed][checked]) .switch .button {
+      transform: translateY(-100%);
+    }
+    :host([disabled]) {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  `;
 }
 
 declare global {

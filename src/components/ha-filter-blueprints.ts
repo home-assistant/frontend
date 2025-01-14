@@ -156,7 +156,7 @@ export class HaFilterBlueprints extends LitElement {
     }
 
     const results = await Promise.all(relatedPromises);
-    const items: Set<string> = new Set();
+    const items = new Set<string>();
     for (const result of results) {
       if (result[this.type!]) {
         result[this.type!]!.forEach((item) => items.add(item));

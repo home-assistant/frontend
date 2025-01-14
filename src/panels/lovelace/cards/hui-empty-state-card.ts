@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-card";
@@ -15,6 +14,7 @@ export class HuiEmptyStateCard extends LitElement implements LovelaceCard {
     return 2;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   public setConfig(_config: EmptyStateCardConfig): void {}
 
   protected render() {
@@ -46,24 +46,22 @@ export class HuiEmptyStateCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .content {
-        margin-top: -1em;
-        padding: 16px;
-      }
+  static styles = css`
+    .content {
+      margin-top: -1em;
+      padding: 16px;
+    }
 
-      .card-actions a {
-        text-decoration: none;
-      }
+    .card-actions a {
+      text-decoration: none;
+    }
 
-      mwc-button {
-        margin-left: -8px;
-        margin-inline-start: -8px;
-        margin-inline-end: initial;
-      }
-    `;
-  }
+    mwc-button {
+      margin-left: -8px;
+      margin-inline-start: -8px;
+      margin-inline-end: initial;
+    }
+  `;
 }
 
 declare global {

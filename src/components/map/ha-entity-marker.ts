@@ -49,32 +49,30 @@ class HaEntityMarker extends LitElement {
     }
   }
 
-  static get styles() {
-    return css`
-      .marker {
-        display: flex;
-        justify-content: center;
-        text-align: center;
-        align-items: center;
-        box-sizing: border-box;
-        width: 48px;
-        height: 48px;
-        font-size: var(--ha-marker-font-size, 1.5em);
-        border-radius: var(--ha-marker-border-radius, 50%);
-        border: 1px solid var(--ha-marker-color, var(--primary-color));
-        color: var(--primary-text-color);
-        background-color: var(--card-background-color);
-      }
-      .marker.picture {
-        overflow: hidden;
-      }
-      .entity-picture {
-        background-size: cover;
-        height: 100%;
-        width: 100%;
-      }
-    `;
-  }
+  static styles = css`
+    .marker {
+      display: flex;
+      justify-content: center;
+      text-align: center;
+      align-items: center;
+      box-sizing: border-box;
+      width: 48px;
+      height: 48px;
+      font-size: var(--ha-marker-font-size, 1.5em);
+      border-radius: var(--ha-marker-border-radius, 50%);
+      border: 1px solid var(--ha-marker-color, var(--primary-color));
+      color: var(--primary-text-color);
+      background-color: var(--card-background-color);
+    }
+    .marker.picture {
+      overflow: hidden;
+    }
+    .entity-picture {
+      background-size: cover;
+      height: 100%;
+      width: 100%;
+    }
+  `;
 }
 
 customElements.define("ha-entity-marker", HaEntityMarker);

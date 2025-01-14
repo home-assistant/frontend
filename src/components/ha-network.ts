@@ -27,7 +27,7 @@ const format_addresses = (
 
 const format_auto_detected_interfaces = (
   adapters: Adapter[]
-): Array<TemplateResult | string> =>
+): (TemplateResult | string)[] =>
   adapters.map((adapter) =>
     adapter.auto
       ? html`${adapter.name}

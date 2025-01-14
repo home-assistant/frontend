@@ -50,9 +50,7 @@ interface LoadedDialogInfo {
   closedFocusTargets?: Set<Element>;
 }
 
-interface LoadedDialogsDict {
-  [tag: string]: LoadedDialogInfo;
-}
+type LoadedDialogsDict = Record<string, LoadedDialogInfo>;
 
 const LOADED: LoadedDialogsDict = {};
 const OPEN_DIALOG_STACK: DialogState[] = [];

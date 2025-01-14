@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, eventOptions, property, state } from "lit/decorators";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
@@ -272,64 +272,62 @@ export class StateHistoryCharts extends LitElement {
     this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-        /* height of single timeline chart = 60px */
-        min-height: 60px;
-      }
+  static styles = css`
+    :host {
+      display: block;
+      /* height of single timeline chart = 60px */
+      min-height: 60px;
+    }
 
-      :host([virtualize]) {
-        height: 100%;
-      }
+    :host([virtualize]) {
+      height: 100%;
+    }
 
-      .info {
-        text-align: center;
-        line-height: 60px;
-        color: var(--secondary-text-color);
-      }
+    .info {
+      text-align: center;
+      line-height: 60px;
+      color: var(--secondary-text-color);
+    }
 
-      .container {
-        max-height: var(--history-max-height);
-      }
+    .container {
+      max-height: var(--history-max-height);
+    }
 
-      .entry-container {
-        width: 100%;
-      }
+    .entry-container {
+      width: 100%;
+    }
 
-      .entry-container:hover {
-        z-index: 1;
-      }
+    .entry-container:hover {
+      z-index: 1;
+    }
 
-      :host([virtualize]) .entry-container {
-        padding-left: 1px;
-        padding-right: 1px;
-        padding-inline-start: 1px;
-        padding-inline-end: 1px;
-      }
+    :host([virtualize]) .entry-container {
+      padding-left: 1px;
+      padding-right: 1px;
+      padding-inline-start: 1px;
+      padding-inline-end: 1px;
+    }
 
-      .entry-container:not(:first-child) {
-        border-top: 2px solid var(--divider-color);
-        margin-top: 16px;
-      }
+    .entry-container:not(:first-child) {
+      border-top: 2px solid var(--divider-color);
+      margin-top: 16px;
+    }
 
-      .container,
-      lit-virtualizer {
-        height: 100%;
-        width: 100%;
-      }
+    .container,
+    lit-virtualizer {
+      height: 100%;
+      width: 100%;
+    }
 
-      lit-virtualizer {
-        contain: size layout !important;
-      }
+    lit-virtualizer {
+      contain: size layout !important;
+    }
 
-      state-history-chart-timeline,
-      state-history-chart-line {
-        width: 100%;
-      }
-    `;
-  }
+    state-history-chart-timeline,
+    state-history-chart-line {
+      width: 100%;
+    }
+  `;
 }
 
 declare global {

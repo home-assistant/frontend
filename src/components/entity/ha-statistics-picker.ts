@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -172,19 +171,17 @@ class HaStatisticsPicker extends LitElement {
     this._updateStatistics([...currentEntities, toAdd]);
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        width: 200px;
-        display: block;
-      }
-      ha-statistic-picker {
-        display: block;
-        width: 100%;
-        margin-top: 8px;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      width: 200px;
+      display: block;
+    }
+    ha-statistic-picker {
+      display: block;
+      width: 100%;
+      margin-top: 8px;
+    }
+  `;
 }
 
 declare global {

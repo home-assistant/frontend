@@ -72,15 +72,13 @@ export interface HistoryResult {
   timeline: TimelineEntity[];
 }
 
-export interface HistoryStates {
-  [entityId: string]: EntityHistoryState[];
-}
+export type HistoryStates = Record<string, EntityHistoryState[]>;
 
 export interface EntityHistoryState {
   /** state */
   s: string;
   /** attributes */
-  a: { [key: string]: any };
+  a: Record<string, any>;
   /** last_changed; if set, also applies to lu */
   lc?: number;
   /** last_updated */
@@ -406,7 +404,7 @@ const NUMERICAL_DOMAINS = ["counter", "input_number", "number"];
 const isNumericFromDomain = (domain: string) =>
   NUMERICAL_DOMAINS.includes(domain);
 
-const isNumericFromAttributes = (attributes: { [key: string]: any }) =>
+const isNumericFromAttributes = (attributes: Record<string, any>) =>
   "unit_of_measurement" in attributes || "state_class" in attributes;
 
 const isNumericSensorEntity = (
@@ -475,7 +473,7 @@ export const computeHistory = (
   splitDeviceClasses = false,
   forceNumeric = false
 ): HistoryResult => {
-  const lineChartDevices: { [unit: string]: HistoryStates } = {};
+  const lineChartDevices: Record<string, HistoryStates> = {};
   const timelineDevices: TimelineEntity[] = [];
 
   const localStateHistory: HistoryStates = {};

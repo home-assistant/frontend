@@ -1,4 +1,4 @@
-import { LitElement, html, css, type CSSResultGroup, nothing } from "lit";
+import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { mdiCloseCircle } from "@mdi/js";
 import "../../../../../components/ha-textfield";
@@ -222,48 +222,46 @@ class ZWaveJSCustomParam extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
+  static styles = css`
+    .custom-config-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 8px;
+    }
+
+    ha-textfield,
+    ha-select {
+      flex-grow: 1;
+      flex-basis: calc(50% - 8px);
+      min-width: 120px;
+    }
+
+    @media (min-width: 681px) {
       .custom-config-form {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 16px;
-        margin-bottom: 8px;
+        flex-wrap: nowrap;
       }
 
       ha-textfield,
       ha-select {
-        flex-grow: 1;
-        flex-basis: calc(50% - 8px);
-        min-width: 120px;
+        flex-basis: 0;
       }
+    }
 
-      @media (min-width: 681px) {
-        .custom-config-form {
-          flex-wrap: nowrap;
-        }
+    .custom-config-buttons {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
 
-        ha-textfield,
-        ha-select {
-          flex-basis: 0;
-        }
-      }
+    .error {
+      color: var(--error-color);
+    }
 
-      .custom-config-buttons {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-      }
-
-      .error {
-        color: var(--error-color);
-      }
-
-      .error-icon {
-        margin-right: 8px;
-      }
-    `;
-  }
+    .error-icon {
+      margin-right: 8px;
+    }
+  `;
 }
 
 declare global {

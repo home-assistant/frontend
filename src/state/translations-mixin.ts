@@ -75,12 +75,10 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     // eslint-disable-next-line: variable-name
     private __coreProgress?: string;
 
-    private __loadedFragmentTranslations: Set<string> = new Set();
+    private __loadedFragmentTranslations = new Set<string>();
 
-    private __loadedTranslations: {
-      // track what things have been loaded
-      [category: string]: LoadedTranslationCategory;
-    } = {};
+    private __loadedTranslations: Record<string, LoadedTranslationCategory> =
+      {};
 
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
