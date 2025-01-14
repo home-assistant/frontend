@@ -61,7 +61,7 @@ class HaCallServiceButton extends LitElement {
       this.progress = false;
       progressElement.actionSuccess();
       eventData.success = true;
-    } catch (e) {
+    } catch (_err) {
       this.progress = false;
       progressElement.actionError();
       eventData.success = false;

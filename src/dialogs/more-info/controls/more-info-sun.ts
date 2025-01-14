@@ -1,5 +1,4 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { formatTime } from "../../../common/datetime/format_time";
@@ -70,25 +69,23 @@ class MoreInfoSun extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .row {
-        margin: 0;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-      }
-      ha-relative-time {
-        display: inline-block;
-        white-space: nowrap;
-      }
-      hr {
-        border-color: var(--divider-color);
-        border-bottom: none;
-        margin: 16px 0;
-      }
-    `;
-  }
+  static styles = css`
+    .row {
+      margin: 0;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+    ha-relative-time {
+      display: inline-block;
+      white-space: nowrap;
+    }
+    hr {
+      border-color: var(--divider-color);
+      border-bottom: none;
+      margin: 16px 0;
+    }
+  `;
 }
 
 declare global {

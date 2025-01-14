@@ -320,8 +320,8 @@ export class HuiEntitiesCardEditor
         : target.value || ev.detail.config || ev.detail.value;
 
     if (
-      (configValue! === "title" && target.value === this._title) ||
-      (configValue! === "theme" && target.value === this._theme)
+      (configValue === "title" && target.value === this._title) ||
+      (configValue === "theme" && target.value === this._theme)
     ) {
       return;
     }

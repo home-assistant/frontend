@@ -7,7 +7,7 @@ import type {
 import type { Extension, TransactionSpec } from "@codemirror/state";
 import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
 import type { HassEntities } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -339,13 +339,11 @@ export class HaCodeEditor extends ReactiveElement {
     return [];
   };
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host(.error-state) .cm-gutters {
-        border-color: var(--error-state-color, red);
-      }
-    `;
-  }
+  static styles = css`
+    :host(.error-state) .cm-gutters {
+      border-color: var(--error-state-color, red);
+    }
+  `;
 }
 
 declare global {

@@ -1,6 +1,5 @@
 import { mdiPlus } from "@mdi/js";
 import "@material/mwc-list/mwc-list";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stringCompare } from "../../../common/string/compare";
@@ -268,7 +267,7 @@ export class HaConfigPerson extends LitElement {
             (ent) => ent !== entry
           );
           return true;
-        } catch (err: any) {
+        } catch (_err: any) {
           return false;
         }
       },
@@ -278,27 +277,25 @@ export class HaConfigPerson extends LitElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      a {
-        color: var(--primary-color);
-      }
-      ha-card {
-        max-width: 600px;
-        margin: 16px auto;
-        overflow: hidden;
-      }
-      .empty {
-        padding: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: space-around;
-      }
-      mwc-list:has(+ .empty) {
-        display: none;
-      }
-    `;
-  }
+  static styles = css`
+    a {
+      color: var(--primary-color);
+    }
+    ha-card {
+      max-width: 600px;
+      margin: 16px auto;
+      overflow: hidden;
+    }
+    .empty {
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+    }
+    mwc-list:has(+ .empty) {
+      display: none;
+    }
+  `;
 }
 
 declare global {

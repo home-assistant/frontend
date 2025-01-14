@@ -9,7 +9,6 @@ import {
   mdiVolumeOff,
   mdiVolumePlus,
 } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
@@ -205,69 +204,67 @@ class MoreInfoMediaPlayer extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-slider {
-        flex-grow: 1;
-      }
+  static styles = css`
+    ha-slider {
+      flex-grow: 1;
+    }
 
-      ha-icon-button[action="turn_off"],
-      ha-icon-button[action="turn_on"] {
-        margin-right: auto;
-        margin-left: inherit;
-        margin-inline-start: inherit;
-        margin-inline-end: auto;
-      }
+    ha-icon-button[action="turn_off"],
+    ha-icon-button[action="turn_on"] {
+      margin-right: auto;
+      margin-left: inherit;
+      margin-inline-start: inherit;
+      margin-inline-end: auto;
+    }
 
-      .controls {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        --mdc-theme-primary: currentColor;
-        direction: ltr;
-      }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      --mdc-theme-primary: currentColor;
+      direction: ltr;
+    }
 
-      .basic-controls {
-        display: inline-flex;
-        flex-grow: 1;
-      }
+    .basic-controls {
+      display: inline-flex;
+      flex-grow: 1;
+    }
 
-      .volume {
-        direction: ltr;
-      }
+    .volume {
+      direction: ltr;
+    }
 
-      .source-input,
-      .sound-input {
-        direction: var(--direction);
-      }
+    .source-input,
+    .sound-input {
+      direction: var(--direction);
+    }
 
-      .volume,
-      .source-input,
-      .sound-input {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
+    .volume,
+    .source-input,
+    .sound-input {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-      .source-input ha-select,
-      .sound-input ha-select {
-        margin-left: 10px;
-        flex-grow: 1;
-        margin-inline-start: 10px;
-        margin-inline-end: initial;
-        direction: var(--direction);
-      }
+    .source-input ha-select,
+    .sound-input ha-select {
+      margin-left: 10px;
+      flex-grow: 1;
+      margin-inline-start: 10px;
+      margin-inline-end: initial;
+      direction: var(--direction);
+    }
 
-      .tts {
-        margin-top: 16px;
-        font-style: italic;
-      }
+    .tts {
+      margin-top: 16px;
+      font-style: italic;
+    }
 
-      mwc-button > ha-svg-icon {
-        vertical-align: text-bottom;
-      }
-    `;
-  }
+    mwc-button > ha-svg-icon {
+      vertical-align: text-bottom;
+    }
+  `;
 
   private _handleClick(e: MouseEvent): void {
     handleMediaControlClick(

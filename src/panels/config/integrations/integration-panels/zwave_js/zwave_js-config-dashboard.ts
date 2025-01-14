@@ -91,7 +91,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     }
   }
 
-  public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
+  public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
     return [
       subscribeZwaveControllerStatistics(
         this.hass,

@@ -125,7 +125,7 @@ export class HuiHeadingBadge extends ReactiveElement {
           if (this.hass) {
             this._element.hass = this.hass;
           }
-        } catch (e: any) {
+        } catch (_e: any) {
           this._element = undefined;
           this._elementConfig = undefined;
         }

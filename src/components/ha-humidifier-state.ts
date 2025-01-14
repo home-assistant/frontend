@@ -1,4 +1,4 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { isUnavailableState, OFF } from "../data/entity";
@@ -86,33 +86,31 @@ class HaHumidifierState extends LitElement {
     return stateString;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        white-space: nowrap;
-      }
+  static styles = css`
+    :host {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      white-space: nowrap;
+    }
 
-      .target {
-        color: var(--primary-text-color);
-      }
+    .target {
+      color: var(--primary-text-color);
+    }
 
-      .current {
-        color: var(--secondary-text-color);
-      }
+    .current {
+      color: var(--secondary-text-color);
+    }
 
-      .state-label {
-        font-weight: bold;
-      }
+    .state-label {
+      font-weight: bold;
+    }
 
-      .unit {
-        display: inline-block;
-        direction: ltr;
-      }
-    `;
-  }
+    .unit {
+      display: inline-block;
+      direction: ltr;
+    }
+  `;
 }
 
 declare global {

@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -71,22 +70,20 @@ export class HaBackgroundSelector extends LitElement {
     fireEvent(this, "value-changed", { value: undefined });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-        position: relative;
-      }
-      div {
-        display: flex;
-        flex-direction: column;
-      }
-      ha-button {
-        white-space: nowrap;
-        --mdc-theme-primary: var(--primary-color);
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+      position: relative;
+    }
+    div {
+      display: flex;
+      flex-direction: column;
+    }
+    ha-button {
+      white-space: nowrap;
+      --mdc-theme-primary: var(--primary-color);
+    }
+  `;
 }
 
 declare global {

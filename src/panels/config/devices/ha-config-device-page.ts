@@ -144,11 +144,11 @@ export class HaConfigDevicePage extends LitElement {
       entries: ConfigEntry[],
       manifests: IntegrationManifest[]
     ): ConfigEntry[] => {
-      const entryLookup: { [entryId: string]: ConfigEntry } = {};
+      const entryLookup: Record<string, ConfigEntry> = {};
       for (const entry of entries) {
         entryLookup[entry.entry_id] = entry;
       }
-      const manifestLookup: { [domain: string]: IntegrationManifest } = {};
+      const manifestLookup: Record<string, IntegrationManifest> = {};
       for (const manifest of manifests) {
         manifestLookup[manifest.domain] = manifest;
       }

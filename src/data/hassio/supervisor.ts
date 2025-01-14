@@ -4,7 +4,7 @@ import type { SupervisorArch } from "../supervisor/supervisor";
 import type { HassioResponse } from "./common";
 import { hassioApiResultExtractor } from "./common";
 
-export type HassioHomeAssistantInfo = {
+export interface HassioHomeAssistantInfo {
   arch: SupervisorArch;
   audio_input: string | null;
   audio_output: string | null;
@@ -19,9 +19,9 @@ export type HassioHomeAssistantInfo = {
   version: string;
   wait_boot: number;
   watchdog: boolean;
-};
+}
 
-export type HassioSupervisorInfo = {
+export interface HassioSupervisorInfo {
   addons: string[];
   addons_repositories: string[];
   arch: SupervisorArch;
@@ -38,9 +38,9 @@ export type HassioSupervisorInfo = {
   version: string;
   version_latest: string;
   wait_boot: number;
-};
+}
 
-export type HassioInfo = {
+export interface HassioInfo {
   arch: SupervisorArch;
   channel: string;
   docker: string;
@@ -64,11 +64,11 @@ export type HassioInfo = {
   supported: boolean;
   supported_arch: SupervisorArch[];
   timezone: string;
-};
+}
 
-export type HassioBoots = {
+export interface HassioBoots {
   boots: Record<number, string>;
-};
+}
 
 export type HassioPanelInfo = PanelInfo<
   | undefined

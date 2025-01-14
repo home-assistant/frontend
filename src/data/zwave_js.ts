@@ -209,9 +209,10 @@ export interface ZWaveJSNodeStatus {
   has_firmware_update_cc: boolean;
 }
 
-export type ZWaveJSNodeCapabilities = {
-  [endpoint: number]: ZWaveJSEndpointCapability[];
-};
+export type ZWaveJSNodeCapabilities = Record<
+  number,
+  ZWaveJSEndpointCapability[]
+>;
 
 export interface ZWaveJSEndpointCapability {
   id: number;
@@ -235,9 +236,7 @@ export interface ZwaveJSNodeAlerts {
   is_embedded: boolean | null;
 }
 
-export interface ZWaveJSNodeConfigParams {
-  [key: string]: ZWaveJSNodeConfigParam;
-}
+export type ZWaveJSNodeConfigParams = Record<string, ZWaveJSNodeConfigParam>;
 
 export interface ZWaveJSNodeComment {
   level: "info" | "warning" | "error";
@@ -262,7 +261,7 @@ export interface ZWaveJSNodeConfigParamMetadata {
   writeable: boolean;
   type: string;
   unit: string;
-  states: { [key: number]: string };
+  states: Record<number, string>;
   default: any;
 }
 
@@ -302,7 +301,7 @@ export interface ZWaveJSRefreshNodeStatusMessage {
 
 export interface ZWaveJSRebuildRoutesStatusMessage {
   event: string;
-  rebuild_routes_status: { [key: number]: string };
+  rebuild_routes_status: Record<number, string>;
 }
 
 export interface ZWaveJSControllerStatisticsUpdatedMessage {
@@ -501,11 +500,11 @@ export const subscribeAddZwaveNode = (
   hass: HomeAssistant,
   entry_id: string,
   callbackFunction: (message: any) => void,
-  inclusion_strategy: InclusionStrategy = InclusionStrategy.Default,
   qr_provisioning_information?: QRProvisioningInformation,
   qr_code_string?: string,
   planned_provisioning_entry?: PlannedProvisioningEntry,
-  dsk?: string
+  dsk?: string,
+  inclusion_strategy: InclusionStrategy = InclusionStrategy.Default
 ): Promise<UnsubscribeFunc> =>
   hass.connection.subscribeMessage((message) => callbackFunction(message), {
     type: "zwave_js/add_node",

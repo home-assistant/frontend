@@ -43,14 +43,14 @@ export const getLovelaceContainerPath = (
   path: LovelaceCardPath
 ): LovelaceContainerPath => path.slice(0, -1) as LovelaceContainerPath;
 
-type FindLovelaceContainer = {
+interface FindLovelaceContainer {
   (config: LovelaceConfig, path: [number]): LovelaceViewRawConfig;
   (config: LovelaceConfig, path: [number, number]): LovelaceSectionRawConfig;
   (
     config: LovelaceConfig,
     path: LovelaceContainerPath
   ): LovelaceViewRawConfig | LovelaceSectionRawConfig;
-};
+}
 export const findLovelaceContainer: FindLovelaceContainer = (
   config: LovelaceConfig,
   path: LovelaceContainerPath
@@ -121,10 +121,10 @@ export const updateLovelaceContainer = (
   };
 };
 
-type LovelaceItemKeys = {
+interface LovelaceItemKeys {
   cards: LovelaceCardConfig[];
   badges: (Partial<LovelaceBadgeConfig> | string)[];
-};
+}
 
 export const updateLovelaceItems = <T extends keyof LovelaceItemKeys>(
   key: T,

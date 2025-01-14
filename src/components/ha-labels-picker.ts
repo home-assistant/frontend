@@ -78,7 +78,7 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public required = false;
 
-  @state() private _labels?: { [id: string]: LabelRegistryEntry };
+  @state() private _labels?: Record<string, LabelRegistryEntry>;
 
   @query("ha-label-picker", true) public labelPicker!: HaLabelPicker;
 
@@ -107,7 +107,7 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
   private _sortedLabels = memoizeOne(
     (
       value: string[] | undefined,
-      labels: { [id: string]: LabelRegistryEntry } | undefined,
+      labels: Record<string, LabelRegistryEntry> | undefined,
       language: string
     ) =>
       value

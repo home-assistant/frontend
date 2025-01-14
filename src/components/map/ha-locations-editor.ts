@@ -7,7 +7,7 @@ import type {
   Marker,
   MarkerOptions,
 } from "leaflet";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -69,7 +69,8 @@ export class HaLocationsEditor extends LitElement {
 
   private Leaflet?: LeafletModuleType;
 
-  private _loadPromise: Promise<boolean | void>;
+  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+  private _loadPromise: Promise<boolean | undefined | void>;
 
   constructor() {
     super();
@@ -145,8 +146,8 @@ export class HaLocationsEditor extends LitElement {
     (
       circles: Record<string, Circle>,
       markers?: Record<string, Marker | Circle>
-    ): Array<Marker | Circle> => {
-      const layers: Array<Marker | Circle> = [];
+    ): (Marker | Circle)[] => {
+      const layers: (Marker | Circle)[] = [];
       Array.prototype.push.apply(layers, Object.values(circles));
       if (markers) {
         Array.prototype.push.apply(layers, Object.values(markers));
@@ -373,14 +374,12 @@ export class HaLocationsEditor extends LitElement {
     fireEvent(this, "markers-updated");
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-map {
-        display: block;
-        height: 100%;
-      }
-    `;
-  }
+  static styles = css`
+    ha-map {
+      display: block;
+      height: 100%;
+    }
+  `;
 }
 
 declare global {

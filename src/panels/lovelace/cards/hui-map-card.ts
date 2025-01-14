@@ -1,7 +1,7 @@
 import { mdiImageFilterCenterFocus } from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { LatLngTuple } from "leaflet";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -72,7 +72,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   @state() private _error?: { code: string; message: string };
 
-  private _subscribed?: Promise<(() => Promise<void>) | void>;
+  private _subscribed?: Promise<(() => Promise<void>) | undefined>;
 
   public setConfig(config: MapCardConfig): void {
     if (!config) {
@@ -260,7 +260,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         }
         this._stateHistory = combinedHistory;
       },
-      this._config!.hours_to_show! ?? DEFAULT_HOURS_TO_SHOW,
+      this._config!.hours_to_show ?? DEFAULT_HOURS_TO_SHOW,
       (this._configEntities || []).map((entity) => entity.entity)!,
       false,
       false,
@@ -268,6 +268,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     ).catch((err) => {
       this._subscribed = undefined;
       this._error = err;
+      return undefined;
     });
   }
 
@@ -441,40 +442,38 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     };
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-card {
-        overflow: hidden;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-      }
+  static styles = css`
+    ha-card {
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
 
-      ha-map {
-        z-index: 0;
-        border: none;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: inherit;
-      }
+    ha-map {
+      z-index: 0;
+      border: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: inherit;
+    }
 
-      ha-icon-button {
-        position: absolute;
-        top: 75px;
-        left: 3px;
-        outline: none;
-      }
+    ha-icon-button {
+      position: absolute;
+      top: 75px;
+      left: 3px;
+      outline: none;
+    }
 
-      #root {
-        position: relative;
-        height: 100%;
-      }
-    `;
-  }
+    #root {
+      position: relative;
+      height: 100%;
+    }
+  `;
 }
 
 declare global {

@@ -1,5 +1,5 @@
 import "@material/mwc-list/mwc-list-item";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -133,13 +133,11 @@ export class HuiViewVisibilityEditor extends LitElement {
     fireEvent(this, "view-visibility-changed", { visible: this._visible });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+    }
+  `;
 }
 
 declare global {

@@ -1,6 +1,5 @@
 import { mdiAlertCircle } from "@mdi/js";
 import { dump } from "js-yaml";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import "../../../components/ha-badge";
@@ -37,7 +36,7 @@ export class HuiErrorHeadingBadge extends LitElement implements LovelaceBadge {
     if (this._config!.origConfig) {
       try {
         dumped = dump(this._config!.origConfig);
-      } catch (err: any) {
+      } catch (_err: any) {
         dumped = `[Error dumping ${this._config!.origConfig}]`;
       }
     }
@@ -67,25 +66,23 @@ export class HuiErrorHeadingBadge extends LitElement implements LovelaceBadge {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-heading-badge {
-        --icon-color: var(--error-color);
-        color: var(--error-color);
-      }
-      .content {
-        max-width: 70px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-      pre {
-        font-family: var(--code-font-family, monospace);
-        white-space: break-spaces;
-        user-select: text;
-      }
-    `;
-  }
+  static styles = css`
+    ha-heading-badge {
+      --icon-color: var(--error-color);
+      color: var(--error-color);
+    }
+    .content {
+      max-width: 70px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    pre {
+      font-family: var(--code-font-family, monospace);
+      white-space: break-spaces;
+      user-select: text;
+    }
+  `;
 }
 
 declare global {

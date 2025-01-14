@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -195,35 +195,33 @@ export class HaServiceAction extends LitElement implements ActionElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-service-control {
-        display: block;
-        margin: 0 -16px;
-      }
-      ha-settings-row {
-        margin: 0 -16px;
-        padding: var(--service-control-padding, 0 16px);
-      }
-      ha-settings-row {
-        --paper-time-input-justify-content: flex-end;
-        --settings-row-content-width: 100%;
-        --settings-row-prefix-display: contents;
-        border-top: var(
-          --service-control-items-border-top,
-          1px solid var(--divider-color)
-        );
-      }
-      ha-checkbox {
-        margin-left: -16px;
-        margin-inline-start: -16px;
-        margin-inline-end: initial;
-      }
-      .checkbox-spacer {
-        width: 32px;
-      }
-    `;
-  }
+  static styles = css`
+    ha-service-control {
+      display: block;
+      margin: 0 -16px;
+    }
+    ha-settings-row {
+      margin: 0 -16px;
+      padding: var(--service-control-padding, 0 16px);
+    }
+    ha-settings-row {
+      --paper-time-input-justify-content: flex-end;
+      --settings-row-content-width: 100%;
+      --settings-row-prefix-display: contents;
+      border-top: var(
+        --service-control-items-border-top,
+        1px solid var(--divider-color)
+      );
+    }
+    ha-checkbox {
+      margin-left: -16px;
+      margin-inline-start: -16px;
+      margin-inline-end: initial;
+    }
+    .checkbox-spacer {
+      width: 32px;
+    }
+  `;
 }
 
 declare global {

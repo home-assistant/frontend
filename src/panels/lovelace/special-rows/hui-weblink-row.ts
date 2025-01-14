@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -42,28 +41,26 @@ class HuiWeblinkRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      a {
-        display: flex;
-        align-items: center;
-        color: var(--primary-color);
-      }
-      ha-icon {
-        padding: 8px;
-        color: var(--paper-item-icon-color);
-      }
-      div {
-        flex: 1;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        margin-left: 16px;
-        margin-inline-start: 16px;
-        margin-inline-end: initial;
-      }
-    `;
-  }
+  static styles = css`
+    a {
+      display: flex;
+      align-items: center;
+      color: var(--primary-color);
+    }
+    ha-icon {
+      padding: 8px;
+      color: var(--paper-item-icon-color);
+    }
+    div {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-left: 16px;
+      margin-inline-start: 16px;
+      margin-inline-end: initial;
+    }
+  `;
 
   protected _computeTargetValue(): string | undefined {
     return this._config &&

@@ -1,8 +1,6 @@
 import type { HomeAssistant } from "../../types";
 
-interface ResultCache<T> {
-  [entityId: string]: Promise<T> | undefined;
-}
+type ResultCache<T> = Record<string, Promise<T> | undefined>;
 
 /**
  * Call a function with result caching per entity.

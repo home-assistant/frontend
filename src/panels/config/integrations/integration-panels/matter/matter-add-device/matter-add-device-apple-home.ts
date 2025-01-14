@@ -12,7 +12,7 @@ import { sharedStyles } from "./matter-add-device-shared-styles";
 class MatterAddDeviceAppleHome extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _code: string = "";
+  @state() private _code = "";
 
   render() {
     return html`

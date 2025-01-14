@@ -327,7 +327,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
       await deleteTag(this.hass, selectedTag.id);
       this._tags = this._tags.filter((tag) => tag.id !== selectedTag.id);
       return true;
-    } catch (err: any) {
+    } catch (_err: any) {
       return false;
     }
   }

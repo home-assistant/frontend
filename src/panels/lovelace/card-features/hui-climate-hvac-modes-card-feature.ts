@@ -96,7 +96,7 @@ class HuiClimateHvacModesCardFeature
 
     try {
       await this._setMode(mode);
-    } catch (err) {
+    } catch (_err) {
       this._currentHvacMode = oldMode;
     }
   }

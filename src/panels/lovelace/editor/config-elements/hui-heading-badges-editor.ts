@@ -1,6 +1,5 @@
 import { mdiDelete, mdiDrag, mdiPencil, mdiPlus } from "@mdi/js";
 import type { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
-import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -225,75 +224,73 @@ export class HuiHeadingBadgesEditor extends LitElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: flex !important;
-        flex-direction: column;
-      }
-      ha-button {
-        margin-top: 8px;
-      }
-      .badge {
-        display: flex;
-        align-items: center;
-      }
-      .badge .handle {
-        cursor: move; /* fallback if grab cursor is unsupported */
-        cursor: grab;
-        padding-right: 8px;
-        padding-inline-end: 8px;
-        padding-inline-start: initial;
-        direction: var(--direction);
-      }
-      .badge .handle > * {
-        pointer-events: none;
-      }
+  static styles = css`
+    :host {
+      display: flex !important;
+      flex-direction: column;
+    }
+    ha-button {
+      margin-top: 8px;
+    }
+    .badge {
+      display: flex;
+      align-items: center;
+    }
+    .badge .handle {
+      cursor: move; /* fallback if grab cursor is unsupported */
+      cursor: grab;
+      padding-right: 8px;
+      padding-inline-end: 8px;
+      padding-inline-start: initial;
+      direction: var(--direction);
+    }
+    .badge .handle > * {
+      pointer-events: none;
+    }
 
-      .badge-content {
-        height: 60px;
-        font-size: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-grow: 1;
-      }
+    .badge-content {
+      height: 60px;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-grow: 1;
+    }
 
-      .badge-content div {
-        display: flex;
-        flex-direction: column;
-      }
+    .badge-content div {
+      display: flex;
+      flex-direction: column;
+    }
 
-      .remove-icon,
-      .edit-icon {
-        --mdc-icon-button-size: 36px;
-        color: var(--secondary-text-color);
-      }
+    .remove-icon,
+    .edit-icon {
+      --mdc-icon-button-size: 36px;
+      color: var(--secondary-text-color);
+    }
 
-      .secondary {
-        font-size: 12px;
-        color: var(--secondary-text-color);
-      }
+    .secondary {
+      font-size: 12px;
+      color: var(--secondary-text-color);
+    }
 
-      li[divider] {
-        border-bottom-color: var(--divider-color);
-      }
+    li[divider] {
+      border-bottom-color: var(--divider-color);
+    }
 
-      .add-container {
-        position: relative;
-        width: 100%;
-      }
+    .add-container {
+      position: relative;
+      width: 100%;
+    }
 
-      mwc-menu-surface {
-        --mdc-menu-min-width: 100%;
-      }
+    mwc-menu-surface {
+      --mdc-menu-min-width: 100%;
+    }
 
-      ha-entity-picker {
-        display: block;
-        width: 100%;
-      }
-    `;
-  }
+    ha-entity-picker {
+      display: block;
+      width: 100%;
+    }
+  `;
 }
 
 declare global {

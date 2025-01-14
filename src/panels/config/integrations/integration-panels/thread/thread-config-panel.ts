@@ -396,7 +396,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       datasets: ThreadDataSet[]
     ): { preferred?: ThreadNetwork; networks: ThreadNetwork[] } => {
       let preferred: ThreadNetwork | undefined;
-      const networks: { [key: string]: ThreadNetwork } = {};
+      const networks: Record<string, ThreadNetwork> = {};
       for (const router of routers) {
         const network = router.extended_pan_id;
         if (network in networks) {
@@ -446,7 +446,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     }
     try {
       this._otbrInfo = await getOTBRInfo(this.hass);
-    } catch (err) {
+    } catch (_err) {
       this._otbrInfo = undefined;
     }
   }

@@ -393,7 +393,7 @@ export class HuiBadgePicker extends LitElement {
     let newBadgeEl: LovelaceBadge;
     try {
       newBadgeEl = this._tryCreateBadgeElement(config);
-    } catch (err: any) {
+    } catch (_err: any) {
       return;
     }
     if (badgeElToReplace.parentElement) {
@@ -431,7 +431,7 @@ export class HuiBadgePicker extends LitElement {
       if (showElement) {
         try {
           element = this._tryCreateBadgeElement(badgeConfig);
-        } catch (err: any) {
+        } catch (_err: any) {
           element = undefined;
         }
       }

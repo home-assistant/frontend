@@ -100,32 +100,30 @@ export class DemoDateTimeDateTime extends LitElement {
     `;
   }
 
-  static get styles() {
-    return css`
-      ha-control-select {
-        max-width: 800px;
-        margin: 12px auto;
-      }
-      .header {
-        font-weight: bold;
-      }
-      .center {
-        text-align: center;
-      }
-      .container {
-        max-width: 900px;
-        margin: 12px auto;
-        display: flex;
-        align-items: center;
-        justify-content: space-evenly;
-      }
+  static styles = css`
+    ha-control-select {
+      max-width: 800px;
+      margin: 12px auto;
+    }
+    .header {
+      font-weight: bold;
+    }
+    .center {
+      text-align: center;
+    }
+    .container {
+      max-width: 900px;
+      margin: 12px auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
+    }
 
-      .container > div {
-        flex-grow: 1;
-        width: 20%;
-      }
-    `;
-  }
+    .container > div {
+      flex-grow: 1;
+      width: 20%;
+    }
+  `;
 }
 
 declare global {

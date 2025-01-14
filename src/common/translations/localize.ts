@@ -56,9 +56,7 @@ export type LocalizeFunc<Keys extends string = LocalizeKeys> = (
   >
 ) => string;
 
-interface FormatType {
-  [format: string]: any;
-}
+type FormatType = Record<string, any>;
 export interface FormatsType {
   number: FormatType;
   date: FormatType;

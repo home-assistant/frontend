@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -103,42 +102,40 @@ class ConfirmEventDialogBox extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host([inert]) {
-        pointer-events: initial !important;
-        cursor: initial !important;
-      }
-      a {
-        color: var(--primary-color);
-      }
-      p {
-        margin: 0;
-        color: var(--primary-text-color);
-      }
-      .no-bottom-padding {
-        padding-bottom: 0;
-      }
-      .secondary {
-        color: var(--secondary-text-color);
-      }
-      .destructive {
-        --mdc-theme-primary: var(--error-color);
-      }
+  static styles = css`
+    :host([inert]) {
+      pointer-events: initial !important;
+      cursor: initial !important;
+    }
+    a {
+      color: var(--primary-color);
+    }
+    p {
+      margin: 0;
+      color: var(--primary-text-color);
+    }
+    .no-bottom-padding {
+      padding-bottom: 0;
+    }
+    .secondary {
+      color: var(--secondary-text-color);
+    }
+    .destructive {
+      --mdc-theme-primary: var(--error-color);
+    }
+    ha-dialog {
+      /* Place above other dialogs */
+      --dialog-z-index: 104;
+    }
+    @media all and (min-width: 600px) {
       ha-dialog {
-        /* Place above other dialogs */
-        --dialog-z-index: 104;
+        --mdc-dialog-min-width: 400px;
       }
-      @media all and (min-width: 600px) {
-        ha-dialog {
-          --mdc-dialog-min-width: 400px;
-        }
-      }
-      ha-textfield {
-        width: 100%;
-      }
-    `;
-  }
+    }
+    ha-textfield {
+      width: 100%;
+    }
+  `;
 }
 
 declare global {

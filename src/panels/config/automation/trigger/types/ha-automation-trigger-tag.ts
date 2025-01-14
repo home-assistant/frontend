@@ -80,13 +80,11 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
     });
   }
 
-  static get styles() {
-    return css`
-      ha-select {
-        display: block;
-      }
-    `;
-  }
+  static styles = css`
+    ha-select {
+      display: block;
+    }
+  `;
 }
 
 declare global {

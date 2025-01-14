@@ -70,9 +70,7 @@ interface ListItem {
   group: boolean;
 }
 
-interface DomainManifestLookup {
-  [domain: string]: IntegrationManifest;
-}
+type DomainManifestLookup = Record<string, IntegrationManifest>;
 
 const ENTITY_DOMAINS_OTHER = new Set([
   "date",
@@ -126,7 +124,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     ).matches;
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     if (this._params) {
       fireEvent(this, "dialog-closed", { dialog: this.localName });
     }
@@ -138,6 +136,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     this._filter = "";
     this._manifests = undefined;
     this._domains = undefined;
+    return true;
   }
 
   private _getGroups = (

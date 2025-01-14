@@ -1,8 +1,7 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../common/entity/compute_domain";
-import type { ChartResizeOptions } from "../../components/chart/ha-chart-base";
 import type { ExtEntityRegistryEntry } from "../../data/entity_registry";
 import type { HomeAssistant } from "../../types";
 import {
@@ -14,7 +13,6 @@ import {
   DOMAINS_WITH_MORE_INFO,
 } from "./const";
 import "./ha-more-info-history";
-import type { MoreInfoHistory } from "./ha-more-info-history";
 import "./ha-more-info-logbook";
 import "./more-info-content";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
@@ -31,9 +29,6 @@ export class MoreInfoInfo extends LitElement {
 
   @state() private _sensorNumericDeviceClasses?: string[] = [];
 
-  @query("ha-more-info-history")
-  private _history?: MoreInfoHistory;
-
   private async _loadNumericDeviceClasses() {
     const deviceClasses = await getSensorNumericDeviceClasses(this.hass);
     this._sensorNumericDeviceClasses = deviceClasses.numeric_device_classes;
@@ -42,10 +37,6 @@ export class MoreInfoInfo extends LitElement {
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     this._loadNumericDeviceClasses();
-  }
-
-  public resize(options?: ChartResizeOptions) {
-    this._history?.resize(options);
   }
 
   protected render() {
@@ -120,54 +111,52 @@ export class MoreInfoInfo extends LitElement {
     `;
   }
 
-  static get styles() {
-    return css`
-      :host {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-      }
-      .container {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-      }
+  static styles = css`
+    :host {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
 
-      .content {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        padding: 24px;
-        padding-bottom: max(env(safe-area-inset-bottom), 24px);
-      }
+    .content {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      padding: 24px;
+      padding-bottom: max(env(safe-area-inset-bottom), 24px);
+    }
 
-      [data-domain="camera"] .content {
-        padding: 0;
-        /* max height of the video is full screen, minus the height of the header of the dialog and the padding of the dialog (mdc-dialog-max-height: calc(100% - 72px)) */
-        --video-max-height: calc(100vh - 65px - 72px);
-      }
+    [data-domain="camera"] .content {
+      padding: 0;
+      /* max height of the video is full screen, minus the height of the header of the dialog and the padding of the dialog (mdc-dialog-max-height: calc(100% - 72px)) */
+      --video-max-height: calc(100vh - 65px - 72px);
+    }
 
-      more-info-content {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-      }
-      more-info-content[full-height] {
-        flex: 1;
-      }
+    more-info-content {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    more-info-content[full-height] {
+      flex: 1;
+    }
 
-      state-card-content,
-      ha-more-info-history,
-      ha-more-info-logbook:not(:last-child) {
-        display: block;
-        margin-bottom: 16px;
-      }
+    state-card-content,
+    ha-more-info-history,
+    ha-more-info-logbook:not(:last-child) {
+      display: block;
+      margin-bottom: 16px;
+    }
 
-      ha-alert {
-        display: block;
-      }
-    `;
-  }
+    ha-alert {
+      display: block;
+    }
+  `;
 }
 
 declare global {

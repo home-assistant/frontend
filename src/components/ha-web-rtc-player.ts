@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -423,19 +423,17 @@ class HaWebRtcPlayer extends LitElement {
     console.timeLog("WebRTC", msg, ...args);
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host,
-      video {
-        display: block;
-      }
+  static styles = css`
+    :host,
+    video {
+      display: block;
+    }
 
-      video {
-        width: 100%;
-        max-height: var(--video-max-height, calc(100vh - 97px));
-      }
-    `;
-  }
+    video {
+      width: 100%;
+      max-height: var(--video-max-height, calc(100vh - 97px));
+    }
+  `;
 }
 
 declare global {

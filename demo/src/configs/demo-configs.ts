@@ -3,7 +3,7 @@ import type { Lovelace } from "../../../src/panels/lovelace/types";
 import { energyEntities } from "../stubs/entities";
 import type { DemoConfig } from "./types";
 
-export const demoConfigs: Array<() => Promise<DemoConfig>> = [
+export const demoConfigs: (() => Promise<DemoConfig>)[] = [
   () => import("./sections").then((mod) => mod.demoSections),
   () => import("./arsaboo").then((mod) => mod.demoArsaboo),
   () => import("./teachingbirds").then((mod) => mod.demoTeachingbirds),

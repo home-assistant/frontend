@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { debounce } from "../../../common/util/debounce";
@@ -114,31 +114,29 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-      }
-      .flex {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        flex-grow: 2;
-      }
-      .state {
-        min-width: 45px;
-        text-align: end;
-      }
-      ha-textfield {
-        text-align: end;
-        direction: ltr !important;
-      }
-      ha-slider {
-        width: 100%;
-        max-width: 200px;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+    }
+    .flex {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-grow: 2;
+    }
+    .state {
+      min-width: 45px;
+      text-align: end;
+    }
+    ha-textfield {
+      text-align: end;
+      direction: ltr !important;
+    }
+    ha-slider {
+      width: 100%;
+      max-width: 200px;
+    }
+  `;
 
   private async _initialLoad(): Promise<void> {
     this._loaded = true;

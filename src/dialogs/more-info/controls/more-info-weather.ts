@@ -7,7 +7,7 @@ import {
   mdiWaterPercent,
   mdiWeatherWindy,
 } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -321,58 +321,56 @@ class MoreInfoWeather extends LitElement {
     ];
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-svg-icon {
-        color: var(--paper-item-icon-color);
-        margin-left: 8px;
-        margin-inline-start: 8px;
-        margin-inline-end: initial;
-      }
+  static styles = css`
+    ha-svg-icon {
+      color: var(--paper-item-icon-color);
+      margin-left: 8px;
+      margin-inline-start: 8px;
+      margin-inline-end: initial;
+    }
 
-      mwc-tab-bar {
-        margin-bottom: 4px;
-      }
+    mwc-tab-bar {
+      margin-bottom: 4px;
+    }
 
-      .section {
-        margin: 16px 0 8px 0;
-        font-size: 1.2em;
-      }
+    .section {
+      margin: 16px 0 8px 0;
+      font-size: 1.2em;
+    }
 
-      .flex {
-        display: flex;
-        height: 32px;
-        align-items: center;
-      }
-      .flex > div:last-child {
-        direction: ltr;
-      }
+    .flex {
+      display: flex;
+      height: 32px;
+      align-items: center;
+    }
+    .flex > div:last-child {
+      direction: ltr;
+    }
 
-      .main {
-        flex: 1;
-        margin-left: 24px;
-        margin-inline-start: 24px;
-        margin-inline-end: initial;
-      }
+    .main {
+      flex: 1;
+      margin-left: 24px;
+      margin-inline-start: 24px;
+      margin-inline-end: initial;
+    }
 
-      .temp,
-      .templow {
-        min-width: 48px;
-        text-align: right;
-        direction: ltr;
-      }
+    .temp,
+    .templow {
+      min-width: 48px;
+      text-align: right;
+      direction: ltr;
+    }
 
-      .templow {
-        margin: 0 16px;
-        color: var(--secondary-text-color);
-      }
+    .templow {
+      margin: 0 16px;
+      color: var(--secondary-text-color);
+    }
 
-      .attribution {
-        color: var(--secondary-text-color);
-        text-align: center;
-      }
-    `;
-  }
+    .attribution {
+      color: var(--secondary-text-color);
+      text-align: center;
+    }
+  `;
 
   private _showValue(item: number | string | undefined): boolean {
     return typeof item !== "undefined" && item !== null;

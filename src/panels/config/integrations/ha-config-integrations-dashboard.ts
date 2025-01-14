@@ -109,8 +109,10 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
   @property({ attribute: false })
   public configEntriesInProgress?: DataEntryFlowProgressExtended[];
 
-  @state() private _improvDiscovered: Map<string, ImprovDiscoveredDevice> =
-    new Map();
+  @state() private _improvDiscovered = new Map<
+    string,
+    ImprovDiscoveredDevice
+  >();
 
   @state()
   private _entityRegistryEntries: EntityRegistryEntry[] = [];
@@ -134,9 +136,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
 
   @state() private _diagnosticHandlers?: Record<string, boolean>;
 
-  @state() private _logInfos?: {
-    [integration: string]: IntegrationLogInfo;
-  };
+  @state() private _logInfos?: Record<string, IntegrationLogInfo>;
 
   @query("search-input-outlined") private _searchInput!: HTMLElement;
 
@@ -152,13 +152,13 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     );
   }
 
-  public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
+  public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
     return [
       subscribeEntityRegistry(this.hass.connection, (entries) => {
         this._entityRegistryEntries = entries;
       }),
       subscribeLogInfo(this.hass.connection, (log_infos) => {
-        const logInfoLookup: { [integration: string]: IntegrationLogInfo } = {};
+        const logInfoLookup: Record<string, IntegrationLogInfo> = {};
         for (const log_info of log_infos) {
           logInfoLookup[log_info.domain] = log_info;
         }
@@ -896,7 +896,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
         ),
         confirm: async () => {
           if (
-            (PROTOCOL_INTEGRATIONS as ReadonlyArray<string>).includes(
+            (PROTOCOL_INTEGRATIONS as readonly string[]).includes(
               integration.supported_by!
             )
           ) {

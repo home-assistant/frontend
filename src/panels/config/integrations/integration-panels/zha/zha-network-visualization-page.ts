@@ -43,10 +43,10 @@ export class ZHANetworkVisualizationPage extends LitElement {
   private _visualization?: HTMLElement;
 
   @state()
-  private _devices: Map<string, ZHADevice> = new Map();
+  private _devices = new Map<string, ZHADevice>();
 
   @state()
-  private _devicesByDeviceId: Map<string, ZHADevice> = new Map();
+  private _devicesByDeviceId = new Map<string, ZHADevice>();
 
   @state()
   private _nodes: Node[] = [];

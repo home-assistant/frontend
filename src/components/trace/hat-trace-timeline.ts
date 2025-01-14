@@ -94,7 +94,7 @@ class RenderedTimeTracker {
 class LogbookRenderer {
   private curIndex: number;
 
-  private pendingItems: Array<[Date, LogbookEntry]> = [];
+  private pendingItems: [Date, LogbookEntry][] = [];
 
   constructor(
     private entries: TemplateResult[],
@@ -198,7 +198,7 @@ class ActionRenderer {
     private hass: HomeAssistant,
     private entityReg: EntityRegistryEntry[],
     private labelReg: LabelRegistryEntry[],
-    private floorReg: { [id: string]: FloorRegistryEntry },
+    private floorReg: Record<string, FloorRegistryEntry>,
     private entries: TemplateResult[],
     private trace: AutomationTraceExtended,
     private logbookRenderer: LogbookRenderer,
@@ -231,7 +231,7 @@ class ActionRenderer {
     const value = this._getItem(index);
 
     if (renderAllIterations) {
-      let i: number = 0;
+      let i = 0;
       value.forEach((item) => {
         i = this._renderIteration(index, item, actionType);
       });
@@ -266,7 +266,7 @@ class ActionRenderer {
     let data;
     try {
       data = getDataFromPath(this.trace.config, path);
-    } catch (err: any) {
+    } catch (_err: any) {
       this._renderEntry(
         path,
         this.hass.localize(
@@ -689,7 +689,7 @@ export class HaAutomationTracer extends LitElement {
 
   @state()
   @consume({ context: floorsContext, subscribe: true })
-  _floorReg!: { [id: string]: FloorRegistryEntry };
+  _floorReg!: Record<string, FloorRegistryEntry>;
 
   protected render() {
     if (!this.trace) {

@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import "../../../components/ha-icon";
@@ -28,32 +27,30 @@ class HuiTextRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: flex;
-        align-items: center;
-      }
-      ha-icon {
-        padding: 8px;
-        color: var(--paper-item-icon-color);
-      }
-      div {
-        flex: 1;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .name {
-        margin-left: 16px;
-        margin-inline-start: 16px;
-        margin-inline-end: initial;
-      }
-      .text {
-        text-align: var(--float-end);
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: flex;
+      align-items: center;
+    }
+    ha-icon {
+      padding: 8px;
+      color: var(--paper-item-icon-color);
+    }
+    div {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .name {
+      margin-left: 16px;
+      margin-inline-start: 16px;
+      margin-inline-end: initial;
+    }
+    .text {
+      text-align: var(--float-end);
+    }
+  `;
 }
 
 declare global {

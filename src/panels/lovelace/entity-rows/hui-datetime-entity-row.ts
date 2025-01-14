@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-date-input";
@@ -106,21 +106,19 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-time-input {
-        margin-left: 4px;
-        margin-inline-start: 4px;
-        margin-inline-end: initial;
-        direction: var(--direction);
-      }
-      div {
-        display: flex;
-        justify-content: flex-end;
-        width: 100%;
-      }
-    `;
-  }
+  static styles = css`
+    ha-time-input {
+      margin-left: 4px;
+      margin-inline-start: 4px;
+      margin-inline-end: initial;
+      direction: var(--direction);
+    }
+    div {
+      display: flex;
+      justify-content: flex-end;
+      width: 100%;
+    }
+  `;
 }
 
 declare global {

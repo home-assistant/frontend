@@ -11,13 +11,10 @@ import type { FrontendLocaleData } from "../../../data/translation";
 import type { HomeAssistant } from "../../../types";
 import type { TimestampRenderingFormat } from "./types";
 
-const FORMATS: {
-  [key: string]: (
-    ts: Date,
-    lang: FrontendLocaleData,
-    config: HassConfig
-  ) => string;
-} = {
+const FORMATS: Record<
+  string,
+  (ts: Date, lang: FrontendLocaleData, config: HassConfig) => string
+> = {
   date: formatDate,
   datetime: formatDateTime,
   time: formatTime,

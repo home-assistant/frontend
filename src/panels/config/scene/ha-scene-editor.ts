@@ -85,9 +85,7 @@ interface DeviceEntities {
   entities: string[];
 }
 
-interface DeviceEntitiesLookup {
-  [deviceId: string]: string[];
-}
+type DeviceEntitiesLookup = Record<string, string[]>;
 
 @customElement("ha-scene-editor")
 export class HaSceneEditor extends PreventUnsavedMixin(
@@ -175,7 +173,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
       const outputDevices: DeviceEntities[] = [];
 
       if (devices.length) {
-        const deviceLookup: { [deviceId: string]: DeviceRegistryEntry } = {};
+        const deviceLookup: Record<string, DeviceRegistryEntry> = {};
         for (const device of deviceRegs) {
           deviceLookup[device.id] = device;
         }
@@ -1152,7 +1150,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
             scene = this.scenes.find(
               (entity: SceneEntity) => entity.attributes.id === id
             );
-          } catch (err) {
+          } catch (_err) {
             // We do nothing.
           } finally {
             this._scenesSet = undefined;
