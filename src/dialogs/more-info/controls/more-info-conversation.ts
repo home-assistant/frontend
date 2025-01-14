@@ -38,6 +38,7 @@ class MoreInfoConversation extends LitElement {
 
   private async _getPipeline() {
     this._pipeline = undefined;
+    this._errorLoadAssist = undefined;
     const pipelineId = this.stateObj!.entity_id;
     try {
       const pipeline = await getAssistPipeline(this.hass, pipelineId);

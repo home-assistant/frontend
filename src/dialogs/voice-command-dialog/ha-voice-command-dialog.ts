@@ -218,6 +218,7 @@ export class HaVoiceCommandDialog extends LitElement {
 
   private async _getPipeline() {
     this._pipeline = undefined;
+    this._errorLoadAssist = undefined;
     const pipelineId = this._pipelineId!;
     try {
       const pipeline = await getAssistPipeline(this.hass, pipelineId);
