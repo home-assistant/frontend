@@ -59,7 +59,8 @@ class HcLovelace extends LitElement {
 
     return html`
       <hui-view-container .hass=${this.hass} .theme=${viewConfig.theme}>
-        <hui-view-background .background=${background}> </hui-view-background>
+        <hui-view-background .hass=${this.hass} .background=${background}>
+        </hui-view-background>
         <hui-view
           .hass=${this.hass}
           .lovelace=${lovelace}
