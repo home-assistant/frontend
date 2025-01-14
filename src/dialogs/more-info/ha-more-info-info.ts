@@ -1,8 +1,7 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { computeDomain } from "../../common/entity/compute_domain";
-import type { ChartResizeOptions } from "../../components/chart/ha-chart-base";
 import type { ExtEntityRegistryEntry } from "../../data/entity_registry";
 import type { HomeAssistant } from "../../types";
 import {
@@ -14,7 +13,6 @@ import {
   DOMAINS_WITH_MORE_INFO,
 } from "./const";
 import "./ha-more-info-history";
-import type { MoreInfoHistory } from "./ha-more-info-history";
 import "./ha-more-info-logbook";
 import "./more-info-content";
 
@@ -27,13 +25,6 @@ export class MoreInfoInfo extends LitElement {
   @property({ attribute: false }) public entry?: ExtEntityRegistryEntry | null;
 
   @property({ attribute: false }) public editMode?: boolean;
-
-  @query("ha-more-info-history")
-  private _history?: MoreInfoHistory;
-
-  public resize(options?: ChartResizeOptions) {
-    this._history?.resize(options);
-  }
 
   protected render() {
     const entityId = this.entityId;
