@@ -3,7 +3,6 @@ import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
 import { property, query, state } from "lit/decorators";
 import type { VisualMapComponentOption } from "echarts/components";
-import type { OptionDataValue } from "echarts/types/src/util/types";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { computeRTL } from "../../common/util/compute_rtl";
 
@@ -14,6 +13,7 @@ import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
 import type { ECOption } from "../../resources/echarts";
 import { formatDateVeryShort } from "../../common/datetime/format_date";
 import { formatTime } from "../../common/datetime/format_time";
+import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import {
   getNumberFormatOptions,
   formatNumber,
@@ -137,6 +137,9 @@ export class StateHistoryChartLine extends LitElement {
               },
             },
           },
+          axisLine: {
+            show: false,
+          },
           splitLine: {
             show: true,
           },
@@ -147,6 +150,11 @@ export class StateHistoryChartLine extends LitElement {
           min: this.fitYData ? this.minYAxis : undefined,
           max: this.fitYData ? this.maxYAxis : undefined,
           position: computeRTL(this.hass) ? "right" : "left",
+          // nameLocation: "middle"
+          // nameGap: 200,
+          axisLabel: {
+            formatter: (value) => `${value} ${this.unit}`,
+          },
           // @ts-ignore this is a valid option
           scale: true,
         },
@@ -157,21 +165,28 @@ export class StateHistoryChartLine extends LitElement {
           type: "line",
           name: dataset.label,
           symbol: "circle",
-          step: "before",
-          symbolSize: dataset.pointRadius ? Number(dataset.pointRadius) : 1,
+          step: dataset.stepped,
+          symbolSize: dataset.pointRadius,
+          lineStyle: {
+            width: 1.5,
+          },
           areaStyle: dataset.fill
             ? {
                 color: dataset.backgroundColor as string,
               }
             : undefined,
+          tooltip: {
+            show: !dataset.fill,
+          },
         })),
         color: this._chartData?.datasets.map((dataset) => dataset.borderColor),
         legend: {
-          // data: this._chartData?.datasets.map((dataset) => dataset.label),
           show: this.showNames,
           icon: "circle",
+          padding: [20, 0],
         },
         grid: {
+          top: this.showNames ? undefined : 30,
           left: 20,
           right: 0,
           bottom: 0,
@@ -206,18 +221,60 @@ export class StateHistoryChartLine extends LitElement {
           .filter(Boolean) as VisualMapComponentOption[],
         tooltip: {
           trigger: "axis",
-          valueFormatter: (
-            value: OptionDataValue | OptionDataValue[],
-            datasetIndex: number
-          ) =>
-            `${formatNumber(
-              value as number,
-              this.hass.locale,
-              getNumberFormatOptions(
-                undefined,
-                this.hass.entities[this._entityIds[datasetIndex]]
-              )
-            )} ${this.unit}`,
+          appendTo: document.body,
+          // valueFormatter: (
+          //   value: OptionDataValue | OptionDataValue[],
+          //   datasetIndex: number
+          // ) =>
+          //   `${formatNumber(
+          //     value as number,
+          //     this.hass.locale,
+          //     getNumberFormatOptions(
+          //       undefined,
+          //       this.hass.entities[this._entityIds[datasetIndex]]
+          //     )
+          //   )} ${this.unit}`,
+          formatter: (params) =>
+            params
+              .map((param, index) => {
+                let value = `${formatNumber(
+                  param.value[1] as number,
+                  this.hass.locale,
+                  getNumberFormatOptions(
+                    undefined,
+                    this.hass.entities[this._entityIds[param.seriesIndex]]
+                  )
+                )} ${this.unit}`;
+                const dataIndex = this._datasetToDataIndex[param.seriesIndex];
+                const data = this.data[dataIndex];
+                if (data.statistics && data.statistics.length > 0) {
+                  value += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                  const source =
+                    data.states.length === 0 ||
+                    param.value[0] < data.states[0].last_changed
+                      ? `${this.hass.localize(
+                          "ui.components.history_charts.source_stats"
+                        )}`
+                      : `${this.hass.localize(
+                          "ui.components.history_charts.source_history"
+                        )}`;
+                  value += source;
+                }
+
+                return `
+              ${
+                index === 0
+                  ? formatDateTimeWithSeconds(
+                      new Date(param.value[0]),
+                      this.hass.locale,
+                      this.hass.config
+                    )
+                  : ""
+              }
+              <br>${param.marker} ${param.seriesName}: ${value}
+            `;
+              })
+              .join(""),
         },
         // scales: {
         //   x: {
@@ -416,8 +473,8 @@ export class StateHistoryChartLine extends LitElement {
           fill: fill ? "origin" : false,
           borderColor: color,
           backgroundColor: color + "7F",
-          stepped: "before",
-          pointRadius: 0,
+          stepped: "end",
+          pointRadius: 1,
           data: [],
         });
         entityIds.push(states.entity_id);

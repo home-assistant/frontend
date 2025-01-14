@@ -109,6 +109,9 @@ export class StateHistoryChartTimeline extends LitElement {
         type: "time",
         min: this.startTime,
         max: this.endTime,
+        splitLine: {
+          show: true,
+        },
         axisLabel: {
           formatter: (value: number) => {
             const date = new Date(value);
