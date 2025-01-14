@@ -736,11 +736,15 @@ class HaPanelHistory extends LitElement {
     return [
       haStyle,
       css`
+        ha-top-app-bar-fixed {
+          height: 100vh;
+          overflow-x: hidden;
+          overflow-y: visible;
+        }
+
         .content {
           padding: 0 16px 16px;
           padding-bottom: max(env(safe-area-inset-bottom), 16px);
-          height: calc(100vh - var(--header-height));
-          overflow: hidden;
         }
 
         :host([virtualize]) {
