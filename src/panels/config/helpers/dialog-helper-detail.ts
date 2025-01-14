@@ -26,7 +26,7 @@ import {
 import { createSchedule } from "../../../data/schedule";
 import { createTimer } from "../../../data/timer";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
-import { haStyleDialog } from "../../../resources/styles";
+import { haStyleDialog, haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import type { Helper, HelperDomain } from "./const";
@@ -385,6 +385,7 @@ export class DialogHelperDetail extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
+      haStyleScrollbar,
       haStyleDialog,
       css`
         ha-dialog.button-left {
