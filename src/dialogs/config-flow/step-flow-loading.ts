@@ -1,4 +1,4 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../components/ha-circular-progress";
@@ -33,17 +33,15 @@ class StepFlowLoading extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .init-spinner {
-        padding: 50px 100px;
-        text-align: center;
-      }
-      ha-circular-progress {
-        margin-top: 16px;
-      }
-    `;
-  }
+  static styles = css`
+    .init-spinner {
+      padding: 50px 100px;
+      text-align: center;
+    }
+    ha-circular-progress {
+      margin-top: 16px;
+    }
+  `;
 }
 
 declare global {

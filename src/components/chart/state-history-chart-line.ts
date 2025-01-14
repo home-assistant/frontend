@@ -553,11 +553,11 @@ export class StateHistoryChartLine extends LitElement {
             !states.states || states.states.length === 0
               ? 0
               : states.states[0].last_changed;
-          for (let i = 0; i < states.statistics.length; i++) {
-            if (stopTime && states.statistics[i].last_changed >= stopTime) {
+          for (const statistic of states.statistics) {
+            if (stopTime && statistic.last_changed >= stopTime) {
               break;
             }
-            processData(states.statistics[i]);
+            processData(statistic);
           }
         }
         states.states.forEach((entityState) => {

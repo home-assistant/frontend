@@ -1,5 +1,4 @@
 import { mdiPuzzle } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -12,13 +11,13 @@ import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
 import "./ha-backup-formfield-label";
 
-export type BackupAddonItem = {
+export interface BackupAddonItem {
   slug: string;
   name: string;
   version?: string;
   icon?: boolean;
   iconPath?: string;
-};
+}
 
 @customElement("ha-backup-addons-picker")
 export class HaBackupAddonsPicker extends LitElement {
@@ -78,14 +77,12 @@ export class HaBackupAddonsPicker extends LitElement {
     fireEvent(this, "value-changed", { value });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .items {
-        display: flex;
-        flex-direction: column;
-      }
-    `;
-  }
+  static styles = css`
+    .items {
+      display: flex;
+      flex-direction: column;
+    }
+  `;
 }
 
 declare global {

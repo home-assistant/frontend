@@ -1,5 +1,5 @@
 import "../components/ha-textfield";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { computeStateName } from "../common/entity/compute_state_name";
@@ -50,22 +50,20 @@ class StateCardText extends LitElement {
     setValue(this.hass!, this.stateObj.entity_id, value);
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: flex;
-      }
+  static styles = css`
+    :host {
+      display: flex;
+    }
 
-      state-badge {
-        float: left;
-        margin-top: 10px;
-      }
+    state-badge {
+      float: left;
+      margin-top: 10px;
+    }
 
-      ha-textfield {
-        width: 100%;
-      }
-    `;
-  }
+    ha-textfield {
+      width: 100%;
+    }
+  `;
 }
 
 declare global {

@@ -1,7 +1,10 @@
 import { customElement } from "lit/decorators";
 import { assert, assign, boolean, object, optional, string } from "superstruct";
 import "../../../../components/ha-form/ha-form";
-import type { EntityBadgeConfig } from "../../badges/types";
+import type {
+  EntityBadgeConfig,
+  StateLabelBadgeConfig,
+} from "../../badges/types";
 import "../hui-sub-element-editor";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceBadgeConfig } from "../structs/base-badge-struct";
@@ -33,7 +36,6 @@ export class HuiStateLabelBadgeEditor extends HuiEntityBadgeEditor {
       show_name: config.show_name ?? true,
     };
 
-    // @ts-ignore
     super.setConfig(entityBadgeConfig);
   }
 }

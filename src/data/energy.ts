@@ -90,9 +90,7 @@ export const emptyWaterEnergyPreference =
 interface EnergySolarForecast {
   wh_hours: Record<string, number>;
 }
-export type EnergySolarForecasts = {
-  [config_entry_id: string]: EnergySolarForecast;
-};
+export type EnergySolarForecasts = Record<string, EnergySolarForecast>;
 
 export interface DeviceConsumptionEnergyPreference {
   // This is an ever increasing value
@@ -232,9 +230,7 @@ export const saveEnergyPreferences = async (
   return newPrefs;
 };
 
-export interface FossilEnergyConsumption {
-  [date: string]: number;
-}
+export type FossilEnergyConsumption = Record<string, number>;
 
 export const getFossilEnergyConsumption = async (
   hass: HomeAssistant,
@@ -801,15 +797,15 @@ export const energyStatisticHelpUrl =
   "/docs/energy/faq/#troubleshooting-missing-entities";
 
 interface EnergySumData {
-  to_grid?: { [start: number]: number };
-  from_grid?: { [start: number]: number };
-  to_battery?: { [start: number]: number };
-  from_battery?: { [start: number]: number };
-  solar?: { [start: number]: number };
+  to_grid?: Record<number, number>;
+  from_grid?: Record<number, number>;
+  to_battery?: Record<number, number>;
+  from_battery?: Record<number, number>;
+  solar?: Record<number, number>;
 }
 
 interface EnergyConsumptionData {
-  total: { [start: number]: number };
+  total: Record<number, number>;
 }
 
 export const getSummedData = memoizeOne(
@@ -880,8 +876,8 @@ const getSummedDataPartial = (
 
   const summedData: EnergySumData = {};
   Object.entries(statIds).forEach(([key, subStatIds]) => {
-    const totalStats: { [start: number]: number } = {};
-    const sets: { [statId: string]: { [start: number]: number } } = {};
+    const totalStats: Record<number, number> = {};
+    const sets: Record<string, Record<number, number>> = {};
     subStatIds!.forEach((id) => {
       const stats = compare ? data.statsCompare[id] : data.stats[id];
       if (!stats) {

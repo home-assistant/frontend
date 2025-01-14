@@ -32,7 +32,7 @@ import {
   getLovelaceElementClass,
 } from "./create-element-base";
 
-const TYPES: Set<LovelaceCardFeatureConfig["type"]> = new Set([
+const TYPES = new Set<LovelaceCardFeatureConfig["type"]>([
   "alarm-modes",
   "climate-fan-modes",
   "climate-swing-modes",

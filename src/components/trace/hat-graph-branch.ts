@@ -132,51 +132,49 @@ export class HatGraphBranch extends LitElement {
     `;
   }
 
-  static get styles() {
-    return css`
-      :host {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      :host(:focus) {
-        outline: none;
-      }
-      #branches {
-        position: relative;
-        display: flex;
-        flex-direction: row;
-        align-items: start;
-      }
-      ::slotted(*) {
-        z-index: 1;
-      }
-      ::slotted([slot="head"]) {
-        margin-bottom: calc(var(--hat-graph-branch-height) / -2);
-      }
-      #lines {
-        position: absolute;
-      }
-      #top {
-        height: var(--hat-graph-branch-height);
-      }
-      #bottom {
-        height: calc(var(--hat-graph-branch-height) + var(--hat-graph-spacing));
-      }
-      path {
-        stroke: var(--stroke-clr);
-        stroke-width: 2;
-        fill: none;
-      }
-      path.track {
-        stroke: var(--track-clr);
-      }
-      :host([disabled]) path {
-        stroke: var(--disabled-clr);
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    :host(:focus) {
+      outline: none;
+    }
+    #branches {
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      align-items: start;
+    }
+    ::slotted(*) {
+      z-index: 1;
+    }
+    ::slotted([slot="head"]) {
+      margin-bottom: calc(var(--hat-graph-branch-height) / -2);
+    }
+    #lines {
+      position: absolute;
+    }
+    #top {
+      height: var(--hat-graph-branch-height);
+    }
+    #bottom {
+      height: calc(var(--hat-graph-branch-height) + var(--hat-graph-spacing));
+    }
+    path {
+      stroke: var(--stroke-clr);
+      stroke-width: 2;
+      fill: none;
+    }
+    path.track {
+      stroke: var(--track-clr);
+    }
+    :host([disabled]) path {
+      stroke: var(--disabled-clr);
+    }
+  `;
 }
 
 declare global {

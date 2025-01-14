@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -156,24 +156,22 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      #root {
-        position: relative;
-      }
+  static styles = css`
+    #root {
+      position: relative;
+    }
 
-      .element {
-        position: absolute;
-        transform: translate(-50%, -50%);
-      }
+    .element {
+      position: absolute;
+      transform: translate(-50%, -50%);
+    }
 
-      ha-card {
-        overflow: hidden;
-        height: 100%;
-        box-sizing: border-box;
-      }
-    `;
-  }
+    ha-card {
+      overflow: hidden;
+      height: 100%;
+      box-sizing: border-box;
+    }
+  `;
 
   private _createElement(
     elementConfig: LovelaceElementConfig

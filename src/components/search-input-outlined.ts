@@ -1,5 +1,5 @@
 import { mdiClose, mdiMagnify } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
@@ -80,29 +80,27 @@ class SearchInputOutlined extends LitElement {
     this._filterChanged("");
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: inline-flex;
-        /* For iOS */
-        z-index: 0;
-        --mdc-icon-button-size: 24px;
-      }
-      ha-outlined-text-field {
-        display: block;
-        width: 100%;
-        --ha-outlined-field-container-color: var(--card-background-color);
-      }
-      ha-svg-icon,
-      ha-icon-button {
-        display: flex;
-        color: var(--primary-text-color);
-      }
-      ha-svg-icon {
-        outline: none;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: inline-flex;
+      /* For iOS */
+      z-index: 0;
+      --mdc-icon-button-size: 24px;
+    }
+    ha-outlined-text-field {
+      display: block;
+      width: 100%;
+      --ha-outlined-field-container-color: var(--card-background-color);
+    }
+    ha-svg-icon,
+    ha-icon-button {
+      display: flex;
+      color: var(--primary-text-color);
+    }
+    ha-svg-icon {
+      outline: none;
+    }
+  `;
 }
 
 declare global {

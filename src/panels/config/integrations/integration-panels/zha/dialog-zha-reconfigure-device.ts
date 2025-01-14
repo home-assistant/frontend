@@ -34,10 +34,10 @@ class DialogZHAReconfigureDevice extends LitElement {
 
   @state() private _stages?: string[];
 
-  @state() private _clusterConfigurationStatuses?: Map<
+  @state() private _clusterConfigurationStatuses? = new Map<
     number,
     ClusterConfigurationStatus
-  > = new Map();
+  >();
 
   @state() private _params: ZHAReconfigureDeviceDialogParams | undefined =
     undefined;

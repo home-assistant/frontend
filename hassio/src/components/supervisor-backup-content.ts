@@ -1,5 +1,5 @@
 import { mdiFolder, mdiPuzzle } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { atLeastVersion } from "../../../src/common/config/version";
@@ -283,52 +283,50 @@ export class SupervisorBackupContent extends LitElement {
     this.homeAssistant = !this.homeAssistant;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .partial-picker ha-formfield {
-        display: block;
-      }
-      .partial-picker ha-checkbox {
-        --mdc-checkbox-touch-target-size: 32px;
-      }
-      .partial-picker {
-        display: block;
-        margin: 0px -6px;
-      }
-      supervisor-formfield-label {
-        display: inline-flex;
-        align-items: center;
-      }
-      hr {
-        border-color: var(--divider-color);
-        border-bottom: none;
-        margin: 16px 0;
-      }
-      .details {
-        color: var(--secondary-text-color);
-      }
-      .section-content {
-        display: flex;
-        flex-direction: column;
-        margin-left: 30px;
-        margin-inline-start: 30px;
-        margin-inline-end: initial;
-      }
-      ha-formfield.password {
-        display: block;
-        margin: 0 -14px -16px;
-      }
-      .backup-types {
-        display: flex;
-        margin-left: -13px;
-        margin-inline-start: -13px;
-        margin-inline-end: initial;
-      }
-      .sub-header {
-        margin-top: 8px;
-      }
-    `;
-  }
+  static styles = css`
+    .partial-picker ha-formfield {
+      display: block;
+    }
+    .partial-picker ha-checkbox {
+      --mdc-checkbox-touch-target-size: 32px;
+    }
+    .partial-picker {
+      display: block;
+      margin: 0px -6px;
+    }
+    supervisor-formfield-label {
+      display: inline-flex;
+      align-items: center;
+    }
+    hr {
+      border-color: var(--divider-color);
+      border-bottom: none;
+      margin: 16px 0;
+    }
+    .details {
+      color: var(--secondary-text-color);
+    }
+    .section-content {
+      display: flex;
+      flex-direction: column;
+      margin-left: 30px;
+      margin-inline-start: 30px;
+      margin-inline-end: initial;
+    }
+    ha-formfield.password {
+      display: block;
+      margin: 0 -14px -16px;
+    }
+    .backup-types {
+      display: flex;
+      margin-left: -13px;
+      margin-inline-start: -13px;
+      margin-inline-end: initial;
+    }
+    .sub-header {
+      margin-top: 8px;
+    }
+  `;
 
   public backupDetails():
     | HassioPartialBackupCreateParams

@@ -1,5 +1,5 @@
 import { dump } from "js-yaml";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -42,49 +42,47 @@ class MQTTDiscoveryPayload extends LitElement {
     this._open = !this._open;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .expander {
-        cursor: pointer;
-        position: relative;
-        padding: 8px;
-        padding-left: 29px;
-        padding-inline-start: 29px;
-        padding-inline-end: initial;
-        border: 1px solid var(--divider-color);
-      }
-      .expander:before {
-        content: "";
-        position: absolute;
-        border-right: 2px solid var(--primary-text-color);
-        border-bottom: 2px solid var(--primary-text-color);
-        width: 5px;
-        height: 5px;
-        top: 50%;
-        left: 12px;
-        transform: translateY(-50%) rotate(-45deg);
-      }
-      .expander.open:before {
-        transform: translateY(-50%) rotate(45deg);
-      }
-      .payload {
-        border: 1px solid var(--divider-color);
-        border-top: 0;
-        padding-left: 16px;
-        padding-inline-start: 16px;
-        padding-inline-end: initial;
-      }
-      pre {
-        display: inline-block;
-        font-size: 0.9em;
-        padding-left: 4px;
-        padding-right: 4px;
-        padding-inline-start: 4px;
-        padding-inline-end: 4px;
-        font-family: var(--code-font-family, monospace);
-      }
-    `;
-  }
+  static styles = css`
+    .expander {
+      cursor: pointer;
+      position: relative;
+      padding: 8px;
+      padding-left: 29px;
+      padding-inline-start: 29px;
+      padding-inline-end: initial;
+      border: 1px solid var(--divider-color);
+    }
+    .expander:before {
+      content: "";
+      position: absolute;
+      border-right: 2px solid var(--primary-text-color);
+      border-bottom: 2px solid var(--primary-text-color);
+      width: 5px;
+      height: 5px;
+      top: 50%;
+      left: 12px;
+      transform: translateY(-50%) rotate(-45deg);
+    }
+    .expander.open:before {
+      transform: translateY(-50%) rotate(45deg);
+    }
+    .payload {
+      border: 1px solid var(--divider-color);
+      border-top: 0;
+      padding-left: 16px;
+      padding-inline-start: 16px;
+      padding-inline-end: initial;
+    }
+    pre {
+      display: inline-block;
+      font-size: 0.9em;
+      padding-left: 4px;
+      padding-right: 4px;
+      padding-inline-start: 4px;
+      padding-inline-end: 4px;
+      font-family: var(--code-font-family, monospace);
+    }
+  `;
 }
 
 declare global {

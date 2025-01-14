@@ -69,10 +69,8 @@ export const provideHass = (
   const hass = (): MockHomeAssistant => elements[0].hass;
 
   const wsCommands = {};
-  const restResponses: Array<[string | RegExp, MockRestCallback]> = [];
-  const eventListeners: {
-    [event: string]: Array<(event) => void>;
-  } = {};
+  const restResponses: [string | RegExp, MockRestCallback][] = [];
+  const eventListeners: Record<string, ((event) => void)[]> = {};
   const entities = {};
 
   async function updateTranslations(

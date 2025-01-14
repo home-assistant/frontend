@@ -43,10 +43,10 @@ import "./components/ha-backup-data-picker";
 import { showRestoreBackupDialog } from "./dialogs/show-dialog-restore-backup";
 import { fireEvent } from "../../../common/dom/fire_event";
 
-type Agent = {
+interface Agent {
   id: string;
   success: boolean;
-};
+}
 
 const computeAgents = (agent_ids: string[], failed_agent_ids: string[]) =>
   [

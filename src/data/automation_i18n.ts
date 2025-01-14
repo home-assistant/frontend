@@ -404,7 +404,7 @@ const tryDescribeTrigger = (
       );
     }
 
-    const invalidParts: Array<"seconds" | "minutes" | "hours"> = [];
+    const invalidParts: ("seconds" | "minutes" | "hours")[] = [];
 
     let secondsChoice: "every" | "every_interval" | "on_the_xth" | "other" =
       "other";
@@ -737,7 +737,7 @@ const tryDescribeTrigger = (
       ? computeStateName(hass.states[trigger.entity_id])
       : trigger.entity_id;
 
-    let offsetChoice: string = "other";
+    let offsetChoice = "other";
     let offset: string | string[] = "";
     if (trigger.offset) {
       offsetChoice = trigger.offset.startsWith("-") ? "before" : "after";
@@ -815,7 +815,7 @@ const tryDescribeCondition = (
   }
 
   if (!condition.condition) {
-    const shorthands: Array<"and" | "or" | "not"> = ["and", "or", "not"];
+    const shorthands: ("and" | "or" | "not")[] = ["and", "or", "not"];
     for (const key of shorthands) {
       if (!(key in condition)) {
         continue;

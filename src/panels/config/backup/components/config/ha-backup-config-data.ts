@@ -25,7 +25,7 @@ import type { HomeAssistant } from "../../../../../types";
 import "../ha-backup-addons-picker";
 import type { BackupAddonItem } from "../ha-backup-addons-picker";
 
-export type FormData = {
+export interface FormData {
   homeassistant: boolean;
   database: boolean;
   media: boolean;
@@ -33,7 +33,7 @@ export type FormData = {
   local_addons: boolean;
   addons_mode: "all" | "custom" | "none";
   addons: string[];
-};
+}
 
 const INITIAL_FORM_DATA: FormData = {
   homeassistant: false,
@@ -45,13 +45,13 @@ const INITIAL_FORM_DATA: FormData = {
   addons: [],
 };
 
-export type BackupConfigData = {
+export interface BackupConfigData {
   include_homeassistant?: boolean;
   include_database: boolean;
   include_folders?: string[];
   include_all_addons: boolean;
   include_addons?: string[];
-};
+}
 
 declare global {
   interface HASSDomEvents {

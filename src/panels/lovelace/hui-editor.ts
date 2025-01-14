@@ -63,7 +63,7 @@ class LovelaceFullConfigEditor extends LitElement {
           slot="actionItems"
           class="save-button
               ${classMap({
-            saved: this._saving! === false || this._changed === true,
+            saved: this._saving === false || this._changed === true,
           })}"
         >
           ${this._changed

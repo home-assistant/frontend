@@ -97,7 +97,7 @@ class HUIRoot extends LitElement {
 
   @state() private _curView?: number | "hass-unused-entities";
 
-  private _viewCache?: { [viewId: string]: HUIView };
+  private _viewCache?: Record<string, HUIView>;
 
   private _debouncedConfigChanged: () => void;
 

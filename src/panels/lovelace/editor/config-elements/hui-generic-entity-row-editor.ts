@@ -68,7 +68,7 @@ export class HuiGenericEntityRowEditor
                   !("domains" in SECONDARY_INFO_VALUES[info]) ||
                   ("domains" in SECONDARY_INFO_VALUES[info] &&
                     SECONDARY_INFO_VALUES[info].domains!.includes(domain))
-              ) as Array<keyof typeof SECONDARY_INFO_VALUES>
+              ) as (keyof typeof SECONDARY_INFO_VALUES)[]
             ).map((info) => ({
               value: info,
               label: localize(

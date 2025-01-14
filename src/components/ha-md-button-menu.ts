@@ -1,5 +1,5 @@
 import type { Button } from "@material/mwc-button";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { FOCUS_TARGET } from "../dialogs/make-dialog-manager";
@@ -81,17 +81,15 @@ export class HaMdButtonMenu extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: inline-block;
-        position: relative;
-      }
-      ::slotted([disabled]) {
-        color: var(--disabled-text-color);
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: inline-block;
+      position: relative;
+    }
+    ::slotted([disabled]) {
+      color: var(--disabled-text-color);
+    }
+  `;
 }
 
 declare global {

@@ -38,27 +38,26 @@ import type { HomeAssistant } from "../../../types";
 class HaPanelDevState extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _error: string = "";
+  @state() private _error = "";
 
-  @state() private _entityId: string = "";
+  @state() private _entityId = "";
 
-  @state() private _entityFilter: string = "";
+  @state() private _entityFilter = "";
 
-  @state() private _stateFilter: string = "";
+  @state() private _stateFilter = "";
 
-  @state() private _attributeFilter: string = "";
+  @state() private _attributeFilter = "";
 
   @state() private _entity?: HassEntity;
 
-  @state() private _state: string = "";
+  @state() private _state = "";
 
-  @state() private _stateAttributes: HassEntityAttributeBase & {
-    [key: string]: any;
-  } = {};
+  @state() private _stateAttributes: HassEntityAttributeBase &
+    Record<string, any> = {};
 
   @state() private _expanded = false;
 
-  @state() private _validJSON: boolean = true;
+  @state() private _validJSON = true;
 
   @storage({
     key: "devToolsShowAttributes",

@@ -1,4 +1,4 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { ClimateEntity } from "../data/climate";
@@ -136,34 +136,32 @@ class HaClimateState extends LitElement {
     return stateString;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        white-space: nowrap;
-      }
+  static styles = css`
+    :host {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      white-space: nowrap;
+    }
 
-      .target {
-        color: var(--primary-text-color);
-      }
+    .target {
+      color: var(--primary-text-color);
+    }
 
-      .current {
-        color: var(--secondary-text-color);
-        direction: var(--direction);
-      }
+    .current {
+      color: var(--secondary-text-color);
+      direction: var(--direction);
+    }
 
-      .state-label {
-        font-weight: bold;
-      }
+    .state-label {
+      font-weight: bold;
+    }
 
-      .unit {
-        display: inline-block;
-        direction: ltr;
-      }
-    `;
-  }
+    .unit {
+      display: inline-block;
+      direction: ltr;
+    }
+  `;
 }
 
 declare global {

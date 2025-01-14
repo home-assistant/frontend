@@ -1,5 +1,4 @@
 import "@material/mwc-list/mwc-list-item";
-import type { CSSResultGroup } from "lit";
 import memoizeOne from "memoize-one";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -192,13 +191,11 @@ export class HuiViewBackgroundEditor extends LitElement {
     }
   };
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+    }
+  `;
 }
 
 declare global {

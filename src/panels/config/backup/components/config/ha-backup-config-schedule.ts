@@ -30,10 +30,10 @@ enum RetentionPreset {
   CUSTOM = "custom",
 }
 
-type RetentionData = {
+interface RetentionData {
   type: "copies" | "days";
   value: number;
-};
+}
 
 const RETENTION_PRESETS: Record<
   Exclude<RetentionPreset, RetentionPreset.CUSTOM>,
@@ -71,14 +71,14 @@ const computeRetentionPreset = (
   return RetentionPreset.CUSTOM;
 };
 
-type FormData = {
+interface FormData {
   enabled: boolean;
   schedule: BackupScheduleState;
   retention: {
     type: "copies" | "days";
     value: number;
   };
-};
+}
 
 const INITIAL_FORM_DATA: FormData = {
   enabled: false,

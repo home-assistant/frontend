@@ -6,7 +6,7 @@ import type {
   TooltipModel,
   UpdateMode,
 } from "chart.js";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, nothing, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -60,7 +60,7 @@ export class HaChartBase extends LitElement {
 
   @state() private _tooltip?: Tooltip;
 
-  @state() private _hiddenDatasets: Set<number> = new Set();
+  @state() private _hiddenDatasets = new Set<number>();
 
   @state() private _showZoomHint = false;
 
@@ -526,145 +526,143 @@ export class HaChartBase extends LitElement {
     this._tooltip = undefined;
   };
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-        position: relative;
-      }
-      .chart-container {
-        position: relative;
-      }
-      canvas {
-        max-height: var(--chart-max-height, 400px);
-      }
-      canvas.not-zoomed {
-        /* allow scrolling if the chart is not zoomed */
-        touch-action: pan-y !important;
-      }
-      .chart-legend {
-        text-align: center;
-      }
-      .chart-legend li {
-        cursor: pointer;
-        display: inline-grid;
-        grid-auto-flow: column;
-        padding: 0 8px;
-        box-sizing: border-box;
-        align-items: center;
-        color: var(--secondary-text-color);
-      }
-      .chart-legend .hidden {
-        text-decoration: line-through;
-      }
-      .chart-legend .label {
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
-      }
-      .chart-legend .bullet,
-      .chart-tooltip .bullet {
-        border-width: 1px;
-        border-style: solid;
-        border-radius: 50%;
-        display: inline-block;
-        height: 16px;
-        margin-right: 6px;
-        width: 16px;
-        flex-shrink: 0;
-        box-sizing: border-box;
-        margin-inline-end: 6px;
-        margin-inline-start: initial;
-        direction: var(--direction);
-      }
-      .chart-tooltip .bullet {
-        align-self: baseline;
-      }
-      .chart-tooltip {
-        padding: 8px;
-        font-size: 90%;
-        position: fixed;
-        background: rgba(80, 80, 80, 0.9);
-        color: white;
-        border-radius: 4px;
-        pointer-events: none;
-        z-index: 1;
-        -ms-user-select: none;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        width: 200px;
-        box-sizing: border-box;
-        direction: var(--direction);
-      }
-      .chart-legend ul,
-      .chart-tooltip ul {
-        display: inline-block;
-        padding: 0 0px;
-        margin: 8px 0 0 0;
-        width: 100%;
-      }
-      .chart-tooltip ul {
-        margin: 0 4px;
-      }
-      .chart-tooltip li {
-        display: flex;
-        white-space: pre-line;
-        word-break: break-word;
-        align-items: center;
-        line-height: 16px;
-        padding: 4px 0;
-      }
-      .chart-tooltip .title {
-        text-align: center;
-        font-weight: 500;
-        word-break: break-word;
-        direction: ltr;
-      }
-      .chart-tooltip .footer {
-        font-weight: 500;
-      }
-      .chart-tooltip .before-body {
-        text-align: center;
-        font-weight: 300;
-        word-break: break-all;
-      }
-      .zoom-hint {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        transition: opacity 500ms cubic-bezier(0.4, 0, 0.2, 1);
-        pointer-events: none;
-      }
-      .zoom-hint.visible {
-        opacity: 1;
-      }
-      .zoom-hint > div {
-        color: white;
-        font-size: 1.5em;
-        font-weight: 500;
-        padding: 8px;
-        border-radius: 8px;
-        background: rgba(0, 0, 0, 0.3);
-        box-shadow: 0 0 32px 32px rgba(0, 0, 0, 0.3);
-      }
-      .zoom-reset {
-        position: absolute;
-        top: 16px;
-        right: 4px;
-        background: var(--card-background-color);
-        border-radius: 4px;
-        --mdc-icon-button-size: 32px;
-        color: var(--primary-color);
-        border: 1px solid var(--divider-color);
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+      position: relative;
+    }
+    .chart-container {
+      position: relative;
+    }
+    canvas {
+      max-height: var(--chart-max-height, 400px);
+    }
+    canvas.not-zoomed {
+      /* allow scrolling if the chart is not zoomed */
+      touch-action: pan-y !important;
+    }
+    .chart-legend {
+      text-align: center;
+    }
+    .chart-legend li {
+      cursor: pointer;
+      display: inline-grid;
+      grid-auto-flow: column;
+      padding: 0 8px;
+      box-sizing: border-box;
+      align-items: center;
+      color: var(--secondary-text-color);
+    }
+    .chart-legend .hidden {
+      text-decoration: line-through;
+    }
+    .chart-legend .label {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .chart-legend .bullet,
+    .chart-tooltip .bullet {
+      border-width: 1px;
+      border-style: solid;
+      border-radius: 50%;
+      display: inline-block;
+      height: 16px;
+      margin-right: 6px;
+      width: 16px;
+      flex-shrink: 0;
+      box-sizing: border-box;
+      margin-inline-end: 6px;
+      margin-inline-start: initial;
+      direction: var(--direction);
+    }
+    .chart-tooltip .bullet {
+      align-self: baseline;
+    }
+    .chart-tooltip {
+      padding: 8px;
+      font-size: 90%;
+      position: fixed;
+      background: rgba(80, 80, 80, 0.9);
+      color: white;
+      border-radius: 4px;
+      pointer-events: none;
+      z-index: 1;
+      -ms-user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      width: 200px;
+      box-sizing: border-box;
+      direction: var(--direction);
+    }
+    .chart-legend ul,
+    .chart-tooltip ul {
+      display: inline-block;
+      padding: 0 0px;
+      margin: 8px 0 0 0;
+      width: 100%;
+    }
+    .chart-tooltip ul {
+      margin: 0 4px;
+    }
+    .chart-tooltip li {
+      display: flex;
+      white-space: pre-line;
+      word-break: break-word;
+      align-items: center;
+      line-height: 16px;
+      padding: 4px 0;
+    }
+    .chart-tooltip .title {
+      text-align: center;
+      font-weight: 500;
+      word-break: break-word;
+      direction: ltr;
+    }
+    .chart-tooltip .footer {
+      font-weight: 500;
+    }
+    .chart-tooltip .before-body {
+      text-align: center;
+      font-weight: 300;
+      word-break: break-all;
+    }
+    .zoom-hint {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 500ms cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+    }
+    .zoom-hint.visible {
+      opacity: 1;
+    }
+    .zoom-hint > div {
+      color: white;
+      font-size: 1.5em;
+      font-weight: 500;
+      padding: 8px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.3);
+      box-shadow: 0 0 32px 32px rgba(0, 0, 0, 0.3);
+    }
+    .zoom-reset {
+      position: absolute;
+      top: 16px;
+      right: 4px;
+      background: var(--card-background-color);
+      border-radius: 4px;
+      --mdc-icon-button-size: 32px;
+      color: var(--primary-color);
+      border: 1px solid var(--divider-color);
+    }
+  `;
 }
 
 declare global {

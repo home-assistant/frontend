@@ -291,9 +291,10 @@ export interface ShorthandNotCondition extends ShorthandBaseCondition {
   not: Condition[];
 }
 
-export interface AutomationElementGroup {
-  [key: string]: { icon?: string; members?: AutomationElementGroup };
-}
+export type AutomationElementGroup = Record<
+  string,
+  { icon?: string; members?: AutomationElementGroup }
+>;
 
 export type Condition =
   | StateCondition
@@ -519,8 +520,8 @@ export const testCondition = (
     variables,
   });
 
-export type AutomationClipboard = {
+export interface AutomationClipboard {
   trigger?: Trigger;
   condition?: Condition;
   action?: Action;
-};
+}

@@ -35,12 +35,12 @@ import type { BackupConfigData } from "../components/config/ha-backup-config-dat
 import "../components/ha-backup-agents-picker";
 import type { GenerateBackupDialogParams } from "./show-dialog-generate-backup";
 
-type FormData = {
+interface FormData {
   name: string;
   agents_mode: "all" | "custom";
   agent_ids: string[];
   data: BackupConfigData;
-};
+}
 
 const INITIAL_DATA: FormData = {
   data: {

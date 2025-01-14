@@ -34,7 +34,7 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
 
   @query("textarea", true) private _textarea?: HTMLTextAreaElement;
 
-  public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
+  public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
     return [
       subscribeZWaveJSLogs(this.hass, this.configEntryId, (update) => {
         if (!this.hasUpdated) {

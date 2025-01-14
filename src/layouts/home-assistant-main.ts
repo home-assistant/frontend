@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { HASSDomEvent } from "../common/dom/fire_event";
@@ -163,29 +163,27 @@ export class HomeAssistantMain extends LitElement {
     this._sidebarEditMode = false;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        color: var(--primary-text-color);
-        /* remove the grey tap highlights in iOS on the fullscreen touch targets */
-        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-        --mdc-drawer-width: 56px;
-        --mdc-top-app-bar-width: calc(100% - var(--mdc-drawer-width));
-      }
-      :host([expanded]) {
-        --mdc-drawer-width: calc(256px + env(safe-area-inset-left));
-      }
-      :host([modal]) {
-        --mdc-drawer-width: unset;
-        --mdc-top-app-bar-width: unset;
-      }
-      partial-panel-resolver,
-      ha-sidebar {
-        /* allow a light tap highlight on the actual interface elements  */
-        -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      color: var(--primary-text-color);
+      /* remove the grey tap highlights in iOS on the fullscreen touch targets */
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+      --mdc-drawer-width: 56px;
+      --mdc-top-app-bar-width: calc(100% - var(--mdc-drawer-width));
+    }
+    :host([expanded]) {
+      --mdc-drawer-width: calc(256px + env(safe-area-inset-left));
+    }
+    :host([modal]) {
+      --mdc-drawer-width: unset;
+      --mdc-top-app-bar-width: unset;
+    }
+    partial-panel-resolver,
+    ha-sidebar {
+      /* allow a light tap highlight on the actual interface elements  */
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    }
+  `;
 }
 
 declare global {

@@ -68,28 +68,26 @@ export class DemoAutomationTrace extends LitElement {
     this._selected = { ...this._selected, [sampleIdx]: ev.detail.path };
   }
 
-  static get styles() {
-    return css`
-      ha-card {
-        max-width: 600px;
-        margin: 24px;
-      }
-      .card-content {
-        display: flex;
-      }
-      .card-content > * {
-        margin-right: 16px;
-      }
-      .card-content > *:last-child {
-        margin-right: 0;
-      }
-      button {
-        position: absolute;
-        top: 0;
-        right: 0;
-      }
-    `;
-  }
+  static styles = css`
+    ha-card {
+      max-width: 600px;
+      margin: 24px;
+    }
+    .card-content {
+      display: flex;
+    }
+    .card-content > * {
+      margin-right: 16px;
+    }
+    .card-content > *:last-child {
+      margin-right: 0;
+    }
+    button {
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+  `;
 }
 
 declare global {

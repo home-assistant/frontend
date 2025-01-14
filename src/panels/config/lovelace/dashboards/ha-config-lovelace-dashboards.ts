@@ -79,7 +79,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
     state: true,
     subscribe: false,
   })
-  private _filter: string = "";
+  private _filter = "";
 
   @storage({
     key: "lovelace-dashboards-table-sort",

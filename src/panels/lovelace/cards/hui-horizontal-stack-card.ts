@@ -11,7 +11,7 @@ export class HuiHorizontalStackCard extends HuiStackCard {
       return 0;
     }
 
-    const promises: Array<Promise<number> | number> = [];
+    const promises: (Promise<number> | number)[] = [];
 
     for (const element of this._cards) {
       promises.push(computeCardSize(element));

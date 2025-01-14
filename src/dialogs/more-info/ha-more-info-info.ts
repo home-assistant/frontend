@@ -111,54 +111,52 @@ export class MoreInfoInfo extends LitElement {
     `;
   }
 
-  static get styles() {
-    return css`
-      :host {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-      }
-      .container {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-      }
+  static styles = css`
+    :host {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
 
-      .content {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        padding: 24px;
-        padding-bottom: max(env(safe-area-inset-bottom), 24px);
-      }
+    .content {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      padding: 24px;
+      padding-bottom: max(env(safe-area-inset-bottom), 24px);
+    }
 
-      [data-domain="camera"] .content {
-        padding: 0;
-        /* max height of the video is full screen, minus the height of the header of the dialog and the padding of the dialog (mdc-dialog-max-height: calc(100% - 72px)) */
-        --video-max-height: calc(100vh - 65px - 72px);
-      }
+    [data-domain="camera"] .content {
+      padding: 0;
+      /* max height of the video is full screen, minus the height of the header of the dialog and the padding of the dialog (mdc-dialog-max-height: calc(100% - 72px)) */
+      --video-max-height: calc(100vh - 65px - 72px);
+    }
 
-      more-info-content {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-      }
-      more-info-content[full-height] {
-        flex: 1;
-      }
+    more-info-content {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    more-info-content[full-height] {
+      flex: 1;
+    }
 
-      state-card-content,
-      ha-more-info-history,
-      ha-more-info-logbook:not(:last-child) {
-        display: block;
-        margin-bottom: 16px;
-      }
+    state-card-content,
+    ha-more-info-history,
+    ha-more-info-logbook:not(:last-child) {
+      display: block;
+      margin-bottom: 16px;
+    }
 
-      ha-alert {
-        display: block;
-      }
-    `;
-  }
+    ha-alert {
+      display: block;
+    }
+  `;
 }
 
 declare global {
