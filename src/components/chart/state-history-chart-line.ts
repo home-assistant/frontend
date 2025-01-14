@@ -1,7 +1,7 @@
 import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
 import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
-import { property, query, state } from "lit/decorators";
+import { property, state } from "lit/decorators";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTL } from "../../common/util/compute_rtl";
@@ -12,7 +12,6 @@ import {
 } from "../../common/number/format_number";
 import type { LineChartEntity, LineChartState } from "../../data/history";
 import type { HomeAssistant } from "../../types";
-import type { ChartResizeOptions, HaChartBase } from "./ha-chart-base";
 import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
 import { clickIsTouch } from "./click_is_touch";
 
@@ -66,12 +65,6 @@ export class StateHistoryChartLine extends LitElement {
   @state() private _yWidth = 0;
 
   private _chartTime: Date = new Date();
-
-  @query("ha-chart-base") private _chart?: HaChartBase;
-
-  public resize = (options?: ChartResizeOptions): void => {
-    this._chart?.resize(options);
-  };
 
   protected render() {
     return html`

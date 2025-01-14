@@ -1,8 +1,7 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../common/entity/compute_domain";
-import type { ChartResizeOptions } from "../../components/chart/ha-chart-base";
 import type { ExtEntityRegistryEntry } from "../../data/entity_registry";
 import type { HomeAssistant } from "../../types";
 import {
@@ -14,7 +13,6 @@ import {
   DOMAINS_WITH_MORE_INFO,
 } from "./const";
 import "./ha-more-info-history";
-import type { MoreInfoHistory } from "./ha-more-info-history";
 import "./ha-more-info-logbook";
 import "./more-info-content";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
@@ -31,9 +29,6 @@ export class MoreInfoInfo extends LitElement {
 
   @state() private _sensorNumericDeviceClasses?: string[] = [];
 
-  @query("ha-more-info-history")
-  private _history?: MoreInfoHistory;
-
   private async _loadNumericDeviceClasses() {
     const deviceClasses = await getSensorNumericDeviceClasses(this.hass);
     this._sensorNumericDeviceClasses = deviceClasses.numeric_device_classes;
@@ -42,10 +37,6 @@ export class MoreInfoInfo extends LitElement {
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     this._loadNumericDeviceClasses();
-  }
-
-  public resize(options?: ChartResizeOptions) {
-    this._history?.resize(options);
   }
 
   protected render() {
