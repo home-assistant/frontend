@@ -154,7 +154,7 @@ export const createCalendarEvent = (
   entityId: string,
   event: CalendarEventMutableParams
 ) =>
-  hass.callWS({
+  hass.callWS<undefined>({
     type: "calendar/event/create",
     entity_id: entityId,
     event: event,
@@ -168,7 +168,7 @@ export const updateCalendarEvent = (
   recurrence_id?: string,
   recurrence_range?: RecurrenceRange
 ) =>
-  hass.callWS({
+  hass.callWS<undefined>({
     type: "calendar/event/update",
     entity_id: entityId,
     uid,
@@ -184,7 +184,7 @@ export const deleteCalendarEvent = (
   recurrence_id?: string,
   recurrence_range?: RecurrenceRange
 ) =>
-  hass.callWS({
+  hass.callWS<undefined>({
     type: "calendar/event/delete",
     entity_id: entityId,
     uid,

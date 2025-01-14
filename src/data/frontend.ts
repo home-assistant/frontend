@@ -35,7 +35,7 @@ export const saveFrontendUserData = async <
   key: UserDataKey,
   value: FrontendUserData[UserDataKey]
 ): Promise<void> =>
-  conn.sendMessagePromise({
+  conn.sendMessagePromise<undefined>({
     type: "frontend/set_user_data",
     key,
     value,

@@ -207,14 +207,14 @@ export const updateStatisticsMetadata = (
   statistic_id: string,
   unit_of_measurement: string | null
 ) =>
-  hass.callWS({
+  hass.callWS<undefined>({
     type: "recorder/update_statistics_metadata",
     statistic_id,
     unit_of_measurement,
   });
 
 export const clearStatistics = (hass: HomeAssistant, statistic_ids: string[]) =>
-  hass.callWS({
+  hass.callWS<undefined>({
     type: "recorder/clear_statistics",
     statistic_ids,
   });
@@ -296,7 +296,7 @@ export const adjustStatisticsSum = (
   adjustment_unit_of_measurement: string | null
 ): Promise<void> => {
   const start_time_iso = new Date(start_time).toISOString();
-  return hass.callWS({
+  return hass.callWS<undefined>({
     type: "recorder/adjust_sum_statistics",
     statistic_id,
     start_time: start_time_iso,
@@ -335,4 +335,4 @@ export const isExternalStatistic = (statisticsId: string): boolean =>
   statisticsId.includes(":");
 
 export const updateStatisticsIssues = (hass: HomeAssistant) =>
-  hass.callWS({ type: "recorder/update_statistics_issues" });
+  hass.callWS<undefined>({ type: "recorder/update_statistics_issues" });

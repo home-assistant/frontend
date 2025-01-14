@@ -63,7 +63,7 @@ export const updateUser = async (
   });
 
 export const deleteUser = async (hass: HomeAssistant, userId: string) =>
-  hass.callWS({
+  hass.callWS<undefined>({
     type: "config/auth/delete",
     user_id: userId,
   });
