@@ -48,7 +48,7 @@ export class MoreInfoHistory extends LitElement {
 
   private _interval?: number;
 
-  private _subscribed?: Promise<(() => Promise<void>) | void>;
+  private _subscribed?: Promise<(() => Promise<void>) | undefined>;
 
   private _error?: string;
 
@@ -239,6 +239,7 @@ export class MoreInfoHistory extends LitElement {
     ).catch((err) => {
       this._subscribed = undefined;
       this._error = err;
+      return undefined;
     });
     this._setRedrawTimer();
   }

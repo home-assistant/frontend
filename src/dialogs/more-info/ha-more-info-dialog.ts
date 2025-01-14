@@ -126,7 +126,7 @@ export class MoreInfoDialog extends LitElement {
         this.hass,
         this._entityId
       );
-    } catch (e) {
+    } catch (_e) {
       this._entry = null;
     }
   }

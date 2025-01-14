@@ -301,7 +301,7 @@ export class StateHistoryChartLine extends LitElement {
         prevValues = datavalues;
       };
 
-      const addDataSet = (nameY: string, fill = false, color?: string) => {
+      const addDataSet = (nameY: string, color?: string, fill = false) => {
         if (!color) {
           color = getGraphColorByIndex(colorIndex, computedStyles);
           colorIndex++;
@@ -359,8 +359,8 @@ export class StateHistoryChartLine extends LitElement {
         if (hasHeat) {
           addDataSet(
             `${this.hass.localize("ui.card.climate.heating", { name: name })}`,
-            true,
-            computedStyles.getPropertyValue("--state-climate-heat-color")
+            computedStyles.getPropertyValue("--state-climate-heat-color"),
+            true
           );
           // The "heating" series uses steppedArea to shade the area below the current
           // temperature when the thermostat is calling for heat.
@@ -368,8 +368,8 @@ export class StateHistoryChartLine extends LitElement {
         if (hasCool) {
           addDataSet(
             `${this.hass.localize("ui.card.climate.cooling", { name: name })}`,
-            true,
-            computedStyles.getPropertyValue("--state-climate-cool-color")
+            computedStyles.getPropertyValue("--state-climate-cool-color"),
+            true
           );
           // The "cooling" series uses steppedArea to shade the area below the current
           // temperature when the thermostat is calling for heat.
@@ -468,22 +468,23 @@ export class StateHistoryChartLine extends LitElement {
             `${this.hass.localize("ui.card.humidifier.humidifying", {
               name: name,
             })}`,
-            true,
-            computedStyles.getPropertyValue("--state-humidifier-on-color")
+            computedStyles.getPropertyValue("--state-humidifier-on-color"),
+            true
           );
         } else if (hasDrying) {
           addDataSet(
             `${this.hass.localize("ui.card.humidifier.drying", {
               name: name,
             })}`,
-            true,
-            computedStyles.getPropertyValue("--state-humidifier-on-color")
+            computedStyles.getPropertyValue("--state-humidifier-on-color"),
+            true
           );
         } else {
           addDataSet(
             `${this.hass.localize("ui.card.humidifier.on_entity", {
               name: name,
             })}`,
+            undefined,
             true
           );
         }

@@ -11,7 +11,7 @@ export const showUploadBackupDialog = (
   element: HTMLElement,
   params: UploadBackupDialogParams
 ) =>
-  new Promise<void | null>((resolve) => {
+  new Promise<undefined | null>((resolve) => {
     const origCancel = params.cancel;
     const origSubmit = params.submit;
     fireEvent(element, "show-dialog", {
@@ -26,7 +26,7 @@ export const showUploadBackupDialog = (
           }
         },
         submit: () => {
-          resolve();
+          resolve(undefined);
           if (origSubmit) {
             origSubmit();
           }

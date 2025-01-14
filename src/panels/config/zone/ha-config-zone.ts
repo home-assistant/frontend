@@ -522,7 +522,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         this._map?.fitMap();
       }
       return true;
-    } catch (err: any) {
+    } catch (_err: any) {
       return false;
     }
   }

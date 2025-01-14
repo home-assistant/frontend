@@ -446,7 +446,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     }
     try {
       this._otbrInfo = await getOTBRInfo(this.hass);
-    } catch (err) {
+    } catch (_err) {
       this._otbrInfo = undefined;
     }
   }

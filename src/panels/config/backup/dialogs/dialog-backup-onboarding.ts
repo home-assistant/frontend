@@ -116,7 +116,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
     this._opened = true;
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     if (this._params!.cancel) {
       this._params!.cancel();
     }
@@ -127,6 +127,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
     this._step = undefined;
     this._config = undefined;
     this._params = undefined;
+    return true;
   }
 
   private get _firstStep(): Step {

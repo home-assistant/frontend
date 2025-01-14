@@ -166,7 +166,7 @@ export class HaCameraStream extends LitElement {
         this.clientWidth,
         this.clientHeight
       );
-    } catch (err: any) {
+    } catch (_err: any) {
       // poster url is optional
       this._posterUrl = undefined;
     }

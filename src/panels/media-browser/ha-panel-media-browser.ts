@@ -274,7 +274,7 @@ class PanelMediaBrowser extends LitElement {
           item.media_content_id,
           item.media_content_type
         );
-      } catch (err) {
+      } catch (_err) {
         this._player.hideResolvingNewMediaPicked();
       }
       return;

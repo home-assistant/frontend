@@ -170,7 +170,7 @@ class MqttSubscribeCard extends LitElement {
     if (this._json_format) {
       try {
         payload = JSON.stringify(JSON.parse(message.payload), null, 4);
-      } catch (err: any) {
+      } catch (_err: any) {
         payload = message.payload;
       }
     } else {

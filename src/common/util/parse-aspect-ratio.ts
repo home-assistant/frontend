@@ -25,7 +25,7 @@ export default function parseAspectRatio(input: string) {
     return arr.length === 1
       ? { w: parseOrThrow(arr[0]), h: 1 }
       : { w: parseOrThrow(arr[0]), h: parseOrThrow(arr[1]) };
-  } catch (err: any) {
+  } catch (_err: any) {
     // Ignore the error
   }
   return null;

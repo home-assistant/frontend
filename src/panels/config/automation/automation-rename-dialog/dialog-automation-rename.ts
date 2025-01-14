@@ -72,7 +72,7 @@ class DialogAutomationRename extends LitElement implements HassDialog {
     ];
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     this._params.onClose();
 
     if (this._opened) {
@@ -80,6 +80,7 @@ class DialogAutomationRename extends LitElement implements HassDialog {
     }
     this._opened = false;
     this._visibleOptionals = [];
+    return true;
   }
 
   protected _renderOptionalChip(id: string, label: string) {

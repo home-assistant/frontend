@@ -126,7 +126,7 @@ class HaLandingPage extends LandingPageBaseElement {
           "selectedLanguage",
           JSON.stringify(language)
         );
-      } catch (err: any) {
+      } catch (_err: any) {
         // Ignore
       }
     }

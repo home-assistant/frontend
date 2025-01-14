@@ -64,10 +64,11 @@ class DialogLabelDetail
     }
   };
 
-  public closeDialog(): void {
+  public closeDialog() {
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
     document.body.removeEventListener("keydown", this._handleKeyPress);
+    return true;
   }
 
   protected render() {

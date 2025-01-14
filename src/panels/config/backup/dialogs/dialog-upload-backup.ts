@@ -65,6 +65,7 @@ export class DialogUploadBackup
 
   public closeDialog() {
     this._dialog?.close();
+    return true;
   }
 
   private _formValid() {

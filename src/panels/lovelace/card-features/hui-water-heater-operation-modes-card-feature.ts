@@ -84,7 +84,7 @@ class HuiWaterHeaterOperationModeCardFeature
 
     try {
       await this._setMode(mode);
-    } catch (err) {
+    } catch (_err) {
       this._currentOperationMode = oldMode;
     }
   }

@@ -237,9 +237,9 @@ export const subscribeHistoryStatesTimeWindow = (
   callbackFunction: (data: HistoryStates) => void,
   hoursToShow: number,
   entityIds: string[],
+  noAttributes?: boolean,
   minimalResponse = true,
-  significantChangesOnly = true,
-  noAttributes?: boolean
+  significantChangesOnly = true
 ): Promise<() => Promise<void>> => {
   const params = {
     type: "history/stream",

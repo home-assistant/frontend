@@ -15,7 +15,7 @@ import type { LocalizeFunc } from "../../../src/common/translations/localize";
 declare global {
   interface HASSDomEvents {
     "backup-uploaded": { backup: HassioBackup };
-    "backup-cleared": void;
+    "backup-cleared": undefined;
   }
 }
 
