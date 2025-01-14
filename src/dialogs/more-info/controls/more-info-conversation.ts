@@ -1,6 +1,6 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-attributes";
 import type { HomeAssistant } from "../../../types";
@@ -88,6 +88,17 @@ class MoreInfoConversation extends LitElement {
             </div>`}
     `;
   }
+
+  static styles = css`
+    :host {
+      display: flex;
+      flex: 1;
+    }
+    ha-assist-chat {
+      flex: 1;
+      min-height: 400px;
+    }
+  `;
 }
 
 declare global {

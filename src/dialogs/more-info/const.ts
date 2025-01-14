@@ -22,6 +22,7 @@ export const DOMAINS_WITH_NEW_MORE_INFO = [
   "alarm_control_panel",
   "cover",
   "climate",
+  "conversation",
   "fan",
   "humidifier",
   "input_boolean",
