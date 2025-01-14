@@ -1,4 +1,3 @@
-import "@material/mwc-formfield";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
@@ -10,6 +9,7 @@ import type {
 } from "./types";
 import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-checkbox";
+import "../ha-formfield";
 
 @customElement("ha-form-boolean")
 export class HaFormBoolean extends LitElement implements HaFormElement {
@@ -33,7 +33,7 @@ export class HaFormBoolean extends LitElement implements HaFormElement {
 
   protected render(): TemplateResult {
     return html`
-      <mwc-formfield .label=${this.label}>
+      <ha-formfield .label=${this.label}>
         <ha-checkbox
           .checked=${this.data}
           .disabled=${this.disabled}
@@ -45,7 +45,7 @@ export class HaFormBoolean extends LitElement implements HaFormElement {
             ? html`<p class="secondary">${this.helper}</p>`
             : nothing}
         </span>
-      </mwc-formfield>
+      </ha-formfield>
     `;
   }
 
