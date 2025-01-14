@@ -76,7 +76,7 @@ class HassioDashboard extends LitElement {
         .mainPage=${!atLeastVersion(this.hass.config.version, 2021, 12)}
         back-path="/config"
         supervisor
-        hasFab
+        has-fab
       >
         <span slot="header">
           ${this.supervisor.localize(

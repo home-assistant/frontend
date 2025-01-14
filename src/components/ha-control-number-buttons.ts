@@ -52,7 +52,7 @@ export class HaControlNumberButton extends LitElement {
     },
   });
 
-  private boundedValue(value: number) {
+  private _boundedValue(value: number) {
     const clamped = conditionalClamp(value, this.min, this.max);
     return Math.round(clamped / this._step) * this._step;
   }
@@ -86,14 +86,14 @@ export class HaControlNumberButton extends LitElement {
   }
 
   private _increment() {
-    this.value = this.boundedValue(this._value + this._step);
+    this.value = this._boundedValue(this._value + this._step);
   }
 
   private _decrement() {
-    this.value = this.boundedValue(this._value - this._step);
+    this.value = this._boundedValue(this._value - this._step);
   }
 
-  _handleKeyDown(e: KeyboardEvent) {
+  private _handleKeyDown(e: KeyboardEvent) {
     if (this.disabled) return;
     if (!A11Y_KEY_CODES.has(e.code)) return;
     e.preventDefault();
@@ -107,10 +107,10 @@ export class HaControlNumberButton extends LitElement {
         this._decrement();
         break;
       case "PageUp":
-        this.value = this.boundedValue(this._value + this._tenPercentStep);
+        this.value = this._boundedValue(this._value + this._tenPercentStep);
         break;
       case "PageDown":
-        this.value = this.boundedValue(this._value - this._tenPercentStep);
+        this.value = this._boundedValue(this._value - this._tenPercentStep);
         break;
       case "Home":
         if (this.min != null) {

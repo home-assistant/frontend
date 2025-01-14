@@ -3,7 +3,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-dialog";
+import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-formfield";
 import "../../components/ha-switch";
 import type { HaSwitch } from "../../components/ha-switch";
@@ -52,14 +52,14 @@ class DialogConfigEntrySystemOptions extends LitElement {
       <ha-dialog
         open
         @closed=${this.closeDialog}
-        .heading=${this.hass.localize(
-          "ui.dialogs.config_entry_system_options.title",
-          {
+        .heading=${createCloseHeading(
+          this.hass,
+          this.hass.localize("ui.dialogs.config_entry_system_options.title", {
             integration:
               this.hass.localize(
                 `component.${this._params.entry.domain}.title`
               ) || this._params.entry.domain,
-          }
+          })
         )}
       >
         ${this._error ? html` <div class="error">${this._error}</div> ` : ""}

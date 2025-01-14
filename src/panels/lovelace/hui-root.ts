@@ -78,6 +78,7 @@ import type { Lovelace } from "./types";
 import "./views/hui-view";
 import "./views/hui-view-container";
 import type { HUIView } from "./views/hui-view";
+import "./views/hui-view-background";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
@@ -469,11 +470,12 @@ class HUIRoot extends LitElement {
         </div>
         <hui-view-container
           .hass=${this.hass}
-          .background=${background}
           .theme=${curViewConfig?.theme}
           id="view"
           @ll-rebuild=${this._debouncedConfigChanged}
         >
+          <hui-view-background .hass=${this.hass} .background=${background}>
+          </hui-view-background>
         </hui-view-container>
       </div>
     `;
@@ -814,7 +816,7 @@ class HUIRoot extends LitElement {
         try {
           await deleteDashboard(this.hass!, dashboard!.id);
           return true;
-        } catch (err: any) {
+        } catch (_err: any) {
           return false;
         }
       },

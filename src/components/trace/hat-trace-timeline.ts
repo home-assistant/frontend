@@ -266,7 +266,7 @@ class ActionRenderer {
     let data;
     try {
       data = getDataFromPath(this.trace.config, path);
-    } catch (err: any) {
+    } catch (_err: any) {
       this._renderEntry(
         path,
         this.hass.localize(
@@ -676,7 +676,8 @@ export class HaAutomationTracer extends LitElement {
 
   @property({ attribute: false }) public selectedPath?: string;
 
-  @property({ type: Boolean }) public allowPick = false;
+  @property({ attribute: "allow-pick", type: Boolean }) public allowPick =
+    false;
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -838,7 +839,7 @@ export class HaAutomationTracer extends LitElement {
 
     entries.push(html`
       <ha-timeline
-        lastItem
+        last-item
         .icon=${entry.icon}
         class=${ifDefined(entry.className)}
       >

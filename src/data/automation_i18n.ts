@@ -682,19 +682,27 @@ const tryDescribeTrigger = (
 
   // Conversation Trigger
   if (trigger.trigger === "conversation") {
-    if (!trigger.command) {
+    if (!trigger.command || !trigger.command.length) {
       return hass.localize(
         `${triggerTranslationBaseKey}.conversation.description.empty`
       );
     }
 
+    const commands = ensureArray(trigger.command);
+
+    if (commands.length === 1) {
+      return hass.localize(
+        `${triggerTranslationBaseKey}.conversation.description.single`,
+        {
+          sentence: commands[0],
+        }
+      );
+    }
     return hass.localize(
-      `${triggerTranslationBaseKey}.conversation.description.full`,
+      `${triggerTranslationBaseKey}.conversation.description.multiple`,
       {
-        sentence: formatListWithOrs(
-          hass.locale,
-          ensureArray(trigger.command).map((cmd) => `'${cmd}'`)
-        ),
+        sentence: commands[0],
+        count: commands.length - 1,
       }
     );
   }
@@ -729,18 +737,22 @@ const tryDescribeTrigger = (
       ? computeStateName(hass.states[trigger.entity_id])
       : trigger.entity_id;
 
-    let offsetChoice = trigger.offset.startsWith("-") ? "before" : "after";
-    let offset: string | string[] = trigger.offset.startsWith("-")
-      ? trigger.offset.substring(1).split(":")
-      : trigger.offset.split(":");
-    const duration = {
-      hours: offset.length > 0 ? +offset[0] : 0,
-      minutes: offset.length > 1 ? +offset[1] : 0,
-      seconds: offset.length > 2 ? +offset[2] : 0,
-    };
-    offset = formatDurationLong(hass.locale, duration);
-    if (offset === "") {
-      offsetChoice = "other";
+    let offsetChoice: string = "other";
+    let offset: string | string[] = "";
+    if (trigger.offset) {
+      offsetChoice = trigger.offset.startsWith("-") ? "before" : "after";
+      offset = trigger.offset.startsWith("-")
+        ? trigger.offset.substring(1).split(":")
+        : trigger.offset.split(":");
+      const duration = {
+        hours: offset.length > 0 ? +offset[0] : 0,
+        minutes: offset.length > 1 ? +offset[1] : 0,
+        seconds: offset.length > 2 ? +offset[2] : 0,
+      };
+      offset = formatDurationLong(hass.locale, duration);
+      if (offset === "") {
+        offsetChoice = "other";
+      }
     }
 
     return hass.localize(

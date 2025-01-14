@@ -19,6 +19,10 @@ export class HaFab extends FabBase {
         margin-inline-end: 12px;
         direction: var(--direction);
       }
+      :disabled {
+        --mdc-theme-secondary: var(--disabled-text-color);
+        pointer-events: none;
+      }
     `,
     // safari workaround - must be explicit
     mainWindow.document.dir === "rtl"

@@ -7,10 +7,10 @@ import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
 import { FlatCompat } from "@eslint/eslintrc";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = path.dirname(_filename);
 const compat = new FlatCompat({
-  baseDirectory: __dirname,
+  baseDirectory: _dirname,
   recommendedConfig: js.configs.recommended,
   allConfig: js.configs.all,
 });
@@ -18,8 +18,8 @@ const compat = new FlatCompat({
 export default [
   ...compat.extends(
     "airbnb-base",
-    "airbnb-typescript/base",
     "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/strict",
     "plugin:wc/recommended",
     "plugin:lit/all",
     "plugin:lit-a11y/recommended",
@@ -50,8 +50,6 @@ export default [
         ecmaFeatures: {
           modules: true,
         },
-
-        project: "./tsconfig.json",
       },
     },
 
@@ -114,12 +112,21 @@ export default [
       "@typescript-eslint/no-shadow": ["error"],
 
       "@typescript-eslint/naming-convention": [
-        "warn",
+        "error",
+        {
+          selector: ["objectLiteralProperty", "objectLiteralMethod"],
+          format: null,
+        },
         {
           selector: ["variable"],
           format: ["camelCase", "snake_case", "UPPER_CASE"],
           leadingUnderscore: "allow",
           trailingUnderscore: "allow",
+        },
+        {
+          selector: ["variable"],
+          modifiers: ["exported"],
+          format: ["camelCase", "PascalCase", "UPPER_CASE"],
         },
         {
           selector: "typeLike",
@@ -139,32 +146,42 @@ export default [
         },
       ],
 
-      "@typescript-eslint/no-unused-vars": "off",
-
-      "unused-imports/no-unused-vars": [
+      "@typescript-eslint/no-unused-vars": [
         "error",
         {
-          vars: "all",
-          varsIgnorePattern: "^_",
-          args: "after-used",
+          args: "all",
           argsIgnorePattern: "^_",
+          caughtErrors: "all",
+          caughtErrorsIgnorePattern: "^_",
+          destructuredArrayIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
           ignoreRestSiblings: true,
         },
       ],
 
       "unused-imports/no-unused-imports": "error",
-      "lit/attribute-names": "warn",
+      "lit/attribute-names": "error",
       "lit/attribute-value-entities": "off",
       "lit/no-template-map": "off",
-      "lit/no-native-attributes": "warn",
-      "lit/no-this-assign-in-render": "warn",
+      "lit/no-native-attributes": "error",
+      "lit/no-this-assign-in-render": "error",
       "lit-a11y/click-events-have-key-events": ["off"],
       "lit-a11y/no-autofocus": "off",
-      "lit-a11y/alt-text": "warn",
-      "lit-a11y/anchor-is-valid": "warn",
-      "lit-a11y/role-has-required-aria-attrs": "warn",
+      "lit-a11y/alt-text": "error",
+      "lit-a11y/anchor-is-valid": "error",
+      "lit-a11y/role-has-required-aria-attrs": "error",
       "@typescript-eslint/consistent-type-imports": "error",
       "@typescript-eslint/no-import-type-side-effects": "error",
+      camelcase: "off",
+      "@typescript-eslint/no-dynamic-delete": "off",
+      "@typescript-eslint/no-empty-object-type": [
+        "error",
+        {
+          allowInterfaces: "always",
+          allowObjectTypes: "always",
+        },
+      ],
+      "no-use-before-define": "off",
     },
   },
 ];

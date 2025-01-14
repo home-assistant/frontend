@@ -50,7 +50,7 @@ class HaPushNotificationsToggle extends LitElement {
         this._loading = false;
         this._pushChecked = !!subscription;
       });
-    } catch (err) {
+    } catch (_err) {
       // We don't set loading to `false` so we remain disabled
     }
   }
@@ -96,7 +96,7 @@ class HaPushNotificationsToggle extends LitElement {
       let applicationServerKey: Uint8Array | null;
       try {
         applicationServerKey = await getAppKey(this.hass);
-      } catch (ex) {
+      } catch (_err) {
         applicationServerKey = null;
       }
 

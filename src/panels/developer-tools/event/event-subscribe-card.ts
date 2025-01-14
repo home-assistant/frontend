@@ -104,7 +104,7 @@ class EventSubscribeCard extends LitElement {
                   )}:
                   <ha-yaml-editor
                     .defaultValue=${event.event}
-                    readOnly
+                    read-only
                   ></ha-yaml-editor>
                 </div>
               `

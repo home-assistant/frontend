@@ -65,7 +65,7 @@ const _computeAddons = (addons): AddonCheckboxItem[] =>
 
 @customElement("supervisor-backup-content")
 export class SupervisorBackupContent extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public localize?: LocalizeFunc;
 
@@ -73,23 +73,24 @@ export class SupervisorBackupContent extends LitElement {
 
   @property({ attribute: false }) public backup?: HassioBackupDetail;
 
-  @property() public backupType: HassioBackupDetail["type"] = "full";
+  @property({ attribute: false })
+  public backupType: HassioBackupDetail["type"] = "full";
 
   @property({ attribute: false }) public folders?: CheckboxItem[];
 
   @property({ attribute: false }) public addons?: AddonCheckboxItem[];
 
-  @property({ type: Boolean }) public homeAssistant = false;
+  @property({ attribute: false }) public homeAssistant = false;
 
-  @property({ type: Boolean }) public backupHasPassword = false;
+  @property({ attribute: false }) public backupHasPassword = false;
 
   @property({ type: Boolean }) public onboarding = false;
 
-  @property() public backupName = "";
+  @property({ attribute: false }) public backupName = "";
 
-  @property() public backupPassword = "";
+  @property({ attribute: false }) public backupPassword = "";
 
-  @property() public confirmBackupPassword = "";
+  @property({ attribute: false }) public confirmBackupPassword = "";
 
   @query("ha-textfield, ha-radio, ha-checkbox", true) private _focusTarget;
 
@@ -185,13 +186,14 @@ export class SupervisorBackupContent extends LitElement {
                     .iconPath=${mdiHomeAssistant}
                     .version=${this.backup
                       ? this.backup.homeassistant
-                      : this.hass.config.version}
+                      : this.hass?.config.version}
                   >
                   </supervisor-formfield-label>`}
                 >
                   <ha-checkbox
-                    .checked=${this.homeAssistant}
-                    @change=${this.toggleHomeAssistant}
+                    .checked=${this.onboarding || this.homeAssistant}
+                    .disabled=${this.onboarding}
+                    @change=${this._toggleHomeAssistant}
                   >
                   </ha-checkbox>
                 </ha-formfield>`
@@ -277,7 +279,7 @@ export class SupervisorBackupContent extends LitElement {
     `;
   }
 
-  private toggleHomeAssistant() {
+  private _toggleHomeAssistant() {
     this.homeAssistant = !this.homeAssistant;
   }
 
@@ -333,7 +335,7 @@ export class SupervisorBackupContent extends LitElement {
     | HassioFullBackupCreateParams {
     const data: any = {};
 
-    if (!this.backup) {
+    if (!this.backup && this.hass) {
       data.name =
         this.backupName ||
         formatDate(new Date(), this.hass.locale, this.hass.config);
@@ -363,7 +365,9 @@ export class SupervisorBackupContent extends LitElement {
     if (folders?.length) {
       data.folders = folders;
     }
-    data.homeassistant = this.homeAssistant;
+
+    // onboarding needs at least homeassistant to restore
+    data.homeassistant = this.onboarding || this.homeAssistant;
 
     return data;
   }
@@ -385,6 +389,7 @@ export class SupervisorBackupContent extends LitElement {
             .iconPath=${section === "addons" ? mdiPuzzle : mdiFolder}
             .imageUrl=${section === "addons" &&
             !this.onboarding &&
+            this.hass &&
             atLeastVersion(this.hass.config.version, 0, 105) &&
             addons?.get(item.slug)?.icon
               ? `/api/hassio/addons/${item.slug}/icon`

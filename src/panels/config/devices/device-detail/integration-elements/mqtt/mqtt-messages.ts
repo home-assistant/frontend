@@ -15,11 +15,13 @@ class MQTTMessages extends LitElement {
 
   @property() public direction!: string;
 
-  @property({ type: Boolean }) public showAsYaml = false;
+  @property({ attribute: "show-as-yaml", type: Boolean })
+  public showAsYaml = false;
 
-  @property({ type: Boolean }) public showDeserialized = false;
+  @property({ attribute: "show-deserialized", type: Boolean })
+  public showDeserialized = false;
 
-  @property() public subscribedTopic!: string;
+  @property({ attribute: false }) public subscribedTopic!: string;
 
   @property() public summary!: string;
 
@@ -111,7 +113,7 @@ class MQTTMessages extends LitElement {
     if (typeof payload === "string") {
       try {
         o = JSON.parse(payload);
-      } catch (err: any) {
+      } catch (_err: any) {
         o = null;
       }
     }

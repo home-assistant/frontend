@@ -9,7 +9,7 @@ import "../components/ha-svg-icon";
 class OnboardingWelcomeLink extends LitElement {
   @property() public label!: string;
 
-  @property() public iconPath!: string;
+  @property({ attribute: false }) public iconPath!: string;
 
   @property({ type: Boolean }) public noninteractive = false;
 

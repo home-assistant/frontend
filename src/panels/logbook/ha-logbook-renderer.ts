@@ -558,11 +558,12 @@ class HaLogbookRenderer extends LitElement {
     });
   }
 
-  _handleClick(ev) {
-    if (!ev.currentTarget.traceLink) {
+  private _handleClick(ev: Event) {
+    const target = ev.currentTarget as any;
+    if (!target.traceLink) {
       return;
     }
-    navigate(ev.currentTarget.traceLink);
+    navigate(target.traceLink);
     fireEvent(this, "closed");
   }
 

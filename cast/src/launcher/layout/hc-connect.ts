@@ -215,7 +215,7 @@ export class HcConnect extends LitElement {
     let url: URL;
     try {
       url = new URL(value);
-    } catch (err: any) {
+    } catch (_err: any) {
       this.error = "Invalid URL";
       return;
     }
@@ -252,7 +252,7 @@ export class HcConnect extends LitElement {
       this.loading = false;
       return;
     } finally {
-      // Clear url if we have a auth callback in url.
+      // Clear url if we have an auth callback in url.
       if (location.search.includes("auth_callback=1")) {
         history.replaceState(null, "", location.pathname);
       }
@@ -288,7 +288,7 @@ export class HcConnect extends LitElement {
     try {
       saveTokens(null);
       location.reload();
-    } catch (err: any) {
+    } catch (_err: any) {
       alert("Unable to log out!");
     }
   }

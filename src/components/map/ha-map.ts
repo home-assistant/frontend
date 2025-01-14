@@ -52,7 +52,7 @@ export interface HaMapPaths {
 export interface HaMapEntity {
   entity_id: string;
   color: string;
-  label_mode?: "name" | "state";
+  label_mode?: "name" | "state" | "icon";
   name?: string;
   focus?: boolean;
 }
@@ -69,13 +69,15 @@ export class HaMap extends ReactiveElement {
 
   @property({ type: Boolean }) public clickable = false;
 
-  @property({ type: Boolean }) public autoFit = false;
+  @property({ attribute: "auto-fit", type: Boolean }) public autoFit = false;
 
-  @property({ type: Boolean }) public renderPassive = false;
+  @property({ attribute: "render-passive", type: Boolean })
+  public renderPassive = false;
 
-  @property({ type: Boolean }) public interactiveZones = false;
+  @property({ attribute: "interactive-zones", type: Boolean })
+  public interactiveZones = false;
 
-  @property({ type: Boolean }) public fitZones = false;
+  @property({ attribute: "fit-zones", type: Boolean }) public fitZones = false;
 
   @property({ attribute: "theme-mode", type: String })
   public themeMode: ThemeMode = "auto";
@@ -318,6 +320,7 @@ export class HaMap extends ReactiveElement {
   private _drawPaths(): void {
     const hass = this.hass;
     const map = this.leafletMap;
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     const Leaflet = this.Leaflet;
 
     if (!hass || !map || !Leaflet) {
@@ -354,23 +357,21 @@ export class HaMap extends ReactiveElement {
 
         // DRAW point
         this._mapPaths.push(
-          Leaflet!
-            .circleMarker(path.points[pointIndex].point, {
-              radius: isTouch ? 8 : 3,
-              color: path.color || darkPrimaryColor,
-              opacity,
-              fillOpacity: opacity,
-              interactive: true,
-            })
-            .bindTooltip(
-              this._computePathTooltip(path, path.points[pointIndex]),
-              { direction: "top" }
-            )
+          Leaflet.circleMarker(path.points[pointIndex].point, {
+            radius: isTouch ? 8 : 3,
+            color: path.color || darkPrimaryColor,
+            opacity,
+            fillOpacity: opacity,
+            interactive: true,
+          }).bindTooltip(
+            this._computePathTooltip(path, path.points[pointIndex]),
+            { direction: "top" }
+          )
         );
 
         // DRAW line between this and next point
         this._mapPaths.push(
-          Leaflet!.polyline(
+          Leaflet.polyline(
             [path.points[pointIndex].point, path.points[pointIndex + 1].point],
             {
               color: path.color || darkPrimaryColor,
@@ -387,18 +388,16 @@ export class HaMap extends ReactiveElement {
           : undefined;
         // DRAW end path point
         this._mapPaths.push(
-          Leaflet!
-            .circleMarker(path.points[pointIndex].point, {
-              radius: isTouch ? 8 : 3,
-              color: path.color || darkPrimaryColor,
-              opacity,
-              fillOpacity: opacity,
-              interactive: true,
-            })
-            .bindTooltip(
-              this._computePathTooltip(path, path.points[pointIndex]),
-              { direction: "top" }
-            )
+          Leaflet.circleMarker(path.points[pointIndex].point, {
+            radius: isTouch ? 8 : 3,
+            color: path.color || darkPrimaryColor,
+            opacity,
+            fillOpacity: opacity,
+            interactive: true,
+          }).bindTooltip(
+            this._computePathTooltip(path, path.points[pointIndex]),
+            { direction: "top" }
+          )
         );
       }
       this._mapPaths.forEach((marker) => map.addLayer(marker));
@@ -408,6 +407,7 @@ export class HaMap extends ReactiveElement {
   private _drawEntities(): void {
     const hass = this.hass;
     const map = this.leafletMap;
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     const Leaflet = this.Leaflet;
 
     if (!hass || !map || !Leaflet) {
@@ -523,23 +523,24 @@ export class HaMap extends ReactiveElement {
               .join("")
               .substr(0, 3));
 
+      const entityMarker = document.createElement("ha-entity-marker");
+      entityMarker.hass = this.hass;
+      entityMarker.showIcon =
+        typeof entity !== "string" && entity.label_mode === "icon";
+      entityMarker.entityId = getEntityId(entity);
+      entityMarker.entityName = entityName;
+      entityMarker.entityPicture =
+        entityPicture && (typeof entity === "string" || !entity.label_mode)
+          ? this.hass.hassUrl(entityPicture)
+          : "";
+      if (typeof entity !== "string") {
+        entityMarker.entityColor = entity.color;
+      }
+
       // create marker with the icon
       const marker = Leaflet.marker([latitude, longitude], {
         icon: Leaflet.divIcon({
-          html: `
-              <ha-entity-marker
-                entity-id="${getEntityId(entity)}"
-                entity-name="${entityName}"
-                entity-picture="${
-                  entityPicture ? this.hass.hassUrl(entityPicture) : ""
-                }"
-                ${
-                  typeof entity !== "string"
-                    ? `entity-color="${entity.color}"`
-                    : ""
-                }
-              ></ha-entity-marker>
-            `,
+          html: entityMarker,
           iconSize: [48, 48],
           className: "",
         }),

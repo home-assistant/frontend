@@ -30,7 +30,7 @@ export class HaGauge extends LitElement {
   @property({ attribute: false })
   public formatOptions?: Intl.NumberFormatOptions;
 
-  @property({ type: String }) public valueText?: string;
+  @property({ attribute: false, type: String }) public valueText?: string;
 
   @property({ attribute: false }) public locale!: FrontendLocaleData;
 
@@ -52,8 +52,8 @@ export class HaGauge extends LitElement {
     afterNextRender(() => {
       this._updated = true;
       this._angle = getAngle(this.value, this.min, this.max);
-      this._segment_label = this.getSegmentLabel();
-      this._rescale_svg();
+      this._segment_label = this._getSegmentLabel();
+      this._rescaleSvg();
     });
   }
 
@@ -62,14 +62,15 @@ export class HaGauge extends LitElement {
     if (
       !this._updated ||
       (!changedProperties.has("value") &&
+        !changedProperties.has("valueText") &&
         !changedProperties.has("label") &&
         !changedProperties.has("_segment_label"))
     ) {
       return;
     }
     this._angle = getAngle(this.value, this.min, this.max);
-    this._segment_label = this.getSegmentLabel();
-    this._rescale_svg();
+    this._segment_label = this._getSegmentLabel();
+    this._rescaleSvg();
   }
 
   protected render() {
@@ -149,7 +150,7 @@ export class HaGauge extends LitElement {
       </svg>`;
   }
 
-  private _rescale_svg() {
+  private _rescaleSvg() {
     // Set the viewbox of the SVG containing the value to perfectly
     // fit the text
     // That way it will auto-scale correctly
@@ -161,7 +162,7 @@ export class HaGauge extends LitElement {
     );
   }
 
-  private getSegmentLabel() {
+  private _getSegmentLabel() {
     if (this.levels) {
       this.levels.sort((a, b) => a.level - b.level);
       for (let i = this.levels.length - 1; i >= 0; i--) {

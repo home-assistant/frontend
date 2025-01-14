@@ -30,6 +30,7 @@ export class HuiEnergyCompareCard
 
   @state() private _endCompare?: Date;
 
+  // eslint-disable-next-line lit/no-native-attributes
   @property({ type: Boolean, reflect: true }) hidden = true;
 
   public getCardSize(): Promise<number> | number {

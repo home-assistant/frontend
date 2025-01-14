@@ -44,11 +44,11 @@ import type { EntityRegistryEntry } from "../../../data/entity_registry";
 export class HaScriptTrace extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public scriptId!: string;
+  @property({ attribute: false }) public scriptId!: string;
 
   @property({ attribute: false }) public scripts!: ScriptEntity[];
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
@@ -178,7 +178,9 @@ export class HaScriptTrace extends LitElement {
                 <ha-icon-button
                   .disabled=${this._traces[this._traces.length - 1].run_id ===
                   this._runId}
-                  label="Older trace"
+                  .label=${this.hass!.localize(
+                    "ui.panel.config.automation.trace.older_trace"
+                  )}
                   @click=${this._pickOlderTrace}
                   .path=${mdiRayEndArrow}
                 ></ha-icon-button>
@@ -198,7 +200,9 @@ export class HaScriptTrace extends LitElement {
                 </select>
                 <ha-icon-button
                   .disabled=${this._traces[0].run_id === this._runId}
-                  label="Newer trace"
+                  .label=${this.hass!.localize(
+                    "ui.panel.config.automation.trace.newer_trace"
+                  )}
                   @click=${this._pickNewerTrace}
                   .path=${mdiRayStartArrow}
                 ></ha-icon-button>
@@ -487,13 +491,15 @@ export class HaScriptTrace extends LitElement {
     if (!traceText) {
       return;
     }
-    localStorage.devTrace = traceText;
+
+    window.localStorage.setItem("devTrace", traceText);
     this._loadLocalTrace(traceText);
   }
 
   private _loadLocalStorageTrace() {
-    if (localStorage.devTrace) {
-      this._loadLocalTrace(localStorage.devTrace);
+    const devTrace = window.localStorage.getItem("devTrace");
+    if (devTrace) {
+      this._loadLocalTrace(devTrace);
     }
   }
 

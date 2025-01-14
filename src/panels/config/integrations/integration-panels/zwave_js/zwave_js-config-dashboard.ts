@@ -36,6 +36,7 @@ import {
   fetchZwaveProvisioningEntries,
   InclusionState,
   setZwaveDataCollectionPreference,
+  subscribeS2Inclusion,
   subscribeZwaveControllerStatistics,
 } from "../../../../../data/zwave_js";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
@@ -56,9 +57,9 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property() public configEntryId!: string;
+  @property({ attribute: false }) public configEntryId!: string;
 
   @state() private _configEntry?: ConfigEntry;
 
@@ -102,6 +103,13 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           this._statistics = message;
         }
       ),
+      subscribeS2Inclusion(this.hass, this.configEntryId, (message) => {
+        showZWaveJSAddNodeDialog(this, {
+          entry_id: this.configEntryId,
+          dsk: message.dsk,
+          onStop: () => setTimeout(() => this._fetchData(), 100),
+        });
+      }),
     ];
   }
 

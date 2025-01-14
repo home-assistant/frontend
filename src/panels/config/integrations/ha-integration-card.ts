@@ -38,7 +38,8 @@ export class HaIntegrationCard extends LitElement {
   @property({ attribute: false })
   public entityRegistryEntries!: EntityRegistryEntry[];
 
-  @property({ type: Boolean }) public supportsDiagnostics = false;
+  @property({ attribute: "supports-diagnostics", type: Boolean })
+  public supportsDiagnostics = false;
 
   @property({ attribute: false }) public logInfo?: IntegrationLogInfo;
 

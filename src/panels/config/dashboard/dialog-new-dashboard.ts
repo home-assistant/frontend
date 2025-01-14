@@ -45,12 +45,13 @@ class DialogNewDashboard extends LitElement implements HassDialog {
     this._params = params;
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     if (this._opened) {
       fireEvent(this, "dialog-closed", { dialog: this.localName });
     }
     this._opened = false;
     this._params = undefined;
+    return true;
   }
 
   protected render() {

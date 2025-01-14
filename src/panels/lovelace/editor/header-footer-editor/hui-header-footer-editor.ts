@@ -17,7 +17,7 @@ export class HuiHeaderFooterEditor extends LitElement {
 
   @property({ attribute: false }) public config?: LovelaceHeaderFooterConfig;
 
-  @property() public configValue!: "header" | "footer";
+  @property({ attribute: false }) public configValue!: "header" | "footer";
 
   protected render(): TemplateResult {
     return html`

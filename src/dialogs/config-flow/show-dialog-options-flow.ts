@@ -61,7 +61,7 @@ export const showOptionsFlowDialog = (
           ? html`
               <ha-markdown
                 breaks
-                allowsvg
+                allow-svg
                 .content=${description}
               ></ha-markdown>
             `
@@ -85,7 +85,7 @@ export const showOptionsFlowDialog = (
         return description
           ? html`
               <ha-markdown
-                allowsvg
+                allow-svg
                 breaks
                 .content=${description}
               ></ha-markdown>
@@ -183,7 +183,7 @@ export const showOptionsFlowDialog = (
         return description
           ? html`
               <ha-markdown
-                allowsvg
+                allow-svg
                 breaks
                 .content=${description}
               ></ha-markdown>
@@ -207,7 +207,7 @@ export const showOptionsFlowDialog = (
         return description
           ? html`
               <ha-markdown
-                allowsvg
+                allow-svg
                 breaks
                 .content=${description}
               ></ha-markdown>

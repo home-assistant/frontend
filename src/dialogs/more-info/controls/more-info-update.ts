@@ -12,8 +12,6 @@ import "../../../components/ha-faded";
 import "../../../components/ha-formfield";
 import "../../../components/ha-markdown";
 import "../../../components/ha-settings-row";
-import "../../../components/ha-switch";
-import type { HaSwitch } from "../../../components/ha-switch";
 import { isUnavailableState } from "../../../data/entity";
 import type { UpdateEntity } from "../../../data/update";
 import {
@@ -136,22 +134,6 @@ class MoreInfoUpdate extends LitElement {
             : nothing}
       </div>
       <div class="footer">
-        ${supportsFeature(this.stateObj, UpdateEntityFeature.BACKUP)
-          ? html`
-              <ha-settings-row>
-                <span slot="heading">
-                  ${this.hass.localize(
-                    "ui.dialogs.more_info_control.update.create_backup"
-                  )}
-                </span>
-                <ha-switch
-                  id="create-backup"
-                  checked
-                  .disabled=${updateIsInstalling(this.stateObj)}
-                ></ha-switch>
-              </ha-settings-row>
-            `
-          : nothing}
         <div class="actions">
           ${this.stateObj.state === BINARY_STATE_OFF &&
           this.stateObj.attributes.skipped_version
@@ -224,27 +206,10 @@ class MoreInfoUpdate extends LitElement {
     }
   }
 
-  get _shouldCreateBackup(): boolean | null {
-    if (!supportsFeature(this.stateObj!, UpdateEntityFeature.BACKUP)) {
-      return null;
-    }
-    const createBackupSwitch = this.shadowRoot?.getElementById(
-      "create-backup"
-    ) as HaSwitch;
-    if (createBackupSwitch) {
-      return createBackupSwitch.checked;
-    }
-    return true;
-  }
-
   private _handleInstall(): void {
     const installData: Record<string, any> = {
       entity_id: this.stateObj!.entity_id,
     };
-
-    if (this._shouldCreateBackup) {
-      installData.backup = true;
-    }
 
     if (
       supportsFeature(this.stateObj!, UpdateEntityFeature.SPECIFIC_VERSION) &&

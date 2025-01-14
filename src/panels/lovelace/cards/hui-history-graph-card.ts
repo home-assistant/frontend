@@ -7,18 +7,21 @@ import "../../../components/chart/state-history-charts";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
-import type { HistoryResult } from "../../../data/history";
 import {
   computeHistory,
   subscribeHistoryStatesTimeWindow,
+  type HistoryResult,
+  convertStatisticsToHistory,
+  mergeHistoryResults,
 } from "../../../data/history";
 import { getSensorNumericDeviceClasses } from "../../../data/sensor";
 import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
-import type { LovelaceCard } from "../types";
+import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import type { HistoryGraphCardConfig } from "./types";
 import { createSearchParam } from "../../../common/url/search-params";
+import { fetchStatistics } from "../../../data/recorder";
 
 export const DEFAULT_HOURS_TO_SHOW = 24;
 
@@ -36,7 +39,9 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @state() private _stateHistory?: HistoryResult;
+  @state() private _history?: HistoryResult;
+
+  @state() private _statisticsHistory?: HistoryResult;
 
   @state() private _config?: HistoryGraphCardConfig;
 
@@ -50,10 +55,18 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   private _interval?: number;
 
-  private _subscribed?: Promise<(() => Promise<void>) | void>;
+  private _subscribed?: Promise<(() => Promise<void>) | undefined>;
 
   public getCardSize(): number {
     return this._config?.title ? 2 : 0 + 2 * (this._entityIds?.length || 1);
+  }
+
+  getGridOptions(): LovelaceGridOptions {
+    return {
+      columns: 12,
+      min_columns: 6,
+      min_rows: (this._config?.entities?.length || 1) * 2,
+    };
   }
 
   public setConfig(config: HistoryGraphCardConfig): void {
@@ -110,12 +123,18 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
           return;
         }
 
-        this._stateHistory = computeHistory(
+        const stateHistory = computeHistory(
           this.hass!,
           combinedHistory,
           this._entityIds,
           this.hass!.localize,
           sensorNumericDeviceClasses,
+          this._config?.split_device_classes
+        );
+
+        this._history = mergeHistoryResults(
+          stateHistory,
+          this._statisticsHistory,
           this._config?.split_device_classes
         );
       },
@@ -124,13 +143,41 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     ).catch((err) => {
       this._subscribed = undefined;
       this._error = err;
+      return undefined;
     });
+
+    await this._fetchStatistics(sensorNumericDeviceClasses);
+
     this._setRedrawTimer();
   }
 
+  private async _fetchStatistics(sensorNumericDeviceClasses: string[]) {
+    const now = new Date();
+    const start = new Date();
+    start.setHours(start.getHours() - this._hoursToShow);
+
+    const statistics = await fetchStatistics(
+      this.hass!,
+      start,
+      now,
+      this._entityIds,
+      "hour",
+      undefined,
+      ["mean", "state"]
+    );
+
+    this._statisticsHistory = convertStatisticsToHistory(
+      this.hass!,
+      statistics,
+      this._entityIds,
+      sensorNumericDeviceClasses,
+      this._config?.split_device_classes
+    );
+  }
+
   private _redrawGraph() {
-    if (this._stateHistory) {
-      this._stateHistory = { ...this._stateHistory };
+    if (this._history) {
+      this._history = { ...this._history };
     }
   }
 
@@ -221,8 +268,8 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
             : html`
                 <state-history-charts
                   .hass=${this.hass}
-                  .isLoadingData=${!this._stateHistory}
-                  .historyData=${this._stateHistory}
+                  .isLoadingData=${!this._history}
+                  .historyData=${this._history}
                   .names=${this._names}
                   up-to-now
                   .hoursToShow=${this._hoursToShow}

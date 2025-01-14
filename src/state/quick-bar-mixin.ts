@@ -65,13 +65,11 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         a: (ev) => this._showVoiceCommandDialog(ev),
         d: (ev) => this._showQuickBar(ev, QuickBarMode.Device),
         // Those are fallbacks for non-latin keyboards that don't have e, c, m keys (qwerty-based shortcuts)
-        /* eslint-disable @typescript-eslint/naming-convention */
         KeyE: (ev) => this._showQuickBar(ev),
         KeyC: (ev) => this._showQuickBar(ev, QuickBarMode.Command),
         KeyM: (ev) => this._createMyLink(ev),
         KeyA: (ev) => this._showVoiceCommandDialog(ev),
         KeyD: (ev) => this._showQuickBar(ev, QuickBarMode.Device),
-        /* eslint-enable @typescript-eslint/naming-convention */
       });
     }
 
@@ -152,9 +150,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
 
       const myPanel = await import("../panels/my/ha-panel-my");
 
-      for (const [slug, redirect] of Object.entries(
-        myPanel.getMyRedirects(isHassio)
-      )) {
+      for (const [slug, redirect] of Object.entries(myPanel.getMyRedirects())) {
         if (targetPath.startsWith(redirect.redirect)) {
           myParams.append("redirect", slug);
           if (redirect.params) {

@@ -90,18 +90,15 @@ export class HuiDialogSelectView extends LitElement {
               >
                 Default
               </mwc-list-item>
-              ${this._dashboards.map((dashboard) => {
-                if (!this.hass.user!.is_admin && dashboard.require_admin) {
-                  return "";
-                }
-                return html`
+              ${this._dashboards.map(
+                (dashboard) => html`
                   <mwc-list-item
                     .disabled=${dashboard.mode !== "storage"}
                     .value=${dashboard.url_path}
                     >${dashboard.title}</mwc-list-item
                   >
-                `;
-              })}
+                `
+              )}
             </ha-select>`
           : ""}
         ${!this._config || (this._config.views || []).length < 1
@@ -181,7 +178,7 @@ export class HuiDialogSelectView extends LitElement {
         urlPath,
         false
       )) as LovelaceConfig;
-    } catch (err: any) {
+    } catch (_err: any) {
       this._config = undefined;
     }
   }

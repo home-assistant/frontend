@@ -42,7 +42,7 @@ export const addEntitiesToLovelaceView = async (
   if (mainLovelaceMode === "storage") {
     try {
       lovelaceConfig = await fetchConfig(hass.connection, null, false);
-    } catch (err: any) {
+    } catch (_err: any) {
       // default dashboard is in generated mode
     }
   }
@@ -59,7 +59,7 @@ export const addEntitiesToLovelaceView = async (
         );
         urlPath = storageDash.url_path;
         break;
-      } catch (err: any) {
+      } catch (_err: any) {
         // dashboard is in generated mode
       }
     }
@@ -98,7 +98,7 @@ export const addEntitiesToLovelaceView = async (
       saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {
         try {
           await saveConfig(hass!, null, newConfig);
-        } catch (err: any) {
+        } catch (_err: any) {
           alert(hass.localize("ui.panel.lovelace.add_entities.saving_failed"));
         }
       },

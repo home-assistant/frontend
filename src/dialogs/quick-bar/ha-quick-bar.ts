@@ -40,6 +40,7 @@ import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import { QuickBarMode, type QuickBarParams } from "./show-dialog-quick-bar";
+import { computeDeviceName } from "../../data/device_registry";
 
 interface QuickBarItem extends ScorableTextItem {
   primaryText: string;
@@ -394,7 +395,7 @@ export class QuickBar extends LitElement {
     `;
   }
 
-  private async processItemAndCloseDialog(item: QuickBarItem, index: number) {
+  private async _processItemAndCloseDialog(item: QuickBarItem, index: number) {
     this._addSpinnerToCommandItem(index);
 
     await item.action();
@@ -407,7 +408,7 @@ export class QuickBar extends LitElement {
       if (!firstItem || firstItem.style.display === "none") {
         return;
       }
-      this.processItemAndCloseDialog((firstItem as any).item, 0);
+      this._processItemAndCloseDialog((firstItem as any).item, 0);
     } else if (ev.code === "ArrowDown") {
       ev.preventDefault();
       this._getItemAtIndex(0)?.focus();
@@ -502,7 +503,7 @@ export class QuickBar extends LitElement {
       }
     }
     if (ev.key === "Enter" || ev.key === " ") {
-      this.processItemAndCloseDialog(
+      this._processItemAndCloseDialog(
         (ev.target as any).item,
         Number((ev.target as HTMLElement).getAttribute("index"))
       );
@@ -515,19 +516,23 @@ export class QuickBar extends LitElement {
 
   private _handleItemClick(ev) {
     const listItem = ev.target.closest("ha-list-item");
-    this.processItemAndCloseDialog(
+    this._processItemAndCloseDialog(
       listItem.item,
       Number(listItem.getAttribute("index"))
     );
   }
 
   private _generateDeviceItems(): DeviceItem[] {
-    return Object.keys(this.hass.devices)
-      .map((deviceId) => {
-        const device = this.hass.devices[deviceId];
-        const area = this.hass.areas[device.area_id!];
+    return Object.values(this.hass.devices)
+      .filter((device) => !device.disabled_by)
+      .map((device) => {
+        const area = device.area_id
+          ? this.hass.areas[device.area_id]
+          : undefined;
         const deviceItem = {
-          primaryText: device.name!,
+          primaryText:
+            computeDeviceName(device, this.hass) ||
+            this.hass.localize("ui.components.device-picker.unnamed_device"),
           deviceId: device.id,
           area: area?.name,
           action: () => navigate(`/config/devices/device/${device.id}`),

@@ -181,17 +181,21 @@ class HaPanelDevTemplate extends LitElement {
                 >`
               : nothing}
             ${this._templateResult
-              ? html`${this.hass.localize(
-                    "ui.panel.developer-tools.tabs.templates.result_type"
-                  )}:
-                  ${resultType}
-                  <!-- prettier-ignore -->
-                  <pre class="rendered ${classMap({
-                    [resultType]: resultType,
-                  })}"
-                  >${type === "object"
-                    ? JSON.stringify(this._templateResult.result, null, 2)
-                    : this._templateResult.result}</pre>
+              ? html`<pre
+                    class="rendered ${classMap({
+                      [resultType]: resultType,
+                    })}"
+                  >
+${type === "object"
+                      ? JSON.stringify(this._templateResult.result, null, 2)
+                      : this._templateResult.result}</pre
+                  >
+                  <p>
+                    ${this.hass.localize(
+                      "ui.panel.developer-tools.tabs.templates.result_type"
+                    )}:
+                    ${resultType}
+                  </p>
                   ${this._templateResult.listeners.time
                     ? html`
                         <p>
@@ -267,9 +271,7 @@ class HaPanelDevTemplate extends LitElement {
       haStyle,
       css`
         :host {
-          -ms-user-select: initial;
-          -webkit-user-select: initial;
-          -moz-user-select: initial;
+          user-select: none;
         }
 
         .content {
@@ -281,6 +283,16 @@ class HaPanelDevTemplate extends LitElement {
             max(16px, env(safe-area-inset-left));
         }
 
+        .content.horizontal {
+          --code-mirror-max-height: calc(
+            100vh - var(--header-height) -
+              (var(--paper-font-body1_-_line-height) * 3) - (1em * 2) -
+              (max(16px, env(safe-area-inset-top)) * 2) -
+              (max(16px, env(safe-area-inset-bottom)) * 2) -
+              (var(--ha-card-border-width, 1px) * 2) - 179px
+          );
+        }
+
         ha-card {
           margin-bottom: 16px;
         }
@@ -289,12 +301,17 @@ class HaPanelDevTemplate extends LitElement {
           direction: var(--direction);
         }
 
+        .edit-pane .card-content {
+          user-select: initial;
+        }
+
         .edit-pane a {
           color: var(--primary-color);
         }
 
-        .horizontal .edit-pane {
-          max-width: 50%;
+        .content.horizontal > * {
+          width: 50%;
+          margin-bottom: 0px;
         }
 
         .render-spinner {
@@ -316,7 +333,28 @@ class HaPanelDevTemplate extends LitElement {
           white-space: pre-wrap;
           background-color: var(--secondary-background-color);
           padding: 8px;
+          margin-top: 0;
+          margin-bottom: 0;
           direction: ltr;
+          user-select: text;
+        }
+
+        p,
+        ul {
+          margin-block-end: 0;
+        }
+
+        .content.horizontal .render-pane .card-content {
+          overflow: auto;
+          max-height: calc(
+            var(--code-mirror-max-height) +
+              47px - var(--ha-card-border-radius, 12px)
+          );
+        }
+
+        .content.horizontal .render-pane {
+          overflow: hidden;
+          padding-bottom: var(--ha-card-border-radius, 12px);
         }
 
         .all_listeners {
@@ -324,7 +362,7 @@ class HaPanelDevTemplate extends LitElement {
         }
 
         @media all and (max-width: 870px) {
-          .render-pane {
+          .content ha-card {
             max-width: 100%;
           }
         }

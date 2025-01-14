@@ -52,16 +52,16 @@ class HuiConditionalElement extends HTMLElement implements LovelaceElement {
       this._elements.push(createStyledHuiElement(elementConfig));
     });
 
-    this.updateElements();
+    this._updateElements();
   }
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
 
-    this.updateElements();
+    this._updateElements();
   }
 
-  private updateElements() {
+  private _updateElements() {
     if (!this._hass || !this._config) {
       return;
     }

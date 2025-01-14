@@ -34,7 +34,7 @@ class HassioIngressView extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ type: Boolean }) public ingressPanel = false;
+  @property({ attribute: false }) public ingressPanel = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -158,7 +158,7 @@ class HassioIngressView extends LitElement {
 
     try {
       addon = await fetchHassioAddonInfo(this.hass, addonSlug);
-    } catch (err: any) {
+    } catch (_err: any) {
       await this.updateComplete;
       await showAlertDialog(this, {
         text:
@@ -219,7 +219,7 @@ class HassioIngressView extends LitElement {
           });
           this._fetchData(addonSlug);
           return;
-        } catch (e) {
+        } catch (_err) {
           await showAlertDialog(this, {
             text:
               this.supervisor.localize("ingress.error_starting_addon") ||
@@ -264,7 +264,7 @@ class HassioIngressView extends LitElement {
 
     try {
       session = await createSessionPromise;
-    } catch (err: any) {
+    } catch (_err: any) {
       if (this._sessionKeepAlive) {
         clearInterval(this._sessionKeepAlive);
       }
@@ -285,7 +285,7 @@ class HassioIngressView extends LitElement {
     this._sessionKeepAlive = window.setInterval(async () => {
       try {
         await validateHassioSession(this.hass, session);
-      } catch (err: any) {
+      } catch (_err: any) {
         session = await createHassioSession(this.hass);
       }
     }, 60000);

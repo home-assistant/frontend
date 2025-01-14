@@ -28,7 +28,7 @@ export class DialogHassioBackupUpload
     await this.updateComplete;
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     if (this._dialogParams && !this._dialogParams.onboarding) {
       if (this._dialogParams.reloadBackup) {
         this._dialogParams.reloadBackup();
@@ -36,6 +36,7 @@ export class DialogHassioBackupUpload
     }
     this._dialogParams = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+    return true;
   }
 
   protected render() {

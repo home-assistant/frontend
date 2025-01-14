@@ -80,12 +80,13 @@ export class DialogEnergyDeviceSettings
     );
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     this._params = undefined;
     this._device = undefined;
     this._error = undefined;
     this._excludeList = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+    return true;
   }
 
   protected render() {

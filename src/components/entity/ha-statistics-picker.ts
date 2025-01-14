@@ -12,7 +12,7 @@ class HaStatisticsPicker extends LitElement {
 
   @property({ type: Array }) public value?: string[];
 
-  @property({ type: Array }) public statisticIds?: string[];
+  @property({ attribute: false, type: Array }) public statisticIds?: string[];
 
   @property({ attribute: "statistic-types" })
   public statisticTypes?: "mean" | "sum";

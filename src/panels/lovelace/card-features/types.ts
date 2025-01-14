@@ -34,6 +34,10 @@ export interface LockOpenDoorCardFeatureConfig {
   type: "lock-open-door";
 }
 
+export interface MediaPlayerVolumeSliderCardFeatureConfig {
+  type: "media-player-volume-slider";
+}
+
 export interface FanPresetModesCardFeatureConfig {
   type: "fan-preset-modes";
   style?: "dropdown" | "icons";
@@ -161,6 +165,7 @@ export type LovelaceCardFeatureConfig =
   | LightColorTempCardFeatureConfig
   | LockCommandsCardFeatureConfig
   | LockOpenDoorCardFeatureConfig
+  | MediaPlayerVolumeSliderCardFeatureConfig
   | NumericInputCardFeatureConfig
   | SelectOptionsCardFeatureConfig
   | TargetHumidityCardFeatureConfig

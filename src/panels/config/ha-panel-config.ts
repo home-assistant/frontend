@@ -321,14 +321,6 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconPath: mdiBackupRestore,
       iconColor: "#0D47A1",
       component: "backup",
-      not_component: "hassio",
-    },
-    {
-      path: "/hassio/backups",
-      translationKey: "backup",
-      iconPath: mdiBackupRestore,
-      iconColor: "#0D47A1",
-      component: "hassio",
     },
     {
       path: "/config/analytics",

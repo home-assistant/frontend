@@ -149,7 +149,7 @@ export class HaGridSizeEditor extends LitElement {
     `;
   }
 
-  _cellClick(ev) {
+  private _cellClick(ev) {
     const cell = ev.currentTarget as HTMLElement;
     const rows = Number(cell.getAttribute("data-row"));
     const columns = Number(cell.getAttribute("data-column"));

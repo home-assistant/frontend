@@ -153,7 +153,7 @@ class MoreInfoVacuum extends LitElement {
                       <ha-icon-button
                         .path=${item.icon}
                         .entry=${item}
-                        @click=${this.callService}
+                        @click=${this._callService}
                         .label=${this.hass!.localize(
                           `ui.dialogs.more_info_control.vacuum.${item.translationKey}`
                         )}
@@ -176,7 +176,7 @@ class MoreInfoVacuum extends LitElement {
                   )}
                   .disabled=${stateObj.state === UNAVAILABLE}
                   .value=${stateObj.attributes.fan_speed}
-                  @selected=${this.handleFanSpeedChanged}
+                  @selected=${this._handleFanSpeedChanged}
                   fixedMenuPosition
                   naturalMenuWidth
                   @closed=${stopPropagation}
@@ -295,14 +295,14 @@ class MoreInfoVacuum extends LitElement {
     return nothing;
   }
 
-  private callService(ev: CustomEvent) {
+  private _callService(ev: CustomEvent) {
     const entry = (ev.target! as any).entry as VacuumCommand;
     this.hass.callService("vacuum", entry.serviceName, {
       entity_id: this.stateObj!.entity_id,
     });
   }
 
-  private handleFanSpeedChanged(ev) {
+  private _handleFanSpeedChanged(ev) {
     const oldVal = this.stateObj!.attributes.fan_speed;
     const newVal = ev.target.value;
 

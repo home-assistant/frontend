@@ -37,7 +37,7 @@ export class HaConfigApplicationCredentials extends LitElement {
 
   @state() public _applicationCredentials: ApplicationCredential[] = [];
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -159,7 +159,7 @@ export class HaConfigApplicationCredentials extends LitElement {
           this._applicationCredentials,
           this.hass.localize
         )}
-        hasFab
+        has-fab
         selectable
         .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}

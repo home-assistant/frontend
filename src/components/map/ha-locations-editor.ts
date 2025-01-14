@@ -51,7 +51,7 @@ export class HaLocationsEditor extends LitElement {
 
   @property() public helper?: string;
 
-  @property({ type: Boolean }) public autoFit = false;
+  @property({ attribute: "auto-fit", type: Boolean }) public autoFit = false;
 
   @property({ type: Number }) public zoom = 16;
 
@@ -69,7 +69,8 @@ export class HaLocationsEditor extends LitElement {
 
   private Leaflet?: LeafletModuleType;
 
-  private _loadPromise: Promise<boolean | void>;
+  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+  private _loadPromise: Promise<boolean | undefined | void>;
 
   constructor() {
     super();

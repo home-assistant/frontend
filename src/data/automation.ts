@@ -366,7 +366,7 @@ export const saveAutomationConfig = (
   hass: HomeAssistant,
   id: string,
   config: AutomationConfig
-) => hass.callApi<void>("POST", `config/automation/config/${id}`, config);
+) => hass.callApi<undefined>("POST", `config/automation/config/${id}`, config);
 
 export const normalizeAutomationConfig = <
   T extends Partial<AutomationConfig> | AutomationConfig,

@@ -402,7 +402,13 @@ const getEnergyData = async (
 
   const dayDifference = differenceInDays(end || new Date(), start);
   const period =
-    dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour";
+    isFirstDayOfMonth(start) &&
+    (!end || isLastDayOfMonth(end)) &&
+    dayDifference > 35
+      ? "month"
+      : dayDifference > 2
+        ? "day"
+        : "hour";
 
   const lengthUnit = hass.config.unit_system.length || "";
   const energyUnits: StatisticsUnitConfiguration = {
@@ -445,7 +451,7 @@ const getEnergyData = async (
         hass.config
       ) as boolean)
     ) {
-      // When comparing a month (or multiple), we want to start at the begining of the month
+      // When comparing a month (or multiple), we want to start at the beginning of the month
       startCompare = calcDate(
         start,
         addMonths,
@@ -751,8 +757,8 @@ export type EnergyGasUnitClass = (typeof energyGasUnitClass)[number];
 
 export const getEnergyGasUnitClass = (
   prefs: EnergyPreferences,
-  statisticsMetaData: Record<string, StatisticsMetaData> = {},
-  excludeSource?: string
+  excludeSource?: string,
+  statisticsMetaData: Record<string, StatisticsMetaData> = {}
 ): EnergyGasUnitClass | undefined => {
   for (const source of prefs.energy_sources) {
     if (source.type !== "gas") {
@@ -778,7 +784,7 @@ export const getEnergyGasUnit = (
   prefs: EnergyPreferences,
   statisticsMetaData: Record<string, StatisticsMetaData> = {}
 ): string | undefined => {
-  const unitClass = getEnergyGasUnitClass(prefs, statisticsMetaData);
+  const unitClass = getEnergyGasUnitClass(prefs, undefined, statisticsMetaData);
   if (unitClass === undefined) {
     return undefined;
   }

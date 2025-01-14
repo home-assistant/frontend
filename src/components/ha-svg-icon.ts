@@ -6,9 +6,9 @@ import { customElement, property } from "lit/decorators";
 export class HaSvgIcon extends LitElement {
   @property() public path?: string;
 
-  @property() public secondaryPath?: string;
+  @property({ attribute: false }) public secondaryPath?: string;
 
-  @property() public viewBox?: string;
+  @property({ attribute: false }) public viewBox?: string;
 
   protected render(): SVGTemplateResult {
     return svg`

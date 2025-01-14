@@ -132,6 +132,7 @@ export class HaSortable extends LitElement {
 
     if (!container) return;
 
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     const Sortable = (await import("../resources/sortable")).default;
 
     const options: SortableInstance.Options = {

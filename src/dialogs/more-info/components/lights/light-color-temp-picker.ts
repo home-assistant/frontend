@@ -97,7 +97,7 @@ class LightColorTempPicker extends LitElement {
     (min: number, max: number) => generateColorTemperatureGradient(min, max)
   );
 
-  public _updateSliderValues() {
+  private _updateSliderValues() {
     const stateObj = this.stateObj;
 
     if (stateObj.state === "on") {

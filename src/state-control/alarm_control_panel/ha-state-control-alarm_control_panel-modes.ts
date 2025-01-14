@@ -60,7 +60,7 @@ export class HaStateControlAlarmControlPanelModes extends LitElement {
 
     try {
       await this._setMode(mode);
-    } catch (err) {
+    } catch (_err) {
       this._currentMode = oldMode;
     }
   }

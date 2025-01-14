@@ -126,7 +126,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     ).matches;
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     if (this._params) {
       fireEvent(this, "dialog-closed", { dialog: this.localName });
     }
@@ -138,6 +138,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     this._filter = "";
     this._manifests = undefined;
     this._domains = undefined;
+    return true;
   }
 
   private _getGroups = (
@@ -318,7 +319,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
             <ha-domain-icon
               .hass=${this.hass}
               .domain=${domain}
-              brandFallback
+              brand-fallback
             ></ha-domain-icon>
           `,
           key: `${SERVICE_PREFIX}${domain}`,

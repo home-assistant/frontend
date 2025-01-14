@@ -80,7 +80,7 @@
     <home-assistant></home-assistant>
     <%= renderTemplate("_js_base.html.template") %>
     <%= renderTemplate("_preload_roboto.html.template") %>
-    <script <% if (!useWDS) { %>crossorigin="use-credentials"<% } %>>
+    <script crossorigin="use-credentials">
       if (isModern) {
         <% for (const entry of latestEntryJS) { %>
           import("<%= entry %>");

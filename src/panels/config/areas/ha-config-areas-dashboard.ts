@@ -58,7 +58,7 @@ const SORT_OPTIONS = { sort: false, delay: 500, delayOnTouchOnly: true };
 export class HaConfigAreasDashboard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 

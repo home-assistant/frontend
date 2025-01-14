@@ -9,6 +9,7 @@ import "../../../src/components/ha-card";
 
 @customElement("demo-black-white-row")
 class DemoBlackWhiteRow extends LitElement {
+  // eslint-disable-next-line lit/no-native-attributes
   @property() title!: string;
 
   @property() value?: any;

@@ -3,6 +3,7 @@ import { assert, describe, it } from "vitest";
 import {
   formatDateTime,
   formatDateTimeWithSeconds,
+  formatDateTimeNumeric,
 } from "../../../src/common/datetime/format_date_time";
 import {
   NumberFormat,
@@ -84,6 +85,43 @@ describe("formatDateTimeWithSeconds", () => {
         demoConfig
       ),
       "November 18, 2017 at 23:12:13"
+    );
+  });
+});
+
+describe("formatDateTimeNumeric", () => {
+  const dateObj = new Date(2017, 10, 18, 23, 12, 13, 400);
+
+  it("Formats English numeric date times", () => {
+    assert.strictEqual(
+      formatDateTimeNumeric(
+        dateObj,
+        {
+          language: "en",
+          number_format: NumberFormat.language,
+          time_format: TimeFormat.am_pm,
+          date_format: DateFormat.language,
+          time_zone: TimeZone.local,
+          first_weekday: FirstWeekday.language,
+        },
+        demoConfig
+      ),
+      "11/18/2017, 11:12 PM"
+    );
+    assert.strictEqual(
+      formatDateTimeNumeric(
+        dateObj,
+        {
+          language: "en",
+          number_format: NumberFormat.language,
+          time_format: TimeFormat.twenty_four,
+          date_format: DateFormat.language,
+          time_zone: TimeZone.local,
+          first_weekday: FirstWeekday.language,
+        },
+        demoConfig
+      ),
+      "11/18/2017, 23:12"
     );
   });
 });

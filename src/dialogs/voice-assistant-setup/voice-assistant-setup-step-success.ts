@@ -33,9 +33,9 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
   @property({ attribute: false })
   public assistConfiguration?: AssistSatelliteConfiguration;
 
-  @property() public deviceId!: string;
+  @property({ attribute: false }) public deviceId!: string;
 
-  @property() public assistEntityId?: string;
+  @property({ attribute: false }) public assistEntityId?: string;
 
   @state() private _ttsSettings?: any;
 
@@ -72,10 +72,15 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
           src="/static/images/voice-assistant/heart.png"
           alt="Casita Home Assistant logo"
         />
-        <h1>Ready to Assist!</h1>
+        <h1>
+          ${this.hass.localize(
+            "ui.panel.config.voice_assistants.satellite_wizard.success.title"
+          )}
+        </h1>
         <p class="secondary">
-          Make any final customizations here. You can always change these in the
-          Voice Assistants section of the settings page.
+          ${this.hass.localize(
+            "ui.panel.config.voice_assistants.satellite_wizard.success.secondary"
+          )}
         </p>
         <div class="rows">
           ${this.assistConfiguration &&
@@ -229,7 +234,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
         const result = await getTranslation(null, pipeline.language, false);
         this._announce(result.data["ui.dialogs.tts-try.message_example"]);
         return;
-      } catch (e) {
+      } catch (_e) {
         // ignore fallback to user language
       }
     }

@@ -86,11 +86,14 @@ export class HaServiceControl extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property({ type: Boolean }) public showAdvanced = false;
+  @property({ attribute: "show-advanced", type: Boolean }) public showAdvanced =
+    false;
 
-  @property({ type: Boolean, reflect: true }) public hidePicker = false;
+  @property({ attribute: "hide-picker", type: Boolean, reflect: true })
+  public hidePicker = false;
 
-  @property({ type: Boolean }) public hideDescription = false;
+  @property({ attribute: "hide-description", type: Boolean })
+  public hideDescription = false;
 
   @state() private _value!: this["value"];
 
@@ -856,7 +859,7 @@ export class HaServiceControl extends LitElement {
     this._manifest = undefined;
     try {
       this._manifest = await fetchIntegrationManifest(this.hass, integration);
-    } catch (err: any) {
+    } catch (_err: any) {
       // Ignore if loading manifest fails. Probably bad JSON in manifest
     }
   }

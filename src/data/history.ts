@@ -10,6 +10,7 @@ import { computeStateNameFromEntityAttributes } from "../common/entity/compute_s
 import type { LocalizeFunc } from "../common/translations/localize";
 import type { HomeAssistant } from "../types";
 import type { FrontendLocaleData } from "./translation";
+import type { Statistics } from "./recorder";
 
 const DOMAINS_USE_LAST_UPDATED = ["climate", "humidifier", "water_heater"];
 const NEED_ATTRIBUTE_DOMAINS = [
@@ -236,9 +237,9 @@ export const subscribeHistoryStatesTimeWindow = (
   callbackFunction: (data: HistoryStates) => void,
   hoursToShow: number,
   entityIds: string[],
+  noAttributes?: boolean,
   minimalResponse = true,
-  significantChangesOnly = true,
-  noAttributes?: boolean
+  significantChangesOnly = true
 ): Promise<() => Promise<void>> => {
   const params = {
     type: "history/stream",
@@ -417,6 +418,54 @@ const isNumericSensorEntity = (
 
 const BLANK_UNIT = " ";
 
+export const convertStatisticsToHistory = (
+  hass: HomeAssistant,
+  statistics: Statistics,
+  statisticIds: string[],
+  sensorNumericDeviceClasses: string[],
+  splitDeviceClasses = false
+): HistoryResult => {
+  // Maintain the statistic id ordering
+  const orderedStatistics: Statistics = {};
+  statisticIds.forEach((id) => {
+    if (id in statistics) {
+      orderedStatistics[id] = statistics[id];
+    }
+  });
+
+  // Convert statistics to HistoryResult format
+  const statsHistoryStates: HistoryStates = {};
+  Object.entries(orderedStatistics).forEach(([key, value]) => {
+    const entityHistoryStates: EntityHistoryState[] = value.map((e) => ({
+      s: e.mean != null ? e.mean.toString() : e.state!.toString(),
+      lc: e.start / 1000,
+      a: {},
+      lu: e.start / 1000,
+    }));
+    statsHistoryStates[key] = entityHistoryStates;
+  });
+
+  const statisticsHistory = computeHistory(
+    hass,
+    statsHistoryStates,
+    [],
+    hass.localize,
+    sensorNumericDeviceClasses,
+    splitDeviceClasses,
+    true
+  );
+
+  // remap states array to statistics array
+  (statisticsHistory?.line || []).forEach((item) => {
+    item.data.forEach((data) => {
+      data.statistics = data.states;
+      data.states = [];
+    });
+  });
+
+  return statisticsHistory;
+};
+
 export const computeHistory = (
   hass: HomeAssistant,
   stateHistory: HistoryStates,
@@ -469,15 +518,13 @@ export const computeHistory = (
 
     let unit: string | undefined;
 
-    const isNumeric =
-      forceNumeric ||
-      isNumericFromDomain(domain) ||
-      (currentState != null &&
-        isNumericFromAttributes(currentState.attributes)) ||
-      (currentState != null &&
-        domain === "sensor" &&
-        isNumericSensorEntity(currentState, sensorNumericalDeviceClasses)) ||
-      numericStateFromHistory != null;
+    const isNumeric = isNumericEntity(
+      domain,
+      currentState,
+      numericStateFromHistory,
+      sensorNumericalDeviceClasses,
+      forceNumeric
+    );
 
     if (isNumeric) {
       unit =
@@ -551,3 +598,116 @@ export const computeGroupKey = (
   device_class: string | undefined,
   splitDeviceClasses: boolean
 ) => (splitDeviceClasses ? `${unit}_${device_class || ""}` : unit);
+
+export const isNumericEntity = (
+  domain: string,
+  currentState: HassEntity | undefined,
+  numericStateFromHistory: EntityHistoryState | undefined,
+  sensorNumericalDeviceClasses: string[],
+  forceNumeric = false
+): boolean =>
+  forceNumeric ||
+  isNumericFromDomain(domain) ||
+  (currentState != null && isNumericFromAttributes(currentState.attributes)) ||
+  (currentState != null &&
+    domain === "sensor" &&
+    isNumericSensorEntity(currentState, sensorNumericalDeviceClasses)) ||
+  numericStateFromHistory != null;
+
+export const mergeHistoryResults = (
+  historyResult: HistoryResult,
+  ltsResult?: HistoryResult,
+  splitDeviceClasses = true
+): HistoryResult => {
+  if (!ltsResult) {
+    return historyResult;
+  }
+  const result: HistoryResult = { ...historyResult, line: [] };
+
+  const lookup: Record<
+    string,
+    { historyItem?: LineChartUnit; ltsItem?: LineChartUnit }
+  > = {};
+
+  for (const item of historyResult.line) {
+    const key = computeGroupKey(
+      item.unit,
+      item.device_class,
+      splitDeviceClasses
+    );
+    if (key) {
+      lookup[key] = {
+        historyItem: item,
+      };
+    }
+  }
+
+  for (const item of ltsResult.line) {
+    const key = computeGroupKey(
+      item.unit,
+      item.device_class,
+      splitDeviceClasses
+    );
+    if (!key) {
+      continue;
+    }
+    if (key in lookup) {
+      lookup[key].ltsItem = item;
+    } else {
+      lookup[key] = { ltsItem: item };
+    }
+  }
+
+  for (const { historyItem, ltsItem } of Object.values(lookup)) {
+    if (!historyItem || !ltsItem) {
+      // Only one result has data for this item, so just push it directly instead of merging.
+      result.line.push(historyItem || ltsItem!);
+      continue;
+    }
+
+    const newLineItem: LineChartUnit = { ...historyItem, data: [] };
+    const entities = new Set([
+      ...historyItem.data.map((d) => d.entity_id),
+      ...ltsItem.data.map((d) => d.entity_id),
+    ]);
+
+    for (const entity of entities) {
+      const historyDataItem = historyItem.data.find(
+        (d) => d.entity_id === entity
+      );
+      const ltsDataItem = ltsItem.data.find((d) => d.entity_id === entity);
+
+      if (!historyDataItem || !ltsDataItem) {
+        newLineItem.data.push(historyDataItem || ltsDataItem!);
+        continue;
+      }
+
+      // Remove statistics that overlap with states
+      const oldestState =
+        historyDataItem.states[0]?.last_changed ||
+        // If no state, fall back to the max last changed of the last statistics (so approve all)
+        ltsDataItem.statistics![ltsDataItem.statistics!.length - 1]
+          .last_changed + 1;
+
+      const statistics: LineChartState[] = [];
+      for (const s of ltsDataItem.statistics!) {
+        if (s.last_changed >= oldestState) {
+          break;
+        }
+        statistics.push(s);
+      }
+
+      newLineItem.data.push(
+        statistics.length === 0
+          ? // All statistics overlapped with states, so just push the states
+            historyDataItem
+          : {
+              ...historyDataItem,
+              statistics,
+            }
+      );
+    }
+    result.line.push(newLineItem);
+  }
+  return result;
+};

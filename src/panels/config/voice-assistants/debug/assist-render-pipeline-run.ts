@@ -365,8 +365,8 @@ export class AssistPipelineDebug extends LitElement {
         <ha-expansion-panel>
           <span slot="header">Raw</span>
           <ha-yaml-editor
-            readOnly
-            autoUpdate
+            read-only
+            auto-update
             .value=${this.pipelineRun}
           ></ha-yaml-editor>
         </ha-expansion-panel>

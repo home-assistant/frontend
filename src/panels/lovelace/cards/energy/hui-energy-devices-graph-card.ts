@@ -111,7 +111,6 @@ export class HuiEnergyDevicesGraphCard
   private _createOptions = memoizeOne(
     (locale: FrontendLocaleData): ChartOptions => ({
       parsing: false,
-      animation: false,
       responsive: true,
       maintainAspectRatio: false,
       indexAxis: "y",
@@ -124,7 +123,7 @@ export class HuiEnergyDevicesGraphCard
               const statisticId = (
                 this._chartData.datasets[0].data[index] as ScatterDataPoint
               ).y;
-              return this.getDeviceName(statisticId as any as string);
+              return this._getDeviceName(statisticId as any as string);
             },
           },
         },
@@ -142,7 +141,7 @@ export class HuiEnergyDevicesGraphCard
           callbacks: {
             title: (item) => {
               const statisticId = item[0].label;
-              return this.getDeviceName(statisticId);
+              return this._getDeviceName(statisticId);
             },
             label: (context) =>
               `${context.dataset.label}: ${formatNumber(
@@ -173,7 +172,7 @@ export class HuiEnergyDevicesGraphCard
     })
   );
 
-  private getDeviceName(statisticId: string): string {
+  private _getDeviceName(statisticId: string): string {
     return (
       this._data?.prefs.device_consumption.find(
         (d) => d.stat_consumption === statisticId

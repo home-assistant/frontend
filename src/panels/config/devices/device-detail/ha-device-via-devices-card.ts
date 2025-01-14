@@ -16,7 +16,7 @@ const MAX_VISIBLE_VIA_DEVICES = 10;
 export class HaDeviceViaDevicesCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public deviceId!: string;
+  @property({ attribute: false }) public deviceId!: string;
 
   @state() public _showAll = false;
 

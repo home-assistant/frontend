@@ -95,7 +95,7 @@ export class ZHADeviceBindingControl extends LitElement {
       try {
         await bindDevices(this.hass, this.device.ieee, this._deviceToBind.ieee);
         button.actionSuccess();
-      } catch (err: any) {
+      } catch (_err: any) {
         button.actionError();
       } finally {
         this._bindingOperationInProgress = false;
@@ -116,7 +116,7 @@ export class ZHADeviceBindingControl extends LitElement {
           this._deviceToBind.ieee
         );
         button.actionSuccess();
-      } catch (err: any) {
+      } catch (_err: any) {
         button.actionError();
       } finally {
         this._bindingOperationInProgress = false;

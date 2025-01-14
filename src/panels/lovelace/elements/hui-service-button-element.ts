@@ -49,7 +49,7 @@ export class HuiServiceButtonElement
     }
 
     if (!this._service) {
-      throw Error("Action does not have a action name");
+      throw Error("Action does not have an action name");
     }
 
     this._config = config;

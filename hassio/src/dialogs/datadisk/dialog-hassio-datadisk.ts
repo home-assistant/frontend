@@ -95,7 +95,7 @@ class HassioDatadiskDialog extends LitElement {
                       .label=${this.dialogParams.supervisor.localize(
                         "dialog.datadisk_move.select_device"
                       )}
-                      @selected=${this._select_device}
+                      @selected=${this._selectDevice}
                       dialogInitialFocus
                     >
                       ${this.devices.map(
@@ -137,7 +137,7 @@ class HassioDatadiskDialog extends LitElement {
     `;
   }
 
-  private _select_device(ev) {
+  private _selectDevice(ev) {
     this.selectedDevice = ev.target.value;
   }
 

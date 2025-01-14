@@ -27,6 +27,9 @@ export const browseLocalMediaPlayer = (
 export const isLocalMediaSourceContentId = (mediaId: string) =>
   mediaId.startsWith("media-source://media_source");
 
+export const isImageUploadMediaSourceContentId = (mediaId: string) =>
+  mediaId.startsWith("media-source://image_upload");
+
 export const uploadLocalMedia = async (
   hass: HomeAssistant,
   media_content_id: string,

@@ -36,7 +36,7 @@ export class HaBaseTimeInput extends LitElement {
   /**
    * auto validate time inputs
    */
-  @property({ type: Boolean }) autoValidate = false;
+  @property({ attribute: "auto-validate", type: Boolean }) autoValidate = false;
 
   /**
    * determines if inputs are required
@@ -81,52 +81,56 @@ export class HaBaseTimeInput extends LitElement {
   /**
    * Label for the day input
    */
-  @property() dayLabel = "";
+  @property({ attribute: false }) dayLabel = "";
 
   /**
    * Label for the hour input
    */
-  @property() hourLabel = "";
+  @property({ attribute: false }) hourLabel = "";
 
   /**
    * Label for the min input
    */
-  @property() minLabel = "";
+  @property({ attribute: false }) minLabel = "";
 
   /**
    * Label for the sec input
    */
-  @property() secLabel = "";
+  @property({ attribute: false }) secLabel = "";
 
   /**
    * Label for the milli sec input
    */
-  @property() millisecLabel = "";
+  @property({ attribute: false }) millisecLabel = "";
 
   /**
    * show the sec field
    */
-  @property({ type: Boolean }) enableSecond = false;
+  @property({ attribute: "enable-second", type: Boolean })
+  public enableSecond = false;
 
   /**
    * show the milli sec field
    */
-  @property({ type: Boolean }) enableMillisecond = false;
+  @property({ attribute: "enable-millisecond", type: Boolean })
+  public enableMillisecond = false;
 
   /**
    * show the day field
    */
-  @property({ type: Boolean }) enableDay = false;
+  @property({ attribute: "enable-day", type: Boolean })
+  public enableDay = false;
 
   /**
    * limit hours input
    */
-  @property({ type: Boolean }) noHoursLimit = false;
+  @property({ attribute: "no-hours-limit", type: Boolean })
+  public noHoursLimit = false;
 
   /**
    * AM or PM
    */
-  @property() amPm: "AM" | "PM" = "AM";
+  @property({ attribute: false }) amPm: "AM" | "PM" = "AM";
 
   @property({ type: Boolean, reflect: true }) public clearable?: boolean;
 

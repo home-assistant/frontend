@@ -74,7 +74,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
   private _footerElement?: HuiErrorCard | LovelaceHeaderFooter;
 
-  private getStateColor(stateObj: HassEntity, config: EntityCardConfig) {
+  private _getStateColor(stateObj: HassEntity, config: EntityCardConfig) {
     const domain = stateObj ? computeStateDomain(stateObj) : undefined;
     return config && (config.state_color ?? domain === "light");
   }
@@ -127,7 +127,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
     const name = this._config.name || computeStateName(stateObj);
 
-    const colored = stateObj && this.getStateColor(stateObj, this._config);
+    const colored = stateObj && this._getStateColor(stateObj, this._config);
 
     const fixedFooter =
       this.layout === "grid" && this._footerElement !== undefined;

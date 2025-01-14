@@ -223,7 +223,7 @@ export class HaTracePathDetails extends LitElement {
     return config
       ? html`<ha-code-editor
           .value=${dump(config).trimEnd()}
-          readOnly
+          read-only
           dir="ltr"
         ></ha-code-editor>`
       : this.hass!.localize(

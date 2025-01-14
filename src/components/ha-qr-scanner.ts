@@ -160,6 +160,7 @@ class HaQrScanner extends LitElement {
     if (!navigator.mediaDevices) {
       return;
     }
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     const QrScanner = (await import("qr-scanner")).default;
     if (!(await QrScanner.hasCamera())) {
       this._reportError("No camera found");

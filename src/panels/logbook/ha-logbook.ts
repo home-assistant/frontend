@@ -65,7 +65,8 @@ export class HaLogbook extends LitElement {
   @property({ type: Boolean, attribute: "relative-time" })
   public relativeTime = false;
 
-  @property({ type: Boolean }) public showMoreLink = true;
+  @property({ attribute: "show-more-link", type: Boolean })
+  public showMoreLink = true;
 
   @state() private _logbookEntries?: LogbookEntry[];
 
@@ -75,7 +76,7 @@ export class HaLogbook extends LitElement {
 
   @state() private _error?: string;
 
-  private _subscribed?: Promise<(() => Promise<void>) | void>;
+  private _subscribed?: Promise<(() => Promise<void>) | undefined>;
 
   private _liveUpdatesEnabled = true;
 
@@ -308,6 +309,7 @@ export class HaLogbook extends LitElement {
     ).catch((err) => {
       this._subscribed = undefined;
       this._error = err;
+      return undefined;
     });
     return true;
   }

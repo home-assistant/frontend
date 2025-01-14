@@ -4,13 +4,12 @@
 # - released in the last year + current alpha/beta versions
 # - Firefox extended support release (ESR)
 # - with global utilization at or above 0.5%
-# - must support dynamic import of ES modules
-# - exclude browsers no longer being maintained
+# - exclude dead browsers (no security maintenance for 2+ years)
 # - exclude KaiOS, QQ, and UC browsers due to lack of sufficient feature support data
 unreleased versions
 last 1 year
 Firefox ESR
->= 0.5% and supports es6-module-dynamic-import
+>= 0.5%
 not dead
 not KaiOS > 0
 not QQAndroid > 0
@@ -20,23 +19,18 @@ not UCAndroid > 0
 # Legacy builds are served when modern requirements are not met and support browsers:
 # - released in the last 7 years + current alpha/beta versionss
 # - with global utilization at or above 0.05%
-# The lattermost query ensures that support for popular old browsers is not dropped too early
-# (e.g. IE 11, Android 4.4, or Samsung 4).
-#
-# In addition, legacy browsers must support some minimum features that cannot be polyfilled:
-# - ES5 (strict mode)
-# - web sockets to communicate with backend
-# - inline SVG used widely in buttons, widgets, etc.
-# - custom events used for most user interactions
-# - CSS flexbox used in the majority of the layout
-# Nearly all of these are redundant with the above rules.
-# As of May 2023, only web sockets must be added to the query.
+# - exclude dead browsers (no security maintenance for 2+ years)
+# - exclude Opera Mini which does not support web sockets
 unreleased versions
 last 7 years
->= 0.05% and supports websockets
+>= 0.05%
+not dead
+not op_mini all
 
 [legacy-sw]
 # Same as legacy plus supports service workers
 unreleased versions
 last 7 years
->= 0.05% and supports websockets and supports serviceworkers
+>= 0.05% and supports serviceworkers
+not dead
+not op_mini all

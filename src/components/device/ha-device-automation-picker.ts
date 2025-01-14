@@ -24,7 +24,7 @@ export abstract class HaDeviceAutomationPicker<
 
   @property() public label?: string;
 
-  @property() public deviceId?: string;
+  @property({ attribute: false }) public deviceId?: string;
 
   @property({ type: Object }) public value?: T;
 

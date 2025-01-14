@@ -20,7 +20,7 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
 
   @property({ type: Number }) public index?: number;
 
-  @property({ type: Boolean }) public isStrategy = false;
+  @property({ attribute: false }) public isStrategy = false;
 
   @property({ attribute: false }) public cards: HuiCard[] = [];
 

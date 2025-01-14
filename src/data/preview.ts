@@ -1,7 +1,7 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../types";
 
-const HAS_CUSTOM_PREVIEW = ["template"];
+const HAS_CUSTOM_PREVIEW = ["generic_camera", "template"];
 
 export interface GenericPreview {
   state: string;

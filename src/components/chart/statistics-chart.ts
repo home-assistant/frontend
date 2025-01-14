@@ -6,7 +6,7 @@ import type {
 } from "chart.js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
@@ -30,11 +30,7 @@ import {
 } from "../../data/recorder";
 import type { HomeAssistant } from "../../types";
 import "./ha-chart-base";
-import type {
-  ChartResizeOptions,
-  ChartDatasetExtra,
-  HaChartBase,
-} from "./ha-chart-base";
+import type { ChartDatasetExtra } from "./ha-chart-base";
 import { clickIsTouch } from "./click_is_touch";
 
 export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
@@ -63,28 +59,28 @@ export class StatisticsChart extends LitElement {
 
   @property({ attribute: false }) public endTime?: Date;
 
-  @property({ type: Array }) public statTypes: Array<StatisticType> = [
-    "sum",
-    "min",
-    "mean",
-    "max",
-  ];
+  @property({ attribute: false, type: Array })
+  public statTypes: Array<StatisticType> = ["sum", "min", "mean", "max"];
 
-  @property() public chartType: ChartType = "line";
+  @property({ attribute: false }) public chartType: ChartType = "line";
 
-  @property({ type: Number }) public minYAxis?: number;
+  @property({ attribute: false, type: Number }) public minYAxis?: number;
 
-  @property({ type: Number }) public maxYAxis?: number;
+  @property({ attribute: false, type: Number }) public maxYAxis?: number;
 
-  @property({ type: Boolean }) public fitYData = false;
+  @property({ attribute: "fit-y-data", type: Boolean }) public fitYData = false;
 
-  @property({ type: Boolean }) public hideLegend = false;
+  @property({ attribute: "hide-legend", type: Boolean }) public hideLegend =
+    false;
 
-  @property({ type: Boolean }) public logarithmicScale = false;
+  @property({ attribute: "logarithmic-scale", type: Boolean })
+  public logarithmicScale = false;
 
-  @property({ type: Boolean }) public isLoadingData = false;
+  @property({ attribute: "is-loading-data", type: Boolean })
+  public isLoadingData = false;
 
-  @property({ type: Boolean }) public clickForMoreInfo = true;
+  @property({ attribute: "click-for-more-info", type: Boolean })
+  public clickForMoreInfo = true;
 
   @property() public period?: string;
 
@@ -98,13 +94,7 @@ export class StatisticsChart extends LitElement {
 
   @state() private _hiddenStats = new Set<string>();
 
-  @query("ha-chart-base") private _chart?: HaChartBase;
-
   private _computedStyle?: CSSStyleDeclaration;
-
-  public resize = (options?: ChartResizeOptions): void => {
-    this._chart?.resize(options);
-  };
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return changedProps.size > 1 || !changedProps.has("hass");
@@ -167,7 +157,7 @@ export class StatisticsChart extends LitElement {
 
     return html`
       <ha-chart-base
-        externalHidden
+        external-hidden
         .hass=${this.hass}
         .data=${this._chartData}
         .extraData=${this._chartDatasetExtra}
@@ -194,7 +184,6 @@ export class StatisticsChart extends LitElement {
   private _createOptions(unit?: string) {
     this._chartOptions = {
       parsing: false,
-      animation: false,
       interaction: {
         mode: "nearest",
         axis: "x",

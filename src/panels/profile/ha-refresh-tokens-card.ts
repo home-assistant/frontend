@@ -148,7 +148,7 @@ class HaRefreshTokens extends LitElement {
                     <div>
                       <ha-button-menu
                         corner="BOTTOM_END"
-                        menuCorner="END"
+                        menu-corner="END"
                         @action=${this._handleAction}
                         .token=${token}
                       >

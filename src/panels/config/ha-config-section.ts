@@ -4,7 +4,7 @@ import { classMap } from "lit/directives/class-map";
 
 @customElement("ha-config-section")
 export class HaConfigSection extends LitElement {
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public vertical = false;
 

@@ -13,7 +13,8 @@ export class AssistPipelineDetailConfig extends LitElement {
 
   @property({ attribute: false }) public data?: Partial<AssistPipeline>;
 
-  @property({ type: Array }) public supportedLanguages?: string[];
+  @property({ attribute: false, type: Array })
+  public supportedLanguages?: string[];
 
   public async focus() {
     await this.updateComplete;

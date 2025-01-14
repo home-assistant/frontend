@@ -229,7 +229,7 @@ class HaConfigSectionGeneral extends LitElement {
               ></ha-country-picker>
               <ha-language-picker
                 .hass=${this.hass}
-                nativeName
+                native-name
                 .label=${this.hass.localize(
                   "ui.panel.config.core.section.core.core_config.language"
                 )}

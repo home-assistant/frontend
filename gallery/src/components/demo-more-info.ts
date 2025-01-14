@@ -10,9 +10,10 @@ import type { HomeAssistant } from "../../../src/types";
 class DemoMoreInfo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public entityId!: string;
+  @property({ attribute: false }) public entityId!: string;
 
-  @property({ type: Boolean }) public showConfig = false;
+  @property({ attribute: "show-config", type: Boolean })
+  public showConfig = false;
 
   render() {
     const state = this._getState(this.entityId, this.hass.states);
@@ -23,7 +24,7 @@ class DemoMoreInfo extends LitElement {
             <state-card-content
               .stateObj=${state}
               .hass=${this.hass}
-              inDialog
+              in-dialog
             ></state-card-content>
 
             <more-info-content

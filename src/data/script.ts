@@ -40,7 +40,7 @@ export const baseActionStruct = object({
   enabled: optional(boolean()),
 });
 
-const targetStruct = object({
+export const targetStruct = object({
   entity_id: optional(union([string(), array(string())])),
   device_id: optional(union([string(), array(string())])),
   area_id: optional(union([string(), array(string())])),

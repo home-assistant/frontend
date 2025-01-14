@@ -19,7 +19,7 @@ export class HaTTSVoicePicker extends LitElement {
 
   @property() public label?: string;
 
-  @property() public engineId?: string;
+  @property({ attribute: false }) public engineId?: string;
 
   @property() public language?: string;
 

@@ -50,7 +50,7 @@ import { showZoneDetailDialog } from "./show-dialog-zone-detail";
 export class HaConfigZone extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -522,7 +522,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         this._map?.fitMap();
       }
       return true;
-    } catch (err: any) {
+    } catch (_err: any) {
       return false;
     }
   }

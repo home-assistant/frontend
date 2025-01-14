@@ -42,7 +42,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
   @property({ type: Number }) public index?: number;
 
-  @property({ type: Boolean }) public isStrategy = false;
+  @property({ attribute: false }) public isStrategy = false;
 
   @property({ attribute: false }) public cards: HuiCard[] = [];
 
@@ -204,7 +204,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     // Calculate the size of every card and determine in what column it should go
     for (const [index, el] of this.cards.entries()) {
       if (tillNextRender === undefined) {
-        // eslint-disable-next-line @typescript-eslint/no-loop-func
+        // eslint-disable-next-line no-loop-func
         tillNextRender = nextRender().then(() => {
           tillNextRender = undefined;
           start = undefined;
@@ -231,7 +231,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
         // An other create columns is started, abort this one
         return;
       }
-      // Calculate in wich column the card should go based on the size and the cards already in there
+      // Calculate in which column the card should go based on the size and the cards already in there
       this._addCardToColumn(
         columnElements[getColumnIndex(columnSizes, cardSize as number)],
         index,

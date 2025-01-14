@@ -87,7 +87,7 @@ class StorageClass {
       } else {
         this.storage.setItem(storageKey, JSON.stringify(value));
       }
-    } catch (err: any) {
+    } catch (_err: any) {
       // Safari in private mode doesn't allow localstorage
     } finally {
       if (this._listeners[storageKey]) {
