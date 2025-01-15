@@ -42,6 +42,7 @@ export interface BackupConfig {
   };
   schedule: {
     state: BackupScheduleState;
+    time?: string | null;
   };
 }
 

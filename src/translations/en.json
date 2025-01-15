@@ -2412,14 +2412,18 @@
             "schedule": "Schedule",
             "schedule_description": "How often you want to create a backup.",
             "schedule_options": {
-              "daily": "Daily at {time}",
-              "mon": "Monday at {time}",
-              "tue": "Tuesday at {time}",
-              "wed": "Wednesday at {time}",
-              "thu": "Thursday at {time}",
-              "fri": "Friday at {time}",
-              "sat": "Saturday at {time}",
-              "sun": "Sunday at {time}"
+              "daily": "Daily",
+              "mon": "Monday",
+              "tue": "Tuesday",
+              "wed": "Wednesday",
+              "thu": "Thursday",
+              "fri": "Friday",
+              "sat": "Saturday",
+              "sun": "Sunday"
+            },
+            "time_options": {
+              "default": "System optimal",
+              "custom": "Custom"
             },
             "retention": "Retention",
             "retention_description": "Based on the maximum number of backups or how many days they should be kept.",

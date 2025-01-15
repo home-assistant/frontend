@@ -13,11 +13,9 @@ import "../../../../../components/ha-md-select-option";
 import "../../../../../components/ha-md-textfield";
 import "../../../../../components/ha-switch";
 import type { BackupConfig } from "../../../../../data/backup";
-import {
-  BackupScheduleState,
-  getFormattedBackupTime,
-} from "../../../../../data/backup";
+import { BackupScheduleState } from "../../../../../data/backup";
 import type { HomeAssistant } from "../../../../../types";
+import "../../../../../components/ha-time-input";
 
 export type BackupConfigSchedule = Pick<BackupConfig, "schedule" | "retention">;
 
@@ -27,6 +25,11 @@ const MAX_VALUE = 50;
 enum RetentionPreset {
   COPIES_3 = "copies_3",
   FOREVER = "forever",
+  CUSTOM = "custom",
+}
+
+enum BackupScheduleTime {
+  DEFAULT = "default",
   CUSTOM = "custom",
 }
 
@@ -60,6 +63,11 @@ const RETENTION_PRESETS_OPTIONS = [
   RetentionPreset.CUSTOM,
 ] as const satisfies RetentionPreset[];
 
+const SCHEDULE_TIME_OPTIONS = [
+  BackupScheduleTime.DEFAULT,
+  BackupScheduleTime.CUSTOM,
+] as const satisfies BackupScheduleTime[];
+
 const computeRetentionPreset = (
   data: RetentionData
 ): RetentionPreset | undefined => {
@@ -74,6 +82,8 @@ const computeRetentionPreset = (
 interface FormData {
   enabled: boolean;
   schedule: BackupScheduleState;
+  time_option: BackupScheduleTime;
+  time?: string | null;
   retention: {
     type: "copies" | "days";
     value: number;
@@ -83,6 +93,7 @@ interface FormData {
 const INITIAL_FORM_DATA: FormData = {
   enabled: false,
   schedule: BackupScheduleState.NEVER,
+  time_option: BackupScheduleTime.DEFAULT,
   retention: {
     type: "copies",
     value: 3,
@@ -116,6 +127,10 @@ class HaBackupConfigSchedule extends LitElement {
     return {
       enabled: config.schedule.state !== BackupScheduleState.NEVER,
       schedule: config.schedule.state,
+      time_option: config.schedule.time
+        ? BackupScheduleTime.CUSTOM
+        : BackupScheduleTime.DEFAULT,
+      time: config.schedule.time,
       retention: {
         type: config.retention.days != null ? "days" : "copies",
         value: config.retention.days ?? config.retention.copies ?? 3,
@@ -125,8 +140,10 @@ class HaBackupConfigSchedule extends LitElement {
 
   private _setData(data: FormData) {
     this.value = {
+      ...this.value,
       schedule: {
         state: data.enabled ? data.schedule : BackupScheduleState.NEVER,
+        time: data.time_option === BackupScheduleTime.CUSTOM ? data.time : null,
       },
       retention:
         data.retention.type === "days"
@@ -139,8 +156,6 @@ class HaBackupConfigSchedule extends LitElement {
 
   protected render() {
     const data = this._getData(this.value);
-
-    const time = getFormattedBackupTime(this.hass.locale, this.hass.config);
 
     return html`
       <ha-md-list>
@@ -160,11 +175,7 @@ class HaBackupConfigSchedule extends LitElement {
         ${data.enabled
           ? html`
               <ha-md-list-item>
-                <span slot="headline">
-                  ${this.hass.localize(
-                    "ui.panel.config.backup.schedule.schedule"
-                  )}
-                </span>
+                <span slot="headline"> Day </span>
                 <span slot="supporting-text">
                   ${this.hass.localize(
                     "ui.panel.config.backup.schedule.schedule_description"
@@ -181,8 +192,7 @@ class HaBackupConfigSchedule extends LitElement {
                       <ha-md-select-option .value=${option}>
                         <div slot="headline">
                           ${this.hass.localize(
-                            `ui.panel.config.backup.schedule.schedule_options.${option}`,
-                            { time }
+                            `ui.panel.config.backup.schedule.schedule_options.${option}`
                           )}
                         </div>
                       </ha-md-select-option>
@@ -190,6 +200,43 @@ class HaBackupConfigSchedule extends LitElement {
                   )}
                 </ha-md-select>
               </ha-md-list-item>
+              <ha-md-list-item>
+                <span slot="headline"> Time </span>
+                <span slot="supporting-text">
+                  ${this.hass.localize(
+                    "ui.panel.config.backup.schedule.schedule_description"
+                  )}
+                </span>
+
+                <ha-md-select
+                  slot="end"
+                  @change=${this._scheduleTimeChanged}
+                  .value=${data.time_option}
+                >
+                  ${SCHEDULE_TIME_OPTIONS.map(
+                    (option) => html`
+                      <ha-md-select-option .value=${option}>
+                        <div slot="headline">
+                          ${this.hass.localize(
+                            `ui.panel.config.backup.schedule.time_options.${option}`
+                          )}
+                        </div>
+                      </ha-md-select-option>
+                    `
+                  )}
+                </ha-md-select>
+              </ha-md-list-item>
+              ${data.time_option === BackupScheduleTime.CUSTOM
+                ? html`<ha-md-list-item>
+                    <ha-time-input
+                      slot="end"
+                      @value-changed=${this._timeChanged}
+                      .value=${data.time}
+                      .locale=${this.hass.locale}
+                    >
+                    </ha-time-input>
+                  </ha-md-list-item>`
+                : nothing}
               <ha-md-list-item>
                 <span slot="headline">
                   ${this.hass.localize(
@@ -272,7 +319,6 @@ class HaBackupConfigSchedule extends LitElement {
         ? BackupScheduleState.DAILY
         : BackupScheduleState.NEVER,
     });
-    fireEvent(this, "value-changed", { value: this.value });
   }
 
   private _scheduleChanged(ev) {
@@ -283,7 +329,27 @@ class HaBackupConfigSchedule extends LitElement {
       ...data,
       schedule: target.value as BackupScheduleState,
     });
-    fireEvent(this, "value-changed", { value: this.value });
+  }
+
+  private _scheduleTimeChanged(ev) {
+    ev.stopPropagation();
+    const target = ev.currentTarget as HaMdSelect;
+    const data = this._getData(this.value);
+    this._setData({
+      ...data,
+      time_option: target.value as BackupScheduleTime,
+      time: target.value === BackupScheduleTime.CUSTOM ? "04:45:00" : undefined,
+    });
+  }
+
+  private _timeChanged(ev) {
+    ev.stopPropagation();
+    const data = this._getData(this.value);
+
+    this._setData({
+      ...data,
+      time: ev.detail.value,
+    });
   }
 
   private _retentionPresetChanged(ev) {
@@ -304,8 +370,6 @@ class HaBackupConfigSchedule extends LitElement {
         retention: RETENTION_PRESETS[value],
       });
     }
-
-    fireEvent(this, "value-changed", { value: this.value });
   }
 
   private _retentionValueChanged(ev) {
@@ -321,8 +385,6 @@ class HaBackupConfigSchedule extends LitElement {
         value: clamped,
       },
     });
-
-    fireEvent(this, "value-changed", { value: this.value });
   }
 
   private _retentionTypeChanged(ev) {
@@ -338,8 +400,6 @@ class HaBackupConfigSchedule extends LitElement {
         type: value,
       },
     });
-
-    fireEvent(this, "value-changed", { value: this.value });
   }
 
   static styles = css`
@@ -351,11 +411,13 @@ class HaBackupConfigSchedule extends LitElement {
     ha-md-list-item {
       --md-item-overflow: visible;
     }
-    ha-md-select {
+    ha-md-select,
+    ha-time-input {
       min-width: 210px;
     }
     @media all and (max-width: 450px) {
-      ha-md-select {
+      ha-md-select,
+      ha-time-input {
         min-width: 160px;
       }
     }
