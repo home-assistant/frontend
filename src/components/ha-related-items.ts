@@ -16,7 +16,7 @@ import { fetchBlueprints } from "../data/blueprint";
 import type { ConfigEntry } from "../data/config_entries";
 import { getConfigEntries } from "../data/config_entries";
 import type { ItemType, RelatedResult } from "../data/search";
-import { sortRelated, findRelated } from "../data/search";
+import { findRelated } from "../data/search";
 import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import { brandsUrl } from "../util/brands-url";
@@ -72,6 +72,10 @@ export class HaRelatedItems extends LitElement {
       this._findRelated();
     }
   }
+
+  private _toEntities = memoizeOne((entityIds: string[]) =>
+    entityIds.map((entityId) => this.hass.states[entityId])
+  );
 
   private _getConfigEntries = memoizeOne(
     (
@@ -242,7 +246,7 @@ export class HaRelatedItems extends LitElement {
         ? html`
             <h3>${this.hass.localize("ui.components.related-items.entity")}</h3>
             <mwc-list>
-              ${sortRelated(this.hass, this._related.entity).map(
+              ${this._toEntities(this._related.entity).map(
                 (entity) => html`
                   <ha-list-item
                     @click=${this._openMoreInfo}
@@ -267,7 +271,7 @@ export class HaRelatedItems extends LitElement {
         ? html`
             <h3>${this.hass.localize("ui.components.related-items.group")}</h3>
             <mwc-list>
-              ${sortRelated(this.hass, this._related.group).map(
+              ${this._toEntities(this._related.group).map(
                 (group) => html`
                   <ha-list-item
                     @click=${this._openMoreInfo}
@@ -292,7 +296,7 @@ export class HaRelatedItems extends LitElement {
         ? html`
             <h3>${this.hass.localize("ui.components.related-items.scene")}</h3>
             <mwc-list>
-              ${sortRelated(this.hass, this._related.scene).map(
+              ${this._toEntities(this._related.scene).map(
                 (scene) => html`
                   <ha-list-item
                     @click=${this._openMoreInfo}
@@ -345,7 +349,7 @@ export class HaRelatedItems extends LitElement {
               ${this.hass.localize("ui.components.related-items.automation")}
             </h3>
             <mwc-list>
-              ${sortRelated(this.hass, this._related.automation).map(
+              ${this._toEntities(this._related.automation).map(
                 (automation) => html`
                   <ha-list-item
                     @click=${this._openMoreInfo}
@@ -397,7 +401,7 @@ export class HaRelatedItems extends LitElement {
         ? html`
             <h3>${this.hass.localize("ui.components.related-items.script")}</h3>
             <mwc-list>
-              ${sortRelated(this.hass, this._related.script).map(
+              ${this._toEntities(this._related.script).map(
                 (script) => html`
                   <ha-list-item
                     @click=${this._openMoreInfo}
