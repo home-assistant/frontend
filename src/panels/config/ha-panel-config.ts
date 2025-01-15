@@ -36,7 +36,11 @@ import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import type { CloudStatus } from "../../data/cloud";
 import { fetchCloudStatus } from "../../data/cloud";
-import { fullEntitiesContext, labelsContext } from "../../data/context";
+import {
+  fullDevicesContext,
+  fullEntitiesContext,
+  labelsContext,
+} from "../../data/context";
 import {
   entityRegistryByEntityId,
   entityRegistryById,
@@ -48,6 +52,7 @@ import { HassRouterPage } from "../../layouts/hass-router-page";
 import type { PageNavigation } from "../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../../types";
+import { subscribeDeviceRegistry } from "../../data/ws-device_registry";
 
 declare global {
   // for fire event
@@ -379,6 +384,11 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
     initialValue: [],
   });
 
+  private _devicesContext = new ContextProvider(this, {
+    context: fullDevicesContext,
+    initialValue: [],
+  });
+
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
       subscribeEntityRegistry(this.hass.connection!, (entities) => {
@@ -386,6 +396,9 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
       }),
       subscribeLabelRegistry(this.hass.connection!, (labels) => {
         this._labelsContext.setValue(labels);
+      }),
+      subscribeDeviceRegistry(this.hass.connection, (entries) => {
+        this._devicesContext.setValue(entries);
       }),
     ];
   }
