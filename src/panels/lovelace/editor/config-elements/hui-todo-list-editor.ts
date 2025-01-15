@@ -110,9 +110,10 @@ export class HuiTodoListEditor
   }
 
   private _todoListSupportsFeature(feature: number): boolean {
-    const entityStateObj =
-      this._config?.entity && this.hass!.states[this._config.entity];
-    return entityStateObj && supportsFeature(entityStateObj, feature);
+    const entityStateObj = this._config?.entity
+      ? this.hass!.states[this._config?.entity]
+      : undefined;
+    return !!entityStateObj && supportsFeature(entityStateObj, feature);
   }
 
   private _computeLabelCallback = (
