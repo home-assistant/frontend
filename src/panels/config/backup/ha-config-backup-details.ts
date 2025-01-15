@@ -21,8 +21,13 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import { getSignedPath } from "../../../data/auth";
-import type { BackupContentExtended, BackupData } from "../../../data/backup";
+import type {
+  BackupConfig,
+  BackupContentExtended,
+  BackupData,
+} from "../../../data/backup";
 import {
+  canDecryptBackupOnDownload,
   compareAgents,
   computeBackupAgentName,
   deleteBackup,
@@ -38,10 +43,14 @@ import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { bytesToString } from "../../../util/bytes-to-string";
 import { fileDownload } from "../../../util/file_download";
-import { showConfirmationDialog } from "../../lovelace/custom-card-helpers";
 import "./components/ha-backup-data-picker";
 import { showRestoreBackupDialog } from "./dialogs/show-dialog-restore-backup";
 import { fireEvent } from "../../../common/dom/fire_event";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+  showPromptDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 
 interface Agent {
   id: string;
@@ -66,6 +75,8 @@ class HaConfigBackupDetails extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: "backup-id" }) public backupId!: string;
+
+  @property({ attribute: false }) public config?: BackupConfig;
 
   @state() private _backup?: BackupContentExtended | null;
 
@@ -376,14 +387,68 @@ class HaConfigBackupDetails extends LitElement {
     this._downloadBackup(agentId);
   }
 
-  private async _downloadBackup(agentId?: string): Promise<void> {
+  private async _downloadBackup(
+    agentId?: string,
+    encryptionKey?: string
+  ): Promise<void> {
     const preferedAgent =
       agentId ?? getPreferredAgentForDownload(this._backup!.agent_ids!);
+
+    if (this._backup?.protected) {
+      if (this.config?.create_backup.password) {
+        try {
+          await canDecryptBackupOnDownload(
+            this.hass,
+            this._backup!.backup_id,
+            preferedAgent,
+            this.config?.create_backup.password
+          );
+        } catch (err: any) {
+          if (err?.code === "password_incorrect") {
+            this._requestEncryptionKey(agentId, encryptionKey !== undefined);
+            return;
+          }
+          if (err?.code === "decrypt_not_supported") {
+            showAlertDialog(this, {
+              text: "Decryption is not supported for this backup. The backup will be encrypted and can't be opened.",
+            });
+            return;
+          }
+        }
+      } else {
+        this._requestEncryptionKey(agentId, encryptionKey !== undefined);
+        return;
+      }
+    }
+
     const signedUrl = await getSignedPath(
       this.hass,
-      getBackupDownloadUrl(this._backup!.backup_id, preferedAgent)
+      getBackupDownloadUrl(
+        this._backup!.backup_id,
+        preferedAgent,
+        this.config?.create_backup.password
+      )
     );
     fileDownload(signedUrl.path);
+  }
+
+  private async _requestEncryptionKey(
+    agentId: undefined | string,
+    userProvided: boolean
+  ): Promise<void> {
+    const encryptionKey = await showPromptDialog(this, {
+      title: "Encryption key",
+      text: userProvided
+        ? "The entered encryption key was incorrect, try again."
+        : "This backup is encrypted with a different encryption key than the current one, please enter the encryption key of this backup.",
+      inputLabel: "Encryption key",
+      inputType: "password",
+      confirmText: "Download",
+    });
+    if (!encryptionKey) {
+      return;
+    }
+    this._downloadBackup(agentId, encryptionKey);
   }
 
   private async _deleteBackup(): Promise<void> {

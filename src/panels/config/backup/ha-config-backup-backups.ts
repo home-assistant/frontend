@@ -36,6 +36,7 @@ import "../../../components/ha-svg-icon";
 import { getSignedPath } from "../../../data/auth";
 import type { BackupConfig, BackupContent } from "../../../data/backup";
 import {
+  canDecryptBackupOnDownload,
   computeBackupAgentName,
   deleteBackup,
   generateBackup,
@@ -52,6 +53,7 @@ import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   showAlertDialog,
   showConfirmationDialog,
+  showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
@@ -486,13 +488,63 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     navigate(`/config/backup/details/${id}`);
   }
 
-  private async _downloadBackup(backup: BackupContent): Promise<void> {
+  private async _downloadBackup(
+    backup: BackupContent,
+    encryptionKey?: string
+  ): Promise<void> {
     const preferedAgent = getPreferredAgentForDownload(backup!.agent_ids!);
+
+    if (backup.protected) {
+      if (this.config?.create_backup.password) {
+        try {
+          await canDecryptBackupOnDownload(
+            this.hass,
+            backup.backup_id,
+            preferedAgent,
+            this.config?.create_backup.password
+          );
+        } catch (err: any) {
+          if (err?.code === "password_incorrect") {
+            this._requestEncryptionKey(backup, encryptionKey !== undefined);
+            return;
+          }
+          if (err?.code === "decrypt_not_supported") {
+            showAlertDialog(this, {
+              text: "Decryption is not supported for this backup. The backup will be encrypted and can't be opened.",
+            });
+            return;
+          }
+        }
+      } else {
+        this._requestEncryptionKey(backup, encryptionKey !== undefined);
+        return;
+      }
+    }
+
     const signedUrl = await getSignedPath(
       this.hass,
       getBackupDownloadUrl(backup.backup_id, preferedAgent)
     );
     fileDownload(signedUrl.path);
+  }
+
+  private async _requestEncryptionKey(
+    backup: BackupContent,
+    userProvided: boolean
+  ): Promise<void> {
+    const encryptionKey = await showPromptDialog(this, {
+      title: "Encryption key",
+      text: userProvided
+        ? "The entered encryption key was incorrect, try again."
+        : "This backup is encrypted with a different encryption key than the current one, please enter the encryption key of this backup.",
+      inputLabel: "Encryption key",
+      inputType: "password",
+      confirmText: "Download",
+    });
+    if (!encryptionKey) {
+      return;
+    }
+    this._downloadBackup(backup, encryptionKey);
   }
 
   private async _deleteBackup(backup: BackupContent): Promise<void> {
