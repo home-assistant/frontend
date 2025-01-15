@@ -14,11 +14,8 @@ import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import { configElementStyle } from "./config-elements-style";
-import {
-  SORT_ALPHA,
-  SORT_DUEDATE,
-  SORT_NONE,
-} from "../../cards/hui-todo-list-card";
+import { TodoListEntityFeature, TodoSortMode } from "../../../../data/todo";
+import { supportsFeature } from "../../../../common/entity/supports-feature";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -28,7 +25,7 @@ const cardConfigStruct = assign(
     entity: optional(string()),
     hide_completed: optional(boolean()),
     hide_create: optional(boolean()),
-    sort: optional(string()),
+    display_order: optional(string()),
   })
 );
 
@@ -42,7 +39,7 @@ export class HuiTodoListEditor
   @state() private _config?: TodoListCardConfig;
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc) =>
+    (localize: LocalizeFunc, supportsManualSort: boolean) =>
       [
         { name: "title", selector: { text: {} } },
         {
@@ -54,13 +51,13 @@ export class HuiTodoListEditor
         { name: "theme", selector: { theme: {} } },
         { name: "hide_completed", selector: { boolean: {} } },
         {
-          name: "sort",
+          name: "display_order",
           selector: {
             select: {
-              options: [SORT_NONE, SORT_ALPHA, SORT_DUEDATE].map((sort) => ({
+              options: Object.values(TodoSortMode).map((sort) => ({
                 value: sort,
                 label: localize(
-                  `ui.panel.lovelace.editor.card.todo-list.sort_modes.${sort}`
+                  `ui.panel.lovelace.editor.card.todo-list.sort_modes.${sort === TodoSortMode.NONE && supportsManualSort ? "manual" : sort}`
                 ),
               })),
             },
@@ -69,7 +66,10 @@ export class HuiTodoListEditor
       ] as const
   );
 
-  private _data = memoizeOne((config) => ({ sort: "none", ...config }));
+  private _data = memoizeOne((config) => ({
+    display_order: "none",
+    ...config,
+  }));
 
   public setConfig(config: TodoListCardConfig): void {
     assert(config, cardConfigStruct);
@@ -96,7 +96,7 @@ export class HuiTodoListEditor
         <ha-form
           .hass=${this.hass}
           .data=${this._data(this._config)}
-          .schema=${this._schema(this.hass.localize)}
+          .schema=${this._schema(this.hass.localize, this._todoListSupportsFeature(TodoListEntityFeature.MOVE_TODO_ITEM))}
           .computeLabel=${this._computeLabelCallback}
           @value-changed=${this._valueChanged}
         ></ha-form>
@@ -107,6 +107,12 @@ export class HuiTodoListEditor
   private _valueChanged(ev: CustomEvent): void {
     const config = ev.detail.value;
     fireEvent(this, "config-changed", { config });
+  }
+
+  private _todoListSupportsFeature(feature: number): boolean {
+    const entityStateObj =
+      this._config?.entity && this.hass!.states[this._config.entity];
+    return entityStateObj && supportsFeature(entityStateObj, feature);
   }
 
   private _computeLabelCallback = (
@@ -120,7 +126,7 @@ export class HuiTodoListEditor
           "ui.panel.lovelace.editor.card.config.optional"
         )})`;
       case "hide_completed":
-      case "sort":
+      case "display_order":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.todo-list.${schema.name}`
         );

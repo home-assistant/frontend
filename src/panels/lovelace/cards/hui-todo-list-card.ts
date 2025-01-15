@@ -43,6 +43,7 @@ import {
   moveItem,
   subscribeItems,
   updateItem,
+  TodoSortMode,
 } from "../../../data/todo";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
@@ -51,10 +52,6 @@ import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { TodoListCardConfig } from "./types";
-
-export const SORT_ALPHA = "alpha";
-export const SORT_DUEDATE = "duedate";
-export const SORT_NONE = "none";
 
 @customElement("hui-todo-list-card")
 export class HuiTodoListCard extends LitElement implements LovelaceCard {
@@ -129,23 +126,30 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   }
 
   private _sortItems(items: TodoItem[], sort?: string | undefined) {
-    if (sort === SORT_ALPHA) {
-      return items.sort((a, b) =>
-        caseInsensitiveStringCompare(
-          a.summary,
-          b.summary,
-          this.hass?.locale.language
-        )
+    if (sort === TodoSortMode.ALPHA_ASC || sort === TodoSortMode.ALPHA_DESC) {
+      const sortOrder = sort === TodoSortMode.ALPHA_ASC ? 1 : -1;
+      return items.sort(
+        (a, b) =>
+          sortOrder *
+          caseInsensitiveStringCompare(
+            a.summary,
+            b.summary,
+            this.hass?.locale.language
+          )
       );
     }
-    if (sort === SORT_DUEDATE) {
+    if (
+      sort === TodoSortMode.DUEDATE_ASC ||
+      sort === TodoSortMode.DUEDATE_DESC
+    ) {
+      const sortOrder = sort === TodoSortMode.DUEDATE_ASC ? 1 : -1;
       return items.sort((a, b) => {
         const aDue = this._getDueDate(a) ?? Infinity;
         const bDue = this._getDueDate(b) ?? Infinity;
         if (aDue === bDue) {
           return 0;
         }
-        return aDue < bDue ? -1 : 1;
+        return aDue < bDue ? -sortOrder : sortOrder;
       });
     }
     return items;
@@ -221,10 +225,13 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
     const unavailable = isUnavailableState(stateObj.state);
 
-    const checkedItems = this._getCheckedItems(this._items, this._config.sort);
+    const checkedItems = this._getCheckedItems(
+      this._items,
+      this._config.display_order
+    );
     const uncheckedItems = this._getUncheckedItems(
       this._items,
-      this._config.sort
+      this._config.display_order
     );
 
     return html`
@@ -274,7 +281,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                         "ui.panel.lovelace.cards.todo-list.unchecked_items"
                       )}
                     </h2>
-                    ${(!this._config.sort || this._config.sort === SORT_NONE) &&
+                    ${(!this._config.display_order ||
+                      this._config.display_order === TodoSortMode.NONE) &&
                     this._todoListSupportsFeature(
                       TodoListEntityFeature.MOVE_TODO_ITEM
                     )
