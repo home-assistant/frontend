@@ -172,12 +172,12 @@ export class HaDeviceEntitiesCard extends LitElement {
       const stateObj = this.hass.states[entry.entity_id];
 
       let name = entry.name
-        ? stripPrefixFromEntityName(entry.name, this.deviceName.toLowerCase())
+        ? stripPrefixFromEntityName(entry.name, this.deviceName)
         : entry.has_entity_name
           ? entry.original_name || this.deviceName
           : stripPrefixFromEntityName(
               computeStateName(stateObj),
-              this.deviceName.toLowerCase()
+              this.deviceName
             );
 
       if (!name) {
@@ -216,8 +216,7 @@ export class HaDeviceEntitiesCard extends LitElement {
         <ha-icon slot="graphic" .icon=${icon}></ha-icon>
         <div class="name">
           ${name
-            ? stripPrefixFromEntityName(name, this.deviceName.toLowerCase()) ||
-              name
+            ? stripPrefixFromEntityName(name, this.deviceName) || name
             : entry.entity_id}
         </div>
       </ha-list-item>
