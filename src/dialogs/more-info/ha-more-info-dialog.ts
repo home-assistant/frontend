@@ -40,7 +40,9 @@ import type {
 } from "../../data/entity_registry";
 import { getExtendedEntityRegistryEntry } from "../../data/entity_registry";
 import { lightSupportsFavoriteColors } from "../../data/light";
+import type { ItemType } from "../../data/search";
 import { SearchableDomains } from "../../data/search";
+import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import { haStyleDialog } from "../../resources/styles";
 import "../../state-summary/state-card-content";
 import type { HomeAssistant } from "../../types";
@@ -56,7 +58,6 @@ import "./ha-more-info-history-and-logbook";
 import "./ha-more-info-info";
 import "./ha-more-info-settings";
 import "./more-info-content";
-import { getSensorNumericDeviceClasses } from "../../data/sensor";
 
 export interface MoreInfoDialogParams {
   entityId: string | null;
@@ -560,7 +561,7 @@ export class MoreInfoDialog extends LitElement {
                             .hass=${this.hass}
                             .itemId=${entityId}
                             .itemType=${SearchableDomains.has(domain)
-                              ? domain
+                              ? (domain as ItemType)
                               : "entity"}
                           ></ha-related-items>
                         `

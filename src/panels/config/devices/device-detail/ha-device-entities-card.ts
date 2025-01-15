@@ -4,7 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { until } from "lit/directives/until";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
+import { computeEntityName } from "../../../../common/entity/compute_entity_name";
 import { stripPrefixFromEntityName } from "../../../../common/entity/strip_prefix_from_entity_name";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
@@ -15,17 +15,17 @@ import { entryIcon } from "../../../../data/icons";
 import { showMoreInfoDialog } from "../../../../dialogs/more-info/show-ha-more-info-dialog";
 import type { HomeAssistant } from "../../../../types";
 import type { HuiErrorCard } from "../../../lovelace/cards/hui-error-card";
-import { createRowElement } from "../../../lovelace/create-element/create-row-element";
-import { addEntitiesToLovelaceView } from "../../../lovelace/editor/add-entities-to-view";
-import type {
-  LovelaceRowConfig,
-  LovelaceRow,
-} from "../../../lovelace/entity-rows/types";
-import type { EntityRegistryStateEntry } from "../ha-config-device-page";
 import {
   computeCards,
   computeSection,
 } from "../../../lovelace/common/generate-lovelace-config";
+import { createRowElement } from "../../../lovelace/create-element/create-row-element";
+import { addEntitiesToLovelaceView } from "../../../lovelace/editor/add-entities-to-view";
+import type {
+  LovelaceRow,
+  LovelaceRowConfig,
+} from "../../../lovelace/entity-rows/types";
+import type { EntityRegistryStateEntry } from "../ha-config-device-page";
 
 @customElement("ha-device-entities-card")
 export class HaDeviceEntitiesCard extends LitElement {
@@ -171,18 +171,11 @@ export class HaDeviceEntitiesCard extends LitElement {
       element.hass = this.hass;
       const stateObj = this.hass.states[entry.entity_id];
 
-      let name = entry.name
-        ? stripPrefixFromEntityName(entry.name, this.deviceName)
-        : entry.has_entity_name
-          ? entry.original_name || this.deviceName
-          : stripPrefixFromEntityName(
-              computeStateName(stateObj),
-              this.deviceName
-            );
-
-      if (!name) {
-        name = computeStateName(stateObj);
-      }
+      let name = computeEntityName(
+        stateObj,
+        this.hass.entities,
+        this.hass.devices
+      );
 
       if (entry.hidden_by) {
         name += ` (${this.hass.localize(
