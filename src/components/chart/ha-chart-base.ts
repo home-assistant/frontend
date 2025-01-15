@@ -430,7 +430,12 @@ export class HaChartBase extends LitElement {
   }
 
   private _createOptions(): ECOption {
-    return this.options;
+    return {
+      aria: {
+        show: true,
+      },
+      ...this.options,
+    };
     const modifierKey = isMac ? "meta" : "ctrl";
     return {
       maintainAspectRatio: false,
@@ -444,10 +449,6 @@ export class HaChartBase extends LitElement {
           ...this.options?.plugins?.tooltip,
           enabled: false,
           external: (context) => this._handleTooltip(context),
-        },
-        legend: {
-          ...this.options?.plugins?.legend,
-          display: false,
         },
         zoom: {
           ...this.options?.plugins?.zoom,

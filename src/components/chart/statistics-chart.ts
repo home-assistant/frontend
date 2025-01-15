@@ -1,21 +1,11 @@
-import type {
-  ChartData,
-  ChartDataset,
-  ChartOptions,
-  ChartType,
-} from "chart.js";
+import type { ChartData, ChartDataset, ChartType } from "chart.js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { fireEvent } from "../../common/dom/fire_event";
-import {
-  formatNumber,
-  numberFormatToLocale,
-  getNumberFormatOptions,
-} from "../../common/number/format_number";
+
 import type {
   Statistics,
   StatisticsMetaData,
@@ -25,7 +15,6 @@ import {
   getDisplayUnit,
   getStatisticLabel,
   getStatisticMetadata,
-  isExternalStatistic,
   statisticsHaveType,
 } from "../../data/recorder";
 import type { HomeAssistant } from "../../types";
@@ -35,7 +24,9 @@ import type {
   ChartDatasetExtra,
   HaChartBase,
 } from "./ha-chart-base";
-import { clickIsTouch } from "./click_is_touch";
+import { formatTime } from "../../common/datetime/format_time";
+import { formatDateVeryShort } from "../../common/datetime/format_date";
+import { computeRTL } from "../../common/util/compute_rtl";
 
 export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
   mean: "mean",
@@ -94,7 +85,7 @@ export class StatisticsChart extends LitElement {
 
   @state() private _statisticIds: string[] = [];
 
-  @state() private _chartOptions?: ChartOptions;
+  @state() private _chartOptions?: ECOption;
 
   @state() private _hiddenStats = new Set<string>();
 
@@ -115,6 +106,15 @@ export class StatisticsChart extends LitElement {
       this._hiddenStats.clear();
     }
     if (
+      changedProps.has("statisticsData") ||
+      changedProps.has("statTypes") ||
+      changedProps.has("chartType") ||
+      changedProps.has("hideLegend") ||
+      changedProps.has("_hiddenStats")
+    ) {
+      this._generateData();
+    }
+    if (
       !this.hasUpdated ||
       changedProps.has("unit") ||
       changedProps.has("period") ||
@@ -123,18 +123,10 @@ export class StatisticsChart extends LitElement {
       changedProps.has("maxYAxis") ||
       changedProps.has("fitYData") ||
       changedProps.has("logarithmicScale") ||
-      changedProps.has("hideLegend")
+      changedProps.has("hideLegend") ||
+      changedProps.has("_chartData")
     ) {
       this._createOptions();
-    }
-    if (
-      changedProps.has("statisticsData") ||
-      changedProps.has("statTypes") ||
-      changedProps.has("chartType") ||
-      changedProps.has("hideLegend") ||
-      changedProps.has("_hiddenStats")
-    ) {
-      this._generateData();
     }
   }
 
@@ -192,121 +184,214 @@ export class StatisticsChart extends LitElement {
   }
 
   private _createOptions(unit?: string) {
+    const yAxisName = unit || this.unit;
     this._chartOptions = {
-      parsing: false,
-      interaction: {
-        mode: "nearest",
-        axis: "x",
+      xAxis: {
+        type: "time",
+        axisLabel: {
+          formatter: (value: number) => {
+            const date = new Date(value);
+            // show only date for the beginning of the day
+            if (
+              date.getHours() === 0 &&
+              date.getMinutes() === 0 &&
+              date.getSeconds() === 0
+            ) {
+              return `{day|${formatDateVeryShort(date, this.hass.locale, this.hass.config)}}`;
+            }
+            return formatTime(date, this.hass.locale, this.hass.config);
+          },
+          rich: {
+            day: {
+              fontWeight: "bold",
+            },
+          },
+        },
+        axisLine: {
+          show: false,
+        },
+        splitLine: {
+          show: true,
+        },
       },
-      scales: {
-        x: {
-          type: "time",
-          adapters: {
-            date: {
-              locale: this.hass.locale,
-              config: this.hass.config,
-            },
+      yAxis: {
+        type: this.logarithmicScale ? "log" : "value",
+        name: yAxisName,
+        position: computeRTL(this.hass) ? "right" : "left",
+        scale: this.chartType !== "bar",
+        min: this.fitYData ? undefined : this.minYAxis,
+        max: this.fitYData ? undefined : this.maxYAxis,
+      },
+      series: this._chartData.datasets.map((dataset) => {
+        let options = {
+          type: this.chartType,
+          data: dataset.data.map((item) =>
+            item && typeof item === "object" ? [item.x, item.y] : item
+          ),
+          name: dataset.label,
+          symbol: "circle",
+          symbolSize: dataset.pointRadius,
+          lineStyle: {
+            width: 1.5,
           },
-          ticks: {
-            source: this.chartType === "bar" ? "data" : undefined,
-            maxRotation: 0,
-            sampleSize: 5,
-            autoSkipPadding: 20,
-            major: {
-              enabled: true,
+        };
+        if (["min", "max"].includes(dataset.label)) {
+          options = {
+            ...options,
+            stack: "band",
+            symbol: "none",
+            lineStyle: {
+              // @ts-ignore the type is wrong
+              // opacity: 0,
             },
-            font: (context) =>
-              context.tick && context.tick.major
-                ? ({ weight: "bold" } as any)
-                : {},
-          },
-          time: {
-            tooltipFormat: "datetime",
-            unit:
-              this.chartType === "bar" &&
-              this.period &&
-              ["hour", "day", "week", "month"].includes(this.period)
-                ? this.period
+            areaStyle:
+              dataset.label === "max"
+                ? {
+                    color: "#ccc",
+                  }
                 : undefined,
-          },
-        },
-        y: {
-          beginAtZero: this.chartType === "bar",
-          ticks: {
-            maxTicksLimit: 7,
-          },
-          title: {
-            display: unit || this.unit,
-            text: unit || this.unit,
-          },
-          type: this.logarithmicScale ? "logarithmic" : "linear",
-          min: this.fitYData ? null : this.minYAxis,
-          max: this.fitYData ? null : this.maxYAxis,
-        },
-      },
-      plugins: {
-        tooltip: {
-          callbacks: {
-            label: (context) =>
-              `${context.dataset.label}: ${formatNumber(
-                context.parsed.y,
-                this.hass.locale,
-                getNumberFormatOptions(
-                  undefined,
-                  this.hass.entities[this._statisticIds[context.datasetIndex]]
-                )
-              )} ${
-                // @ts-ignore
-                context.dataset.unit || ""
-              }`,
-          },
-        },
-        filler: {
-          propagate: true,
-        },
-        legend: {
-          display: !this.hideLegend,
-          labels: {
-            usePointStyle: true,
-          },
-        },
-      },
-      elements: {
-        line: {
-          tension: 0.4,
-          cubicInterpolationMode: "monotone",
-          borderWidth: 1.5,
-        },
-        bar: { borderWidth: 1.5, borderRadius: 4 },
-        point: {
-          hitRadius: 50,
-        },
-      },
-      // @ts-expect-error
-      locale: numberFormatToLocale(this.hass.locale),
-      onClick: (e: any) => {
-        if (!this.clickForMoreInfo || clickIsTouch(e)) {
-          return;
+          };
         }
-
-        const chart = e.chart;
-
-        const points = chart.getElementsAtEventForMode(
-          e,
-          "nearest",
-          { intersect: true },
-          true
-        );
-
-        if (points.length) {
-          const firstPoint = points[0];
-          const statisticId = this._statisticIds[firstPoint.datasetIndex];
-          if (!isExternalStatistic(statisticId)) {
-            fireEvent(this, "hass-more-info", { entityId: statisticId });
-            chart.canvas.dispatchEvent(new Event("mouseout")); // to hide tooltip
-          }
-        }
+        return options;
+      }),
+      legend: {
+        show: !this.hideLegend,
+        icon: "circle",
+        padding: [20, 0],
       },
+      grid: {
+        ...(this.hideLegend ? { top: yAxisName ? 30 : 5 } : {}), // undefined is the same as 0
+        left: 20,
+        right: 1,
+        bottom: 0,
+        containLabel: true,
+      },
+      tooltip: {
+        trigger: "axis",
+        appendTo: document.body,
+      },
+      dataZoom: [
+        {
+          type: "inside",
+          orient: "horizontal",
+          filterMode: "none",
+          zoomOnMouseWheel: "ctrl",
+        },
+      ],
+      // parsing: false,
+      // interaction: {
+      //   mode: "nearest",
+      //   axis: "x",
+      // },
+      // scales: {
+      //   x: {
+      //     type: "time",
+      //     adapters: {
+      //       date: {
+      //         locale: this.hass.locale,
+      //         config: this.hass.config,
+      //       },
+      //     },
+      //     ticks: {
+      //       source: this.chartType === "bar" ? "data" : undefined,
+      //       maxRotation: 0,
+      //       sampleSize: 5,
+      //       autoSkipPadding: 20,
+      //       major: {
+      //         enabled: true,
+      //       },
+      //       font: (context) =>
+      //         context.tick && context.tick.major
+      //           ? ({ weight: "bold" } as any)
+      //           : {},
+      //     },
+      //     time: {
+      //       tooltipFormat: "datetime",
+      //       unit:
+      //         this.chartType === "bar" &&
+      //         this.period &&
+      //         ["hour", "day", "week", "month"].includes(this.period)
+      //           ? this.period
+      //           : undefined,
+      //     },
+      //   },
+      //   y: {
+      //     beginAtZero: this.chartType === "bar",
+      //     ticks: {
+      //       maxTicksLimit: 7,
+      //     },
+      //     title: {
+      //       display: unit || this.unit,
+      //       text: unit || this.unit,
+      //     },
+      //     type: this.logarithmicScale ? "logarithmic" : "linear",
+      //     min: this.fitYData ? null : this.minYAxis,
+      //     max: this.fitYData ? null : this.maxYAxis,
+      //   },
+      // },
+      // plugins: {
+      //   tooltip: {
+      //     callbacks: {
+      //       label: (context) =>
+      //         `${context.dataset.label}: ${formatNumber(
+      //           context.parsed.y,
+      //           this.hass.locale,
+      //           getNumberFormatOptions(
+      //             undefined,
+      //             this.hass.entities[this._statisticIds[context.datasetIndex]]
+      //           )
+      //         )} ${
+      //           // @ts-ignore
+      //           context.dataset.unit || ""
+      //         }`,
+      //     },
+      //   },
+      //   filler: {
+      //     propagate: true,
+      //   },
+      //   legend: {
+      //     display: !this.hideLegend,
+      //     labels: {
+      //       usePointStyle: true,
+      //     },
+      //   },
+      // },
+      // elements: {
+      //   line: {
+      //     tension: 0.4,
+      //     cubicInterpolationMode: "monotone",
+      //     borderWidth: 1.5,
+      //   },
+      //   bar: { borderWidth: 1.5, borderRadius: 4 },
+      //   point: {
+      //     hitRadius: 50,
+      //   },
+      // },
+      // // @ts-expect-error
+      // locale: numberFormatToLocale(this.hass.locale),
+      // onClick: (e: any) => {
+      //   if (!this.clickForMoreInfo || clickIsTouch(e)) {
+      //     return;
+      //   }
+
+      //   const chart = e.chart;
+
+      //   const points = chart.getElementsAtEventForMode(
+      //     e,
+      //     "nearest",
+      //     { intersect: true },
+      //     true
+      //   );
+
+      //   if (points.length) {
+      //     const firstPoint = points[0];
+      //     const statisticId = this._statisticIds[firstPoint.datasetIndex];
+      //     if (!isExternalStatistic(statisticId)) {
+      //       fireEvent(this, "hass-more-info", { entityId: statisticId });
+      //       chart.canvas.dispatchEvent(new Event("mouseout")); // to hide tooltip
+      //     }
+      //   }
+      // },
     };
   }
 

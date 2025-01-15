@@ -15,6 +15,9 @@ import type { ECOption } from "../../resources/echarts";
 import echarts from "../../resources/echarts";
 import { formatDateVeryShort } from "../../common/datetime/format_date";
 import { formatTime } from "../../common/datetime/format_time";
+import { luminosity } from "../../common/color/rgb";
+import { hex2rgb } from "../../common/color/convert-color";
+import { measureTextWidth } from "../../util/text";
 
 @customElement("state-history-chart-timeline")
 export class StateHistoryChartTimeline extends LitElement {
@@ -102,7 +105,7 @@ export class StateHistoryChartTimeline extends LitElement {
   private _createOptions() {
     const narrow = this.narrow;
     const labelWidth = narrow ? 105 : 185;
-    const labelPadding = this.chunked || this.showNames ? labelWidth - 20 : 10;
+    const labelPadding = this.chunked || this.showNames ? labelWidth - 5 : 10;
     const rtl = computeRTL(this.hass);
     this._chartOptions = {
       xAxis: {
@@ -173,11 +176,16 @@ export class StateHistoryChartTimeline extends LitElement {
           y: 0,
         },
         name: this._chartData?.labels?.[datasetIndex] ?? "",
+        label: {
+          show: true,
+          position: "inside",
+        },
         renderItem: (params, api) => {
           const categoryIndex = api.value(0);
           const start = api.coord([api.value(1), categoryIndex]);
           const end = api.coord([api.value(2), categoryIndex]);
-          const height = api.size!([0, 1])[1] * 0.8;
+          const height = 20;
+          const coordSys = params.coordSys as any;
           const rectShape = echarts.graphic.clipRectByRect(
             {
               x: start[0],
@@ -186,20 +194,45 @@ export class StateHistoryChartTimeline extends LitElement {
               height: height,
             },
             {
-              x: params.coordSys.x,
-              y: params.coordSys.y,
-              width: params.coordSys.width,
-              height: params.coordSys.height,
+              x: coordSys.x,
+              y: coordSys.y,
+              width: coordSys.width,
+              height: coordSys.height,
             }
           );
-          return (
-            rectShape && {
-              type: "rect",
-              transition: ["shape"],
-              shape: rectShape,
-              style: api.style(),
-            }
-          );
+          if (!rectShape) return rectShape;
+          const rect = {
+            type: "rect",
+            transition: ["shape"],
+            shape: rectShape,
+            style: api.style(),
+          };
+          const text = api.value(3) as string;
+          const textWidth = measureTextWidth(text, 12);
+          if (textWidth < rectShape.width - 8) {
+            return {
+              type: "group",
+              children: [
+                rect,
+                {
+                  type: "text",
+                  style: {
+                    ...rectShape,
+                    x: rectShape.x + 4,
+                    width: rectShape.width - 4,
+                    text,
+                    fill:
+                      luminosity(hex2rgb(api.style().fill)) > 0.5
+                        ? "#000"
+                        : "#fff",
+                    fontSize: 12,
+                    lineHeight: rectShape.height,
+                  },
+                },
+              ],
+            };
+          }
+          return rect;
         },
       })),
       tooltip: {
@@ -226,52 +259,7 @@ export class StateHistoryChartTimeline extends LitElement {
           ].join("<br>");
         },
       },
-      // maintainAspectRatio: false,
-      // parsing: false,
-      // scales: {
-      //   x: {
-      //     type: "time",
-      //     position: "bottom",
-      //     adapters: {
-      //       date: {
-      //         locale: this.hass.locale,
-      //         config: this.hass.config,
-      //       },
-      //     },
-      //     min: this.startTime,
-      //     suggestedMax: this.endTime,
-      //     ticks: {
-      //       autoSkip: true,
-      //       maxRotation: 0,
-      //       sampleSize: 5,
-      //       autoSkipPadding: 20,
-      //       major: {
-      //         enabled: true,
-      //       },
-      //       font: (context) =>
-      //         context.tick && context.tick.major
-      //           ? ({ weight: "bold" } as any)
-      //           : {},
-      //     },
-      //     grid: {
-      //       offset: false,
-      //     },
-      //     time: {
-      //       tooltipFormat: "datetimeseconds",
-      //     },
-      //   },
       //   y: {
-      //     type: "category",
-      //     barThickness: 20,
-      //     offset: true,
-      //     grid: {
-      //       display: false,
-      //       drawBorder: false,
-      //       drawTicks: false,
-      //     },
-      //     ticks: {
-      //       display: this.chunked || this.showNames,
-      //     },
       //     afterSetDimensions: (y) => {
       //       y.maxWidth = y.chart.width * 0.18;
       //     },
@@ -298,55 +286,8 @@ export class StateHistoryChartTimeline extends LitElement {
       //         });
       //       }
       //     },
-      //     position: computeRTL(this.hass) ? "right" : "left",
       //   },
       // },
-      // plugins: {
-      //   tooltip: {
-      //     mode: "nearest",
-      //     callbacks: {
-      //       title: (context) =>
-      //         context![0].chart!.data!.labels![
-      //           context[0].datasetIndex
-      //         ] as string,
-      //       beforeBody: (context) => context[0].dataset.label || "",
-      //       label: (item) => {
-      //         const d = item.dataset.data[item.dataIndex] as TimeLineData;
-      //         const durationInMs = d.end.getTime() - d.start.getTime();
-      //         const formattedDuration = `${this.hass.localize(
-      //           "ui.components.history_charts.duration"
-      //         )}: ${millisecondsToDuration(durationInMs)}`;
-
-      //         return [
-      //           d.label || "",
-      //           formatDateTimeWithSeconds(
-      //             d.start,
-      //             this.hass.locale,
-      //             this.hass.config
-      //           ),
-      //           formatDateTimeWithSeconds(
-      //             d.end,
-      //             this.hass.locale,
-      //             this.hass.config
-      //           ),
-      //           formattedDuration,
-      //         ];
-      //       },
-      //       labelColor: (item) => ({
-      //         borderColor: (item.dataset.data[item.dataIndex] as TimeLineData)
-      //           .color!,
-      //         backgroundColor: (
-      //           item.dataset.data[item.dataIndex] as TimeLineData
-      //         ).color!,
-      //       }),
-      //     },
-      //   },
-      //   filler: {
-      //     propagate: true,
-      //   },
-      // },
-      // // @ts-expect-error
-      // locale: numberFormatToLocale(this.hass.locale),
       // onClick: (e: any) => {
       //   if (!this.clickForMoreInfo || clickIsTouch(e)) {
       //     return;

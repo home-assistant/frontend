@@ -150,11 +150,6 @@ export class StateHistoryChartLine extends LitElement {
           min: this.fitYData ? this.minYAxis : undefined,
           max: this.fitYData ? this.maxYAxis : undefined,
           position: computeRTL(this.hass) ? "right" : "left",
-          // nameLocation: "middle"
-          // nameGap: 200,
-          axisLabel: {
-            formatter: (value) => `${value} ${this.unit}`,
-          },
           // @ts-ignore this is a valid option
           scale: true,
         },
@@ -168,7 +163,7 @@ export class StateHistoryChartLine extends LitElement {
           step: dataset.stepped,
           symbolSize: dataset.pointRadius,
           lineStyle: {
-            width: 1.5,
+            width: dataset.fill ? 0 : 1.5,
           },
           areaStyle: dataset.fill
             ? {
@@ -186,7 +181,7 @@ export class StateHistoryChartLine extends LitElement {
           padding: [20, 0],
         },
         grid: {
-          top: this.showNames ? undefined : 30,
+          ...(this.showNames ? {} : { top: 30 }), // undefined is the same as 0
           left: 20,
           right: 0,
           bottom: 0,
@@ -276,6 +271,14 @@ export class StateHistoryChartLine extends LitElement {
               })
               .join(""),
         },
+        dataZoom: [
+          {
+            type: "inside",
+            orient: "horizontal",
+            filterMode: "none",
+            zoomOnMouseWheel: "ctrl",
+          },
+        ],
         // scales: {
         //   x: {
         //     type: "time",
