@@ -1,5 +1,6 @@
 import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list";
+import { consume } from "@lit-labs/context";
 import {
   mdiCog,
   mdiContentDuplicate,
@@ -41,15 +42,9 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
-import {
-  computeDeviceName,
-  subscribeDeviceRegistry,
-} from "../../../data/device_registry";
+import { computeDeviceName } from "../../../data/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity_registry";
-import {
-  subscribeEntityRegistry,
-  updateEntityRegistryEntry,
-} from "../../../data/entity_registry";
+import { updateEntityRegistryEntry } from "../../../data/entity_registry";
 import type {
   SceneConfig,
   SceneEntities,
@@ -72,12 +67,12 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import "../ha-config-section";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
+import { fullEntitiesContext } from "../../../data/context";
 
 interface DeviceEntities {
   id: string;
@@ -89,7 +84,7 @@ type DeviceEntitiesLookup = Record<string, string[]>;
 
 @customElement("ha-scene-editor")
 export class HaSceneEditor extends PreventUnsavedMixin(
-  SubscribeMixin(KeyboardShortcutMixin(LitElement))
+  KeyboardShortcutMixin(LitElement)
 ) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -120,9 +115,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
   @state() private _devices: string[] = [];
 
   @state()
-  private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
-
-  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
   private _entityRegistryEntries: EntityRegistryEntry[] = [];
 
   @state() private _scene?: SceneEntity;
@@ -219,17 +212,6 @@ export class HaSceneEditor extends PreventUnsavedMixin(
       this._unsubscribeEvents();
       this._unsubscribeEvents = undefined;
     }
-  }
-
-  public hassSubscribe() {
-    return [
-      subscribeEntityRegistry(this.hass.connection, (entries) => {
-        this._entityRegistryEntries = entries;
-      }),
-      subscribeDeviceRegistry(this.hass.connection, (entries) => {
-        this._deviceRegistryEntries = entries;
-      }),
-    ];
   }
 
   protected render() {
@@ -347,7 +329,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
       this._entities,
       this._devices,
       this._deviceEntityLookup,
-      this._deviceRegistryEntries
+      Object.values(this.hass.devices)
     );
     return html` <div
       id="root"
