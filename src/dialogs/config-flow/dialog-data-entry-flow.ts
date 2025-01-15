@@ -312,32 +312,31 @@ class DataEntryFlowDialog extends LitElement {
   private async _processStep(
     step: DataEntryFlowStep | undefined | Promise<DataEntryFlowStep>
   ): Promise<void> {
-    if (step instanceof Promise) {
-      this._loading = "loading_step";
-      try {
-        this._step = await step;
-      } catch (err: any) {
-        this.closeDialog();
-        showAlertDialog(this, {
-          title: this.hass.localize(
-            "ui.panel.config.integrations.config_flow.error"
-          ),
-          text: err?.body?.message,
-        });
-        return;
-      } finally {
-        this._loading = undefined;
-      }
-      return;
-    }
-
     if (step === undefined) {
       this.closeDialog();
       return;
     }
+
+    this._loading = "loading_step";
+    let _step: DataEntryFlowStep;
+    try {
+      _step = await step;
+    } catch (err: any) {
+      this.closeDialog();
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.integrations.config_flow.error"
+        ),
+        text: err?.body?.message,
+      });
+      return;
+    } finally {
+      this._loading = undefined;
+    }
+
     this._step = undefined;
     await this.updateComplete;
-    this._step = step;
+    this._step = _step;
   }
 
   private async _subscribeDataEntryFlowProgressed() {
