@@ -176,6 +176,7 @@ interface DeviceSelectorFilter {
   integration?: string;
   manufacturer?: string;
   model?: string;
+  model_id?: string;
 }
 
 export interface DeviceSelector {
@@ -721,6 +722,7 @@ export const filterSelectorDevices = (
   const {
     manufacturer: filterManufacturer,
     model: filterModel,
+    model_id: filterModelId,
     integration: filterIntegration,
   } = filterDevice;
 
@@ -729,6 +731,10 @@ export const filterSelectorDevices = (
   }
 
   if (filterModel && device.model !== filterModel) {
+    return false;
+  }
+
+  if (filterModelId && device.model_id !== filterModelId) {
     return false;
   }
 
