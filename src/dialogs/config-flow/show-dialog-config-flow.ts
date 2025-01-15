@@ -1,4 +1,5 @@
 import { html } from "lit";
+import { mainWindow } from "../../common/dom/get_main_window";
 import {
   createConfigFlow,
   deleteConfigFlow,
@@ -11,6 +12,22 @@ import {
   loadDataEntryFlowDialog,
   showFlowDialog,
 } from "./show-dialog-data-entry-flow";
+
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "show-config-flow-dialog": {
+      dialogParams?: Omit<DataEntryFlowDialogParams, "flowConfig">;
+    };
+  }
+}
+
+export const addEventListenerConfigFlow = (el: HTMLElement) => {
+  mainWindow.addEventListener("show-options-flow-dialog", (ev) => {
+    const dialogParams = ev.detail.dialogParams;
+    showConfigFlowDialog(el, dialogParams);
+  });
+};
 
 export const loadConfigFlowDialog = loadDataEntryFlowDialog;
 

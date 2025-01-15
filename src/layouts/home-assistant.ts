@@ -7,6 +7,8 @@ import { getStorageDefaultPanelUrlPath } from "../data/panel";
 import type { WindowWithPreloads } from "../data/preloads";
 import type { RecorderInfo } from "../data/recorder";
 import { getRecorderInfo } from "../data/recorder";
+import { addEventListenerConfigFlow } from "../dialogs/config-flow/show-dialog-config-flow";
+import { addEventListenerOptionsFlow } from "../dialogs/config-flow/show-dialog-options-flow";
 import "../resources/custom-card-support";
 import { HassElement } from "../state/hass-element";
 import QuickBarMixin from "../state/quick-bar-mixin";
@@ -138,6 +140,10 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
         navigate(href);
       }
     });
+
+    // Handle data entry flow requessts
+    addEventListenerConfigFlow(this);
+    addEventListenerOptionsFlow(this);
 
     // Render launch screen info box (loading data / error message)
     // if Home Assistant is not loaded yet.
