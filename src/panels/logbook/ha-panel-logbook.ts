@@ -87,29 +87,31 @@ export class HaPanelLogbook extends LitElement {
           .label=${this.hass!.localize("ui.common.refresh")}
         ></ha-icon-button>
 
-        <div class="filters">
-          <ha-date-range-picker
-            .hass=${this.hass}
-            .startDate=${this._time.range[0]}
-            .endDate=${this._time.range[1]}
-            @change=${this._dateRangeChanged}
-          ></ha-date-range-picker>
+        <div class="content">
+          <div class="filters">
+            <ha-date-range-picker
+              .hass=${this.hass}
+              .startDate=${this._time.range[0]}
+              .endDate=${this._time.range[1]}
+              @change=${this._dateRangeChanged}
+            ></ha-date-range-picker>
 
-          <ha-target-picker
+            <ha-target-picker
+              .hass=${this.hass}
+              .entityFilter=${filterLogbookCompatibleEntities}
+              .value=${this._targetPickerValue}
+              add-on-top
+              @value-changed=${this._targetsChanged}
+            ></ha-target-picker>
+          </div>
+
+          <ha-logbook
             .hass=${this.hass}
-            .entityFilter=${filterLogbookCompatibleEntities}
-            .value=${this._targetPickerValue}
-            add-on-top
-            @value-changed=${this._targetsChanged}
-          ></ha-target-picker>
+            .time=${this._time}
+            .entityIds=${this._getEntityIds()}
+            virtualize
+          ></ha-logbook>
         </div>
-
-        <ha-logbook
-          .hass=${this.hass}
-          .time=${this._time}
-          .entityIds=${this._getEntityIds()}
-          virtualize
-        ></ha-logbook>
       </ha-top-app-bar-fixed>
     `;
   }
@@ -317,6 +319,10 @@ export class HaPanelLogbook extends LitElement {
           margin-inline-start: initial;
           direction: var(--direction);
           margin-bottom: 8px;
+        }
+
+        .content {
+          overflow: hidden;
         }
 
         .filters {
