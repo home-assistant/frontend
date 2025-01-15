@@ -142,6 +142,9 @@ export class StateHistoryChartLine extends LitElement {
           },
           splitLine: {
             show: true,
+            lineStyle: {
+              opacity: 0.1,
+            },
           },
         },
         yAxis: {
@@ -152,6 +155,12 @@ export class StateHistoryChartLine extends LitElement {
           position: computeRTL(this.hass) ? "right" : "left",
           // @ts-ignore this is a valid option
           scale: true,
+          splitLine: {
+            show: true,
+            lineStyle: {
+              opacity: 0.1,
+            },
+          },
         },
         series: this._chartData?.datasets.map((dataset) => ({
           data: dataset.data.map((item) =>

@@ -1,7 +1,12 @@
-import type { ChartData, ChartDataset } from "chart.js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import type {
+  CustomSeriesOption,
+  CustomSeriesRenderItem,
+  TooltipFormatterCallback,
+  TooltipPositionCallbackParams,
+} from "echarts/types/dist/shared";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import millisecondsToDuration from "../../common/datetime/milliseconds_to_duration";
 import { computeRTL } from "../../common/util/compute_rtl";
@@ -9,7 +14,6 @@ import type { TimelineEntity } from "../../data/history";
 import type { HomeAssistant } from "../../types";
 import type { ChartResizeOptions, HaChartBase } from "./ha-chart-base";
 import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
-import type { TimeLineData } from "./timeline-chart/const";
 import { computeTimelineColor } from "./timeline-chart/timeline-color";
 import type { ECOption } from "../../resources/echarts";
 import echarts from "../../resources/echarts";
@@ -48,7 +52,7 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property({ attribute: false, type: Number }) public chartIndex?;
 
-  @state() private _chartData?: ChartData<"timeline">;
+  @state() private _chartData: CustomSeriesOption[] = [];
 
   @state() private _chartOptions?: ECOption;
 
@@ -66,14 +70,95 @@ export class StateHistoryChartTimeline extends LitElement {
     return html`
       <ha-chart-base
         .hass=${this.hass}
-        .data=${this._chartData}
         .options=${this._chartOptions}
-        .height=${this.data.length * 25 + 40}
+        .height=${this.data.length * 30 + 30}
         .paddingYAxis=${this.paddingYAxis - this._yWidth}
         chart-type="timeline"
       ></ha-chart-base>
     `;
   }
+
+  private _renderItem: CustomSeriesRenderItem = (params, api) => {
+    const categoryIndex = api.value(0);
+    const start = api.coord([api.value(1), categoryIndex]);
+    const end = api.coord([api.value(2), categoryIndex]);
+    const height = 20;
+    const coordSys = params.coordSys as any;
+    const rectShape = echarts.graphic.clipRectByRect(
+      {
+        x: start[0],
+        y: start[1] - height / 2,
+        width: end[0] - start[0],
+        height: height,
+      },
+      {
+        x: coordSys.x,
+        y: coordSys.y,
+        width: coordSys.width,
+        height: coordSys.height,
+      }
+    );
+    if (!rectShape) return null;
+    const rect = {
+      type: "rect" as const,
+      transition: "shape" as const,
+      shape: rectShape,
+      style: {
+        fill: api.value(4) as string,
+      },
+    };
+    const text = api.value(3) as string;
+    const textWidth = measureTextWidth(text, 12);
+    const LABEL_PADDING = 4;
+    if (textWidth < rectShape.width - LABEL_PADDING * 2) {
+      return {
+        type: "group",
+        children: [
+          rect,
+          {
+            type: "text",
+            style: {
+              ...rectShape,
+              x: rectShape.x + LABEL_PADDING,
+              text,
+              fill: api.value(5) as string,
+              fontSize: 12,
+              lineHeight: rectShape.height,
+            },
+          },
+        ],
+      };
+    }
+    return rect;
+  };
+
+  private _renderTooltip: TooltipFormatterCallback<TooltipPositionCallbackParams> =
+    (params: TooltipPositionCallbackParams) => {
+      const { value, name, marker } = Array.isArray(params)
+        ? params[0]
+        : params;
+      const title = `<h4 style="text-align: center; margin: 0;">${value![0]}</h4>`;
+      const durationInMs = value![2] - value![1];
+      const formattedDuration = `${this.hass.localize(
+        "ui.components.history_charts.duration"
+      )}: ${millisecondsToDuration(durationInMs)}`;
+
+      const lines = [
+        marker + name,
+        formatDateTimeWithSeconds(
+          new Date(value![1]),
+          this.hass.locale,
+          this.hass.config
+        ),
+        formatDateTimeWithSeconds(
+          new Date(value![2]),
+          this.hass.locale,
+          this.hass.config
+        ),
+        formattedDuration,
+      ].join("<br>");
+      return [title, lines].join("");
+    };
 
   public willUpdate(changedProps: PropertyValues) {
     if (!this.hasUpdated) {
@@ -112,9 +197,6 @@ export class StateHistoryChartTimeline extends LitElement {
         type: "time",
         min: this.startTime,
         max: this.endTime,
-        splitLine: {
-          show: true,
-        },
         axisLabel: {
           formatter: (value: number) => {
             const date = new Date(value);
@@ -137,7 +219,7 @@ export class StateHistoryChartTimeline extends LitElement {
       },
       yAxis: {
         type: "category",
-        data: (this._chartData?.labels ?? []) as string[],
+        inverse: true,
         position: rtl ? "right" : "left",
         axisTick: {
           show: false,
@@ -157,107 +239,10 @@ export class StateHistoryChartTimeline extends LitElement {
         left: rtl ? 10 : labelPadding,
         right: rtl ? labelPadding : 10,
       },
-      series: this._chartData?.datasets.map((dataset, datasetIndex) => ({
-        data: dataset.data.map((data) => ({
-          value: [
-            datasetIndex,
-            data.start.getTime(),
-            data.end.getTime(),
-            data.label,
-          ],
-          itemStyle: {
-            color: data.color,
-          },
-          name: data.label,
-        })),
-        type: "custom",
-        encode: {
-          x: [1, 2],
-          y: 0,
-        },
-        name: this._chartData?.labels?.[datasetIndex] ?? "",
-        label: {
-          show: true,
-          position: "inside",
-        },
-        renderItem: (params, api) => {
-          const categoryIndex = api.value(0);
-          const start = api.coord([api.value(1), categoryIndex]);
-          const end = api.coord([api.value(2), categoryIndex]);
-          const height = 20;
-          const coordSys = params.coordSys as any;
-          const rectShape = echarts.graphic.clipRectByRect(
-            {
-              x: start[0],
-              y: start[1] - height / 2,
-              width: end[0] - start[0],
-              height: height,
-            },
-            {
-              x: coordSys.x,
-              y: coordSys.y,
-              width: coordSys.width,
-              height: coordSys.height,
-            }
-          );
-          if (!rectShape) return rectShape;
-          const rect = {
-            type: "rect",
-            transition: ["shape"],
-            shape: rectShape,
-            style: api.style(),
-          };
-          const text = api.value(3) as string;
-          const textWidth = measureTextWidth(text, 12);
-          if (textWidth < rectShape.width - 8) {
-            return {
-              type: "group",
-              children: [
-                rect,
-                {
-                  type: "text",
-                  style: {
-                    ...rectShape,
-                    x: rectShape.x + 4,
-                    width: rectShape.width - 4,
-                    text,
-                    fill:
-                      luminosity(hex2rgb(api.style().fill)) > 0.5
-                        ? "#000"
-                        : "#fff",
-                    fontSize: 12,
-                    lineHeight: rectShape.height,
-                  },
-                },
-              ],
-            };
-          }
-          return rect;
-        },
-      })),
+      series: this._chartData,
       tooltip: {
         appendTo: document.body,
-        formatter: (params) => {
-          const durationInMs = params.value[2] - params.value[1];
-          const formattedDuration = `${this.hass.localize(
-            "ui.components.history_charts.duration"
-          )}: ${millisecondsToDuration(durationInMs)}`;
-
-          return [
-            params.marker + params.name,
-            formatDateTimeWithSeconds(
-              new Date(params.value[1]),
-              this.hass.locale,
-              this.hass.config
-            ),
-            formatDateTimeWithSeconds(
-              new Date(params.value[2]),
-              this.hass.locale,
-              this.hass.config
-            ),
-            formattedDuration,
-          ].join("<br>");
-        },
+        formatter: this._renderTooltip,
       },
       //   y: {
       //     afterSetDimensions: (y) => {
@@ -319,8 +304,7 @@ export class StateHistoryChartTimeline extends LitElement {
     this._chartTime = new Date();
     const startTime = this.startTime;
     const endTime = this.endTime;
-    const labels: string[] = [];
-    const datasets: ChartDataset<"timeline">[] = [];
+    const datasets: CustomSeriesOption[] = [];
     const names = this.names || {};
     // stateHistory is a list of lists of sorted state objects
     stateHistory.forEach((stateInfo) => {
@@ -331,7 +315,7 @@ export class StateHistoryChartTimeline extends LitElement {
       const entityDisplay: string =
         names[stateInfo.entity_id] || stateInfo.name;
 
-      const dataRow: TimeLineData[] = [];
+      const dataRow: unknown[] = [];
       stateInfo.data.forEach((entityState) => {
         let newState: string | null = entityState.state;
         const timeStamp = new Date(entityState.last_changed);
@@ -350,15 +334,23 @@ export class StateHistoryChartTimeline extends LitElement {
         } else if (newState !== prevState) {
           newLastChanged = new Date(entityState.last_changed);
 
+          const color = computeTimelineColor(
+            prevState,
+            computedStyles,
+            this.hass.states[stateInfo.entity_id]
+          );
           dataRow.push({
-            start: prevLastChanged,
-            end: newLastChanged,
-            label: locState,
-            color: computeTimelineColor(
-              prevState,
-              computedStyles,
-              this.hass.states[stateInfo.entity_id]
-            ),
+            value: [
+              entityDisplay,
+              prevLastChanged,
+              newLastChanged,
+              locState,
+              color,
+              luminosity(hex2rgb(color)) > 0.5 ? "#000" : "#fff",
+            ],
+            itemStyle: {
+              color,
+            },
           });
 
           prevState = newState;
@@ -368,28 +360,40 @@ export class StateHistoryChartTimeline extends LitElement {
       });
 
       if (prevState !== null) {
+        const color = computeTimelineColor(
+          prevState,
+          computedStyles,
+          this.hass.states[stateInfo.entity_id]
+        );
         dataRow.push({
-          start: prevLastChanged,
-          end: endTime,
-          label: locState,
-          color: computeTimelineColor(
-            prevState,
-            computedStyles,
-            this.hass.states[stateInfo.entity_id]
-          ),
+          value: [
+            entityDisplay,
+            prevLastChanged,
+            endTime,
+            locState,
+            color,
+            luminosity(hex2rgb(color)) > 0.5 ? "#000" : "#fff",
+          ],
+          itemStyle: {
+            color,
+          },
         });
       }
       datasets.push({
         data: dataRow,
-        label: stateInfo.entity_id,
+        name: entityDisplay,
+        dimensions: ["index", "start", "end", "name", "color", "textColor"],
+        type: "custom",
+        encode: {
+          x: [1, 2],
+          y: 0,
+          itemName: 3,
+        },
+        renderItem: this._renderItem,
       });
-      labels.push(entityDisplay);
     });
 
-    this._chartData = {
-      labels: labels,
-      datasets: datasets,
-    };
+    this._chartData = datasets;
   }
 
   static get styles(): CSSResultGroup {

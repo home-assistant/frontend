@@ -212,6 +212,9 @@ export class StatisticsChart extends LitElement {
         },
         splitLine: {
           show: true,
+          lineStyle: {
+            opacity: 0.1,
+          },
         },
       },
       yAxis: {
@@ -221,6 +224,12 @@ export class StatisticsChart extends LitElement {
         scale: this.chartType !== "bar",
         min: this.fitYData ? undefined : this.minYAxis,
         max: this.fitYData ? undefined : this.maxYAxis,
+        splitLine: {
+          show: true,
+          lineStyle: {
+            opacity: 0.1,
+          },
+        },
       },
       series: this._chartData.datasets.map((dataset) => {
         let options = {
