@@ -29,6 +29,9 @@ export class HaAssistChat extends LitElement {
 
   @property({ attribute: false }) public pipeline?: AssistPipeline;
 
+  @property({ type: Boolean, attribute: "disable-speech" })
+  public disableSpeech = false;
+
   @property({ type: Boolean, attribute: false })
   public startListening?: boolean;
 
@@ -103,7 +106,7 @@ export class HaAssistChat extends LitElement {
             )
           : true);
     const supportsMicrophone = AudioRecorder.isSupported;
-    const supportsSTT = this.pipeline?.stt_engine;
+    const supportsSTT = this.pipeline?.stt_engine && !this.disableSpeech;
 
     return html`
       ${controlHA
