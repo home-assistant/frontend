@@ -36,7 +36,7 @@ export class HaFormFloat extends LitElement implements HaFormElement {
   protected render(): TemplateResult {
     return html`
       <ha-textfield
-        type="numeric"
+        type="number"
         inputMode="decimal"
         .label=${this.label}
         .helper=${this.helper}
@@ -84,11 +84,6 @@ export class HaFormFloat extends LitElement implements HaFormElement {
 
     // Detect anything changed
     if (this.data === value) {
-      // parseFloat will drop invalid text at the end, in that case update textfield
-      const newRawValue = value === undefined ? "" : String(value);
-      if (source.value !== newRawValue) {
-        source.value = newRawValue;
-      }
       return;
     }
 
