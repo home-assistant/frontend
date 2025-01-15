@@ -118,7 +118,7 @@ class HcLovelace extends LitElement {
       min-height: 100vh;
       box-sizing: border-box;
     }
-    hui-view {
+    hui-view-container > * {
       flex: 1 1 100%;
       max-width: 100%;
     }
