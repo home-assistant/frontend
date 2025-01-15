@@ -401,8 +401,11 @@ class HaConfigBackupDetails extends LitElement {
             this.hass,
             this._backup!.backup_id,
             preferedAgent,
-            this.config?.create_backup.password
+            encryptionKey || this.config?.create_backup.password
           );
+          if (!encryptionKey) {
+            encryptionKey = this.config?.create_backup.password;
+          }
         } catch (err: any) {
           if (err?.code === "password_incorrect") {
             this._requestEncryptionKey(agentId, encryptionKey !== undefined);
@@ -410,9 +413,8 @@ class HaConfigBackupDetails extends LitElement {
           }
           if (err?.code === "decrypt_not_supported") {
             showAlertDialog(this, {
-              text: "Decryption is not supported for this backup. The backup will be encrypted and can't be opened.",
+              text: "Decryption is not supported for this backup. The backup will be encrypted downloaded and can't be opened. To restore it, you will need the encryption key.",
             });
-            return;
           }
         }
       } else {
@@ -426,7 +428,7 @@ class HaConfigBackupDetails extends LitElement {
       getBackupDownloadUrl(
         this._backup!.backup_id,
         preferedAgent,
-        this.config?.create_backup.password
+        encryptionKey
       )
     );
     fileDownload(signedUrl.path);
