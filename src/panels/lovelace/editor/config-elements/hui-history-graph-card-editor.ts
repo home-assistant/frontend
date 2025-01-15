@@ -68,7 +68,7 @@ export class HuiHistoryGraphCardEditor
             {
               name: "hours_to_show",
               default: DEFAULT_HOURS_TO_SHOW,
-              selector: { number: { min: 1, mode: "box" } },
+              selector: { number: { min: 0, step: "any", mode: "box" } },
             },
           ],
         },

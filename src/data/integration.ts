@@ -33,12 +33,20 @@ export interface IntegrationManifest {
   after_dependencies?: string[];
   codeowners?: string[];
   requirements?: string[];
-  ssdp?: Array<{ manufacturer?: string; modelName?: string; st?: string }>;
+  ssdp?: { manufacturer?: string; modelName?: string; st?: string }[];
   zeroconf?: string[];
   homekit?: { models: string[] };
   integration_type?: IntegrationType;
   loggers?: string[];
-  quality_scale?: "gold" | "internal" | "platinum" | "silver";
+  quality_scale?:
+    | "bronze"
+    | "silver"
+    | "gold"
+    | "platinum"
+    | "no_score"
+    | "internal"
+    | "legacy"
+    | "custom";
   iot_class:
     | "assumed_state"
     | "cloud_polling"

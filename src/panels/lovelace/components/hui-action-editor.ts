@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -71,13 +71,13 @@ const ASSIST_SCHEMA = [
 export class HuiActionEditor extends LitElement {
   @property({ attribute: false }) public config?: ActionConfig;
 
-  @property() public label?: string;
+  @property({ attribute: false }) public label?: string;
 
   @property({ attribute: false }) public actions?: UiAction[];
 
   @property({ attribute: false }) public defaultAction?: UiAction;
 
-  @property() public tooltipText?: string;
+  @property({ attribute: false }) public tooltipText?: string;
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
@@ -315,45 +315,43 @@ export class HuiActionEditor extends LitElement {
     fireEvent(this, "value-changed", { value });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .dropdown {
-        position: relative;
-      }
-      ha-help-tooltip {
-        position: absolute;
-        right: 40px;
-        top: 16px;
-        inset-inline-start: initial;
-        inset-inline-end: 40px;
-        direction: var(--direction);
-      }
-      ha-select,
-      ha-textfield {
-        width: 100%;
-      }
-      ha-service-control,
-      ha-navigation-picker,
-      ha-form {
-        display: block;
-      }
-      ha-textfield,
-      ha-service-control,
-      ha-navigation-picker,
-      ha-form {
-        margin-top: 8px;
-      }
-      ha-service-control {
-        --service-control-padding: 0;
-      }
-      ha-formfield {
-        display: flex;
-        height: 56px;
-        align-items: center;
-        --mdc-typography-body2-font-size: 1em;
-      }
-    `;
-  }
+  static styles = css`
+    .dropdown {
+      position: relative;
+    }
+    ha-help-tooltip {
+      position: absolute;
+      right: 40px;
+      top: 16px;
+      inset-inline-start: initial;
+      inset-inline-end: 40px;
+      direction: var(--direction);
+    }
+    ha-select,
+    ha-textfield {
+      width: 100%;
+    }
+    ha-service-control,
+    ha-navigation-picker,
+    ha-form {
+      display: block;
+    }
+    ha-textfield,
+    ha-service-control,
+    ha-navigation-picker,
+    ha-form {
+      margin-top: 8px;
+    }
+    ha-service-control {
+      --service-control-padding: 0;
+    }
+    ha-formfield {
+      display: flex;
+      height: 56px;
+      align-items: center;
+      --mdc-typography-body2-font-size: 1em;
+    }
+  `;
 }
 
 declare global {

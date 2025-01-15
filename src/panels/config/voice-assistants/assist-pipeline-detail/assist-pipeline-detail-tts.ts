@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -127,37 +126,35 @@ export class AssistPipelineDetailTTS extends LitElement {
     this._supportedLanguages = ev.detail.value;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .section {
-        border: 1px solid var(--divider-color);
-        border-radius: 8px;
-      }
-      .content {
-        padding: 16px;
-      }
-      .intro {
-        margin-bottom: 16px;
-      }
-      h3 {
-        font-weight: normal;
-        font-size: 22px;
-        line-height: 28px;
-        margin-top: 0;
-        margin-bottom: 4px;
-      }
-      p {
-        color: var(--secondary-text-color);
-        font-size: var(--mdc-typography-body2-font-size, 0.875rem);
-        margin-top: 0;
-        margin-bottom: 0;
-      }
-      .footer {
-        border-top: 1px solid var(--divider-color);
-        padding: 8px 16px;
-      }
-    `;
-  }
+  static styles = css`
+    .section {
+      border: 1px solid var(--divider-color);
+      border-radius: 8px;
+    }
+    .content {
+      padding: 16px;
+    }
+    .intro {
+      margin-bottom: 16px;
+    }
+    h3 {
+      font-weight: normal;
+      font-size: 22px;
+      line-height: 28px;
+      margin-top: 0;
+      margin-bottom: 4px;
+    }
+    p {
+      color: var(--secondary-text-color);
+      font-size: var(--mdc-typography-body2-font-size, 0.875rem);
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+    .footer {
+      border-top: 1px solid var(--divider-color);
+      padding: 8px 16px;
+    }
+  `;
 }
 
 declare global {

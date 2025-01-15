@@ -1,4 +1,4 @@
-import type { CSSResultGroup, SVGTemplateResult } from "lit";
+import type { SVGTemplateResult } from "lit";
 import { css, LitElement, nothing, svg } from "lit";
 import { customElement, property } from "lit/decorators";
 
@@ -6,9 +6,9 @@ import { customElement, property } from "lit/decorators";
 export class HaSvgIcon extends LitElement {
   @property() public path?: string;
 
-  @property() public secondaryPath?: string;
+  @property({ attribute: false }) public secondaryPath?: string;
 
-  @property() public viewBox?: string;
+  @property({ attribute: false }) public viewBox?: string;
 
   protected render(): SVGTemplateResult {
     return svg`
@@ -34,33 +34,31 @@ export class HaSvgIcon extends LitElement {
     </svg>`;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: var(--ha-icon-display, inline-flex);
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        vertical-align: middle;
-        fill: var(--icon-primary-color, currentcolor);
-        width: var(--mdc-icon-size, 24px);
-        height: var(--mdc-icon-size, 24px);
-      }
-      svg {
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        display: block;
-      }
-      path.primary-path {
-        opacity: var(--icon-primary-opactity, 1);
-      }
-      path.secondary-path {
-        fill: var(--icon-secondary-color, currentcolor);
-        opacity: var(--icon-secondary-opactity, 0.5);
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: var(--ha-icon-display, inline-flex);
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      vertical-align: middle;
+      fill: var(--icon-primary-color, currentcolor);
+      width: var(--mdc-icon-size, 24px);
+      height: var(--mdc-icon-size, 24px);
+    }
+    svg {
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      display: block;
+    }
+    path.primary-path {
+      opacity: var(--icon-primary-opactity, 1);
+    }
+    path.secondary-path {
+      fill: var(--icon-secondary-color, currentcolor);
+      opacity: var(--icon-secondary-opactity, 0.5);
+    }
+  `;
 }
 declare global {
   interface HTMLElementTagNameMap {

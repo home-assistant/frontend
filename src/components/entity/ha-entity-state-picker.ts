@@ -14,12 +14,13 @@ export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 class HaEntityStatePicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public entityId?: string;
+  @property({ attribute: false }) public entityId?: string;
 
   @property() public attribute?: string;
 
   @property({ attribute: false }) public extraOptions?: any[];
 
+  // eslint-disable-next-line lit/no-native-attributes
   @property({ type: Boolean }) public autofocus = false;
 
   @property({ type: Boolean }) public disabled = false;

@@ -48,9 +48,10 @@ export interface SortingChangedEvent {
 
 export type SortingDirection = "desc" | "asc" | null;
 
-export interface DataTableColumnContainer<T = any> {
-  [key: string]: DataTableColumnData<T>;
-}
+export type DataTableColumnContainer<T = any> = Record<
+  string,
+  DataTableColumnData<T>
+>;
 
 export interface DataTableSortColumnData {
   sortable?: boolean;
@@ -94,9 +95,7 @@ export interface DataTableRowData {
   selectable?: boolean;
 }
 
-export interface SortableColumnContainer {
-  [key: string]: ClonedDataTableColumnData;
-}
+export type SortableColumnContainer = Record<string, ClonedDataTableColumnData>;
 
 const UNDEFINED_GROUP_KEY = "zzzzz_undefined";
 
@@ -116,7 +115,7 @@ export class HaDataTable extends LitElement {
 
   @property({ type: Boolean }) public clickable = false;
 
-  @property({ type: Boolean }) public hasFab = false;
+  @property({ attribute: "has-fab", type: Boolean }) public hasFab = false;
 
   /**
    * Add an extra row at the bottom of the data table
@@ -127,24 +126,25 @@ export class HaDataTable extends LitElement {
   @property({ type: Boolean, attribute: "auto-height" })
   public autoHeight = false;
 
+  // eslint-disable-next-line lit/no-native-attributes
   @property({ type: String }) public id = "id";
 
-  @property({ type: String }) public noDataText?: string;
+  @property({ attribute: false, type: String }) public noDataText?: string;
 
-  @property({ type: String }) public searchLabel?: string;
+  @property({ attribute: false, type: String }) public searchLabel?: string;
 
   @property({ type: Boolean, attribute: "no-label-float" })
   public noLabelFloat? = false;
 
   @property({ type: String }) public filter = "";
 
-  @property() public groupColumn?: string;
+  @property({ attribute: false }) public groupColumn?: string;
 
   @property({ attribute: false }) public groupOrder?: string[];
 
-  @property() public sortColumn?: string;
+  @property({ attribute: false }) public sortColumn?: string;
 
-  @property() public sortDirection: SortingDirection = null;
+  @property({ attribute: false }) public sortDirection: SortingDirection = null;
 
   @property({ attribute: false }) public initialCollapsedGroups?: string[];
 
@@ -514,7 +514,7 @@ export class HaDataTable extends LitElement {
       return html`<div class="mdc-data-table__row">${row.content}</div>`;
     }
     if (row.empty) {
-      return html`<div class="mdc-data-table__row"></div>`;
+      return html`<div class="mdc-data-table__row empty-row"></div>`;
     }
     return html`
       <div
@@ -693,9 +693,9 @@ export class HaDataTable extends LitElement {
             grouped[UNDEFINED_GROUP_KEY] = grouped.undefined;
             delete grouped.undefined;
           }
-          const sorted: {
-            [key: string]: DataTableRowData[];
-          } = Object.keys(grouped)
+          const sorted: Record<string, DataTableRowData[]> = Object.keys(
+            grouped
+          )
             .sort((a, b) => {
               const orderA = groupOrder?.indexOf(a) ?? -1;
               const orderB = groupOrder?.indexOf(b) ?? -1;
@@ -957,6 +957,13 @@ export class HaDataTable extends LitElement {
           display: flex;
           height: var(--data-table-row-height, 52px);
           width: var(--table-row-width, 100%);
+        }
+
+        .mdc-data-table__row.empty-row {
+          height: var(
+            --data-table-empty-row-height,
+            var(--data-table-row-height, 52px)
+          );
         }
 
         .mdc-data-table__row ~ .mdc-data-table__row {

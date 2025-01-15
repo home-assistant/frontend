@@ -56,9 +56,7 @@ export type LocalizeFunc<Keys extends string = LocalizeKeys> = (
   >
 ) => string;
 
-interface FormatType {
-  [format: string]: any;
-}
+type FormatType = Record<string, any>;
 export interface FormatsType {
   number: FormatType;
   date: FormatType;
@@ -94,6 +92,7 @@ export const computeLocalize = async <Keys extends string = LocalizeKeys>(
   resources: Resources,
   formats?: FormatsType
 ): Promise<LocalizeFunc<Keys>> => {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   const { IntlMessageFormat } = await import("intl-messageformat");
   await polyfillLocaleData(language);
 

@@ -36,19 +36,13 @@ import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
 import "../../components/ha-target-picker";
 import "../../components/ha-top-app-bar-fixed";
-import type {
-  EntityHistoryState,
-  HistoryResult,
-  HistoryStates,
-  LineChartState,
-  LineChartUnit,
-} from "../../data/history";
+import type { HistoryResult } from "../../data/history";
 import {
-  computeGroupKey,
   computeHistory,
   subscribeHistory,
+  mergeHistoryResults,
+  convertStatisticsToHistory,
 } from "../../data/history";
-import type { Statistics } from "../../data/recorder";
 import { fetchStatistics } from "../../data/recorder";
 import { resolveEntityIDs } from "../../data/selector";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
@@ -177,14 +171,14 @@ class HaPanelHistory extends LitElement {
               ?disabled=${this._isLoading}
               .startDate=${this._startDate}
               .endDate=${this._endDate}
-              extendedPresets
+              extended-presets
               @change=${this._dateRangeChanged}
             ></ha-date-range-picker>
             <ha-target-picker
               .hass=${this.hass}
               .value=${this._targetPickerValue}
               .disabled=${this._isLoading}
-              addOnTop
+              add-on-top
               @value-changed=${this._targetsChanged}
             ></ha-target-picker>
           </div>
@@ -210,92 +204,6 @@ class HaPanelHistory extends LitElement {
     `;
   }
 
-  private mergeHistoryResults(
-    ltsResult: HistoryResult,
-    historyResult: HistoryResult
-  ): HistoryResult {
-    const result: HistoryResult = { ...historyResult, line: [] };
-
-    const lookup: Record<
-      string,
-      { historyItem?: LineChartUnit; ltsItem?: LineChartUnit }
-    > = {};
-
-    for (const item of historyResult.line) {
-      const key = computeGroupKey(item.unit, item.device_class, true);
-      if (key) {
-        lookup[key] = {
-          historyItem: item,
-        };
-      }
-    }
-
-    for (const item of ltsResult.line) {
-      const key = computeGroupKey(item.unit, item.device_class, true);
-      if (!key) {
-        continue;
-      }
-      if (key in lookup) {
-        lookup[key].ltsItem = item;
-      } else {
-        lookup[key] = { ltsItem: item };
-      }
-    }
-
-    for (const { historyItem, ltsItem } of Object.values(lookup)) {
-      if (!historyItem || !ltsItem) {
-        // Only one result has data for this item, so just push it directly instead of merging.
-        result.line.push(historyItem || ltsItem!);
-        continue;
-      }
-
-      const newLineItem: LineChartUnit = { ...historyItem, data: [] };
-      const entities = new Set([
-        ...historyItem.data.map((d) => d.entity_id),
-        ...ltsItem.data.map((d) => d.entity_id),
-      ]);
-
-      for (const entity of entities) {
-        const historyDataItem = historyItem.data.find(
-          (d) => d.entity_id === entity
-        );
-        const ltsDataItem = ltsItem.data.find((d) => d.entity_id === entity);
-
-        if (!historyDataItem || !ltsDataItem) {
-          newLineItem.data.push(historyDataItem || ltsDataItem!);
-          continue;
-        }
-
-        // Remove statistics that overlap with states
-        const oldestState =
-          historyDataItem.states[0]?.last_changed ||
-          // If no state, fall back to the max last changed of the last statistics (so approve all)
-          ltsDataItem.statistics![ltsDataItem.statistics!.length - 1]
-            .last_changed + 1;
-
-        const statistics: LineChartState[] = [];
-        for (const s of ltsDataItem.statistics!) {
-          if (s.last_changed >= oldestState) {
-            break;
-          }
-          statistics.push(s);
-        }
-
-        newLineItem.data.push(
-          statistics.length === 0
-            ? // All statistics overlapped with states, so just push the states
-              historyDataItem
-            : {
-                ...historyDataItem,
-                statistics,
-              }
-        );
-      }
-      result.line.push(newLineItem);
-    }
-    return result;
-  }
-
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
@@ -307,9 +215,9 @@ class HaPanelHistory extends LitElement {
       changedProps.has("_targetPickerValue")
     ) {
       if (this._statisticsHistory && this._stateHistory) {
-        this._mungedStateHistory = this.mergeHistoryResults(
-          this._statisticsHistory,
-          this._stateHistory
+        this._mungedStateHistory = mergeHistoryResults(
+          this._stateHistory,
+          this._statisticsHistory
         );
       } else {
         this._mungedStateHistory =
@@ -410,45 +318,16 @@ class HaPanelHistory extends LitElement {
       ["mean", "state"]
     );
 
-    // Maintain the statistic id ordering
-    const orderedStatistics: Statistics = {};
-    statisticIds.forEach((id) => {
-      if (id in statistics) {
-        orderedStatistics[id] = statistics[id];
-      }
-    });
-
-    // Convert statistics to HistoryResult format
-    const statsHistoryStates: HistoryStates = {};
-    Object.entries(orderedStatistics).forEach(([key, value]) => {
-      const entityHistoryStates: EntityHistoryState[] = value.map((e) => ({
-        s: e.mean != null ? e.mean.toString() : e.state!.toString(),
-        lc: e.start / 1000,
-        a: {},
-        lu: e.start / 1000,
-      }));
-      statsHistoryStates[key] = entityHistoryStates;
-    });
-
     const { numeric_device_classes: sensorNumericDeviceClasses } =
       await getSensorNumericDeviceClasses(this.hass);
 
-    this._statisticsHistory = computeHistory(
-      this.hass,
-      statsHistoryStates,
-      [],
-      this.hass.localize,
+    this._statisticsHistory = convertStatisticsToHistory(
+      this.hass!,
+      statistics,
+      statisticIds,
       sensorNumericDeviceClasses,
-      true,
       true
     );
-    // remap states array to statistics array
-    (this._statisticsHistory?.line || []).forEach((item) => {
-      item.data.forEach((data) => {
-        data.statistics = data.states;
-        data.states = [];
-      });
-    });
   }
 
   private async _getHistory() {
@@ -736,6 +615,12 @@ class HaPanelHistory extends LitElement {
     return [
       haStyle,
       css`
+        ha-top-app-bar-fixed {
+          height: 100vh;
+          overflow-x: hidden;
+          overflow-y: visible;
+        }
+
         .content {
           padding: 0 16px 16px;
           padding-bottom: max(env(safe-area-inset-bottom), 16px);
@@ -772,10 +657,8 @@ class HaPanelHistory extends LitElement {
             flex-direction: column;
           }
           ha-date-range-picker {
-            margin-right: 0;
-            margin-inline-end: 0;
-            margin-inline-start: initial;
             width: 100%;
+            margin-bottom: 8px;
           }
         }
 

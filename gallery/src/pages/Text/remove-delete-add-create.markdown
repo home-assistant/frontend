@@ -42,7 +42,7 @@ In most cases, Create can be paired with Delete, and Add can be paired with Remo
 
 ## Add
 
-An already-exisiting item.
+An already-existing item.
 
 For example:
 

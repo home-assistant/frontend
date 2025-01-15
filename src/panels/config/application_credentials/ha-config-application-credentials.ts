@@ -1,5 +1,5 @@
 import { mdiDelete, mdiPlus } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -37,7 +37,7 @@ export class HaConfigApplicationCredentials extends LitElement {
 
   @state() public _applicationCredentials: ApplicationCredential[] = [];
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -159,7 +159,7 @@ export class HaConfigApplicationCredentials extends LitElement {
           this._applicationCredentials,
           this.hass.localize
         )}
-        hasFab
+        has-fab
         selectable
         .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}
@@ -308,60 +308,58 @@ export class HaConfigApplicationCredentials extends LitElement {
     this._filter = ev.detail.value;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .table-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        height: 56px;
-        background-color: var(--mdc-text-field-fill-color, whitesmoke);
-        border-bottom: 1px solid
-          var(--mdc-text-field-idle-line-color, rgba(0, 0, 0, 0.42));
-        box-sizing: border-box;
-      }
-      .header-toolbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        color: var(--secondary-text-color);
-        position: relative;
-        top: -4px;
-      }
-      .selected-txt {
-        font-weight: bold;
-        padding-left: 16px;
-        padding-inline-start: 16px;
-        direction: var(--direction);
-      }
-      .table-header .selected-txt {
-        margin-top: 20px;
-      }
-      .header-toolbar .selected-txt {
-        font-size: 16px;
-      }
-      .header-toolbar .header-btns {
-        margin-right: -12px;
-        margin-inline-end: -12px;
-        margin-inline-start: initial;
-      }
-      .header-btns {
-        display: flex;
-      }
-      .header-btns > mwc-button,
-      .header-btns > ha-icon-button {
-        margin: 8px;
-      }
-      ha-button-menu {
-        margin-left: 8px;
-        margin-inline-start: 8px;
-        margin-inline-end: initial;
-      }
-      .warning {
-        --mdc-theme-primary: var(--error-color);
-      }
-    `;
-  }
+  static styles = css`
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 56px;
+      background-color: var(--mdc-text-field-fill-color, whitesmoke);
+      border-bottom: 1px solid
+        var(--mdc-text-field-idle-line-color, rgba(0, 0, 0, 0.42));
+      box-sizing: border-box;
+    }
+    .header-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--secondary-text-color);
+      position: relative;
+      top: -4px;
+    }
+    .selected-txt {
+      font-weight: bold;
+      padding-left: 16px;
+      padding-inline-start: 16px;
+      direction: var(--direction);
+    }
+    .table-header .selected-txt {
+      margin-top: 20px;
+    }
+    .header-toolbar .selected-txt {
+      font-size: 16px;
+    }
+    .header-toolbar .header-btns {
+      margin-right: -12px;
+      margin-inline-end: -12px;
+      margin-inline-start: initial;
+    }
+    .header-btns {
+      display: flex;
+    }
+    .header-btns > mwc-button,
+    .header-btns > ha-icon-button {
+      margin: 8px;
+    }
+    ha-button-menu {
+      margin-left: 8px;
+      margin-inline-start: 8px;
+      margin-inline-end: initial;
+    }
+    .warning {
+      --mdc-theme-primary: var(--error-color);
+    }
+  `;
 }
 
 declare global {

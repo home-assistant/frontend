@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/triple-slash-reference */
-// eslint-disable-next-line spaced-comment
+
 /// <reference path="../types/service-worker.d.ts" />
 /* eslint-env serviceworker */
 import type { RouteHandler } from "workbox-core";
@@ -14,6 +14,7 @@ import {
   StaleWhileRevalidate,
 } from "workbox-strategies";
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 declare const __WB_MANIFEST__: Parameters<typeof precacheAndRoute>[0];
 
 const noFallBackRegEx =
@@ -42,7 +43,7 @@ const initRouting = () => {
       // CORS must be forced to work for CSS images
       fetchOptions: { mode: "cors", credentials: "omit" },
       plugins: [
-        // Add 404 so we quicly respond to domains with missing images
+        // Add 404 so we quickly respond to domains with missing images
         new CacheableResponsePlugin({ statuses: [0, 200, 404] }),
         new ExpirationPlugin({
           maxAgeSeconds: 60 * 60 * 24 * 30,
@@ -221,7 +222,7 @@ self.addEventListener("activate", () => {
   // that didn't have a service worker loaded.
   // Happens the first time they open the app without any
   // service worker registered.
-  // This will serve code splitted bundles from SW.
+  // This will serve code split bundles from SW.
   clients.claim();
 });
 

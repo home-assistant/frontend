@@ -81,7 +81,7 @@ export class HuiCreateDialogBadge
     const title = this._containerConfig.title
       ? this.hass!.localize(
           "ui.panel.lovelace.editor.edit_badge.pick_badge_title",
-          { name: `"${this._containerConfig.title}"` }
+          { name: this._containerConfig.title }
         )
       : this.hass!.localize("ui.panel.lovelace.editor.edit_badge.pick_badge");
 

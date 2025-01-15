@@ -75,7 +75,9 @@ export class DialogTryTts extends LitElement {
           <ha-textarea
             autogrow
             id="message"
-            label="Message"
+            .label=${this.hass.localize(
+              "ui.panel.config.cloud.account.tts.dialog.message"
+            )}
             .value=${this._message ||
             this.hass.localize(
               "ui.panel.config.cloud.account.tts.dialog.example_message",

@@ -3,7 +3,10 @@ import type { Lovelace } from "../types";
 import { deleteCard } from "./config-util";
 import type { LovelaceCardPath } from "./lovelace-path";
 
-export type DeleteCardParams = { path: LovelaceCardPath; silent: boolean };
+export interface DeleteCardParams {
+  path: LovelaceCardPath;
+  silent: boolean;
+}
 
 export async function performDeleteCard(
   hass: HomeAssistant,

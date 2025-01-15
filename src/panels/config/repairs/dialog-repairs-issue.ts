@@ -99,7 +99,7 @@ class DialogRepairsIssue extends LitElement {
             : ""}
           <ha-markdown
             id="dialog-repairs-issue-description"
-            allowsvg
+            allow-svg
             breaks
             @click=${this._clickHandler}
             .content=${this.hass.localize(
@@ -131,7 +131,7 @@ class DialogRepairsIssue extends LitElement {
             ? html`
                 <a
                   rel="noopener noreferrer"
-                  .href=${learnMoreUrlIsHomeAssistant
+                  href=${learnMoreUrlIsHomeAssistant
                     ? this._issue.learn_more_url.replace(
                         "homeassistant://",
                         "/"

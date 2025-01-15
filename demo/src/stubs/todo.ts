@@ -22,5 +22,6 @@ export const mockTodo = (hass: MockHomeAssistant) => {
       },
     ] as TodoItem[],
   }));
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   hass.mockWS("todo/item/subscribe", (_msg, _hass) => () => {});
 };

@@ -49,7 +49,7 @@ function computeTimelineStateColor(
 }
 
 let colorIndex = 0;
-const stateColorMap: Map<string, string> = new Map();
+const stateColorMap = new Map<string, string>();
 
 function computeTimeLineGenericColor(
   state: string,

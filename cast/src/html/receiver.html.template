@@ -7,7 +7,6 @@
   <%= renderTemplate("../../../src/html/_style_base.html.template") %>
   <style>
     body {
-      background-color: white;
       font-size: initial;
     }
   </style>

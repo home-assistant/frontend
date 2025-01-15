@@ -23,14 +23,12 @@ export class HaHelpTooltip extends LitElement {
     `;
   }
 
-  static get styles() {
-    return css`
-      ha-svg-icon {
-        --mdc-icon-size: var(--ha-help-tooltip-size, 14px);
-        color: var(--ha-help-tooltip-color, var(--disabled-text-color));
-      }
-    `;
-  }
+  static styles = css`
+    ha-svg-icon {
+      --mdc-icon-size: var(--ha-help-tooltip-size, 14px);
+      color: var(--ha-help-tooltip-color, var(--disabled-text-color));
+    }
+  `;
 }
 
 declare global {

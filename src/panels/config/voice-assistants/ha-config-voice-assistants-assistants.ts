@@ -24,7 +24,7 @@ export class HaConfigVoiceAssistantsAssistants extends LitElement {
     ExposeEntitySettings
   >;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 

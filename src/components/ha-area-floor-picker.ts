@@ -345,9 +345,10 @@ export class HaAreaFloorPicker extends LitElement {
       );
 
       // @ts-ignore
-      const floorAreaEntries: Array<
-        [FloorRegistryEntry | undefined, AreaRegistryEntry[]]
-      > = Object.entries(floorAreaLookup)
+      const floorAreaEntries: [
+        FloorRegistryEntry | undefined,
+        AreaRegistryEntry[],
+      ][] = Object.entries(floorAreaLookup)
         .map(([floorId, floorAreas]) => {
           const floor = floors.find((fl) => fl.floor_id === floorId)!;
           return [floor, floorAreas] as const;

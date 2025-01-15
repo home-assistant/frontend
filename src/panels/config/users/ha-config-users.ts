@@ -33,7 +33,7 @@ import { storage } from "../../../common/decorators/storage";
 export class HaConfigUsers extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -195,7 +195,7 @@ export class HaConfigUsers extends LitElement {
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
         @row-click=${this._editUser}
-        hasFab
+        has-fab
         clickable
       >
         <ha-fab
@@ -271,7 +271,7 @@ export class HaConfigUsers extends LitElement {
           await deleteUser(this.hass!, entry!.id);
           this._users = this._users!.filter((ent) => ent !== entry);
           return true;
-        } catch (err: any) {
+        } catch (_err: any) {
           return false;
         }
       },

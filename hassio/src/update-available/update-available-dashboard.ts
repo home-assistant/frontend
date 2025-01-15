@@ -1,4 +1,4 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { Supervisor } from "../../../src/data/supervisor/supervisor";
@@ -38,20 +38,18 @@ class UpdateAvailableDashboard extends LitElement {
     history.back();
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      hass-subpage {
-        --app-header-background-color: var(--primary-background-color);
-        --app-header-text-color: var(--sidebar-text-color);
-      }
-      update-available-card {
-        margin: auto;
-        margin-top: 16px;
-        margin-bottom: 24px;
-        max-width: 600px;
-      }
-    `;
-  }
+  static styles = css`
+    hass-subpage {
+      --app-header-background-color: var(--primary-background-color);
+      --app-header-text-color: var(--sidebar-text-color);
+    }
+    update-available-card {
+      margin: auto;
+      margin-top: 16px;
+      margin-bottom: 24px;
+      max-width: 600px;
+    }
+  `;
 }
 
 declare global {

@@ -1,6 +1,6 @@
 import { mdiFlash, mdiFlashOff } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -128,43 +128,41 @@ export class HaStateControlToggle extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-control-switch {
-        height: 45vh;
-        max-height: 320px;
-        min-height: 200px;
-        --control-switch-thickness: 130px;
-        --control-switch-border-radius: 36px;
-        --control-switch-padding: 6px;
-        --mdc-icon-size: 24px;
-      }
-      .buttons {
-        display: flex;
-        flex-direction: column;
-        width: 130px;
-        height: 45vh;
-        max-height: 320px;
-        min-height: 200px;
-        padding: 6px;
-        box-sizing: border-box;
-      }
-      ha-control-button {
-        flex: 1;
-        width: 100%;
-        --control-button-border-radius: 36px;
-        --mdc-icon-size: 24px;
-      }
-      ha-control-button.active {
-        --control-button-icon-color: white;
-        --control-button-background-color: var(--color);
-        --control-button-background-opacity: 1;
-      }
-      ha-control-button:not(:last-child) {
-        margin-bottom: 6px;
-      }
-    `;
-  }
+  static styles = css`
+    ha-control-switch {
+      height: 45vh;
+      max-height: 320px;
+      min-height: 200px;
+      --control-switch-thickness: 130px;
+      --control-switch-border-radius: 36px;
+      --control-switch-padding: 6px;
+      --mdc-icon-size: 24px;
+    }
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      width: 130px;
+      height: 45vh;
+      max-height: 320px;
+      min-height: 200px;
+      padding: 6px;
+      box-sizing: border-box;
+    }
+    ha-control-button {
+      flex: 1;
+      width: 100%;
+      --control-button-border-radius: 36px;
+      --mdc-icon-size: 24px;
+    }
+    ha-control-button.active {
+      --control-button-icon-color: white;
+      --control-button-background-color: var(--color);
+      --control-button-background-opacity: 1;
+    }
+    ha-control-button:not(:last-child) {
+      margin-bottom: 6px;
+    }
+  `;
 }
 
 declare global {

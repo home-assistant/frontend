@@ -33,7 +33,7 @@ class HassioCoreInfo extends LitElement {
 
   @state() private _metrics?: HassioStats;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult | undefined {
     const metrics = [
       {
         description: this.supervisor.localize("system.core.cpu_usage"),

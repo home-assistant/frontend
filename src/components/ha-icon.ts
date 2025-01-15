@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
@@ -14,12 +14,13 @@ import {
 } from "../data/iconsets";
 import "./ha-svg-icon";
 
-interface DeprecatedIcon {
-  [key: string]: {
+type DeprecatedIcon = Record<
+  string,
+  {
     removeIn: string;
     newName?: string;
-  };
-}
+  }
+>;
 
 const mdiDeprecatedIcons: DeprecatedIcon = {};
 
@@ -56,7 +57,7 @@ export class HaIcon extends LitElement {
       return nothing;
     }
     if (this._legacy) {
-      return html`<!-- @ts-ignore we don't provice the iron-icon element -->
+      return html`<!-- @ts-ignore we don't provide the iron-icon element -->
         <iron-icon .icon=${this.icon}></iron-icon>`;
     }
     return html`<ha-svg-icon
@@ -183,13 +184,11 @@ export class HaIcon extends LitElement {
     cachedIcons[iconName] = iconPack[iconName];
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        fill: currentcolor;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      fill: currentcolor;
+    }
+  `;
 }
 declare global {
   interface HTMLElementTagNameMap {

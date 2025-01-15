@@ -51,7 +51,7 @@ export class HaConfigLogs extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ attribute: false }) public route!: Route;
 
@@ -221,7 +221,7 @@ export class HaConfigLogs extends LitElement {
             name: addon.name,
           })),
       ];
-    } catch (err) {
+    } catch (_err) {
       // Ignore, nothing the user can do anyway
     }
   }

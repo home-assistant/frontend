@@ -1,4 +1,3 @@
-/* eslint-disable lit/no-template-arrow */
 import type { TemplateResult } from "lit";
 import { LitElement, html, css } from "lit";
 import { customElement, state } from "lit/decorators";
@@ -64,11 +63,6 @@ class DemoHaAutomationEditorAction extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const valueChanged = (ev) => {
-      const sampleIdx = ev.target.sampleIdx;
-      this.data[sampleIdx] = ev.detail.value;
-      this.requestUpdate();
-    };
     return html`
       <div class="options">
         <ha-formfield label="Disabled">
@@ -93,7 +87,7 @@ class DemoHaAutomationEditorAction extends LitElement {
                   .actions=${this.data[sampleIdx]}
                   .sampleIdx=${sampleIdx}
                   .disabled=${this._disabled}
-                  @value-changed=${valueChanged}
+                  @value-changed=${this._handleValueChange}
                 ></ha-automation-action>
               `
             )}
@@ -101,6 +95,12 @@ class DemoHaAutomationEditorAction extends LitElement {
         `
       )}
     `;
+  }
+
+  private _handleValueChange(ev) {
+    const sampleIdx = ev.target.sampleIdx;
+    this.data[sampleIdx] = ev.detail.value;
+    this.requestUpdate();
   }
 
   private _handleOptionChange(ev) {

@@ -103,19 +103,17 @@ export class DemoHaChips extends LitElement {
     `;
   }
 
-  static get styles() {
-    return css`
-      ha-card {
-        max-width: 600px;
-        margin: 24px auto;
-      }
-      .card-content {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-      }
-    `;
-  }
+  static styles = css`
+    ha-card {
+      max-width: 600px;
+      margin: 24px auto;
+    }
+    .card-content {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  `;
 }
 
 declare global {

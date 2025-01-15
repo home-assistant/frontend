@@ -63,7 +63,12 @@ class PanelMediaBrowser extends LitElement {
 
   @state() _currentItem?: MediaPlayerItem;
 
-  @state() _preferredLayout: MediaPlayerLayoutType = "auto";
+  @storage({
+    key: "mediaBrowserPreferredLayout",
+    state: true,
+    subscribe: false,
+  })
+  private _preferredLayout: MediaPlayerLayoutType = "auto";
 
   private _navigateIds: MediaPlayerItemId[] = [
     {
@@ -269,7 +274,7 @@ class PanelMediaBrowser extends LitElement {
           item.media_content_id,
           item.media_content_type
         );
-      } catch (err) {
+      } catch (_err) {
         this._player.hideResolvingNewMediaPicked();
       }
       return;

@@ -1,4 +1,4 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-absolute-time";
@@ -67,33 +67,31 @@ export class HaMoreInfoStateHeader extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      p {
-        text-align: center;
-        margin: 0;
-      }
-      .state {
-        font-style: normal;
-        font-weight: 400;
-        font-size: 36px;
-        line-height: 44px;
-      }
-      .last-changed {
-        font-style: normal;
-        font-weight: 500;
-        font-size: 16px;
-        line-height: 24px;
-        letter-spacing: 0.1px;
-        padding: 4px 0;
-        margin-bottom: 20px;
-        cursor: pointer;
-        user-select: none;
-        -webkit-user-select: none;
-        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-      }
-    `;
-  }
+  static styles = css`
+    p {
+      text-align: center;
+      margin: 0;
+    }
+    .state {
+      font-style: normal;
+      font-weight: 400;
+      font-size: 36px;
+      line-height: 44px;
+    }
+    .last-changed {
+      font-style: normal;
+      font-weight: 500;
+      font-size: 16px;
+      line-height: 24px;
+      letter-spacing: 0.1px;
+      padding: 4px 0;
+      margin-bottom: 20px;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+  `;
 }
 
 declare global {

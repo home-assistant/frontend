@@ -79,6 +79,7 @@ class HaEntityStatePicker extends LitElement {
 
   @property({ attribute: false }) public entityId?: string;
 
+  // eslint-disable-next-line lit/no-native-attributes
   @property({ type: Boolean }) public autofocus = false;
 
   @property({ type: Boolean }) public disabled = false;

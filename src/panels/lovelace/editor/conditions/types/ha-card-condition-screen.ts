@@ -89,9 +89,9 @@ const mediaQueryMap = new Map(
 );
 const mediaQueryReverseMap = new Map(queries.map(([b, m]) => [m, b]));
 
-type ScreenConditionData = {
+interface ScreenConditionData {
   breakpoints: Breakpoint[];
-};
+}
 
 @customElement("ha-card-condition-screen")
 export class HaCardConditionScreen extends LitElement {

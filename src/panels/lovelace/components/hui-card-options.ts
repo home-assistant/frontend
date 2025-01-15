@@ -56,7 +56,8 @@ export class HuiCardOptions extends LitElement {
 
   @queryAssignedNodes() private _assignedNodes?: NodeListOf<LovelaceCard>;
 
-  @property({ type: Boolean }) public hidePosition = false;
+  @property({ attribute: "hide-position", type: Boolean })
+  public hidePosition = false;
 
   @storage({
     key: "dashboardCardClipboard",
@@ -406,7 +407,7 @@ export class HuiCardOptions extends LitElement {
               text: this.hass!.localize("ui.common.undo"),
             },
           });
-        } catch (err: any) {
+        } catch (_err: any) {
           this.lovelace.showToast({
             message: this.hass!.localize(
               "ui.panel.lovelace.editor.move_card.error"

@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -27,11 +27,13 @@ export class HaLanguagePicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
-  @property({ type: Boolean }) public nativeName = false;
+  @property({ attribute: "native-name", type: Boolean })
+  public nativeName = false;
 
-  @property({ type: Boolean }) public noSort = false;
+  @property({ attribute: "no-sort", type: Boolean }) public noSort = false;
 
-  @property({ type: Boolean }) public inlineArrow = false;
+  @property({ attribute: "inline-arrow", type: Boolean })
+  public inlineArrow = false;
 
   @state() _defaultLanguages: string[] = [];
 
@@ -95,7 +97,7 @@ export class HaLanguagePicker extends LitElement {
                 type: "language",
                 fallback: "code",
               }).of(lang)!;
-            } catch (err) {
+            } catch (_err) {
               label = lang;
             }
           }
@@ -165,13 +167,11 @@ export class HaLanguagePicker extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-select {
-        width: 100%;
-      }
-    `;
-  }
+  static styles = css`
+    ha-select {
+      width: 100%;
+    }
+  `;
 
   private _changed(ev): void {
     const target = ev.target as HaSelect;

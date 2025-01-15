@@ -49,7 +49,7 @@ class HassioHostInfo extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult | undefined {
     const primaryIpAddress = this.supervisor.host.features.includes("network")
       ? this._primaryIpAddress(this.supervisor.network!)
       : "";

@@ -525,6 +525,9 @@ export class HassioNetwork extends LitElement {
     IP_VERSIONS.forEach((version) => {
       interfaceOptions[version] = {
         method: this._interface![version]?.method || "auto",
+        nameservers: this._interface![version]?.nameservers?.filter(
+          (ns: string) => ns.trim()
+        ),
       };
       if (this._interface![version]?.method === "static") {
         interfaceOptions[version] = {
@@ -533,9 +536,6 @@ export class HassioNetwork extends LitElement {
             (address: string) => address.trim()
           ),
           gateway: this._interface![version]?.gateway,
-          nameservers: this._interface![version]?.nameservers?.filter(
-            (ns: string) => ns.trim()
-          ),
         };
       }
     });
@@ -655,8 +655,14 @@ export class HassioNetwork extends LitElement {
     this._dirty = true;
     if (id === "address") {
       const index = (ev.target as any).index as number;
+      const { mask: oldMask } = parseAddress(
+        this._interface![version]!.address![index]
+      );
       const { mask } = parseAddress(value);
-      this._interface[version]!.address![index] = formatAddress(value, mask);
+      this._interface[version]!.address![index] = formatAddress(
+        value,
+        mask || oldMask || ""
+      );
       this.requestUpdate("_interface");
     } else if (id === "netmask") {
       const index = (ev.target as any).index as number;

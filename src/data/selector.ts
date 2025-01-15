@@ -26,6 +26,7 @@ export type Selector =
   | AreaFilterSelector
   | AttributeSelector
   | BooleanSelector
+  | ButtonToggleSelector
   | ColorRGBSelector
   | ColorTempSelector
   | ConditionSelector
@@ -45,6 +46,7 @@ export type Selector =
   | IconSelector
   | LabelSelector
   | ImageSelector
+  | BackgroundSelector
   | LanguageSelector
   | LocationSelector
   | MediaSelector
@@ -68,10 +70,10 @@ export type Selector =
   | TTSVoiceSelector
   | UiActionSelector
   | UiColorSelector
-  | UiStateContentSelector;
+  | UiStateContentSelector
+  | BackupLocationSelector;
 
 export interface ActionSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   action: {} | null;
 }
 
@@ -91,7 +93,6 @@ export interface AreaSelector {
 }
 
 export interface AreaFilterSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   area_filter: {} | null;
 }
 
@@ -103,12 +104,18 @@ export interface AttributeSelector {
 }
 
 export interface BooleanSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   boolean: {} | null;
 }
 
+export interface ButtonToggleSelector {
+  button_toggle: {
+    options: readonly string[] | readonly SelectOption[];
+    translation_key?: string;
+    sort?: boolean;
+  } | null;
+}
+
 export interface ColorRGBSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   color_rgb: {} | null;
 }
 
@@ -123,7 +130,6 @@ export interface ColorTempSelector {
 }
 
 export interface ConditionSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   condition: {} | null;
 }
 
@@ -153,12 +159,10 @@ export interface CountrySelector {
 }
 
 export interface DateSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   date: {} | null;
 }
 
 export interface DateTimeSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   datetime: {} | null;
 }
 
@@ -262,8 +266,11 @@ export interface IconSelector {
 }
 
 export interface ImageSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   image: { original?: boolean; crop?: CropOptions } | null;
+}
+
+export interface BackgroundSelector {
+  background: { original?: boolean; crop?: CropOptions } | null;
 }
 
 export interface LabelSelector {
@@ -295,7 +302,6 @@ export interface LocationSelectorValue {
 }
 
 export interface MediaSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   media: {} | null;
 }
 
@@ -313,7 +319,6 @@ export interface MediaSelectorValue {
 }
 
 export interface NavigationSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   navigation: {} | null;
 }
 
@@ -329,12 +334,10 @@ export interface NumberSelector {
 }
 
 export interface ObjectSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   object: {} | null;
 }
 
 export interface AssistPipelineSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   assist_pipeline: {
     include_last_used?: boolean;
   } | null;
@@ -359,7 +362,6 @@ export interface SelectSelector {
 }
 
 export interface SelectorSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   selector: {} | null;
 }
 
@@ -372,7 +374,6 @@ export interface StateSelector {
 }
 
 export interface BackupLocationSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   backup_location: {} | null;
 }
 
@@ -421,7 +422,6 @@ export interface TargetSelector {
 }
 
 export interface TemplateSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   template: {} | null;
 }
 
@@ -433,7 +433,6 @@ export interface TimeSelector {
 }
 
 export interface TriggerSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   trigger: {} | null;
 }
 
@@ -453,7 +452,6 @@ export interface UiActionSelector {
 }
 
 export interface UiColorSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   ui_color: {
     default_color?: string;
     include_none?: boolean;
@@ -462,7 +460,6 @@ export interface UiColorSelector {
 }
 
 export interface UiStateContentSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   ui_state_content: {
     entity_id?: string;
     allow_name?: boolean;

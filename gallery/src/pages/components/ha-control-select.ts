@@ -168,42 +168,40 @@ export class DemoHaControlSelect extends LitElement {
     `;
   }
 
-  static get styles() {
-    return css`
-      ha-card {
-        max-width: 600px;
-        margin: 24px auto;
-      }
-      pre {
-        margin-top: 0;
-        margin-bottom: 8px;
-      }
-      p {
-        margin: 0;
-      }
-      label {
-        font-weight: 600;
-      }
-      .custom {
-        --mdc-icon-size: 24px;
-        --control-select-color: var(--state-fan-active-color);
-        --control-select-thickness: 130px;
-        --control-select-border-radius: 36px;
-      }
-      .vertical-selects {
-        height: 300px;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-      }
-      p.title {
-        margin-bottom: 12px;
-      }
-      .vertical-selects > *:not(:last-child) {
-        margin-right: 4px;
-      }
-    `;
-  }
+  static styles = css`
+    ha-card {
+      max-width: 600px;
+      margin: 24px auto;
+    }
+    pre {
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+    p {
+      margin: 0;
+    }
+    label {
+      font-weight: 600;
+    }
+    .custom {
+      --mdc-icon-size: 24px;
+      --control-select-color: var(--state-fan-active-color);
+      --control-select-thickness: 130px;
+      --control-select-border-radius: 36px;
+    }
+    .vertical-selects {
+      height: 300px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+    p.title {
+      margin-bottom: 12px;
+    }
+    .vertical-selects > *:not(:last-child) {
+      margin-right: 4px;
+    }
+  `;
 }
 
 declare global {

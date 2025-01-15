@@ -58,7 +58,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @property() public helper?: string;
 
-  @property({ type: Array }) public createDomains?: string[];
+  @property({ attribute: false, type: Array }) public createDomains?: string[];
 
   /**
    * Show only targets with entities from specific domains.
@@ -84,7 +84,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
-  @property({ type: Boolean }) public addOnTop = false;
+  @property({ attribute: "add-on-top", type: Boolean }) public addOnTop = false;
 
   @state() private _addMode?:
     | "area_id"
@@ -345,7 +345,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   "ui.components.target-picker.expand"
                 )}
                 .path=${mdiUnfoldMoreVertical}
-                hideTooltip
+                hide-title
                 .id=${id}
                 .type=${type}
                 @click=${this._handleExpand}
@@ -361,7 +361,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
             class="mdc-chip__icon mdc-chip__icon--trailing"
             .label=${this.hass.localize("ui.components.target-picker.remove")}
             .path=${mdiClose}
-            hideTooltip
+            hide-title
             .id=${id}
             .type=${type}
             @click=${this._handleRemove}

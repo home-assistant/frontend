@@ -1,6 +1,6 @@
 import { mdiAlert } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -26,7 +26,7 @@ const TRUNCATED_DOMAINS = [
   "alarm_control_panel",
   "device_tracker",
   "person",
-] as const satisfies ReadonlyArray<keyof typeof FIXED_DOMAIN_STATES>;
+] as const satisfies readonly (keyof typeof FIXED_DOMAIN_STATES)[];
 
 type TruncatedDomain = (typeof TRUNCATED_DOMAINS)[number];
 type TruncatedKey = {
@@ -55,7 +55,7 @@ export class HaStateLabelBadge extends LitElement {
 
   @property() public image?: string;
 
-  @property({ type: Boolean }) public showName = false;
+  @property({ attribute: "show-name", type: Boolean }) public showName = false;
 
   @state() private _timerTimeRemaining?: number;
 
@@ -66,13 +66,13 @@ export class HaStateLabelBadge extends LitElement {
   public connectedCallback(): void {
     super.connectedCallback();
     this._connected = true;
-    this.startInterval(this.state);
+    this._startInterval(this.state);
   }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     this._connected = false;
-    this.clearInterval();
+    this._clearInterval();
   }
 
   protected render(): TemplateResult {
@@ -151,7 +151,7 @@ export class HaStateLabelBadge extends LitElement {
     super.updated(changedProperties);
 
     if (this._connected && changedProperties.has("state")) {
-      this.startInterval(this.state);
+      this._startInterval(this.state);
     }
   }
 
@@ -237,75 +237,73 @@ export class HaStateLabelBadge extends LitElement {
     return entityState.attributes.unit_of_measurement || null;
   }
 
-  private clearInterval() {
+  private _clearInterval() {
     if (this._updateRemaining) {
       clearInterval(this._updateRemaining);
       this._updateRemaining = undefined;
     }
   }
 
-  private startInterval(stateObj) {
-    this.clearInterval();
+  private _startInterval(stateObj) {
+    this._clearInterval();
     if (stateObj && computeStateDomain(stateObj) === "timer") {
-      this.calculateTimerRemaining(stateObj);
+      this._calculateTimerRemaining(stateObj);
 
       if (stateObj.state === "active") {
         this._updateRemaining = window.setInterval(
-          () => this.calculateTimerRemaining(this.state),
+          () => this._calculateTimerRemaining(this.state),
           1000
         );
       }
     }
   }
 
-  private calculateTimerRemaining(stateObj) {
+  private _calculateTimerRemaining(stateObj) {
     this._timerTimeRemaining = timerTimeRemaining(stateObj);
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        cursor: pointer;
-      }
-      .big {
-        font-size: 70%;
-      }
-      ha-label-badge {
-        --ha-label-badge-color: var(--label-badge-red);
-      }
-      ha-label-badge.has-unit_of_measurement {
-        --ha-label-badge-label-text-transform: none;
-      }
+  static styles = css`
+    :host {
+      cursor: pointer;
+    }
+    .big {
+      font-size: 70%;
+    }
+    ha-label-badge {
+      --ha-label-badge-color: var(--label-badge-red);
+    }
+    ha-label-badge.has-unit_of_measurement {
+      --ha-label-badge-label-text-transform: none;
+    }
 
-      ha-label-badge.binary_sensor {
-        --ha-label-badge-color: var(--label-badge-blue);
-      }
+    ha-label-badge.binary_sensor {
+      --ha-label-badge-color: var(--label-badge-blue);
+    }
 
-      .red {
-        --ha-label-badge-color: var(--label-badge-red);
-      }
+    .red {
+      --ha-label-badge-color: var(--label-badge-red);
+    }
 
-      .blue {
-        --ha-label-badge-color: var(--label-badge-blue);
-      }
+    .blue {
+      --ha-label-badge-color: var(--label-badge-blue);
+    }
 
-      .green {
-        --ha-label-badge-color: var(--label-badge-green);
-      }
+    .green {
+      --ha-label-badge-color: var(--label-badge-green);
+    }
 
-      .yellow {
-        --ha-label-badge-color: var(--label-badge-yellow);
-      }
+    .yellow {
+      --ha-label-badge-color: var(--label-badge-yellow);
+    }
 
-      .grey {
-        --ha-label-badge-color: var(--label-badge-grey);
-      }
+    .grey {
+      --ha-label-badge-color: var(--label-badge-grey);
+    }
 
-      .warning {
-        --ha-label-badge-color: var(--label-badge-yellow);
-      }
-    `;
-  }
+    .warning {
+      --ha-label-badge-color: var(--label-badge-yellow);
+    }
+  `;
 }
 
 declare global {

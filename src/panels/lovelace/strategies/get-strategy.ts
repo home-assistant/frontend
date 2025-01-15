@@ -37,11 +37,11 @@ const STRATEGIES: Record<LovelaceStrategyConfigType, Record<string, any>> = {
 
 export type LovelaceStrategyConfigType = "dashboard" | "view" | "section";
 
-type Strategies = {
+interface Strategies {
   dashboard: LovelaceDashboardStrategy;
   view: LovelaceViewStrategy;
   section: LovelaceSectionStrategy;
-};
+}
 
 type StrategyConfig<T extends LovelaceStrategyConfigType> = AsyncReturnType<
   Strategies[T]["generate"]

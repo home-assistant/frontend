@@ -7,7 +7,7 @@ import type {
 } from "chart.js";
 import { getRelativePosition } from "chart.js/helpers";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -111,7 +111,6 @@ export class HuiEnergyDevicesGraphCard
   private _createOptions = memoizeOne(
     (locale: FrontendLocaleData): ChartOptions => ({
       parsing: false,
-      animation: false,
       responsive: true,
       maintainAspectRatio: false,
       indexAxis: "y",
@@ -124,7 +123,7 @@ export class HuiEnergyDevicesGraphCard
               const statisticId = (
                 this._chartData.datasets[0].data[index] as ScatterDataPoint
               ).y;
-              return this.getDeviceName(statisticId as any as string);
+              return this._getDeviceName(statisticId as any as string);
             },
           },
         },
@@ -142,7 +141,7 @@ export class HuiEnergyDevicesGraphCard
           callbacks: {
             title: (item) => {
               const statisticId = item[0].label;
-              return this.getDeviceName(statisticId);
+              return this._getDeviceName(statisticId);
             },
             label: (context) =>
               `${context.dataset.label}: ${formatNumber(
@@ -173,7 +172,7 @@ export class HuiEnergyDevicesGraphCard
     })
   );
 
-  private getDeviceName(statisticId: string): string {
+  private _getDeviceName(statisticId: string): string {
     return (
       this._data?.prefs.device_consumption.find(
         (d) => d.stat_consumption === statisticId
@@ -190,11 +189,11 @@ export class HuiEnergyDevicesGraphCard
     const data = energyData.stats;
     const compareData = energyData.statsCompare;
 
-    const chartData: Array<ChartDataset<"bar", ParsedDataType<"bar">>["data"]> =
-      [];
-    const chartDataCompare: Array<
-      ChartDataset<"bar", ParsedDataType<"bar">>["data"]
-    > = [];
+    const chartData: ChartDataset<"bar", ParsedDataType<"bar">>["data"][] = [];
+    const chartDataCompare: ChartDataset<
+      "bar",
+      ParsedDataType<"bar">
+    >["data"][] = [];
     const borderColor: string[] = [];
     const borderColorCompare: string[] = [];
     const backgroundColor: string[] = [];
@@ -282,22 +281,20 @@ export class HuiEnergyDevicesGraphCard
     this._chart?.updateChart("none");
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .card-header {
-        padding-bottom: 0;
-      }
-      .content {
-        padding: 16px;
-      }
-      .has-header {
-        padding-top: 0;
-      }
-      ha-chart-base {
-        --chart-max-height: none;
-      }
-    `;
-  }
+  static styles = css`
+    .card-header {
+      padding-bottom: 0;
+    }
+    .content {
+      padding: 16px;
+    }
+    .has-header {
+      padding-top: 0;
+    }
+    ha-chart-base {
+      --chart-max-height: none;
+    }
+  `;
 }
 
 declare global {

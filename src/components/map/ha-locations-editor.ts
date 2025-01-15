@@ -7,7 +7,7 @@ import type {
   Marker,
   MarkerOptions,
 } from "leaflet";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -51,12 +51,15 @@ export class HaLocationsEditor extends LitElement {
 
   @property() public helper?: string;
 
-  @property({ type: Boolean }) public autoFit = false;
+  @property({ attribute: "auto-fit", type: Boolean }) public autoFit = false;
 
   @property({ type: Number }) public zoom = 16;
 
   @property({ attribute: "theme-mode", type: String })
   public themeMode: ThemeMode = "auto";
+
+  @property({ type: Boolean, attribute: "pin-on-click" })
+  public pinOnClick = false;
 
   @state() private _locationMarkers?: Record<string, Marker | Circle>;
 
@@ -66,7 +69,8 @@ export class HaLocationsEditor extends LitElement {
 
   private Leaflet?: LeafletModuleType;
 
-  private _loadPromise: Promise<boolean | void>;
+  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+  private _loadPromise: Promise<boolean | undefined | void>;
 
   constructor() {
     super();
@@ -129,6 +133,8 @@ export class HaLocationsEditor extends LitElement {
         .zoom=${this.zoom}
         .autoFit=${this.autoFit}
         .themeMode=${this.themeMode}
+        .clickable=${this.pinOnClick}
+        @map-clicked=${this._mapClicked}
       ></ha-map>
       ${this.helper
         ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
@@ -140,8 +146,8 @@ export class HaLocationsEditor extends LitElement {
     (
       circles: Record<string, Circle>,
       markers?: Record<string, Marker | Circle>
-    ): Array<Marker | Circle> => {
-      const layers: Array<Marker | Circle> = [];
+    ): (Marker | Circle)[] => {
+      const layers: (Marker | Circle)[] = [];
       Array.prototype.push.apply(layers, Object.values(circles));
       if (markers) {
         Array.prototype.push.apply(layers, Object.values(markers));
@@ -193,15 +199,21 @@ export class HaLocationsEditor extends LitElement {
     }
   }
 
+  private _normalizeLongitude(longitude: number): number {
+    if (Math.abs(longitude) > 180.0) {
+      // Normalize longitude if map provides values beyond -180 to +180 degrees.
+      return (((longitude % 360.0) + 540.0) % 360.0) - 180.0;
+    }
+    return longitude;
+  }
+
   private _updateLocation(ev: DragEndEvent) {
     const marker = ev.target;
     const latlng: LatLng = marker.getLatLng();
-    let longitude: number = latlng.lng;
-    if (Math.abs(longitude) > 180.0) {
-      // Normalize longitude if map provides values beyond -180 to +180 degrees.
-      longitude = (((longitude % 360.0) + 540.0) % 360.0) - 180.0;
-    }
-    const location: [number, number] = [latlng.lat, longitude];
+    const location: [number, number] = [
+      latlng.lat,
+      this._normalizeLongitude(latlng.lng),
+    ];
     fireEvent(
       this,
       "location-updated",
@@ -224,6 +236,22 @@ export class HaLocationsEditor extends LitElement {
   private _markerClicked(ev: DragEndEvent) {
     const marker = ev.target;
     fireEvent(this, "marker-clicked", { id: marker.id }, { bubbles: false });
+  }
+
+  private _mapClicked(ev) {
+    if (this.pinOnClick && this._locationMarkers) {
+      const id = Object.keys(this._locationMarkers)[0];
+      const location: [number, number] = [
+        ev.detail.location[0],
+        this._normalizeLongitude(ev.detail.location[1]),
+      ];
+      fireEvent(this, "location-updated", { id, location }, { bubbles: false });
+
+      // If the normalized longitude wraps around the globe, pan to the new location.
+      if (location[1] !== ev.detail.location[1]) {
+        this.map.leafletMap?.panTo({ lat: location[0], lng: location[1] });
+      }
+    }
   }
 
   private _updateMarkers(): void {
@@ -346,14 +374,12 @@ export class HaLocationsEditor extends LitElement {
     fireEvent(this, "markers-updated");
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-map {
-        display: block;
-        height: 100%;
-      }
-    `;
-  }
+  static styles = css`
+    ha-map {
+      display: block;
+      height: 100%;
+    }
+  `;
 }
 
 declare global {

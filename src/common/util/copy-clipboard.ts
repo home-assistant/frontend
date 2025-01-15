@@ -1,4 +1,4 @@
-export const copyToClipboard = async (str) => {
+export const copyToClipboard = async (str, rootEl?: HTMLElement) => {
   if (navigator.clipboard) {
     try {
       await navigator.clipboard.writeText(str);
@@ -8,10 +8,12 @@ export const copyToClipboard = async (str) => {
     }
   }
 
+  const root = rootEl ?? document.body;
+
   const el = document.createElement("textarea");
   el.value = str;
-  document.body.appendChild(el);
+  root.appendChild(el);
   el.select();
   document.execCommand("copy");
-  document.body.removeChild(el);
+  root.removeChild(el);
 };

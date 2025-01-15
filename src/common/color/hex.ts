@@ -14,8 +14,8 @@ export const hexBlend = (c1: string, c2: string, blend = 50): string => {
   c1 = expandHex(c1);
   c2 = expandHex(c2);
   for (let i = 0; i <= 5; i += 2) {
-    const h1 = parseInt(c1.substr(i, 2), 16);
-    const h2 = parseInt(c2.substr(i, 2), 16);
+    const h1 = parseInt(c1.substring(i, i + 2), 16);
+    const h2 = parseInt(c2.substring(i, i + 2), 16);
     let hex = Math.floor(h2 + (h1 - h2) * (blend / 100)).toString(16);
     while (hex.length < 2) hex = "0" + hex;
     color += hex;

@@ -1,6 +1,5 @@
 import { mdiCalendar } from "@mdi/js";
 import type { HassConfig } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { firstWeekdayIndex } from "../common/datetime/first_weekday";
@@ -13,7 +12,7 @@ import "./ha-textfield";
 
 const loadDatePickerDialog = () => import("./ha-dialog-date-picker");
 
-export interface datePickerDialogParams {
+export interface DatePickerDialogParams {
   value?: string;
   min?: string;
   max?: string;
@@ -25,7 +24,7 @@ export interface datePickerDialogParams {
 
 const showDatePickerDialog = (
   element: HTMLElement,
-  dialogParams: datePickerDialogParams
+  dialogParams: DatePickerDialogParams
 ): void => {
   fireEvent(element, "show-dialog", {
     dialogTag: "ha-dialog-date-picker",
@@ -51,7 +50,7 @@ export class HaDateInput extends LitElement {
 
   @property() public helper?: string;
 
-  @property({ type: Boolean }) public canClear = false;
+  @property({ attribute: "can-clear", type: Boolean }) public canClear = false;
 
   render() {
     return html`<ha-textfield
@@ -111,16 +110,14 @@ export class HaDateInput extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-svg-icon {
-        color: var(--secondary-text-color);
-      }
-      ha-textfield {
-        display: block;
-      }
-    `;
-  }
+  static styles = css`
+    ha-svg-icon {
+      color: var(--secondary-text-color);
+    }
+    ha-textfield {
+      display: block;
+    }
+  `;
 }
 declare global {
   interface HTMLElementTagNameMap {

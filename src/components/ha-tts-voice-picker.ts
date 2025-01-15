@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
@@ -19,7 +19,7 @@ export class HaTTSVoicePicker extends LitElement {
 
   @property() public label?: string;
 
-  @property() public engineId?: string;
+  @property({ attribute: false }) public engineId?: string;
 
   @property() public language?: string;
 
@@ -113,13 +113,11 @@ export class HaTTSVoicePicker extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-select {
-        width: 100%;
-      }
-    `;
-  }
+  static styles = css`
+    ha-select {
+      width: 100%;
+    }
+  `;
 
   private _changed(ev): void {
     const target = ev.target as HaSelect;

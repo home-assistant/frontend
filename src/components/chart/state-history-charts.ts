@@ -1,12 +1,7 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import {
-  customElement,
-  eventOptions,
-  property,
-  queryAll,
-  state,
-} from "lit/decorators";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement } from "lit";
+import { customElement, eventOptions, property, state } from "lit/decorators";
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import type {
@@ -18,9 +13,6 @@ import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
 import "./state-history-chart-line";
 import "./state-history-chart-timeline";
-import type { StateHistoryChartLine } from "./state-history-chart-line";
-import type { StateHistoryChartTimeline } from "./state-history-chart-timeline";
-import type { ChartResizeOptions } from "./ha-chart-base";
 
 const CANVAS_TIMELINE_ROWS_CHUNK = 10; // Split up the canvases to avoid hitting the render limit
 
@@ -44,7 +36,7 @@ declare global {
 export class StateHistoryCharts extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public historyData!: HistoryResult;
+  @property({ attribute: false }) public historyData?: HistoryResult;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -58,21 +50,24 @@ export class StateHistoryCharts extends LitElement {
 
   @property({ type: Boolean, attribute: "up-to-now" }) public upToNow = false;
 
-  @property({ type: Number }) public hoursToShow?: number;
+  @property({ attribute: false, type: Number }) public hoursToShow?: number;
 
-  @property({ type: Boolean }) public showNames = true;
+  @property({ attribute: "show-names", type: Boolean }) public showNames = true;
 
-  @property({ type: Boolean }) public clickForMoreInfo = true;
+  @property({ attribute: "click-for-more-info", type: Boolean })
+  public clickForMoreInfo = true;
 
-  @property({ type: Boolean }) public isLoadingData = false;
+  @property({ attribute: "is-loading-data", type: Boolean })
+  public isLoadingData = false;
 
-  @property({ type: Boolean }) public logarithmicScale = false;
+  @property({ attribute: "logarithmic-scale", type: Boolean })
+  public logarithmicScale = false;
 
-  @property({ type: Number }) public minYAxis?: number;
+  @property({ attribute: false, type: Number }) public minYAxis?: number;
 
-  @property({ type: Number }) public maxYAxis?: number;
+  @property({ attribute: false, type: Number }) public maxYAxis?: number;
 
-  @property({ type: Boolean }) public fitYData = false;
+  @property({ attribute: "fit-y-data", type: Boolean }) public fitYData = false;
 
   private _computedStartTime!: Date;
 
@@ -86,16 +81,6 @@ export class StateHistoryCharts extends LitElement {
 
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
-
-  @queryAll("state-history-chart-line")
-  private _charts?: StateHistoryChartLine[];
-
-  public resize = (options?: ChartResizeOptions): void => {
-    this._charts?.forEach(
-      (chart: StateHistoryChartLine | StateHistoryChartTimeline) =>
-        chart.resize(options)
-    );
-  };
 
   protected render() {
     if (!isComponentLoaded(this.hass, "history")) {
@@ -115,13 +100,14 @@ export class StateHistoryCharts extends LitElement {
         ${this.hass.localize("ui.components.history_charts.no_history_found")}
       </div>`;
     }
-    const combinedItems = this.historyData.timeline.length
+    const combinedItems = this.historyData!.timeline.length
       ? (this.virtualize
-          ? chunkData(this.historyData.timeline, CANVAS_TIMELINE_ROWS_CHUNK)
-          : [this.historyData.timeline]
-        ).concat(this.historyData.line)
-      : this.historyData.line;
+          ? chunkData(this.historyData!.timeline, CANVAS_TIMELINE_ROWS_CHUNK)
+          : [this.historyData!.timeline]
+        ).concat(this.historyData!.line)
+      : this.historyData!.line;
 
+    // eslint-disable-next-line lit/no-this-assign-in-render
     this._chartCount = combinedItems.length;
 
     return this.virtualize
@@ -139,12 +125,12 @@ export class StateHistoryCharts extends LitElement {
         )}`;
   }
 
-  private _renderHistoryItem = (
-    item: TimelineEntity[] | LineChartUnit,
-    index: number
-  ) => {
+  private _renderHistoryItem: RenderItemFunction<
+    TimelineEntity[] | LineChartUnit
+  > = (item, index) => {
     if (!item || index === undefined) {
-      return nothing;
+      // eslint-disable-next-line lit/prefer-nothing
+      return html``;
     }
     if (!Array.isArray(item)) {
       return html`<div class="entry-container">
@@ -286,64 +272,62 @@ export class StateHistoryCharts extends LitElement {
     this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-        /* height of single timeline chart = 60px */
-        min-height: 60px;
-      }
+  static styles = css`
+    :host {
+      display: block;
+      /* height of single timeline chart = 60px */
+      min-height: 60px;
+    }
 
-      :host([virtualize]) {
-        height: 100%;
-      }
+    :host([virtualize]) {
+      height: 100%;
+    }
 
-      .info {
-        text-align: center;
-        line-height: 60px;
-        color: var(--secondary-text-color);
-      }
+    .info {
+      text-align: center;
+      line-height: 60px;
+      color: var(--secondary-text-color);
+    }
 
-      .container {
-        max-height: var(--history-max-height);
-      }
+    .container {
+      max-height: var(--history-max-height);
+    }
 
-      .entry-container {
-        width: 100%;
-      }
+    .entry-container {
+      width: 100%;
+    }
 
-      .entry-container:hover {
-        z-index: 1;
-      }
+    .entry-container:hover {
+      z-index: 1;
+    }
 
-      :host([virtualize]) .entry-container {
-        padding-left: 1px;
-        padding-right: 1px;
-        padding-inline-start: 1px;
-        padding-inline-end: 1px;
-      }
+    :host([virtualize]) .entry-container {
+      padding-left: 1px;
+      padding-right: 1px;
+      padding-inline-start: 1px;
+      padding-inline-end: 1px;
+    }
 
-      .entry-container:not(:first-child) {
-        border-top: 2px solid var(--divider-color);
-        margin-top: 16px;
-      }
+    .entry-container:not(:first-child) {
+      border-top: 2px solid var(--divider-color);
+      margin-top: 16px;
+    }
 
-      .container,
-      lit-virtualizer {
-        height: 100%;
-        width: 100%;
-      }
+    .container,
+    lit-virtualizer {
+      height: 100%;
+      width: 100%;
+    }
 
-      lit-virtualizer {
-        contain: size layout !important;
-      }
+    lit-virtualizer {
+      contain: size layout !important;
+    }
 
-      state-history-chart-timeline,
-      state-history-chart-line {
-        width: 100%;
-      }
-    `;
-  }
+    state-history-chart-timeline,
+    state-history-chart-line {
+      width: 100%;
+    }
+  `;
 }
 
 declare global {

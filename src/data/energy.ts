@@ -90,9 +90,7 @@ export const emptyWaterEnergyPreference =
 interface EnergySolarForecast {
   wh_hours: Record<string, number>;
 }
-export type EnergySolarForecasts = {
-  [config_entry_id: string]: EnergySolarForecast;
-};
+export type EnergySolarForecasts = Record<string, EnergySolarForecast>;
 
 export interface DeviceConsumptionEnergyPreference {
   // This is an ever increasing value
@@ -232,9 +230,7 @@ export const saveEnergyPreferences = async (
   return newPrefs;
 };
 
-export interface FossilEnergyConsumption {
-  [date: string]: number;
-}
+export type FossilEnergyConsumption = Record<string, number>;
 
 export const getFossilEnergyConsumption = async (
   hass: HomeAssistant,
@@ -401,7 +397,13 @@ const getEnergyData = async (
 
   const dayDifference = differenceInDays(end || new Date(), start);
   const period =
-    dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour";
+    isFirstDayOfMonth(start) &&
+    (!end || isLastDayOfMonth(end)) &&
+    dayDifference > 35
+      ? "month"
+      : dayDifference > 2
+        ? "day"
+        : "hour";
 
   const lengthUnit = hass.config.unit_system.length || "";
   const energyUnits: StatisticsUnitConfiguration = {
@@ -444,7 +446,7 @@ const getEnergyData = async (
         hass.config
       ) as boolean)
     ) {
-      // When comparing a month (or multiple), we want to start at the begining of the month
+      // When comparing a month (or multiple), we want to start at the beginning of the month
       startCompare = calcDate(
         start,
         addMonths,
@@ -750,8 +752,8 @@ export type EnergyGasUnitClass = (typeof energyGasUnitClass)[number];
 
 export const getEnergyGasUnitClass = (
   prefs: EnergyPreferences,
-  statisticsMetaData: Record<string, StatisticsMetaData> = {},
-  excludeSource?: string
+  excludeSource?: string,
+  statisticsMetaData: Record<string, StatisticsMetaData> = {}
 ): EnergyGasUnitClass | undefined => {
   for (const source of prefs.energy_sources) {
     if (source.type !== "gas") {
@@ -777,7 +779,7 @@ export const getEnergyGasUnit = (
   prefs: EnergyPreferences,
   statisticsMetaData: Record<string, StatisticsMetaData> = {}
 ): string | undefined => {
-  const unitClass = getEnergyGasUnitClass(prefs, statisticsMetaData);
+  const unitClass = getEnergyGasUnitClass(prefs, undefined, statisticsMetaData);
   if (unitClass === undefined) {
     return undefined;
   }
@@ -795,15 +797,15 @@ export const energyStatisticHelpUrl =
   "/docs/energy/faq/#troubleshooting-missing-entities";
 
 interface EnergySumData {
-  to_grid?: { [start: number]: number };
-  from_grid?: { [start: number]: number };
-  to_battery?: { [start: number]: number };
-  from_battery?: { [start: number]: number };
-  solar?: { [start: number]: number };
+  to_grid?: Record<number, number>;
+  from_grid?: Record<number, number>;
+  to_battery?: Record<number, number>;
+  from_battery?: Record<number, number>;
+  solar?: Record<number, number>;
 }
 
 interface EnergyConsumptionData {
-  total: { [start: number]: number };
+  total: Record<number, number>;
 }
 
 export const getSummedData = memoizeOne(
@@ -874,8 +876,8 @@ const getSummedDataPartial = (
 
   const summedData: EnergySumData = {};
   Object.entries(statIds).forEach(([key, subStatIds]) => {
-    const totalStats: { [start: number]: number } = {};
-    const sets: { [statId: string]: { [start: number]: number } } = {};
+    const totalStats: Record<number, number> = {};
+    const sets: Record<string, Record<number, number>> = {};
     subStatIds!.forEach((id) => {
       const stats = compare ? data.statsCompare[id] : data.stats[id];
       if (!stats) {

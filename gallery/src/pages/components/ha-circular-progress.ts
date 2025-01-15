@@ -48,14 +48,12 @@ export class DemoHaCircularProgress extends LitElement {
       ></ha-card>`;
   }
 
-  static get styles() {
-    return css`
-      ha-card {
-        max-width: 600px;
-        margin: 24px auto;
-      }
-    `;
-  }
+  static styles = css`
+    ha-card {
+      max-width: 600px;
+      margin: 24px auto;
+    }
+  `;
 }
 
 declare global {

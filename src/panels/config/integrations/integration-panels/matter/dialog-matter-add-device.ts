@@ -120,7 +120,7 @@ class DialogMatterAddDevice extends LitElement {
     try {
       this._step = "commissioning";
       await commissionMatterDevice(this.hass, code);
-    } catch (err) {
+    } catch (_err) {
       showToast(this, {
         message: this.hass.localize(
           "ui.dialogs.matter-add-device.add_device_failed"

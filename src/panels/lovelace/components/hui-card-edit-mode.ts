@@ -49,13 +49,13 @@ export class HuiCardEditMode extends LitElement {
   public noDuplicate = false;
 
   @state()
-  public _menuOpened: boolean = false;
+  public _menuOpened = false;
 
   @state()
-  public _hover: boolean = false;
+  public _hover = false;
 
   @state()
-  public _focused: boolean = false;
+  public _focused = false;
 
   @storage({
     key: "dashboardCardClipboard",
@@ -105,7 +105,7 @@ export class HuiCardEditMode extends LitElement {
     document.removeEventListener("click", this._documentClicked);
   }
 
-  _documentClicked = (ev) => {
+  private _documentClicked = (ev) => {
     this._hover = ev.composedPath().includes(this);
     document.removeEventListener("click", this._documentClicked);
   };
@@ -138,7 +138,7 @@ export class HuiCardEditMode extends LitElement {
         <ha-button-menu
           class="more"
           corner="BOTTOM_END"
-          menuCorner="END"
+          menu-corner="END"
           .path=${[this.path!]}
           @action=${this._handleAction}
           @opened=${this._handleOpened}

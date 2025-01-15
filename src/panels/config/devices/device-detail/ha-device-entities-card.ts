@@ -1,5 +1,5 @@
 import "@material/mwc-list/mwc-list";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -31,20 +31,21 @@ import {
 export class HaDeviceEntitiesCard extends LitElement {
   @property() public header!: string;
 
-  @property() public deviceName!: string;
+  @property({ attribute: false }) public deviceName!: string;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public entities!: EntityRegistryStateEntry[];
 
-  @property({ type: Boolean }) public showHidden = false;
+  @property({ attribute: "show-hidden", type: Boolean })
+  public showHidden = false;
 
   @state() private _extDisabledEntityEntries?: Record<
     string,
     ExtEntityRegistryEntry
   >;
 
-  private _entityRows: Array<LovelaceRow | HuiErrorCard> = [];
+  private _entityRows: (LovelaceRow | HuiErrorCard)[] = [];
 
   protected shouldUpdate(changedProps: PropertyValues) {
     if (changedProps.has("hass") && changedProps.size === 1) {
@@ -53,6 +54,7 @@ export class HaDeviceEntitiesCard extends LitElement {
       });
       return false;
     }
+    this._entityRows = [];
     return true;
   }
 
@@ -69,7 +71,6 @@ export class HaDeviceEntitiesCard extends LitElement {
 
     const shownEntities: EntityRegistryStateEntry[] = [];
     const hiddenEntities: EntityRegistryStateEntry[] = [];
-    this._entityRows = [];
 
     this.entities.forEach((entry) => {
       if (entry.disabled_by) {
@@ -106,7 +107,7 @@ export class HaDeviceEntitiesCard extends LitElement {
                 ? html`
                     <button class="show-more" @click=${this._toggleShowHidden}>
                       ${this.hass.localize(
-                        "ui.panel.config.devices.entities.hidden_entities",
+                        "ui.panel.config.devices.entities.disabled_entities",
                         { count: hiddenEntities.length }
                       )}
                     </button>
@@ -246,70 +247,81 @@ export class HaDeviceEntitiesCard extends LitElement {
     );
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-      }
-      ha-icon {
-        margin-left: -8px;
-      }
-      .entity-id {
-        color: var(--secondary-text-color);
-      }
-      .buttons {
-        text-align: right;
-        margin: 0 0 0 8px;
-      }
-      .disabled-entry {
-        color: var(--secondary-text-color);
-      }
-      .move-up {
-        margin-top: -24px;
-      }
-      #entities > * {
-        margin: 8px 16px 8px 8px;
-      }
-      #entities > paper-icon-item {
-        margin: 0;
-      }
-      paper-icon-item {
-        min-height: 40px;
-        padding: 0 16px;
-        cursor: pointer;
-        --paper-item-icon-width: 48px;
-      }
-      .name {
-        font-size: 14px;
-      }
-      .name:dir(rtl) {
-        margin-inline-start: 8px;
-      }
-      .empty {
-        text-align: center;
-      }
-      button.show-more {
-        color: var(--primary-color);
-        text-align: left;
-        cursor: pointer;
-        background: none;
-        border-width: initial;
-        border-style: none;
-        border-color: initial;
-        border-image: initial;
-        padding: 16px;
-        font: inherit;
-      }
-      button.show-more:focus {
-        outline: none;
-        text-decoration: underline;
-      }
-      ha-list-item {
-        height: 40px;
-        --mdc-ripple-color: transparent;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+    }
+    ha-icon {
+      margin-left: -8px;
+    }
+    .entity-id {
+      color: var(--secondary-text-color);
+    }
+    .buttons {
+      text-align: right;
+      margin: 0 0 0 8px;
+    }
+    .disabled-entry {
+      color: var(--secondary-text-color);
+    }
+    .move-up {
+      margin-top: -13px;
+    }
+    .move-up:has(> mwc-list) {
+      margin-top: -24px;
+    }
+    :not(.move-up) > mwc-list {
+      margin-top: -24px;
+    }
+    mwc-list + button.show-more,
+    .move-up + :not(:has(mwc-list)) > button.show-more {
+      margin-top: -12px;
+    }
+    #entities > mwc-list {
+      margin: 0 16px 0 8px;
+    }
+    #entities > paper-icon-item {
+      margin: 0;
+    }
+    paper-icon-item {
+      min-height: 40px;
+      padding: 0 16px;
+      cursor: pointer;
+      --paper-item-icon-width: 48px;
+    }
+    .name {
+      font-size: 14px;
+    }
+    .name:dir(rtl) {
+      margin-inline-start: 8px;
+    }
+    .empty {
+      text-align: center;
+    }
+    button.show-more {
+      color: var(--primary-color);
+      text-align: left;
+      cursor: pointer;
+      background: none;
+      border-width: initial;
+      border-style: none;
+      border-color: initial;
+      border-image: initial;
+      padding: 16px;
+      font: inherit;
+    }
+    button.show-more:focus {
+      outline: none;
+      text-decoration: underline;
+    }
+    mwc-list > * {
+      margin: 8px 0px;
+    }
+    ha-list-item {
+      height: 40px;
+      --mdc-ripple-color: transparent;
+    }
+  `;
 }
 
 declare global {

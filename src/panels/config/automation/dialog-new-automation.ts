@@ -61,11 +61,12 @@ class DialogNewAutomation extends LitElement implements HassDialog {
     });
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     if (this._opened) {
       fireEvent(this, "dialog-closed", { dialog: this.localName });
     }
     this._opened = false;
+    return true;
   }
 
   private _processedBlueprints = memoizeOne((blueprints?: Blueprints) => {
@@ -205,7 +206,6 @@ class DialogNewAutomation extends LitElement implements HassDialog {
       return;
     }
     const path = (ev.currentTarget! as any).path;
-    this.closeDialog();
     if (this._mode === "script") {
       showScriptEditor({ use_blueprint: { path } });
     } else {
@@ -217,7 +217,6 @@ class DialogNewAutomation extends LitElement implements HassDialog {
     if (!shouldHandleRequestSelectedEvent(ev)) {
       return;
     }
-    this.closeDialog();
     if (this._mode === "script") {
       showScriptEditor();
     } else {

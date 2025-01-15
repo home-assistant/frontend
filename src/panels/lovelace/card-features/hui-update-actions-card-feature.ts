@@ -16,7 +16,7 @@ import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type { UpdateActionsCardFeatureConfig } from "./types";
 
-export const DEFAULT_UPDATE_BACKUP_OPTION = "ask";
+export const DEFAULT_UPDATE_BACKUP_OPTION = "no";
 
 export const supportsUpdateActionsCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);

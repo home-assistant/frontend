@@ -1,5 +1,5 @@
 import "@material/mwc-list/mwc-list-item";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, nothing, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
@@ -15,7 +15,8 @@ export class HaThemePicker extends LitElement {
 
   @property() public label?: string;
 
-  @property({ type: Boolean }) includeDefault = false;
+  @property({ attribute: "include-default", type: Boolean })
+  public includeDefault = false;
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
@@ -60,13 +61,11 @@ export class HaThemePicker extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-select {
-        width: 100%;
-      }
-    `;
-  }
+  static styles = css`
+    ha-select {
+      width: 100%;
+    }
+  `;
 
   private _changed(ev): void {
     if (!this.hass || ev.target.value === "") {

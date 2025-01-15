@@ -30,7 +30,7 @@ export class HaGridSizeEditor extends LitElement {
 
   @property({ attribute: false }) public isDefault?: boolean;
 
-  @property({ attribute: false }) public step: number = 1;
+  @property({ attribute: false }) public step = 1;
 
   @state() public _localValue?: CardGridSize = { rows: 1, columns: 1 };
 
@@ -149,7 +149,7 @@ export class HaGridSizeEditor extends LitElement {
     `;
   }
 
-  _cellClick(ev) {
+  private _cellClick(ev) {
     const cell = ev.currentTarget as HTMLElement;
     const rows = Number(cell.getAttribute("data-row"));
     const columns = Number(cell.getAttribute("data-column"));

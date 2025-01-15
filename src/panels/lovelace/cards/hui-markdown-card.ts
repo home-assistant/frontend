@@ -1,5 +1,5 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -111,7 +111,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
       this._config.show_empty === false &&
       this._templateResult.result.length === 0;
     if (shouldBeHidden !== this.hidden) {
-      this.style.display = shouldBeHidden ? "none" : "block";
+      this.style.display = shouldBeHidden ? "none" : "";
       this.toggleAttribute("hidden", shouldBeHidden);
       fireEvent(this, "card-visibility-changed", { value: !shouldBeHidden });
     }
@@ -186,29 +186,27 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    this._unsubRenderTemplate.then((unsub) => unsub()).catch(() => {});
+    this._unsubRenderTemplate.then((unsub) => unsub()).catch(/* ignore */);
     this._unsubRenderTemplate = undefined;
     this._error = undefined;
     this._errorLevel = undefined;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-card {
-        height: 100%;
-      }
-      ha-alert {
-        margin-bottom: 8px;
-      }
-      ha-markdown {
-        padding: 0 16px 16px;
-        word-wrap: break-word;
-      }
-      ha-markdown.no-header {
-        padding-top: 16px;
-      }
-    `;
-  }
+  static styles = css`
+    ha-card {
+      height: 100%;
+    }
+    ha-alert {
+      margin-bottom: 8px;
+    }
+    ha-markdown {
+      padding: 0 16px 16px;
+      word-wrap: break-word;
+    }
+    ha-markdown.no-header {
+      padding-top: 16px;
+    }
+  `;
 }
 
 declare global {

@@ -28,8 +28,9 @@ export class HaOutlinedTextField extends MdOutlinedTextField {
         --md-outlined-field-container-shape-end-end: 10px;
         --md-outlined-field-container-shape-end-start: 10px;
         --md-outlined-field-focus-outline-width: 1px;
-        --ha-outlined-field-start-margin: -4px;
-        --ha-outlined-field-end-margin: -4px;
+        --md-outlined-field-with-leading-content-leading-space: 8px;
+        --md-outlined-field-with-trailing-content-trailing-space: 8px;
+        --md-outlined-field-content-space: 8px;
         --mdc-icon-size: var(--md-input-chip-icon-size, 18px);
       }
       .input {

@@ -40,9 +40,7 @@ export interface MatterNodeDiagnostics {
   active_fabric_index: number;
 }
 
-export interface MatterPingResult {
-  [ip_address: string]: boolean;
-}
+export type MatterPingResult = Record<string, boolean>;
 
 export interface MatterCommissioningParameters {
   setup_pin_code: number;

@@ -40,7 +40,7 @@ export const baseActionStruct = object({
   enabled: optional(boolean()),
 });
 
-const targetStruct = object({
+export const targetStruct = object({
   entity_id: optional(union([string(), array(string())])),
   device_id: optional(union([string(), array(string())])),
   area_id: optional(union([string(), array(string())])),
@@ -97,9 +97,7 @@ export interface BlueprintScriptConfig extends ManualScriptConfig {
   use_blueprint: { path: string; input?: BlueprintInput };
 }
 
-export interface Fields {
-  [key: string]: Field;
-}
+export type Fields = Record<string, Field>;
 
 export interface Field {
   name?: string;
@@ -242,9 +240,7 @@ export interface SetConversationResponseAction extends BaseAction {
   set_conversation_response: string;
 }
 
-interface UnknownAction extends BaseAction {
-  [key: string]: unknown;
-}
+interface UnknownAction extends BaseAction, Record<string, unknown> {}
 
 export type NonConditionAction =
   | EventAction

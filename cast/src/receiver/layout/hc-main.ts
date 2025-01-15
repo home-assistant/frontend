@@ -144,10 +144,10 @@ export class HcMain extends HassElement {
     }
 
     if (senderId) {
-      this.sendMessage(senderId, status);
+      this._sendMessage(senderId, status);
     } else {
       for (const sender of castContext.getSenders()) {
-        this.sendMessage(sender.id, status);
+        this._sendMessage(sender.id, status);
       }
     }
   }
@@ -164,10 +164,10 @@ export class HcMain extends HassElement {
     };
 
     if (senderId) {
-      this.sendMessage(senderId, error);
+      this._sendMessage(senderId, error);
     } else {
       for (const sender of castContext.getSenders()) {
-        this.sendMessage(sender.id, error);
+        this._sendMessage(sender.id, error);
       }
     }
   }
@@ -394,7 +394,7 @@ export class HcMain extends HassElement {
     }
   }
 
-  private sendMessage(senderId: string, response: any) {
+  private _sendMessage(senderId: string, response: any) {
     castContext.sendCustomMessage(CAST_NS, senderId, response);
   }
 }

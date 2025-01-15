@@ -11,6 +11,7 @@ const LAZY_LOADED_MORE_INFO_CONTROL = {
   camera: () => import("./controls/more-info-camera"),
   climate: () => import("./controls/more-info-climate"),
   configurator: () => import("./controls/more-info-configurator"),
+  conversation: () => import("./controls/more-info-conversation"),
   counter: () => import("./controls/more-info-counter"),
   cover: () => import("./controls/more-info-cover"),
   date: () => import("./controls/more-info-date"),

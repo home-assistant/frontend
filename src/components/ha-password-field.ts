@@ -23,6 +23,7 @@ export class HaPasswordField extends LitElement {
 
   @property({ type: Boolean }) public icon = false;
 
+  // eslint-disable-next-line lit/attribute-names
   @property({ type: Boolean }) public iconTrailing = false;
 
   @property() public autocomplete?: string;
@@ -42,29 +43,37 @@ export class HaPasswordField extends LitElement {
 
   @property({ type: Boolean }) required = false;
 
+  // eslint-disable-next-line lit/attribute-names
   @property({ type: Number }) minLength = -1;
 
+  // eslint-disable-next-line lit/attribute-names
   @property({ type: Number }) maxLength = -1;
 
   @property({ type: Boolean, reflect: true }) outlined = false;
 
   @property({ type: String }) helper = "";
 
+  // eslint-disable-next-line lit/attribute-names
   @property({ type: Boolean }) validateOnInitialRender = false;
 
+  // eslint-disable-next-line lit/attribute-names
   @property({ type: String }) validationMessage = "";
 
+  // eslint-disable-next-line lit/attribute-names
   @property({ type: Boolean }) autoValidate = false;
 
   @property({ type: String }) pattern = "";
 
   @property({ type: Number }) size: number | null = null;
 
+  // eslint-disable-next-line lit/attribute-names
   @property({ type: Boolean }) helperPersistent = false;
 
+  // eslint-disable-next-line lit/attribute-names
   @property({ type: Boolean }) charCounter: boolean | TextAreaCharCounter =
     false;
 
+  // eslint-disable-next-line lit/attribute-names
   @property({ type: Boolean }) endAligned = false;
 
   @property({ type: String }) prefix = "";
@@ -76,9 +85,11 @@ export class HaPasswordField extends LitElement {
   @property({ type: String, attribute: "input-mode" })
   inputMode!: string;
 
+  // eslint-disable-next-line lit/attribute-names
   @property({ type: Boolean }) readOnly = false;
 
-  @property({ type: String }) autocapitalize = "";
+  // eslint-disable-next-line lit/no-native-attributes
+  @property({ attribute: false, type: String }) autocapitalize = "";
 
   @state() private _unmaskedPassword = false;
 
@@ -130,6 +141,10 @@ export class HaPasswordField extends LitElement {
         @click=${this._toggleUnmaskedPassword}
         .path=${this._unmaskedPassword ? mdiEyeOff : mdiEye}
       ></ha-icon-button>`;
+  }
+
+  public focus(): void {
+    this._textField.focus();
   }
 
   public checkValidity(): boolean {

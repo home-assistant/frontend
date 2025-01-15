@@ -1,9 +1,9 @@
-import { assert } from "chai";
+import { describe, assert, it } from "vitest";
 
 import {
   fuzzyFilterSort,
   fuzzySequentialMatch,
-  ScorableTextItem,
+  type ScorableTextItem,
 } from "../../../src/common/string/filter/sequence-matching";
 
 describe("fuzzySequentialMatch", () => {
