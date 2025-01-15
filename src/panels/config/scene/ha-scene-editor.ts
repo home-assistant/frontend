@@ -1,5 +1,6 @@
 import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list";
+import { consume } from "@lit-labs/context";
 import {
   mdiCog,
   mdiContentDuplicate,
@@ -41,15 +42,9 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
-import {
-  computeDeviceName,
-  subscribeDeviceRegistry,
-} from "../../../data/device_registry";
+import { computeDeviceName } from "../../../data/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity_registry";
-import {
-  subscribeEntityRegistry,
-  updateEntityRegistryEntry,
-} from "../../../data/entity_registry";
+import { updateEntityRegistryEntry } from "../../../data/entity_registry";
 import type {
   SceneConfig,
   SceneEntities,
@@ -72,12 +67,13 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import "../ha-config-section";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
+import { fullDevicesContext, fullEntitiesContext } from "../../../data/context";
+import { transform } from "../../../common/decorators/transform";
 
 interface DeviceEntities {
   id: string;
@@ -89,7 +85,7 @@ type DeviceEntitiesLookup = Record<string, string[]>;
 
 @customElement("ha-scene-editor")
 export class HaSceneEditor extends PreventUnsavedMixin(
-  SubscribeMixin(KeyboardShortcutMixin(LitElement))
+  KeyboardShortcutMixin(LitElement)
 ) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -119,11 +115,22 @@ export class HaSceneEditor extends PreventUnsavedMixin(
 
   @state() private _devices: string[] = [];
 
-  @state()
+  @consume({ context: fullDevicesContext, subscribe: true })
   private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
 
   @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
   private _entityRegistryEntries: EntityRegistryEntry[] = [];
+
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  @transform<string | undefined, EntityRegistryEntry[]>({
+    transformer: function (this: HaSceneEditor, value) {
+      return value.find(({ entity_id }) => entity_id === this._scene?.entity_id)
+        ?.categories?.scene;
+    },
+    watch: ["_scene"],
+  })
+  private _category?: string;
 
   @state() private _scene?: SceneEntity;
 
@@ -150,16 +157,6 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     (entries: EntityRegistryEntry[], entity_id: string) => {
       const entry = entries.find((ent) => ent.entity_id === entity_id);
       return entry ? entry.area_id : null;
-    }
-  );
-
-  private _getCategory = memoizeOne(
-    (entries: EntityRegistryEntry[], entity_id: string | undefined) => {
-      if (!entity_id) {
-        return undefined;
-      }
-      const entry = entries.find((ent) => ent.entity_id === entity_id);
-      return entry?.categories?.scene;
     }
   );
 
@@ -221,17 +218,6 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     }
   }
 
-  public hassSubscribe() {
-    return [
-      subscribeEntityRegistry(this.hass.connection, (entries) => {
-        this._entityRegistryEntries = entries;
-      }),
-      subscribeDeviceRegistry(this.hass.connection, (entries) => {
-        this._deviceRegistryEntries = entries;
-      }),
-    ];
-  }
-
   protected render() {
     if (!this.hass) {
       return nothing;
@@ -280,7 +266,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
 
           <ha-list-item graphic="icon" .disabled=${!this.sceneId}>
             ${this.hass.localize(
-              `ui.panel.config.scene.picker.${this._getCategory(this._entityRegistryEntries, this._scene?.entity_id) ? "edit_category" : "assign_category"}`
+              `ui.panel.config.scene.picker.${this._category ? "edit_category" : "assign_category"}`
             )}
             <ha-svg-icon slot="graphic" .path=${mdiTag}></ha-svg-icon>
           </ha-list-item>
