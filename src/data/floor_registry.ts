@@ -13,9 +13,7 @@ export interface FloorRegistryEntry extends RegistryEntry {
   aliases: string[];
 }
 
-export interface FloorAreaLookup {
-  [floorId: string]: AreaRegistryEntry[];
-}
+export type FloorAreaLookup = Record<string, AreaRegistryEntry[]>;
 
 export interface FloorRegistryEntryMutableParams {
   name: string;

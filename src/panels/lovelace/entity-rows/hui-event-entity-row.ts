@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isUnavailableState } from "../../../data/entity";
@@ -84,19 +84,17 @@ class HuiEventEntityRow extends LitElement implements LovelaceRow {
     handleAction(this, this.hass!, this._config!, ev.detail.action);
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      div {
-        text-align: right;
-      }
-      .when {
-        color: var(--primary-text-color);
-      }
-      .what {
-        color: var(--secondary-text-color);
-      }
-    `;
-  }
+  static styles = css`
+    div {
+      text-align: right;
+    }
+    .when {
+      color: var(--primary-text-color);
+    }
+    .what {
+      color: var(--secondary-text-color);
+    }
+  `;
 }
 
 declare global {

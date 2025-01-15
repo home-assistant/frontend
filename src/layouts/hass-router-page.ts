@@ -37,10 +37,7 @@ export interface RouterOptions {
   // Hook that is called before rendering a new route. Allowing redirects.
   // If string returned, that page will be rendered instead.
   beforeRender?: (page: string) => string | undefined;
-  routes: {
-    // If it's a string, it is another route whose options should be adopted.
-    [route: string]: RouteOptions | string;
-  };
+  routes: Record<string, RouteOptions | string>;
 }
 
 // Time to wait for code to load before we show loading screen.

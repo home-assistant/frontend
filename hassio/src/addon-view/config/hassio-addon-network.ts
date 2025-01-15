@@ -151,7 +151,7 @@ class HassioAddonNetwork extends LitElement {
 
   private async _configChanged(ev: CustomEvent): Promise<void> {
     this._configHasChanged = true;
-    this._config! = ev.detail.value;
+    this._config = ev.detail.value;
   }
 
   private async _resetTapped(ev: CustomEvent): Promise<void> {

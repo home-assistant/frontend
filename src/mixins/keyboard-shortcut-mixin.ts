@@ -2,9 +2,7 @@ import type { LitElement } from "lit";
 import type { Constructor } from "../types";
 
 declare global {
-  interface SupportedShortcuts {
-    [key: string]: () => void;
-  }
+  type SupportedShortcuts = Record<string, () => void>;
 }
 
 export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(

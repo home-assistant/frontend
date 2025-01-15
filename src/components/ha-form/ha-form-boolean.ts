@@ -1,5 +1,4 @@
-import "@material/mwc-formfield";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -10,6 +9,7 @@ import type {
 } from "./types";
 import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-checkbox";
+import "../ha-formfield";
 
 @customElement("ha-form-boolean")
 export class HaFormBoolean extends LitElement implements HaFormElement {
@@ -33,7 +33,7 @@ export class HaFormBoolean extends LitElement implements HaFormElement {
 
   protected render(): TemplateResult {
     return html`
-      <mwc-formfield .label=${this.label}>
+      <ha-formfield .label=${this.label}>
         <ha-checkbox
           .checked=${this.data}
           .disabled=${this.disabled}
@@ -45,7 +45,7 @@ export class HaFormBoolean extends LitElement implements HaFormElement {
             ? html`<p class="secondary">${this.helper}</p>`
             : nothing}
         </span>
-      </mwc-formfield>
+      </ha-formfield>
     `;
   }
 
@@ -55,27 +55,25 @@ export class HaFormBoolean extends LitElement implements HaFormElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-formfield {
-        display: flex;
-        min-height: 56px;
-        align-items: center;
-        --mdc-typography-body2-font-size: 1em;
-      }
-      p {
-        margin: 0;
-      }
-      .secondary {
-        direction: var(--direction);
-        padding-top: 4px;
-        box-sizing: border-box;
-        color: var(--secondary-text-color);
-        font-size: 0.875rem;
-        font-weight: var(--mdc-typography-body2-font-weight, 400);
-      }
-    `;
-  }
+  static styles = css`
+    ha-formfield {
+      display: flex;
+      min-height: 56px;
+      align-items: center;
+      --mdc-typography-body2-font-size: 1em;
+    }
+    p {
+      margin: 0;
+    }
+    .secondary {
+      direction: var(--direction);
+      padding-top: 4px;
+      box-sizing: border-box;
+      color: var(--secondary-text-color);
+      font-size: 0.875rem;
+      font-weight: var(--mdc-typography-body2-font-weight, 400);
+    }
+  `;
 }
 
 declare global {

@@ -7,7 +7,7 @@ import type {
 } from "chart.js";
 import { getRelativePosition } from "chart.js/helpers";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -189,11 +189,11 @@ export class HuiEnergyDevicesGraphCard
     const data = energyData.stats;
     const compareData = energyData.statsCompare;
 
-    const chartData: Array<ChartDataset<"bar", ParsedDataType<"bar">>["data"]> =
-      [];
-    const chartDataCompare: Array<
-      ChartDataset<"bar", ParsedDataType<"bar">>["data"]
-    > = [];
+    const chartData: ChartDataset<"bar", ParsedDataType<"bar">>["data"][] = [];
+    const chartDataCompare: ChartDataset<
+      "bar",
+      ParsedDataType<"bar">
+    >["data"][] = [];
     const borderColor: string[] = [];
     const borderColorCompare: string[] = [];
     const backgroundColor: string[] = [];
@@ -281,22 +281,20 @@ export class HuiEnergyDevicesGraphCard
     this._chart?.updateChart("none");
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .card-header {
-        padding-bottom: 0;
-      }
-      .content {
-        padding: 16px;
-      }
-      .has-header {
-        padding-top: 0;
-      }
-      ha-chart-base {
-        --chart-max-height: none;
-      }
-    `;
-  }
+  static styles = css`
+    .card-header {
+      padding-bottom: 0;
+    }
+    .content {
+      padding: 16px;
+    }
+    .has-header {
+      padding-top: 0;
+    }
+    ha-chart-base {
+      --chart-max-height: none;
+    }
+  `;
 }
 
 declare global {

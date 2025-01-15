@@ -1,6 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list-item";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -224,34 +224,32 @@ export class HaPickThemeRow extends LitElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      a {
-        color: var(--primary-color);
-      }
-      .inputs {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        margin: 0 12px;
-      }
-      ha-formfield {
-        margin: 0 4px;
-      }
-      .color-pickers {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        flex-grow: 1;
-      }
-      ha-textfield {
-        --text-field-padding: 8px;
-        min-width: 75px;
-        flex-grow: 1;
-        margin: 0 4px;
-      }
-    `;
-  }
+  static styles = css`
+    a {
+      color: var(--primary-color);
+    }
+    .inputs {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      margin: 0 12px;
+    }
+    ha-formfield {
+      margin: 0 4px;
+    }
+    .color-pickers {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      flex-grow: 1;
+    }
+    ha-textfield {
+      --text-field-padding: 8px;
+      min-width: 75px;
+      flex-grow: 1;
+      margin: 0 4px;
+    }
+  `;
 }
 
 declare global {

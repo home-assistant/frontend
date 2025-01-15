@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { Condition } from "../../data/automation";
@@ -29,19 +28,17 @@ export class HaConditionSelector extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-automation-condition {
-        display: block;
-        margin-bottom: 16px;
-      }
-      label {
-        display: block;
-        margin-bottom: 4px;
-        font-weight: 500;
-      }
-    `;
-  }
+  static styles = css`
+    ha-automation-condition {
+      display: block;
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+  `;
 }
 
 declare global {

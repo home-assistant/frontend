@@ -1,14 +1,21 @@
+import { mdiDotsVertical, mdiHarddisk } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { debounce } from "../../../common/util/debounce";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
+import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-list-item";
+import "../../../components/ha-alert";
 import "../../../components/ha-password-field";
+import "../../../components/ha-svg-icon";
 import type { BackupConfig } from "../../../data/backup";
 import { updateBackupConfig } from "../../../data/backup";
 import type { CloudStatus } from "../../../data/cloud";
@@ -20,6 +27,7 @@ import type { BackupConfigData } from "./components/config/ha-backup-config-data
 import "./components/config/ha-backup-config-encryption-key";
 import "./components/config/ha-backup-config-schedule";
 import type { BackupConfigSchedule } from "./components/config/ha-backup-config-schedule";
+import { showLocalBackupLocationDialog } from "./dialogs/show-dialog-local-backup-location";
 
 @customElement("ha-config-backup-settings")
 class HaConfigBackupSettings extends LitElement {
@@ -91,15 +99,44 @@ class HaConfigBackupSettings extends LitElement {
         back-path="/config/backup"
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .header=${"Automatic backups"}
+        .header=${this.hass.localize("ui.panel.config.backup.settings.header")}
       >
+        ${isComponentLoaded(this.hass, "hassio")
+          ? html`
+              <ha-button-menu slot="toolbar-icon">
+                <ha-icon-button
+                  slot="trigger"
+                  .label=${this.hass.localize("ui.common.menu")}
+                  .path=${mdiDotsVertical}
+                ></ha-icon-button>
+                <ha-list-item
+                  graphic="icon"
+                  @request-selected=${this._changeLocalLocation}
+                >
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiHarddisk}
+                  ></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.panel.config.backup.settings.menu.change_default_location"
+                  )}
+                </ha-list-item>
+              </ha-button-menu>
+            `
+          : nothing}
+
         <div class="content">
           <ha-card id="schedule">
-            <div class="card-header">Automatic backups</div>
+            <div class="card-header">
+              ${this.hass.localize(
+                "ui.panel.config.backup.settings.schedule.title"
+              )}
+            </div>
             <div class="card-content">
               <p>
-                Let Home Assistant take care of your backups by creating a
-                scheduled backup that also removes older backups.
+                ${this.hass.localize(
+                  "ui.panel.config.backup.settings.schedule.description"
+                )}
               </p>
               <ha-backup-config-schedule
                 .hass=${this.hass}
@@ -109,7 +146,11 @@ class HaConfigBackupSettings extends LitElement {
             </div>
           </ha-card>
           <ha-card id="data">
-            <div class="card-header">Backup data</div>
+            <div class="card-header">
+              ${this.hass.localize(
+                "ui.panel.config.backup.settings.data.title"
+              )}
+            </div>
             <div class="card-content">
               <ha-backup-config-data
                 .hass=${this.hass}
@@ -122,11 +163,16 @@ class HaConfigBackupSettings extends LitElement {
           </ha-card>
 
           <ha-card class="agents" id="locations">
-            <div class="card-header">Locations</div>
+            <div class="card-header">
+              ${this.hass.localize(
+                "ui.panel.config.backup.settings.locations.title"
+              )}
+            </div>
             <div class="card-content">
               <p>
-                Your backup will be stored on these locations when this default
-                backup is created. You can use all locations for custom backups.
+                ${this.hass.localize(
+                  "ui.panel.config.backup.settings.locations.description"
+                )}
               </p>
               <ha-backup-config-agents
                 .hass=${this.hass}
@@ -134,16 +180,34 @@ class HaConfigBackupSettings extends LitElement {
                 .cloudStatus=${this.cloudStatus}
                 @value-changed=${this._agentsConfigChanged}
               ></ha-backup-config-agents>
+              ${!this._config.create_backup.agent_ids.length
+                ? html`
+                    <ha-alert
+                      alert-type="warning"
+                      .title=${this.hass.localize(
+                        "ui.panel.config.backup.settings.locations.no_location"
+                      )}
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.backup.settings.locations.no_location_description"
+                      )}
+                    </ha-alert>
+                    <br />
+                  `
+                : nothing}
             </div>
           </ha-card>
           <ha-card>
-            <div class="card-header">Encryption key</div>
+            <div class="card-header">
+              ${this.hass.localize(
+                "ui.panel.config.backup.settings.encryption_key.title"
+              )}
+            </div>
             <div class="card-content">
               <p>
-                Keep this encryption key in a safe place, as you will need it to
-                access your backup, allowing it to be restored. Download them as
-                an emergency kit file and store it somewhere safe. Encryption
-                keeps your backups private and secure.
+                ${this.hass.localize(
+                  "ui.panel.config.backup.settings.encryption_key.description"
+                )}
               </p>
               <ha-backup-config-encryption-key
                 .hass=${this.hass}
@@ -155,6 +219,14 @@ class HaConfigBackupSettings extends LitElement {
         </div>
       </hass-subpage>
     `;
+  }
+
+  private async _changeLocalLocation(ev) {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+
+    showLocalBackupLocationDialog(this, {});
   }
 
   private _scheduleConfigChanged(ev) {

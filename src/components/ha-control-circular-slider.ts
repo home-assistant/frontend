@@ -6,7 +6,7 @@ import {
   Tap,
   TouchMouseInput,
 } from "@egjs/hammerjs";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing, svg } from "lit";
 import {
   customElement,
@@ -683,163 +683,159 @@ export class HaControlCircularSlider extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        --control-circular-slider-color: var(--primary-color);
-        --control-circular-slider-background: var(--disabled-color);
-        --control-circular-slider-background-opacity: 0.3;
-        --control-circular-slider-low-color: var(
-          --control-circular-slider-color
-        );
-        --control-circular-slider-high-color: var(
-          --control-circular-slider-color
-        );
-        --control-circular-slider-interaction-margin: 12px;
-        width: 320px;
-        display: block;
-      }
-      svg {
-        width: 100%;
-        display: block;
-        pointer-events: none;
-      }
-      g {
-        fill: none;
-      }
-      #slider {
-        outline: none;
-      }
-      path[data-interaction] {
-        fill: none;
-        cursor: pointer;
-        pointer-events: auto;
-        stroke: transparent;
-        stroke-linecap: round;
-        stroke-width: calc(
-          24px + 2 * var(--control-circular-slider-interaction-margin)
-        );
-      }
-      circle[data-interaction] {
-        r: calc(12px + var(--control-circular-slider-interaction-margin));
-        fill: transparent;
-        cursor: pointer;
-        pointer-events: auto;
-      }
-      :host([disabled]) [data-interaction],
-      :host([readonly]) [data-interaction] {
-        cursor: initial;
-        pointer-events: none;
-      }
+  static styles = css`
+    :host {
+      --control-circular-slider-color: var(--primary-color);
+      --control-circular-slider-background: var(--disabled-color);
+      --control-circular-slider-background-opacity: 0.3;
+      --control-circular-slider-low-color: var(--control-circular-slider-color);
+      --control-circular-slider-high-color: var(
+        --control-circular-slider-color
+      );
+      --control-circular-slider-interaction-margin: 12px;
+      width: 320px;
+      display: block;
+    }
+    svg {
+      width: 100%;
+      display: block;
+      pointer-events: none;
+    }
+    g {
+      fill: none;
+    }
+    #slider {
+      outline: none;
+    }
+    path[data-interaction] {
+      fill: none;
+      cursor: pointer;
+      pointer-events: auto;
+      stroke: transparent;
+      stroke-linecap: round;
+      stroke-width: calc(
+        24px + 2 * var(--control-circular-slider-interaction-margin)
+      );
+    }
+    circle[data-interaction] {
+      r: calc(12px + var(--control-circular-slider-interaction-margin));
+      fill: transparent;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+    :host([disabled]) [data-interaction],
+    :host([readonly]) [data-interaction] {
+      cursor: initial;
+      pointer-events: none;
+    }
 
-      .background {
-        fill: none;
-        stroke: var(--control-circular-slider-background);
-        opacity: var(--control-circular-slider-background-opacity);
-        transition:
-          stroke 180ms ease-in-out,
-          opacity 180ms ease-in-out;
-        stroke-linecap: round;
-        stroke-width: 24px;
-      }
+    .background {
+      fill: none;
+      stroke: var(--control-circular-slider-background);
+      opacity: var(--control-circular-slider-background-opacity);
+      transition:
+        stroke 180ms ease-in-out,
+        opacity 180ms ease-in-out;
+      stroke-linecap: round;
+      stroke-width: 24px;
+    }
 
-      .arc {
-        fill: none;
-        stroke-linecap: round;
-        stroke-width: 24px;
-        transition:
-          stroke-width 300ms ease-in-out,
-          stroke-dasharray 300ms ease-in-out,
-          stroke-dashoffset 300ms ease-in-out,
-          stroke 180ms ease-in-out,
-          opacity 180ms ease-in-out;
-      }
+    .arc {
+      fill: none;
+      stroke-linecap: round;
+      stroke-width: 24px;
+      transition:
+        stroke-width 300ms ease-in-out,
+        stroke-dasharray 300ms ease-in-out,
+        stroke-dashoffset 300ms ease-in-out,
+        stroke 180ms ease-in-out,
+        opacity 180ms ease-in-out;
+    }
 
-      .target {
-        fill: none;
-        stroke-linecap: round;
-        stroke-width: 18px;
-        stroke: white;
-        transition:
-          stroke-width 300ms ease-in-out,
-          stroke-dasharray 300ms ease-in-out,
-          stroke-dashoffset 300ms ease-in-out,
-          stroke 180ms ease-in-out,
-          opacity 180ms ease-in-out;
-      }
+    .target {
+      fill: none;
+      stroke-linecap: round;
+      stroke-width: 18px;
+      stroke: white;
+      transition:
+        stroke-width 300ms ease-in-out,
+        stroke-dasharray 300ms ease-in-out,
+        stroke-dashoffset 300ms ease-in-out,
+        stroke 180ms ease-in-out,
+        opacity 180ms ease-in-out;
+    }
 
-      .target-border {
-        fill: none;
-        stroke-linecap: round;
-        stroke-width: 24px;
-        stroke: white;
-        transition:
-          stroke-width 300ms ease-in-out,
-          stroke-dasharray 300ms ease-in-out,
-          stroke-dashoffset 300ms ease-in-out,
-          stroke 180ms ease-in-out,
-          opacity 180ms ease-in-out;
-      }
+    .target-border {
+      fill: none;
+      stroke-linecap: round;
+      stroke-width: 24px;
+      stroke: white;
+      transition:
+        stroke-width 300ms ease-in-out,
+        stroke-dasharray 300ms ease-in-out,
+        stroke-dashoffset 300ms ease-in-out,
+        stroke 180ms ease-in-out,
+        opacity 180ms ease-in-out;
+    }
 
-      .current {
-        fill: none;
-        stroke-linecap: round;
-        stroke-width: 8px;
-        stroke: var(--primary-text-color);
-        opacity: 0.5;
-        transition:
-          stroke-width 300ms ease-in-out,
-          stroke-dasharray 300ms ease-in-out,
-          stroke-dashoffset 300ms ease-in-out,
-          stroke 180ms ease-in-out,
-          opacity 180ms ease-in-out;
-      }
+    .current {
+      fill: none;
+      stroke-linecap: round;
+      stroke-width: 8px;
+      stroke: var(--primary-text-color);
+      opacity: 0.5;
+      transition:
+        stroke-width 300ms ease-in-out,
+        stroke-dasharray 300ms ease-in-out,
+        stroke-dashoffset 300ms ease-in-out,
+        stroke 180ms ease-in-out,
+        opacity 180ms ease-in-out;
+    }
 
-      .arc-current {
-        stroke: var(--clear-background-color);
-      }
+    .arc-current {
+      stroke: var(--clear-background-color);
+    }
 
-      .arc-clear {
-        stroke: var(--clear-background-color);
-      }
-      .arc-colored {
-        opacity: 0.5;
-      }
-      .arc-active {
-        outline: none;
-      }
-      .arc-active:focus-visible {
-        stroke-width: 28px;
-      }
+    .arc-clear {
+      stroke: var(--clear-background-color);
+    }
+    .arc-colored {
+      opacity: 0.5;
+    }
+    .arc-active {
+      outline: none;
+    }
+    .arc-active:focus-visible {
+      stroke-width: 28px;
+    }
 
-      .pressed .arc,
-      .pressed .target,
-      .pressed .target-border,
-      .pressed .current {
-        transition:
-          stroke-width 300ms ease-in-out,
-          stroke 180ms ease-in-out,
-          opacity 180ms ease-in-out;
-      }
+    .pressed .arc,
+    .pressed .target,
+    .pressed .target-border,
+    .pressed .current {
+      transition:
+        stroke-width 300ms ease-in-out,
+        stroke 180ms ease-in-out,
+        opacity 180ms ease-in-out;
+    }
 
-      .inactive .arc,
-      .inactive .arc-current {
-        opacity: 0;
-      }
+    .inactive .arc,
+    .inactive .arc-current {
+      opacity: 0;
+    }
 
-      .value {
-        stroke: var(--control-circular-slider-color);
-      }
+    .value {
+      stroke: var(--control-circular-slider-color);
+    }
 
-      .low {
-        stroke: var(--control-circular-slider-low-color);
-      }
+    .low {
+      stroke: var(--control-circular-slider-low-color);
+    }
 
-      .high {
-        stroke: var(--control-circular-slider-high-color);
-      }
-    `;
-  }
+    .high {
+      stroke: var(--control-circular-slider-high-color);
+    }
+  `;
 }
 
 declare global {

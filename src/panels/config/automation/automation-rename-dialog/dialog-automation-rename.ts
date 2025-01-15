@@ -72,7 +72,7 @@ class DialogAutomationRename extends LitElement implements HassDialog {
     ];
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     this._params.onClose();
 
     if (this._opened) {
@@ -80,6 +80,7 @@ class DialogAutomationRename extends LitElement implements HassDialog {
     }
     this._opened = false;
     this._visibleOptionals = [];
+    return true;
   }
 
   protected _renderOptionalChip(id: string, label: string) {
@@ -323,6 +324,14 @@ class DialogAutomationRename extends LitElement implements HassDialog {
         ha-dialog {
           --dialog-content-padding: 0 24px 24px 24px;
         }
+
+        @media all and (min-width: 500px) {
+          ha-dialog {
+            --mdc-dialog-min-width: min(500px, 95vw);
+            --mdc-dialog-max-width: min(500px, 95vw);
+          }
+        }
+
         ha-textfield,
         ha-textarea,
         ha-icon-picker,

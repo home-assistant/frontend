@@ -145,8 +145,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         this._params!.statistic
       );
       const rows: TemplateResult[] = [];
-      for (let i = 0; i < data.length; i++) {
-        const stat = data[i];
+      for (const stat of data) {
         const growth = Math.round(stat.change! * 100) / 100;
         rows.push(html`
           <ha-list-item

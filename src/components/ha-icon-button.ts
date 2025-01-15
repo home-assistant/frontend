@@ -1,6 +1,6 @@
 import "@material/mwc-icon-button";
 import type { IconButton } from "@material/mwc-icon-button";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -49,21 +49,19 @@ export class HaIconButton extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: inline-block;
-        outline: none;
-      }
-      :host([disabled]) {
-        pointer-events: none;
-      }
-      mwc-icon-button {
-        --mdc-theme-on-primary: currentColor;
-        --mdc-theme-text-disabled-on-light: var(--disabled-text-color);
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: inline-block;
+      outline: none;
+    }
+    :host([disabled]) {
+      pointer-events: none;
+    }
+    mwc-icon-button {
+      --mdc-theme-on-primary: currentColor;
+      --mdc-theme-text-disabled-on-light: var(--disabled-text-color);
+    }
+  `;
 }
 
 declare global {

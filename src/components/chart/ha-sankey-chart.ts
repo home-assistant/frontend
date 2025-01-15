@@ -4,7 +4,7 @@ import { ResizeController } from "@lit-labs/observers/resize-controller";
 import memoizeOne from "memoize-one";
 import type { HomeAssistant } from "../../types";
 
-export type Node = {
+export interface Node {
   id: string;
   value: number;
   index: number; // like z-index but for x/y
@@ -12,13 +12,17 @@ export type Node = {
   tooltip?: string;
   color?: string;
   passThrough?: boolean;
-};
-export type Link = { source: string; target: string; value?: number };
+}
+export interface Link {
+  source: string;
+  target: string;
+  value?: number;
+}
 
-export type SankeyChartData = {
+export interface SankeyChartData {
   nodes: Node[];
   links: Link[];
-};
+}
 
 type ProcessedNode = Node & {
   x: number;
@@ -35,13 +39,13 @@ type ProcessedLink = Link & {
   passThroughNodeIds: string[];
 };
 
-type Section = {
+interface Section {
   nodes: ProcessedNode[];
   offset: number;
   index: number;
   totalValue: number;
   statePerPixel: number;
-};
+}
 
 const MIN_SIZE = 3;
 const DEFAULT_COLOR = "var(--primary-color)";
@@ -49,8 +53,8 @@ const NODE_WIDTH = 15;
 const FONT_SIZE = 12;
 const MIN_DISTANCE = FONT_SIZE / 2;
 
-@customElement("sankey-chart")
-export class SankeyChart extends LitElement {
+@customElement("ha-sankey-chart")
+export class HaSankeyChart extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public data: SankeyChartData = {
@@ -315,7 +319,7 @@ export class SankeyChart extends LitElement {
       } else {
         totalSize = section.nodes.reduce((sum, b) => sum + b.size, 0);
       }
-      // calc margin betwee boxes
+      // calc margin between boxes
       const emptySpace = sectionSize - totalSize;
       const spacerSize = emptySpace / (section.nodes.length - 1);
 
@@ -539,6 +543,6 @@ export class SankeyChart extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "sankey-chart": SankeyChart;
+    "ha-sankey-chart": HaSankeyChart;
   }
 }

@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import "../../../components/buttons/ha-call-service-button";
@@ -49,7 +48,7 @@ export class HuiServiceButtonElement
     }
 
     if (!this._service) {
-      throw Error("Action does not have a action name");
+      throw Error("Action does not have an action name");
     }
 
     this._config = config;
@@ -83,14 +82,12 @@ export class HuiServiceButtonElement
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-call-service-button {
-        color: var(--primary-color);
-        white-space: nowrap;
-      }
-    `;
-  }
+  static styles = css`
+    ha-call-service-button {
+      color: var(--primary-color);
+      white-space: nowrap;
+    }
+  `;
 }
 
 declare global {

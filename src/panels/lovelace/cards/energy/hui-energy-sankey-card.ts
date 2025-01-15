@@ -18,8 +18,8 @@ import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard, LovelaceGridOptions } from "../../types";
 import type { EnergySankeyCardConfig } from "../types";
-import "../../../../components/chart/sankey-chart";
-import type { Link, Node } from "../../../../components/chart/sankey-chart";
+import "../../../../components/chart/ha-sankey-chart";
+import type { Link, Node } from "../../../../components/chart/ha-sankey-chart";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
 import { formatNumber } from "../../../../common/number/format_number";
 
@@ -399,13 +399,13 @@ class HuiEnergySankeyCard
       <ha-card .header=${this._config.title}>
         <div class="card-content">
           ${hasData
-            ? html`<sankey-chart
+            ? html`<ha-sankey-chart
                 .data=${{ nodes, links }}
                 .vertical=${this._config.layout === "vertical"}
                 .loadingText=${this.hass.localize(
                   "ui.panel.lovelace.cards.energy.loading"
                 )}
-              ></sankey-chart>`
+              ></ha-sankey-chart>`
             : html`${this.hass.localize(
                 "ui.panel.lovelace.cards.energy.no_data_period"
               )}`}

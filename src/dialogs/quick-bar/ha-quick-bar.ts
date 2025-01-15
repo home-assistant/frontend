@@ -530,7 +530,9 @@ export class QuickBar extends LitElement {
           ? this.hass.areas[device.area_id]
           : undefined;
         const deviceItem = {
-          primaryText: computeDeviceName(device, this.hass),
+          primaryText:
+            computeDeviceName(device, this.hass) ||
+            this.hass.localize("ui.components.device-picker.unnamed_device"),
           deviceId: device.id,
           area: area?.name,
           action: () => navigate(`/config/devices/device/${device.id}`),

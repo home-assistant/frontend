@@ -4,6 +4,7 @@ import { property, query, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { debounce } from "../../../common/util/debounce";
 import { handleStructError } from "../../../common/structs/handle-errors";
 import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/ha-alert";
@@ -66,6 +67,11 @@ export abstract class HuiElementEditor<
 
   // Error: Configuration broken - do not save
   @state() private _errors?: string[];
+
+  // Error from unparseable YAML, but don't show it immediately to prevent showing immediately on every keystroke
+  @state() private _pendingYamlError?: string;
+
+  @state() private _yamlError = false;
 
   // Warning: GUI editor can't handle configuration - ok to save
   @state() private _warnings?: string[];
@@ -237,6 +243,7 @@ export abstract class HuiElementEditor<
                   autofocus
                   .hass=${this.hass}
                   @value-changed=${this._handleYAMLChanged}
+                  @blur=${this._onBlurYaml}
                   @keydown=${this._ignoreKeydown}
                   dir="ltr"
                 ></ha-yaml-editor>
@@ -327,6 +334,34 @@ export abstract class HuiElementEditor<
     if (ev.detail.isValid) {
       this._config = config;
       this._errors = undefined;
+      this._pendingYamlError = undefined;
+      this._yamlError = false;
+      this._debounceYamlError.cancel();
+      this._setConfig();
+    } else if (this._yamlError) {
+      // If we're already showing a yaml error, don't bother to debounce, just update immediately.
+      this._errors = [ev.detail.errorMsg];
+    } else {
+      this._pendingYamlError = ev.detail.errorMsg;
+      this._debounceYamlError();
+    }
+  }
+
+  private _debounceYamlError = debounce(() => {
+    if (this._pendingYamlError) {
+      this._yamlError = true;
+      this._errors = [this._pendingYamlError];
+      this._pendingYamlError = undefined;
+      this._setConfig();
+    }
+  }, 2000);
+
+  private _onBlurYaml() {
+    this._debounceYamlError.cancel();
+    if (this._pendingYamlError) {
+      this._yamlError = true;
+      this._errors = [this._pendingYamlError];
+      this._pendingYamlError = undefined;
       this._setConfig();
     }
   }
@@ -421,25 +456,23 @@ export abstract class HuiElementEditor<
     ev.stopPropagation();
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: flex;
-      }
-      .wrapper {
-        width: 100%;
-      }
-      .gui-editor,
-      .yaml-editor {
-        padding: 8px 0px;
-      }
-      ha-code-editor {
-        --code-mirror-max-height: calc(100vh - 245px);
-      }
-      ha-circular-progress {
-        display: block;
-        margin: auto;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: flex;
+    }
+    .wrapper {
+      width: 100%;
+    }
+    .gui-editor,
+    .yaml-editor {
+      padding: 8px 0px;
+    }
+    ha-code-editor {
+      --code-mirror-max-height: calc(100vh - 245px);
+    }
+    ha-circular-progress {
+      display: block;
+      margin: auto;
+    }
+  ` as CSSResultGroup;
 }

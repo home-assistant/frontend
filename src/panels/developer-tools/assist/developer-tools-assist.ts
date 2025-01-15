@@ -19,11 +19,11 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
 
-type SentenceParsingResult = {
+interface SentenceParsingResult {
   sentence: string;
   language: string;
   result: AssitDebugResult | null;
-};
+}
 
 @customElement("developer-tools-assist")
 class HaPanelDevAssist extends SubscribeMixin(LitElement) {

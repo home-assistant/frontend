@@ -1,5 +1,4 @@
 import "@material/mwc-list/mwc-list-item";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -81,39 +80,37 @@ export class HaDeviceViaDevicesCard extends LitElement {
     this._showAll = !this._showAll;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-      }
+  static styles = css`
+    :host {
+      display: block;
+    }
 
-      .card-header {
-        padding-bottom: 0;
-      }
+    .card-header {
+      padding-bottom: 0;
+    }
 
-      a {
-        text-decoration: none;
-        color: var(--primary-text-color);
-      }
+    a {
+      text-decoration: none;
+      color: var(--primary-text-color);
+    }
 
-      button.show-more {
-        color: var(--primary-color);
-        text-align: left;
-        cursor: pointer;
-        background: none;
-        border-width: initial;
-        border-style: none;
-        border-color: initial;
-        border-image: initial;
-        padding: 16px;
-        font: inherit;
-      }
-      button.show-more:focus {
-        outline: none;
-        text-decoration: underline;
-      }
-    `;
-  }
+    button.show-more {
+      color: var(--primary-color);
+      text-align: left;
+      cursor: pointer;
+      background: none;
+      border-width: initial;
+      border-style: none;
+      border-color: initial;
+      border-image: initial;
+      padding: 16px;
+      font: inherit;
+    }
+    button.show-more:focus {
+      outline: none;
+      text-decoration: underline;
+    }
+  `;
 }
 
 declare global {

@@ -72,7 +72,7 @@ export class ExternalAuth extends Auth {
       try {
         await this._tokenCallbackPromise;
         return;
-      } catch (err: any) {
+      } catch (_err: any) {
         // _tokenCallbackPromise is in a rejected state
         // Clear the _tokenCallbackPromise and go on refreshing access token
         this._tokenCallbackPromise = undefined;

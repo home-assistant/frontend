@@ -9,7 +9,7 @@ export interface ShowViewConfig {
 
 export interface LovelaceViewBackgroundConfig {
   image?: string;
-  transparency?: number;
+  opacity?: number;
   size?: "auto" | "cover" | "contain";
   alignment?:
     | "top left"

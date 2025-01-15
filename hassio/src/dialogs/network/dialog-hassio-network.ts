@@ -82,10 +82,11 @@ export class DialogHassioNetwork
     await this.updateComplete;
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     this._params = undefined;
     this._processing = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+    return true;
   }
 
   protected render() {

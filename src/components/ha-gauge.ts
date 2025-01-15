@@ -62,6 +62,7 @@ export class HaGauge extends LitElement {
     if (
       !this._updated ||
       (!changedProperties.has("value") &&
+        !changedProperties.has("valueText") &&
         !changedProperties.has("label") &&
         !changedProperties.has("_segment_label"))
     ) {
@@ -173,49 +174,47 @@ export class HaGauge extends LitElement {
     return "";
   }
 
-  static get styles() {
-    return css`
-      :host {
-        position: relative;
-      }
-      .dial {
-        fill: none;
-        stroke: var(--primary-background-color);
-        stroke-width: 15;
-      }
-      .value {
-        fill: none;
-        stroke-width: 15;
-        stroke: var(--gauge-color);
-        transition: all 1s ease 0s;
-      }
-      .needle {
-        fill: var(--primary-text-color);
-        transition: all 1s ease 0s;
-      }
-      .level {
-        fill: none;
-        stroke-width: 15;
-      }
-      .gauge {
-        display: block;
-      }
-      .text {
-        position: absolute;
-        max-height: 40%;
-        max-width: 55%;
-        left: 50%;
-        bottom: -6%;
-        transform: translate(-50%, 0%);
-      }
-      .value-text {
-        font-size: 50px;
-        fill: var(--primary-text-color);
-        text-anchor: middle;
-        direction: ltr;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      position: relative;
+    }
+    .dial {
+      fill: none;
+      stroke: var(--primary-background-color);
+      stroke-width: 15;
+    }
+    .value {
+      fill: none;
+      stroke-width: 15;
+      stroke: var(--gauge-color);
+      transition: all 1s ease 0s;
+    }
+    .needle {
+      fill: var(--primary-text-color);
+      transition: all 1s ease 0s;
+    }
+    .level {
+      fill: none;
+      stroke-width: 15;
+    }
+    .gauge {
+      display: block;
+    }
+    .text {
+      position: absolute;
+      max-height: 40%;
+      max-width: 55%;
+      left: 50%;
+      bottom: -6%;
+      transform: translate(-50%, 0%);
+    }
+    .value-text {
+      font-size: 50px;
+      fill: var(--primary-text-color);
+      text-anchor: middle;
+      direction: ltr;
+    }
+  `;
 }
 
 declare global {

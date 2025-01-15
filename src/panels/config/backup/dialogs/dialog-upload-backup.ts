@@ -20,14 +20,13 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showAlertDialog } from "../../../lovelace/custom-card-helpers";
-import "../components/ha-backup-agents-picker";
 import type { UploadBackupDialogParams } from "./show-dialog-upload-backup";
 
 const SUPPORTED_FORMAT = "application/x-tar";
 
-type FormData = {
+interface FormData {
   file?: File;
-};
+}
 
 const INITIAL_DATA: FormData = {
   file: undefined,
@@ -66,6 +65,7 @@ export class DialogUploadBackup
 
   public closeDialog() {
     this._dialog?.close();
+    return true;
   }
 
   private _formValid() {
@@ -87,26 +87,36 @@ export class DialogUploadBackup
             @click=${this.closeDialog}
           ></ha-icon-button>
 
-          <span slot="title">Upload backup</span>
+          <span slot="title">
+            ${this.hass.localize("ui.panel.config.backup.dialogs.upload.title")}
+          </span>
         </ha-dialog-header>
         <div slot="content">
+          ${this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing}
           <ha-file-upload
             .hass=${this.hass}
             .uploading=${this._uploading}
             .icon=${mdiFolderUpload}
             accept=${SUPPORTED_FORMAT}
-            label="Select backup file"
-            supports="Supports .tar files"
+            .label=${this.hass.localize(
+              "ui.panel.config.backup.dialogs.upload.input_label"
+            )}
+            .supports=${this.hass.localize(
+              "ui.panel.config.backup.dialogs.upload.supports_tar"
+            )}
             @file-picked=${this._filePicked}
           ></ha-file-upload>
-          ${this._error
-            ? html`<ha-alert alertType="error">${this._error}</ha-alert>`
-            : nothing}
         </div>
         <div slot="actions">
-          <ha-button @click=${this.closeDialog}>Cancel</ha-button>
+          <ha-button @click=${this.closeDialog}
+            >${this.hass.localize("ui.common.cancel")}</ha-button
+          >
           <ha-button @click=${this._upload} .disabled=${!this._formValid()}>
-            Upload backup
+            ${this.hass.localize(
+              "ui.panel.config.backup.dialogs.upload.action"
+            )}
           </ha-button>
         </div>
       </ha-md-dialog>
@@ -127,9 +137,13 @@ export class DialogUploadBackup
     const { file } = this._formData!;
     if (!file || file.type !== SUPPORTED_FORMAT) {
       showAlertDialog(this, {
-        title: "Unsupported file format",
-        text: "Please choose a Home Assistant backup file (.tar)",
-        confirmText: "ok",
+        title: this.hass.localize(
+          "ui.panel.config.backup.dialogs.upload.unsupported.title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.backup.dialogs.upload.unsupported.text"
+        ),
+        confirmText: this.hass.localize("ui.common.ok"),
       });
       return;
     }
@@ -160,6 +174,10 @@ export class DialogUploadBackup
           width: 100%;
           max-width: 500px;
           max-height: 100%;
+        }
+        ha-alert {
+          display: block;
+          margin-bottom: 16px;
         }
       `,
     ];

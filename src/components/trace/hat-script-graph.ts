@@ -91,7 +91,7 @@ export class HatScriptGraph extends LitElement {
     }
     return html`
       <hat-graph-node
-        graphStart
+        graph-start
         ?track=${track}
         @focus=${this._selectNode(config, path)}
         ?active=${this.selected === path}
@@ -202,7 +202,7 @@ export class HatScriptGraph extends LitElement {
                     .notEnabled=${disabled || config.enabled === false}
                   ></hat-graph-node>
                   ${branch.sequence !== null
-                    ? ensureArray(branch.sequence).map((action, j) =>
+                    ? ensureArray<Action>(branch.sequence).map((action, j) =>
                         this._renderActionNode(
                           action,
                           `${branchPath}/sequence/${j}`,
@@ -218,13 +218,14 @@ export class HatScriptGraph extends LitElement {
         <div ?track=${trackDefault}>
           <hat-graph-spacer ?track=${trackDefault}></hat-graph-spacer>
           ${config.default !== null
-            ? ensureArray(config.default)?.map((action, i) =>
-                this._renderActionNode(
-                  action,
-                  `${path}/default/${i}`,
-                  false,
-                  disabled || config.enabled === false
-                )
+            ? ensureArray<Action | undefined>(config.default)?.map(
+                (action, i) =>
+                  this._renderActionNode(
+                    action,
+                    `${path}/default/${i}`,
+                    false,
+                    disabled || config.enabled === false
+                  )
               )
             : ""}
         </div>
@@ -278,7 +279,7 @@ export class HatScriptGraph extends LitElement {
                 .notEnabled=${disabled || config.enabled === false}
                 nofocus
               ></hat-graph-node
-              >${ensureArray(config.else).map((action, j) =>
+              >${ensureArray<Action>(config.else).map((action, j) =>
                 this._renderActionNode(
                   action,
                   `${path}/else/${j}`,
@@ -296,7 +297,7 @@ export class HatScriptGraph extends LitElement {
             .notEnabled=${disabled || config.enabled === false}
             nofocus
           ></hat-graph-node>
-          ${ensureArray(config.then ?? []).map((action, j) =>
+          ${ensureArray<Action>(config.then ?? []).map((action, j) =>
             this._renderActionNode(
               action,
               `${path}/then/${j}`,
@@ -354,8 +355,8 @@ export class HatScriptGraph extends LitElement {
         ></hat-graph-node>
         <div
           style=${`width: ${NODE_SIZE + SPACING}px;`}
-          graphStart
-          graphEnd
+          graph-start
+          graph-end
         ></div>
         <div ?track=${trackPass}></div>
         <hat-graph-node
@@ -403,7 +404,7 @@ export class HatScriptGraph extends LitElement {
           .badge=${repeats > 1 ? repeats : undefined}
         ></hat-graph-node>
         <div ?track=${trace}>
-          ${ensureArray(node.repeat.sequence).map((action, i) =>
+          ${ensureArray<Action>(node.repeat.sequence).map((action, i) =>
             this._renderActionNode(
               action,
               `${path}/repeat/sequence/${i}`,
@@ -526,17 +527,18 @@ export class HatScriptGraph extends LitElement {
           slot="head"
           nofocus
         ></hat-graph-node>
-        ${ensureArray(node.parallel).map((action, i) =>
+        ${ensureArray<Action>(node.parallel).map((action, i) =>
           "sequence" in action
             ? html`<div ?track=${path in this.trace.trace}>
-                ${ensureArray((action as ManualScriptConfig).sequence).map(
-                  (sAction, j) =>
-                    this._renderActionNode(
-                      sAction,
-                      `${path}/parallel/${i}/sequence/${j}`,
-                      false,
-                      disabled || node.enabled === false
-                    )
+                ${ensureArray<Action>(
+                  (action as ManualScriptConfig).sequence
+                ).map((sAction, j) =>
+                  this._renderActionNode(
+                    sAction,
+                    `${path}/parallel/${i}/sequence/${j}`,
+                    false,
+                    disabled || node.enabled === false
+                  )
                 )}
               </div>`
             : this._renderActionNode(
@@ -601,8 +603,9 @@ export class HatScriptGraph extends LitElement {
               )}`
             : ""}
           ${"sequence" in this.trace.config
-            ? html`${ensureArray(this.trace.config.sequence).map((action, i) =>
-                this._renderActionNode(action, `sequence/${i}`, i === 0)
+            ? html`${ensureArray<Action>(this.trace.config.sequence).map(
+                (action, i) =>
+                  this._renderActionNode(action, `sequence/${i}`, i === 0)
               )}`
             : ""}
         </div>

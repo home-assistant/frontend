@@ -18,10 +18,7 @@ import "../../../src/components/ha-checkbox";
 import "../../../src/components/ha-faded";
 import "../../../src/components/ha-icon-button";
 import "../../../src/components/ha-markdown";
-import "../../../src/components/ha-settings-row";
 import "../../../src/components/ha-svg-icon";
-import "../../../src/components/ha-switch";
-import type { HaSwitch } from "../../../src/components/ha-switch";
 import type { HassioAddonDetails } from "../../../src/data/hassio/addon";
 import {
   fetchHassioAddonChangelog,
@@ -163,19 +160,6 @@ class UpdateAvailableCard extends LitElement {
                       )}
                     </p>
                   </div>
-                  ${["core", "addon"].includes(this._updateType)
-                    ? html`
-                        <hr />
-                        <ha-settings-row>
-                          <span slot="heading">
-                            ${this.supervisor.localize(
-                              "update_available.create_backup"
-                            )}
-                          </span>
-                          <ha-switch id="create_backup" checked></ha-switch>
-                        </ha-settings-row>
-                      `
-                    : nothing}
                 `
               : html`<ha-circular-progress
                     aria-label="Updating"
@@ -241,19 +225,6 @@ class UpdateAvailableCard extends LitElement {
         this._loadOsData();
         break;
     }
-  }
-
-  get _shouldCreateBackup(): boolean {
-    if (this._updateType && !["core", "addon"].includes(this._updateType)) {
-      return false;
-    }
-    const createBackupSwitch = this.shadowRoot?.getElementById(
-      "create-backup"
-    ) as HaSwitch;
-    if (createBackupSwitch) {
-      return createBackupSwitch.checked;
-    }
-    return true;
   }
 
   get _version(): string {
@@ -370,23 +341,14 @@ class UpdateAvailableCard extends LitElement {
   }
 
   private async _update() {
-    if (this._shouldCreateBackup && this.supervisor.info.state === "freeze") {
-      this._error = this.supervisor.localize("backup.backup_already_running");
-      return;
-    }
-
     this._error = undefined;
     this._updating = true;
 
     try {
       if (this._updateType === "addon") {
-        await updateHassioAddon(
-          this.hass,
-          this.addonSlug!,
-          this._shouldCreateBackup
-        );
+        await updateHassioAddon(this.hass, this.addonSlug!);
       } else if (this._updateType === "core") {
-        await updateCore(this.hass, this._shouldCreateBackup);
+        await updateCore(this.hass);
       } else if (this._updateType === "os") {
         await updateOS(this.hass);
       } else if (this._updateType === "supervisor") {
@@ -434,11 +396,6 @@ class UpdateAvailableCard extends LitElement {
 
         ha-markdown {
           padding-bottom: 8px;
-        }
-
-        ha-settings-row {
-          padding: 0;
-          margin-bottom: -16px;
         }
 
         hr {

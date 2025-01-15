@@ -100,7 +100,7 @@ class HuiClimateSwingModesCardFeature
 
     try {
       await this._setMode(swingMode);
-    } catch (err) {
+    } catch (_err) {
       this._currentSwingMode = oldSwingMode;
     }
   }

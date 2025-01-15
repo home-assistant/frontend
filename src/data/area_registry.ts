@@ -16,13 +16,9 @@ export interface AreaRegistryEntry extends RegistryEntry {
   aliases: string[];
 }
 
-export interface AreaEntityLookup {
-  [areaId: string]: EntityRegistryEntry[];
-}
+export type AreaEntityLookup = Record<string, EntityRegistryEntry[]>;
 
-export interface AreaDeviceLookup {
-  [areaId: string]: DeviceRegistryEntry[];
-}
+export type AreaDeviceLookup = Record<string, DeviceRegistryEntry[]>;
 
 export interface AreaRegistryEntryMutableParams {
   name: string;

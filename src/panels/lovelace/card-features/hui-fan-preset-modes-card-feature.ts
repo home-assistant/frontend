@@ -97,7 +97,7 @@ class HuiFanPresetModesCardFeature
 
     try {
       await this._setMode(presetMode);
-    } catch (err) {
+    } catch (_err) {
       this._currentPresetMode = oldPresetMode;
     }
   }

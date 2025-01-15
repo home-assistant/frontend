@@ -48,9 +48,10 @@ export interface SortingChangedEvent {
 
 export type SortingDirection = "desc" | "asc" | null;
 
-export interface DataTableColumnContainer<T = any> {
-  [key: string]: DataTableColumnData<T>;
-}
+export type DataTableColumnContainer<T = any> = Record<
+  string,
+  DataTableColumnData<T>
+>;
 
 export interface DataTableSortColumnData {
   sortable?: boolean;
@@ -94,9 +95,7 @@ export interface DataTableRowData {
   selectable?: boolean;
 }
 
-export interface SortableColumnContainer {
-  [key: string]: ClonedDataTableColumnData;
-}
+export type SortableColumnContainer = Record<string, ClonedDataTableColumnData>;
 
 const UNDEFINED_GROUP_KEY = "zzzzz_undefined";
 
@@ -515,7 +514,7 @@ export class HaDataTable extends LitElement {
       return html`<div class="mdc-data-table__row">${row.content}</div>`;
     }
     if (row.empty) {
-      return html`<div class="mdc-data-table__row"></div>`;
+      return html`<div class="mdc-data-table__row empty-row"></div>`;
     }
     return html`
       <div
@@ -694,9 +693,9 @@ export class HaDataTable extends LitElement {
             grouped[UNDEFINED_GROUP_KEY] = grouped.undefined;
             delete grouped.undefined;
           }
-          const sorted: {
-            [key: string]: DataTableRowData[];
-          } = Object.keys(grouped)
+          const sorted: Record<string, DataTableRowData[]> = Object.keys(
+            grouped
+          )
             .sort((a, b) => {
               const orderA = groupOrder?.indexOf(a) ?? -1;
               const orderB = groupOrder?.indexOf(b) ?? -1;
@@ -958,6 +957,13 @@ export class HaDataTable extends LitElement {
           display: flex;
           height: var(--data-table-row-height, 52px);
           width: var(--table-row-width, 100%);
+        }
+
+        .mdc-data-table__row.empty-row {
+          height: var(
+            --data-table-empty-row-height,
+            var(--data-table-row-height, 52px)
+          );
         }
 
         .mdc-data-table__row ~ .mdc-data-table__row {

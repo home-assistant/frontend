@@ -95,25 +95,23 @@ export class DemoHaLabelBadge extends LitElement {
     `;
   }
 
-  static get styles() {
-    return css`
-      ha-card {
-        max-width: 600px;
-        margin: 24px auto;
-      }
-      pre {
-        margin-left: 16px;
-        background-color: var(--markdown-code-background-color);
-        padding: 8px;
-      }
-      .badge {
-        display: flex;
-        flex-direction: row;
-        margin-bottom: 16px;
-        align-items: center;
-      }
-    `;
-  }
+  static styles = css`
+    ha-card {
+      max-width: 600px;
+      margin: 24px auto;
+    }
+    pre {
+      margin-left: 16px;
+      background-color: var(--markdown-code-background-color);
+      padding: 8px;
+    }
+    .badge {
+      display: flex;
+      flex-direction: row;
+      margin-bottom: 16px;
+      align-items: center;
+    }
+  `;
 }
 
 declare global {

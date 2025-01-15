@@ -9,6 +9,7 @@ import { showChangeBackupEncryptionKeyDialog } from "../../dialogs/show-dialog-c
 import { showSetBackupEncryptionKeyDialog } from "../../dialogs/show-dialog-set-backup-encryption-key";
 
 import { downloadEmergencyKit } from "../../../../../data/backup";
+import { showShowBackupEncryptionKeyDialog } from "../../dialogs/show-dialog-show-backup-encryption-key";
 
 @customElement("ha-backup-config-encryption-key")
 class HaBackupConfigEncryptionKey extends LitElement {
@@ -25,23 +26,55 @@ class HaBackupConfigEncryptionKey extends LitElement {
       return html`
         <ha-md-list>
           <ha-md-list-item>
-            <span slot="headline">Download emergency kit</span>
+            <span slot="headline">
+              ${this.hass.localize(
+                "ui.panel.config.backup.encryption_key.download_emergency_kit"
+              )}
+            </span>
             <span slot="supporting-text">
-              We recommend to save this encryption key somewhere secure.
+              ${this.hass.localize(
+                "ui.panel.config.backup.encryption_key.download_emergency_kit_description"
+              )}
             </span>
             <ha-button slot="end" @click=${this._download}>
               <ha-svg-icon .path=${mdiDownload} slot="icon"></ha-svg-icon>
-              Download
+              ${this.hass.localize(
+                "ui.panel.config.backup.encryption_key.download_emergency_kit_action"
+              )}
             </ha-button>
           </ha-md-list-item>
-
           <ha-md-list-item>
-            <span slot="headline">Change encryption key</span>
+            <span slot="headline">
+              ${this.hass.localize(
+                "ui.panel.config.backup.encryption_key.show_encryption_key"
+              )}
+            </span>
             <span slot="supporting-text">
-              All next backups will use this encryption key.
+              ${this.hass.localize(
+                "ui.panel.config.backup.encryption_key.show_encryption_key_description"
+              )}
+            </span>
+            <ha-button slot="end" @click=${this._show}>
+              ${this.hass.localize(
+                "ui.panel.config.backup.encryption_key.show_encryption_key_action"
+              )}
+            </ha-button>
+          </ha-md-list-item>
+          <ha-md-list-item>
+            <span slot="headline">
+              ${this.hass.localize(
+                "ui.panel.config.backup.encryption_key.change_encryption_key"
+              )}
+            </span>
+            <span slot="supporting-text">
+              ${this.hass.localize(
+                "ui.panel.config.backup.encryption_key.change_encryption_key_description"
+              )}
             </span>
             <ha-button class="danger" slot="end" @click=${this._change}>
-              Change
+              ${this.hass.localize(
+                "ui.panel.config.backup.encryption_key.change_encryption_key_action"
+              )}
             </ha-button>
           </ha-md-list-item>
         </ha-md-list>
@@ -51,11 +84,21 @@ class HaBackupConfigEncryptionKey extends LitElement {
     return html`
       <ha-md-list>
         <ha-md-list-item>
-          <span slot="headline">Set encryption key</span>
+          <span slot="headline">
+            ${this.hass.localize(
+              "ui.panel.config.backup.encryption_key.set_encryption_key"
+            )}</span
+          >
           <span slot="supporting-text">
-            Set an encryption key for your backups.
+            ${this.hass.localize(
+              "ui.panel.config.backup.encryption_key.set_encryption_key_description"
+            )}
           </span>
-          <ha-button slot="end" @click=${this._set}> Set </ha-button>
+          <ha-button slot="end" @click=${this._set}>
+            ${this.hass.localize(
+              "ui.panel.config.backup.encryption_key.set_encryption_key_action"
+            )}</ha-button
+          >
         </ha-md-list-item>
       </ha-md-list>
     `;
@@ -66,6 +109,10 @@ class HaBackupConfigEncryptionKey extends LitElement {
       return;
     }
     downloadEmergencyKit(this.hass, this._value);
+  }
+
+  private _show() {
+    showShowBackupEncryptionKeyDialog(this, { currentKey: this._value });
   }
 
   private _change() {
@@ -90,6 +137,9 @@ class HaBackupConfigEncryptionKey extends LitElement {
       background: none;
       --md-list-item-leading-space: 0;
       --md-list-item-trailing-space: 0;
+    }
+    ha-md-list-item {
+      --md-item-overflow: visible;
     }
     .danger {
       --mdc-theme-primary: var(--error-color);

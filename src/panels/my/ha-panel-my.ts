@@ -16,7 +16,7 @@ import "../../layouts/hass-error-screen";
 import type { HomeAssistant, Route } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 
-export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
+export const getMyRedirects = (): Redirects => ({
   application_credentials: {
     redirect: "/config/application_credentials",
   },
@@ -27,10 +27,10 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
     redirect: "/developer-tools/state",
   },
   developer_services: {
-    redirect: "/developer-tools/service",
+    redirect: "/developer-tools/action",
   },
   developer_call_service: {
-    redirect: "/developer-tools/service",
+    redirect: "/developer-tools/action",
     params: {
       service: "string",
     },
@@ -248,16 +248,24 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
     redirect: "/media-browser",
   },
   backup: {
-    component: hasSupervisor ? "hassio" : "backup",
-    redirect: hasSupervisor ? "/hassio/backups" : "/config/backup",
+    component: "backup",
+    redirect: "/config/backup",
+  },
+  backup_list: {
+    component: "backup",
+    redirect: "/config/backup/backups",
+  },
+  backup_config: {
+    component: "backup",
+    redirect: "/config/backup/settings",
   },
   supervisor_snapshots: {
-    component: hasSupervisor ? "hassio" : "backup",
-    redirect: hasSupervisor ? "/hassio/backups" : "/config/backup",
+    component: "backup",
+    redirect: "/config/backup",
   },
   supervisor_backups: {
-    component: hasSupervisor ? "hassio" : "backup",
-    redirect: hasSupervisor ? "/hassio/backups" : "/config/backup",
+    component: "backup",
+    redirect: "/config/backup",
   },
   supervisor_system: {
     // Moved from Supervisor panel in 2022.5
@@ -282,25 +290,19 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
   },
 });
 
-const getRedirect = (
-  path: string,
-  hasSupervisor: boolean
-): Redirect | undefined => getMyRedirects(hasSupervisor)?.[path];
+const getRedirect = (path: string): Redirect | undefined =>
+  getMyRedirects()?.[path];
 
 export type ParamType = "url" | "string" | "string?";
 
-export type Redirects = { [key: string]: Redirect };
+export type Redirects = Record<string, Redirect>;
 export interface Redirect {
   redirect: string;
   // Set to True to use browser redirect instead of frontend navigation
   navigate_outside_spa?: boolean;
   component?: string;
-  params?: {
-    [key: string]: ParamType;
-  };
-  optional_params?: {
-    [key: string]: ParamType;
-  };
+  params?: Record<string, ParamType>;
+  optional_params?: Record<string, ParamType>;
 }
 
 @customElement("ha-panel-my")
@@ -318,7 +320,7 @@ class HaPanelMy extends LitElement {
     const path = this.route.path.substring(1);
     const hasSupervisor = isComponentLoaded(this.hass, "hassio");
 
-    this._redirect = getRedirect(path, hasSupervisor);
+    this._redirect = getRedirect(path);
 
     if (path.startsWith("supervisor") && this._redirect === undefined) {
       if (!hasSupervisor) {
@@ -352,9 +354,7 @@ class HaPanelMy extends LitElement {
       this.hass.loadBackendTranslation("title", this._redirect.component);
       this._error = "no_component";
       const component = this._redirect.component;
-      if (
-        (PROTOCOL_INTEGRATIONS as ReadonlyArray<string>).includes(component)
-      ) {
+      if ((PROTOCOL_INTEGRATIONS as readonly string[]).includes(component)) {
         const params = extractSearchParamsObject();
         this.hass
           .loadFragmentTranslation("config")
@@ -372,7 +372,7 @@ class HaPanelMy extends LitElement {
     let url: string;
     try {
       url = this._createRedirectUrl();
-    } catch (err: any) {
+    } catch (_err: any) {
       this._error = "url_error";
       return;
     }

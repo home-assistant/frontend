@@ -1,12 +1,11 @@
 import "@material/mwc-list/mwc-list-item";
-import type { CSSResultGroup } from "lit";
 import memoizeOne from "memoize-one";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
-import "../../../../components/ha-selector/ha-selector-image";
+import "../../../../components/ha-selector/ha-selector-background";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 
@@ -26,7 +25,7 @@ export class HuiViewBackgroundEditor extends LitElement {
   private _schema = memoizeOne((showSettings: boolean) => [
     {
       name: "image",
-      selector: { image: { original: true } },
+      selector: { background: { original: true } },
     },
     ...(showSettings
       ? ([
@@ -37,7 +36,7 @@ export class HuiViewBackgroundEditor extends LitElement {
             type: "expandable" as const,
             schema: [
               {
-                name: "transparency",
+                name: "opacity",
                 selector: {
                   number: { min: 1, max: 100, mode: "slider" },
                 },
@@ -54,6 +53,7 @@ export class HuiViewBackgroundEditor extends LitElement {
               },
               {
                 name: "size",
+                required: true,
                 selector: {
                   select: {
                     translation_key:
@@ -65,6 +65,7 @@ export class HuiViewBackgroundEditor extends LitElement {
               },
               {
                 name: "alignment",
+                required: true,
                 selector: {
                   select: {
                     translation_key:
@@ -86,6 +87,7 @@ export class HuiViewBackgroundEditor extends LitElement {
               },
               {
                 name: "repeat",
+                required: true,
                 selector: {
                   select: {
                     translation_key:
@@ -117,7 +119,7 @@ export class HuiViewBackgroundEditor extends LitElement {
 
     if (!background) {
       background = {
-        transparency: 33,
+        opacity: 33,
         alignment: "center",
         size: "cover",
         repeat: "repeat",
@@ -125,7 +127,7 @@ export class HuiViewBackgroundEditor extends LitElement {
       };
     } else {
       background = {
-        transparency: 100,
+        opacity: 100,
         alignment: "center",
         size: "cover",
         repeat: "no-repeat",
@@ -162,9 +164,9 @@ export class HuiViewBackgroundEditor extends LitElement {
         return this.hass.localize(
           "ui.panel.lovelace.editor.edit_view.background.image"
         );
-      case "transparency":
+      case "opacity":
         return this.hass.localize(
-          "ui.panel.lovelace.editor.edit_view.background.transparency"
+          "ui.panel.lovelace.editor.edit_view.background.opacity"
         );
       case "alignment":
         return this.hass.localize(
@@ -189,13 +191,11 @@ export class HuiViewBackgroundEditor extends LitElement {
     }
   };
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+    }
+  `;
 }
 
 declare global {

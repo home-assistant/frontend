@@ -57,7 +57,7 @@ declare global {
   }
 }
 
-export const configSections: { [name: string]: PageNavigation[] } = {
+export const configSections: Record<string, PageNavigation[]> = {
   dashboard: [
     {
       path: "/config/integrations",
@@ -569,7 +569,7 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
 
   @state() private _cloudStatus?: CloudStatus;
 
-  private _listeners: Array<() => void> = [];
+  private _listeners: (() => void)[] = [];
 
   public connectedCallback() {
     super.connectedCallback();

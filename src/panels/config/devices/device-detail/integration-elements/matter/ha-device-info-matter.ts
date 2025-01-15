@@ -41,7 +41,7 @@ export class HaDeviceInfoMatter extends SubscribeMixin(LitElement) {
         this.hass,
         this.device.id
       );
-    } catch (err: any) {
+    } catch (_err: any) {
       this._nodeDiagnostics = undefined;
     }
   }

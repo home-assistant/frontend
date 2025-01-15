@@ -1,5 +1,4 @@
 import { mdiStop, mdiValveClosed, mdiValveOpen } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -76,19 +75,17 @@ class HaValveControls extends LitElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-      }
-      .state {
-        white-space: nowrap;
-      }
-      .hidden {
-        visibility: hidden !important;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+    }
+    .state {
+      white-space: nowrap;
+    }
+    .hidden {
+      visibility: hidden !important;
+    }
+  `;
 }
 
 declare global {

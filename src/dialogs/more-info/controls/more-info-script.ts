@@ -1,7 +1,7 @@
 import { mdiPlay, mdiStop } from "@mdi/js";
 import "@material/mwc-button";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-relative-time";
@@ -99,6 +99,7 @@ class MoreInfoScript extends LitElement {
                 ${this.hass.localize("ui.card.script.run_script")}
               </div>
               <ha-service-control
+                hide-picker
                 hide-description
                 .hass=${this.hass}
                 .value=${this._scriptData}
@@ -198,37 +199,35 @@ class MoreInfoScript extends LitElement {
     return false;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .queue {
-        visibility: hidden;
-        color: var(--secondary-text-color);
-        text-align: center;
-        margin-bottom: 16px;
-        height: 21px;
-      }
-      .queue.has-queue {
-        visibility: visible;
-      }
-      .fields {
-        padding: 16px;
-        border: 1px solid var(--divider-color);
-        border-radius: 8px;
-        margin-bottom: 16px;
-      }
-      .fields .title {
-        font-weight: bold;
-      }
-      ha-control-button ha-svg-icon {
-        z-index: -1;
-        margin-right: 4px;
-      }
-      ha-service-control {
-        --service-control-padding: 0;
-        --service-control-items-border-top: none;
-      }
-    `;
-  }
+  static styles = css`
+    .queue {
+      visibility: hidden;
+      color: var(--secondary-text-color);
+      text-align: center;
+      margin-bottom: 16px;
+      height: 21px;
+    }
+    .queue.has-queue {
+      visibility: visible;
+    }
+    .fields {
+      padding: 16px;
+      border: 1px solid var(--divider-color);
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+    .fields .title {
+      font-weight: bold;
+    }
+    ha-control-button ha-svg-icon {
+      z-index: -1;
+      margin-right: 4px;
+    }
+    ha-service-control {
+      --service-control-padding: 0;
+      --service-control-items-border-top: none;
+    }
+  `;
 }
 
 declare global {

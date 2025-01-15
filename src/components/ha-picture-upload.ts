@@ -95,7 +95,7 @@ export class HaPictureUpload extends LitElement {
           <ha-button
             @click=${this._handleChangeClick}
             .label=${this.hass.localize(
-              "ui.components.picture-upload.change_picture"
+              "ui.components.picture-upload.clear_picture"
             )}
           >
           </ha-button>

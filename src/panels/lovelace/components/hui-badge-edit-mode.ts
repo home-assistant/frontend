@@ -43,13 +43,13 @@ export class HuiBadgeEditMode extends LitElement {
   public hiddenOverlay = false;
 
   @state()
-  public _menuOpened: boolean = false;
+  public _menuOpened = false;
 
   @state()
-  public _hover: boolean = false;
+  public _hover = false;
 
   @state()
-  public _focused: boolean = false;
+  public _focused = false;
 
   @storage({
     key: "dashboardBadgeClipboard",

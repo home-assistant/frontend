@@ -1,5 +1,4 @@
 import { mdiPlayCircleOutline } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { storage } from "../../common/decorators/storage";
@@ -163,23 +162,21 @@ export class TTSTryDialog extends LitElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-dialog {
-        --mdc-dialog-max-width: 500px;
-      }
-      ha-textarea,
-      ha-select {
-        width: 100%;
-      }
-      ha-select {
-        margin-top: 8px;
-      }
-      .loading {
-        height: 36px;
-      }
-    `;
-  }
+  static styles = css`
+    ha-dialog {
+      --mdc-dialog-max-width: 500px;
+    }
+    ha-textarea,
+    ha-select {
+      width: 100%;
+    }
+    ha-select {
+      margin-top: 8px;
+    }
+    .loading {
+      height: 36px;
+    }
+  `;
 }
 
 declare global {

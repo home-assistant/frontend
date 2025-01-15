@@ -76,14 +76,12 @@ export class DemoMiscMarkdown extends LitElement {
     `;
   }
 
-  static get styles() {
-    return css`
-      ha-card {
-        margin: 12px;
-        padding: 12px;
-      }
-    `;
-  }
+  static styles = css`
+    ha-card {
+      margin: 12px;
+      padding: 12px;
+    }
+  `;
 }
 
 declare global {

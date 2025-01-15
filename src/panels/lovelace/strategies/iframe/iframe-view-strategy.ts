@@ -3,11 +3,11 @@ import { customElement } from "lit/decorators";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { IframeCardConfig } from "../../cards/types";
 
-export type IframeViewStrategyConfig = {
+export interface IframeViewStrategyConfig {
   type: "iframe";
   url: string;
   title?: string;
-};
+}
 
 @customElement("iframe-view-strategy")
 export class IframeViewStrategy extends ReactiveElement {

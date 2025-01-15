@@ -16,10 +16,10 @@ import type { NewDashboardDialogParams } from "./show-dialog-new-dashboard";
 
 const EMPTY_CONFIG: LovelaceRawConfig = { views: [{ title: "Home" }] };
 
-type Strategy = {
+interface Strategy {
   type: string;
   iconPath: string;
-};
+}
 
 const STRATEGIES = [
   {
@@ -45,12 +45,13 @@ class DialogNewDashboard extends LitElement implements HassDialog {
     this._params = params;
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     if (this._opened) {
       fireEvent(this, "dialog-closed", { dialog: this.localName });
     }
     this._opened = false;
     this._params = undefined;
+    return true;
   }
 
   protected render() {

@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -80,34 +80,32 @@ class UserBadge extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: contents;
-      }
-      .picture {
-        width: 40px;
-        height: 40px;
-        background-size: cover;
-        border-radius: 50%;
-      }
-      .initials {
-        display: inline-block;
-        box-sizing: border-box;
-        width: 40px;
-        line-height: 40px;
-        border-radius: 50%;
-        text-align: center;
-        background-color: var(--light-primary-color);
-        text-decoration: none;
-        color: var(--text-light-primary-color, var(--primary-text-color));
-        overflow: hidden;
-      }
-      .initials.long {
-        font-size: 80%;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: contents;
+    }
+    .picture {
+      width: 40px;
+      height: 40px;
+      background-size: cover;
+      border-radius: 50%;
+    }
+    .initials {
+      display: inline-block;
+      box-sizing: border-box;
+      width: 40px;
+      line-height: 40px;
+      border-radius: 50%;
+      text-align: center;
+      background-color: var(--light-primary-color);
+      text-decoration: none;
+      color: var(--text-light-primary-color, var(--primary-text-color));
+      overflow: hidden;
+    }
+    .initials.long {
+      font-size: 80%;
+    }
+  `;
 }
 
 declare global {

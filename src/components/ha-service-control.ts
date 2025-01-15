@@ -4,7 +4,7 @@ import type {
   HassServices,
   HassServiceTarget,
 } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -60,15 +60,13 @@ interface Field extends Omit<HassService["fields"][string], "selector"> {
 }
 
 interface ExtHassService extends Omit<HassService, "fields"> {
-  fields: Array<
-    Omit<HassService["fields"][string], "selector"> & {
-      key: string;
-      selector?: Selector;
-      fields?: Record<string, Omit<HassService["fields"][string], "selector">>;
-      collapsed?: boolean;
-    }
-  >;
-  flatFields: Array<Field>;
+  fields: (Omit<HassService["fields"][string], "selector"> & {
+    key: string;
+    selector?: Selector;
+    fields?: Record<string, Omit<HassService["fields"][string], "selector">>;
+    collapsed?: boolean;
+  })[];
+  flatFields: Field[];
   hasSelector: string[];
 }
 
@@ -89,7 +87,7 @@ export class HaServiceControl extends LitElement {
   @property({ attribute: "show-advanced", type: Boolean }) public showAdvanced =
     false;
 
-  @property({ attribute: false, type: Boolean, reflect: true })
+  @property({ attribute: "hide-picker", type: Boolean, reflect: true })
   public hidePicker = false;
 
   @property({ attribute: "hide-description", type: Boolean })
@@ -859,70 +857,68 @@ export class HaServiceControl extends LitElement {
     this._manifest = undefined;
     try {
       this._manifest = await fetchIntegrationManifest(this.hass, integration);
-    } catch (err: any) {
+    } catch (_err: any) {
       // Ignore if loading manifest fails. Probably bad JSON in manifest
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-settings-row {
-        padding: var(--service-control-padding, 0 16px);
-      }
-      ha-settings-row {
-        --paper-time-input-justify-content: flex-end;
-        --settings-row-content-width: 100%;
-        --settings-row-prefix-display: contents;
-        border-top: var(
-          --service-control-items-border-top,
-          1px solid var(--divider-color)
-        );
-      }
-      ha-service-picker,
-      ha-entity-picker,
-      ha-yaml-editor {
-        display: block;
-        margin: var(--service-control-padding, 0 16px);
-      }
-      ha-yaml-editor {
-        padding: 16px 0;
-      }
-      p {
-        margin: var(--service-control-padding, 0 16px);
-        padding: 16px 0;
-      }
-      :host([hidePicker]) p {
-        padding-top: 0;
-      }
-      .checkbox-spacer {
-        width: 32px;
-      }
-      ha-checkbox {
-        margin-left: -16px;
-        margin-inline-start: -16px;
-        margin-inline-end: initial;
-      }
-      .help-icon {
-        color: var(--secondary-text-color);
-      }
-      .description {
-        justify-content: space-between;
-        display: flex;
-        align-items: center;
-        padding-right: 2px;
-        padding-inline-end: 2px;
-        padding-inline-start: initial;
-      }
-      .description p {
-        direction: ltr;
-      }
-      ha-expansion-panel {
-        --ha-card-border-radius: 0;
-        --expansion-panel-summary-padding: 0 16px;
-        --expansion-panel-content-padding: 0;
-      }
-    `;
-  }
+  static styles = css`
+    ha-settings-row {
+      padding: var(--service-control-padding, 0 16px);
+    }
+    ha-settings-row {
+      --paper-time-input-justify-content: flex-end;
+      --settings-row-content-width: 100%;
+      --settings-row-prefix-display: contents;
+      border-top: var(
+        --service-control-items-border-top,
+        1px solid var(--divider-color)
+      );
+    }
+    ha-service-picker,
+    ha-entity-picker,
+    ha-yaml-editor {
+      display: block;
+      margin: var(--service-control-padding, 0 16px);
+    }
+    ha-yaml-editor {
+      padding: 16px 0;
+    }
+    p {
+      margin: var(--service-control-padding, 0 16px);
+      padding: 16px 0;
+    }
+    :host([hidePicker]) p {
+      padding-top: 0;
+    }
+    .checkbox-spacer {
+      width: 32px;
+    }
+    ha-checkbox {
+      margin-left: -16px;
+      margin-inline-start: -16px;
+      margin-inline-end: initial;
+    }
+    .help-icon {
+      color: var(--secondary-text-color);
+    }
+    .description {
+      justify-content: space-between;
+      display: flex;
+      align-items: center;
+      padding-right: 2px;
+      padding-inline-end: 2px;
+      padding-inline-start: initial;
+    }
+    .description p {
+      direction: ltr;
+    }
+    ha-expansion-panel {
+      --ha-card-border-radius: 0;
+      --expansion-panel-summary-padding: 0 16px;
+      --expansion-panel-content-padding: 0;
+    }
+  `;
 }
 
 declare global {

@@ -5,7 +5,7 @@ import {
   mdiPlayBoxMultiple,
   mdiPuzzle,
 } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -25,11 +25,11 @@ import "./ha-backup-addons-picker";
 import type { BackupAddonItem } from "./ha-backup-addons-picker";
 import "./ha-backup-formfield-label";
 
-type CheckBoxItem = {
+interface CheckBoxItem {
   label: string;
   id: string;
   version?: string;
-};
+}
 
 const ITEM_ICONS = {
   config: mdiCog,
@@ -38,10 +38,10 @@ const ITEM_ICONS = {
   share: mdiFolder,
 };
 
-type SelectedItems = {
+interface SelectedItems {
   homeassistant: string[];
   addons: string[];
-};
+}
 
 @customElement("ha-backup-data-picker")
 export class HaBackupDataPicker extends LitElement {
@@ -77,15 +77,13 @@ export class HaBackupDataPicker extends LitElement {
 
       if (data.homeassistant_included) {
         items.push({
-          label: "Settings",
+          label: data.database_included
+            ? this.hass.localize(
+                "ui.panel.config.backup.data_picker.settings_and_history"
+              )
+            : this.hass.localize("ui.panel.config.backup.data_picker.settings"),
           id: "config",
           version: data.homeassistant_version,
-        });
-      }
-      if (data.database_included) {
-        items.push({
-          label: "History",
-          id: "database",
         });
       }
       items.push(
@@ -99,8 +97,17 @@ export class HaBackupDataPicker extends LitElement {
   );
 
   private _localizeFolder(folder: string): string {
-    if (folder === "addons/local") {
-      return "Local addons";
+    switch (folder) {
+      case "media":
+        return this.hass.localize("ui.panel.config.backup.data_picker.media");
+      case "share":
+        return this.hass.localize(
+          "ui.panel.config.backup.data_picker.share_folder"
+        );
+      case "addons/local":
+        return this.hass.localize(
+          "ui.panel.config.backup.data_picker.local_addons"
+        );
     }
     return capitalizeFirstLetter(folder);
   }
@@ -132,9 +139,6 @@ export class HaBackupDataPicker extends LitElement {
     if (value.homeassistant_included) {
       homeassistant.push("config");
     }
-    if (value.database_included) {
-      homeassistant.push("database");
-    }
 
     const folders = value.folders;
     homeassistant.push(...folders);
@@ -151,7 +155,9 @@ export class HaBackupDataPicker extends LitElement {
     (selectedItems: SelectedItems, data: BackupData): BackupData => ({
       homeassistant_version: data.homeassistant_version,
       homeassistant_included: selectedItems.homeassistant.includes("config"),
-      database_included: selectedItems.homeassistant.includes("database"),
+      database_included:
+        data.database_included &&
+        selectedItems.homeassistant.includes("config"),
       addons: data.addons.filter((addon) =>
         selectedItems.addons.includes(addon.slug)
       ),
@@ -226,7 +232,7 @@ export class HaBackupDataPicker extends LitElement {
               <ha-formfield>
                 <ha-backup-formfield-label
                   slot="label"
-                  .label=${"Home Assistant"}
+                  label="Home Assistant"
                   .iconPath=${mdiHomeAssistant}
                 >
                 </ha-backup-formfield-label>
@@ -272,7 +278,9 @@ export class HaBackupDataPicker extends LitElement {
               <ha-formfield>
                 <ha-backup-formfield-label
                   slot="label"
-                  .label=${"Add-ons"}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.backup.data_picker.local_addons"
+                  )}
                   .iconPath=${mdiPuzzle}
                 >
                 </ha-backup-formfield-label>
@@ -297,28 +305,26 @@ export class HaBackupDataPicker extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .section {
-        margin-left: -16px;
-        margin-inline-start: -16px;
-        margin-inline-end: initial;
-      }
-      .items {
-        padding-left: 40px;
-        padding-inline-start: 40px;
-        padding-inline-end: initial;
-        display: flex;
-        flex-direction: column;
-      }
-      ha-backup-addons-picker {
-        display: block;
-        padding-left: 40px;
-        padding-inline-start: 40px;
-        padding-inline-end: initial;
-      }
-    `;
-  }
+  static styles = css`
+    .section {
+      margin-left: -16px;
+      margin-inline-start: -16px;
+      margin-inline-end: initial;
+    }
+    .items {
+      padding-left: 40px;
+      padding-inline-start: 40px;
+      padding-inline-end: initial;
+      display: flex;
+      flex-direction: column;
+    }
+    ha-backup-addons-picker {
+      display: block;
+      padding-left: 40px;
+      padding-inline-start: 40px;
+      padding-inline-end: initial;
+    }
+  `;
 }
 
 declare global {

@@ -221,7 +221,7 @@ export class HaConfigLogs extends LitElement {
             name: addon.name,
           })),
       ];
-    } catch (err) {
+    } catch (_err) {
       // Ignore, nothing the user can do anyway
     }
   }

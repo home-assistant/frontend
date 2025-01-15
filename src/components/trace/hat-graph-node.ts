@@ -20,8 +20,8 @@ export class HatGraphNode extends LitElement {
   @property({ attribute: false, reflect: true, type: Boolean }) notEnabled =
     false;
 
-  @property({ attribute: false, reflect: true, type: Boolean }) graphStart =
-    false;
+  @property({ attribute: "graph-start", reflect: true, type: Boolean })
+  graphStart = false;
 
   @property({ type: Boolean, attribute: "nofocus" }) noFocus = false;
 
@@ -102,86 +102,82 @@ export class HatGraphNode extends LitElement {
     `;
   }
 
-  static get styles() {
-    return css`
-      :host {
-        display: flex;
-        flex-direction: column;
-        min-width: calc(var(--hat-graph-node-size) + var(--hat-graph-spacing));
-        height: calc(
-          var(--hat-graph-node-size) + var(--hat-graph-spacing) + 1px
-        );
-      }
-      :host([graphStart]) {
-        height: calc(var(--hat-graph-node-size) + 2px);
-      }
-      :host([track]) {
-        --stroke-clr: var(--track-clr);
-        --icon-clr: var(--default-icon-clr);
-      }
-      :host([active]) circle {
-        --stroke-clr: var(--active-clr);
-        --icon-clr: var(--default-icon-clr);
-      }
-      :host(:focus) {
-        outline: none;
-      }
-      :host(:hover) circle {
-        --stroke-clr: var(--hover-clr);
-        --icon-clr: var(--default-icon-clr);
-      }
-      :host([notEnabled]) circle {
-        --stroke-clr: var(--disabled-clr);
-      }
-      :host([notEnabled][active]) circle {
-        --stroke-clr: var(--disabled-active-clr);
-      }
-      :host([notEnabled]:hover) circle {
-        --stroke-clr: var(--disabled-hover-clr);
-      }
-      svg:not(.safari) {
-        width: 100%;
-        height: 100%;
-      }
-      circle,
-      path.connector {
-        stroke: var(--stroke-clr);
-        stroke-width: 2;
-        fill: none;
-      }
-      circle {
-        fill: var(--background-clr);
-        stroke: var(--circle-clr, var(--stroke-clr));
-      }
-      .error circle {
-        fill: var(--error-color);
-        stroke: none;
-        stroke-width: 0;
-      }
-      .error .exclamation {
-        fill: var(--text-primary-color);
-      }
-      .number circle {
-        fill: var(--track-clr);
-        stroke: none;
-        stroke-width: 0;
-      }
-      .number text {
-        font-size: 10px;
-        fill: var(--text-primary-color);
-      }
-      path.icon {
-        fill: var(--icon-clr);
-      }
-      foreignObject {
-        width: 24px;
-        height: 24px;
-      }
-      .icon {
-        color: var(--icon-clr);
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: flex;
+      flex-direction: column;
+      min-width: calc(var(--hat-graph-node-size) + var(--hat-graph-spacing));
+      height: calc(var(--hat-graph-node-size) + var(--hat-graph-spacing) + 1px);
+    }
+    :host([graph-start]) {
+      height: calc(var(--hat-graph-node-size) + 2px);
+    }
+    :host([track]) {
+      --stroke-clr: var(--track-clr);
+      --icon-clr: var(--default-icon-clr);
+    }
+    :host([active]) circle {
+      --stroke-clr: var(--active-clr);
+      --icon-clr: var(--default-icon-clr);
+    }
+    :host(:focus) {
+      outline: none;
+    }
+    :host(:hover) circle {
+      --stroke-clr: var(--hover-clr);
+      --icon-clr: var(--default-icon-clr);
+    }
+    :host([notEnabled]) circle {
+      --stroke-clr: var(--disabled-clr);
+    }
+    :host([notEnabled][active]) circle {
+      --stroke-clr: var(--disabled-active-clr);
+    }
+    :host([notEnabled]:hover) circle {
+      --stroke-clr: var(--disabled-hover-clr);
+    }
+    svg:not(.safari) {
+      width: 100%;
+      height: 100%;
+    }
+    circle,
+    path.connector {
+      stroke: var(--stroke-clr);
+      stroke-width: 2;
+      fill: none;
+    }
+    circle {
+      fill: var(--background-clr);
+      stroke: var(--circle-clr, var(--stroke-clr));
+    }
+    .error circle {
+      fill: var(--error-color);
+      stroke: none;
+      stroke-width: 0;
+    }
+    .error .exclamation {
+      fill: var(--text-primary-color);
+    }
+    .number circle {
+      fill: var(--track-clr);
+      stroke: none;
+      stroke-width: 0;
+    }
+    .number text {
+      font-size: 10px;
+      fill: var(--text-primary-color);
+    }
+    path.icon {
+      fill: var(--icon-clr);
+    }
+    foreignObject {
+      width: 24px;
+      height: 24px;
+    }
+    .icon {
+      color: var(--icon-clr);
+    }
+  `;
 }
 
 declare global {
