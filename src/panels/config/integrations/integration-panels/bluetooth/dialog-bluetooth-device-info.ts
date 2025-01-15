@@ -22,9 +22,10 @@ class DialogBluetoothDeviceInfo extends LitElement implements HassDialog {
     this._params = params;
   }
 
-  public closeDialog(): void {
+  public closeDialog(): boolean {
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+    return true;
   }
 
   public showDataAsHex(bytestring: string): string {
