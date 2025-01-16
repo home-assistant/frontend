@@ -66,7 +66,7 @@ export class StateHistoryChartTimeline extends LitElement {
         .options=${this._chartOptions}
         .height=${this.data.length * 30 + 30}
         .paddingYAxis=${this.paddingYAxis - this._yWidth}
-        chart-type="timeline"
+        .data=${this._chartData}
       ></ha-chart-base>
     `;
   }
@@ -173,8 +173,7 @@ export class StateHistoryChartTimeline extends LitElement {
     if (
       changedProps.has("startTime") ||
       changedProps.has("endTime") ||
-      changedProps.has("showNames") ||
-      changedProps.has("_chartData")
+      changedProps.has("showNames")
     ) {
       this._createOptions();
     }
@@ -232,7 +231,6 @@ export class StateHistoryChartTimeline extends LitElement {
         left: rtl ? 10 : labelPadding,
         right: rtl ? labelPadding : 10,
       },
-      series: this._chartData,
       tooltip: {
         appendTo: document.body,
         formatter: this._renderTooltip,
@@ -265,23 +263,6 @@ export class StateHistoryChartTimeline extends LitElement {
       //       }
       //     },
       //   },
-      // },
-      // onClick: (e: any) => {
-      //   if (!this.clickForMoreInfo || clickIsTouch(e)) {
-      //     return;
-      //   }
-
-      //   const chart = e.chart;
-      //   const canvasPosition = getRelativePosition(e, chart);
-
-      //   const index = Math.abs(
-      //     chart.scales.y.getValueForPixel(canvasPosition.y)
-      //   );
-      //   fireEvent(this, "hass-more-info", {
-      //     // @ts-ignore
-      //     entityId: this._chartData?.datasets[index]?.label,
-      //   });
-      //   chart.canvas.dispatchEvent(new Event("mouseout")); // to hide tooltip
       // },
     };
   }

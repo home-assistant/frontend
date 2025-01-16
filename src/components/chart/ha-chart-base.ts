@@ -1,10 +1,3 @@
-import type {
-  // Chart,
-  ChartType,
-  ChartData,
-  TooltipModel,
-  UpdateMode,
-} from "chart.js";
 import type { PropertyValues } from "lit";
 import { css, html, nothing, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -13,6 +6,7 @@ import { styleMap } from "lit/directives/style-map";
 import { mdiRestart } from "@mdi/js";
 import type { EChartsType } from "echarts/core";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
+import type { SeriesOption } from "echarts/types/dist/shared";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HomeAssistant } from "../../types";
 import { debounce } from "../../common/util/debounce";
@@ -22,26 +16,15 @@ import type { ECOption } from "../../resources/echarts";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 
-interface Tooltip
-  extends Omit<TooltipModel<any>, "tooltipPosition" | "hasValue" | "getProps"> {
-  top: string;
-  left: string;
-}
-
 @customElement("ha-chart-base")
 export class HaChartBase extends LitElement {
   public chart?: EChartsType;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: "chart-type", reflect: true })
-  public chartType: ChartType = "line";
-
-  @property({ attribute: false }) public data: ChartData = { datasets: [] };
+  @property({ attribute: false }) public data: SeriesOption[] = [];
 
   @property({ attribute: false }) public options?: ECOption;
-
-  @property({ attribute: false }) public plugins?: any[];
 
   @property({ type: Number }) public height?: number;
 
@@ -50,17 +33,13 @@ export class HaChartBase extends LitElement {
   @property({ attribute: "external-hidden", type: Boolean })
   public externalHidden = false;
 
-  @state() private _tooltip?: Tooltip;
-
   @state() private _showZoomHint = false;
 
   @state() private _isZoomed = false;
 
-  private _width = new ResizeController(this, {
-    callback: (entries) => {
-      this.chart?.resize();
-      return entries[0]?.contentRect.width ?? 0;
-    },
+  // @ts-ignore
+  private _resizeController = new ResizeController(this, {
+    callback: () => this.chart?.resize(),
   });
 
   private _paddingUpdateCount = 0;
@@ -69,26 +48,20 @@ export class HaChartBase extends LitElement {
 
   private _paddingYAxisInternal = 0;
 
-  private _datasetOrder: number[] = [];
+  private _loading = false;
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    window.removeEventListener("scroll", this._handleScroll, true);
     this._releaseCanvas();
   }
 
   public connectedCallback() {
     super.connectedCallback();
-    window.addEventListener("scroll", this._handleScroll, true);
     if (this.hasUpdated) {
       this._releaseCanvas();
       this._setupChart();
     }
   }
-
-  public updateChart = (mode?: UpdateMode): void => {
-    this.chart?.update(mode);
-  };
 
   protected firstUpdated() {
     this._setupChart();
@@ -135,21 +108,12 @@ export class HaChartBase extends LitElement {
     if (!this.hasUpdated || !this.chart) {
       return;
     }
-    if (changedProps.has("plugins") || changedProps.has("chartType")) {
-      this._releaseCanvas();
-      this._setupChart();
-      return;
-    }
     if (changedProps.has("data")) {
-      this.chart?.setOption(this._createOptions());
-      // this.chart.data = this.data;
+      this.chart.setOption({ series: this.data }, { lazyUpdate: true });
     }
-    // if (changedProps.has("options") && !this.chart.isZoomedOrPanned()) {
-    //   // this resets the chart zoom because min/max scales changed
-    //   // so we only do it if the user is not zooming or panning
-    //   this.chart.options = this._createOptions();
-    // }
-    // this.chart.update("none");
+    if (changedProps.has("options")) {
+      this.chart.setOption(this._createOptions(), { lazyUpdate: true });
+    }
   }
 
   protected render() {
@@ -176,7 +140,7 @@ export class HaChartBase extends LitElement {
               : this.hass.localize("ui.components.history_charts.zoom_hint")}
           </div>
         </div>
-        ${this._isZoomed && this.chartType !== "timeline"
+        ${this._isZoomed && this.options?.dataZoom
           ? html`<ha-icon-button
               class="zoom-reset"
               .path=${mdiRestart}
@@ -186,53 +150,9 @@ export class HaChartBase extends LitElement {
               )}
             ></ha-icon-button>`
           : nothing}
-        ${this._tooltip
-          ? html`<div
-              class="chart-tooltip ${classMap({
-                [this._tooltip.yAlign]: true,
-              })}"
-              style=${styleMap({
-                top: this._tooltip.top,
-                left: this._tooltip.left,
-              })}
-            >
-              <div class="title">${this._tooltip.title}</div>
-              ${this._tooltip.beforeBody
-                ? html`<div class="before-body">
-                    ${this._tooltip.beforeBody}
-                  </div>`
-                : ""}
-              <div>
-                <ul>
-                  ${this._tooltip.body.map(
-                    (item, i) =>
-                      html`<li>
-                        <div
-                          class="bullet"
-                          style=${styleMap({
-                            backgroundColor: this._tooltip!.labelColors[i]
-                              .backgroundColor as string,
-                            borderColor: this._tooltip!.labelColors[i]
-                              .borderColor as string,
-                          })}
-                        ></div>
-                        ${item.lines.join("\n")}
-                      </li>`
-                  )}
-                </ul>
-              </div>
-              ${this._tooltip.footer.length
-                ? html`<div class="footer">
-                    ${this._tooltip.footer.map((item) => html`${item}<br />`)}
-                  </div>`
-                : ""}
-            </div>`
-          : ""}
       </div>
     `;
   }
-
-  private _loading = false;
 
   private async _setupChart() {
     if (this._loading) return;
@@ -240,8 +160,6 @@ export class HaChartBase extends LitElement {
     this._loading = true;
     try {
       const echarts = (await import("../../resources/echarts")).default;
-
-      // const computedStyles = getComputedStyle(this);
 
       this.chart = echarts.init(container);
       this.chart.on("legendselectchanged", (params: any) => {
@@ -254,7 +172,7 @@ export class HaChartBase extends LitElement {
           }
         }
       });
-      this.chart.setOption(this._createOptions());
+      this.chart.setOption({ ...this._createOptions(), series: this.data });
     } finally {
       this._loading = false;
     }
@@ -262,6 +180,7 @@ export class HaChartBase extends LitElement {
 
   private _createOptions(): ECOption {
     return {
+      darkMode: this.hass.themes?.darkMode,
       aria: {
         show: true,
       },
@@ -271,6 +190,7 @@ export class HaChartBase extends LitElement {
           orient: "horizontal",
           filterMode: "none",
           zoomOnMouseWheel: "ctrl",
+          moveOnMouseWheel: false,
         },
       ],
       ...this.options,
@@ -292,10 +212,6 @@ export class HaChartBase extends LitElement {
   private _handleZoomReset() {
     // this.chart?.resetZoom();
   }
-
-  private _handleScroll = () => {
-    this._tooltip = undefined;
-  };
 
   static styles = css`
     :host {
