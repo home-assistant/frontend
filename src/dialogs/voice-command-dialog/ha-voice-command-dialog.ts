@@ -308,6 +308,10 @@ export class HaVoiceCommandDialog extends LitElement {
           display: flex;
           justify-content: center;
         }
+        ha-assist-chat {
+          margin: 0 24px 16px;
+          min-height: 399px;
+        }
       `,
     ];
   }
