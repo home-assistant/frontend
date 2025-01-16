@@ -293,7 +293,6 @@ export class HaVoiceCommandDialog extends LitElement {
         ha-list-item {
           --mdc-list-item-meta-size: 16px;
         }
-
         ha-list-item ha-svg-icon {
           margin-left: 4px;
           margin-inline-start: 4px;
@@ -304,6 +303,7 @@ export class HaVoiceCommandDialog extends LitElement {
         ha-button-menu a {
           text-decoration: none;
         }
+
         .pipelines-loading {
           display: flex;
           justify-content: center;
