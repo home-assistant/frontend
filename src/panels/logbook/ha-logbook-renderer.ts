@@ -12,7 +12,7 @@ import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { navigate } from "../../common/navigate";
-import { computeTimelineColor } from "../../components/chart/timeline-chart/timeline-color";
+import { computeTimelineColor } from "../../components/chart/timeline-color";
 import "../../components/entity/state-badge";
 import "../../components/ha-circular-progress";
 import "../../components/ha-icon-next";

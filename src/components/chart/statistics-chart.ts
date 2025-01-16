@@ -2,7 +2,10 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import type { LineSeriesOption } from "echarts/types/dist/shared";
+import type {
+  BarSeriesOption,
+  LineSeriesOption,
+} from "echarts/types/dist/shared";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 
@@ -80,7 +83,7 @@ export class StatisticsChart extends LitElement {
 
   @property() public period?: string;
 
-  @state() private _chartData: LineSeriesOption[] = [];
+  @state() private _chartData: (LineSeriesOption | BarSeriesOption)[] = [];
 
   @state() private _legendData: string[] = [];
 
@@ -345,7 +348,7 @@ export class StatisticsChart extends LitElement {
       let prevEndTime: Date | undefined;
 
       // The datasets for the current statistic
-      const statDataSets: LineSeriesOption[] = [];
+      const statDataSets: (LineSeriesOption | BarSeriesOption)[] = [];
       const statLegendData: string[] = [];
 
       const pushData = (
@@ -420,7 +423,7 @@ export class StatisticsChart extends LitElement {
             displayedLegend = displayedLegend || showLegend;
           }
           statTypes.push(type);
-          const series: LineSeriesOption = {
+          const series: LineSeriesOption | BarSeriesOption = {
             type: this.chartType,
             data: [],
             name: name
@@ -440,12 +443,12 @@ export class StatisticsChart extends LitElement {
           };
           if (band) {
             series.stack = "band";
-            series.symbol = "none";
-            series.lineStyle = {
+            (series as LineSeriesOption).symbol = "none";
+            (series as LineSeriesOption).lineStyle = {
               opacity: 0,
             };
             if (drawBands && type === "max") {
-              series.areaStyle = {
+              (series as LineSeriesOption).areaStyle = {
                 color: color + "3F",
               };
             }

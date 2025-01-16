@@ -13,7 +13,7 @@ import { computeRTL } from "../../common/util/compute_rtl";
 import type { TimelineEntity } from "../../data/history";
 import type { HomeAssistant } from "../../types";
 import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
-import { computeTimelineColor } from "./timeline-chart/timeline-color";
+import { computeTimelineColor } from "./timeline-color";
 import type { ECOption } from "../../resources/echarts";
 import echarts from "../../resources/echarts";
 import { formatDateVeryShort } from "../../common/datetime/format_date";

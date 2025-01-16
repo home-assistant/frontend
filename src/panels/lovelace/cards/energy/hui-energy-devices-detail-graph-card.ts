@@ -1,9 +1,3 @@
-import type {
-  ChartData,
-  ChartDataset,
-  ChartOptions,
-  ScatterDataPoint,
-} from "chart.js";
 import { endOfToday, startOfToday } from "date-fns";
 import type { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -13,7 +7,6 @@ import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
 import { getEnergyColor } from "./common/color";
-import type { ChartDatasetExtra } from "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import "../../../../components/chart/ha-chart-base";
 import type {
@@ -40,7 +33,6 @@ import { hasConfigChanged } from "../../common/has-changed";
 import { getCommonOptions } from "./common/energy-chart-options";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { storage } from "../../../../common/decorators/storage";
-import { clickIsTouch } from "../../../../components/chart/click_is_touch";
 
 const UNIT = "kWh";
 

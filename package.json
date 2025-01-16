@@ -99,8 +99,6 @@
     "@webcomponents/webcomponentsjs": "2.8.0",
     "app-datepicker": "5.1.1",
     "barcode-detector": "2.3.1",
-    "chart.js": "4.4.7",
-    "chartjs-plugin-zoom": "2.2.0",
     "color-name": "2.0.0",
     "comlink": "4.4.2",
     "core-js": "3.40.0",
