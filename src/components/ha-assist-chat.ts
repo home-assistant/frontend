@@ -498,7 +498,7 @@ export class HaAssistChat extends LitElement {
       bottom: 0px;
       right: 0px;
       left: 0px;
-      padding: 0px 4px 16px;
+      padding: 0px 10px 16px;
       box-sizing: border-box;
       overflow-y: auto;
       max-height: 100%;
