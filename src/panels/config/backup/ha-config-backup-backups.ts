@@ -33,16 +33,12 @@ import "../../../components/ha-icon-next";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
-import { getSignedPath } from "../../../data/auth";
 import type { BackupConfig, BackupContent } from "../../../data/backup";
 import {
-  canDecryptBackupOnDownload,
   computeBackupAgentName,
   deleteBackup,
   generateBackup,
   generateBackupWithAutomaticSettings,
-  getBackupDownloadUrl,
-  getPreferredAgentForDownload,
   isLocalAgent,
   isNetworkMountAgent,
 } from "../../../data/backup";
@@ -53,7 +49,6 @@ import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   showAlertDialog,
   showConfirmationDialog,
-  showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
@@ -62,10 +57,10 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { bytesToString } from "../../../util/bytes-to-string";
-import { fileDownload } from "../../../util/file_download";
 import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
 import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
+import { downloadBackup } from "./helper/download_backup";
 
 interface BackupRow extends DataTableRowData, BackupContent {
   formatted_type: string;
@@ -488,65 +483,13 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     navigate(`/config/backup/details/${id}`);
   }
 
-  private async _downloadBackup(
-    backup: BackupContent,
-    encryptionKey?: string
-  ): Promise<void> {
-    const preferedAgent = getPreferredAgentForDownload(backup!.agent_ids!);
-
-    if (backup.protected) {
-      if (this.config?.create_backup.password) {
-        try {
-          await canDecryptBackupOnDownload(
-            this.hass,
-            backup.backup_id,
-            preferedAgent,
-            encryptionKey || this.config?.create_backup.password
-          );
-          if (!encryptionKey) {
-            encryptionKey = this.config?.create_backup.password;
-          }
-        } catch (err: any) {
-          if (err?.code === "password_incorrect") {
-            this._requestEncryptionKey(backup, encryptionKey !== undefined);
-            return;
-          }
-          if (err?.code === "decrypt_not_supported") {
-            showAlertDialog(this, {
-              text: "Decryption is not supported for this backup. The backup will be encrypted downloaded and can't be opened. To restore it, you will need the encryption key.",
-            });
-          }
-        }
-      } else {
-        this._requestEncryptionKey(backup, encryptionKey !== undefined);
-        return;
-      }
-    }
-
-    const signedUrl = await getSignedPath(
+  private async _downloadBackup(backup: BackupContent): Promise<void> {
+    downloadBackup(
       this.hass,
-      getBackupDownloadUrl(backup.backup_id, preferedAgent, encryptionKey)
+      this,
+      backup,
+      this.config?.create_backup.password
     );
-    fileDownload(signedUrl.path);
-  }
-
-  private async _requestEncryptionKey(
-    backup: BackupContent,
-    userProvided: boolean
-  ): Promise<void> {
-    const encryptionKey = await showPromptDialog(this, {
-      title: "Encryption key",
-      text: userProvided
-        ? "The entered encryption key was incorrect, try again."
-        : "This backup is encrypted with a different encryption key than the current one, please enter the encryption key of this backup.",
-      inputLabel: "Encryption key",
-      inputType: "password",
-      confirmText: "Download",
-    });
-    if (!encryptionKey) {
-      return;
-    }
-    this._downloadBackup(backup, encryptionKey);
   }
 
   private async _deleteBackup(backup: BackupContent): Promise<void> {
