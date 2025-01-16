@@ -5,14 +5,15 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeAreaName } from "../../common/entity/compute_area_name";
+import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
 import {
-  computeEntityAreaName,
-  computeEntityDeviceName,
-  computeEntityFloorName,
   computeEntityFullName,
   computeEntityName,
 } from "../../common/entity/compute_entity_name";
+import { computeFloorName } from "../../common/entity/compute_floor_name";
+import { getEntityContext } from "../../common/entity/get_entity_context";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { ScorableTextItem } from "../../common/string/filter/sequence-matching";
 import { fuzzyFilterSort } from "../../common/string/filter/sequence-matching";
@@ -338,32 +339,13 @@ export class HaEntityPicker extends LitElement {
     stateObj: HassEntity,
     hass: HomeAssistant
   ): HassEntityWithCachedName {
-    const areaName = computeEntityAreaName(
-      stateObj,
-      hass.entities,
-      hass.devices,
-      hass.areas
-    );
-    const floorName = computeEntityFloorName(
-      stateObj,
-      hass.entities,
-      hass.devices,
-      hass.areas,
-      hass.floors
-    );
-    const deviceName = computeEntityDeviceName(
-      stateObj,
-      hass.entities,
-      hass.devices
-    );
+    const { device, area, floor } = getEntityContext(stateObj, hass);
 
-    const entityName = computeEntityName(stateObj, hass.entities, hass.devices);
-
-    const displayedName = computeEntityFullName(
-      stateObj,
-      hass.entities,
-      hass.devices
-    );
+    const entityName = computeEntityName(stateObj, this.hass);
+    const deviceName = (device && computeDeviceName(device)) || "";
+    const areaName = (area && computeAreaName(area)) || "";
+    const floorName = (floor && computeFloorName(floor)) || "";
+    const displayedName = computeEntityFullName(stateObj, hass) || "";
 
     // Do not include device name if it's the same as entity name
     const entityContext = [
@@ -376,13 +358,13 @@ export class HaEntityPicker extends LitElement {
 
     return {
       ...stateObj,
-      displayed_name: displayedName ?? "",
+      displayed_name: displayedName,
       strings: [
         stateObj.entity_id,
-        displayedName ?? "",
-        areaName ?? "",
-        deviceName ?? "",
-        floorName ?? "",
+        displayedName,
+        areaName,
+        deviceName,
+        floorName,
       ].filter(Boolean),
       entity_name: entityName,
       entity_context: entityContext,

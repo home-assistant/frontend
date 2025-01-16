@@ -18,13 +18,12 @@ import { classMap } from "lit/directives/class-map";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
+import { computeAreaName } from "../../common/entity/compute_area_name";
+import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
-import {
-  computeEntityAreaName,
-  computeEntityDeviceName,
-  computeEntityFloorName,
-  computeEntityName,
-} from "../../common/entity/compute_entity_name";
+import { computeEntityName } from "../../common/entity/compute_entity_name";
+import { computeFloorName } from "../../common/entity/compute_floor_name";
+import { getEntityContext } from "../../common/entity/get_entity_context";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-button-menu";
@@ -295,32 +294,12 @@ export class MoreInfoDialog extends LitElement {
       this._initialView !== DEFAULT_VIEW && !this._childView;
     const showCloseIcon = isDefaultView || isSpecificInitialView;
 
-    const entityName = stateObj
-      ? computeEntityName(stateObj, this.hass.entities, this.hass.devices)
-      : entityId;
+    const context = stateObj ? getEntityContext(stateObj, this.hass) : null;
 
-    const areaName = stateObj
-      ? computeEntityAreaName(
-          stateObj,
-          this.hass.entities,
-          this.hass.devices,
-          this.hass.areas
-        )
-      : "";
-
-    const floorName = stateObj
-      ? computeEntityFloorName(
-          stateObj,
-          this.hass.entities,
-          this.hass.devices,
-          this.hass.areas,
-          this.hass.floors
-        )
-      : "";
-
-    const deviceName = stateObj
-      ? computeEntityDeviceName(stateObj, this.hass.entities, this.hass.devices)
-      : "";
+    const entityName = stateObj ? computeEntityName(stateObj, this.hass) : "";
+    const deviceName = context?.device ? computeDeviceName(context.device) : "";
+    const areaName = context?.area ? computeAreaName(context.area) : "";
+    const floorName = context?.floor ? computeFloorName(context.floor) : "";
 
     const title = this._childView?.viewTitle || entityName || entityId;
 

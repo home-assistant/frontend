@@ -1,28 +1,26 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
 import type { HomeAssistant } from "../../types";
-import { stripPrefixFromEntityName } from "./strip_prefix_from_entity_name";
-import { computeStateName } from "./compute_state_name";
 import { computeDeviceName } from "./compute_device_name";
-import { computeAreaName } from "./compute_area_name";
-import { computeFloorName } from "./compute_floor_name";
+import { computeStateName } from "./compute_state_name";
+import { stripPrefixFromEntityName } from "./strip_prefix_from_entity_name";
 
 export const computeEntityFullName = (
   stateObj: HassEntity,
-  entities: HomeAssistant["entities"],
-  devices: HomeAssistant["devices"]
+  hass: HomeAssistant
 ): string | undefined => {
-  const entry = entities[stateObj.entity_id] as
+  const entry = hass.entities[stateObj.entity_id] as
     | EntityRegistryDisplayEntry
     | undefined;
 
-  const entityName = computeEntityName(stateObj, entities, devices);
+  const entityName = computeEntityName(stateObj, hass);
 
   if (!entry?.has_entity_name) {
     return entityName;
   }
 
-  const deviceName = computeEntityDeviceName(stateObj, entities, devices);
+  const device = entry?.device_id ? hass.devices[entry.device_id] : undefined;
+  const deviceName = device ? computeDeviceName(device) : undefined;
 
   if (!entityName || !deviceName || entityName === deviceName) {
     return entityName || deviceName;
@@ -33,14 +31,13 @@ export const computeEntityFullName = (
 
 export const computeEntityName = (
   stateObj: HassEntity,
-  entities: HomeAssistant["entities"],
-  devices: HomeAssistant["devices"]
+  hass: HomeAssistant
 ): string | undefined => {
-  const entry = entities[stateObj.entity_id] as
+  const entry = hass.entities[stateObj.entity_id] as
     | EntityRegistryDisplayEntry
     | undefined;
 
-  const device = entry?.device_id ? devices[entry.device_id] : undefined;
+  const device = entry?.device_id ? hass.devices[entry.device_id] : undefined;
 
   const name = entry ? entry.name : computeStateName(stateObj);
 
@@ -51,53 +48,4 @@ export const computeEntityName = (
   }
 
   return stripPrefixFromEntityName(name, deviceName) || name;
-};
-
-export const computeEntityDeviceName = (
-  stateObj: HassEntity,
-  entities: HomeAssistant["entities"],
-  devices: HomeAssistant["devices"]
-): string | undefined => {
-  const entry = entities[stateObj.entity_id] as
-    | EntityRegistryDisplayEntry
-    | undefined;
-  const device = entry?.device_id ? devices[entry.device_id] : undefined;
-
-  return device ? computeDeviceName(device) : undefined;
-};
-
-export const computeEntityAreaName = (
-  stateObj: HassEntity,
-  entities: HomeAssistant["entities"],
-  devices: HomeAssistant["devices"],
-  areas: HomeAssistant["areas"]
-): string | undefined => {
-  const entry = entities[stateObj.entity_id] as
-    | EntityRegistryDisplayEntry
-    | undefined;
-  const device = entry?.device_id ? devices[entry?.device_id] : undefined;
-
-  const areaId = entry?.area_id || device?.area_id;
-  const area = areaId ? areas[areaId] : undefined;
-
-  return area ? computeAreaName(area) : undefined;
-};
-
-export const computeEntityFloorName = (
-  stateObj: HassEntity,
-  entities: HomeAssistant["entities"],
-  devices: HomeAssistant["devices"],
-  areas: HomeAssistant["areas"],
-  floors: HomeAssistant["floors"]
-): string | undefined => {
-  const entry = entities[stateObj.entity_id] as
-    | EntityRegistryDisplayEntry
-    | undefined;
-  const device = entry?.device_id ? devices[entry?.device_id] : undefined;
-
-  const areaId = entry?.area_id || device?.area_id;
-  const area = areaId ? areas[areaId] : undefined;
-  const floor = area?.floor_id ? floors[area?.floor_id] : undefined;
-
-  return floor ? computeFloorName(floor) : undefined;
 };
