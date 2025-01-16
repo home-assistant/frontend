@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -122,32 +121,30 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
     };
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-card {
-        overflow: hidden;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-      }
+  static styles = css`
+    ha-card {
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
 
-      #root {
-        width: 100%;
-        height: 100%;
-        position: relative;
-      }
+    #root {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
 
-      iframe {
-        position: absolute;
-        border: none;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-      }
-    `;
-  }
+    iframe {
+      position: absolute;
+      border: none;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+    }
+  `;
 }
 
 declare global {

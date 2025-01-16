@@ -234,7 +234,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
         const result = await getTranslation(null, pipeline.language, false);
         this._announce(result.data["ui.dialogs.tts-try.message_example"]);
         return;
-      } catch (e) {
+      } catch (_e) {
         // ignore fallback to user language
       }
     }

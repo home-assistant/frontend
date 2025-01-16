@@ -110,7 +110,7 @@ import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { isHelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
 
-type HelperItem = {
+interface HelperItem {
   id: string;
   name: string;
   icon?: string;
@@ -122,7 +122,7 @@ type HelperItem = {
   category: string | undefined;
   label_entries: LabelRegistryEntry[];
   disabled?: boolean;
-};
+}
 
 // This groups items by a key but only returns last entry per key.
 const groupByOne = <T>(
@@ -204,7 +204,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   @state() private _activeFilters?: string[];
 
-  @state() private _helperManifests?: { [domain: string]: IntegrationManifest };
+  @state() private _helperManifests?: Record<string, IntegrationManifest>;
 
   @storage({
     storage: "sessionStorage",
@@ -875,7 +875,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         Array.isArray(filter) &&
         filter.length
       ) {
-        const labelItems: Set<string> = new Set();
+        const labelItems = new Set<string>();
         this._stateItems
           .filter((stateItem) =>
             this._entityReg
@@ -901,7 +901,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         Array.isArray(filter) &&
         filter.length
       ) {
-        const categoryItems: Set<string> = new Set();
+        const categoryItems = new Set<string>();
         this._stateItems
           .filter(
             (stateItem) =>
@@ -1043,7 +1043,7 @@ ${rejected
       fetchIntegrationManifests(this.hass),
     ]);
 
-    const manifests: { [domain: string]: IntegrationManifest } = {};
+    const manifests: Record<string, IntegrationManifest> = {};
 
     for (const manifest of fetchedManifests) {
       if (manifest.integration_type === "helper") {

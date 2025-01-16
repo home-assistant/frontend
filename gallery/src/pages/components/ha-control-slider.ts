@@ -131,43 +131,41 @@ export class DemoHaBarSlider extends LitElement {
     `;
   }
 
-  static get styles() {
-    return css`
-      ha-card {
-        max-width: 600px;
-        margin: 24px auto;
-      }
-      pre {
-        margin-top: 0;
-        margin-bottom: 8px;
-      }
-      p {
-        margin: 0;
-      }
-      label {
-        font-weight: 600;
-      }
-      .custom {
-        --control-slider-color: #ffcf4c;
-        --control-slider-background: #ffcf4c;
-        --control-slider-background-opacity: 0.2;
-        --control-slider-thickness: 130px;
-        --control-slider-border-radius: 36px;
-      }
-      .vertical-sliders {
-        height: 300px;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-      }
-      p.title {
-        margin-bottom: 12px;
-      }
-      .vertical-sliders > *:not(:last-child) {
-        margin-right: 4px;
-      }
-    `;
-  }
+  static styles = css`
+    ha-card {
+      max-width: 600px;
+      margin: 24px auto;
+    }
+    pre {
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+    p {
+      margin: 0;
+    }
+    label {
+      font-weight: 600;
+    }
+    .custom {
+      --control-slider-color: #ffcf4c;
+      --control-slider-background: #ffcf4c;
+      --control-slider-background-opacity: 0.2;
+      --control-slider-thickness: 130px;
+      --control-slider-border-radius: 36px;
+    }
+    .vertical-sliders {
+      height: 300px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+    p.title {
+      margin-bottom: 12px;
+    }
+    .vertical-sliders > *:not(:last-child) {
+      margin-right: 4px;
+    }
+  `;
 }
 
 declare global {

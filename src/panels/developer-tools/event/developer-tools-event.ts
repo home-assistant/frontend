@@ -19,11 +19,11 @@ class HaPanelDevEvent extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @state() private _eventType: string = "";
+  @state() private _eventType = "";
 
   @state() private _eventData: object = {};
 
-  @state() private _isValid: boolean = true;
+  @state() private _isValid = true;
 
   protected render(): TemplateResult {
     return html`

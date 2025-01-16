@@ -1,6 +1,5 @@
 import "@material/mwc-button";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { isUnavailableState } from "../../../data/entity";
@@ -55,16 +54,14 @@ class MoreInfoCounter extends LitElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .actions {
-        margin: 8px 0;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-    `;
-  }
+  static styles = css`
+    .actions {
+      margin: 8px 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  `;
 }
 
 declare global {

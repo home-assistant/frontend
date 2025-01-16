@@ -1,5 +1,4 @@
 import { mdiAlertOutline } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -158,33 +157,31 @@ class DialogBox extends LitElement {
     this._params = undefined;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host([inert]) {
-        pointer-events: initial !important;
-        cursor: initial !important;
-      }
-      a {
-        color: var(--primary-color);
-      }
-      p {
-        margin: 0;
-        color: var(--primary-text-color);
-      }
-      .no-bottom-padding {
-        padding-bottom: 0;
-      }
-      .secondary {
-        color: var(--secondary-text-color);
-      }
-      .destructive {
-        --mdc-theme-primary: var(--error-color);
-      }
-      ha-textfield {
-        width: 100%;
-      }
-    `;
-  }
+  static styles = css`
+    :host([inert]) {
+      pointer-events: initial !important;
+      cursor: initial !important;
+    }
+    a {
+      color: var(--primary-color);
+    }
+    p {
+      margin: 0;
+      color: var(--primary-text-color);
+    }
+    .no-bottom-padding {
+      padding-bottom: 0;
+    }
+    .secondary {
+      color: var(--secondary-text-color);
+    }
+    .destructive {
+      --mdc-theme-primary: var(--error-color);
+    }
+    ha-textfield {
+      width: 100%;
+    }
+  `;
 }
 
 declare global {

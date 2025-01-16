@@ -1,6 +1,6 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import type {
   CustomSeriesOption,
   CustomSeriesRenderItem,
@@ -12,7 +12,6 @@ import millisecondsToDuration from "../../common/datetime/milliseconds_to_durati
 import { computeRTL } from "../../common/util/compute_rtl";
 import type { TimelineEntity } from "../../data/history";
 import type { HomeAssistant } from "../../types";
-import type { ChartResizeOptions, HaChartBase } from "./ha-chart-base";
 import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
 import { computeTimelineColor } from "./timeline-chart/timeline-color";
 import type { ECOption } from "../../resources/echarts";
@@ -59,12 +58,6 @@ export class StateHistoryChartTimeline extends LitElement {
   @state() private _yWidth = 0;
 
   private _chartTime: Date = new Date();
-
-  @query("ha-chart-base") private _chart?: HaChartBase;
-
-  public resize = (options?: ChartResizeOptions): void => {
-    this._chart?.resize(options);
-  };
 
   protected render() {
     return html`
@@ -396,13 +389,11 @@ export class StateHistoryChartTimeline extends LitElement {
     this._chartData = datasets;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-chart-base {
-        --chart-max-height: none;
-      }
-    `;
-  }
+  static styles = css`
+    ha-chart-base {
+      --chart-max-height: none;
+    }
+  `;
 }
 
 declare global {

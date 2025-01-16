@@ -49,7 +49,7 @@ export class HuiButtonsHeaderFooter
     );
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult | undefined {
     return html`
       ${this.type === "footer"
         ? html`<li class="divider footer" role="separator"></li>`

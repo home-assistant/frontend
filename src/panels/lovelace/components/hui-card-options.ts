@@ -407,7 +407,7 @@ export class HuiCardOptions extends LitElement {
               text: this.hass!.localize("ui.common.undo"),
             },
           });
-        } catch (err: any) {
+        } catch (_err: any) {
           this.lovelace.showToast({
             message: this.hass!.localize(
               "ui.panel.lovelace.editor.move_card.error"

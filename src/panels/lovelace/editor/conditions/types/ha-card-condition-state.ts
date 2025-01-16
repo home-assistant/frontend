@@ -20,12 +20,12 @@ const stateConditionStruct = object({
   state_not: optional(string()),
 });
 
-type StateConditionData = {
+interface StateConditionData {
   condition: "state";
   entity?: string;
   invert: "true" | "false";
   state?: string | string[];
-};
+}
 
 @customElement("ha-card-condition-state")
 export class HaCardConditionState extends LitElement {

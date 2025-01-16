@@ -1,6 +1,6 @@
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { subHours, differenceInDays } from "date-fns";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -70,7 +70,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
   private _interval?: number;
 
-  private _statTypes?: Array<StatisticType>;
+  private _statTypes?: StatisticType[];
 
   private _energySub?: UnsubscribeFunc;
 
@@ -345,24 +345,22 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
           this._statistics![id] = statistics[id];
         }
       });
-    } catch (err) {
+    } catch (_err) {
       this._statistics = undefined;
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-card {
-        height: 100%;
-      }
-      .content {
-        padding: 16px;
-      }
-      .has-header {
-        padding-top: 0;
-      }
-    `;
-  }
+  static styles = css`
+    ha-card {
+      height: 100%;
+    }
+    .content {
+      padding: 16px;
+    }
+    .has-header {
+      padding-top: 0;
+    }
+  `;
 }
 
 declare global {

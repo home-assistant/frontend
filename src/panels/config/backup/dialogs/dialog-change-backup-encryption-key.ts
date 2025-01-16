@@ -48,7 +48,7 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
     this._newEncryptionKey = generateEncryptionKey();
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     if (this._params!.cancel) {
       this._params!.cancel();
     }
@@ -59,6 +59,7 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
     this._step = undefined;
     this._params = undefined;
     this._newEncryptionKey = undefined;
+    return true;
   }
 
   private _done() {

@@ -168,7 +168,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
           total: repairsIssues.length,
         };
 
-        const integrations: Set<string> = new Set();
+        const integrations = new Set<string>();
         for (const issue of this._repairsIssues.issues) {
           integrations.add(issue.domain);
         }

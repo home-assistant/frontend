@@ -1,5 +1,5 @@
 import { mdiAccountGroup, mdiFileDocument, mdiTabletCellphone } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { LocalizeFunc } from "../common/translations/localize";
@@ -59,31 +59,29 @@ class OnboardingWelcomeLinks extends LitElement {
     showAppDialog(this, { localize: this.localize });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
+  static styles = css`
+    :host {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      margin-top: 16px;
+      column-gap: 16px;
+      row-gap: 16px;
+    }
+    @media (max-width: 550px) {
       :host {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        margin-top: 16px;
-        column-gap: 16px;
-        row-gap: 16px;
+        grid-template-columns: 1fr;
       }
-      @media (max-width: 550px) {
-        :host {
-          grid-template-columns: 1fr;
-        }
-      }
-      .community {
-        --welcome-link-color: #008142;
-      }
-      .app {
-        --welcome-link-color: #6e41ab;
-      }
-      a {
-        text-decoration: none;
-      }
-    `;
-  }
+    }
+    .community {
+      --welcome-link-color: #008142;
+    }
+    .app {
+      --welcome-link-color: #6e41ab;
+    }
+    a {
+      text-decoration: none;
+    }
+  `;
 }
 
 declare global {

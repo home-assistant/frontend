@@ -58,22 +58,20 @@ export class DemoAutomationTraceTimeline extends LitElement {
     hass.updateTranslations("config", "en");
   }
 
-  static get styles() {
-    return css`
-      ha-card {
-        max-width: 600px;
-        margin: 24px;
-      }
-      .card-content {
-        display: flex;
-      }
-      button {
-        position: absolute;
-        top: 0;
-        right: 0;
-      }
-    `;
-  }
+  static styles = css`
+    ha-card {
+      max-width: 600px;
+      margin: 24px;
+    }
+    .card-content {
+      display: flex;
+    }
+    button {
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+  `;
 }
 
 declare global {

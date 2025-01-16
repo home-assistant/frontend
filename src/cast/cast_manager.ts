@@ -32,7 +32,7 @@ export class CastManager {
   // If the cast connection is connected to our Hass.
   public status?: ReceiverStatusMessage;
 
-  private _eventListeners: { [event: string]: CastEventListener[] } = {};
+  private _eventListeners: Record<string, CastEventListener[]> = {};
 
   constructor(auth?: Auth) {
     this.auth = auth;

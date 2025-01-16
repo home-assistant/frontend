@@ -1,5 +1,5 @@
 import type HlsType from "hls.js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
@@ -186,7 +186,7 @@ class HaHLSPlayer extends LitElement {
       let base_url: string;
       try {
         base_url = new URL(this._url).href;
-      } catch (error) {
+      } catch (_error) {
         base_url = new URL(this._url, window.location.href).href;
       }
       playlist_url = new URL(match[3], base_url).href;
@@ -382,28 +382,26 @@ class HaHLSPlayer extends LitElement {
     fireEvent(this, "load");
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host,
-      video {
-        display: block;
-      }
+  static styles = css`
+    :host,
+    video {
+      display: block;
+    }
 
-      video {
-        width: 100%;
-        max-height: var(--video-max-height, calc(100vh - 97px));
-      }
+    video {
+      width: 100%;
+      max-height: var(--video-max-height, calc(100vh - 97px));
+    }
 
-      .fatal {
-        display: block;
-        padding: 100px 16px;
-      }
+    .fatal {
+      display: block;
+      padding: 100px 16px;
+    }
 
-      .retry {
-        display: block;
-      }
-    `;
-  }
+    .retry {
+      display: block;
+    }
+  `;
 }
 
 declare global {

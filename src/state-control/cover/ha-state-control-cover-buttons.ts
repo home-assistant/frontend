@@ -1,5 +1,5 @@
 import { mdiArrowBottomLeft, mdiArrowTopRight, mdiStop } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -33,10 +33,10 @@ type CoverButton =
   | "close-tilt"
   | "none";
 
-type CoverLayout = {
+interface CoverLayout {
   type: "line" | "cross";
   buttons: CoverButton[];
-};
+}
 
 export const getCoverLayout = memoizeOne(
   (stateObj: CoverEntity): CoverLayout => {
@@ -242,50 +242,48 @@ export class HaStateControlCoverButtons extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-control-button-group {
-        height: 45vh;
-        max-height: 320px;
-        min-height: 200px;
-        --control-button-group-spacing: 10px;
-        --control-button-group-thickness: 100px;
-      }
-      .cross-container {
-        height: 45vh;
-        max-height: 320px;
-        min-height: 200px;
-        display: grid;
-        gap: 10px;
-        grid-template-columns: repeat(3, min(100px, 25vw, 15vh));
-        grid-template-rows: repeat(3, min(100px, 25vw, 15vh));
-        grid-template-areas: ". open ." "close-tilt stop open-tilt" ". close .";
-      }
-      .cross-container > * {
-        width: 100%;
-        height: 100%;
-      }
-      .cross-container > [data-button="open"] {
-        grid-area: open;
-      }
-      .cross-container > [data-button="close"] {
-        grid-area: close;
-      }
-      .cross-container > [data-button="open-tilt"] {
-        grid-area: open-tilt;
-      }
-      .cross-container > [data-button="close-tilt"] {
-        grid-area: close-tilt;
-      }
-      .cross-container > [data-button="stop"] {
-        grid-area: stop;
-      }
-      ha-control-button {
-        --control-button-border-radius: 36px;
-        --mdc-icon-size: 24px;
-      }
-    `;
-  }
+  static styles = css`
+    ha-control-button-group {
+      height: 45vh;
+      max-height: 320px;
+      min-height: 200px;
+      --control-button-group-spacing: 10px;
+      --control-button-group-thickness: 100px;
+    }
+    .cross-container {
+      height: 45vh;
+      max-height: 320px;
+      min-height: 200px;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(3, min(100px, 25vw, 15vh));
+      grid-template-rows: repeat(3, min(100px, 25vw, 15vh));
+      grid-template-areas: ". open ." "close-tilt stop open-tilt" ". close .";
+    }
+    .cross-container > * {
+      width: 100%;
+      height: 100%;
+    }
+    .cross-container > [data-button="open"] {
+      grid-area: open;
+    }
+    .cross-container > [data-button="close"] {
+      grid-area: close;
+    }
+    .cross-container > [data-button="open-tilt"] {
+      grid-area: open-tilt;
+    }
+    .cross-container > [data-button="close-tilt"] {
+      grid-area: close-tilt;
+    }
+    .cross-container > [data-button="stop"] {
+      grid-area: stop;
+    }
+    ha-control-button {
+      --control-button-border-radius: 36px;
+      --mdc-icon-size: 24px;
+    }
+  `;
 }
 
 declare global {

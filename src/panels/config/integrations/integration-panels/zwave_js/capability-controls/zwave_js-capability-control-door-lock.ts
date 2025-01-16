@@ -18,7 +18,7 @@ import { extractApiErrorMessage } from "../../../../../../data/hassio/common";
 
 type DoorHandleStatus = [boolean, boolean, boolean, boolean];
 
-type DoorLockConfiguration = {
+interface DoorLockConfiguration {
   operationType: number;
   outsideHandlesCanOpenDoorConfiguration: DoorHandleStatus;
   insideHandlesCanOpenDoorConfiguration: DoorHandleStatus;
@@ -27,7 +27,7 @@ type DoorLockConfiguration = {
   holdAndReleaseTime?: number;
   twistAssist?: boolean;
   blockToBlock?: boolean;
-};
+}
 
 enum DoorLockMode {
   Unsecured = 0x00,
@@ -40,14 +40,14 @@ enum DoorLockMode {
   Secured = 0xff,
 }
 
-type DoorLockCapabilities = {
+interface DoorLockCapabilities {
   supportedOperationTypes: number[];
   supportedDoorLockModes: DoorLockMode[];
   blockToBlockSupported?: boolean;
   twistAssistSupported?: boolean;
   holdAndReleaseSupported?: boolean;
   autoRelockSupported?: boolean;
-};
+}
 
 const TIMED_MODES = [
   DoorLockMode.UnsecuredWithTimeout,

@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -29,14 +28,12 @@ class HuiDividerRow extends LitElement implements LovelaceRow {
     ></div>`;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      div {
-        height: 1px;
-        background-color: var(--entities-divider-color, var(--divider-color));
-      }
-    `;
-  }
+  static styles = css`
+    div {
+      height: 1px;
+      background-color: var(--entities-divider-color, var(--divider-color));
+    }
+  `;
 }
 
 declare global {

@@ -16,7 +16,7 @@ class StateCardInputText extends LitElement {
 
   @property({ attribute: "in-dialog", type: Boolean }) public inDialog = false;
 
-  @state() public value: string = "";
+  @state() public value = "";
 
   protected render(): TemplateResult {
     return html`

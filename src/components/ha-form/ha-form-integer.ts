@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -174,22 +174,20 @@ export class HaFormInteger extends LitElement implements HaFormElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host([own-margin]) {
-        margin-bottom: 5px;
-      }
-      .flex {
-        display: flex;
-      }
-      ha-slider {
-        flex: 1;
-      }
-      ha-textfield {
-        display: block;
-      }
-    `;
-  }
+  static styles = css`
+    :host([own-margin]) {
+      margin-bottom: 5px;
+    }
+    .flex {
+      display: flex;
+    }
+    ha-slider {
+      flex: 1;
+    }
+    ha-textfield {
+      display: block;
+    }
+  `;
 }
 
 declare global {

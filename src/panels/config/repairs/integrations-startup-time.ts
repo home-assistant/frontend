@@ -1,5 +1,5 @@
 import "@material/mwc-list/mwc-list";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-card";
@@ -23,9 +23,7 @@ class IntegrationsStartupTime extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @state() private _manifests?: {
-    [domain: string]: IntegrationManifest;
-  };
+  @state() private _manifests?: Record<string, IntegrationManifest>;
 
   @state() private _setups?: IntegrationSetup[];
 
@@ -110,24 +108,22 @@ class IntegrationsStartupTime extends LitElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-clickable-list-item {
-        --mdc-list-item-meta-size: 64px;
-        --mdc-typography-caption-font-size: 12px;
-      }
-      img {
-        display: block;
-        max-height: 40px;
-        max-width: 40px;
-      }
-      div[slot="meta"] {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-    `;
-  }
+  static styles = css`
+    ha-clickable-list-item {
+      --mdc-list-item-meta-size: 64px;
+      --mdc-typography-caption-font-size: 12px;
+    }
+    img {
+      display: block;
+      max-height: 40px;
+      max-width: 40px;
+    }
+    div[slot="meta"] {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  `;
 }
 
 declare global {

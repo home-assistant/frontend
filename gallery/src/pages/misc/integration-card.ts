@@ -135,12 +135,12 @@ const configFlows: DataEntryFlowProgressExtended[] = [
   },
 ];
 
-const configEntries: Array<{
+const configEntries: {
   items: ConfigEntryExtended[];
   is_custom?: boolean;
   disabled?: boolean;
   highlight?: string;
-}> = [
+}[] = [
   { items: [loadedEntry] },
   { items: [configPanelEntry] },
   { items: [optionsFlowEntry] },
@@ -349,26 +349,24 @@ export class DemoIntegrationCard extends LitElement {
     this.isCloud = !this.isCloud;
   }
 
-  static get styles() {
-    return css`
-      .container {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        grid-gap: 8px 8px;
-        padding: 8px 16px 16px;
-        margin-bottom: 16px;
-      }
+  static styles = css`
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      grid-gap: 8px 8px;
+      padding: 8px 16px 16px;
+      margin-bottom: 16px;
+    }
 
-      .container > * {
-        max-width: 500px;
-      }
+    .container > * {
+      max-width: 500px;
+    }
 
-      ha-formfield {
-        margin: 8px 0;
-        display: block;
-      }
-    `;
-  }
+    ha-formfield {
+      margin: 8px 0;
+      display: block;
+    }
+  `;
 }
 
 declare global {

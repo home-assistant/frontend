@@ -16,14 +16,14 @@ const addVector = ([a1, a2]: Vector, [b1, b2]: Vector): Vector => [
 
 export const toRadian = (angle: number) => (angle / 180) * Math.PI;
 
-type ArcOptions = {
+interface ArcOptions {
   x: number;
   y: number;
   r: number;
   start: number;
   end: number;
   rotate?: number;
-};
+}
 
 export const svgArc = (options: ArcOptions) => {
   const { x, y, r, start, end, rotate = 0 } = options;

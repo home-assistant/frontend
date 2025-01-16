@@ -130,7 +130,7 @@ export class ZHAGroupBindingControl extends LitElement {
         );
         this._zhaClustersDataTable.clearSelection();
         button.actionSuccess();
-      } catch (err: any) {
+      } catch (_err: any) {
         button.actionError();
       } finally {
         this._bindingOperationInProgress = false;
@@ -153,7 +153,7 @@ export class ZHAGroupBindingControl extends LitElement {
         );
         this._zhaClustersDataTable.clearSelection();
         button.actionSuccess();
-      } catch (err: any) {
+      } catch (_err: any) {
         button.actionError();
       } finally {
         this._bindingOperationInProgress = false;

@@ -963,7 +963,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         Array.isArray(filter.value) &&
         filter.value.length
       ) {
-        const categoryItems: Set<string> = new Set();
+        const categoryItems = new Set<string>();
         this.automations
           .filter(
             (automation) =>
@@ -988,7 +988,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         Array.isArray(filter.value) &&
         filter.value.length
       ) {
-        const labelItems: Set<string> = new Set();
+        const labelItems = new Set<string>();
         this.automations
           .filter((automation) =>
             this._entityReg

@@ -39,11 +39,12 @@ export class DialogAreaFilter
     this._areas = allAreas.concat().sort(areaCompare(this.hass!.areas, order));
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     this._dialogParams = undefined;
     this._hidden = [];
     this._areas = [];
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+    return true;
   }
 
   private _submit(): void {

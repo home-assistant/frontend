@@ -12,9 +12,7 @@ interface InvalidConfig {
 
 type ValidKeys = "triggers" | "actions" | "conditions";
 
-export const validateConfig = <
-  T extends Partial<{ [key in ValidKeys]: unknown }>,
->(
+export const validateConfig = <T extends Partial<Record<ValidKeys, unknown>>>(
   hass: HomeAssistant,
   config: T
 ): Promise<Record<keyof T, ValidConfig | InvalidConfig>> =>

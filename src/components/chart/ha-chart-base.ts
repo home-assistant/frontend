@@ -3,8 +3,9 @@ import type {
   ChartType,
   ChartData,
   TooltipModel,
+  UpdateMode,
 } from "chart.js";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, nothing, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -20,12 +21,6 @@ import "../ha-icon-button";
 import type { ECOption } from "../../resources/echarts";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
-
-export interface ChartResizeOptions {
-  aspectRatio?: number;
-  height?: number;
-  width?: number;
-}
 
 interface Tooltip
   extends Omit<TooltipModel<any>, "tooltipPosition" | "hasValue" | "getProps"> {
@@ -54,8 +49,6 @@ export class HaChartBase extends LitElement {
 
   @property({ attribute: "external-hidden", type: Boolean })
   public externalHidden = false;
-
-  @state() private _chartHeight?: number;
 
   @state() private _tooltip?: Tooltip;
 
@@ -93,34 +86,8 @@ export class HaChartBase extends LitElement {
     }
   }
 
-  public updateChart = (
-    mode:
-      | "resize"
-      | "reset"
-      | "none"
-      | "hide"
-      | "show"
-      | "default"
-      | "active"
-      | undefined
-  ): void => {
+  public updateChart = (mode?: UpdateMode): void => {
     this.chart?.update(mode);
-  };
-
-  public resize = (options?: ChartResizeOptions): void => {
-    if (options?.aspectRatio && !options.height) {
-      options.height = Math.round(
-        (options.width ?? this._width.value) / options.aspectRatio
-      );
-    } else if (options?.aspectRatio && !options.width) {
-      options.width = Math.round(
-        (options.height ?? this.clientHeight) * options.aspectRatio
-      );
-    }
-    this.chart?.resize(
-      options?.width ?? this._width.value,
-      options?.height ?? this.clientHeight
-    );
   };
 
   protected firstUpdated() {
@@ -188,91 +155,79 @@ export class HaChartBase extends LitElement {
   protected render() {
     return html`
       <div
-        class="animation-container"
+        class="chart-container"
         style=${styleMap({
-          // height: `${this.height || this._chartHeight || 0}px`,
-          // overflow: this._chartHeight ? "initial" : "hidden",
+          height: `${this.height ?? this._getDefaultHeight()}px`,
+          "padding-left": `${this._paddingYAxisInternal}px`,
+          "padding-right": 0,
+          "padding-inline-start": `${this._paddingYAxisInternal}px`,
+          "padding-inline-end": 0,
         })}
       >
+        <div class="chart"></div>
         <div
-          class="chart-container"
-          style=${styleMap({
-            height: `${
-              this.height ?? this._chartHeight ?? this._width.value / 2
-            }px`,
-            "padding-left": `${this._paddingYAxisInternal}px`,
-            "padding-right": 0,
-            "padding-inline-start": `${this._paddingYAxisInternal}px`,
-            "padding-inline-end": 0,
-          })}
+          class="zoom-hint ${classMap({
+            visible: this._showZoomHint,
+          })}"
         >
-          <div class="chart"></div>
-          <div
-            class="zoom-hint ${classMap({
-              visible: this._showZoomHint,
-            })}"
-          >
-            <div>
-              ${isMac
-                ? this.hass.localize(
-                    "ui.components.history_charts.zoom_hint_mac"
-                  )
-                : this.hass.localize("ui.components.history_charts.zoom_hint")}
-            </div>
+          <div>
+            ${isMac
+              ? this.hass.localize("ui.components.history_charts.zoom_hint_mac")
+              : this.hass.localize("ui.components.history_charts.zoom_hint")}
           </div>
-          ${this._isZoomed && this.chartType !== "timeline"
-            ? html`<ha-icon-button
-                class="zoom-reset"
-                .path=${mdiRestart}
-                @click=${this._handleZoomReset}
-                title=${this.hass.localize(
-                  "ui.components.history_charts.zoom_reset"
-                )}
-              ></ha-icon-button>`
-            : nothing}
-          ${this._tooltip
-            ? html`<div
-                class="chart-tooltip ${classMap({
-                  [this._tooltip.yAlign]: true,
-                })}"
-                style=${styleMap({
-                  top: this._tooltip.top,
-                  left: this._tooltip.left,
-                })}
-              >
-                <div class="title">${this._tooltip.title}</div>
-                ${this._tooltip.beforeBody
-                  ? html`<div class="before-body">
-                      ${this._tooltip.beforeBody}
-                    </div>`
-                  : ""}
-                <div>
-                  <ul>
-                    ${this._tooltip.body.map(
-                      (item, i) =>
-                        html`<li>
-                          <div
-                            class="bullet"
-                            style=${styleMap({
-                              backgroundColor: this._tooltip!.labelColors[i]
-                                .backgroundColor as string,
-                              borderColor: this._tooltip!.labelColors[i]
-                                .borderColor as string,
-                            })}
-                          ></div>
-                          ${item.lines.join("\n")}
-                        </li>`
-                    )}
-                  </ul>
-                </div>
-                ${this._tooltip.footer.length
-                  ? html`<div class="footer">
-                      ${this._tooltip.footer.map((item) => html`${item}<br />`)}
-                    </div>`
-                  : ""}
-              </div>`
-            : ""}
         </div>
+        ${this._isZoomed && this.chartType !== "timeline"
+          ? html`<ha-icon-button
+              class="zoom-reset"
+              .path=${mdiRestart}
+              @click=${this._handleZoomReset}
+              title=${this.hass.localize(
+                "ui.components.history_charts.zoom_reset"
+              )}
+            ></ha-icon-button>`
+          : nothing}
+        ${this._tooltip
+          ? html`<div
+              class="chart-tooltip ${classMap({
+                [this._tooltip.yAlign]: true,
+              })}"
+              style=${styleMap({
+                top: this._tooltip.top,
+                left: this._tooltip.left,
+              })}
+            >
+              <div class="title">${this._tooltip.title}</div>
+              ${this._tooltip.beforeBody
+                ? html`<div class="before-body">
+                    ${this._tooltip.beforeBody}
+                  </div>`
+                : ""}
+              <div>
+                <ul>
+                  ${this._tooltip.body.map(
+                    (item, i) =>
+                      html`<li>
+                        <div
+                          class="bullet"
+                          style=${styleMap({
+                            backgroundColor: this._tooltip!.labelColors[i]
+                              .backgroundColor as string,
+                            borderColor: this._tooltip!.labelColors[i]
+                              .borderColor as string,
+                          })}
+                        ></div>
+                        ${item.lines.join("\n")}
+                      </li>`
+                  )}
+                </ul>
+              </div>
+              ${this._tooltip.footer.length
+                ? html`<div class="footer">
+                    ${this._tooltip.footer.map((item) => html`${item}<br />`)}
+                  </div>`
+                : ""}
+            </div>`
+          : ""}
       </div>
     `;
   }
@@ -322,6 +277,10 @@ export class HaChartBase extends LitElement {
     };
   }
 
+  private _getDefaultHeight() {
+    return this.clientWidth / 2;
+  }
+
   private _releaseCanvas() {
     // release the canvas memory to prevent
     // safari from running out of memory.
@@ -338,61 +297,59 @@ export class HaChartBase extends LitElement {
     this._tooltip = undefined;
   };
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-        position: relative;
-      }
-      .chart-container {
-        position: relative;
-        max-height: var(--chart-max-height, 400px);
-      }
-      canvas.not-zoomed {
-        /* allow scrolling if the chart is not zoomed */
-        touch-action: pan-y !important;
-      }
-      .chart {
-        width: 100%;
-        height: 100%;
-      }
-      .zoom-hint {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        transition: opacity 500ms cubic-bezier(0.4, 0, 0.2, 1);
-        pointer-events: none;
-      }
-      .zoom-hint.visible {
-        opacity: 1;
-      }
-      .zoom-hint > div {
-        color: white;
-        font-size: 1.5em;
-        font-weight: 500;
-        padding: 8px;
-        border-radius: 8px;
-        background: rgba(0, 0, 0, 0.3);
-        box-shadow: 0 0 32px 32px rgba(0, 0, 0, 0.3);
-      }
-      .zoom-reset {
-        position: absolute;
-        top: 16px;
-        right: 4px;
-        background: var(--card-background-color);
-        border-radius: 4px;
-        --mdc-icon-button-size: 32px;
-        color: var(--primary-color);
-        border: 1px solid var(--divider-color);
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+      position: relative;
+    }
+    .chart-container {
+      position: relative;
+      max-height: var(--chart-max-height, 400px);
+    }
+    canvas.not-zoomed {
+      /* allow scrolling if the chart is not zoomed */
+      touch-action: pan-y !important;
+    }
+    .chart {
+      width: 100%;
+      height: 100%;
+    }
+    .zoom-hint {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 500ms cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+    }
+    .zoom-hint.visible {
+      opacity: 1;
+    }
+    .zoom-hint > div {
+      color: white;
+      font-size: 1.5em;
+      font-weight: 500;
+      padding: 8px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.3);
+      box-shadow: 0 0 32px 32px rgba(0, 0, 0, 0.3);
+    }
+    .zoom-reset {
+      position: absolute;
+      top: 16px;
+      right: 4px;
+      background: var(--card-background-color);
+      border-radius: 4px;
+      --mdc-icon-button-size: 32px;
+      color: var(--primary-color);
+      border: 1px solid var(--divider-color);
+    }
+  `;
 }
 
 declare global {

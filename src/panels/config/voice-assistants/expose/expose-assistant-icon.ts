@@ -1,6 +1,5 @@
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { mdiAlertCircle } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -76,29 +75,27 @@ export class VoiceAssistantExposeAssistantIcon extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .container {
-        position: relative;
-      }
-      .logo {
-        position: relative;
-        height: 24px;
-        margin-right: 16px;
-        margin-inline-end: 16px;
-        margin-inline-start: initial;
-      }
-      .unsupported {
-        color: var(--error-color);
-        position: absolute;
-        --mdc-icon-size: 16px;
-        right: 10px;
-        top: -7px;
-        inset-inline-end: 10px;
-        inset-inline-start: initial;
-      }
-    `;
-  }
+  static styles = css`
+    .container {
+      position: relative;
+    }
+    .logo {
+      position: relative;
+      height: 24px;
+      margin-right: 16px;
+      margin-inline-end: 16px;
+      margin-inline-start: initial;
+    }
+    .unsupported {
+      color: var(--error-color);
+      position: absolute;
+      --mdc-icon-size: 16px;
+      right: 10px;
+      top: -7px;
+      inset-inline-end: 10px;
+      inset-inline-start: initial;
+    }
+  `;
 }
 
 declare global {

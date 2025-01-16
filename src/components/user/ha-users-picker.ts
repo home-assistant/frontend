@@ -1,5 +1,4 @@
 import { mdiClose } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { guard } from "lit/directives/guard";
@@ -154,17 +153,15 @@ class HaUsersPickerLight extends LitElement {
     this._updateUsers(this._currentUsers.filter((user) => user !== userId));
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-      }
-      div {
-        display: flex;
-        align-items: center;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+    }
+    div {
+      display: flex;
+      align-items: center;
+    }
+  `;
 }
 
 declare global {

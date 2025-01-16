@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-card";
@@ -36,17 +36,15 @@ export class HuiRecoveryModeCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-card {
-        --ha-card-header-color: var(--primary-color);
-      }
-      error-log-card {
-        display: block;
-        padding-bottom: 16px;
-      }
-    `;
-  }
+  static styles = css`
+    ha-card {
+      --ha-card-header-color: var(--primary-color);
+    }
+    error-log-card {
+      display: block;
+      padding-bottom: 16px;
+    }
+  `;
 }
 
 declare global {

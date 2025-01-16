@@ -3,7 +3,7 @@ import type { HomeAssistant } from "../../types";
 import type { HassioResponse } from "./common";
 import { hassioApiResultExtractor } from "./common";
 
-export type HassioHostInfo = {
+export interface HassioHostInfo {
   agent_version: string;
   chassis: string;
   cpe: string;
@@ -18,7 +18,7 @@ export type HassioHostInfo = {
   operating_system: string;
   boot_timestamp: number;
   startup_time: number;
-};
+}
 
 export interface HassioHassOSInfo {
   board: string | null;

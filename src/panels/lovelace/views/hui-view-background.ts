@@ -1,5 +1,5 @@
 import { css, LitElement, nothing } from "lit";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewBackgroundConfig } from "../../../data/lovelace/config/view";
@@ -55,7 +55,7 @@ export class HUIViewBackground extends LitElement {
       const alignment = background.alignment ?? "center";
       const size = background.size ?? "cover";
       const repeat = background.repeat ?? "no-repeat";
-      return `${alignment} / ${size} ${repeat} url('${background.image}')`;
+      return `${alignment} / ${size} ${repeat} url('${this.hass.hassUrl(background.image)}')`;
     }
     if (typeof background === "string") {
       return background;
@@ -93,34 +93,32 @@ export class HUIViewBackground extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      /* Fixed background hack for Safari iOS */
-      :host([fixed-background]) {
-        display: block;
-        z-index: -1;
-        position: fixed;
-        background-attachment: scroll !important;
-      }
-      :host(:not([fixed-background])) {
-        z-index: -1;
-        position: absolute;
-      }
-      :host {
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        height: 100%;
-        width: 100%;
-        background: var(
-          --view-background,
-          var(--lovelace-background, var(--primary-background-color))
-        );
-        opacity: var(--view-background-opacity);
-      }
-    `;
-  }
+  static styles = css`
+    /* Fixed background hack for Safari iOS */
+    :host([fixed-background]) {
+      display: block;
+      z-index: -1;
+      position: fixed;
+      background-attachment: scroll !important;
+    }
+    :host(:not([fixed-background])) {
+      z-index: -1;
+      position: absolute;
+    }
+    :host {
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 100%;
+      width: 100%;
+      background: var(
+        --view-background,
+        var(--lovelace-background, var(--primary-background-color))
+      );
+      opacity: var(--view-background-opacity);
+    }
+  `;
 }
 
 declare global {

@@ -31,11 +31,9 @@ class StorageClass {
 
   public storage: globalThis.Storage;
 
-  private _storage: { [storageKey: string]: any } = {};
+  private _storage: Record<string, any> = {};
 
-  private _listeners: {
-    [storageKey: string]: Callback[];
-  } = {};
+  private _listeners: Record<string, Callback[]> = {};
 
   public addFromStorage(storageKey: any): void {
     if (!this._storage[storageKey]) {
@@ -87,7 +85,7 @@ class StorageClass {
       } else {
         this.storage.setItem(storageKey, JSON.stringify(value));
       }
-    } catch (err: any) {
+    } catch (_err: any) {
       // Safari in private mode doesn't allow localstorage
     } finally {
       if (this._listeners[storageKey]) {

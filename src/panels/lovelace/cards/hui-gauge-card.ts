@@ -1,5 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket/dist/types";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -271,42 +271,40 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-card {
-        height: 100%;
-        overflow: hidden;
-        padding: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        box-sizing: border-box;
-      }
+  static styles = css`
+    ha-card {
+      height: 100%;
+      overflow: hidden;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      box-sizing: border-box;
+    }
 
-      ha-card.action {
-        cursor: pointer;
-      }
+    ha-card.action {
+      cursor: pointer;
+    }
 
-      ha-card:focus {
-        outline: none;
-      }
+    ha-card:focus {
+      outline: none;
+    }
 
-      ha-gauge {
-        width: 100%;
-        max-width: 250px;
-      }
+    ha-gauge {
+      width: 100%;
+      max-width: 250px;
+    }
 
-      .name {
-        text-align: center;
-        line-height: initial;
-        color: var(--primary-text-color);
-        width: 100%;
-        font-size: 15px;
-        margin-top: 8px;
-      }
-    `;
-  }
+    .name {
+      text-align: center;
+      line-height: initial;
+      color: var(--primary-text-color);
+      width: 100%;
+      font-size: 15px;
+      margin-top: 8px;
+    }
+  `;
 }
 
 declare global {

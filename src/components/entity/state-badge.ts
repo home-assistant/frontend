@@ -35,7 +35,7 @@ export class StateBadge extends LitElement {
   // @todo Consider reworking to eliminate need for attribute since it is manipulated internally
   @property({ type: Boolean, reflect: true }) public icon = true;
 
-  @state() private _iconStyle: { [name: string]: string | undefined } = {};
+  @state() private _iconStyle: Record<string, string | undefined> = {};
 
   connectedCallback(): void {
     super.connectedCallback();
@@ -108,7 +108,7 @@ export class StateBadge extends LitElement {
     }
     const stateObj = this.stateObj;
 
-    const iconStyle: { [name: string]: string } = {};
+    const iconStyle: Record<string, string> = {};
     let backgroundImage = "";
 
     this.icon = true;

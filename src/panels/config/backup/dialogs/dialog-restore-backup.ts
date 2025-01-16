@@ -29,10 +29,10 @@ import type {
 } from "../../../../data/backup_manager";
 import { subscribeBackupEvents } from "../../../../data/backup_manager";
 
-type FormData = {
+interface FormData {
   encryption_key_type: "config" | "custom";
   custom_encryption_key: string;
-};
+}
 
 const INITIAL_DATA: FormData = {
   encryption_key_type: "config",
@@ -90,6 +90,7 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
 
   public closeDialog() {
     this._dialog?.close();
+    return true;
   }
 
   private _dialogClosed() {

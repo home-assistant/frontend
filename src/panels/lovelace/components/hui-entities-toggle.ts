@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { DOMAINS_TOGGLE } from "../../../common/const";
@@ -46,18 +46,16 @@ class HuiEntitiesToggle extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        width: 38px;
-        display: block;
-      }
-      ha-switch {
-        padding: 13px 5px;
-        margin: -4px -8px;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      width: 38px;
+      display: block;
+    }
+    ha-switch {
+      padding: 13px 5px;
+      margin: -4px -8px;
+    }
+  `;
 
   private _callService(ev: MouseEvent): void {
     forwardHaptic("light");

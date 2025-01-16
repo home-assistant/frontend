@@ -5,7 +5,7 @@ import memoizeOne from "memoize-one";
 import type { HomeAssistant } from "../../types";
 import { measureTextWidth } from "../../util/text";
 
-export type Node = {
+export interface Node {
   id: string;
   value: number;
   index: number; // like z-index but for x/y
@@ -13,13 +13,17 @@ export type Node = {
   tooltip?: string;
   color?: string;
   passThrough?: boolean;
-};
-export type Link = { source: string; target: string; value?: number };
+}
+export interface Link {
+  source: string;
+  target: string;
+  value?: number;
+}
 
-export type SankeyChartData = {
+export interface SankeyChartData {
   nodes: Node[];
   links: Link[];
-};
+}
 
 type ProcessedNode = Node & {
   x: number;
@@ -36,13 +40,13 @@ type ProcessedLink = Link & {
   passThroughNodeIds: string[];
 };
 
-type Section = {
+interface Section {
   nodes: ProcessedNode[];
   offset: number;
   index: number;
   totalValue: number;
   statePerPixel: number;
-};
+}
 
 const MIN_SIZE = 3;
 const DEFAULT_COLOR = "var(--primary-color)";

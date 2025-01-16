@@ -24,9 +24,9 @@ import type { UploadBackupDialogParams } from "./show-dialog-upload-backup";
 
 const SUPPORTED_FORMAT = "application/x-tar";
 
-type FormData = {
+interface FormData {
   file?: File;
-};
+}
 
 const INITIAL_DATA: FormData = {
   file: undefined,
@@ -65,6 +65,7 @@ export class DialogUploadBackup
 
   public closeDialog() {
     this._dialog?.close();
+    return true;
   }
 
   private _formValid() {
@@ -109,7 +110,9 @@ export class DialogUploadBackup
           ></ha-file-upload>
         </div>
         <div slot="actions">
-          <ha-button @click=${this.closeDialog}>Cancel</ha-button>
+          <ha-button @click=${this.closeDialog}
+            >${this.hass.localize("ui.common.cancel")}</ha-button
+          >
           <ha-button @click=${this._upload} .disabled=${!this._formValid()}>
             ${this.hass.localize(
               "ui.panel.config.backup.dialogs.upload.action"
