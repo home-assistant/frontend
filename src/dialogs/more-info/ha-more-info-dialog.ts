@@ -97,6 +97,8 @@ export class MoreInfoDialog extends LitElement {
 
   @state() private _infoEditMode = false;
 
+  @state() private _isEscapeEnabled = true;
+
   @state() private _sensorNumericDeviceClasses?: string[] = [];
 
   public showDialog(params: MoreInfoDialogParams) {
@@ -132,6 +134,9 @@ export class MoreInfoDialog extends LitElement {
     this._childView = undefined;
     this._infoEditMode = false;
     this._initialView = DEFAULT_VIEW;
+    this._isEscapeEnabled = true;
+    window.removeEventListener("dialog-closed", this._enableEscapeKeyClose);
+    window.removeEventListener("show-dialog", this._disableEscapeKeyClose);
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -290,6 +295,8 @@ export class MoreInfoDialog extends LitElement {
       <ha-dialog
         open
         @closed=${this.closeDialog}
+        @opened=${this._handleOpened}
+        .escapeKeyAction=${this._isEscapeEnabled ? undefined : ""}
         .heading=${title}
         hideActions
         flexContent
@@ -539,6 +546,19 @@ export class MoreInfoDialog extends LitElement {
   private _enlarge() {
     this.large = !this.large;
   }
+
+  private _handleOpened() {
+    window.addEventListener("dialog-closed", this._enableEscapeKeyClose);
+    window.addEventListener("show-dialog", this._disableEscapeKeyClose);
+  }
+
+  private _enableEscapeKeyClose = () => {
+    this._isEscapeEnabled = true;
+  };
+
+  private _disableEscapeKeyClose = () => {
+    this._isEscapeEnabled = false;
+  };
 
   static get styles() {
     return [
