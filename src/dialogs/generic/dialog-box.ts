@@ -31,7 +31,7 @@ class DialogBox extends LitElement {
   private _closeResolve?: () => void;
 
   public async showDialog(params: DialogBoxParams): Promise<void> {
-    if (this._closeState) {
+    if (this._closePromise) {
       await this._closePromise;
     }
     this._params = params;
