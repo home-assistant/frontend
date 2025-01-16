@@ -125,7 +125,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     return undefined;
   }
 
-  private _sortItems(items: TodoItem[], sort?: string | undefined) {
+  private _sortItems(items: TodoItem[], sort?: string) {
     if (sort === TodoSortMode.ALPHA_ASC || sort === TodoSortMode.ALPHA_DESC) {
       const sortOrder = sort === TodoSortMode.ALPHA_ASC ? 1 : -1;
       return items.sort(
