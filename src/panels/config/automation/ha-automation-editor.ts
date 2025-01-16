@@ -760,7 +760,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           const id = this.automationId || String(Date.now());
           try {
             await this._saveAutomation(id);
-          } catch (err: any) {
+          } catch (_err: any) {
             this.requestUpdate();
             resolve(false);
             return;
