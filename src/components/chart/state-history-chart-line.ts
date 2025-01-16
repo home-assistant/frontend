@@ -280,14 +280,6 @@ export class StateHistoryChartLine extends LitElement {
               })
               .join(""),
         },
-        dataZoom: [
-          {
-            type: "inside",
-            orient: "horizontal",
-            filterMode: "none",
-            zoomOnMouseWheel: "ctrl",
-          },
-        ],
         // scales: {
         //   x: {
         //     type: "time",

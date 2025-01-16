@@ -133,7 +133,6 @@ export class HuiEnergyDevicesDetailGraphCard
             external-hidden
             .hass=${this.hass}
             .data=${this._chartData}
-            .extraData=${this._chartDatasetExtra}
             .options=${this._createOptions(
               this._start,
               this._end,
@@ -153,22 +152,12 @@ export class HuiEnergyDevicesDetailGraphCard
   }
 
   private _datasetHidden(ev) {
-    const hiddenEntity =
-      ev.detail.index === this._untrackedIndex
-        ? "untracked"
-        : this._data!.prefs.device_consumption[ev.detail.index]
-            .stat_consumption;
-    this._hiddenStats = [...this._hiddenStats, hiddenEntity];
+    this._hiddenStats = [...this._hiddenStats, ev.detail.name];
   }
 
   private _datasetUnhidden(ev) {
-    const hiddenEntity =
-      ev.detail.index === this._untrackedIndex
-        ? "untracked"
-        : this._data!.prefs.device_consumption[ev.detail.index]
-            .stat_consumption;
     this._hiddenStats = this._hiddenStats.filter(
-      (stat) => stat !== hiddenEntity
+      (stat) => stat !== ev.detail.name
     );
   }
 

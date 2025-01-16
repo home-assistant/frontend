@@ -27,6 +27,7 @@ import type {
 import { formatTime } from "../../common/datetime/format_time";
 import { formatDateVeryShort } from "../../common/datetime/format_date";
 import { computeRTL } from "../../common/util/compute_rtl";
+import type { ECOption } from "../../resources/echarts";
 
 export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
   mean: "mean",
@@ -86,8 +87,6 @@ export class StatisticsChart extends LitElement {
   @state() private _statisticIds: string[] = [];
 
   @state() private _chartOptions?: ECOption;
-
-  @state() private _hiddenStats = new Set<string>();
 
   @query("ha-chart-base") private _chart?: HaChartBase;
 
@@ -165,22 +164,8 @@ export class StatisticsChart extends LitElement {
         .extraData=${this._chartDatasetExtra}
         .options=${this._chartOptions}
         .chartType=${this.chartType}
-        @dataset-hidden=${this._datasetHidden}
-        @dataset-unhidden=${this._datasetUnhidden}
       ></ha-chart-base>
     `;
-  }
-
-  private _datasetHidden(ev) {
-    ev.stopPropagation();
-    this._hiddenStats.add(this._statisticIds[ev.detail.index]);
-    this.requestUpdate("_hiddenStats");
-  }
-
-  private _datasetUnhidden(ev) {
-    ev.stopPropagation();
-    this._hiddenStats.delete(this._statisticIds[ev.detail.index]);
-    this.requestUpdate("_hiddenStats");
   }
 
   private _createOptions(unit?: string) {
@@ -279,14 +264,6 @@ export class StatisticsChart extends LitElement {
         trigger: "axis",
         appendTo: document.body,
       },
-      dataZoom: [
-        {
-          type: "inside",
-          orient: "horizontal",
-          filterMode: "none",
-          zoomOnMouseWheel: "ctrl",
-        },
-      ],
       // parsing: false,
       // interaction: {
       //   mode: "nearest",
@@ -577,9 +554,6 @@ export class StatisticsChart extends LitElement {
               band && hasMean ? color + (this.hideLegend ? "00" : "7F") : color,
             backgroundColor: band ? color + "3F" : color + "7F",
             pointRadius: 0,
-            hidden: !this.hideLegend
-              ? this._hiddenStats.has(statistic_id)
-              : false,
             data: [],
             // @ts-ignore
             unit: meta?.unit_of_measurement,
