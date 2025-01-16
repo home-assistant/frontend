@@ -32,7 +32,7 @@ export const ancestorsWithProperty = (
   property: string | symbol,
   own = DEFAULT_OWN
 ) => {
-  const ancestors: Set<Element> = new Set();
+  const ancestors = new Set<Element>();
   while (element) {
     ancestors.add(element);
     element = closestWithProperty(element, property, own);

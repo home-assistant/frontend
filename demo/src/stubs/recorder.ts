@@ -15,7 +15,7 @@ import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 const generateMeanStatistics = (
   start: Date,
   end: Date,
-  // eslint-disable-next-line @typescript-eslint/default-param-last
+  // eslint-disable-next-line default-param-last
   period: "5minute" | "hour" | "day" | "month" = "hour",
   initValue: number,
   maxDiff: number
@@ -52,7 +52,7 @@ const generateMeanStatistics = (
 const generateSumStatistics = (
   start: Date,
   end: Date,
-  // eslint-disable-next-line @typescript-eslint/default-param-last
+  // eslint-disable-next-line default-param-last
   period: "5minute" | "hour" | "day" | "month" = "hour",
   initValue: number,
   maxDiff: number
@@ -89,7 +89,7 @@ const generateSumStatistics = (
 const generateCurvedStatistics = (
   start: Date,
   end: Date,
-  // eslint-disable-next-line @typescript-eslint/default-param-last
+  // eslint-disable-next-line default-param-last
   _period: "5minute" | "hour" | "day" | "month" = "hour",
   initValue: number,
   maxDiff: number,

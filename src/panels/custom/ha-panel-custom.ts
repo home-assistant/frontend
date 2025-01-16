@@ -31,7 +31,7 @@ export class HaPanelCustom extends ReactiveElement {
 
   @property({ attribute: false }) public panel!: CustomPanelInfo;
 
-  private _setProperties?: (props: Record<string, unknown>) => void | undefined;
+  private _setProperties?: (props: Record<string, unknown>) => void;
 
   protected createRenderRoot() {
     return this;

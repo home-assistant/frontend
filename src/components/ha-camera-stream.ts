@@ -1,11 +1,4 @@
-import {
-  css,
-  type CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  type PropertyValues,
-} from "lit";
+import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
@@ -28,10 +21,10 @@ import "./ha-web-rtc-player";
 
 const MJPEG_STREAM = "mjpeg";
 
-type Stream = {
+interface Stream {
   type: StreamType | typeof MJPEG_STREAM;
   visible: boolean;
-};
+}
 
 @customElement("ha-camera-stream")
 export class HaCameraStream extends LitElement {
@@ -166,7 +159,7 @@ export class HaCameraStream extends LitElement {
         this.clientWidth,
         this.clientHeight
       );
-    } catch (err: any) {
+    } catch (_err: any) {
       // poster url is optional
       this._posterUrl = undefined;
     }
@@ -256,22 +249,20 @@ export class HaCameraStream extends LitElement {
     }
   );
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host,
-      img {
-        display: block;
-      }
+  static styles = css`
+    :host,
+    img {
+      display: block;
+    }
 
-      img {
-        width: 100%;
-      }
+    img {
+      width: 100%;
+    }
 
-      .hidden {
-        display: none;
-      }
-    `;
-  }
+    .hidden {
+      display: none;
+    }
+  `;
 }
 
 declare global {

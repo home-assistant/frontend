@@ -98,7 +98,7 @@ class HuiClimateFanModesCardFeature
 
     try {
       await this._setMode(fanMode);
-    } catch (err) {
+    } catch (_err) {
       this._currentFanMode = oldFanMode;
     }
   }

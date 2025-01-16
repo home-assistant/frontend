@@ -75,13 +75,14 @@ export class DialogEnergyWaterSettings
       .filter((id) => id !== this._source?.stat_energy_from);
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     this._params = undefined;
     this._source = undefined;
     this._error = undefined;
     this._pickedDisplayUnit = undefined;
     this._excludeList = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+    return true;
   }
 
   protected render() {

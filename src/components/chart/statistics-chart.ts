@@ -4,9 +4,9 @@ import type {
   ChartOptions,
   ChartType,
 } from "chart.js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
@@ -30,11 +30,7 @@ import {
 } from "../../data/recorder";
 import type { HomeAssistant } from "../../types";
 import "./ha-chart-base";
-import type {
-  ChartResizeOptions,
-  ChartDatasetExtra,
-  HaChartBase,
-} from "./ha-chart-base";
+import type { ChartDatasetExtra } from "./ha-chart-base";
 import { clickIsTouch } from "./click_is_touch";
 
 export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
@@ -64,7 +60,7 @@ export class StatisticsChart extends LitElement {
   @property({ attribute: false }) public endTime?: Date;
 
   @property({ attribute: false, type: Array })
-  public statTypes: Array<StatisticType> = ["sum", "min", "mean", "max"];
+  public statTypes: StatisticType[] = ["sum", "min", "mean", "max"];
 
   @property({ attribute: false }) public chartType: ChartType = "line";
 
@@ -98,13 +94,7 @@ export class StatisticsChart extends LitElement {
 
   @state() private _hiddenStats = new Set<string>();
 
-  @query("ha-chart-base") private _chart?: HaChartBase;
-
   private _computedStyle?: CSSStyleDeclaration;
-
-  public resize = (options?: ChartResizeOptions): void => {
-    this._chart?.resize(options);
-  };
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return changedProps.size > 1 || !changedProps.has("hass");
@@ -382,7 +372,7 @@ export class StatisticsChart extends LitElement {
       }
 
       // array containing [value1, value2, etc]
-      let prevValues: Array<number | null> | null = null;
+      let prevValues: (number | null)[] | null = null;
       let prevEndTime: Date | undefined;
 
       // The datasets for the current statistic
@@ -392,7 +382,7 @@ export class StatisticsChart extends LitElement {
       const pushData = (
         start: Date,
         end: Date,
-        dataValues: Array<number | null> | null
+        dataValues: (number | null)[] | null
       ) => {
         if (!dataValues) return;
         if (start > end) {
@@ -504,7 +494,7 @@ export class StatisticsChart extends LitElement {
           return;
         }
         prevDate = startDate;
-        const dataValues: Array<number | null> = [];
+        const dataValues: (number | null)[] = [];
         statTypes.forEach((type) => {
           let val: number | null | undefined;
           if (type === "sum") {
@@ -538,19 +528,17 @@ export class StatisticsChart extends LitElement {
     this._statisticIds = statisticIds;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-        min-height: 60px;
-      }
-      .info {
-        text-align: center;
-        line-height: 60px;
-        color: var(--secondary-text-color);
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+      min-height: 60px;
+    }
+    .info {
+      text-align: center;
+      line-height: 60px;
+      color: var(--secondary-text-color);
+    }
+  `;
 }
 
 declare global {

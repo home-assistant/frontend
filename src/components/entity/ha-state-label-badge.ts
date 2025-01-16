@@ -1,6 +1,6 @@
 import { mdiAlert } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -26,7 +26,7 @@ const TRUNCATED_DOMAINS = [
   "alarm_control_panel",
   "device_tracker",
   "person",
-] as const satisfies ReadonlyArray<keyof typeof FIXED_DOMAIN_STATES>;
+] as const satisfies readonly (keyof typeof FIXED_DOMAIN_STATES)[];
 
 type TruncatedDomain = (typeof TRUNCATED_DOMAINS)[number];
 type TruncatedKey = {
@@ -262,50 +262,48 @@ export class HaStateLabelBadge extends LitElement {
     this._timerTimeRemaining = timerTimeRemaining(stateObj);
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        cursor: pointer;
-      }
-      .big {
-        font-size: 70%;
-      }
-      ha-label-badge {
-        --ha-label-badge-color: var(--label-badge-red);
-      }
-      ha-label-badge.has-unit_of_measurement {
-        --ha-label-badge-label-text-transform: none;
-      }
+  static styles = css`
+    :host {
+      cursor: pointer;
+    }
+    .big {
+      font-size: 70%;
+    }
+    ha-label-badge {
+      --ha-label-badge-color: var(--label-badge-red);
+    }
+    ha-label-badge.has-unit_of_measurement {
+      --ha-label-badge-label-text-transform: none;
+    }
 
-      ha-label-badge.binary_sensor {
-        --ha-label-badge-color: var(--label-badge-blue);
-      }
+    ha-label-badge.binary_sensor {
+      --ha-label-badge-color: var(--label-badge-blue);
+    }
 
-      .red {
-        --ha-label-badge-color: var(--label-badge-red);
-      }
+    .red {
+      --ha-label-badge-color: var(--label-badge-red);
+    }
 
-      .blue {
-        --ha-label-badge-color: var(--label-badge-blue);
-      }
+    .blue {
+      --ha-label-badge-color: var(--label-badge-blue);
+    }
 
-      .green {
-        --ha-label-badge-color: var(--label-badge-green);
-      }
+    .green {
+      --ha-label-badge-color: var(--label-badge-green);
+    }
 
-      .yellow {
-        --ha-label-badge-color: var(--label-badge-yellow);
-      }
+    .yellow {
+      --ha-label-badge-color: var(--label-badge-yellow);
+    }
 
-      .grey {
-        --ha-label-badge-color: var(--label-badge-grey);
-      }
+    .grey {
+      --ha-label-badge-color: var(--label-badge-grey);
+    }
 
-      .warning {
-        --ha-label-badge-color: var(--label-badge-yellow);
-      }
-    `;
-  }
+    .warning {
+      --ha-label-badge-color: var(--label-badge-yellow);
+    }
+  `;
 }
 
 declare global {

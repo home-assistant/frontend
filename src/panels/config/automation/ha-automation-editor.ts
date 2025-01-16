@@ -946,7 +946,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
         // wait for automation to appear in entity registry when creating a new automation
         if (entityRegPromise) {
           try {
-            const automation = await promiseTimeout(2000, entityRegPromise);
+            const automation = await promiseTimeout(5000, entityRegPromise);
             entityId = automation.entity_id;
           } catch (e) {
             if (e instanceof Error && e.name === "TimeoutError") {

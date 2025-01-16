@@ -1,5 +1,4 @@
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
 import { customElement, property } from "lit/decorators";
 import "./ha-markdown-element";
 
@@ -27,73 +26,71 @@ export class HaMarkdown extends LitElement {
     ></ha-markdown-element>`;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-      }
-      ha-markdown-element {
-        -ms-user-select: text;
-        -webkit-user-select: text;
-        -moz-user-select: text;
-      }
-      ha-markdown-element > *:first-child {
-        margin-top: 0;
-      }
-      ha-markdown-element > *:last-child {
-        margin-bottom: 0;
-      }
-      ha-alert {
-        display: block;
-        margin: 4px 0;
-      }
-      a {
-        color: var(--primary-color);
-      }
-      img {
-        max-width: 100%;
-      }
-      code,
-      pre {
-        background-color: var(--markdown-code-background-color, none);
-        border-radius: 3px;
-      }
-      svg {
-        background-color: var(--markdown-svg-background-color, none);
-        color: var(--markdown-svg-color, none);
-      }
-      code {
-        font-size: 85%;
-        padding: 0.2em 0.4em;
-      }
-      pre code {
-        padding: 0;
-      }
-      pre {
-        padding: 16px;
-        overflow: auto;
-        line-height: 1.45;
-        font-family: var(--code-font-family, monospace);
-      }
-      h1,
-      h2,
-      h3,
-      h4,
-      h5,
-      h6 {
-        line-height: initial;
-      }
-      h2 {
-        font-size: 1.5em;
-        font-weight: bold;
-      }
-      hr {
-        border-color: var(--divider-color);
-        border-bottom: none;
-        margin: 16px 0;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+    }
+    ha-markdown-element {
+      -ms-user-select: text;
+      -webkit-user-select: text;
+      -moz-user-select: text;
+    }
+    ha-markdown-element > *:first-child {
+      margin-top: 0;
+    }
+    ha-markdown-element > *:last-child {
+      margin-bottom: 0;
+    }
+    ha-alert {
+      display: block;
+      margin: 4px 0;
+    }
+    a {
+      color: var(--primary-color);
+    }
+    img {
+      max-width: 100%;
+    }
+    code,
+    pre {
+      background-color: var(--markdown-code-background-color, none);
+      border-radius: 3px;
+    }
+    svg {
+      background-color: var(--markdown-svg-background-color, none);
+      color: var(--markdown-svg-color, none);
+    }
+    code {
+      font-size: 85%;
+      padding: 0.2em 0.4em;
+    }
+    pre code {
+      padding: 0;
+    }
+    pre {
+      padding: 16px;
+      overflow: auto;
+      line-height: 1.45;
+      font-family: var(--code-font-family, monospace);
+    }
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      line-height: initial;
+    }
+    h2 {
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+    hr {
+      border-color: var(--divider-color);
+      border-bottom: none;
+      margin: 16px 0;
+    }
+  ` as CSSResultGroup;
 }
 
 declare global {

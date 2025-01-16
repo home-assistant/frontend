@@ -51,7 +51,7 @@ export const updateTag = async (
   });
 
 export const deleteTag = async (hass: HomeAssistant, tagId: string) =>
-  hass.callWS<void>({
+  hass.callWS<undefined>({
     type: "tag/delete",
     tag_id: tagId,
   });

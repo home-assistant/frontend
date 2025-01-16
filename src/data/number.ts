@@ -1,6 +1,8 @@
 import type { HomeAssistant } from "../types";
 
-export type NumberDeviceClassUnits = { units: string[] };
+export interface NumberDeviceClassUnits {
+  units: string[];
+}
 
 export const getNumberDeviceClassConvertibleUnits = (
   hass: HomeAssistant,

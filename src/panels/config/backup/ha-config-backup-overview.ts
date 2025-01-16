@@ -130,7 +130,7 @@ class HaConfigBackupOverview extends LitElement {
         back-path="/config/system"
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .header=${"Backup"}
+        .header=${this.hass.localize("ui.panel.config.backup.overview.header")}
       >
         <ha-button-menu slot="toolbar-icon">
           <ha-icon-button
@@ -140,7 +140,9 @@ class HaConfigBackupOverview extends LitElement {
           ></ha-icon-button>
           <ha-list-item graphic="icon" @request-selected=${this._uploadBackup}>
             <ha-svg-icon slot="graphic" .path=${mdiUpload}></ha-svg-icon>
-            Upload backup
+            ${this.hass.localize(
+              "ui.panel.config.backup.overview.menu.upload_backup"
+            )}
           </ha-list-item>
         </ha-button-menu>
         <div class="content">
@@ -190,7 +192,9 @@ class HaConfigBackupOverview extends LitElement {
         <ha-fab
           slot="fab"
           ?disabled=${backupInProgress}
-          .label=${"Backup now"}
+          .label=${this.hass.localize(
+            "ui.panel.config.backup.overview.new_backup"
+          )}
           extended
           @click=${this._newBackup}
         >

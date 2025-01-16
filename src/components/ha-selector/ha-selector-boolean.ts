@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -47,27 +46,25 @@ export class HaBooleanSelector extends LitElement {
     fireEvent(this, "value-changed", { value });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-formfield {
-        display: flex;
-        min-height: 56px;
-        align-items: center;
-        --mdc-typography-body2-font-size: 1em;
-      }
-      p {
-        margin: 0;
-      }
-      .secondary {
-        direction: var(--direction);
-        padding-top: 4px;
-        box-sizing: border-box;
-        color: var(--secondary-text-color);
-        font-size: 0.875rem;
-        font-weight: var(--mdc-typography-body2-font-weight, 400);
-      }
-    `;
-  }
+  static styles = css`
+    ha-formfield {
+      display: flex;
+      min-height: 56px;
+      align-items: center;
+      --mdc-typography-body2-font-size: 1em;
+    }
+    p {
+      margin: 0;
+    }
+    .secondary {
+      direction: var(--direction);
+      padding-top: 4px;
+      box-sizing: border-box;
+      color: var(--secondary-text-color);
+      font-size: 0.875rem;
+      font-weight: var(--mdc-typography-body2-font-weight, 400);
+    }
+  `;
 }
 
 declare global {

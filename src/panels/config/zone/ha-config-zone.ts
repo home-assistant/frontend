@@ -2,7 +2,7 @@ import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import "@material/mwc-list/mwc-list";
 import { mdiPencil, mdiPencilOff, mdiPlus } from "@mdi/js";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -452,7 +452,6 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       showAlertDialog(this, {
         title: this.hass.localize("ui.panel.config.zone.can_not_edit"),
         text: this.hass.localize("ui.panel.config.zone.configured_in_yaml"),
-        confirm: () => {},
       });
       return;
     }
@@ -522,7 +521,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         this._map?.fitMap();
       }
       return true;
-    } catch (err: any) {
+    } catch (_err: any) {
       return false;
     }
   }
@@ -538,60 +537,58 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      hass-loading-screen {
-        --app-header-background-color: var(--sidebar-background-color);
-        --app-header-text-color: var(--sidebar-text-color);
-      }
-      ha-list-item {
-        --mdc-list-item-meta-size: 48px;
-      }
-      a {
-        color: var(--primary-color);
-      }
-      ha-card {
-        margin: 16px auto;
-        overflow: hidden;
-      }
-      ha-icon,
-      ha-icon-button:not([disabled]) {
-        color: var(--secondary-text-color);
-      }
-      ha-icon-button {
-        --mdc-theme-text-disabled-on-light: var(--disabled-text-color);
-      }
-      .empty {
-        text-align: center;
-        padding: 8px;
-      }
-      .flex {
-        display: flex;
-        height: 100%;
-      }
-      .overflow {
-        height: 100%;
-        overflow: auto;
-      }
-      ha-locations-editor {
-        flex-grow: 1;
-        height: 100%;
-      }
-      .flex mwc-list {
-        padding-bottom: 64px;
-      }
-      .flex mwc-list,
-      .flex .empty {
-        border-left: 1px solid var(--divider-color);
-        width: 250px;
-        min-height: 100%;
-        box-sizing: border-box;
-      }
-      ha-card {
-        margin-bottom: 100px;
-      }
-    `;
-  }
+  static styles = css`
+    hass-loading-screen {
+      --app-header-background-color: var(--sidebar-background-color);
+      --app-header-text-color: var(--sidebar-text-color);
+    }
+    ha-list-item {
+      --mdc-list-item-meta-size: 48px;
+    }
+    a {
+      color: var(--primary-color);
+    }
+    ha-card {
+      margin: 16px auto;
+      overflow: hidden;
+    }
+    ha-icon,
+    ha-icon-button:not([disabled]) {
+      color: var(--secondary-text-color);
+    }
+    ha-icon-button {
+      --mdc-theme-text-disabled-on-light: var(--disabled-text-color);
+    }
+    .empty {
+      text-align: center;
+      padding: 8px;
+    }
+    .flex {
+      display: flex;
+      height: 100%;
+    }
+    .overflow {
+      height: 100%;
+      overflow: auto;
+    }
+    ha-locations-editor {
+      flex-grow: 1;
+      height: 100%;
+    }
+    .flex mwc-list {
+      padding-bottom: 64px;
+    }
+    .flex mwc-list,
+    .flex .empty {
+      border-left: 1px solid var(--divider-color);
+      width: 250px;
+      min-height: 100%;
+      box-sizing: border-box;
+    }
+    ha-card {
+      margin-bottom: 100px;
+    }
+  `;
 }
 
 declare global {

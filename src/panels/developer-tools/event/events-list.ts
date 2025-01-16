@@ -1,4 +1,4 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { stringCompare } from "../../../common/string/compare";
@@ -56,23 +56,21 @@ class EventsList extends LitElement {
     fireEvent(this, "event-selected", { eventType: event });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ul {
-        margin: 0;
-        padding: 0;
-      }
+  static styles = css`
+    ul {
+      margin: 0;
+      padding: 0;
+    }
 
-      li {
-        list-style: none;
-        line-height: 2em;
-      }
+    li {
+      list-style: none;
+      line-height: 2em;
+    }
 
-      a {
-        color: var(--primary-color);
-      }
-    `;
-  }
+    a {
+      color: var(--primary-color);
+    }
+  `;
 }
 
 declare global {

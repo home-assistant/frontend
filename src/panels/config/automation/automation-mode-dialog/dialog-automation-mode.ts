@@ -45,13 +45,14 @@ class DialogAutomationMode extends LitElement implements HassDialog {
       : undefined;
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     this._params.onClose();
 
     if (this._opened) {
       fireEvent(this, "dialog-closed", { dialog: this.localName });
     }
     this._opened = false;
+    return true;
   }
 
   protected render() {

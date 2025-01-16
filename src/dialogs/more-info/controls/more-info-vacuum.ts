@@ -9,7 +9,6 @@ import {
   mdiStop,
   mdiTargetVariant,
 } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -316,24 +315,22 @@ class MoreInfoVacuum extends LitElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        line-height: 1.5;
-      }
-      .status-subtitle {
-        color: var(--secondary-text-color);
-      }
-      .flex-horizontal {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-      }
-      .space-around {
-        justify-content: space-around;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      line-height: 1.5;
+    }
+    .status-subtitle {
+      color: var(--secondary-text-color);
+    }
+    .flex-horizontal {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+    .space-around {
+      justify-content: space-around;
+    }
+  `;
 }
 
 declare global {

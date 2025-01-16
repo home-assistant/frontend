@@ -1,16 +1,16 @@
 import { setHours, setMinutes } from "date-fns";
 import type { HassConfig } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
-import { formatTime } from "../common/datetime/format_time";
-import type { LocalizeFunc } from "../common/translations/localize";
-import type { HomeAssistant } from "../types";
-import { domainToName } from "./integration";
-import type { FrontendLocaleData } from "./translation";
 import {
   formatDateTime,
   formatDateTimeNumeric,
 } from "../common/datetime/format_date_time";
+import { formatTime } from "../common/datetime/format_time";
+import type { LocalizeFunc } from "../common/translations/localize";
+import type { HomeAssistant } from "../types";
 import { fileDownload } from "../util/file_download";
+import { domainToName } from "./integration";
+import type { FrontendLocaleData } from "./translation";
 
 export const enum BackupScheduleState {
   NEVER = "never",
@@ -106,7 +106,7 @@ export interface BackupAgentsInfo {
   agents: BackupAgent[];
 }
 
-export type GenerateBackupParams = {
+export interface GenerateBackupParams {
   agent_ids: string[];
   include_addons?: string[];
   include_all_addons?: boolean;
@@ -115,9 +115,9 @@ export type GenerateBackupParams = {
   include_homeassistant?: boolean;
   name?: string;
   password?: string;
-};
+}
 
-export type RestoreBackupParams = {
+export interface RestoreBackupParams {
   backup_id: string;
   agent_id: string;
   password?: string;
@@ -125,7 +125,7 @@ export type RestoreBackupParams = {
   restore_database?: boolean;
   restore_folders?: string[];
   restore_homeassistant?: boolean;
-};
+}
 
 export const fetchBackupConfig = (hass: HomeAssistant) =>
   hass.callWS<{ config: BackupConfig }>({ type: "backup/config/info" });
@@ -217,10 +217,16 @@ export const uploadBackup = async (
 };
 
 export const getPreferredAgentForDownload = (agents: string[]) => {
-  const localAgents = agents.filter(
-    (agent) => agent.split(".")[0] === "backup"
-  );
-  return localAgents[0] || agents[0];
+  const localAgent = agents.find(isLocalAgent);
+  if (localAgent) {
+    return localAgent;
+  }
+  const networkMountAgent = agents.find(isNetworkMountAgent);
+  if (networkMountAgent) {
+    return networkMountAgent;
+  }
+
+  return agents[0];
 };
 
 export const CORE_LOCAL_AGENT = "backup.local";
@@ -241,7 +247,7 @@ export const computeBackupAgentName = (
   agentIds?: string[]
 ) => {
   if (isLocalAgent(agentId)) {
-    return "This system";
+    return localize("ui.panel.config.backup.agents.local_agent");
   }
   const [domain, name] = agentId.split(".");
 
@@ -298,23 +304,22 @@ export const generateEmergencyKit = (
   encryptionKey: string
 ) =>
   "data:text/plain;charset=utf-8," +
-  encodeURIComponent(`Home Assistant Backup Emergency Kit
+  encodeURIComponent(`${hass.localize("ui.panel.config.backup.emergency_kit_file.title")}
 
-This emergency kit contains your backup encryption key. You need this key
-to be able to restore your Home Assistant backups.
+${hass.localize("ui.panel.config.backup.emergency_kit_file.description")}
 
-Date: ${formatDateTime(new Date(), hass.locale, hass.config)}
+${hass.localize("ui.panel.config.backup.emergency_kit_file.date")} ${formatDateTime(new Date(), hass.locale, hass.config)}
 
-Instance:
+${hass.localize("ui.panel.config.backup.emergency_kit_file.instance")}
 ${hass.config.location_name}
 
-URL:
+${hass.localize("ui.panel.config.backup.emergency_kit_file.url")}
 ${hass.auth.data.hassUrl}
 
-Encryption key:
+${hass.localize("ui.panel.config.backup.emergency_kit_file.encryption_key")}
 ${encryptionKey}
 
-For more information visit: https://www.home-assistant.io/more-info/backup-emergency-kit`);
+${hass.localize("ui.panel.config.backup.emergency_kit_file.more_info", { link: "https://www.home-assistant.io/more-info/backup-emergency-kit" })}`);
 
 export const geneateEmergencyKitFileName = (
   hass: HomeAssistant,

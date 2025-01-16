@@ -168,7 +168,8 @@ class HaLogbookRenderer extends LitElement {
 
     const traceContext =
       triggerDomains.includes(item.domain!) &&
-      item.context_id! in this.traceContexts
+      item.context_id &&
+      item.context_id in this.traceContexts
         ? this.traceContexts[item.context_id!]
         : undefined;
 

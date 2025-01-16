@@ -12,11 +12,11 @@ import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
 import "./ha-icon";
 
-type NavigationItem = {
+interface NavigationItem {
   path: string;
   icon: string;
   title: string;
-};
+}
 
 const DEFAULT_ITEMS: NavigationItem[] = [];
 
@@ -196,21 +196,19 @@ export class HaNavigationPicker extends LitElement {
     return this.value || "";
   }
 
-  static get styles() {
-    return css`
-      ha-icon,
-      ha-svg-icon {
-        color: var(--primary-text-color);
-        position: relative;
-        bottom: 0px;
-      }
-      *[slot="prefix"] {
-        margin-right: 8px;
-        margin-inline-end: 8px;
-        margin-inline-start: initial;
-      }
-    `;
-  }
+  static styles = css`
+    ha-icon,
+    ha-svg-icon {
+      color: var(--primary-text-color);
+      position: relative;
+      bottom: 0px;
+    }
+    *[slot="prefix"] {
+      margin-right: 8px;
+      margin-inline-end: 8px;
+      margin-inline-start: initial;
+    }
+  `;
 }
 
 declare global {

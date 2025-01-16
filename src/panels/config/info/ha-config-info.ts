@@ -95,7 +95,7 @@ class HaConfigInfo extends LitElement {
 
   protected render(): TemplateResult {
     const hass = this.hass;
-    const customUiList: Array<{ name: string; url: string; version: string }> =
+    const customUiList: { name: string; url: string; version: string }[] =
       (window as any).CUSTOM_UI_LIST || [];
 
     return html`

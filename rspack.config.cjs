@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-require-imports */
 // Needs to remain CommonJS until eslint-import-resolver-webpack supports ES modules
 const rspack = require("./build-scripts/rspack.cjs");
 const env = require("./build-scripts/env.cjs");

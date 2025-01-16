@@ -3,7 +3,9 @@ import type { HomeAssistant } from "../types";
 export const SENSOR_DEVICE_CLASS_BATTERY = "battery";
 export const SENSOR_DEVICE_CLASS_TIMESTAMP = "timestamp";
 
-export type SensorDeviceClassUnits = { units: string[] };
+export interface SensorDeviceClassUnits {
+  units: string[];
+}
 
 export const getSensorDeviceClassConvertibleUnits = (
   hass: HomeAssistant,
@@ -14,9 +16,9 @@ export const getSensorDeviceClassConvertibleUnits = (
     device_class: deviceClass,
   });
 
-export type SensorNumericDeviceClasses = {
+export interface SensorNumericDeviceClasses {
   numeric_device_classes: string[];
-};
+}
 
 let sensorNumericDeviceClassesCache:
   | Promise<SensorNumericDeviceClasses>

@@ -178,7 +178,7 @@ export class HuiDialogSelectView extends LitElement {
         urlPath,
         false
       )) as LovelaceConfig;
-    } catch (err: any) {
+    } catch (_err: any) {
       this._config = undefined;
     }
   }

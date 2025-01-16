@@ -212,7 +212,7 @@ export class ZHAClusterAttributes extends LitElement {
         this._attributeValue = await readAttributeValue(this.hass, data);
         forwardHaptic("success");
         button.actionSuccess();
-      } catch (err: any) {
+      } catch (_err: any) {
         forwardHaptic("failure");
         button.actionError();
       } finally {

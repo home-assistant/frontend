@@ -323,7 +323,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       }
 
       this._steps = steps;
-    } catch (err: any) {
+    } catch (_err: any) {
       alert("Something went wrong loading onboarding, try refreshing");
     }
   }
@@ -370,7 +370,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
           saveTokens,
         });
         await this._connectHass(auth);
-      } catch (err: any) {
+      } catch (_err: any) {
         alert("Ah snap, something went wrong!");
         location.reload();
       } finally {
@@ -486,7 +486,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
           "selectedLanguage",
           JSON.stringify(language)
         );
-      } catch (err: any) {
+      } catch (_err: any) {
         // Ignore
       }
     }

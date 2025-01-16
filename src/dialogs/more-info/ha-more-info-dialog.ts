@@ -12,7 +12,7 @@ import {
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -47,9 +47,7 @@ import {
 } from "./const";
 import "./controls/more-info-default";
 import "./ha-more-info-history-and-logbook";
-import type { MoreInfoHistoryAndLogbook } from "./ha-more-info-history-and-logbook";
 import "./ha-more-info-info";
-import type { MoreInfoInfo } from "./ha-more-info-info";
 import "./ha-more-info-settings";
 import "./more-info-content";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
@@ -63,12 +61,12 @@ export interface MoreInfoDialogParams {
 
 type View = "info" | "history" | "settings" | "related";
 
-type ChildView = {
+interface ChildView {
   viewTag: string;
   viewTitle?: string;
   viewImport?: () => Promise<unknown>;
   viewParams?: any;
-};
+}
 
 declare global {
   interface HASSDomEvents {
@@ -101,9 +99,6 @@ export class MoreInfoDialog extends LitElement {
 
   @state() private _isEscapeEnabled = true;
 
-  @query("ha-more-info-info, ha-more-info-history-and-logbook")
-  private _history?: MoreInfoInfo | MoreInfoHistoryAndLogbook;
-
   @state() private _sensorNumericDeviceClasses?: string[] = [];
 
   public showDialog(params: MoreInfoDialogParams) {
@@ -128,7 +123,7 @@ export class MoreInfoDialog extends LitElement {
         this.hass,
         this._entityId
       );
-    } catch (e) {
+    } catch (_e) {
       this._entry = null;
     }
   }
@@ -553,7 +548,6 @@ export class MoreInfoDialog extends LitElement {
   }
 
   private _handleOpened() {
-    this._history?.resize({ aspectRatio: 2 });
     window.addEventListener("dialog-closed", this._enableEscapeKeyClose);
     window.addEventListener("show-dialog", this._disableEscapeKeyClose);
   }

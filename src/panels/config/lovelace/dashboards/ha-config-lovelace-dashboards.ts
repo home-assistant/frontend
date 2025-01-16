@@ -79,7 +79,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
     state: true,
     subscribe: false,
   })
-  private _filter: string = "";
+  private _filter = "";
 
   @storage({
     key: "lovelace-dashboards-table-sort",
@@ -453,7 +453,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
             (res) => res !== dashboard
           );
           return true;
-        } catch (err: any) {
+        } catch (_err: any) {
           return false;
         }
       },

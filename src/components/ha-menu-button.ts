@@ -1,6 +1,5 @@
 import { mdiMenu } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
@@ -124,26 +123,24 @@ class HaMenuButton extends LitElement {
     fireEvent(this, "hass-toggle-menu");
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        position: relative;
-      }
-      .dot {
-        pointer-events: none;
-        position: absolute;
-        background-color: var(--accent-color);
-        width: 12px;
-        height: 12px;
-        top: 9px;
-        right: 7px;
-        inset-inline-end: 7px;
-        inset-inline-start: initial;
-        border-radius: 50%;
-        border: 2px solid var(--app-header-background-color);
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      position: relative;
+    }
+    .dot {
+      pointer-events: none;
+      position: absolute;
+      background-color: var(--accent-color);
+      width: 12px;
+      height: 12px;
+      top: 9px;
+      right: 7px;
+      inset-inline-end: 7px;
+      inset-inline-start: initial;
+      border-radius: 50%;
+      border: 2px solid var(--app-header-background-color);
+    }
+  `;
 }
 
 declare global {

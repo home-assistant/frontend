@@ -125,7 +125,7 @@ class HaBlueprintOverview extends LitElement {
     state: true,
     subscribe: false,
   })
-  private _filter: string = "";
+  private _filter = "";
 
   private _processedBlueprints = memoizeOne(
     (

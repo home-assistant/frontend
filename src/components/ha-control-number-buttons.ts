@@ -1,6 +1,6 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { mdiMinus, mdiPlus } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -181,110 +181,108 @@ export class HaControlNumberButton extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-        --control-number-buttons-focus-color: var(--primary-color);
-        --control-number-buttons-background-color: var(--disabled-color);
-        --control-number-buttons-background-opacity: 0.2;
-        --control-number-buttons-border-radius: 10px;
-        --mdc-icon-size: 16px;
-        height: var(--feature-height);
-        width: 100%;
-        color: var(--primary-text-color);
-        -webkit-tap-highlight-color: transparent;
-        font-style: normal;
-        font-weight: 500;
-        transition: color 180ms ease-in-out;
-      }
-      :host([disabled]) {
-        color: var(--disabled-color);
-      }
-      .container {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        container-type: inline-size;
-        container-name: container;
-      }
-      .value {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-        position: relative;
-        width: 100%;
-        height: 100%;
-        padding: 0 44px;
-        border-radius: var(--control-number-buttons-border-radius);
-        padding: 0;
-        margin: 0;
-        box-sizing: border-box;
-        line-height: 0;
-        overflow: hidden;
-        /* For safari border-radius overflow */
-        z-index: 0;
-        font-size: inherit;
-        color: inherit;
-        user-select: none;
-        -webkit-tap-highlight-color: transparent;
-        outline: none;
-      }
-      .value::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 100%;
-        background-color: var(--control-number-buttons-background-color);
-        transition:
-          background-color 180ms ease-in-out,
-          opacity 180ms ease-in-out;
-        opacity: var(--control-number-buttons-background-opacity);
-      }
-      .value:focus-visible {
-        box-shadow: 0 0 0 2px var(--control-number-buttons-focus-color);
-      }
-      .button {
-        color: inherit;
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        padding: 0;
-        width: 35px;
-        height: 40px;
-        border: none;
-        background: none;
-        cursor: pointer;
-        outline: none;
-      }
-      .button[disabled] {
-        opacity: 0.4;
-        pointer-events: none;
-        cursor: not-allowed;
-      }
-      .button.minus {
-        left: 0;
-        inset-inline-start: 0;
-        inset-inline-end: initial;
-      }
-      .button.plus {
-        right: 0;
-        inset-inline-start: initial;
-        inset-inline-end: 0;
-      }
+  static styles = css`
+    :host {
+      display: block;
+      --control-number-buttons-focus-color: var(--primary-color);
+      --control-number-buttons-background-color: var(--disabled-color);
+      --control-number-buttons-background-opacity: 0.2;
+      --control-number-buttons-border-radius: 10px;
+      --mdc-icon-size: 16px;
+      height: var(--feature-height);
+      width: 100%;
+      color: var(--primary-text-color);
+      -webkit-tap-highlight-color: transparent;
+      font-style: normal;
+      font-weight: 500;
+      transition: color 180ms ease-in-out;
+    }
+    :host([disabled]) {
+      color: var(--disabled-color);
+    }
+    .container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      container-type: inline-size;
+      container-name: container;
+    }
+    .value {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      width: 100%;
+      height: 100%;
+      padding: 0 44px;
+      border-radius: var(--control-number-buttons-border-radius);
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+      line-height: 0;
+      overflow: hidden;
+      /* For safari border-radius overflow */
+      z-index: 0;
+      font-size: inherit;
+      color: inherit;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+    }
+    .value::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background-color: var(--control-number-buttons-background-color);
+      transition:
+        background-color 180ms ease-in-out,
+        opacity 180ms ease-in-out;
+      opacity: var(--control-number-buttons-background-opacity);
+    }
+    .value:focus-visible {
+      box-shadow: 0 0 0 2px var(--control-number-buttons-focus-color);
+    }
+    .button {
+      color: inherit;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      padding: 0;
+      width: 35px;
+      height: 40px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      outline: none;
+    }
+    .button[disabled] {
+      opacity: 0.4;
+      pointer-events: none;
+      cursor: not-allowed;
+    }
+    .button.minus {
+      left: 0;
+      inset-inline-start: 0;
+      inset-inline-end: initial;
+    }
+    .button.plus {
+      right: 0;
+      inset-inline-start: initial;
+      inset-inline-end: 0;
+    }
+    .unit {
+      white-space: pre;
+    }
+    @container container (max-width: 100px) {
       .unit {
-        white-space: pre;
+        display: none;
       }
-      @container container (max-width: 100px) {
-        .unit {
-          display: none;
-        }
-      }
-    `;
-  }
+    }
+  `;
 }
 
 declare global {

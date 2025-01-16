@@ -57,7 +57,7 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
         this._repairsIssues = repairs.issues.sort(
           (a, b) => severitySort[a.severity] - severitySort[b.severity]
         );
-        const integrations: Set<string> = new Set();
+        const integrations = new Set<string>();
         for (const issue of this._repairsIssues) {
           integrations.add(issue.domain);
         }
