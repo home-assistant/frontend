@@ -162,7 +162,7 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
         ${this._results.length
           ? html`
               <div class="result-toolbar">
-                <ha-button outlined @click=${this._clear} class="destructive">
+                <ha-button outlined @click=${this._clear} destructive>
                   <ha-svg-icon slot="icon" .path=${mdiTrashCan}></ha-svg-icon>
                   ${this.hass.localize("ui.common.clear")}
                 </ha-button>
@@ -279,9 +279,6 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
         ha-alert {
           display: block;
           margin-top: 16px;
-        }
-        .destructive {
-          --mdc-theme-primary: var(--error-color);
         }
       `,
     ];
