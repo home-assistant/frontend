@@ -413,7 +413,7 @@ export class HaDateRangePicker extends LitElement {
       .date-range-ranges {
         overflow: auto;
         max-height: calc(70vh - 330px);
-        min-height: 200px;
+        min-height: 160px;
       }
     }
   `;
