@@ -198,7 +198,7 @@ export class HuiCreateDialogCard
 
         ha-dialog {
           --mdc-dialog-max-width: 845px;
-          --dialog-content-padding: 2px 24px 20px 24px;
+          --dialog-content-padding: 0px 24px 20px 24px;
           --dialog-z-index: 6;
         }
 
@@ -219,12 +219,12 @@ export class HuiCreateDialogCard
         }
         hui-entity-picker-table {
           display: block;
-          height: calc(100vh - 215px);
+          height: calc(100vh - 198px);
           --mdc-shape-small: 0;
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           hui-entity-picker-table {
-            height: calc(100vh - 285px);
+            height: calc(100vh - 158px);
           }
         }
       `,
