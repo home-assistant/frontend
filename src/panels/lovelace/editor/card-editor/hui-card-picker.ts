@@ -216,6 +216,7 @@ export class HuiCardPicker extends LitElement {
                 `ui.panel.lovelace.editor.card.generic.manual_description`
               )}
             </div>
+            <ha-ripple></ha-ripple>
           </div>
         </div>
       </div>
