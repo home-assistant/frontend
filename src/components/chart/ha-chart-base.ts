@@ -13,6 +13,7 @@ import { debounce } from "../../common/util/debounce";
 import { isMac } from "../../util/is_mac";
 import "../ha-icon-button";
 import type { ECOption } from "../../resources/echarts";
+import { listenMediaQuery } from "../../common/dom/media_query";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 
@@ -50,8 +51,15 @@ export class HaChartBase extends LitElement {
 
   private _loading = false;
 
+  private _reducedMotion = false;
+
+  private _listeners: (() => void)[] = [];
+
   public disconnectedCallback() {
     super.disconnectedCallback();
+    while (this._listeners.length) {
+      this._listeners.pop()!();
+    }
     this._releaseCanvas();
   }
 
@@ -61,6 +69,13 @@ export class HaChartBase extends LitElement {
       this._releaseCanvas();
       this._setupChart();
     }
+
+    this._listeners.push(
+      listenMediaQuery("(prefers-reduced-motion)", (matches) => {
+        this._reducedMotion = matches;
+        this.chart?.setOption({ animation: !this._reducedMotion });
+      })
+    );
   }
 
   protected firstUpdated() {
@@ -186,6 +201,7 @@ export class HaChartBase extends LitElement {
 
   private _createOptions(): ECOption {
     return {
+      animation: !this._reducedMotion,
       darkMode: this.hass.themes?.darkMode,
       aria: {
         show: true,
