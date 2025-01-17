@@ -4,6 +4,7 @@ import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiCalendar } from "@mdi/js";
 import {
+  addDays,
   subHours,
   endOfDay,
   endOfMonth,
@@ -113,8 +114,28 @@ export class HaDateRangePicker extends LitElement {
             weekStartsOn,
           }),
         ],
-        [this.hass.localize("ui.components.date-range-picker.ranges.now-24h")]:
-          [subHours(today, 24), today],
+        [this.hass.localize(
+          "ui.components.date-range-picker.ranges.yesterday"
+        )]: [
+          calcDate(
+            addDays(today, -1),
+            startOfDay,
+            this.hass.locale,
+            this.hass.config,
+            {
+              weekStartsOn,
+            }
+          ),
+          calcDate(
+            addDays(today, -1),
+            endOfDay,
+            this.hass.locale,
+            this.hass.config,
+            {
+              weekStartsOn,
+            }
+          ),
+        ],
         [this.hass.localize(
           "ui.components.date-range-picker.ranges.this_week"
         )]: [weekStart, weekEnd],
@@ -143,9 +164,6 @@ export class HaDateRangePicker extends LitElement {
                 ),
               ],
               [this.hass.localize(
-                "ui.components.date-range-picker.ranges.now-30d"
-              )]: [subHours(today, 24 * 30), today],
-              [this.hass.localize(
                 "ui.components.date-range-picker.ranges.this_year"
               )]: [
                 calcDate(
@@ -161,6 +179,12 @@ export class HaDateRangePicker extends LitElement {
                   weekStartsOn,
                 }),
               ],
+              [this.hass.localize(
+                "ui.components.date-range-picker.ranges.now-24h"
+              )]: [subHours(today, 24), today],
+              [this.hass.localize(
+                "ui.components.date-range-picker.ranges.now-30d"
+              )]: [subHours(today, 24 * 30), today],
               [this.hass.localize(
                 "ui.components.date-range-picker.ranges.now-365d"
               )]: [subDays(today, 365), today],
@@ -386,10 +410,11 @@ export class HaDateRangePicker extends LitElement {
         }
       }
 
-      @media only screen and (max-height: 920px) and (max-width: 800px) {
+      @media only screen and (max-height: 940px) and (max-width: 800px) {
         .date-range-ranges {
-          overflow: scroll;
-          max-height: calc(70vh - 350px);
+          overflow: auto;
+          max-height: calc(70vh - 330px);
+          min-height: 200px;
         }
       }
     `;
