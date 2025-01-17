@@ -11,6 +11,7 @@ import type { HomeAssistant } from "../types";
 import { fileDownload } from "../util/file_download";
 import { domainToName } from "./integration";
 import type { FrontendLocaleData } from "./translation";
+import checkValidDate from "../common/datetime/check_valid_date";
 
 export const enum BackupScheduleState {
   NEVER = "never",
@@ -27,6 +28,7 @@ export const enum BackupScheduleState {
 export interface BackupConfig {
   last_attempted_automatic_backup: string | null;
   last_completed_automatic_backup: string | null;
+  next_automatic_backup: string | null;
   create_backup: {
     agent_ids: string[];
     include_addons: string[] | null;
@@ -355,9 +357,12 @@ export const getFormattedBackupTime = memoizeOne(
   (
     locale: FrontendLocaleData,
     config: HassConfig,
-    backupTime?: string | null
+    backupTime?: Date | string | null
   ) => {
-    if (backupTime) {
+    if (checkValidDate(backupTime as Date)) {
+      return formatTime(backupTime as Date, locale, config);
+    }
+    if (typeof backupTime === "string" && backupTime) {
       const splitted = backupTime.split(":");
       const date = setMinutes(
         setHours(new Date(), parseInt(splitted[0])),

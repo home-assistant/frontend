@@ -39,20 +39,21 @@ class HaBackupBackupsSummary extends LitElement {
       );
     }
 
-    const time = getFormattedBackupTime(
-      this.hass.locale,
-      this.hass.config,
-      this.config.schedule.time
-    );
+    const time: string | undefined | null =
+      this.config.schedule.time &&
+      getFormattedBackupTime(
+        this.hass.locale,
+        this.hass.config,
+        this.config.schedule.time
+      );
 
     const scheduleText = this.hass.localize(
-      `ui.panel.config.backup.overview.settings.schedule_${schedule}`,
+      `ui.panel.config.backup.overview.settings.schedule_${!this.config.schedule.time ? "optimized_" : ""}${schedule}`,
       { time }
     );
 
     let copiesText = this.hass.localize(
-      `ui.panel.config.backup.overview.settings.schedule_copies_all`,
-      { time }
+      `ui.panel.config.backup.overview.settings.schedule_copies_all`
     );
     if (copies) {
       copiesText = this.hass.localize(

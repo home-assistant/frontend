@@ -2563,6 +2563,14 @@
               "schedule_fri": "Weekly on Fridays at {time}",
               "schedule_sat": "Weekly on Saturdays at {time}",
               "schedule_sun": "Weekly on Sundays at {time}",
+              "schedule_optimized_daily": "Daily",
+              "schedule_optimized_mon": "Weekly on Mondays",
+              "schedule_optimized_tue": "Weekly on Tuesdays",
+              "schedule_optimized_wed": "Weekly on Wednesdays",
+              "schedule_optimized_thu": "Weekly on Thursdays",
+              "schedule_optimized_fri": "Weekly on Fridays",
+              "schedule_optimized_sat": "Weekly on Saturdays",
+              "schedule_optimized_sun": "Weekly on Sundays",
               "schedule_never": "Automatic backups are not scheduled",
               "data": "Home Assistant data that is included",
               "data_settings_history": "Settings and history",
@@ -2575,7 +2583,8 @@
               "locations_one": "Store in {name}",
               "locations_many": "Store in {count} off-site {count, plural,\n one {location}\n other {locations}\n}",
               "locations_local_only": "Local backup only",
-              "locations_none": "No locations configured"
+              "locations_none": "No locations configured",
+              "system_optimal_time": "system optimal time"
             }
           },
           "backups": {

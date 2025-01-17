@@ -76,17 +76,6 @@ class HaBackupOverviewBackups extends LitElement {
 
     const lastBackup = this._lastBackup(this.backups);
 
-    const backupTime = getFormattedBackupTime(
-      this.hass.locale,
-      this.hass.config,
-      this.config.schedule.time
-    );
-
-    const nextBackupDescription = this.hass.localize(
-      `ui.panel.config.backup.overview.summary.next_backup_description.${this.config.schedule.state}`,
-      { time: backupTime }
-    );
-
     const lastAttemptDate = this.config.last_attempted_automatic_backup
       ? new Date(this.config.last_attempted_automatic_backup)
       : new Date(0);
@@ -94,6 +83,21 @@ class HaBackupOverviewBackups extends LitElement {
     const lastCompletedDate = this.config.last_completed_automatic_backup
       ? new Date(this.config.last_completed_automatic_backup)
       : new Date(0);
+
+    const nextAutomaticDate = this.config.next_automatic_backup
+      ? new Date(this.config.next_automatic_backup)
+      : undefined;
+
+    const backupTime = getFormattedBackupTime(
+      this.hass.locale,
+      this.hass.config,
+      nextAutomaticDate || this.config.schedule.time
+    );
+
+    const nextBackupDescription = this.hass.localize(
+      `ui.panel.config.backup.overview.summary.next_backup_description.${this.config.schedule.state}`,
+      { time: backupTime }
+    );
 
     // If last attempt is after last completed backup, show error
     if (lastAttemptDate > lastCompletedDate) {
