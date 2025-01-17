@@ -481,6 +481,10 @@ export class HuiCardPicker extends LitElement {
           position: sticky;
           top: 0;
           z-index: 10;
+          background-color: var(
+              --ha-dialog-surface-background,
+              var(--mdc-theme-surface, #fff)
+          );
         }
 
         .cards-container-header {
