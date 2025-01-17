@@ -17,7 +17,7 @@ import {
   startOfYear,
   isThisYear,
 } from "date-fns";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -371,54 +371,52 @@ export class HaDateRangePicker extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-icon-button {
-        direction: var(--direction);
-      }
+  static styles = css`
+    ha-icon-button {
+      direction: var(--direction);
+    }
 
-      .date-range-inputs {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
+    .date-range-inputs {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-      .date-range-ranges {
-        border-right: 1px solid var(--divider-color);
-      }
+    .date-range-ranges {
+      border-right: 1px solid var(--divider-color);
+    }
 
-      .date-range-footer {
-        display: flex;
-        justify-content: flex-end;
-        padding: 8px;
-        border-top: 1px solid var(--divider-color);
-      }
+    .date-range-footer {
+      display: flex;
+      justify-content: flex-end;
+      padding: 8px;
+      border-top: 1px solid var(--divider-color);
+    }
 
+    ha-textarea {
+      display: inline-block;
+      width: 340px;
+    }
+    @media only screen and (max-width: 460px) {
       ha-textarea {
-        display: inline-block;
-        width: 340px;
+        width: 100%;
       }
-      @media only screen and (max-width: 460px) {
-        ha-textarea {
-          width: 100%;
-        }
+    }
+    @media only screen and (max-width: 800px) {
+      .date-range-ranges {
+        border-right: none;
+        border-bottom: 1px solid var(--divider-color);
       }
-      @media only screen and (max-width: 800px) {
-        .date-range-ranges {
-          border-right: none;
-          border-bottom: 1px solid var(--divider-color);
-        }
-      }
+    }
 
-      @media only screen and (max-height: 940px) and (max-width: 800px) {
-        .date-range-ranges {
-          overflow: auto;
-          max-height: calc(70vh - 330px);
-          min-height: 200px;
-        }
+    @media only screen and (max-height: 940px) and (max-width: 800px) {
+      .date-range-ranges {
+        overflow: auto;
+        max-height: calc(70vh - 330px);
+        min-height: 200px;
       }
-    `;
-  }
+    }
+  `;
 }
 
 declare global {
