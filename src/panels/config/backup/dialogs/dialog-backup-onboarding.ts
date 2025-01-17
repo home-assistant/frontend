@@ -69,9 +69,11 @@ const RECOMMENDED_CONFIG: BackupConfig = {
   },
   schedule: {
     state: BackupScheduleState.DAILY,
+    time: null,
   },
   last_attempted_automatic_backup: null,
   last_completed_automatic_backup: null,
+  next_automatic_backup: null,
 };
 
 @customElement("ha-dialog-backup-onboarding")
@@ -145,7 +147,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
         include_database: this._config.create_backup.include_database,
         agent_ids: this._config.create_backup.agent_ids,
       },
-      schedule: this._config.schedule.state,
+      schedule: this._config.schedule,
       retention: this._config.retention,
     };
 
