@@ -5,6 +5,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import type { BarSeriesOption } from "echarts/charts";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
 import { getEnergyColor } from "./common/color";
 import "../../../../components/ha-card";
@@ -22,7 +23,6 @@ import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
 import {
   calculateStatisticSumGrowth,
   getStatisticLabel,
-  isExternalStatistic,
 } from "../../../../data/recorder";
 import type { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
@@ -31,8 +31,8 @@ import type { LovelaceCard } from "../../types";
 import type { EnergyDevicesDetailGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import { getCommonOptions } from "./common/energy-chart-options";
-import { fireEvent } from "../../../../common/dom/fire_event";
 import { storage } from "../../../../common/decorators/storage";
+import type { ECOption } from "../../../../resources/echarts";
 
 const UNIT = "kWh";
 
@@ -45,9 +45,7 @@ export class HuiEnergyDevicesDetailGraphCard
 
   @state() private _config?: EnergyDevicesDetailGraphCardConfig;
 
-  @state() private _chartData: ChartData = { datasets: [] };
-
-  @state() private _chartDatasetExtra: ChartDatasetExtra[] = [];
+  @state() private _chartData: BarSeriesOption[] = [];
 
   @state() private _data?: EnergyData;
 
@@ -65,8 +63,6 @@ export class HuiEnergyDevicesDetailGraphCard
     subscribe: false,
   })
   private _hiddenStats: string[] = [];
-
-  private _untrackedIndex?: number;
 
   protected hassSubscribeRequiredHostProps = ["_config"];
 
@@ -134,7 +130,6 @@ export class HuiEnergyDevicesDetailGraphCard
               this._compareStart,
               this._compareEnd
             )}
-            chart-type="bar"
             @dataset-hidden=${this._datasetHidden}
             @dataset-unhidden=${this._datasetUnhidden}
           ></ha-chart-base>
@@ -162,7 +157,7 @@ export class HuiEnergyDevicesDetailGraphCard
       unit?: string,
       compareStart?: Date,
       compareEnd?: Date
-    ): ChartOptions => {
+    ): ECOption => {
       const commonOptions = getCommonOptions(
         start,
         end,
@@ -170,44 +165,41 @@ export class HuiEnergyDevicesDetailGraphCard
         config,
         unit,
         compareStart,
-        compareEnd
+        compareEnd,
+        this.hass.themes?.darkMode
       );
 
-      const options: ChartOptions = {
+      return {
         ...commonOptions,
-        interaction: {
-          mode: "nearest",
+        legend: {
+          show: true,
+          type: "scroll",
+          animationDurationUpdate: 400,
+          selected: this._hiddenStats.reduce((acc, stat) => {
+            acc[stat] = false;
+            return acc;
+          }, {}),
+          icon: "circle",
         },
-        plugins: {
-          ...commonOptions.plugins!,
-          legend: {
-            display: true,
-            labels: {
-              usePointStyle: true,
-            },
-          },
-        },
-        onClick: (event, elements, chart) => {
-          if (clickIsTouch(event)) return;
-
-          const index = elements[0]?.datasetIndex ?? -1;
-          if (index < 0) return;
-
-          const statisticId =
-            this._data?.prefs.device_consumption[index]?.stat_consumption;
-
-          if (!statisticId || isExternalStatistic(statisticId)) return;
-
-          fireEvent(this, "hass-more-info", { entityId: statisticId });
-          chart?.canvas?.dispatchEvent(new Event("mouseout")); // to hide tooltip
+        grid: {
+          bottom: 0,
+          left: 5,
+          right: 5,
+          containLabel: true,
         },
       };
-      return options;
     }
   );
 
   private _processStatistics() {
     const energyData = this._data!;
+
+    this._start = energyData.start;
+    this._end = energyData.end || endOfToday();
+
+    this._compareStart = energyData.startCompare;
+    this._compareEnd = energyData.endCompare;
+
     const data = energyData.stats;
     const compareData = energyData.statsCompare;
 
@@ -228,21 +220,7 @@ export class HuiEnergyDevicesDetailGraphCard
     );
     sorted_devices.sort((a, b) => growthValues[b] - growthValues[a]);
 
-    const datasets: ChartDataset<"bar", ScatterDataPoint[]>[] = [];
-    const datasetExtras: ChartDatasetExtra[] = [];
-
-    const { data: processedData, dataExtras: processedDataExtras } =
-      this._processDataSet(
-        computedStyle,
-        data,
-        energyData.statsMetadata,
-        energyData.prefs.device_consumption,
-        sorted_devices
-      );
-
-    datasets.push(...processedData);
-
-    datasetExtras.push(...processedDataExtras);
+    const datasets: BarSeriesOption[] = [];
 
     const { summedData, compareSummedData } = getSummedData(energyData);
 
@@ -258,41 +236,8 @@ export class HuiEnergyDevicesDetailGraphCard
       ? computeConsumptionData(summedData, compareSummedData)
       : { consumption: undefined, compareConsumption: undefined };
 
-    if (showUntracked) {
-      this._untrackedIndex = datasets.length;
-      const { dataset: untrackedData, datasetExtra: untrackedDataExtra } =
-        this._processUntracked(
-          computedStyle,
-          processedData,
-          consumptionData,
-          false
-        );
-      datasets.push(untrackedData);
-      datasetExtras.push(untrackedDataExtra);
-    }
-
     if (compareData) {
-      // Add empty dataset to align the bars
-      datasets.push({
-        order: 0,
-        data: [],
-      });
-      datasetExtras.push({
-        show_legend: false,
-      });
-      datasets.push({
-        order: 999,
-        data: [],
-        xAxisID: "xAxisCompare",
-      });
-      datasetExtras.push({
-        show_legend: false,
-      });
-
-      const {
-        data: processedCompareData,
-        dataExtras: processedCompareDataExtras,
-      } = this._processDataSet(
+      const processedCompareData = this._processDataSet(
         computedStyle,
         compareData,
         energyData.statsMetadata,
@@ -302,33 +247,75 @@ export class HuiEnergyDevicesDetailGraphCard
       );
 
       datasets.push(...processedCompareData);
-      datasetExtras.push(...processedCompareDataExtras);
 
       if (showUntracked) {
-        const {
-          dataset: untrackedCompareData,
-          datasetExtra: untrackedCompareDataExtra,
-        } = this._processUntracked(
+        const untrackedCompareData = this._processUntracked(
           computedStyle,
           processedCompareData,
           consumptionCompareData,
           true
         );
         datasets.push(untrackedCompareData);
-        datasetExtras.push(untrackedCompareDataExtra);
       }
+    } else {
+      // add empty dataset so compare bars are first
+      // `stack: devices` so it doesn't take up space yet
+      const firstId =
+        energyData.prefs.device_consumption[0]?.stat_consumption ?? "untracked";
+      datasets.push({
+        id: "compare-" + firstId,
+        type: "bar",
+        stack: "devices",
+        data: [],
+      });
     }
 
-    this._start = energyData.start;
-    this._end = energyData.end || endOfToday();
+    const processedData = this._processDataSet(
+      computedStyle,
+      data,
+      energyData.statsMetadata,
+      energyData.prefs.device_consumption,
+      sorted_devices
+    );
 
-    this._compareStart = energyData.startCompare;
-    this._compareEnd = energyData.endCompare;
+    datasets.push(...processedData);
 
-    this._chartData = {
-      datasets,
-    };
-    this._chartDatasetExtra = datasetExtras;
+    if (showUntracked) {
+      const untrackedData = this._processUntracked(
+        computedStyle,
+        processedData,
+        consumptionData,
+        false
+      );
+      datasets.push(untrackedData);
+    }
+
+    const buckets = Array.from(
+      new Set(
+        datasets
+          .map((dataset) => dataset.data!.map((datapoint) => datapoint![0]))
+          .flat()
+      )
+    ).sort((a, b) => a - b);
+
+    // make sure all datasets have the same buckets
+    // otherwise the chart will render incorrectly in some cases
+    datasets.forEach((dataset) => {
+      if (!dataset.data?.length) {
+        return;
+      }
+      buckets.forEach((bucket, index) => {
+        if (dataset.data![index]?.[0] !== bucket) {
+          dataset.data?.splice(index, 0, {
+            value: [bucket, 0],
+            itemStyle: {
+              borderWidth: 0,
+            },
+          });
+        }
+      });
+    });
+    this._chartData = datasets;
   }
 
   private _processUntracked(
@@ -336,36 +323,51 @@ export class HuiEnergyDevicesDetailGraphCard
     processedData,
     consumptionData,
     compare: boolean
-  ): { dataset; datasetExtra } {
+  ): BarSeriesOption {
     const totalDeviceConsumption: Record<number, number> = {};
 
     processedData.forEach((device) => {
       device.data.forEach((datapoint) => {
-        totalDeviceConsumption[datapoint.x] =
-          (totalDeviceConsumption[datapoint.x] || 0) + datapoint.y;
+        totalDeviceConsumption[datapoint[0]] =
+          (totalDeviceConsumption[datapoint[0]] || 0) + datapoint[1];
       });
     });
+    const compareOffset = compare
+      ? this._start.getTime() - this._compareStart!.getTime()
+      : 0;
 
-    const untrackedConsumption: { x: number; y: number }[] = [];
+    const untrackedConsumption: BarSeriesOption["data"] = [];
     Object.keys(consumptionData.total).forEach((time) => {
-      untrackedConsumption.push({
-        x: Number(time),
-        y: consumptionData.total[time] - (totalDeviceConsumption[time] || 0),
-      });
+      const value =
+        consumptionData.total[time] - (totalDeviceConsumption[time] || 0);
+      if (value > 0) {
+        const dataPoint = [Number(time), value];
+        if (compare) {
+          dataPoint[2] = dataPoint[0];
+          dataPoint[0] += compareOffset;
+        }
+        untrackedConsumption.push(dataPoint);
+      }
     });
-    const dataset = {
-      label: this.hass.localize(
+    const dataset: BarSeriesOption = {
+      type: "bar",
+      id: compare ? "compare-untracked" : "untracked",
+      name: this.hass.localize(
         "ui.panel.lovelace.cards.energy.energy_devices_detail_graph.untracked_consumption"
       ),
-      hidden: this._hiddenStats.includes("untracked"),
-      borderColor: getEnergyColor(
-        computedStyle,
-        this.hass.themes.darkMode,
-        false,
-        compare,
-        "--state-unavailable-color"
-      ),
-      backgroundColor: getEnergyColor(
+      itemStyle: {
+        borderRadius: [4, 4, 0, 0],
+        borderWidth: 1.5,
+        borderColor: getEnergyColor(
+          computedStyle,
+          this.hass.themes.darkMode,
+          false,
+          compare,
+          "--state-unavailable-color"
+        ),
+      },
+      barMaxWidth: 50,
+      color: getEnergyColor(
         computedStyle,
         this.hass.themes.darkMode,
         true,
@@ -373,15 +375,9 @@ export class HuiEnergyDevicesDetailGraphCard
         "--state-unavailable-color"
       ),
       data: untrackedConsumption,
-      order: 1 + this._untrackedIndex!,
-      stack: "devices",
-      pointStyle: compare ? false : "circle",
-      xAxisID: compare ? "xAxisCompare" : undefined,
+      stack: compare ? "devicesCompare" : "devices",
     };
-    const datasetExtra = {
-      show_legend: !compare,
-    };
-    return { dataset, datasetExtra };
+    return dataset;
   }
 
   private _processDataSet(
@@ -392,70 +388,74 @@ export class HuiEnergyDevicesDetailGraphCard
     sorted_devices: string[],
     compare = false
   ) {
-    const data: ChartDataset<"bar", ScatterDataPoint[]>[] = [];
-    const dataExtras: ChartDatasetExtra[] = [];
+    const data: BarSeriesOption[] = [];
+    const compareOffset = compare
+      ? this._start.getTime() - this._compareStart!.getTime()
+      : 0;
 
     devices.forEach((source, idx) => {
+      const order = sorted_devices.indexOf(source.stat_consumption);
+      if (this._config?.max_devices && order >= this._config.max_devices) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `Max devices exceeded for ${source.name} (${order} >= ${this._config.max_devices})`
+        );
+        return;
+      }
       const color = getGraphColorByIndex(idx, computedStyle);
 
       let prevStart: number | null = null;
 
-      const consumptionData: ScatterDataPoint[] = [];
+      const consumptionData: BarSeriesOption["data"] = [];
 
       // Process gas consumption data.
       if (source.stat_consumption in statistics) {
         const stats = statistics[source.stat_consumption];
-        let end;
 
         for (const point of stats) {
-          if (point.change === null || point.change === undefined) {
+          if (
+            point.change === null ||
+            point.change === undefined ||
+            point.change === 0
+          ) {
             continue;
           }
           if (prevStart === point.start) {
             continue;
           }
-          const date = new Date(point.start);
-          consumptionData.push({
-            x: date.getTime(),
-            y: point.change,
-          });
+          const dataPoint = [point.start, point.change];
+          if (compare) {
+            dataPoint[2] = dataPoint[0];
+            dataPoint[0] += compareOffset;
+          }
+          consumptionData.push(dataPoint);
           prevStart = point.start;
-          end = point.end;
-        }
-        if (consumptionData.length === 1) {
-          consumptionData.push({
-            x: end,
-            y: 0,
-          });
         }
       }
 
-      const order = sorted_devices.indexOf(source.stat_consumption);
-      const itemExceedsMax = !!(
-        this._config?.max_devices && order >= this._config.max_devices
-      );
-
       data.push({
-        label:
+        type: "bar",
+        id: compare
+          ? `compare-${source.stat_consumption}`
+          : source.stat_consumption,
+        name:
           source.name ||
           getStatisticLabel(
             this.hass,
             source.stat_consumption,
             statisticsMetaData[source.stat_consumption]
           ),
-        hidden:
-          this._hiddenStats.includes(source.stat_consumption) || itemExceedsMax,
-        borderColor: compare ? color + "7F" : color,
-        backgroundColor: compare ? color + "32" : color + "7F",
+        itemStyle: {
+          borderWidth: 1.5,
+          borderColor: compare ? color + "7F" : color,
+        },
+        barMaxWidth: 50,
+        color: compare ? color + "32" : color + "7F",
         data: consumptionData,
-        order: 1 + order,
-        stack: "devices",
-        pointStyle: compare ? false : "circle",
-        xAxisID: compare ? "xAxisCompare" : undefined,
+        stack: compare ? "devicesCompare" : "devices",
       });
-      dataExtras.push({ show_legend: !compare && !itemExceedsMax });
     });
-    return { data, dataExtras };
+    return data;
   }
 
   static styles = css`

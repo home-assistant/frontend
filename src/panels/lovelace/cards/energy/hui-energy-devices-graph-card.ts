@@ -186,15 +186,22 @@ export class HuiEnergyDevicesGraphCard
       });
     }
 
+    const computedStyle = getComputedStyle(this);
+
     energyData.prefs.device_consumption.forEach((device, id) => {
       const value =
         device.stat_consumption in data
           ? calculateStatisticSumGrowth(data[device.stat_consumption]) || 0
           : 0;
+      const color = getGraphColorByIndex(id, computedStyle);
 
       chartData.push({
         id,
         value: [value, device.stat_consumption],
+        itemStyle: {
+          color: color + "7F",
+          borderColor: color,
+        },
       });
 
       if (compareData) {
@@ -208,6 +215,10 @@ export class HuiEnergyDevicesGraphCard
         chartDataCompare.push({
           id,
           value: [compareValue, device.stat_consumption],
+          itemStyle: {
+            color: color + "32",
+            borderColor: color + "7F",
+          },
         });
       }
     });
@@ -215,26 +226,6 @@ export class HuiEnergyDevicesGraphCard
     chartData.sort((a: any, b: any) => b.value[0] - a.value[0]);
 
     chartData.length = this._config?.max_devices || chartData.length;
-
-    const computedStyle = getComputedStyle(this);
-
-    chartData.forEach((d: any) => {
-      const color = getGraphColorByIndex(d.id, computedStyle);
-
-      d.itemStyle = {
-        color: color + "7F",
-        borderColor: color,
-      };
-    });
-
-    chartDataCompare.forEach((d: any) => {
-      const color = getGraphColorByIndex(d.id, computedStyle);
-
-      d.itemStyle = {
-        color: color + "32",
-        borderColor: color + "7F",
-      };
-    });
 
     this._chartData = datasets;
     await this.updateComplete;

@@ -109,10 +109,16 @@ export class HaChartBase extends LitElement {
       return;
     }
     if (changedProps.has("data")) {
-      this.chart.setOption({ series: this.data }, { lazyUpdate: true });
+      this.chart.setOption(
+        { series: this.data },
+        { lazyUpdate: true, replaceMerge: ["series"] }
+      );
     }
     if (changedProps.has("options")) {
-      this.chart.setOption(this._createOptions(), { lazyUpdate: true });
+      this.chart.setOption(this._createOptions(), {
+        lazyUpdate: true,
+        notMerge: true,
+      });
     }
   }
 
@@ -172,7 +178,7 @@ export class HaChartBase extends LitElement {
           }
         }
       });
-      this.chart.setOption({ ...this._createOptions(), series: this.data });
+      this.chart.setOption(this._createOptions());
     } finally {
       this._loading = false;
     }
@@ -185,14 +191,16 @@ export class HaChartBase extends LitElement {
         show: true,
       },
       dataZoom: [
-        {
-          type: "inside",
-          orient: "horizontal",
-          filterMode: "none",
-          zoomOnMouseWheel: "ctrl",
-          moveOnMouseWheel: false,
-        },
+        // {
+        //   type: "inside",
+        //   orient: "horizontal",
+        //   filterMode: "none",
+        //   zoomOnMouseWheel: "ctrl",
+        //   moveOnMouseWheel: false,
+        // },
       ],
+      // @ts-ignore
+      series: this.data,
       ...this.options,
     };
   }
