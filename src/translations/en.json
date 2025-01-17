@@ -2409,8 +2409,16 @@
           },
           "schedule": {
             "use_automatic_backups": "Use automatic backups",
+            "day": "Day",
             "schedule": "Schedule",
+            "time": "Time",
+            "custom_time": "Custom time",
+            "custom_time_label": "Backup at",
+            "custom_time_description": "The optimal time is after Home Assistant finished cleaning up the database. This is done at {time}.",
             "schedule_description": "How often you want to create a backup.",
+            "schedule_time_description": "When the backup creation starts.",
+            "schedule_time_optimal_description": "By default Home Assistant picks the optimal time between {time_range_start} and {time_range_end}.",
+            "tip": "You can create your own custom backup automation with the {backup_create} action",
             "schedule_options": {
               "daily": "Daily",
               "mon": "Monday",
@@ -2426,6 +2434,8 @@
               "custom": "Custom"
             },
             "retention": "Retention",
+            "custom_retention": "Custom retention",
+            "custom_retention_label": "Clean up every",
             "retention_description": "Based on the maximum number of backups or how many days they should be kept.",
             "retention_presets": {
               "copies_3": "3 backups",

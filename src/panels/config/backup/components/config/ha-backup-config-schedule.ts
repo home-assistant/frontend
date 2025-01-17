@@ -16,6 +16,9 @@ import type { BackupConfig } from "../../../../../data/backup";
 import { BackupScheduleState } from "../../../../../data/backup";
 import type { HomeAssistant } from "../../../../../types";
 import "../../../../../components/ha-time-input";
+import "../../../../../components/ha-tip";
+import "../../../../../components/ha-expansion-panel";
+import { formatTime } from "../../../../../common/datetime/format_time";
 
 export type BackupConfigSchedule = Pick<BackupConfig, "schedule" | "retention">;
 
@@ -67,6 +70,15 @@ const SCHEDULE_TIME_OPTIONS = [
   BackupScheduleTime.DEFAULT,
   BackupScheduleTime.CUSTOM,
 ] as const satisfies BackupScheduleTime[];
+
+const DEFAULT_OPTIMIZED_START_TIME = new Date();
+DEFAULT_OPTIMIZED_START_TIME.setHours(4);
+DEFAULT_OPTIMIZED_START_TIME.setMinutes(45);
+
+const DEFAULT_OPTIMIZED_END_TIME = new Date(
+  DEFAULT_OPTIMIZED_START_TIME.getTime()
+);
+DEFAULT_OPTIMIZED_END_TIME.setHours(5);
 
 const computeRetentionPreset = (
   data: RetentionData
@@ -175,7 +187,11 @@ class HaBackupConfigSchedule extends LitElement {
         ${data.enabled
           ? html`
               <ha-md-list-item>
-                <span slot="headline"> Day </span>
+                <span slot="headline">
+                  ${this.hass.localize(
+                    "ui.panel.config.backup.schedule.day"
+                  )}</span
+                >
                 <span slot="supporting-text">
                   ${this.hass.localize(
                     "ui.panel.config.backup.schedule.schedule_description"
@@ -201,11 +217,32 @@ class HaBackupConfigSchedule extends LitElement {
                 </ha-md-select>
               </ha-md-list-item>
               <ha-md-list-item>
-                <span slot="headline"> Time </span>
+                <span slot="headline">
+                  ${this.hass.localize(
+                    "ui.panel.config.backup.schedule.time"
+                  )}</span
+                >
                 <span slot="supporting-text">
                   ${this.hass.localize(
-                    "ui.panel.config.backup.schedule.schedule_description"
+                    "ui.panel.config.backup.schedule.schedule_time_description"
                   )}
+                  ${data.time_option === BackupScheduleTime.DEFAULT
+                    ? this.hass.localize(
+                        "ui.panel.config.backup.schedule.schedule_time_optimal_description",
+                        {
+                          time_range_start: formatTime(
+                            DEFAULT_OPTIMIZED_START_TIME,
+                            this.hass.locale,
+                            this.hass.config
+                          ),
+                          time_range_end: formatTime(
+                            DEFAULT_OPTIMIZED_END_TIME,
+                            this.hass.locale,
+                            this.hass.config
+                          ),
+                        }
+                      )
+                    : nothing}
                 </span>
 
                 <ha-md-select
@@ -227,15 +264,40 @@ class HaBackupConfigSchedule extends LitElement {
                 </ha-md-select>
               </ha-md-list-item>
               ${data.time_option === BackupScheduleTime.CUSTOM
-                ? html`<ha-md-list-item>
-                    <ha-time-input
-                      slot="end"
-                      @value-changed=${this._timeChanged}
-                      .value=${data.time}
-                      .locale=${this.hass.locale}
-                    >
-                    </ha-time-input>
-                  </ha-md-list-item>`
+                ? html`<ha-expansion-panel
+                    expanded
+                    .header=${this.hass.localize(
+                      "ui.panel.config.backup.schedule.custom_time"
+                    )}
+                    outlined
+                  >
+                    <ha-md-list-item>
+                      <span slot="headline">
+                        ${this.hass.localize(
+                          "ui.panel.config.backup.schedule.custom_time_label"
+                        )}
+                      </span>
+                      <span slot="supporting-text">
+                        ${this.hass.localize(
+                          "ui.panel.config.backup.schedule.custom_time_description",
+                          {
+                            time: formatTime(
+                              DEFAULT_OPTIMIZED_START_TIME,
+                              this.hass.locale,
+                              this.hass.config
+                            ),
+                          }
+                        )}
+                      </span>
+                      <ha-time-input
+                        slot="end"
+                        @value-changed=${this._timeChanged}
+                        .value=${data.time}
+                        .locale=${this.hass.locale}
+                      >
+                      </ha-time-input>
+                    </ha-md-list-item>
+                  </ha-expansion-panel>`
                 : nothing}
               <ha-md-list-item>
                 <span slot="headline">
@@ -266,9 +328,21 @@ class HaBackupConfigSchedule extends LitElement {
                   )}
                 </ha-md-select>
               </ha-md-list-item>
+
               ${this._retentionPreset === RetentionPreset.CUSTOM
-                ? html`
+                ? html`<ha-expansion-panel
+                    expanded
+                    .header=${this.hass.localize(
+                      "ui.panel.config.backup.schedule.custom_retention"
+                    )}
+                    outlined
+                  >
                     <ha-md-list-item>
+                      <span slot="headline">
+                        ${this.hass.localize(
+                          "ui.panel.config.backup.schedule.custom_retention_label"
+                        )}
+                      </span>
                       <ha-md-textfield
                         slot="end"
                         @change=${this._retentionValueChanged}
@@ -299,11 +373,21 @@ class HaBackupConfigSchedule extends LitElement {
                           )}
                         </ha-md-select-option>
                       </ha-md-select>
-                    </ha-md-list-item>
-                  `
+                    </ha-md-list-item></ha-expansion-panel
+                  > `
                 : nothing}
             `
           : nothing}
+        <ha-tip .hass=${this.hass}
+          >${this.hass.localize("ui.panel.config.backup.schedule.tip", {
+            backup_create: html`<a
+              href="https://www.home-assistant.io/integrations/backup#example-backing-up-every-night-at-300-am"
+              target="_blank"
+              rel="noopener noreferrer"
+              >backup.create</a
+            >`,
+          })}</ha-tip
+        >
       </ha-md-list>
     `;
   }
@@ -426,6 +510,14 @@ class HaBackupConfigSchedule extends LitElement {
     }
     ha-md-select#type {
       min-width: 100px;
+    }
+    ha-expansion-panel {
+      padding: 0 8px;
+      margin-bottom: 16px;
+    }
+    ha-tip {
+      text-align: unset;
+      margin: 16px 0;
     }
   `;
 }
