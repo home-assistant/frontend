@@ -33,6 +33,7 @@ import type { LovelaceCard } from "../../types";
 import { getCardStubConfig } from "../get-card-stub-config";
 import { coreCards } from "../lovelace-cards";
 import type { Card, CardPickTarget } from "../types";
+import { haStyleScrollbar } from "../../../../resources/styles";
 
 interface CardElement {
   card: Card;
@@ -62,8 +63,6 @@ export class HuiCardPicker extends LitElement {
   @state() private _filter = "";
 
   @state() private _width?: number;
-
-  @state() private _height?: number;
 
   private _unusedEntities?: string[];
 
@@ -149,10 +148,10 @@ export class HuiCardPicker extends LitElement {
         )}
       ></search-input>
       <div
+        class="ha-scrollbar"
         id="content"
         style=${styleMap({
           width: this._width ? `${this._width}px` : "auto",
-          height: this._height ? `${this._height}px` : "auto",
         })}
       >
         <div class="cards-container">
@@ -352,20 +351,13 @@ export class HuiCardPicker extends LitElement {
     if (!value) {
       // Reset when we no longer filter
       this._width = undefined;
-      this._height = undefined;
-    } else if (!this._width || !this._height) {
+    } else if (!this._width) {
       // Save height and width so the dialog doesn't jump while searching
       const div = this.shadowRoot!.getElementById("content");
       if (div && !this._width) {
         const width = div.clientWidth;
         if (width) {
           this._width = width;
-        }
-      }
-      if (div && !this._height) {
-        const height = div.clientHeight;
-        if (height) {
-          this._height = height;
         }
       }
     }
@@ -450,11 +442,7 @@ export class HuiCardPicker extends LitElement {
           .config=${cardConfig}
         ></div>
         <div class="card-header">
-          ${customCard
-            ? `${this.hass!.localize(
-                "ui.panel.lovelace.editor.cardpicker.custom_card"
-              )}: ${customCard.name || customCard.type}`
-            : name}
+          ${customCard ? customCard.name || customCard.type : name}
         </div>
         <div
           class="preview ${classMap({
@@ -470,12 +458,14 @@ export class HuiCardPicker extends LitElement {
                 )
               : description}
         </div>
+        <ha-ripple></ha-ripple>
       </div>
     `;
   }
 
   static get styles(): CSSResultGroup {
     return [
+      haStyleScrollbar,
       css`
         search-input {
           display: block;
@@ -486,9 +476,16 @@ export class HuiCardPicker extends LitElement {
         .cards-container-header {
           font-size: 16px;
           font-weight: 500;
-          padding: 12px 8px 4px 8px;
+          padding: 12px 8px;
           margin: 0;
           grid-column: 1 / -1;
+          position: sticky;
+          top: 0;
+          z-index: 10;
+          background-color: var(
+              --ha-dialog-surface-background,
+              var(--mdc-theme-surface, #fff)
+          );
         }
 
         .cards-container {
@@ -522,11 +519,6 @@ export class HuiCardPicker extends LitElement {
           padding: 12px 16px;
           display: block;
           text-align: center;
-          background: var(
-            --ha-card-background,
-            var(--card-background-color, white)
-          );
-          border-bottom: 1px solid var(--divider-color);
         }
 
         .preview {
@@ -539,7 +531,6 @@ export class HuiCardPicker extends LitElement {
         }
 
         .preview > :first-child {
-          zoom: 0.6;
           display: block;
           width: 100%;
         }
@@ -583,6 +574,13 @@ export class HuiCardPicker extends LitElement {
         .icon.custom {
           background: var(--warning-color);
         }
+        #content {
+          height: calc(100vh - 290px);
+        }
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          #content {
+            height: calc(100vh - 345px);
+          }
       `,
     ];
   }

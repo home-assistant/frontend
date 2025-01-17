@@ -219,12 +219,12 @@ export class HuiCreateDialogCard
         }
         hui-entity-picker-table {
           display: block;
-          height: calc(100vh - 198px);
+          height: calc(100vh - 215px);
           --mdc-shape-small: 0;
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           hui-entity-picker-table {
-            height: calc(100vh - 158px);
+            height: calc(100vh - 285px);
           }
         }
       `,
