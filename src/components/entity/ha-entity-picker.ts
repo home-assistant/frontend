@@ -12,7 +12,6 @@ import {
   computeEntityFullName,
   computeEntityName,
 } from "../../common/entity/compute_entity_name";
-import { computeFloorName } from "../../common/entity/compute_floor_name";
 import { getEntityContext } from "../../common/entity/get_entity_context";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { ScorableTextItem } from "../../common/string/filter/sequence-matching";
@@ -339,19 +338,17 @@ export class HaEntityPicker extends LitElement {
     stateObj: HassEntity,
     hass: HomeAssistant
   ): HassEntityWithCachedName {
-    const { device, area, floor } = getEntityContext(stateObj, hass);
+    const { device, area } = getEntityContext(stateObj, hass);
 
     const entityName = computeEntityName(stateObj, this.hass);
     const deviceName = (device && computeDeviceName(device)) || "";
     const areaName = (area && computeAreaName(area)) || "";
-    const floorName = (floor && computeFloorName(floor)) || "";
     const displayedName = computeEntityFullName(stateObj, hass) || "";
 
     // Do not include device name if it's the same as entity name
     const entityContext = [
       entityName !== deviceName ? deviceName : undefined,
       areaName,
-      floorName,
     ]
       .filter(Boolean)
       .join(" ⸱ ");
@@ -359,13 +356,9 @@ export class HaEntityPicker extends LitElement {
     return {
       ...stateObj,
       displayed_name: displayedName,
-      strings: [
-        stateObj.entity_id,
-        displayedName,
-        areaName,
-        deviceName,
-        floorName,
-      ].filter(Boolean),
+      strings: [stateObj.entity_id, displayedName, areaName, deviceName].filter(
+        Boolean
+      ),
       entity_name: entityName,
       entity_context: entityContext,
     };
