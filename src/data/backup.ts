@@ -60,7 +60,10 @@ export interface BackupMutableConfig {
     copies?: number | null;
     days?: number | null;
   };
-  schedule?: BackupScheduleState;
+  schedule?: {
+    state: BackupScheduleState;
+    time?: string | null;
+  };
 }
 
 export interface BackupAgent {
