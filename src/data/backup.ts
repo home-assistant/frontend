@@ -341,9 +341,31 @@ export const downloadEmergencyKit = (
     geneateEmergencyKitFileName(hass, appendFileName)
   );
 
+export const DEFAULT_OPTIMIZED_BACKUP_START_TIME = setMinutes(
+  setHours(new Date(), 4),
+  45
+);
+
+export const DEFAULT_OPTIMIZED_BACKUP_END_TIME = setMinutes(
+  setHours(new Date(), 5),
+  45
+);
+
 export const getFormattedBackupTime = memoizeOne(
-  (locale: FrontendLocaleData, config: HassConfig) => {
-    const date = setMinutes(setHours(new Date(), 4), 45);
-    return formatTime(date, locale, config);
+  (
+    locale: FrontendLocaleData,
+    config: HassConfig,
+    backupTime?: string | null
+  ) => {
+    if (backupTime) {
+      const splitted = backupTime.split(":");
+      const date = setMinutes(
+        setHours(new Date(), parseInt(splitted[0])),
+        parseInt(splitted[1])
+      );
+      return formatTime(date, locale, config);
+    }
+
+    return `${formatTime(DEFAULT_OPTIMIZED_BACKUP_START_TIME, locale, config)} - ${formatTime(DEFAULT_OPTIMIZED_BACKUP_END_TIME, locale, config)}`;
   }
 );

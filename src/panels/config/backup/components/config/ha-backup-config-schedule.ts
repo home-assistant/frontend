@@ -13,7 +13,11 @@ import "../../../../../components/ha-md-select-option";
 import "../../../../../components/ha-md-textfield";
 import "../../../../../components/ha-switch";
 import type { BackupConfig } from "../../../../../data/backup";
-import { BackupScheduleState } from "../../../../../data/backup";
+import {
+  BackupScheduleState,
+  DEFAULT_OPTIMIZED_BACKUP_END_TIME,
+  DEFAULT_OPTIMIZED_BACKUP_START_TIME,
+} from "../../../../../data/backup";
 import type { HomeAssistant } from "../../../../../types";
 import "../../../../../components/ha-time-input";
 import "../../../../../components/ha-tip";
@@ -70,15 +74,6 @@ const SCHEDULE_TIME_OPTIONS = [
   BackupScheduleTime.DEFAULT,
   BackupScheduleTime.CUSTOM,
 ] as const satisfies BackupScheduleTime[];
-
-const DEFAULT_OPTIMIZED_START_TIME = new Date();
-DEFAULT_OPTIMIZED_START_TIME.setHours(4);
-DEFAULT_OPTIMIZED_START_TIME.setMinutes(45);
-
-const DEFAULT_OPTIMIZED_END_TIME = new Date(
-  DEFAULT_OPTIMIZED_START_TIME.getTime()
-);
-DEFAULT_OPTIMIZED_END_TIME.setHours(5);
 
 const computeRetentionPreset = (
   data: RetentionData
@@ -231,12 +226,12 @@ class HaBackupConfigSchedule extends LitElement {
                         "ui.panel.config.backup.schedule.schedule_time_optimal_description",
                         {
                           time_range_start: formatTime(
-                            DEFAULT_OPTIMIZED_START_TIME,
+                            DEFAULT_OPTIMIZED_BACKUP_START_TIME,
                             this.hass.locale,
                             this.hass.config
                           ),
                           time_range_end: formatTime(
-                            DEFAULT_OPTIMIZED_END_TIME,
+                            DEFAULT_OPTIMIZED_BACKUP_END_TIME,
                             this.hass.locale,
                             this.hass.config
                           ),
@@ -282,7 +277,7 @@ class HaBackupConfigSchedule extends LitElement {
                           "ui.panel.config.backup.schedule.custom_time_description",
                           {
                             time: formatTime(
-                              DEFAULT_OPTIMIZED_START_TIME,
+                              DEFAULT_OPTIMIZED_BACKUP_START_TIME,
                               this.hass.locale,
                               this.hass.config
                             ),

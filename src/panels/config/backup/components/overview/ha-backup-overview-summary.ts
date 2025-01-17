@@ -78,7 +78,8 @@ class HaBackupOverviewBackups extends LitElement {
 
     const backupTime = getFormattedBackupTime(
       this.hass.locale,
-      this.hass.config
+      this.hass.config,
+      this.config.schedule.time
     );
 
     const nextBackupDescription = this.hass.localize(

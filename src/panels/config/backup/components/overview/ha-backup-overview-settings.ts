@@ -39,7 +39,11 @@ class HaBackupBackupsSummary extends LitElement {
       );
     }
 
-    const time = getFormattedBackupTime(this.hass.locale, this.hass.config);
+    const time = getFormattedBackupTime(
+      this.hass.locale,
+      this.hass.config,
+      this.config.schedule.time
+    );
 
     const scheduleText = this.hass.localize(
       `ui.panel.config.backup.overview.settings.schedule_${schedule}`,
