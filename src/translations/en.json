@@ -2377,9 +2377,13 @@
               "description": "Make sure you save the encryption key in a secure place so you always have access to your backups."
             },
             "download": {
+              "decryption_unsupported_title": "Decryption unsupported",
               "decryption_unsupported": "Decryption is not supported for this backup. The backup will be encrypted downloaded and can't be opened. To restore it, you will need the encryption key.",
-              "incorrect_entered_encryption_key": "The entered encryption key was incorrect, try again.",
-              "incorrect_current_encryption_key": "This backup is encrypted with a different encryption key than the current one, please enter the encryption key of this backup."
+              "incorrect_entered_encryption_key": "The entered encryption key was incorrect, try again or download the encrypted backup. The encrypted backup can't be opened. To restore it, you will need the encryption key.",
+              "download_encrypted": "Download encrypted",
+              "incorrect_current_encryption_key": "This backup is encrypted with a different encryption key than the current one, please enter the encryption key of this backup.",
+              "error_check_title": "Error checking backup",
+              "error_check_description": "An error occurred while checking the backup, please try again. Error message: {error}"
             }
           },
           "agents": {
