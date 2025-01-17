@@ -357,7 +357,6 @@ export class HuiEnergyDevicesDetailGraphCard
       ),
       itemStyle: {
         borderRadius: [4, 4, 0, 0],
-        borderWidth: 1.5,
         borderColor: getEnergyColor(
           computedStyle,
           this.hass.themes.darkMode,
@@ -446,7 +445,6 @@ export class HuiEnergyDevicesDetailGraphCard
             statisticsMetaData[source.stat_consumption]
           ),
         itemStyle: {
-          borderWidth: 1.5,
           borderColor: compare ? color + "7F" : color,
         },
         barMaxWidth: 50,

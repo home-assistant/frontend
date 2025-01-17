@@ -164,7 +164,6 @@ export class HuiEnergyDevicesGraphCard
         ),
         itemStyle: {
           borderRadius: [0, 4, 4, 0],
-          borderWidth: 1,
         },
         data: chartData,
         barWidth: compareData ? 10 : 20,
@@ -179,7 +178,6 @@ export class HuiEnergyDevicesGraphCard
         ),
         itemStyle: {
           borderRadius: [0, 4, 4, 0],
-          borderWidth: 1,
         },
         data: chartDataCompare,
         barWidth: 10,
