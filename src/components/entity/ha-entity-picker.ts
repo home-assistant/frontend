@@ -8,10 +8,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
-import {
-  computeEntityFullName,
-  computeEntityName,
-} from "../../common/entity/compute_entity_name";
+import { computeEntityName } from "../../common/entity/compute_entity_name";
 import { getEntityContext } from "../../common/entity/get_entity_context";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { ScorableTextItem } from "../../common/string/filter/sequence-matching";
@@ -27,6 +24,7 @@ import "../ha-icon-button";
 import "../ha-list-item";
 import "../ha-svg-icon";
 import "./state-badge";
+import { computeStateName } from "../../common/entity/compute_state_name";
 
 interface HassEntityWithCachedName extends HassEntity, ScorableTextItem {
   displayed_name: string;
@@ -343,7 +341,7 @@ export class HaEntityPicker extends LitElement {
     const entityName = computeEntityName(stateObj, this.hass);
     const deviceName = (device && computeDeviceName(device)) || "";
     const areaName = (area && computeAreaName(area)) || "";
-    const displayedName = computeEntityFullName(stateObj, hass) || "";
+    const displayedName = computeStateName(stateObj) || "";
 
     // Do not include device name if it's the same as entity name
     const entityContext = [
