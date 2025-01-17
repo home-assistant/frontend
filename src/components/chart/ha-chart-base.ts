@@ -18,6 +18,7 @@ import type { HomeAssistant } from "../../types";
 import { debounce } from "../../common/util/debounce";
 import { isMac } from "../../util/is_mac";
 import "../ha-icon-button";
+import { listenMediaQuery } from "../../common/dom/media_query";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 
@@ -74,10 +75,17 @@ export class HaChartBase extends LitElement {
 
   private _datasetOrder: number[] = [];
 
+  private _reducedMotion = false;
+
+  private _listeners: (() => void)[] = [];
+
   public disconnectedCallback() {
     super.disconnectedCallback();
     window.removeEventListener("scroll", this._handleScroll, true);
     this._releaseCanvas();
+    while (this._listeners.length) {
+      this._listeners.pop()!();
+    }
   }
 
   public connectedCallback() {
@@ -87,6 +95,12 @@ export class HaChartBase extends LitElement {
       this._releaseCanvas();
       this._setupChart();
     }
+
+    this._listeners.push(
+      listenMediaQuery("(prefers-reduced-motion)", (matches) => {
+        this._reducedMotion = matches;
+      })
+    );
   }
 
   public updateChart = (mode?: UpdateMode): void => {
@@ -355,9 +369,11 @@ export class HaChartBase extends LitElement {
     const modifierKey = isMac ? "meta" : "ctrl";
     return {
       maintainAspectRatio: false,
-      animation: {
-        duration: 500,
-      },
+      animation: this._reducedMotion
+        ? false
+        : {
+            duration: 500,
+          },
       ...this.options,
       plugins: {
         ...this.options?.plugins,
