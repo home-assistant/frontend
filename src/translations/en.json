@@ -7247,7 +7247,6 @@
           },
           "cardpicker": {
             "no_description": "No description available.",
-            "custom_card": "Custom",
             "domain": "Domain",
             "entity": "Entity",
             "by_entity": "By entity",
