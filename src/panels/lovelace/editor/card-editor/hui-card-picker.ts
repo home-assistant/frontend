@@ -352,6 +352,7 @@ export class HuiCardPicker extends LitElement {
     if (!value) {
       // Reset when we no longer filter
       this._width = undefined;
+      this._height = undefined;
     } else if (!this._width || !this._height) {
       // Save height and width so the dialog doesn't jump while searching
       const div = this.shadowRoot!.getElementById("content");
