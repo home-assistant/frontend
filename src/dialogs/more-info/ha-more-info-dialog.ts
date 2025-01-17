@@ -22,7 +22,6 @@ import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeEntityName } from "../../common/entity/compute_entity_name";
-import { computeFloorName } from "../../common/entity/compute_floor_name";
 import { getEntityContext } from "../../common/entity/get_entity_context";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
@@ -299,17 +298,12 @@ export class MoreInfoDialog extends LitElement {
     const entityName = stateObj ? computeEntityName(stateObj, this.hass) : "";
     const deviceName = context?.device ? computeDeviceName(context.device) : "";
     const areaName = context?.area ? computeAreaName(context.area) : "";
-    const floorName = context?.floor ? computeFloorName(context.floor) : "";
 
     const title = this._childView?.viewTitle || entityName || entityId;
 
     const subtitle = this._childView?.viewTitle
       ? undefined
-      : [
-          entityName !== deviceName ? deviceName : undefined,
-          areaName,
-          floorName,
-        ] // Do not include device name if it's the same as entity name
+      : [entityName !== deviceName ? deviceName : undefined, areaName] // Do not include device name if it's the same as entity name
           .filter(Boolean)
           .join(" ⸱ ");
 
