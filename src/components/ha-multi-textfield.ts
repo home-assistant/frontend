@@ -72,12 +72,15 @@ class HaMultiTextField extends LitElement {
           </div>
         `;
       })}
-      <div class="layout horizontal center-center">
+      <div class="layout horizontal">
         <ha-button @click=${this._addItem} .disabled=${this.disabled}>
           ${this.addLabel ??
-          (this.label ? this.hass?.localize("ui.components.multi-textfield.add_item", {
-            item: this.label,
-          }) : this.hass?.localize("ui.common.add")) ?? "Add"}
+          (this.label
+            ? this.hass?.localize("ui.components.multi-textfield.add_item", {
+                item: this.label,
+              })
+            : this.hass?.localize("ui.common.add")) ??
+          "Add"}
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </ha-button>
       </div>
