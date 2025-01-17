@@ -369,11 +369,7 @@ export class HaChartBase extends LitElement {
     const modifierKey = isMac ? "meta" : "ctrl";
     return {
       maintainAspectRatio: false,
-      animation: this._reducedMotion
-        ? false
-        : {
-            duration: 500,
-          },
+      animation: this._reducedMotion ? false : { duration: 500 },
       ...this.options,
       plugins: {
         ...this.options?.plugins,
