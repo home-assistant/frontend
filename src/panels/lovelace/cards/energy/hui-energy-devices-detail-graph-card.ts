@@ -30,9 +30,13 @@ import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyDevicesDetailGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
-import { getCommonOptions } from "./common/energy-chart-options";
+import {
+  fillDatasetGaps,
+  getCommonOptions,
+} from "./common/energy-chart-options";
 import { storage } from "../../../../common/decorators/storage";
 import type { ECOption } from "../../../../resources/echarts";
+import { formatNumber } from "../../../../common/number/format_number";
 
 const UNIT = "kWh";
 
@@ -138,6 +142,12 @@ export class HuiEnergyDevicesDetailGraphCard
     `;
   }
 
+  private _formatTotal = (total: number) =>
+    this.hass.localize(
+      "ui.panel.lovelace.cards.energy.energy_usage_graph.total_consumed",
+      { num: formatNumber(total, this.hass.locale), unit: UNIT }
+    );
+
   private _datasetHidden(ev) {
     this._hiddenStats = [...this._hiddenStats, ev.detail.name];
   }
@@ -166,7 +176,8 @@ export class HuiEnergyDevicesDetailGraphCard
         unit,
         compareStart,
         compareEnd,
-        this.hass.themes?.darkMode
+        this.hass.themes?.darkMode,
+        this._formatTotal
       );
 
       return {
@@ -290,31 +301,7 @@ export class HuiEnergyDevicesDetailGraphCard
       datasets.push(untrackedData);
     }
 
-    const buckets = Array.from(
-      new Set(
-        datasets
-          .map((dataset) => dataset.data!.map((datapoint) => datapoint![0]))
-          .flat()
-      )
-    ).sort((a, b) => a - b);
-
-    // make sure all datasets have the same buckets
-    // otherwise the chart will render incorrectly in some cases
-    datasets.forEach((dataset) => {
-      if (!dataset.data?.length) {
-        return;
-      }
-      buckets.forEach((bucket, index) => {
-        if (dataset.data![index]?.[0] !== bucket) {
-          dataset.data?.splice(index, 0, {
-            value: [bucket, 0],
-            itemStyle: {
-              borderWidth: 0,
-            },
-          });
-        }
-      });
-    });
+    fillDatasetGaps(datasets);
     this._chartData = datasets;
   }
 

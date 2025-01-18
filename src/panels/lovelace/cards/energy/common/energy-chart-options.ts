@@ -1,5 +1,6 @@
 import type { HassConfig } from "home-assistant-js-websocket";
 import { addHours, subHours, differenceInDays } from "date-fns";
+import type { BarSeriesOption } from "echarts/types/dist/shared";
 import type { FrontendLocaleData } from "../../../../../data/translation";
 import { formatNumber } from "../../../../../common/number/format_number";
 import { formatDateVeryShort } from "../../../../../common/datetime/format_date";
@@ -39,7 +40,8 @@ export function getCommonOptions(
   unit?: string,
   compareStart?: Date,
   compareEnd?: Date,
-  darkMode?: boolean
+  darkMode?: boolean,
+  formatTotal?: (total: number) => string
 ): ECOption {
   const dayDifference = differenceInDays(end, start);
   const compare = compareStart !== undefined && compareEnd !== undefined;
@@ -86,45 +88,50 @@ export function getCommonOptions(
       },
     },
     grid: {
-      top: 10,
+      top: 35,
       bottom: 10,
       left: 10,
       right: 10,
       containLabel: true,
     },
     tooltip: {
-      // trigger: "axis",
-      formatter: (args: any) => {
+      trigger: "axis",
+      formatter: (params: any) => {
         // trigger: "axis" gives an array of params, but "item" gives a single param
-        const params = Array.isArray(args) ? args : [args];
-        if (!params[0].value) {
-          return "";
+        if (Array.isArray(params)) {
+          const mainItems: Record<string, any>[] = [];
+          const compareItems: Record<string, any>[] = [];
+          params.forEach((param: Record<string, any>) => {
+            if (param.seriesId?.includes("compare")) {
+              compareItems.push(param);
+            } else {
+              mainItems.push(param);
+            }
+          });
+          return [mainItems, compareItems]
+            .filter((items) => items.length > 0)
+            .map((items) =>
+              formatTooltip(
+                items,
+                locale,
+                config,
+                dayDifference,
+                compare,
+                unit,
+                formatTotal
+              )
+            )
+            .join("<br><br>");
         }
-        // when comparing the first value is offset to match the main period
-        // and the real date is in the third value
-        const date = new Date(params[0].value?.[2] ?? params[0].value?.[0]);
-        let period: string;
-        if (dayDifference > 0) {
-          period = `${formatDateVeryShort(date, locale, config)}`;
-        } else {
-          period = `${
-            compare ? `${formatDateVeryShort(date, locale, config)}: ` : ""
-          }${formatTime(date, locale, config)} – ${formatTime(
-            addHours(date, 1),
-            locale,
-            config
-          )}`;
-        }
-        const title = `<h4 style="text-align: center; margin: 0;">${period}</h4>`;
-        const values = params
-          .map((param) => {
-            const value = formatNumber(param.value[1] as number, locale);
-            return value === "0"
-              ? false
-              : `${param.marker} ${param.seriesName}: ${value} kWh`;
-          })
-          .filter(Boolean);
-        return `${title}${values.join("<br>")}`;
+        return formatTooltip(
+          [params],
+          locale,
+          config,
+          dayDifference,
+          compare,
+          unit,
+          formatTotal
+        );
       },
     },
     // scales: {
@@ -144,35 +151,80 @@ export function getCommonOptions(
     //     },
     //   },
     // },
-    // plugins: {
-    //   tooltip: {
-    //     position: "nearest",
-    //     filter: (val) => val.formattedValue !== "0",
-    //     itemSort: function (a, b) {
-    //       return b.datasetIndex - a.datasetIndex;
-    //     },
-    //     callbacks: {
-    //       title: (datasets) => {
-    //         if (dayDifference > 0) {
-    //           return datasets[0].label;
-    //         }
-    //         const date = new Date(datasets[0].parsed.x);
-    //         return `${
-    //           compare ? `${formatDateVeryShort(date, locale, config)}: ` : ""
-    //         }${formatTime(date, locale, config)} – ${formatTime(
-    //           addHours(date, 1),
-    //           locale,
-    //           config
-    //         )}`;
-    //       },
-    //       label: (context) =>
-    //         `${context.dataset.label}: ${formatNumber(
-    //           context.parsed.y,
-    //           locale
-    //         )} ${unit}`,
-    //     },
-    //   },
-    // },
   };
   return options;
+}
+
+function formatTooltip(
+  params: any[],
+  locale: FrontendLocaleData,
+  config: HassConfig,
+  dayDifference: number,
+  compare: boolean | null,
+  unit?: string,
+  formatTotal?: (total: number) => string
+) {
+  if (!params[0].value) {
+    return "";
+  }
+  // when comparing the first value is offset to match the main period
+  // and the real date is in the third value
+  const date = new Date(params[0].value?.[2] ?? params[0].value?.[0]);
+  let period: string;
+  if (dayDifference > 0) {
+    period = `${formatDateVeryShort(date, locale, config)}`;
+  } else {
+    period = `${
+      compare ? `${formatDateVeryShort(date, locale, config)}: ` : ""
+    }${formatTime(date, locale, config)} – ${formatTime(
+      addHours(date, 1),
+      locale,
+      config
+    )}`;
+  }
+  const title = `<h4 style="text-align: center; margin: 0;">${period}</h4>`;
+  let total = 0;
+  const values = params
+    .map((param) => {
+      const value = formatNumber(param.value[1] as number, locale);
+      if (value === "0") {
+        return false;
+      }
+      total += param.value[1] as number;
+      return `${param.marker} ${param.seriesName}: ${value} ${unit}`;
+    })
+    .filter(Boolean);
+  const footer =
+    total > 0 && values.length > 1 && formatTotal
+      ? `<br><b>${formatTotal(total)}</b>`
+      : "";
+  return values.length > 0 ? `${title}${values.join("<br>")}${footer}` : "";
+}
+
+export function fillDatasetGaps(datasets: BarSeriesOption[]) {
+  const buckets = Array.from(
+    new Set(
+      datasets
+        .map((dataset) => dataset.data!.map((datapoint) => datapoint![0]))
+        .flat()
+    )
+  ).sort((a, b) => a - b);
+
+  // make sure all datasets have the same buckets
+  // otherwise the chart will render incorrectly in some cases
+  datasets.forEach((dataset) => {
+    if (!dataset.data?.length) {
+      return;
+    }
+    buckets.forEach((bucket, index) => {
+      if (dataset.data![index]?.[0] !== bucket) {
+        dataset.data?.splice(index, 0, {
+          value: [bucket, 0],
+          itemStyle: {
+            borderWidth: 0,
+          },
+        });
+      }
+    });
+  });
 }

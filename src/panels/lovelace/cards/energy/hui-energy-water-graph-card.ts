@@ -25,8 +25,12 @@ import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyWaterGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
-import { getCommonOptions } from "./common/energy-chart-options";
+import {
+  fillDatasetGaps,
+  getCommonOptions,
+} from "./common/energy-chart-options";
 import type { ECOption } from "../../../../resources/echarts";
+import { formatNumber } from "../../../../common/number/format_number";
 
 @customElement("hui-energy-water-graph-card")
 export class HuiEnergyWaterGraphCard
@@ -119,6 +123,12 @@ export class HuiEnergyWaterGraphCard
     `;
   }
 
+  private _formatTotal = (total: number) =>
+    this.hass.localize(
+      "ui.panel.lovelace.cards.energy.energy_water_graph.total_consumed",
+      { num: formatNumber(total, this.hass.locale), unit: this._unit }
+    );
+
   private _createOptions = memoizeOne(
     (
       start: Date,
@@ -129,8 +139,8 @@ export class HuiEnergyWaterGraphCard
       compareStart?: Date,
       compareEnd?: Date,
       darkMode?: boolean
-    ): ECOption => {
-      const commonOptions = getCommonOptions(
+    ): ECOption =>
+      getCommonOptions(
         start,
         end,
         locale,
@@ -138,44 +148,18 @@ export class HuiEnergyWaterGraphCard
         unit,
         compareStart,
         compareEnd,
-        darkMode
-      );
-      const options: ECOption = {
-        ...commonOptions,
-        tooltip: {
-          formatter: (params: any) => params.value,
-        },
-        // plugins: {
-        //   tooltip: {
-        //     callbacks: {
-        //       ...commonOptions.plugins!.tooltip!.callbacks,
-        //       footer: (contexts) => {
-        //         if (contexts.length < 2) {
-        //           return [];
-        //         }
-        //         let total = 0;
-        //         for (const context of contexts) {
-        //           total += (context.dataset.data[context.dataIndex] as any).y;
-        //         }
-        //         if (total === 0) {
-        //           return [];
-        //         }
-        //         return [
-        //           this.hass.localize(
-        //             "ui.panel.lovelace.cards.energy.energy_water_graph.total_consumed",
-        //             { num: formatNumber(total, locale), unit }
-        //           ),
-        //         ];
-        //       },
-        //     },
-        //   },
-        // },
-      };
-      return options;
-    }
+        darkMode,
+        this._formatTotal
+      )
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
+    this._start = energyData.start;
+    this._end = energyData.end || endOfToday();
+
+    this._compareStart = energyData.startCompare;
+    this._compareEnd = energyData.endCompare;
+
     const waterSources: WaterSourceTypeEnergyPreference[] =
       energyData.prefs.energy_sources.filter(
         (source) => source.type === "water"
@@ -218,12 +202,7 @@ export class HuiEnergyWaterGraphCard
       )
     );
 
-    this._start = energyData.start;
-    this._end = energyData.end || endOfToday();
-
-    this._compareStart = energyData.startCompare;
-    this._compareEnd = energyData.endCompare;
-
+    fillDatasetGaps(datasets);
     this._chartData = datasets;
   }
 
