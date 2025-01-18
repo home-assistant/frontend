@@ -23,6 +23,9 @@ export class HaButton extends Button {
       .slot-container {
         overflow: var(--button-slot-container-overflow, visible);
       }
+      :host([destructive]) {
+        --mdc-theme-primary: var(--error-color);
+      }
     `,
   ];
 }
