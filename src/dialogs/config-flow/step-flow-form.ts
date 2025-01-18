@@ -11,7 +11,10 @@ import "../../components/ha-alert";
 import "../../components/ha-circular-progress";
 import { computeInitialHaFormData } from "../../components/ha-form/compute-initial-ha-form-data";
 import "../../components/ha-form/ha-form";
-import type { HaFormSchema } from "../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  HaFormSelector,
+} from "../../components/ha-form/types";
 import "../../components/ha-markdown";
 import { autocompleteLoginFields } from "../../data/auth";
 import type { DataEntryFlowStepForm } from "../../data/data_entry_flow";
@@ -43,7 +46,9 @@ class StepFlowForm extends LitElement {
   private handleReadOnlyFields = memoizeOne((schema) =>
     schema?.map((field) => ({
       ...field,
-      ...(field?.description?.read_only ? { disabled: true } : {}),
+      ...(Object.values((field as HaFormSelector)?.selector ?? {})[0].read_only
+        ? { disabled: true }
+        : {}),
     }))
   );
 
@@ -184,8 +189,9 @@ class StepFlowForm extends LitElement {
       const value = stepData[key];
       const isEmpty = [undefined, ""].includes(value);
       const field = this.step.data_schema?.find((f) => f.name === key);
-
-      if (!isEmpty && !field?.description?.read_only) {
+      const selector = (field as HaFormSelector)?.selector ?? {};
+      const read_only = (Object.values(selector)[0] as any)?.read_only;
+      if (!isEmpty && !read_only) {
         toSendData[key] = value;
       }
     });
