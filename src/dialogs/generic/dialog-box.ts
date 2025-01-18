@@ -1,7 +1,6 @@
 import { mdiAlertOutline } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-md-dialog";
@@ -117,9 +116,7 @@ class DialogBox extends LitElement {
             @click=${this._confirm}
             ?dialogInitialFocus=${!this._params.prompt &&
             !this._params.destructive}
-            class=${classMap({
-              destructive: this._params.destructive || false,
-            })}
+            ?destructive=${this._params.destructive || false}
           >
             ${this._params.confirmText
               ? this._params.confirmText
@@ -186,9 +183,6 @@ class DialogBox extends LitElement {
     }
     .secondary {
       color: var(--secondary-text-color);
-    }
-    .destructive {
-      --mdc-theme-primary: var(--error-color);
     }
     ha-textfield {
       width: 100%;
