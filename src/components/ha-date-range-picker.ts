@@ -415,6 +415,9 @@ export class HaDateRangePicker extends LitElement {
         max-height: calc(70vh - 330px);
         min-height: 160px;
       }
+      :host([top-style]) .date-range-ranges {
+        max-height: calc(90vh - 430px);
+      }
     }
   `;
 }

@@ -256,6 +256,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
             @change=${this._dateRangeChanged}
             time-picker
             minimal
+            top-style
           ></ha-date-range-picker>
         </div>
 
