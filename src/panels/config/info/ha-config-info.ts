@@ -156,7 +156,9 @@ class HaConfigInfo extends LitElement {
             </ul>
           </ha-card>
           <ha-card outlined class="ohf">
-            <div>Proud part of</div>
+            <div>
+              ${this.hass.localize("ui.panel.config.info.proud_part_of")}
+            </div>
             <a
               href="https://www.openhomefoundation.org"
               target="_blank"
