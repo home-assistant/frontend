@@ -555,7 +555,7 @@ class AddIntegrationDialog extends LitElement {
     if (integration.integrations) {
       let domains = integration.domains || [];
       if (integration.domain === "apple") {
-        // we show discoverd homekit devices in their own brand section, dont show them at apple
+        // we show discovered homekit devices in their own brand section, dont show them in apple
         domains = domains.filter((domain) => domain !== "homekit_controller");
       }
       this._fetchFlowsInProgress(domains);
@@ -564,7 +564,7 @@ class AddIntegrationDialog extends LitElement {
     }
 
     if (
-      (PROTOCOL_INTEGRATIONS as ReadonlyArray<string>).includes(
+      (PROTOCOL_INTEGRATIONS as readonly string[]).includes(
         integration.domain
       ) &&
       isComponentLoaded(this.hass, integration.domain)

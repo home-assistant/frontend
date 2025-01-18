@@ -13,7 +13,7 @@ export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 class HaEntityAttributePicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public entityId?: string;
+  @property({ attribute: false }) public entityId?: string;
 
   /**
    * List of attributes to be hidden.
@@ -23,6 +23,7 @@ class HaEntityAttributePicker extends LitElement {
   @property({ type: Array, attribute: "hide-attributes" })
   public hideAttributes?: string[];
 
+  // eslint-disable-next-line lit/no-native-attributes
   @property({ type: Boolean }) public autofocus = false;
 
   @property({ type: Boolean }) public disabled = false;

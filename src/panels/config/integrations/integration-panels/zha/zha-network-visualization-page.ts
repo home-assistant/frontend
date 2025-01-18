@@ -31,9 +31,9 @@ export class ZHANetworkVisualizationPage extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property()
+  @property({ attribute: false })
   public zoomedDeviceIdFromURL?: string;
 
   @state()
@@ -43,10 +43,10 @@ export class ZHANetworkVisualizationPage extends LitElement {
   private _visualization?: HTMLElement;
 
   @state()
-  private _devices: Map<string, ZHADevice> = new Map();
+  private _devices = new Map<string, ZHADevice>();
 
   @state()
-  private _devicesByDeviceId: Map<string, ZHADevice> = new Map();
+  private _devicesByDeviceId = new Map<string, ZHADevice>();
 
   @state()
   private _nodes: Node[] = [];

@@ -1,4 +1,3 @@
-/* eslint-disable lit/no-template-arrow */
 import "@material/mwc-button";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
@@ -591,13 +590,6 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
       </div>
       ${SCHEMAS.map((info, idx) => {
         const data = this.data[idx];
-        const valueChanged = (ev) => {
-          this.data[idx] = {
-            ...data,
-            [ev.target.key]: ev.detail.value,
-          };
-          this.requestUpdate();
-        };
         return html`
           <demo-black-white-row .title=${info.name}>
             ${["light", "dark"].map((slot) =>
@@ -614,7 +606,8 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
                       .value=${data[key] ?? value!.default}
                       .disabled=${this._disabled}
                       .required=${this._required}
-                      @value-changed=${valueChanged}
+                      @value-changed=${this._handleValueChanged}
+                      .sampleIdx=${idx}
                       .helper=${this._helper ? "Helper text" : undefined}
                     ></ha-selector>
                   </ha-settings-row>
@@ -625,6 +618,15 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
         `;
       })}
     `;
+  }
+
+  private _handleValueChanged(ev) {
+    const idx = ev.target.sampleIdx;
+    this.data[idx] = {
+      ...this.data[idx],
+      [ev.target.key]: ev.detail.value,
+    };
+    this.requestUpdate();
   }
 
   private _handleOptionChange(ev) {

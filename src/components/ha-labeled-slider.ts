@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
@@ -62,33 +61,31 @@ class HaLabeledSlider extends LitElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-      }
+  static styles = css`
+    :host {
+      display: block;
+    }
 
-      .title {
-        margin: 5px 0 8px;
-        color: var(--primary-text-color);
-      }
+    .title {
+      margin: 5px 0 8px;
+      color: var(--primary-text-color);
+    }
 
-      .slider-container {
-        display: flex;
-      }
+    .slider-container {
+      display: flex;
+    }
 
-      ha-icon {
-        margin-top: 8px;
-        color: var(--secondary-text-color);
-      }
+    ha-icon {
+      margin-top: 8px;
+      color: var(--secondary-text-color);
+    }
 
-      ha-slider {
-        flex-grow: 1;
-        background-image: var(--ha-slider-background);
-        border-radius: 4px;
-      }
-    `;
-  }
+    ha-slider {
+      flex-grow: 1;
+      background-image: var(--ha-slider-background);
+      border-radius: 4px;
+    }
+  `;
 }
 
 declare global {

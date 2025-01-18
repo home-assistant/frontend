@@ -58,12 +58,13 @@ export class DialogEnergyBatterySettings
     );
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     this._params = undefined;
     this._source = undefined;
     this._error = undefined;
     this._excludeList = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+    return true;
   }
 
   protected render() {
@@ -80,9 +81,7 @@ export class DialogEnergyBatterySettings
             .path=${mdiBatteryHigh}
             style="--mdc-icon-size: 32px;"
           ></ha-svg-icon>
-          ${this.hass.localize(
-            "ui.panel.config.energy.battery.dialog.header"
-          )}`}
+          ${this.hass.localize("ui.panel.config.energy.battery.dialog.header")}`}
         @closed=${this.closeDialog}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}

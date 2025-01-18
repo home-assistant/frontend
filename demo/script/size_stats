@@ -4,11 +4,6 @@
 # Stop on errors
 set -e
 
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/../.."
 
-export STATS=1
-statsfile="compilation-stats-demo.json"
-
-./node_modules/.bin/webpack-cli --profile --node-env=production --json=$statsfile
-npx webpack-bundle-analyzer $statsfile dist/frontend_latest
-rm -f $statsfile
+./node_modules/.bin/gulp analyze-demo

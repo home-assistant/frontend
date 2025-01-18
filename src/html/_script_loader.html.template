@@ -1,4 +1,4 @@
-<script <% if (!useWDS) { %>crossorigin="use-credentials"<% } %>>
+<script crossorigin="use-credentials">
   if (isModern) {
     <% for (const entry of latestEntryJS) { %>
       import("<%= entry %>");

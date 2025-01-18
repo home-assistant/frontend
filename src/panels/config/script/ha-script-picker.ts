@@ -120,7 +120,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public scripts!: ScriptEntity[];
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -526,7 +526,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           "ui.panel.config.script.picker.search",
           { number: scripts.length }
         )}
-        hasFilters
+        has-filters
         .initialGroupColumn=${this._activeGrouping || "category"}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._activeSorting}
@@ -558,7 +558,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         @clear-filter=${this._clearFilter}
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
-        hasFab
+        has-fab
         clickable
         class=${this.narrow ? "narrow" : ""}
         @row-click=${this._handleRowClicked}
@@ -695,7 +695,9 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
                   </ha-assist-chip>`
                 : html`<ha-icon-button
                     .path=${mdiDotsVertical}
-                    .label=${"ui.panel.config.automation.picker.bulk_action"}
+                    .label=${this.hass.localize(
+                      "ui.panel.config.automation.picker.bulk_action"
+                    )}
                     slot="trigger"
                   ></ha-icon-button>`
             }
@@ -855,7 +857,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         Array.isArray(filter.value) &&
         filter.value.length
       ) {
-        const categoryItems: Set<string> = new Set();
+        const categoryItems = new Set<string>();
         this.scripts
           .filter(
             (script) =>
@@ -879,7 +881,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         Array.isArray(filter.value) &&
         filter.value.length
       ) {
-        const labelItems: Set<string> = new Set();
+        const labelItems = new Set<string>();
         this.scripts
           .filter((script) =>
             this._entityReg

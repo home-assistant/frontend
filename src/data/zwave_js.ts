@@ -42,7 +42,7 @@ export const enum InclusionStrategy {
    *
    * Issues a warning if Security S0 is not supported or the secure bootstrapping fails.
    *
-   * **Not recommended** because S0 should be used sparingly and S2 preferred whereever possible.
+   * **Not recommended** because S0 should be used sparingly and S2 preferred wherever possible.
    */
   Security_S0,
   /**
@@ -209,9 +209,10 @@ export interface ZWaveJSNodeStatus {
   has_firmware_update_cc: boolean;
 }
 
-export type ZWaveJSNodeCapabilities = {
-  [endpoint: number]: ZWaveJSEndpointCapability[];
-};
+export type ZWaveJSNodeCapabilities = Record<
+  number,
+  ZWaveJSEndpointCapability[]
+>;
 
 export interface ZWaveJSEndpointCapability {
   id: number;
@@ -235,9 +236,7 @@ export interface ZwaveJSNodeAlerts {
   is_embedded: boolean | null;
 }
 
-export interface ZWaveJSNodeConfigParams {
-  [key: string]: ZWaveJSNodeConfigParam;
-}
+export type ZWaveJSNodeConfigParams = Record<string, ZWaveJSNodeConfigParam>;
 
 export interface ZWaveJSNodeComment {
   level: "info" | "warning" | "error";
@@ -262,7 +261,7 @@ export interface ZWaveJSNodeConfigParamMetadata {
   writeable: boolean;
   type: string;
   unit: string;
-  states: { [key: number]: string };
+  states: Record<number, string>;
   default: any;
 }
 
@@ -302,7 +301,7 @@ export interface ZWaveJSRefreshNodeStatusMessage {
 
 export interface ZWaveJSRebuildRoutesStatusMessage {
   event: string;
-  rebuild_routes_status: { [key: number]: string };
+  rebuild_routes_status: Record<number, string>;
 }
 
 export interface ZWaveJSControllerStatisticsUpdatedMessage {
@@ -396,6 +395,11 @@ export interface ZWaveJSRemovedNode {
   node_id: number;
   manufacturer: string;
   label: string;
+}
+
+export interface ZWaveJSS2InclusionValidateDskAndEnterPinMessage {
+  event: "validate dsk and enter pin";
+  dsk: string;
 }
 
 export const enum NodeStatus {
@@ -496,11 +500,11 @@ export const subscribeAddZwaveNode = (
   hass: HomeAssistant,
   entry_id: string,
   callbackFunction: (message: any) => void,
-  inclusion_strategy: InclusionStrategy = InclusionStrategy.Default,
   qr_provisioning_information?: QRProvisioningInformation,
   qr_code_string?: string,
   planned_provisioning_entry?: PlannedProvisioningEntry,
-  dsk?: string
+  dsk?: string,
+  inclusion_strategy: InclusionStrategy = InclusionStrategy.Default
 ): Promise<UnsubscribeFunc> =>
   hass.connection.subscribeMessage((message) => callbackFunction(message), {
     type: "zwave_js/add_node",
@@ -710,11 +714,13 @@ export const getZwaveNodeRawConfigParameter = (
   device_id: string,
   property: number
 ): Promise<number> =>
-  hass.callWS({
-    type: "zwave_js/get_raw_config_parameter",
-    device_id,
-    property,
-  });
+  hass
+    .callWS<{ value: number }>({
+      type: "zwave_js/get_raw_config_parameter",
+      device_id,
+      property,
+    })
+    .then((res) => res.value);
 
 export const reinterviewZwaveNode = (
   hass: HomeAssistant,
@@ -805,6 +811,21 @@ export const subscribeZwaveNodeStatistics = (
     {
       type: "zwave_js/subscribe_node_statistics",
       device_id,
+    }
+  );
+
+export const subscribeS2Inclusion = (
+  hass: HomeAssistant,
+  entry_id: string,
+  callbackFunction: (
+    message: ZWaveJSS2InclusionValidateDskAndEnterPinMessage
+  ) => void
+): Promise<UnsubscribeFunc> =>
+  hass.connection.subscribeMessage(
+    (message: any) => callbackFunction(message),
+    {
+      type: "zwave_js/subscribe_s2_inclusion",
+      entry_id,
     }
   );
 
@@ -961,4 +982,13 @@ export const fetchZwaveIntegrationSettings = (
 ): Promise<ZWaveJSIntegrationSettings> =>
   hass.callWS({
     type: "zwave_js/get_integration_settings",
+  });
+
+export const cancelSecureBootstrapS2 = (
+  hass: HomeAssistant,
+  entry_id: string
+): Promise<void> =>
+  hass.callWS({
+    type: "zwave_js/cancel_secure_bootstrap_s2",
+    entry_id,
   });

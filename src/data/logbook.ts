@@ -19,7 +19,7 @@ export interface LogbookStreamMessage {
   events: LogbookEntry[];
   start_time?: number; // Start time of this historical chunk
   end_time?: number; // End time of this historical chunk
-  partial?: boolean; // Indiciates more historical chunks are coming
+  partial?: boolean; // Indicates more historical chunks are coming
 }
 
 export interface LogbookEntry {
@@ -148,7 +148,8 @@ export const subscribeLogbook = (
 export const createHistoricState = (
   currentStateObj: HassEntity,
   state?: string
-): HassEntity => <HassEntity>(<unknown>{
+): HassEntity =>
+  ({
     entity_id: currentStateObj.entity_id,
     state: state,
     attributes: {
@@ -170,7 +171,7 @@ export const createHistoricState = (
         ? undefined
         : currentStateObj?.attributes.entity_picture,
     },
-  });
+  }) as unknown as HassEntity;
 
 export const localizeTriggerSource = (
   localize: LocalizeFunc,

@@ -28,13 +28,13 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property() public configEntryId!: string;
+  @property({ attribute: false }) public configEntryId!: string;
 
   @state() private _logConfig?: ZWaveJSLogConfig;
 
   @query("textarea", true) private _textarea?: HTMLTextAreaElement;
 
-  public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
+  public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
     return [
       subscribeZWaveJSLogs(this.hass, this.configEntryId, (update) => {
         if (!this.hasUpdated) {

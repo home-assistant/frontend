@@ -43,7 +43,7 @@ customElements.whenDefined("hui-root").then(() => {
       const index = (ev as CustomEvent).detail.index;
       try {
         await setDemoConfig(this.hass, this.lovelace!, index);
-      } catch (err: any) {
+      } catch (_err: any) {
         setDemoConfig(this.hass, this.lovelace!, selectedDemoConfigIndex);
         alert("Failed to switch config :-(");
       }

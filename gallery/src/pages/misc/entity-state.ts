@@ -321,13 +321,13 @@ function createEntity(
   };
 }
 
-type EntityRowData = {
+interface EntityRowData {
   stateObj: HassEntity;
   entity_id: string;
   state: string;
   device_class?: string;
   domain: string;
-};
+}
 
 function createRowData(stateObj: HassEntity): EntityRowData {
   return {
@@ -429,17 +429,15 @@ export class DemoEntityState extends LitElement {
     `;
   }
 
-  static get styles() {
-    return css`
-      .color {
-        display: block;
-        height: 20px;
-        width: 20px;
-        border-radius: 10px;
-        background-color: rgb(--color);
-      }
-    `;
-  }
+  static styles = css`
+    .color {
+      display: block;
+      height: 20px;
+      width: 20px;
+      border-radius: 10px;
+      background-color: rgb(--color);
+    }
+  `;
 }
 
 declare global {

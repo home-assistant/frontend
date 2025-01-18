@@ -73,7 +73,7 @@ class NotificationManager extends LitElement {
               <ha-button
                 slot="action"
                 .label=${this._parameters?.action.text}
-                @click=${this.buttonClicked}
+                @click=${this._buttonClicked}
               ></ha-button>
             `
           : nothing}
@@ -91,7 +91,7 @@ class NotificationManager extends LitElement {
     `;
   }
 
-  private buttonClicked() {
+  private _buttonClicked() {
     this._toast?.close("action");
     if (this._parameters?.action) {
       this._parameters?.action.action();

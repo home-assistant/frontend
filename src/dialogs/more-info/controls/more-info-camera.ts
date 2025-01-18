@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import "../../../components/ha-camera-stream";
@@ -8,6 +7,7 @@ import "../../../components/buttons/ha-progress-button";
 import { UNAVAILABLE } from "../../../data/entity";
 import { fileDownload } from "../../../util/file_download";
 import { showToast } from "../../../util/toast";
+import { slugify } from "../../../common/string/slugify";
 
 class MoreInfoCamera extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -69,10 +69,15 @@ class MoreInfoCamera extends LitElement {
         throw new Error("No response from API");
       }
 
+      const contentType = result.headers.get("content-type");
+      const ext = contentType === "image/png" ? "png" : "jpg";
+      const date = new Date().toLocaleString();
+      const filename = `snapshot_${slugify(this.stateObj!.entity_id)}_${date}.${ext}`;
+
       const blob = await result.blob();
       const url = window.URL.createObjectURL(blob);
-      fileDownload(url);
-    } catch (err) {
+      fileDownload(url, filename);
+    } catch (_err) {
       this._waiting = false;
       button.actionError();
       showToast(this, {
@@ -87,25 +92,23 @@ class MoreInfoCamera extends LitElement {
     button.actionSuccess();
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-      }
+  static styles = css`
+    :host {
+      display: block;
+    }
 
-      .actions {
-        width: 100%;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-        box-sizing: border-box;
-        padding: 12px;
-        z-index: 1;
-        gap: 8px;
-      }
-    `;
-  }
+    .actions {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      box-sizing: border-box;
+      padding: 12px;
+      z-index: 1;
+      gap: 8px;
+    }
+  `;
 }
 
 customElements.define("more-info-camera", MoreInfoCamera);

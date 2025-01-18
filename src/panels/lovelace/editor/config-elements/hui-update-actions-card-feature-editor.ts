@@ -38,7 +38,7 @@ export class HuiUpdateActionsCardFeatureEditor
           disabled: !supportsBackup,
           selector: {
             select: {
-              default: "yes",
+              default: "no",
               mode: "dropdown",
               options: ["ask", "yes", "no"].map((option) => ({
                 value: option,

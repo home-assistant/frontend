@@ -6,7 +6,7 @@ import "./entry-html.js";
 import "./gather-static.js";
 import "./gen-icons-json.js";
 import "./translations.js";
-import "./webpack.js";
+import "./rspack.js";
 
 gulp.task(
   "develop-hassio",
@@ -21,7 +21,7 @@ gulp.task(
     "copy-translations-supervisor",
     "build-locale-data",
     "copy-static-supervisor",
-    "webpack-watch-hassio"
+    "rspack-watch-hassio"
   )
 );
 
@@ -37,7 +37,7 @@ gulp.task(
     "copy-translations-supervisor",
     "build-locale-data",
     "copy-static-supervisor",
-    "webpack-prod-hassio",
+    "rspack-prod-hassio",
     "gen-pages-hassio-prod",
     ...// Don't compress running tests
     (env.isTestBuild() ? [] : ["compress-hassio"])

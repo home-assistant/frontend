@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -96,6 +95,7 @@ export class HaImageSelector extends LitElement {
                 .value=${this.value?.startsWith(URL_PREFIX) ? this.value : null}
                 .original=${this.selector.image?.original}
                 .cropOptions=${this.selector.image?.crop}
+                select-media
                 @change=${this._pictureChanged}
               ></ha-picture-upload>
             `}
@@ -125,26 +125,24 @@ export class HaImageSelector extends LitElement {
     fireEvent(this, "value-changed", { value });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-        position: relative;
-      }
-      div {
-        display: flex;
-        flex-direction: column;
-      }
-      label {
-        display: flex;
-        flex-direction: column;
-      }
-      ha-textarea,
-      ha-textfield {
-        width: 100%;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+      position: relative;
+    }
+    div {
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      display: flex;
+      flex-direction: column;
+    }
+    ha-textarea,
+    ha-textfield {
+      width: 100%;
+    }
+  `;
 }
 
 declare global {

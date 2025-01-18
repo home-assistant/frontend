@@ -299,7 +299,7 @@ class HassioAddonConfig extends LitElement {
     if (this.addon.schema && this._canShowSchema && !this._yamlMode) {
       this._valid = true;
       this._configHasChanged = true;
-      this._options! = ev.detail.value;
+      this._options = ev.detail.value;
     } else {
       this._configHasChanged = true;
       this._valid = ev.detail.isValid;
@@ -315,6 +315,7 @@ class HassioAddonConfig extends LitElement {
       text: this.supervisor.localize("confirm.reset_options.text"),
       confirmText: this.supervisor.localize("common.reset_options"),
       dismissText: this.supervisor.localize("common.cancel"),
+      destructive: true,
     });
 
     if (!confirmed) {

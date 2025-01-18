@@ -1,6 +1,5 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -123,7 +122,7 @@ export class CloudTTSPref extends LitElement {
     });
   }
 
-  async _handleLanguageChange(ev) {
+  private async _handleLanguageChange(ev) {
     if (ev.detail.value === this.cloudStatus!.prefs.tts_default_voice[0]) {
       return;
     }
@@ -152,7 +151,7 @@ export class CloudTTSPref extends LitElement {
     }
   }
 
-  async _handleVoiceChange(ev) {
+  private async _handleVoiceChange(ev) {
     if (ev.target.value === this.cloudStatus!.prefs.tts_default_voice[1]) {
       return;
     }
@@ -176,41 +175,39 @@ export class CloudTTSPref extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      a {
-        color: var(--primary-color);
-      }
-      .example {
-        position: absolute;
-        right: 16px;
-        inset-inline-end: 16px;
-        inset-inline-start: initial;
-        top: 16px;
-      }
-      .row {
-        display: flex;
-      }
-      .row > * {
-        flex: 1;
-        width: 0;
-      }
-      .row > *:first-child {
-        margin-right: 8px;
-        margin-inline-end: 8px;
-        margin-inline-start: initial;
-      }
-      .row > *:last-child {
-        margin-left: 8px;
-        margin-inline-start: 8px;
-        margin-inline-end: initial;
-      }
-      .card-actions {
-        display: flex;
-        flex-direction: row-reverse;
-      }
-    `;
-  }
+  static styles = css`
+    a {
+      color: var(--primary-color);
+    }
+    .example {
+      position: absolute;
+      right: 16px;
+      inset-inline-end: 16px;
+      inset-inline-start: initial;
+      top: 16px;
+    }
+    .row {
+      display: flex;
+    }
+    .row > * {
+      flex: 1;
+      width: 0;
+    }
+    .row > *:first-child {
+      margin-right: 8px;
+      margin-inline-end: 8px;
+      margin-inline-start: initial;
+    }
+    .row > *:last-child {
+      margin-left: 8px;
+      margin-inline-start: 8px;
+      margin-inline-end: initial;
+    }
+    .card-actions {
+      display: flex;
+      flex-direction: row-reverse;
+    }
+  `;
 }
 
 declare global {

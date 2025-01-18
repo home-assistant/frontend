@@ -34,7 +34,7 @@ export class ZHAGroupsDashboard extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @state() private _groups: ZHAGroup[] = [];
 
@@ -109,7 +109,7 @@ export class ZHAGroupsDashboard extends LitElement {
         .data=${this._formattedGroups(this._groups)}
         @row-click=${this._handleRowClicked}
         clickable
-        hasFab
+        has-fab
       >
         <a href="/config/zha/group-add" slot="fab">
           <ha-fab

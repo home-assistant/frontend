@@ -77,7 +77,7 @@ export class HaFilterIntegrations extends LitElement {
                         slot="graphic"
                         .hass=${this.hass}
                         .domain=${integration.domain}
-                        brandFallback
+                        brand-fallback
                       ></ha-domain-icon>
                       ${integration.name || integration.domain}
                     </ha-check-list-item>`

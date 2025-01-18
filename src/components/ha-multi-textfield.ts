@@ -20,17 +20,17 @@ class HaMultiTextField extends LitElement {
 
   @property() public label?: string;
 
-  @property() public inputType?: string;
+  @property({ attribute: false }) public inputType?: string;
 
-  @property() public inputSuffix?: string;
+  @property({ attribute: false }) public inputSuffix?: string;
 
-  @property() public inputPrefix?: string;
+  @property({ attribute: false }) public inputPrefix?: string;
 
-  @property() public autocomplete?: string;
+  @property({ attribute: false }) public autocomplete?: string;
 
-  @property() public addLabel?: string;
+  @property({ attribute: false }) public addLabel?: string;
 
-  @property() public removeLabel?: string;
+  @property({ attribute: false }) public removeLabel?: string;
 
   @property({ attribute: "item-index", type: Boolean })
   public itemIndex = false;

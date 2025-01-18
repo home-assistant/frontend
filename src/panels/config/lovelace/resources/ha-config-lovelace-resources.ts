@@ -38,7 +38,7 @@ import { storage } from "../../../../common/decorators/storage";
 export class HaConfigLovelaceRescources extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -105,6 +105,9 @@ export class HaConfigLovelaceRescources extends LitElement {
       },
       delete: {
         title: "",
+        label: localize(
+          "ui.panel.config.lovelace.resources.picker.headers.delete"
+        ),
         type: "icon-button",
         minWidth: "48px",
         maxWidth: "48px",
@@ -174,7 +177,7 @@ export class HaConfigLovelaceRescources extends LitElement {
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
         @row-click=${this._editResource}
-        hasFab
+        has-fab
         clickable
       >
         <ha-fab
@@ -281,7 +284,7 @@ export class HaConfigLovelaceRescources extends LitElement {
         confirm: () => location.reload(),
       });
       return true;
-    } catch (err: any) {
+    } catch (_err: any) {
       return false;
     }
   };

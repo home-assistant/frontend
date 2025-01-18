@@ -2,7 +2,7 @@ import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { HomeAssistant } from "../../types";
 
 export interface CloudTTSInfo {
-  languages: Array<[string, string]>;
+  languages: [string, string][];
 }
 
 export const getCloudTTSInfo = (hass: HomeAssistant) =>
@@ -30,7 +30,7 @@ export const getCloudTtsSupportedVoices = (
   language: string,
   info: CloudTTSInfo | undefined
 ) => {
-  const voices: Array<string> = [];
+  const voices: string[] = [];
 
   if (!info) {
     return voices;

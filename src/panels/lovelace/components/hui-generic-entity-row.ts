@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -23,16 +23,17 @@ export class HuiGenericEntityRow extends LitElement {
 
   @property({ attribute: false }) public config?: EntitiesCardEntityConfig;
 
-  @property() public secondaryText?: string;
+  @property({ attribute: "secondary-text" }) public secondaryText?: string;
 
-  @property({ type: Boolean }) public hideName = false;
+  @property({ attribute: "hide-name", type: Boolean }) public hideName = false;
 
   // Allows to control if this row should capture the user interaction, e.g. with its
   // toggle switch, button or input field. Some domains dynamically decide what to show
   // => static determination will not work => the caller has to pass the desired value in.
   // Same applies for custom components that want to override the default behavior.
   // Default behavior is controlled by DOMAINS_INPUT_ROW.
-  @property({ type: Boolean }) public catchInteraction?;
+  @property({ attribute: "catch-interaction", type: Boolean })
+  public catchInteraction?;
 
   protected render() {
     if (!this.hass || !this.config) {
@@ -187,55 +188,53 @@ export class HuiGenericEntityRow extends LitElement {
     handleAction(this, this.hass!, this.config!, ev.detail.action!);
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: flex;
-        align-items: center;
-        flex-direction: row;
-      }
-      .info {
-        margin-left: 16px;
-        margin-right: 8px;
-        margin-inline-start: 16px;
-        margin-inline-end: 8px;
-        flex: 1 1 30%;
-      }
-      .info,
-      .info > * {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .flex ::slotted(*) {
-        margin-left: 8px;
-        margin-inline-start: 8px;
-        margin-inline-end: initial;
-        min-width: 0;
-      }
-      .flex ::slotted([slot="secondary"]) {
-        margin-left: 0;
-        margin-inline-start: 0;
-        margin-inline-end: initial;
-      }
-      .secondary,
-      ha-relative-time {
-        color: var(--secondary-text-color);
-      }
-      state-badge {
-        flex: 0 0 40px;
-      }
-      .pointer {
-        cursor: pointer;
-      }
-      .state {
-        text-align: var(--float-end);
-      }
-      .value {
-        direction: ltr;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+    }
+    .info {
+      margin-left: 16px;
+      margin-right: 8px;
+      margin-inline-start: 16px;
+      margin-inline-end: 8px;
+      flex: 1 1 30%;
+    }
+    .info,
+    .info > * {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .flex ::slotted(*) {
+      margin-left: 8px;
+      margin-inline-start: 8px;
+      margin-inline-end: initial;
+      min-width: 0;
+    }
+    .flex ::slotted([slot="secondary"]) {
+      margin-left: 0;
+      margin-inline-start: 0;
+      margin-inline-end: initial;
+    }
+    .secondary,
+    ha-relative-time {
+      color: var(--secondary-text-color);
+    }
+    state-badge {
+      flex: 0 0 40px;
+    }
+    .pointer {
+      cursor: pointer;
+    }
+    .state {
+      text-align: var(--float-end);
+    }
+    .value {
+      direction: ltr;
+    }
+  `;
 }
 
 declare global {

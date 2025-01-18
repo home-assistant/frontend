@@ -1,5 +1,5 @@
 import "@material/mwc-list/mwc-list-item";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
@@ -56,14 +56,14 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
       <hui-generic-entity-row
         .hass=${this.hass}
         .config=${this._config}
-        hideName
+        hide-name
       >
         <ha-select
           .label=${this._config.name || computeStateName(stateObj)}
           .value=${stateObj.state}
           .disabled=${stateObj.state === UNAVAILABLE}
           naturalMenuWidth
-          @selected=${this._selectedChanged}
+          @action=${this._handleAction}
           @click=${stopPropagation}
           @closed=${stopPropagation}
         >
@@ -81,24 +81,24 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      hui-generic-entity-row {
-        display: flex;
-        align-items: center;
-      }
-      ha-select {
-        width: 100%;
-        --ha-select-min-width: 0;
-      }
-    `;
-  }
+  static styles = css`
+    hui-generic-entity-row {
+      display: flex;
+      align-items: center;
+    }
+    ha-select {
+      width: 100%;
+      --ha-select-min-width: 0;
+    }
+  `;
 
-  private _selectedChanged(ev): void {
+  private _handleAction(ev): void {
     const stateObj = this.hass!.states[
       this._config!.entity
     ] as InputSelectEntity;
+
     const option = ev.target.value;
+
     if (
       option === stateObj.state ||
       !stateObj.attributes.options.includes(option)

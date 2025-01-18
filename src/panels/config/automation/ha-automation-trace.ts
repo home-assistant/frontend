@@ -49,11 +49,11 @@ const TABS = ["details", "automation_config", "timeline", "logbook"] as const;
 export class HaAutomationTrace extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public automationId!: string;
+  @property({ attribute: false }) public automationId!: string;
 
   @property({ attribute: false }) public automations!: AutomationEntity[];
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
@@ -424,7 +424,9 @@ export class HaAutomationTrace extends LitElement {
       }
 
       await showAlertDialog(this, {
-        text: "Chosen trace is no longer available",
+        text: this.hass!.localize(
+          "ui.panel.config.automation.trace.trace_no_longer_available"
+        ),
       });
     }
 
@@ -471,17 +473,22 @@ export class HaAutomationTrace extends LitElement {
   }
 
   private _importTrace() {
-    const traceText = prompt("Enter downloaded trace");
+    const traceText = prompt(
+      this.hass.localize(
+        "ui.panel.config.automation.trace.enter_downloaded_trace"
+      )
+    );
     if (!traceText) {
       return;
     }
-    localStorage.devTrace = traceText;
+    window.localStorage.setItem("devTrace", traceText);
     this._loadLocalTrace(traceText);
   }
 
   private _loadLocalStorageTrace() {
-    if (localStorage.devTrace) {
-      this._loadLocalTrace(localStorage.devTrace);
+    const devTrace = window.localStorage.getItem("devTrace");
+    if (devTrace) {
+      this._loadLocalTrace(devTrace);
     }
   }
 

@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -175,53 +175,51 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-card {
-        min-height: 75px;
-        overflow: hidden;
-        position: relative;
-        height: 100%;
-        box-sizing: border-box;
-      }
+  static styles = css`
+    ha-card {
+      min-height: 75px;
+      overflow: hidden;
+      position: relative;
+      height: 100%;
+      box-sizing: border-box;
+    }
 
-      hui-image {
-        cursor: pointer;
-        height: 100%;
-      }
+    hui-image {
+      cursor: pointer;
+      height: 100%;
+    }
 
-      .footer {
-        /* start paper-font-common-nowrap style */
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        /* end paper-font-common-nowrap style */
+    .footer {
+      /* start paper-font-common-nowrap style */
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      /* end paper-font-common-nowrap style */
 
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: var(
-          --ha-picture-card-background-color,
-          rgba(0, 0, 0, 0.3)
-        );
-        padding: 16px;
-        font-size: 16px;
-        line-height: 16px;
-        color: var(--ha-picture-card-text-color, white);
-        pointer-events: none;
-      }
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(
+        --ha-picture-card-background-color,
+        rgba(0, 0, 0, 0.3)
+      );
+      padding: 16px;
+      font-size: 16px;
+      line-height: 16px;
+      color: var(--ha-picture-card-text-color, white);
+      pointer-events: none;
+    }
 
-      .both {
-        display: flex;
-        justify-content: space-between;
-      }
+    .both {
+      display: flex;
+      justify-content: space-between;
+    }
 
-      .single {
-        text-align: center;
-      }
-    `;
-  }
+    .single {
+      text-align: center;
+    }
+  `;
 
   private _handleAction(ev: ActionHandlerEvent) {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);

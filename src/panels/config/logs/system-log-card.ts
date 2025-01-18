@@ -1,6 +1,5 @@
 import "@material/mwc-list/mwc-list";
 import { mdiDotsVertical, mdiDownload, mdiRefresh, mdiText } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -241,69 +240,68 @@ export class SystemLogCard extends LitElement {
     showSystemLogDetailDialog(this, { item });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-card {
-        padding-top: 8px;
-      }
+  static styles = css`
+    ha-card {
+      padding-top: 8px;
+    }
 
-      .header {
-        display: flex;
-        justify-content: space-between;
-        padding: 0 16px;
-      }
+    :host {
+      direction: var(--direction);
+    }
+    mwc-list {
+      direction: ltr;
+    }
 
-      .header-buttons {
-        display: flex;
-        align-items: center;
-      }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 16px;
+    }
 
-      .card-header {
-        color: var(--ha-card-header-color, var(--primary-text-color));
-        font-family: var(--ha-card-header-font-family, inherit);
-        font-size: var(--ha-card-header-font-size, 24px);
-        letter-spacing: -0.012em;
-        line-height: 48px;
-        display: block;
-        margin-block-start: 0px;
-        margin-block-end: 0px;
-        font-weight: normal;
-      }
+    .header-buttons {
+      display: flex;
+      align-items: center;
+    }
 
-      .system-log-intro {
-        margin: 16px;
-      }
+    .card-header {
+      color: var(--ha-card-header-color, var(--primary-text-color));
+      font-family: var(--ha-card-header-font-family, inherit);
+      font-size: var(--ha-card-header-font-size, 24px);
+      letter-spacing: -0.012em;
+      line-height: 48px;
+      display: block;
+      margin-block-start: 0px;
+      margin-block-end: 0px;
+      font-weight: normal;
+    }
 
-      .loading-container {
-        height: 100px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
+    .system-log-intro {
+      margin: 16px;
+    }
 
-      .error {
-        color: var(--error-color);
-      }
+    .loading-container {
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-      .warning {
-        color: var(--warning-color);
-      }
+    .error {
+      color: var(--error-color);
+    }
 
-      .card-content {
-        border-top: 1px solid var(--divider-color);
-      }
+    .warning {
+      color: var(--warning-color);
+    }
 
-      .card-actions,
-      .empty-content {
-        direction: var(--direction);
-      }
+    .card-content {
+      border-top: 1px solid var(--divider-color);
+    }
 
-      .row-secondary {
-        direction: var(--direction);
-        text-align: left;
-      }
-    `;
-  }
+    .row-secondary {
+      text-align: left;
+    }
+  `;
 }
 
 declare global {

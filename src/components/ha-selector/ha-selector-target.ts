@@ -2,7 +2,7 @@ import type {
   HassEntity,
   HassServiceTarget,
 } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -113,13 +113,11 @@ export class HaTargetSelector extends LitElement {
     );
   };
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-target-picker {
-        display: block;
-      }
-    `;
-  }
+  static styles = css`
+    ha-target-picker {
+      display: block;
+    }
+  `;
 }
 
 declare global {

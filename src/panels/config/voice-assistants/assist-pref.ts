@@ -8,7 +8,7 @@ import {
   mdiStar,
   mdiTrashCan,
 } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -32,6 +32,10 @@ import {
 import type { CloudStatus } from "../../../data/cloud";
 import type { ExposeEntitySettings } from "../../../data/expose";
 import {
+  getExposeNewEntities,
+  setExposeNewEntities,
+} from "../../../data/expose";
+import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
@@ -42,6 +46,8 @@ import { showVoiceAssistantPipelineDetailDialog } from "./show-dialog-voice-assi
 import { showVoiceCommandDialog } from "../../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import type { HaSwitch } from "../../../components/ha-switch";
+import { navigate } from "../../../common/navigate";
 
 @customElement("assist-pref")
 export class AssistPref extends LitElement {
@@ -60,6 +66,16 @@ export class AssistPref extends LitElement {
 
   @state() private _pipelineEntitiesCount = 0;
 
+  @state() private _exposeNew?: boolean;
+
+  protected willUpdate() {
+    if (!this.hasUpdated) {
+      getExposeNewEntities(this.hass, "conversation").then((value) => {
+        this._exposeNew = value.expose_new;
+      });
+    }
+  }
+
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
 
@@ -68,7 +84,9 @@ export class AssistPref extends LitElement {
       this._preferred = pipelines.preferred_pipeline;
     });
     this._pipelineEntitiesCount = Object.values(this.hass.entities).filter(
-      (entity) => computeDomain(entity.entity_id) === "assist_satellite"
+      (entity) =>
+        computeDomain(entity.entity_id) === "assist_satellite" &&
+        this.hass.states[entity.entity_id].state !== "unavailable"
     ).length;
   }
 
@@ -103,7 +121,9 @@ export class AssistPref extends LitElement {
             class="icon-link"
           >
             <ha-icon-button
-              label="Learn how it works"
+              .label=${this.hass.localize(
+                "ui.panel.config.voice_assistants.assistants.pipeline.link_learn_how_it_works"
+              )}
               .path=${mdiHelpCircle}
             ></ha-icon-button>
           </a>
@@ -159,14 +179,16 @@ export class AssistPref extends LitElement {
                     )}
                     <ha-svg-icon slot="graphic" .path=${mdiStar}></ha-svg-icon>
                   </ha-list-item>
-                  <a href=${`/config/voice-assistants/debug/${pipeline.id}`}>
-                    <ha-list-item graphic="icon">
-                      ${this.hass.localize(
-                        "ui.panel.config.voice_assistants.assistants.pipeline.detail.debug"
-                      )}
-                      <ha-svg-icon slot="graphic" .path=${mdiBug}></ha-svg-icon>
-                    </ha-list-item>
-                  </a>
+                  <ha-list-item
+                    graphic="icon"
+                    .id=${pipeline.id}
+                    @request-selected=${this._debugPipeline}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.voice_assistants.assistants.pipeline.detail.debug"
+                    )}
+                    <ha-svg-icon slot="graphic" .path=${mdiBug}></ha-svg-icon>
+                  </ha-list-item>
                   <ha-list-item
                     class="danger"
                     graphic="icon"
@@ -190,6 +212,23 @@ export class AssistPref extends LitElement {
           )}
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </ha-button>
+        <ha-settings-row>
+          <span slot="heading">
+            ${this.hass!.localize(
+              "ui.panel.config.voice_assistants.expose.expose_new_entities"
+            )}
+          </span>
+          <span slot="description">
+            ${this.hass!.localize(
+              "ui.panel.config.voice_assistants.expose.expose_new_entities_info"
+            )}
+          </span>
+          <ha-switch
+            .checked=${this._exposeNew}
+            .disabled=${this._exposeNew === undefined}
+            @change=${this._exposeNewToggleChanged}
+          ></ha-switch>
+        </ha-settings-row>
         <div class="card-actions">
           <a
             href="/config/voice-assistants/expose?assistants=conversation&historyBack"
@@ -222,6 +261,18 @@ export class AssistPref extends LitElement {
     `;
   }
 
+  private async _exposeNewToggleChanged(ev) {
+    const toggle = ev.target as HaSwitch;
+    if (this._exposeNew === undefined || this._exposeNew === toggle.checked) {
+      return;
+    }
+    try {
+      await setExposeNewEntities(this.hass, "conversation", toggle.checked);
+    } catch (_err: any) {
+      toggle.checked = !toggle.checked;
+    }
+  }
+
   private _talkWithPipeline(ev) {
     const id = ev.currentTarget.id as string;
     showVoiceCommandDialog(this, this.hass, { pipeline_id: id });
@@ -231,6 +282,11 @@ export class AssistPref extends LitElement {
     const id = ev.currentTarget.id as string;
     await setAssistPipelinePreferred(this.hass!, id);
     this._preferred = id;
+  }
+
+  private async _debugPipeline(ev) {
+    const id = ev.currentTarget.id as string;
+    navigate(`/config/voice-assistants/debug/${id}`);
   }
 
   private async _deletePipeline(ev) {
@@ -298,70 +354,69 @@ export class AssistPref extends LitElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      a {
-        color: var(--primary-color);
-      }
-      .header-actions {
-        position: absolute;
-        right: 0px;
-        inset-inline-end: 0px;
-        inset-inline-start: initial;
-        top: 24px;
-        display: flex;
-        flex-direction: row;
-      }
-      .header-actions .icon-link {
-        margin-top: -16px;
-        margin-right: 8px;
-        margin-inline-end: 8px;
-        margin-inline-start: initial;
-        direction: var(--direction);
-        color: var(--secondary-text-color);
-      }
-      ha-list-item {
-        --mdc-list-item-meta-size: auto;
-        --mdc-list-item-meta-display: flex;
-        --mdc-list-side-padding-right: 8px;
-      }
+  static styles = css`
+    a {
+      color: var(--primary-color);
+    }
+    .header-actions {
+      position: absolute;
+      right: 0px;
+      inset-inline-end: 0px;
+      inset-inline-start: initial;
+      top: 24px;
+      display: flex;
+      flex-direction: row;
+    }
+    .header-actions .icon-link {
+      margin-top: -16px;
+      margin-right: 8px;
+      margin-inline-end: 8px;
+      margin-inline-start: initial;
+      direction: var(--direction);
+      color: var(--secondary-text-color);
+    }
+    ha-list-item {
+      --mdc-list-item-meta-size: auto;
+      --mdc-list-item-meta-display: flex;
+      --mdc-list-side-padding-right: 8px;
+      --mdc-list-side-padding-left: 16px;
+    }
 
-      ha-list-item.danger {
-        color: var(--error-color);
-        border-top: 1px solid var(--divider-color);
-      }
+    ha-list-item.danger {
+      color: var(--error-color);
+      border-top: 1px solid var(--divider-color);
+    }
 
-      ha-button-menu a {
-        text-decoration: none;
-      }
+    ha-button-menu a {
+      text-decoration: none;
+    }
 
-      ha-svg-icon {
-        color: currentColor;
-        width: 16px;
-      }
+    ha-svg-icon {
+      color: currentColor;
+      width: 16px;
+    }
 
-      .add {
-        margin: 0 16px 16px;
-      }
-      .card-actions {
-        display: flex;
-      }
-      .card-actions a {
-        text-decoration: none;
-      }
-      .card-header {
-        display: flex;
-        align-items: center;
-        padding-bottom: 0;
-      }
-      img {
-        height: 28px;
-        margin-right: 16px;
-        margin-inline-end: 16px;
-        margin-inline-start: initial;
-      }
-    `;
-  }
+    .add {
+      margin: 0 16px 16px;
+    }
+    .card-actions {
+      display: flex;
+    }
+    .card-actions a {
+      text-decoration: none;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      padding-bottom: 0;
+    }
+    img {
+      height: 28px;
+      margin-right: 16px;
+      margin-inline-end: 16px;
+      margin-inline-start: initial;
+    }
+  `;
 }
 
 declare global {

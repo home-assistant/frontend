@@ -127,11 +127,9 @@ export class HaTracePathDetails extends LitElement {
         .substring(this.selected.path.length + 1)
         .split("/");
       let currentDetail = this.selected.config;
-      for (let i = 0; i < nestPath.length; i++) {
-        if (
-          !["undefined", "string"].includes(typeof currentDetail[nestPath[i]])
-        ) {
-          currentDetail = currentDetail[nestPath[i]];
+      for (const part of nestPath) {
+        if (!["undefined", "string"].includes(typeof currentDetail[part])) {
+          currentDetail = currentDetail[part];
         }
       }
 
@@ -223,7 +221,7 @@ export class HaTracePathDetails extends LitElement {
     return config
       ? html`<ha-code-editor
           .value=${dump(config).trimEnd()}
-          readOnly
+          read-only
           dir="ltr"
         ></ha-code-editor>`
       : this.hass!.localize(

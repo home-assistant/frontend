@@ -23,7 +23,7 @@ export interface SignedPath {
   path: string;
 }
 
-export const hassUrl = `${location.protocol}//${location.host}`;
+export const hassUrl = __HASS_URL__;
 
 export const autocompleteLoginFields = (schema: HaFormSchema[]) =>
   schema.map((field) => {
@@ -132,7 +132,7 @@ export const adminChangePassword = (
   userId: string,
   password: string
 ) =>
-  hass.callWS<void>({
+  hass.callWS<undefined>({
     type: "config/auth_provider/homeassistant/admin_change_password",
     user_id: userId,
     password,
@@ -143,7 +143,7 @@ export const adminChangeUsername = (
   userId: string,
   username: string
 ) =>
-  hass.callWS<void>({
+  hass.callWS<undefined>({
     type: "config/auth_provider/homeassistant/admin_change_username",
     user_id: userId,
     username,

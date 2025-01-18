@@ -135,7 +135,7 @@ class MoveDatadiskDialog extends LitElement {
                 .label=${this.hass.localize(
                   "ui.panel.config.storage.datadisk.select_device"
                 )}
-                @selected=${this._select_device}
+                @selected=${this._selectDevice}
                 @closed=${stopPropagation}
                 dialogInitialFocus
                 fixedMenuPosition
@@ -177,7 +177,7 @@ class MoveDatadiskDialog extends LitElement {
     `;
   }
 
-  private _select_device(ev) {
+  private _selectDevice(ev) {
     this._selectedDevice = ev.target.value;
   }
 

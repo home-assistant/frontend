@@ -143,7 +143,7 @@ class DialogMatterPingNode extends LitElement {
       }
 
       this._pingResultEntries = pingResultEntries;
-    } catch (err) {
+    } catch (_err) {
       this._status = "failed";
     }
   }

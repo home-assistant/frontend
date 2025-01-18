@@ -143,13 +143,11 @@ export class DemoHaExpansionPanel extends LitElement {
     `;
   }
 
-  static get styles() {
-    return css`
-      ha-expansion-panel {
-        margin: -16px;
-      }
-    `;
-  }
+  static styles = css`
+    ha-expansion-panel {
+      margin: -16px;
+    }
+  `;
 }
 
 declare global {

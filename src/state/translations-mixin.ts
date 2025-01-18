@@ -75,12 +75,10 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     // eslint-disable-next-line: variable-name
     private __coreProgress?: string;
 
-    private __loadedFragmentTranslations: Set<string> = new Set();
+    private __loadedFragmentTranslations = new Set<string>();
 
-    private __loadedTranslations: {
-      // track what things have been loaded
-      [category: string]: LoadedTranslationCategory;
-    } = {};
+    private __loadedTranslations: Record<string, LoadedTranslationCategory> =
+      {};
 
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
@@ -298,7 +296,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         }
         const resources = await getHassTranslationsPre109(this.hass!, language);
 
-        // Ignore the repsonse if user switched languages before we got response
+        // Ignore the response if user switched languages before we got response
         if (this.hass!.language !== language) {
           return this.hass!.localize;
         }
@@ -359,7 +357,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         configFlow
       );
 
-      // Ignore the repsonse if user switched languages before we got response
+      // Ignore the response if user switched languages before we got response
       if (this.hass!.language !== language) {
         return this.hass!.localize;
       }

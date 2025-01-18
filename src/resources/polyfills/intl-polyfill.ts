@@ -6,6 +6,8 @@ import { shouldPolyfill as shouldPolyfillLocale } from "@formatjs/intl-locale/sh
 import { shouldPolyfill as shouldPolyfillNumberFormat } from "@formatjs/intl-numberformat/should-polyfill";
 import { shouldPolyfill as shouldPolyfillPluralRules } from "@formatjs/intl-pluralrules/should-polyfill";
 import { shouldPolyfill as shouldPolyfillRelativeTimeFormat } from "@formatjs/intl-relativetimeformat/should-polyfill";
+import { shouldPolyfill as shouldPolyfillDurationFormat } from "@formatjs/intl-durationformat/should-polyfill";
+
 import { getLocalLanguage } from "../../util/common-translation";
 import {
   polyfillLocaleData,
@@ -27,6 +29,9 @@ const polyfillIntl = async () => {
         polyfillTimeZoneData()
       )
     );
+  }
+  if (shouldPolyfillDurationFormat()) {
+    polyfills.push(import("@formatjs/intl-durationformat/polyfill-force"));
   }
   if (shouldPolyfillDisplayNames(locale)) {
     polyfills.push(import("@formatjs/intl-displaynames/polyfill-force"));

@@ -172,7 +172,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
         this.hass,
         this.device_id!
       );
-    } catch (e) {
+    } catch (_e) {
       this._status = "failed";
     }
   }

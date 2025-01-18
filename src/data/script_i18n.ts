@@ -1,5 +1,5 @@
 import { ensureArray } from "../common/array/ensure-array";
-import { formatDuration } from "../common/datetime/format_duration";
+import { formatNumericDuration } from "../common/datetime/format_duration";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { formatListWithAnds } from "../common/string/format-list";
@@ -43,7 +43,7 @@ export const describeAction = <T extends ActionType>(
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],
   labelRegistry: LabelRegistryEntry[],
-  floorRegistry: { [id: string]: FloorRegistryEntry },
+  floorRegistry: Record<string, FloorRegistryEntry>,
   action: ActionTypes[T],
   actionType?: T,
   ignoreAlias = false
@@ -77,7 +77,7 @@ const tryDescribeAction = <T extends ActionType>(
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],
   labelRegistry: LabelRegistryEntry[],
-  floorRegistry: { [id: string]: FloorRegistryEntry },
+  floorRegistry: Record<string, FloorRegistryEntry>,
   action: ActionTypes[T],
   actionType?: T,
   ignoreAlias = false
@@ -277,7 +277,7 @@ const tryDescribeAction = <T extends ActionType>(
       duration = hass.localize(
         `${actionTranslationBaseKey}.delay.description.duration_string`,
         {
-          string: formatDuration(hass.locale, config.delay),
+          string: formatNumericDuration(hass.locale, config.delay),
         }
       );
     } else {
@@ -486,6 +486,11 @@ const tryDescribeAction = <T extends ActionType>(
 
   if (actionType === "set_conversation_response") {
     const config = action as SetConversationResponseAction;
+    if (isTemplate(config.set_conversation_response)) {
+      return hass.localize(
+        `${actionTranslationBaseKey}.set_conversation_response.description.template`
+      );
+    }
     return hass.localize(
       `${actionTranslationBaseKey}.set_conversation_response.description.full`,
       { response: config.set_conversation_response }

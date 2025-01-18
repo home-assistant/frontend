@@ -12,7 +12,7 @@ import {
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -47,11 +47,10 @@ import {
 } from "./const";
 import "./controls/more-info-default";
 import "./ha-more-info-history-and-logbook";
-import type { MoreInfoHistoryAndLogbook } from "./ha-more-info-history-and-logbook";
 import "./ha-more-info-info";
-import type { MoreInfoInfo } from "./ha-more-info-info";
 import "./ha-more-info-settings";
 import "./more-info-content";
+import { getSensorNumericDeviceClasses } from "../../data/sensor";
 
 export interface MoreInfoDialogParams {
   entityId: string | null;
@@ -62,12 +61,12 @@ export interface MoreInfoDialogParams {
 
 type View = "info" | "history" | "settings" | "related";
 
-type ChildView = {
+interface ChildView {
   viewTag: string;
   viewTitle?: string;
   viewImport?: () => Promise<unknown>;
   viewParams?: any;
-};
+}
 
 declare global {
   interface HASSDomEvents {
@@ -98,8 +97,9 @@ export class MoreInfoDialog extends LitElement {
 
   @state() private _infoEditMode = false;
 
-  @query("ha-more-info-info, ha-more-info-history-and-logbook")
-  private _history?: MoreInfoInfo | MoreInfoHistoryAndLogbook;
+  @state() private _isEscapeEnabled = true;
+
+  @state() private _sensorNumericDeviceClasses?: string[] = [];
 
   public showDialog(params: MoreInfoDialogParams) {
     this._entityId = params.entityId;
@@ -123,7 +123,7 @@ export class MoreInfoDialog extends LitElement {
         this.hass,
         this._entityId
       );
-    } catch (e) {
+    } catch (_e) {
       this._entry = null;
     }
   }
@@ -134,10 +134,13 @@ export class MoreInfoDialog extends LitElement {
     this._childView = undefined;
     this._infoEditMode = false;
     this._initialView = DEFAULT_VIEW;
+    this._isEscapeEnabled = true;
+    window.removeEventListener("dialog-closed", this._enableEscapeKeyClose);
+    window.removeEventListener("show-dialog", this._disableEscapeKeyClose);
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  private shouldShowEditIcon(
+  private _shouldShowEditIcon(
     domain: string,
     stateObj: HassEntity | undefined
   ): boolean {
@@ -157,11 +160,15 @@ export class MoreInfoDialog extends LitElement {
     return false;
   }
 
-  private shouldShowHistory(domain: string): boolean {
+  private _shouldShowHistory(domain: string): boolean {
     return (
       DOMAINS_WITH_MORE_INFO.includes(domain) &&
       (computeShowHistoryComponent(this.hass, this._entityId!) ||
-        computeShowLogBookComponent(this.hass, this._entityId!))
+        computeShowLogBookComponent(
+          this.hass,
+          this._entityId!,
+          this._sensorNumericDeviceClasses
+        ))
     );
   }
 
@@ -172,7 +179,7 @@ export class MoreInfoDialog extends LitElement {
     return entity?.device_id ?? null;
   }
 
-  private setView(view: View) {
+  private _setView(view: View) {
     history.replaceState(
       {
         ...history.state,
@@ -190,21 +197,21 @@ export class MoreInfoDialog extends LitElement {
     if (this._childView) {
       this._childView = undefined;
     } else {
-      this.setView(this._initialView);
+      this._setView(this._initialView);
     }
   }
 
   private _resetInitialView() {
     this._initialView = DEFAULT_VIEW;
-    this.setView(DEFAULT_VIEW);
+    this._setView(DEFAULT_VIEW);
   }
 
   private _goToHistory() {
-    this.setView("history");
+    this._setView("history");
   }
 
   private _goToSettings(): void {
-    this.setView("settings");
+    this._setView("settings");
   }
 
   private _showChildView(ev: CustomEvent): void {
@@ -255,7 +262,12 @@ export class MoreInfoDialog extends LitElement {
 
   private _goToRelated(ev): void {
     if (!shouldHandleRequestSelectedEvent(ev)) return;
-    this.setView("related");
+    this._setView("related");
+  }
+
+  private async _loadNumericDeviceClasses() {
+    const deviceClasses = await getSensorNumericDeviceClasses(this.hass);
+    this._sensorNumericDeviceClasses = deviceClasses.numeric_device_classes;
   }
 
   protected render() {
@@ -284,6 +296,7 @@ export class MoreInfoDialog extends LitElement {
         open
         @closed=${this.closeDialog}
         @opened=${this._handleOpened}
+        .escapeKeyAction=${this._isEscapeEnabled ? undefined : ""}
         .heading=${title}
         hideActions
         flexContent
@@ -314,7 +327,7 @@ export class MoreInfoDialog extends LitElement {
           </span>
           ${isDefaultView
             ? html`
-                ${this.shouldShowHistory(domain)
+                ${this._shouldShowHistory(domain)
                   ? html`
                       <ha-icon-button
                         slot="actionItems"
@@ -338,7 +351,7 @@ export class MoreInfoDialog extends LitElement {
                       ></ha-icon-button>
                       <ha-button-menu
                         corner="BOTTOM_END"
-                        menuCorner="END"
+                        menu-corner="END"
                         slot="actionItems"
                         @closed=${stopPropagation}
                         fixed
@@ -365,7 +378,7 @@ export class MoreInfoDialog extends LitElement {
                               </ha-list-item>
                             `
                           : nothing}
-                        ${this.shouldShowEditIcon(domain, stateObj)
+                        ${this._shouldShowEditIcon(domain, stateObj)
                           ? html`
                               <ha-list-item
                                 graphic="icon"
@@ -426,7 +439,7 @@ export class MoreInfoDialog extends LitElement {
               ? html`
                   <ha-button-menu
                     corner="BOTTOM_END"
-                    menuCorner="END"
+                    menu-corner="END"
                     slot="actionItems"
                     @closed=${stopPropagation}
                     fixed
@@ -515,6 +528,7 @@ export class MoreInfoDialog extends LitElement {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this.addEventListener("close-dialog", () => this.closeDialog());
+    this._loadNumericDeviceClasses();
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -534,8 +548,17 @@ export class MoreInfoDialog extends LitElement {
   }
 
   private _handleOpened() {
-    this._history?.resize({ aspectRatio: 2 });
+    window.addEventListener("dialog-closed", this._enableEscapeKeyClose);
+    window.addEventListener("show-dialog", this._disableEscapeKeyClose);
   }
+
+  private _enableEscapeKeyClose = () => {
+    this._isEscapeEnabled = true;
+  };
+
+  private _disableEscapeKeyClose = () => {
+    this._isEscapeEnabled = false;
+  };
 
   static get styles() {
     return [
@@ -545,11 +568,7 @@ export class MoreInfoDialog extends LitElement {
           /* Set the top top of the dialog to a fixed position, so it doesnt jump when the content changes size */
           --vertical-align-dialog: flex-start;
           --dialog-surface-margin-top: 40px;
-          /* This is needed for the tooltip of the history charts to be positioned correctly */
-          --dialog-surface-position: static;
-          --dialog-content-position: static;
           --dialog-content-padding: 0;
-          --chart-base-position: static;
         }
 
         .content {

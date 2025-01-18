@@ -57,7 +57,7 @@ class HaConfigNavigation extends LitElement {
       }));
     return html`
       <ha-navigation-list
-        hasSecondary
+        has-secondary
         .hass=${this.hass}
         .narrow=${this.narrow}
         .pages=${pages}

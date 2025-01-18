@@ -118,17 +118,16 @@ export const accesspointScan = async (
 
 export const parseAddress = (address: string) => {
   const [ip, cidr] = address.split("/");
-  return { ip, mask: cidrToNetmask(cidr, address.includes(":")) };
+  const isIPv6 = ip.includes(":");
+  const mask = cidr ? cidrToNetmask(cidr, isIPv6) : null;
+  return { ip, mask };
 };
 
 export const formatAddress = (ip: string, mask: string) =>
   `${ip}/${netmaskToCidr(mask)}`;
 
 // Helper functions
-export const cidrToNetmask = (
-  cidr: string,
-  isIPv6: boolean = false
-): string => {
+export const cidrToNetmask = (cidr: string, isIPv6 = false): string => {
   const bits = parseInt(cidr, 10);
   if (isIPv6) {
     const fullMask = "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff";

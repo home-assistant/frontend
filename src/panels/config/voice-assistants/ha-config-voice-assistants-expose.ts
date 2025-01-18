@@ -59,7 +59,7 @@ export class VoiceAssistantsExpose extends LitElement {
 
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -146,6 +146,7 @@ export class VoiceAssistantsExpose extends LitElement {
     ): DataTableColumnContainer => ({
       icon: {
         title: "",
+        label: localize("ui.panel.config.voice_assistants.expose.headers.icon"),
         type: "icon",
         moveable: false,
         hidden: narrow,
@@ -241,6 +242,9 @@ export class VoiceAssistantsExpose extends LitElement {
       },
       remove: {
         title: "",
+        label: localize(
+          "ui.panel.config.voice_assistants.expose.headers.remove"
+        ),
         type: "icon-button",
         hidden: narrow,
         template: () =>
@@ -576,7 +580,7 @@ export class VoiceAssistantsExpose extends LitElement {
         @search-changed=${this._handleSearchChange}
         @row-click=${this._openEditEntry}
         id="entity_id"
-        hasFab
+        has-fab
       >
         ${this._selectedEntities.length
           ? html`

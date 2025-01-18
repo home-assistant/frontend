@@ -15,6 +15,7 @@ export class HaTextField extends TextFieldBase {
   @property({ type: Boolean }) public icon = false;
 
   // @ts-ignore
+  // eslint-disable-next-line lit/attribute-names
   @property({ type: Boolean }) public iconTrailing = false;
 
   @property() public autocomplete?: string;
@@ -205,6 +206,9 @@ export class HaTextField extends TextFieldBase {
       .mdc-text-field:not(.mdc-text-field--disabled)
         .mdc-text-field__affix--prefix {
         color: var(--mdc-text-field-label-ink-color);
+      }
+      #helper-text ha-markdown {
+        display: inline-block;
       }
     `,
     // safari workaround - must be explicit

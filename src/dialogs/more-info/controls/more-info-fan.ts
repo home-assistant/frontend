@@ -48,7 +48,7 @@ class MoreInfoFan extends LitElement {
     });
   };
 
-  _handleDirection(ev) {
+  private _handleDirection(ev) {
     const newVal = ev.target.value;
     const oldVal = this.stateObj?.attributes.direction;
 
@@ -60,7 +60,7 @@ class MoreInfoFan extends LitElement {
     });
   }
 
-  _handlePresetMode(ev) {
+  private _handlePresetMode(ev) {
     const newVal = ev.target.value;
     const oldVal = this._presetMode;
 
@@ -73,7 +73,7 @@ class MoreInfoFan extends LitElement {
     });
   }
 
-  _handleOscillating(ev) {
+  private _handleOscillating(ev) {
     const newVal = ev.target.value === "true";
     const oldVal = this.stateObj?.attributes.oscillating;
 

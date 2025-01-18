@@ -185,7 +185,7 @@ export class DialogDataTableSettings extends LitElement {
     this._params!.onUpdate(this._columnOrder, this._hiddenColumns);
   }
 
-  _toggle(ev) {
+  private _toggle(ev) {
     if (!this._params) {
       return;
     }
@@ -218,8 +218,8 @@ export class DialogDataTableSettings extends LitElement {
 
       // Array.findLastIndex when supported or core-js polyfill
       const findLastIndex = (
-        arr: Array<any>,
-        fn: (item: any, index: number, arr: Array<any>) => boolean
+        arr: any[],
+        fn: (item: any, index: number, arr: any[]) => boolean
       ) => {
         for (let i = arr.length - 1; i >= 0; i--) {
           if (fn(arr[i], i, arr)) return i;
@@ -266,7 +266,7 @@ export class DialogDataTableSettings extends LitElement {
     this._params!.onUpdate(this._columnOrder, this._hiddenColumns);
   }
 
-  _reset() {
+  private _reset() {
     this._columnOrder = undefined;
     this._hiddenColumns = undefined;
 

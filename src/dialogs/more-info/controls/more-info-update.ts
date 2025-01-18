@@ -1,5 +1,4 @@
 import "@material/mwc-linear-progress/mwc-linear-progress";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { BINARY_STATE_OFF } from "../../../common/const";
@@ -12,8 +11,6 @@ import "../../../components/ha-faded";
 import "../../../components/ha-formfield";
 import "../../../components/ha-markdown";
 import "../../../components/ha-settings-row";
-import "../../../components/ha-switch";
-import type { HaSwitch } from "../../../components/ha-switch";
 import { isUnavailableState } from "../../../data/entity";
 import type { UpdateEntity } from "../../../data/update";
 import {
@@ -136,22 +133,6 @@ class MoreInfoUpdate extends LitElement {
             : nothing}
       </div>
       <div class="footer">
-        ${supportsFeature(this.stateObj, UpdateEntityFeature.BACKUP)
-          ? html`
-              <ha-settings-row>
-                <span slot="heading">
-                  ${this.hass.localize(
-                    "ui.dialogs.more_info_control.update.create_backup"
-                  )}
-                </span>
-                <ha-switch
-                  id="create-backup"
-                  checked
-                  .disabled=${updateIsInstalling(this.stateObj)}
-                ></ha-switch>
-              </ha-settings-row>
-            `
-          : nothing}
         <div class="actions">
           ${this.stateObj.state === BINARY_STATE_OFF &&
           this.stateObj.attributes.skipped_version
@@ -224,27 +205,10 @@ class MoreInfoUpdate extends LitElement {
     }
   }
 
-  get _shouldCreateBackup(): boolean | null {
-    if (!supportsFeature(this.stateObj!, UpdateEntityFeature.BACKUP)) {
-      return null;
-    }
-    const createBackupSwitch = this.shadowRoot?.getElementById(
-      "create-backup"
-    ) as HaSwitch;
-    if (createBackupSwitch) {
-      return createBackupSwitch.checked;
-    }
-    return true;
-  }
-
   private _handleInstall(): void {
     const installData: Record<string, any> = {
       entity_id: this.stateObj!.entity_id,
     };
-
-    if (this._shouldCreateBackup) {
-      installData.backup = true;
-    }
 
     if (
       supportsFeature(this.stateObj!, UpdateEntityFeature.SPECIFIC_VERSION) &&
@@ -279,100 +243,98 @@ class MoreInfoUpdate extends LitElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        justify-content: space-between;
-      }
-      hr {
-        border-color: var(--divider-color);
-        border-bottom: none;
-        margin: 16px 0;
-      }
-      ha-expansion-panel {
-        margin: 16px 0;
-      }
+  static styles = css`
+    :host {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      justify-content: space-between;
+    }
+    hr {
+      border-color: var(--divider-color);
+      border-bottom: none;
+      margin: 16px 0;
+    }
+    ha-expansion-panel {
+      margin: 16px 0;
+    }
 
-      .summary {
-        margin-bottom: 16px;
-      }
+    .summary {
+      margin-bottom: 16px;
+    }
 
-      .row {
-        margin: 0;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-      }
+    .row {
+      margin: 0;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
 
-      .footer {
-        border-top: 1px solid var(--divider-color);
-        background: var(
-          --ha-dialog-surface-background,
-          var(--mdc-theme-surface, #fff)
-        );
-        position: sticky;
-        bottom: 0;
-        margin: 0 -24px 0 -24px;
-        margin-bottom: calc(-1 * max(env(safe-area-inset-bottom), 24px));
-        padding-bottom: env(safe-area-inset-bottom);
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        overflow: hidden;
-        z-index: 10;
-      }
+    .footer {
+      border-top: 1px solid var(--divider-color);
+      background: var(
+        --ha-dialog-surface-background,
+        var(--mdc-theme-surface, #fff)
+      );
+      position: sticky;
+      bottom: 0;
+      margin: 0 -24px 0 -24px;
+      margin-bottom: calc(-1 * max(env(safe-area-inset-bottom), 24px));
+      padding-bottom: env(safe-area-inset-bottom);
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+      z-index: 10;
+    }
 
-      ha-settings-row {
-        width: 100%;
-        padding: 0 24px;
-        box-sizing: border-box;
-        margin-bottom: -16px;
-        margin-top: -4px;
-      }
+    ha-settings-row {
+      width: 100%;
+      padding: 0 24px;
+      box-sizing: border-box;
+      margin-bottom: -16px;
+      margin-top: -4px;
+    }
 
-      .actions {
-        width: 100%;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-        box-sizing: border-box;
-        padding: 12px;
-        z-index: 1;
-        gap: 8px;
-      }
+    .actions {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      box-sizing: border-box;
+      padding: 12px;
+      z-index: 1;
+      gap: 8px;
+    }
 
-      a {
-        color: var(--primary-color);
-      }
-      .flex.center {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-      mwc-linear-progress {
-        margin-bottom: -8px;
-        margin-top: 4px;
-      }
-      ha-markdown {
-        direction: ltr;
-        padding-bottom: 16px;
-        box-sizing: border-box;
-      }
-      ha-markdown.hidden {
-        display: none;
-      }
-      .loader {
-        height: 80px;
-        box-sizing: border-box;
-        padding-bottom: 16px;
-      }
-    `;
-  }
+    a {
+      color: var(--primary-color);
+    }
+    .flex.center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    mwc-linear-progress {
+      margin-bottom: -8px;
+      margin-top: 4px;
+    }
+    ha-markdown {
+      direction: ltr;
+      padding-bottom: 16px;
+      box-sizing: border-box;
+    }
+    ha-markdown.hidden {
+      display: none;
+    }
+    .loader {
+      height: 80px;
+      box-sizing: border-box;
+      padding-bottom: 16px;
+    }
+  `;
 }
 
 declare global {

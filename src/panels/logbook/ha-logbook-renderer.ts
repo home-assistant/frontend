@@ -168,7 +168,8 @@ class HaLogbookRenderer extends LitElement {
 
     const traceContext =
       triggerDomains.includes(item.domain!) &&
-      item.context_id! in this.traceContexts
+      item.context_id &&
+      item.context_id in this.traceContexts
         ? this.traceContexts[item.context_id!]
         : undefined;
 
@@ -558,11 +559,12 @@ class HaLogbookRenderer extends LitElement {
     });
   }
 
-  _handleClick(ev) {
-    if (!ev.currentTarget.traceLink) {
+  private _handleClick(ev: Event) {
+    const target = ev.currentTarget as any;
+    if (!target.traceLink) {
       return;
     }
-    navigate(ev.currentTarget.traceLink);
+    navigate(target.traceLink);
     fireEvent(this, "closed");
   }
 

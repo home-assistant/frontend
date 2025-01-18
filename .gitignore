@@ -50,3 +50,6 @@ src/cast/dev_const.ts
 
 # Jetbrains
 /.idea/
+
+# test coverage
+test/coverage/

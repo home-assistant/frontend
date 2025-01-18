@@ -18,11 +18,12 @@ import type { IssueCommandServiceData } from "./types";
 export class ZHAClusterCommands extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ attribute: false }) public device?: ZHADevice;
 
-  @property({ type: Object }) public selectedCluster?: Cluster;
+  @property({ attribute: false, type: Object })
+  public selectedCluster?: Cluster;
 
   @state() private _commands: Command[] | undefined;
 

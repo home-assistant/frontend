@@ -1,5 +1,4 @@
 import { mdiDrag } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -120,38 +119,36 @@ export class HuiEntityEditor extends LitElement {
     fireEvent(this, "entities-changed", { entities: newConfigEntities });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-entity-picker {
-        margin-top: 8px;
-      }
-      .add-entity {
-        display: block;
-        margin-left: 31px;
-        margin-inline-start: 31px;
-        margin-inline-end: initial;
-        direction: var(--direction);
-      }
-      .entity {
-        display: flex;
-        align-items: center;
-      }
-      .entity .handle {
-        padding-right: 8px;
-        cursor: move; /* fallback if grab cursor is unsupported */
-        cursor: grab;
-        padding-inline-end: 8px;
-        padding-inline-start: initial;
-        direction: var(--direction);
-      }
-      .entity .handle > * {
-        pointer-events: none;
-      }
-      .entity ha-entity-picker {
-        flex-grow: 1;
-      }
-    `;
-  }
+  static styles = css`
+    ha-entity-picker {
+      margin-top: 8px;
+    }
+    .add-entity {
+      display: block;
+      margin-left: 31px;
+      margin-inline-start: 31px;
+      margin-inline-end: initial;
+      direction: var(--direction);
+    }
+    .entity {
+      display: flex;
+      align-items: center;
+    }
+    .entity .handle {
+      padding-right: 8px;
+      cursor: move; /* fallback if grab cursor is unsupported */
+      cursor: grab;
+      padding-inline-end: 8px;
+      padding-inline-start: initial;
+      direction: var(--direction);
+    }
+    .entity .handle > * {
+      pointer-events: none;
+    }
+    .entity ha-entity-picker {
+      flex-grow: 1;
+    }
+  `;
 }
 
 declare global {

@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -8,12 +8,12 @@ import { fireEvent } from "../common/dom/fire_event";
 import "./ha-icon";
 import "./ha-svg-icon";
 
-export type ControlSelectOption = {
+export interface ControlSelectOption {
   value: string;
   label?: string;
   icon?: TemplateResult;
   path?: string;
-};
+}
 
 @customElement("ha-control-select")
 export class HaControlSelect extends LitElement {
@@ -186,150 +186,148 @@ export class HaControlSelect extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-        --control-select-color: var(--primary-color);
-        --control-select-focused-opacity: 0.2;
-        --control-select-selected-opacity: 1;
-        --control-select-background: var(--disabled-color);
-        --control-select-background-opacity: 0.2;
-        --control-select-thickness: 40px;
-        --control-select-border-radius: 10px;
-        --control-select-padding: 4px;
-        --control-select-button-border-radius: calc(
-          var(--control-select-border-radius) - var(--control-select-padding)
-        );
-        --mdc-icon-size: 20px;
-        height: var(--control-select-thickness);
-        width: 100%;
-        border-radius: var(--control-select-border-radius);
-        outline: none;
-        transition: box-shadow 180ms ease-in-out;
-        font-style: normal;
-        font-weight: 500;
-        color: var(--primary-text-color);
-        user-select: none;
-        -webkit-tap-highlight-color: transparent;
-      }
-      :host(:focus-visible) {
-        box-shadow: 0 0 0 2px var(--control-select-color);
-      }
-      :host([vertical]) {
-        width: var(--control-select-thickness);
-        height: 100%;
-      }
-      .container {
-        position: relative;
-        height: 100%;
-        width: 100%;
-        border-radius: var(--control-select-border-radius);
-        transform: translateZ(0);
-        overflow: hidden;
-        display: flex;
-        flex-direction: row;
-        padding: var(--control-select-padding);
-        box-sizing: border-box;
-      }
-      .container::before {
-        position: absolute;
-        content: "";
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 100%;
-        background: var(--control-select-background);
-        opacity: var(--control-select-background-opacity);
-      }
+  static styles = css`
+    :host {
+      display: block;
+      --control-select-color: var(--primary-color);
+      --control-select-focused-opacity: 0.2;
+      --control-select-selected-opacity: 1;
+      --control-select-background: var(--disabled-color);
+      --control-select-background-opacity: 0.2;
+      --control-select-thickness: 40px;
+      --control-select-border-radius: 10px;
+      --control-select-padding: 4px;
+      --control-select-button-border-radius: calc(
+        var(--control-select-border-radius) - var(--control-select-padding)
+      );
+      --mdc-icon-size: 20px;
+      height: var(--control-select-thickness);
+      width: 100%;
+      border-radius: var(--control-select-border-radius);
+      outline: none;
+      transition: box-shadow 180ms ease-in-out;
+      font-style: normal;
+      font-weight: 500;
+      color: var(--primary-text-color);
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    :host(:focus-visible) {
+      box-shadow: 0 0 0 2px var(--control-select-color);
+    }
+    :host([vertical]) {
+      width: var(--control-select-thickness);
+      height: 100%;
+    }
+    .container {
+      position: relative;
+      height: 100%;
+      width: 100%;
+      border-radius: var(--control-select-border-radius);
+      transform: translateZ(0);
+      overflow: hidden;
+      display: flex;
+      flex-direction: row;
+      padding: var(--control-select-padding);
+      box-sizing: border-box;
+    }
+    .container::before {
+      position: absolute;
+      content: "";
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: var(--control-select-background);
+      opacity: var(--control-select-background-opacity);
+    }
 
-      .container > *:not(:last-child) {
-        margin-right: var(--control-select-padding);
-        margin-inline-end: var(--control-select-padding);
-        margin-inline-start: initial;
-        direction: var(--direction);
-      }
-      .option {
-        cursor: pointer;
-        position: relative;
-        flex: 1;
-        height: 100%;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: var(--control-select-button-border-radius);
-        overflow: hidden;
-        /* For safari border-radius overflow */
-        z-index: 0;
-      }
-      .content > *:not(:last-child) {
-        margin-bottom: 4px;
-      }
-      .option::before {
-        position: absolute;
-        content: "";
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 100%;
-        background-color: var(--control-select-color);
-        opacity: 0;
-        transition:
-          background-color ease-in-out 180ms,
-          opacity ease-in-out 80ms;
-      }
-      .option.focused::before,
-      .option:hover::before {
-        opacity: var(--control-select-focused-opacity);
-      }
-      .option.selected {
-        color: white;
-      }
-      .option.selected::before {
-        opacity: var(--control-select-selected-opacity);
-      }
-      .option .content {
-        position: relative;
-        pointer-events: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        text-align: center;
-        padding: 2px;
-        width: 100%;
-        box-sizing: border-box;
-      }
-      .option .content span {
-        display: block;
-        width: 100%;
-        -webkit-hyphens: auto;
-        -moz-hyphens: auto;
-        hyphens: auto;
-      }
-      :host([vertical]) {
-        width: var(--control-select-thickness);
-        height: auto;
-      }
-      :host([vertical]) .container {
-        flex-direction: column;
-      }
-      :host([vertical]) .container > *:not(:last-child) {
-        margin-right: initial;
-        margin-inline-end: initial;
-        margin-bottom: var(--control-select-padding);
-      }
-      :host([disabled]) {
-        --control-select-color: var(--disabled-color);
-        --control-select-focused-opacity: 0;
-        color: var(--disabled-color);
-      }
-      :host([disabled]) .option {
-        cursor: not-allowed;
-      }
-    `;
-  }
+    .container > *:not(:last-child) {
+      margin-right: var(--control-select-padding);
+      margin-inline-end: var(--control-select-padding);
+      margin-inline-start: initial;
+      direction: var(--direction);
+    }
+    .option {
+      cursor: pointer;
+      position: relative;
+      flex: 1;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--control-select-button-border-radius);
+      overflow: hidden;
+      /* For safari border-radius overflow */
+      z-index: 0;
+    }
+    .content > *:not(:last-child) {
+      margin-bottom: 4px;
+    }
+    .option::before {
+      position: absolute;
+      content: "";
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background-color: var(--control-select-color);
+      opacity: 0;
+      transition:
+        background-color ease-in-out 180ms,
+        opacity ease-in-out 80ms;
+    }
+    .option.focused::before,
+    .option:hover::before {
+      opacity: var(--control-select-focused-opacity);
+    }
+    .option.selected {
+      color: white;
+    }
+    .option.selected::before {
+      opacity: var(--control-select-selected-opacity);
+    }
+    .option .content {
+      position: relative;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      padding: 2px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .option .content span {
+      display: block;
+      width: 100%;
+      -webkit-hyphens: auto;
+      -moz-hyphens: auto;
+      hyphens: auto;
+    }
+    :host([vertical]) {
+      width: var(--control-select-thickness);
+      height: auto;
+    }
+    :host([vertical]) .container {
+      flex-direction: column;
+    }
+    :host([vertical]) .container > *:not(:last-child) {
+      margin-right: initial;
+      margin-inline-end: initial;
+      margin-bottom: var(--control-select-padding);
+    }
+    :host([disabled]) {
+      --control-select-color: var(--disabled-color);
+      --control-select-focused-opacity: 0;
+      color: var(--disabled-color);
+    }
+    :host([disabled]) .option {
+      cursor: not-allowed;
+    }
+  `;
 }
 
 declare global {

@@ -7,7 +7,7 @@ export interface LovelaceHeaderFooterConfig {
 
 export interface ButtonsHeaderFooterConfig extends LovelaceHeaderFooterConfig {
   type: "buttons";
-  entities: Array<string | EntitiesCardEntityConfig>;
+  entities: (string | EntitiesCardEntityConfig)[];
 }
 
 export interface GraphHeaderFooterConfig extends LovelaceHeaderFooterConfig {

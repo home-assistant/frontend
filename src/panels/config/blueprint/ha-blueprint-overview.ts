@@ -81,7 +81,7 @@ const createNewFunctions = {
 class HaBlueprintOverview extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public isWide = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -125,7 +125,7 @@ class HaBlueprintOverview extends LitElement {
     state: true,
     subscribe: false,
   })
-  private _filter: string = "";
+  private _filter = "";
 
   private _processedBlueprints = memoizeOne(
     (
@@ -290,7 +290,7 @@ class HaBlueprintOverview extends LitElement {
         .noDataText=${this.hass.localize(
           "ui.panel.config.blueprint.overview.no_blueprints"
         )}
-        hasFab
+        has-fab
         clickable
         @row-click=${this._handleRowClicked}
         .appendRow=${html`<div

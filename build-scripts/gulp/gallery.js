@@ -11,7 +11,7 @@ import "./gather-static.js";
 import "./gen-icons-json.js";
 import "./service-worker.js";
 import "./translations.js";
-import "./webpack.js";
+import "./rspack.js";
 
 gulp.task("gather-gallery-pages", async function gatherPages() {
   const pageDir = path.resolve(paths.gallery_dir, "src/pages");
@@ -156,7 +156,7 @@ gulp.task(
     "copy-static-gallery",
     "gen-pages-gallery-dev",
     gulp.parallel(
-      "webpack-dev-server-gallery",
+      "rspack-dev-server-gallery",
       async function watchMarkdownFiles() {
         gulp.watch(
           [
@@ -185,7 +185,7 @@ gulp.task(
       "gather-gallery-pages"
     ),
     "copy-static-gallery",
-    "webpack-prod-gallery",
+    "rspack-prod-gallery",
     "gen-pages-gallery-prod"
   )
 );

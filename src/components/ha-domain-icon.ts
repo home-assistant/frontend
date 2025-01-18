@@ -1,9 +1,11 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { until } from "lit/directives/until";
-import { DEFAULT_DOMAIN_ICON, FIXED_DOMAIN_ICONS } from "../common/const";
-import { domainIcon } from "../data/icons";
+import {
+  DEFAULT_DOMAIN_ICON,
+  domainIcon,
+  FALLBACK_DOMAIN_ICONS,
+} from "../data/icons";
 import type { HomeAssistant } from "../types";
 import { brandsUrl } from "../util/brands-url";
 import "./ha-icon";
@@ -14,11 +16,12 @@ export class HaDomainIcon extends LitElement {
 
   @property() public domain?: string;
 
-  @property() public deviceClass?: string;
+  @property({ attribute: false }) public deviceClass?: string;
 
   @property() public icon?: string;
 
-  @property({ type: Boolean }) public brandFallback?: boolean;
+  @property({ attribute: "brand-fallback", type: Boolean })
+  public brandFallback?: boolean;
 
   protected render() {
     if (this.icon) {
@@ -46,9 +49,9 @@ export class HaDomainIcon extends LitElement {
   }
 
   private _renderFallback() {
-    if (this.domain! in FIXED_DOMAIN_ICONS) {
+    if (this.domain && this.domain in FALLBACK_DOMAIN_ICONS) {
       return html`
-        <ha-svg-icon .path=${FIXED_DOMAIN_ICONS[this.domain!]}></ha-svg-icon>
+        <ha-svg-icon .path=${FALLBACK_DOMAIN_ICONS[this.domain!]}></ha-svg-icon>
       `;
     }
     if (this.brandFallback) {
@@ -69,13 +72,11 @@ export class HaDomainIcon extends LitElement {
     return html`<ha-svg-icon .path=${DEFAULT_DOMAIN_ICON}></ha-svg-icon>`;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      img {
-        width: var(--mdc-icon-size, 24px);
-      }
-    `;
-  }
+  static styles = css`
+    img {
+      width: var(--mdc-icon-size, 24px);
+    }
+  `;
 }
 
 declare global {

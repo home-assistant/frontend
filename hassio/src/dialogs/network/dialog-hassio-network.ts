@@ -82,10 +82,11 @@ export class DialogHassioNetwork
     await this.updateComplete;
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     this._params = undefined;
     this._processing = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+    return true;
   }
 
   protected render() {
@@ -394,7 +395,7 @@ export class DialogHassioNetwork
     `;
   }
 
-  _toArray(data: string | string[]): string[] {
+  private _toArray(data: string | string[]): string[] {
     if (Array.isArray(data)) {
       if (data && typeof data[0] === "string") {
         data = data[0];
@@ -409,7 +410,7 @@ export class DialogHassioNetwork
     return data;
   }
 
-  _toString(data: string | string[]): string {
+  private _toString(data: string | string[]): string {
     if (!data) {
       return "";
     }

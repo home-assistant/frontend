@@ -57,7 +57,7 @@ declare global {
   }
 }
 
-export const configSections: { [name: string]: PageNavigation[] } = {
+export const configSections: Record<string, PageNavigation[]> = {
   dashboard: [
     {
       path: "/config/integrations",
@@ -321,14 +321,6 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconPath: mdiBackupRestore,
       iconColor: "#0D47A1",
       component: "backup",
-      not_component: "hassio",
-    },
-    {
-      path: "/hassio/backups",
-      translationKey: "backup",
-      iconPath: mdiBackupRestore,
-      iconColor: "#0D47A1",
-      component: "hassio",
     },
     {
       path: "/config/analytics",
@@ -570,7 +562,7 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
 
   @state() private _cloudStatus?: CloudStatus;
 
-  private _listeners: Array<() => void> = [];
+  private _listeners: (() => void)[] = [];
 
   public connectedCallback() {
     super.connectedCallback();

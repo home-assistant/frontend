@@ -5,7 +5,7 @@ import "./entry-html.js";
 import "./gather-static.js";
 import "./gen-icons-json.js";
 import "./translations.js";
-import "./webpack.js";
+import "./rspack.js";
 
 gulp.task(
   "develop-landing-page",
@@ -20,7 +20,7 @@ gulp.task(
     "build-locale-data",
     "copy-static-landing-page",
     "gen-pages-landing-page-dev",
-    "webpack-watch-landing-page"
+    "rspack-watch-landing-page"
   )
 );
 
@@ -35,7 +35,7 @@ gulp.task(
     "copy-translations-landing-page",
     "build-locale-data",
     "copy-static-landing-page",
-    "webpack-prod-landing-page",
+    "rspack-prod-landing-page",
     "gen-pages-landing-page-prod"
   )
 );

@@ -1,5 +1,5 @@
 import "@material/mwc-list/mwc-list-item";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -78,7 +78,7 @@ export class HuiViewVisibilityEditor extends LitElement {
             <ha-switch
               slot="meta"
               .userId=${user.id}
-              @change=${this.valChange}
+              @change=${this._valChange}
               .checked=${this.checkUser(user.id)}
             ></ha-switch>
           </ha-list-item>
@@ -97,7 +97,7 @@ export class HuiViewVisibilityEditor extends LitElement {
     return (this._visible as ShowViewConfig[]).some((u) => u.user === userId);
   }
 
-  private valChange(ev: Event): void {
+  private _valChange(ev: Event): void {
     const userId = (ev.currentTarget as any).userId;
     const checked = (ev.currentTarget as HaSwitch).checked;
 
@@ -133,13 +133,11 @@ export class HuiViewVisibilityEditor extends LitElement {
     fireEvent(this, "view-visibility-changed", { visible: this._visible });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+    }
+  `;
 }
 
 declare global {

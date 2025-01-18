@@ -37,7 +37,7 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
 
   @state() private _discoveredDomains?: Set<string>;
 
-  public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
+  public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
     return [
       subscribeConfigFlowInProgress(this.hass, (flows) => {
         this._discoveredDomains = new Set(
@@ -55,7 +55,7 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
         (messages) => {
           let fullUpdate = false;
           const newEntries: ConfigEntry[] = [];
-          const integrations: Set<string> = new Set();
+          const integrations = new Set<string>();
           messages.forEach((message) => {
             if (message.type === null || message.type === "added") {
               if (HIDDEN_DOMAINS.has(message.entry.domain)) {
@@ -97,12 +97,12 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
       return nothing;
     }
     // Render discovered and existing entries together sorted by localized title.
-    let uniqueDomains: Set<string> = new Set();
+    let uniqueDomains = new Set<string>();
     this._entries.forEach((entry) => {
       uniqueDomains.add(entry.domain);
     });
     uniqueDomains = new Set([...uniqueDomains, ...this._discoveredDomains]);
-    let domains: Array<[string, string]> = [];
+    let domains: [string, string][] = [];
     for (const domain of uniqueDomains.values()) {
       domains.push([domain, domainToName(this.hass.localize, domain)]);
     }

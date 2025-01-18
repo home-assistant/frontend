@@ -1,3 +1,4 @@
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { HaDurationData } from "../../../components/ha-duration-input";
 import type { ActionConfig } from "../../../data/lovelace/config/action";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
@@ -90,7 +91,7 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
   type: "entities";
   show_header_toggle?: boolean;
   title?: string;
-  entities: Array<LovelaceRowConfig | string>;
+  entities: (LovelaceRowConfig | string)[];
   theme?: string;
   icon?: string;
   header?: LovelaceHeaderFooterConfig;
@@ -195,11 +196,17 @@ export interface EnergyCarbonGaugeCardConfig extends EnergyCardBaseConfig {
   title?: string;
 }
 
+export interface EnergySankeyCardConfig extends EnergyCardBaseConfig {
+  type: "energy-sankey";
+  title?: string;
+  layout?: "vertical" | "horizontal";
+}
+
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
   type: "entity-filter";
-  entities: Array<EntityFilterEntityConfig | string>;
-  state_filter?: Array<LegacyStateFilter>;
-  conditions: Array<Condition>;
+  entities: (EntityFilterEntityConfig | string)[];
+  state_filter?: LegacyStateFilter[];
+  conditions: Condition[];
   card?: Partial<LovelaceCardConfig>;
   show_empty?: boolean;
 }
@@ -296,7 +303,11 @@ export interface LightCardConfig extends LovelaceCardConfig {
 
 export interface LogbookCardConfig extends LovelaceCardConfig {
   type: "logbook";
-  entities: string[];
+  /**
+   * @deprecated Use target instead
+   */
+  entities?: string[];
+  target: HassServiceTarget;
   title?: string;
   hours_to_show?: number;
   theme?: string;
@@ -304,6 +315,7 @@ export interface LogbookCardConfig extends LovelaceCardConfig {
 
 interface GeoLocationSourceConfig {
   source: string;
+  label_mode?: "name" | "state" | "icon";
   focus?: boolean;
 }
 
@@ -314,9 +326,9 @@ export interface MapCardConfig extends LovelaceCardConfig {
   auto_fit?: boolean;
   fit_zones?: boolean;
   default_zoom?: number;
-  entities?: Array<EntityConfig | string>;
+  entities?: (EntityConfig | string)[];
   hours_to_show?: number;
-  geo_location_sources?: Array<GeoLocationSourceConfig | string>;
+  geo_location_sources?: (GeoLocationSourceConfig | string)[];
   dark_mode?: boolean;
   theme_mode?: ThemeMode;
 }
@@ -337,7 +349,7 @@ export interface MediaControlCardConfig extends LovelaceCardConfig {
 }
 
 export interface HistoryGraphCardConfig extends LovelaceCardConfig {
-  entities: Array<EntityConfig | string>;
+  entities: (EntityConfig | string)[];
   hours_to_show?: number;
   title?: string;
   show_names?: boolean;
@@ -348,9 +360,9 @@ export interface HistoryGraphCardConfig extends LovelaceCardConfig {
   split_device_classes?: boolean;
 }
 
-export interface StatisticsGraphCardConfig extends LovelaceCardConfig {
+export interface StatisticsGraphCardConfig extends EnergyCardBaseConfig {
   title?: string;
-  entities: Array<EntityConfig | string>;
+  entities: (EntityConfig | string)[];
   unit?: string;
   days_to_show?: number;
   period?: "5minute" | "hour" | "day" | "month";
@@ -361,11 +373,12 @@ export interface StatisticsGraphCardConfig extends LovelaceCardConfig {
   fit_y_data?: boolean;
   hide_legend?: boolean;
   logarithmic_scale?: boolean;
+  energy_date_selection?: boolean;
 }
 
 export interface StatisticCardConfig extends LovelaceCardConfig {
   name?: string;
-  entities: Array<EntityConfig | string>;
+  entities: (EntityConfig | string)[];
   period: {
     fixed_period?: { start: string; end: string };
     calendar?: { period: string; offset: number };
@@ -419,7 +432,7 @@ export interface PictureEntityCardConfig extends LovelaceCardConfig {
 }
 
 export interface PictureGlanceCardConfig extends LovelaceCardConfig {
-  entities: Array<string | PictureGlanceEntityConfig>;
+  entities: (string | PictureGlanceEntityConfig)[];
   title?: string;
   image?: string;
   image_entity?: string;
@@ -466,6 +479,8 @@ export interface TodoListCardConfig extends LovelaceCardConfig {
   theme?: string;
   entity?: string;
   hide_completed?: boolean;
+  hide_create?: boolean;
+  sort?: string;
 }
 
 export interface StackCardConfig extends LovelaceCardConfig {

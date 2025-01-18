@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -39,18 +39,16 @@ class HaMfaModulesCard extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      mwc-button {
-        margin-right: -0.57em;
-        margin-inline-end: -0.57em;
-        margin-inline-start: initial;
-      }
-      ha-list-item {
-        --mdc-list-item-meta-size: auto;
-      }
-    `;
-  }
+  static styles = css`
+    mwc-button {
+      margin-right: -0.57em;
+      margin-inline-end: -0.57em;
+      margin-inline-start: initial;
+    }
+    ha-list-item {
+      --mdc-list-item-meta-size: auto;
+    }
+  `;
 
   private _enable(ev) {
     showMfaModuleSetupFlowDialog(this, {

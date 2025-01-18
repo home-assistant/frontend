@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -28,9 +28,7 @@ const enum LoadState {
   Error = 3,
 }
 
-export interface StateSpecificConfig {
-  [state: string]: string;
-}
+export type StateSpecificConfig = Record<string, string>;
 
 @customElement("hui-image")
 export class HuiImage extends LitElement {
@@ -42,21 +40,21 @@ export class HuiImage extends LitElement {
 
   @property({ attribute: false }) public stateImage?: StateSpecificConfig;
 
-  @property() public cameraImage?: string;
+  @property({ attribute: false }) public cameraImage?: string;
 
-  @property() public cameraView?: "live" | "auto";
+  @property({ attribute: false }) public cameraView?: "live" | "auto";
 
-  @property() public aspectRatio?: string;
+  @property({ attribute: false }) public aspectRatio?: string;
 
   @property() public filter?: string;
 
   @property({ attribute: false }) public stateFilter?: StateSpecificConfig;
 
-  @property() public darkModeImage?: string;
+  @property({ attribute: false }) public darkModeImage?: string;
 
-  @property() public darkModeFilter?: string;
+  @property({ attribute: false }) public darkModeFilter?: string;
 
-  @property() public fitMode?: "cover" | "contain" | "fill";
+  @property({ attribute: false }) public fitMode?: "cover" | "contain" | "fill";
 
   @state() private _imageVisible? = false;
 
@@ -228,6 +226,7 @@ export class HuiImage extends LitElement {
                 <img
                   id="image"
                   src=${imageSrc}
+                  alt=${this.entity || ""}
                   @error=${this._onImageError}
                   @load=${this._onImageLoad}
                   style=${styleMap({
@@ -388,70 +387,68 @@ export class HuiImage extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-      }
+  static styles = css`
+    :host {
+      display: block;
+    }
 
-      .container {
-        transition: filter 0.2s linear;
-        height: 100%;
-      }
+    .container {
+      transition: filter 0.2s linear;
+      height: 100%;
+    }
 
-      img {
-        display: block;
-        height: 100%;
-        width: 100%;
-        object-fit: cover;
-      }
+    img {
+      display: block;
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+    }
 
-      .progress-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
+    .progress-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-      .ratio {
-        position: relative;
-        width: 100%;
-        height: 0;
-        background-position: center;
-        background-size: cover;
-      }
-      .ratio.fill {
-        background-size: 100% 100%;
-      }
-      .ratio.contain {
-        background-size: contain;
-        background-repeat: no-repeat;
-      }
-      .fill img {
-        object-fit: fill;
-      }
-      .contain img {
-        object-fit: contain;
-      }
+    .ratio {
+      position: relative;
+      width: 100%;
+      height: 0;
+      background-position: center;
+      background-size: cover;
+    }
+    .ratio.fill {
+      background-size: 100% 100%;
+    }
+    .ratio.contain {
+      background-size: contain;
+      background-repeat: no-repeat;
+    }
+    .fill img {
+      object-fit: fill;
+    }
+    .contain img {
+      object-fit: contain;
+    }
 
-      .ratio img,
-      .ratio div {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-      }
+    .ratio img,
+    .ratio div {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
 
-      .ratio img {
-        visibility: hidden;
-      }
+    .ratio img {
+      visibility: hidden;
+    }
 
-      #brokenImage {
-        background: grey url("/static/images/image-broken.svg") center/36px
-          no-repeat;
-      }
-    `;
-  }
+    #brokenImage {
+      background: grey url("/static/images/image-broken.svg") center/36px
+        no-repeat;
+    }
+  `;
 }
 
 declare global {

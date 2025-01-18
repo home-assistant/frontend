@@ -108,16 +108,17 @@ export const BROWSER_PLAYER = "browser";
 
 export type MediaPlayerLayoutType = "grid" | "list" | "auto";
 
-export type MediaClassBrowserSetting = {
+export interface MediaClassBrowserSetting {
   icon: string;
   thumbnail_ratio?: string;
   layout?: "grid";
   show_list_images?: boolean;
-};
+}
 
-export const MediaClassBrowserSettings: {
-  [type: string]: MediaClassBrowserSetting;
-} = {
+export const MediaClassBrowserSettings: Record<
+  string,
+  MediaClassBrowserSetting
+> = {
   album: { icon: mdiAlbum, layout: "grid" },
   app: { icon: mdiApplication, layout: "grid", show_list_images: true },
   artist: { icon: mdiAccountMusic, layout: "grid", show_list_images: true },
