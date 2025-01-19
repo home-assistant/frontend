@@ -32,6 +32,8 @@ import type {
 import type { HuiErrorCard } from "./hui-error-card";
 import type { EntityCardConfig, StatisticCardConfig } from "./types";
 
+export const PERIOD_ENERGY = "energy_date_selection";
+
 @customElement("hui-statistic-card")
 export class HuiStatisticCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -89,7 +91,7 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
 
   public connectedCallback() {
     super.connectedCallback();
-    if (this._config?.energy_date_selection) {
+    if (this._config?.period === PERIOD_ENERGY) {
       this._subscribeEnergy();
     } else {
       this._setFetchStatisticTimer();
@@ -232,17 +234,17 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
       | undefined;
 
     if (this.hass) {
-      if (this._config.energy_date_selection && !this._energySub) {
+      if (this._config.period === PERIOD_ENERGY && !this._energySub) {
         this._subscribeEnergy();
         return;
       }
-      if (!this._config.energy_date_selection && this._energySub) {
+      if (this._config.period !== PERIOD_ENERGY && this._energySub) {
         this._unsubscribeEnergy();
         this._setFetchStatisticTimer();
         return;
       }
       if (
-        this._config.energy_date_selection &&
+        this._config.period === PERIOD_ENERGY &&
         this._energySub &&
         changedProps.has("_config") &&
         oldConfig?.collection_key !== this._config.collection_key
@@ -292,7 +294,7 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
     this._fetchStatistic();
     // statistics are created every hour
     clearInterval(this._interval);
-    if (!this._config?.energy_date_selection) {
+    if (this._config?.period !== PERIOD_ENERGY) {
       this._interval = window.setInterval(
         () => this._fetchStatistic(),
         5 * 1000 * 60
@@ -310,7 +312,9 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
         this._config.entity,
         this._energyStart && this._energyEnd
           ? { fixed_period: { start: this._energyStart, end: this._energyEnd } }
-          : this._config?.period
+          : typeof this._config?.period === "object"
+            ? this._config?.period
+            : {}
       );
       this._value = stats[this._config!.stat_type];
       this._error = undefined;

@@ -379,11 +379,13 @@ export interface StatisticsGraphCardConfig extends EnergyCardBaseConfig {
 export interface StatisticCardConfig extends LovelaceCardConfig {
   name?: string;
   entities: (EntityConfig | string)[];
-  period: {
-    fixed_period?: { start: string; end: string };
-    calendar?: { period: string; offset: number };
-    rolling_window?: { duration: HaDurationData; offset: HaDurationData };
-  };
+  period:
+    | {
+        fixed_period?: { start: string; end: string };
+        calendar?: { period: string; offset: number };
+        rolling_window?: { duration: HaDurationData; offset: HaDurationData };
+      }
+    | "energy_date_selection";
   stat_type: keyof Statistic;
   theme?: string;
 }
