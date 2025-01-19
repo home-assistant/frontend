@@ -261,6 +261,7 @@ export class SystemLogCard extends LitElement {
     .header-buttons {
       display: flex;
       align-items: center;
+      height: 100%;
     }
 
     .card-header {
@@ -271,7 +272,6 @@ export class SystemLogCard extends LitElement {
       line-height: 48px;
       display: block;
       margin-block-start: 0px;
-      margin-block-end: 0px;
       font-weight: normal;
     }
 
@@ -296,6 +296,8 @@ export class SystemLogCard extends LitElement {
 
     .card-content {
       border-top: 1px solid var(--divider-color);
+      padding-top: 12px;
+      padding-bottom: 12px;
     }
 
     .row-secondary {
