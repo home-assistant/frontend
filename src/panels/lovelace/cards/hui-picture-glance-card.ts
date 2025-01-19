@@ -323,11 +323,9 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       height: 100%;
       box-sizing: border-box;
     }
-
     hui-image.clickable {
       cursor: pointer;
     }
-
     .box {
       position: absolute;
       left: 0;
@@ -342,7 +340,6 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       justify-content: space-between;
       flex-direction: row;
     }
-
     .box .title {
       font-weight: 500;
       margin-left: 8px;
@@ -356,13 +353,11 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       color: var(--ha-picture-card-text-color, white);
       align-self: center;
     }
-
     ha-icon-button {
       --mdc-icon-button-size: 40px;
       --disabled-text-color: currentColor;
       color: var(--ha-picture-icon-button-color, #a9a9a9);
     }
-
     ha-icon-button.state-on {
       color: var(--ha-picture-icon-button-on-color, white);
     }
