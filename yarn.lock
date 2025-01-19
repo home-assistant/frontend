@@ -5286,7 +5286,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vibrant/generator-default@npm:^4.0.2":
+"@vibrant/generator-default@npm:^4.0.3":
   version: 4.0.3
   resolution: "@vibrant/generator-default@npm:4.0.3"
   dependencies:
@@ -9286,7 +9286,7 @@ __metadata:
     map-stream: "npm:0.0.7"
     marked: "npm:15.0.6"
     memoize-one: "npm:6.0.0"
-    node-vibrant: "npm:4.0.2"
+    node-vibrant: "npm:4.0.3"
     object-hash: "npm:3.0.0"
     pinst: "npm:3.0.0"
     prettier: "npm:3.4.2"
@@ -11392,17 +11392,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-vibrant@npm:4.0.2":
-  version: 4.0.2
-  resolution: "node-vibrant@npm:4.0.2"
+"node-vibrant@npm:4.0.3":
+  version: 4.0.3
+  resolution: "node-vibrant@npm:4.0.3"
   dependencies:
     "@types/node": "npm:^18.15.3"
     "@vibrant/core": "npm:^4.0.0"
-    "@vibrant/generator-default": "npm:^4.0.2"
+    "@vibrant/generator-default": "npm:^4.0.3"
     "@vibrant/image-browser": "npm:^4.0.0"
     "@vibrant/image-node": "npm:^4.0.0"
     "@vibrant/quantizer-mmcq": "npm:^4.0.0"
-  checksum: 10/f0f95a020aca1ad0903fbbf59907446c444e3e41c32ad7e26e2ede9a96a67f4b93f4ee5049cd340f24567727d97d4aa2b5e9cce2ca8e7293c2a4d4e2ec878767
+  checksum: 10/a96c0f325a79c39367b0eb7bf4c682bbf36249ff87001385771bf866175278e6079646062eaeb3a2d77368fb2d60a862787ba9e25ea50ac5d875dce5ac521585
   languageName: node
   linkType: hard
 
