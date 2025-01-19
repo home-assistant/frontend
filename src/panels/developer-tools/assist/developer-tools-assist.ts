@@ -1,4 +1,4 @@
-import { mdiDownload } from "@mdi/js";
+import { mdiDownload, mdiTrashCan } from "@mdi/js";
 import { dump } from "js-yaml";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -162,6 +162,10 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
         ${this._results.length
           ? html`
               <div class="result-toolbar">
+                <ha-button outlined @click=${this._clear} destructive>
+                  <ha-svg-icon slot="icon" .path=${mdiTrashCan}></ha-svg-icon>
+                  ${this.hass.localize("ui.common.clear")}
+                </ha-button>
                 <ha-button outlined @click=${this._download}>
                   <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
                   ${this.hass.localize(
@@ -219,6 +223,10 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
       )}`,
       `intent_results.json`
     );
+  }
+
+  private _clear() {
+    this._results = [];
   }
 
   static get styles(): CSSResultGroup {

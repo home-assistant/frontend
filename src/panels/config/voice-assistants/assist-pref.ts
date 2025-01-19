@@ -121,7 +121,9 @@ export class AssistPref extends LitElement {
             class="icon-link"
           >
             <ha-icon-button
-              label="Learn how it works"
+              .label=${this.hass.localize(
+                "ui.panel.config.voice_assistants.assistants.pipeline.link_learn_how_it_works"
+              )}
               .path=${mdiHelpCircle}
             ></ha-icon-button>
           </a>
