@@ -201,7 +201,7 @@
     "eslint-plugin-unused-imports": "4.1.4",
     "eslint-plugin-wc": "2.2.0",
     "fancy-log": "2.0.0",
-    "fs-extra": "11.2.0",
+    "fs-extra": "11.3.0",
     "glob": "11.0.1",
     "gulp": "5.0.0",
     "gulp-brotli": "3.0.0",
