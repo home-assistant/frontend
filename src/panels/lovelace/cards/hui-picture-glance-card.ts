@@ -329,12 +329,6 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     }
 
     .box {
-      /* start paper-font-common-nowrap style */
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      /* end paper-font-common-nowrap style */
-
       position: absolute;
       left: 0;
       right: 0;
@@ -344,9 +338,6 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
         rgba(0, 0, 0, 0.3)
       );
       padding: 4px 8px;
-      font-size: 16px;
-      line-height: 40px;
-      color: var(--ha-picture-card-text-color, white);
       display: flex;
       justify-content: space-between;
       flex-direction: row;
@@ -357,6 +348,12 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       margin-left: 8px;
       margin-inline-start: 8px;
       margin-inline-end: initial;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      font-size: 16px;
+      line-height: 40px;
+      color: var(--ha-picture-card-text-color, white);
     }
 
     ha-icon-button {
