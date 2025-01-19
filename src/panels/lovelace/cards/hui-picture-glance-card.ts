@@ -375,6 +375,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      color: var(--ha-picture-card-text-color, white);
     }
     .row {
       display: flex;
