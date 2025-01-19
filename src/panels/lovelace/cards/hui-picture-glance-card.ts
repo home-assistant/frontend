@@ -353,6 +353,9 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       color: var(--ha-picture-card-text-color, white);
       align-self: center;
     }
+    ha-state-icon {
+      font-size: 0;
+    }
     ha-icon-button {
       --mdc-icon-button-size: 40px;
       --disabled-text-color: currentColor;
