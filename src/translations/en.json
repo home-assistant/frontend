@@ -2933,6 +2933,7 @@
           "built_using": "Built using",
           "icons_by": "Icons by",
           "frontend_version_label": "Frontend",
+          "proud_part_of": "Proud part of",
           "custom_uis": "Custom UIs:",
           "system_health_error": "System Health component is not loaded. Add 'system_health:' to configuration.yaml",
           "documentation": "Documentation",
@@ -3111,6 +3112,7 @@
           "assistants": {
             "caption": "Assistants",
             "pipeline": {
+              "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]",
               "add_assistant": "Add assistant",
               "exposed_entities": "[%key:ui::panel::config::cloud::account::google::exposed_entities%]",
               "assist_devices": "{number} Assist {number, plural,\n  one {device}\n  other {devices}\n}",
