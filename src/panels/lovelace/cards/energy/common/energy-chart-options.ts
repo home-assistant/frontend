@@ -184,18 +184,22 @@ function formatTooltip(
   }
   const title = `<h4 style="text-align: center; margin: 0;">${period}</h4>`;
   let total = 0;
+  let totalCount = 0;
   const values = params
     .map((param) => {
       const value = formatNumber(param.value[1] as number, locale);
       if (value === "0") {
         return false;
       }
-      total += param.value[1] as number;
+      if (param.componentSubType === "bar") {
+        total += param.value[1] as number;
+        totalCount++;
+      }
       return `${param.marker} ${param.seriesName}: ${value} ${unit}`;
     })
     .filter(Boolean);
   const footer =
-    total > 0 && values.length > 1 && formatTotal
+    total > 0 && totalCount > 1 && formatTotal
       ? `<br><b>${formatTotal(total)}</b>`
       : "";
   return values.length > 0 ? `${title}${values.join("<br>")}${footer}` : "";

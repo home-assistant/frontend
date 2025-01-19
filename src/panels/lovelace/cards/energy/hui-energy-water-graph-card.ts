@@ -183,7 +183,7 @@ export class HuiEnergyWaterGraphCard
       );
     } else {
       // add empty dataset so compare bars are first
-      // `stack: devices` so it doesn't take up space yet
+      // `stack: water` so it doesn't take up space yet
       const firstId = waterSources[0]?.stat_energy_from ?? "placeholder";
       datasets.push({
         id: "compare-" + firstId,
@@ -214,6 +214,9 @@ export class HuiEnergyWaterGraphCard
     compare = false
   ) {
     const data: BarSeriesOption[] = [];
+    const compareOffset = compare
+      ? this._start.getTime() - this._compareStart!.getTime()
+      : 0;
 
     waterSources.forEach((source, idx) => {
       let prevStart: number | null = null;
@@ -234,8 +237,12 @@ export class HuiEnergyWaterGraphCard
           if (prevStart === point.start) {
             continue;
           }
-          const date = new Date(point.start);
-          waterConsumptionData.push([date.getTime(), point.change]);
+          const dataPoint = [point.start, point.change];
+          if (compare) {
+            dataPoint[2] = dataPoint[0];
+            dataPoint[0] += compareOffset;
+          }
+          waterConsumptionData.push(dataPoint);
           prevStart = point.start;
         }
       }
