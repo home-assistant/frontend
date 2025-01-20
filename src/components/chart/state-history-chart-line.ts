@@ -16,6 +16,8 @@ import {
   formatNumber,
 } from "../../common/number/format_number";
 import { getLabelFormatter } from "./chart-label";
+import { measureTextWidth } from "../../util/text";
+import { fireEvent } from "../../common/dom/fire_event";
 
 const safeParseFloat = (value) => {
   const parsed = parseFloat(value);
@@ -74,7 +76,6 @@ export class StateHistoryChartLine extends LitElement {
         .hass=${this.hass}
         .data=${this._chartData}
         .options=${this._chartOptions}
-        .paddingYAxis=${this.paddingYAxis - this._yWidth}
       ></ha-chart-base>
     `;
   }
@@ -143,8 +144,10 @@ export class StateHistoryChartLine extends LitElement {
       changedProps.has("minYAxis") ||
       changedProps.has("maxYAxis") ||
       changedProps.has("fitYData") ||
-      changedProps.has("_chartData")
+      changedProps.has("_chartData") ||
+      changedProps.has("paddingYAxis")
     ) {
+      const rtl = computeRTL(this.hass);
       const splitLineStyle = this.hass.themes?.darkMode
         ? { opacity: 0.15 }
         : {};
@@ -174,12 +177,27 @@ export class StateHistoryChartLine extends LitElement {
           name: this.unit,
           min: this.fitYData ? this.minYAxis : undefined,
           max: this.fitYData ? this.maxYAxis : undefined,
-          position: computeRTL(this.hass) ? "right" : "left",
+          position: rtl ? "right" : "left",
           // @ts-ignore this is a valid option
           scale: true,
           splitLine: {
             show: true,
             lineStyle: splitLineStyle,
+          },
+          axisLabel: {
+            // @ts-ignore this is a valid option
+            formatter: (value: number) => {
+              const label = formatNumber(value, this.hass.locale);
+              const width = measureTextWidth(label, 12);
+              if (width > this._yWidth) {
+                this._yWidth = width;
+                fireEvent(this, "y-width-changed", {
+                  value: this._yWidth,
+                  chartIndex: this.chartIndex,
+                });
+              }
+              return label;
+            },
           },
         },
         legend: {
@@ -189,10 +207,9 @@ export class StateHistoryChartLine extends LitElement {
         },
         grid: {
           ...(this.showNames ? {} : { top: 30 }), // undefined is the same as 0
-          left: 20,
-          right: 0,
-          bottom: 0,
-          containLabel: true,
+          left: rtl ? 1 : Math.max(25, this.paddingYAxis, this._yWidth),
+          right: rtl ? Math.max(25, this.paddingYAxis, this._yWidth) : 1,
+          bottom: 30,
         },
         visualMap: this._chartData
           .map((_, seriesIndex) => {
@@ -226,19 +243,6 @@ export class StateHistoryChartLine extends LitElement {
           appendTo: document.body,
           formatter: this._renderTooltip.bind(this),
         },
-        // scales: {
-        //   y: {
-        //     afterUpdate: (y) => {
-        //       if (this._yWidth !== Math.floor(y.width)) {
-        //         this._yWidth = Math.floor(y.width);
-        //         fireEvent(this, "y-width-changed", {
-        //           value: this._yWidth,
-        //           chartIndex: this.chartIndex,
-        //         });
-        //       }
-        //     },
-        //   },
-        // },
       };
     }
   }

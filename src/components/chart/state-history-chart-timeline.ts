@@ -21,6 +21,7 @@ import { formatTime } from "../../common/datetime/format_time";
 import { luminosity } from "../../common/color/rgb";
 import { hex2rgb } from "../../common/color/convert-color";
 import { measureTextWidth } from "../../util/text";
+import { fireEvent } from "../../common/dom/fire_event";
 
 @customElement("state-history-chart-timeline")
 export class StateHistoryChartTimeline extends LitElement {
@@ -65,7 +66,6 @@ export class StateHistoryChartTimeline extends LitElement {
         .hass=${this.hass}
         .options=${this._chartOptions}
         .height=${this.data.length * 30 + 30}
-        .paddingYAxis=${this.paddingYAxis - this._yWidth}
         .data=${this._chartData}
       ></ha-chart-base>
     `;
@@ -173,7 +173,8 @@ export class StateHistoryChartTimeline extends LitElement {
     if (
       changedProps.has("startTime") ||
       changedProps.has("endTime") ||
-      changedProps.has("showNames")
+      changedProps.has("showNames") ||
+      changedProps.has("paddingYAxis")
     ) {
       this._createOptions();
     }
@@ -182,7 +183,11 @@ export class StateHistoryChartTimeline extends LitElement {
   private _createOptions() {
     const narrow = this.narrow;
     const labelWidth = narrow ? 105 : 185;
-    const labelPadding = this.chunked || this.showNames ? labelWidth - 5 : 10;
+    const showNames = this.chunked || this.showNames;
+    const labelPadding = Math.max(
+      showNames ? labelWidth : 1,
+      this.paddingYAxis
+    );
     const rtl = computeRTL(this.hass);
     this._chartOptions = {
       xAxis: {
@@ -220,50 +225,33 @@ export class StateHistoryChartTimeline extends LitElement {
           show: false,
         },
         axisLabel: {
-          show: this.chunked || this.showNames,
+          show: showNames,
           width: labelWidth,
           overflow: "truncate",
+          // @ts-ignore this is a valid option
+          formatter: (label: string) => {
+            const width = Math.min(measureTextWidth(label, 12), labelWidth);
+            if (width > this._yWidth) {
+              this._yWidth = width;
+              fireEvent(this, "y-width-changed", {
+                value: this._yWidth,
+                chartIndex: this.chartIndex,
+              });
+            }
+            return label;
+          },
         },
       },
       grid: {
         top: 10,
         bottom: 30,
-        left: rtl ? 10 : labelPadding,
-        right: rtl ? labelPadding : 10,
+        left: rtl ? 1 : labelPadding,
+        right: rtl ? labelPadding : 1,
       },
       tooltip: {
         appendTo: document.body,
         formatter: this._renderTooltip,
       },
-      //   y: {
-      //     afterSetDimensions: (y) => {
-      //       y.maxWidth = y.chart.width * 0.18;
-      //     },
-      //     afterFit: (scaleInstance) => {
-      //       if (this.chunked) {
-      //         // ensure all the chart labels are the same width
-      //         scaleInstance.width = narrow ? 105 : 185;
-      //       }
-      //     },
-      //     afterUpdate: (y) => {
-      //       const yWidth = this.showNames
-      //         ? (y.width ?? 0)
-      //         : computeRTL(this.hass)
-      //           ? 0
-      //           : (y.left ?? 0);
-      //       if (
-      //         this._yWidth !== Math.floor(yWidth) &&
-      //         y.ticks.length === this.data.length
-      //       ) {
-      //         this._yWidth = Math.floor(yWidth);
-      //         fireEvent(this, "y-width-changed", {
-      //           value: this._yWidth,
-      //           chartIndex: this.chartIndex,
-      //         });
-      //       }
-      //     },
-      //   },
-      // },
     };
   }
 

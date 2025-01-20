@@ -9,7 +9,6 @@ import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type { SeriesOption } from "echarts/types/dist/shared";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HomeAssistant } from "../../types";
-import { debounce } from "../../common/util/debounce";
 import { isMac } from "../../util/is_mac";
 import "../ha-icon-button";
 import type { ECOption } from "../../resources/echarts";
@@ -29,8 +28,6 @@ export class HaChartBase extends LitElement {
 
   @property({ type: Number }) public height?: number;
 
-  @property({ attribute: false, type: Number }) public paddingYAxis = 0;
-
   @property({ attribute: "external-hidden", type: Boolean })
   public externalHidden = false;
 
@@ -43,12 +40,6 @@ export class HaChartBase extends LitElement {
     callback: () => this.chart?.resize(),
   });
 
-  private _paddingUpdateCount = 0;
-
-  private _paddingUpdateLock = false;
-
-  private _paddingYAxisInternal = 0;
-
   private _loading = false;
 
   private _reducedMotion = false;
@@ -60,13 +51,12 @@ export class HaChartBase extends LitElement {
     while (this._listeners.length) {
       this._listeners.pop()!();
     }
-    this._releaseCanvas();
+    this.chart?.dispose();
   }
 
   public connectedCallback() {
     super.connectedCallback();
     if (this.hasUpdated) {
-      this._releaseCanvas();
       this._setupChart();
     }
 
@@ -82,43 +72,8 @@ export class HaChartBase extends LitElement {
     this._setupChart();
   }
 
-  public shouldUpdate(changedProps: PropertyValues): boolean {
-    if (
-      this._paddingUpdateLock &&
-      changedProps.size === 1 &&
-      changedProps.has("paddingYAxis")
-    ) {
-      return false;
-    }
-    return true;
-  }
-
-  private _debouncedClearUpdates = debounce(
-    () => {
-      this._paddingUpdateCount = 0;
-    },
-    2000,
-    false
-  );
-
   public willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
-
-    if (!this._paddingUpdateLock) {
-      this._paddingYAxisInternal = this.paddingYAxis;
-      if (changedProps.size === 1 && changedProps.has("paddingYAxis")) {
-        this._paddingUpdateCount++;
-        if (this._paddingUpdateCount > 300) {
-          this._paddingUpdateLock = true;
-          // eslint-disable-next-line
-          console.error(
-            "Detected excessive chart padding updates, possibly an infinite loop. Disabling axis padding."
-          );
-        } else {
-          this._debouncedClearUpdates();
-        }
-      }
-    }
 
     if (!this.hasUpdated || !this.chart) {
       return;
@@ -143,10 +98,6 @@ export class HaChartBase extends LitElement {
         class="chart-container"
         style=${styleMap({
           height: `${this.height ?? this._getDefaultHeight()}px`,
-          "padding-left": `${this._paddingYAxisInternal}px`,
-          "padding-right": 0,
-          "padding-inline-start": `${this._paddingYAxisInternal}px`,
-          "padding-inline-end": 0,
         })}
       >
         <div class="chart"></div>
@@ -223,14 +174,6 @@ export class HaChartBase extends LitElement {
 
   private _getDefaultHeight() {
     return this.clientWidth / 2;
-  }
-
-  private _releaseCanvas() {
-    // release the canvas memory to prevent
-    // safari from running out of memory.
-    if (this.chart) {
-      // this.chart.destroy();
-    }
   }
 
   private _handleZoomReset() {
