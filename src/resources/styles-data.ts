@@ -154,4 +154,12 @@ export const derivedStyles = {
   "material-background-color": "var(--card-background-color)",
   "material-secondary-background-color": "var(--secondary-background-color)",
   "material-secondary-text-color": "var(--secondary-text-color)",
+  "safe-area-bottom":
+    "var(--android-safe-area-inset-bottom, env(safe-area-inset-bottom, 0))",
+  "safe-area-top":
+    "var(--android-safe-area-inset-top, env(safe-area-inset-top, 0))",
+  "safe-area-left":
+    "var(--android-safe-area-inset-left, env(safe-area-inset-left, 0))",
+  "safe-area-right":
+    "var(--android-safe-area-inset-right, env(safe-area-inset-right, 0))",
 } as const;
