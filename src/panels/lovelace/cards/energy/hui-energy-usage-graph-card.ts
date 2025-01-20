@@ -184,31 +184,6 @@ export class HuiEnergyUsageGraphCard
             return (
               (commonOptions.tooltip as TooltipOption)?.formatter as any
             )?.(params);
-
-            let totalConsumed = 0;
-            let totalReturned = 0;
-            for (const context of params) {
-              const value = (context.value as number[])?.[1];
-              if (value > 0) {
-                totalConsumed += value;
-              } else {
-                totalReturned += Math.abs(value);
-              }
-            }
-            if (totalConsumed) {
-              tooltip += `<br><b>${this.hass.localize(
-                "ui.panel.lovelace.cards.energy.energy_usage_graph.total_consumed",
-                { num: formatNumber(totalConsumed, locale) }
-              )}</b>`;
-            }
-            if (totalReturned) {
-              tooltip += `<br><b>${this.hass.localize(
-                "ui.panel.lovelace.cards.energy.energy_usage_graph.total_returned",
-                { num: formatNumber(totalReturned, locale) }
-              )}</b>`;
-            }
-
-            return tooltip;
           },
         },
       };
