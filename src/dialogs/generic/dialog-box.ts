@@ -116,7 +116,7 @@ class DialogBox extends LitElement {
             @click=${this._confirm}
             ?dialogInitialFocus=${!this._params.prompt &&
             !this._params.destructive}
-            ?destructive=${this._params.destructive || false}
+            ?destructive=${this._params.destructive}
           >
             ${this._params.confirmText
               ? this._params.confirmText
