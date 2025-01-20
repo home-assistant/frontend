@@ -155,12 +155,12 @@ export class HuiCardPicker extends LitElement {
           height: this._height ? `${this._height}px` : "auto",
         })}
       >
-        <div class="cards-container">
-          ${this._filter
-            ? this._filterCards(this._cards, this._filter).map(
-                (cardElement: CardElement) => cardElement.element
-              )
-            : html`
+        ${this._filter
+          ? this._filterCards(this._cards, this._filter).map(
+              (cardElement: CardElement) => cardElement.element
+            )
+          : html`
+              <div class="cards-container">
                 ${suggestedCards.length > 0
                   ? html`
                       <div class="cards-container-header">
@@ -174,6 +174,8 @@ export class HuiCardPicker extends LitElement {
                 ${suggestedCards.map(
                   (cardElement: CardElement) => cardElement.element
                 )}
+              </div>
+              <div class="cards-container">
                 ${suggestedCards.length > 0
                   ? html`
                       <div class="cards-container-header">
@@ -186,6 +188,8 @@ export class HuiCardPicker extends LitElement {
                 ${othersCards.map(
                   (cardElement: CardElement) => cardElement.element
                 )}
+              </div>
+              <div class="cards-container">
                 ${customCardsItems.length > 0
                   ? html`
                       <div class="cards-container-header">
@@ -198,8 +202,8 @@ export class HuiCardPicker extends LitElement {
                 ${customCardsItems.map(
                   (cardElement: CardElement) => cardElement.element
                 )}
-              `}
-        </div>
+              </div>
+            `}
         <div class="cards-container">
           <div
             class="card manual"
@@ -443,8 +447,13 @@ export class HuiCardPicker extends LitElement {
       }
     }
 
+    // prevent tabbing to card
+    if (element) {
+      element.tabIndex = -1;
+    }
+
     return html`
-      <div class="card">
+      <div class="card" tabindex="0">
         <div
           class="overlay"
           @click=${this._cardPicked}
@@ -496,11 +505,11 @@ export class HuiCardPicker extends LitElement {
           grid-column: 1 / -1;
           position: sticky;
           top: 56px;
-          z-index: 10;
-          background-color: var(
-              --ha-dialog-surface-background,
-              var(--mdc-theme-surface, #fff)
-          );
+          z-index: 1;
+          background: linear-gradient(180deg, var(
+                  --ha-dialog-surface-background,
+                  var(--mdc-theme-surface, #fff)
+          ) 0%, #ffffff00 80%);
         }
 
         .cards-container {
@@ -520,8 +529,7 @@ export class HuiCardPicker extends LitElement {
           cursor: pointer;
           position: relative;
           overflow: hidden;
-          border: var(--ha-card-border-width, 1px) solid
-            var(--ha-card-border-color, var(--divider-color));
+          border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color));
         }
 
         .card-header {
