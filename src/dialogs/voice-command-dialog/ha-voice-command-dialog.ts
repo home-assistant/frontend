@@ -191,7 +191,7 @@ export class HaVoiceCommandDialog extends LitElement {
               </div>`}
         ${this._hint
           ? html`<ha-tip .hass=${this.hass}>${this._hint}</ha-tip>`
-          : ""}
+          : nothing}
       </ha-dialog>
     `;
   }
