@@ -92,6 +92,7 @@ class MoreInfoUpdate extends LitElement {
         ? new Date(this._backupConfig?.last_completed_automatic_backup)
         : null;
       const now = new Date();
+
       return {
         title: this.hass.localize(
           "ui.dialogs.more_info_control.update.create_backup.automatic"
@@ -343,9 +344,9 @@ class MoreInfoUpdate extends LitElement {
     }
   }
 
-  get _shouldCreateBackup(): boolean | null {
+  get _shouldCreateBackup(): boolean {
     if (!supportsFeature(this.stateObj!, UpdateEntityFeature.BACKUP)) {
-      return null;
+      return false;
     }
     const createBackupSwitch = this.shadowRoot?.getElementById(
       "create-backup"

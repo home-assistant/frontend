@@ -216,14 +216,12 @@ export const isAddonUpdate = (
   if (domain !== "hassio") {
     return false;
   }
-  if (!stateObj.attributes.title) {
-    return true;
-  }
+  const title = stateObj.attributes.title || "";
   return ![
     HOME_ASSISTANT_CORE_TITLE,
     HOME_ASSISTANT_SUPERVISOR_TITLE,
     HOME_ASSISTANT_OS_TITLE,
-  ].includes(stateObj.attributes.title);
+  ].includes(title);
 };
 
 export const isHomeAssistantUpdate = (
@@ -235,5 +233,6 @@ export const isHomeAssistantUpdate = (
   if (domain !== "hassio") {
     return false;
   }
-  return stateObj.attributes.title === HOME_ASSISTANT_CORE_TITLE;
+  const title = stateObj.attributes.title || "";
+  return title === HOME_ASSISTANT_CORE_TITLE;
 };
