@@ -127,6 +127,17 @@ export class HuiEnergyUsageGraphCard
     `;
   }
 
+  private _formatTotal = (total: number) =>
+    total > 0
+      ? this.hass.localize(
+          "ui.panel.lovelace.cards.energy.energy_usage_graph.total_consumed",
+          { num: formatNumber(total, this.hass.locale) }
+        )
+      : this.hass.localize(
+          "ui.panel.lovelace.cards.energy.energy_usage_graph.total_returned",
+          { num: formatNumber(-total, this.hass.locale) }
+        );
+
   private _createOptions = memoizeOne(
     (
       start: Date,
@@ -145,7 +156,8 @@ export class HuiEnergyUsageGraphCard
         "kWh",
         compareStart,
         compareEnd,
-        darkMode
+        darkMode,
+        this._formatTotal
       );
       const options: ECOption = {
         ...commonOptions,
@@ -169,7 +181,7 @@ export class HuiEnergyUsageGraphCard
               }
               return a.componentIndex - b.componentIndex;
             });
-            let tooltip = (
+            return (
               (commonOptions.tooltip as TooltipOption)?.formatter as any
             )?.(params);
 

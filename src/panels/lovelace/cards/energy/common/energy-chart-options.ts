@@ -187,25 +187,37 @@ function formatTooltip(
     )}`;
   }
   const title = `<h4 style="text-align: center; margin: 0;">${period}</h4>`;
-  let total = 0;
-  let totalCount = 0;
+
+  let sumPositive = 0;
+  let countPositive = 0;
+  let sumNegative = 0;
+  let countNegative = 0;
   const values = params
     .map((param) => {
-      const value = formatNumber(param.value?.[1] as number, locale);
+      const y = param.value?.[1] as number;
+      const value = formatNumber(y, locale);
       if (value === "0") {
         return false;
       }
       if (param.componentSubType === "bar") {
-        total += param.value?.[1] as number;
-        totalCount++;
+        if (y > 0) {
+          sumPositive += y;
+          countPositive++;
+        } else {
+          sumNegative += y;
+          countNegative++;
+        }
       }
       return `${param.marker} ${param.seriesName}: ${value} ${unit}`;
     })
     .filter(Boolean);
-  const footer =
-    total > 0 && totalCount > 1 && formatTotal
-      ? `<br><b>${formatTotal(total)}</b>`
-      : "";
+  let footer = "";
+  if (sumPositive > 0 && countPositive > 1 && formatTotal) {
+    footer = `<br><b>${formatTotal(sumPositive)}</b>`;
+  }
+  if (sumNegative > 0 && countNegative > 1 && formatTotal) {
+    footer = `<br><b>${formatTotal(sumNegative)}</b>`;
+  }
   return values.length > 0 ? `${title}${values.join("<br>")}${footer}` : "";
 }
 
