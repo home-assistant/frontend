@@ -730,7 +730,12 @@ class HUIRoot extends LitElement {
   }
 
   private _showVoiceCommandDialog(): void {
-    showVoiceCommandDialog(this, this.hass, { pipeline_id: "last_used" });
+    showVoiceCommandDialog(this, this.hass, {
+      pipeline_id: "last_used",
+      hint: this.hass.enableShortcuts
+        ? this.hass.localize("ui.tips.key_a_hint")
+        : undefined,
+    });
   }
 
   private _handleEnableEditMode(ev: CustomEvent<RequestSelectedDetail>): void {
