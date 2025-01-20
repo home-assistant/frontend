@@ -221,8 +221,8 @@ export function fillDataGapsAndRoundCaps(datasets: BarSeriesOption[]) {
   // make sure all datasets have the same buckets
   // otherwise the chart will render incorrectly in some cases
   buckets.forEach((bucket, index) => {
-    let capRounded = {};
-    let capRoundedNegative = {};
+    const capRounded = {};
+    const capRoundedNegative = {};
     for (let i = datasets.length - 1; i >= 0; i--) {
       const dataPoint = datasets[i].data![index];
       const item: any =
@@ -232,7 +232,7 @@ export function fillDataGapsAndRoundCaps(datasets: BarSeriesOption[]) {
       const x = item.value?.[0];
       const stack = datasets[i].stack ?? "";
       if (x === undefined) {
-        return;
+        continue;
       }
       if (x !== bucket) {
         datasets[i].data?.splice(index, 0, {
