@@ -188,6 +188,11 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
           right: 10,
           containLabel: true,
         },
+        tooltip: {
+          trigger: "axis",
+          valueFormatter: (value) =>
+            value + blankBeforePercent(this.hass.locale) + "%",
+        },
       };
     }
   }
@@ -391,6 +396,9 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                         {
                           ...DATA_SET_CONFIG,
                           id: "cpu",
+                          name: this.hass.localize(
+                            "ui.panel.config.hardware.processor"
+                          ),
                           data: this._cpuEntries,
                         } as SeriesOption,
                       ]}
@@ -422,6 +430,9 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                         {
                           ...DATA_SET_CONFIG,
                           id: "memory",
+                          name: this.hass.localize(
+                            "ui.panel.config.hardware.memory"
+                          ),
                           data: this._memoryEntries,
                         } as SeriesOption,
                       ]}
