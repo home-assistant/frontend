@@ -10,13 +10,12 @@ import type { LineChartEntity, LineChartState } from "../../data/history";
 import type { HomeAssistant } from "../../types";
 import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
 import type { ECOption } from "../../resources/echarts";
-import { formatDateVeryShort } from "../../common/datetime/format_date";
-import { formatTime } from "../../common/datetime/format_time";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import {
   getNumberFormatOptions,
   formatNumber,
 } from "../../common/number/format_number";
+import { getLabelFormatter } from "./chart-label";
 
 const safeParseFloat = (value) => {
   const parsed = parseFloat(value);
@@ -155,18 +154,7 @@ export class StateHistoryChartLine extends LitElement {
           min: this.startTime,
           max: this.endTime,
           axisLabel: {
-            formatter: (value: number) => {
-              const date = new Date(value);
-              // show only date for the beginning of the day
-              if (
-                date.getHours() === 0 &&
-                date.getMinutes() === 0 &&
-                date.getSeconds() === 0
-              ) {
-                return `{day|${formatDateVeryShort(date, this.hass.locale, this.hass.config)}}`;
-              }
-              return formatTime(date, this.hass.locale, this.hass.config);
-            },
+            formatter: getLabelFormatter(this.hass.locale, this.hass.config),
             rich: {
               day: {
                 fontWeight: "bold",
