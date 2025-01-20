@@ -506,7 +506,7 @@ export class HuiCardPicker extends LitElement {
           position: sticky;
           top: 56px;
           z-index: 1;
-          background: linear-gradient(180deg, var(
+          background: linear-gradient(90deg, var(
                   --ha-dialog-surface-background,
                   var(--mdc-theme-surface, #fff)
           ) 0%, #ffffff00 80%);
