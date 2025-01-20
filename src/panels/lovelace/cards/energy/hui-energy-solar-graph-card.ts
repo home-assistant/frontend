@@ -28,7 +28,10 @@ import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergySolarGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
-import { getCommonOptions } from "./common/energy-chart-options";
+import {
+  fillDataGapsAndRoundCaps,
+  getCommonOptions,
+} from "./common/energy-chart-options";
 import type { ECOption } from "../../../../resources/echarts";
 
 @customElement("hui-energy-solar-graph-card")
@@ -206,6 +209,8 @@ export class HuiEnergySolarGraphCard
       )
     );
 
+    fillDataGapsAndRoundCaps(datasets as BarSeriesOption[]);
+
     if (forecasts) {
       datasets.push(
         ...this._processForecast(
@@ -281,7 +286,6 @@ export class HuiEnergySolarGraphCard
         ),
         barMaxWidth: 50,
         itemStyle: {
-          borderRadius: [4, 4, 0, 0],
           borderColor: getEnergyColor(
             computedStyles,
             this.hass.themes.darkMode,

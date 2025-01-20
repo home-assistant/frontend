@@ -26,7 +26,10 @@ import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyGasGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
-import { getCommonOptions } from "./common/energy-chart-options";
+import {
+  fillDataGapsAndRoundCaps,
+  getCommonOptions,
+} from "./common/energy-chart-options";
 import type { ECOption } from "../../../../resources/echarts";
 
 @customElement("hui-energy-gas-graph-card")
@@ -201,6 +204,7 @@ export class HuiEnergyGasGraphCard
       )
     );
 
+    fillDataGapsAndRoundCaps(datasets);
     this._chartData = datasets;
   }
 
@@ -257,7 +261,6 @@ export class HuiEnergyGasGraphCard
         ),
         barMaxWidth: 50,
         itemStyle: {
-          borderRadius: [4, 4, 0, 0],
           borderColor: getEnergyColor(
             computedStyles,
             this.hass.themes.darkMode,

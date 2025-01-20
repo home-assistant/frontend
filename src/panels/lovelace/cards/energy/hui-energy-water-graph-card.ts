@@ -26,7 +26,7 @@ import type { LovelaceCard } from "../../types";
 import type { EnergyWaterGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import {
-  fillDatasetGaps,
+  fillDataGapsAndRoundCaps,
   getCommonOptions,
 } from "./common/energy-chart-options";
 import type { ECOption } from "../../../../resources/echarts";
@@ -202,7 +202,7 @@ export class HuiEnergyWaterGraphCard
       )
     );
 
-    fillDatasetGaps(datasets);
+    fillDataGapsAndRoundCaps(datasets);
     this._chartData = datasets;
   }
 
@@ -259,7 +259,6 @@ export class HuiEnergyWaterGraphCard
         ),
         barMaxWidth: 50,
         itemStyle: {
-          borderRadius: [4, 4, 0, 0],
           borderColor: getEnergyColor(
             computedStyles,
             this.hass.themes.darkMode,

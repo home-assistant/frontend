@@ -31,7 +31,7 @@ import type { LovelaceCard } from "../../types";
 import type { EnergyDevicesDetailGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import {
-  fillDatasetGaps,
+  fillDataGapsAndRoundCaps,
   getCommonOptions,
 } from "./common/energy-chart-options";
 import { storage } from "../../../../common/decorators/storage";
@@ -301,7 +301,7 @@ export class HuiEnergyDevicesDetailGraphCard
       datasets.push(untrackedData);
     }
 
-    fillDatasetGaps(datasets);
+    fillDataGapsAndRoundCaps(datasets);
     this._chartData = datasets;
   }
 
@@ -343,7 +343,6 @@ export class HuiEnergyDevicesDetailGraphCard
         "ui.panel.lovelace.cards.energy.energy_devices_detail_graph.untracked_consumption"
       ),
       itemStyle: {
-        borderRadius: [4, 4, 0, 0],
         borderColor: getEnergyColor(
           computedStyle,
           this.hass.themes.darkMode,

@@ -1,6 +1,10 @@
 import type { HassConfig } from "home-assistant-js-websocket";
 import { addHours, subHours, differenceInDays } from "date-fns";
-import type { BarSeriesOption } from "echarts/types/dist/shared";
+import type {
+  BarSeriesOption,
+  CallbackDataParams,
+  TopLevelFormatterParams,
+} from "echarts/types/dist/shared";
 import type { FrontendLocaleData } from "../../../../../data/translation";
 import { formatNumber } from "../../../../../common/number/format_number";
 import { formatDateVeryShort } from "../../../../../common/datetime/format_date";
@@ -96,13 +100,13 @@ export function getCommonOptions(
     },
     tooltip: {
       trigger: "axis",
-      formatter: (params: any) => {
+      formatter: (params: TopLevelFormatterParams): string => {
         // trigger: "axis" gives an array of params, but "item" gives a single param
         if (Array.isArray(params)) {
-          const mainItems: Record<string, any>[] = [];
-          const compareItems: Record<string, any>[] = [];
-          params.forEach((param: Record<string, any>) => {
-            if (param.seriesId?.includes("compare")) {
+          const mainItems: CallbackDataParams[] = [];
+          const compareItems: CallbackDataParams[] = [];
+          params.forEach((param: CallbackDataParams) => {
+            if (param.seriesId?.startsWith("compare-")) {
               compareItems.push(param);
             } else {
               mainItems.push(param);
@@ -156,7 +160,7 @@ export function getCommonOptions(
 }
 
 function formatTooltip(
-  params: any[],
+  params: CallbackDataParams[],
   locale: FrontendLocaleData,
   config: HassConfig,
   dayDifference: number,
@@ -187,12 +191,12 @@ function formatTooltip(
   let totalCount = 0;
   const values = params
     .map((param) => {
-      const value = formatNumber(param.value[1] as number, locale);
+      const value = formatNumber(param.value?.[1] as number, locale);
       if (value === "0") {
         return false;
       }
       if (param.componentSubType === "bar") {
-        total += param.value[1] as number;
+        total += param.value?.[1] as number;
         totalCount++;
       }
       return `${param.marker} ${param.seriesName}: ${value} ${unit}`;
@@ -205,7 +209,7 @@ function formatTooltip(
   return values.length > 0 ? `${title}${values.join("<br>")}${footer}` : "";
 }
 
-export function fillDatasetGaps(datasets: BarSeriesOption[]) {
+export function fillDataGapsAndRoundCaps(datasets: BarSeriesOption[]) {
   const buckets = Array.from(
     new Set(
       datasets
@@ -216,19 +220,42 @@ export function fillDatasetGaps(datasets: BarSeriesOption[]) {
 
   // make sure all datasets have the same buckets
   // otherwise the chart will render incorrectly in some cases
-  datasets.forEach((dataset) => {
-    if (!dataset.data?.length) {
-      return;
-    }
-    buckets.forEach((bucket, index) => {
-      if (dataset.data![index]?.[0] !== bucket) {
-        dataset.data?.splice(index, 0, {
+  buckets.forEach((bucket, index) => {
+    let capRounded = false;
+    let capRoundedNegative = false;
+    for (let i = datasets.length - 1; i >= 0; i--) {
+      const dataPoint = datasets[i].data![index];
+      const item: any =
+        dataPoint && typeof dataPoint === "object" && "value" in dataPoint
+          ? dataPoint
+          : { value: dataPoint };
+      const x = item.value?.[0];
+      if (typeof x !== "undefined" && x !== bucket) {
+        datasets[i].data?.splice(index, 0, {
           value: [bucket, 0],
           itemStyle: {
             borderWidth: 0,
           },
         });
+      } else if (!capRounded && item.value?.[1] > 0) {
+        datasets[i].data![index] = {
+          ...item,
+          itemStyle: {
+            ...item.itemStyle,
+            borderRadius: [4, 4, 0, 0],
+          },
+        };
+        capRounded = true;
+      } else if (!capRoundedNegative && item.value?.[1] < 0) {
+        datasets[i].data![index] = {
+          ...item,
+          itemStyle: {
+            ...item.itemStyle,
+            borderRadius: [0, 0, 4, 4],
+          },
+        };
+        capRoundedNegative = true;
       }
-    });
+    }
   });
 }
