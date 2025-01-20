@@ -3,6 +3,7 @@ import { html, LitElement } from "lit";
 import { property, state } from "lit/decorators";
 import type { VisualMapComponentOption } from "echarts/components";
 import type { LineSeriesOption } from "echarts/charts";
+import type { YAXisOption } from "echarts/types/dist/shared";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { computeRTL } from "../../common/util/compute_rtl";
 
@@ -178,14 +179,12 @@ export class StateHistoryChartLine extends LitElement {
           min: this.fitYData ? this.minYAxis : undefined,
           max: this.fitYData ? this.maxYAxis : undefined,
           position: rtl ? "right" : "left",
-          // @ts-ignore this is a valid option
           scale: true,
           splitLine: {
             show: true,
             lineStyle: splitLineStyle,
           },
           axisLabel: {
-            // @ts-ignore this is a valid option
             formatter: (value: number) => {
               const label = formatNumber(value, this.hass.locale);
               const width = measureTextWidth(label, 12);
@@ -199,7 +198,7 @@ export class StateHistoryChartLine extends LitElement {
               return label;
             },
           },
-        },
+        } as YAXisOption,
         legend: {
           show: this.showNames,
           icon: "circle",
