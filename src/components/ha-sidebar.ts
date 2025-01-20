@@ -702,12 +702,12 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           );
           font-size: var(--ha-font-size-xl);
           align-items: center;
-          padding-left: calc(4px + env(safe-area-inset-left));
-          padding-inline-start: calc(4px + env(safe-area-inset-left));
+          padding-left: calc(4px + var(--safe-area-inset-left));
+          padding-inline-start: calc(4px + var(--safe-area-inset-left));
           padding-inline-end: initial;
         }
         :host([expanded]) .menu {
-          width: calc(256px + env(safe-area-inset-left));
+          width: calc(256px + var(--safe-area-inset-left));
         }
         .menu ha-icon-button {
           color: var(--sidebar-icon-color);
@@ -735,11 +735,11 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           box-sizing: border-box;
           height: calc(100% - var(--header-height) - 132px);
           height: calc(
-            100% - var(--header-height) - 132px - env(safe-area-inset-bottom)
+            100% - var(--header-height) - 132px - var(--safe-area-inset-bottom)
           );
           overflow-x: hidden;
           background: none;
-          margin-left: env(safe-area-inset-left);
+          margin-left: var(--safe-area-inset-left);
         }
 
         ha-md-list-item {
@@ -759,7 +759,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         }
         :host([expanded]) ha-md-list-item {
           width: 248px;
-          width: calc(248px - env(safe-area-inset-left));
+          width: calc(248px - var(--safe-area-inset-left));
         }
 
         ha-md-list-item.selected {
