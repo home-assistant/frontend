@@ -543,7 +543,10 @@ export class HaAssistChat extends LitElement {
       margin-inline-start: initial;
       float: var(--float-start);
       border-bottom-left-radius: 0px;
-      background-color: var(--chat-background-color-hass, var(--secondary-background-color));
+      background-color: var(
+        --chat-background-color-hass,
+        var(--secondary-background-color)
+      );
 
       color: var(--primary-text-color);
       direction: var(--direction);
