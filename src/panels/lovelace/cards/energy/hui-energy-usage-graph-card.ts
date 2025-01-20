@@ -492,18 +492,27 @@ export class HuiEnergyUsageGraphCard
       (a, b) => Number(a) - Number(b)
     );
 
+    const compareOffset = compare
+      ? this._start.getTime() - this._compareStart!.getTime()
+      : 0;
+
     Object.entries(combinedData).forEach(([type, sources]) => {
       Object.entries(sources).forEach(([statId, source]) => {
         const points: BarSeriesOption["data"] = [];
         // Process chart data.
         for (const key of uniqueKeys) {
           const value = source[key] || 0;
-          points.push([
+          const dataPoint = [
             Number(key),
             value && ["to_grid", "to_battery"].includes(type)
               ? -1 * value
               : value,
-          ]);
+          ];
+          if (compare) {
+            dataPoint[2] = dataPoint[0];
+            dataPoint[0] += compareOffset;
+          }
+          points.push(dataPoint);
         }
 
         data.push({

@@ -221,8 +221,8 @@ export function fillDataGapsAndRoundCaps(datasets: BarSeriesOption[]) {
   // make sure all datasets have the same buckets
   // otherwise the chart will render incorrectly in some cases
   buckets.forEach((bucket, index) => {
-    let capRounded = false;
-    let capRoundedNegative = false;
+    let capRounded = {};
+    let capRoundedNegative = {};
     for (let i = datasets.length - 1; i >= 0; i--) {
       const dataPoint = datasets[i].data![index];
       const item: any =
@@ -230,14 +230,27 @@ export function fillDataGapsAndRoundCaps(datasets: BarSeriesOption[]) {
           ? dataPoint
           : { value: dataPoint };
       const x = item.value?.[0];
-      if (typeof x !== "undefined" && x !== bucket) {
+      const stack = datasets[i].stack ?? "";
+      if (x === undefined) {
+        return;
+      }
+      if (x !== bucket) {
         datasets[i].data?.splice(index, 0, {
           value: [bucket, 0],
           itemStyle: {
             borderWidth: 0,
           },
         });
-      } else if (!capRounded && item.value?.[1] > 0) {
+      } else if (item.value?.[1] === 0) {
+        // remove the border for zero values or it will be rendered
+        datasets[i].data![index] = {
+          ...item,
+          itemStyle: {
+            ...item.itemStyle,
+            borderWidth: 0,
+          },
+        };
+      } else if (!capRounded[stack] && item.value?.[1] > 0) {
         datasets[i].data![index] = {
           ...item,
           itemStyle: {
@@ -245,8 +258,8 @@ export function fillDataGapsAndRoundCaps(datasets: BarSeriesOption[]) {
             borderRadius: [4, 4, 0, 0],
           },
         };
-        capRounded = true;
-      } else if (!capRoundedNegative && item.value?.[1] < 0) {
+        capRounded[stack] = true;
+      } else if (!capRoundedNegative[stack] && item.value?.[1] < 0) {
         datasets[i].data![index] = {
           ...item,
           itemStyle: {
@@ -254,7 +267,7 @@ export function fillDataGapsAndRoundCaps(datasets: BarSeriesOption[]) {
             borderRadius: [0, 0, 4, 4],
           },
         };
-        capRoundedNegative = true;
+        capRoundedNegative[stack] = true;
       }
     }
   });
