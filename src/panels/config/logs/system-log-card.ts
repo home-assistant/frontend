@@ -260,8 +260,7 @@ export class SystemLogCard extends LitElement {
 
     .header-buttons {
       display: flex;
-      align-items: center;
-      height: 100%;
+      align-items: flex-start;
     }
 
     .card-header {
