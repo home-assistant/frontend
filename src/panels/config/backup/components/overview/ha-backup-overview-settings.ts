@@ -11,7 +11,7 @@ import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
 import type { BackupConfig } from "../../../../../data/backup";
 import {
-  BackupScheduleState,
+  BackupScheduleRecurrence,
   computeBackupAgentName,
   getFormattedBackupTime,
   isLocalAgent,
@@ -31,9 +31,9 @@ class HaBackupBackupsSummary extends LitElement {
 
   private _scheduleDescription(config: BackupConfig): string {
     const { copies, days } = config.retention;
-    const { state: schedule } = config.schedule;
+    const { recurrence } = config.schedule;
 
-    if (schedule === BackupScheduleState.NEVER) {
+    if (recurrence === BackupScheduleRecurrence.NEVER) {
       return this.hass.localize(
         "ui.panel.config.backup.overview.settings.schedule_never"
       );
@@ -47,10 +47,42 @@ class HaBackupBackupsSummary extends LitElement {
         this.config.schedule.time
       );
 
-    const scheduleText = this.hass.localize(
-      `ui.panel.config.backup.overview.settings.schedule_${!this.config.schedule.time ? "optimized_" : ""}${schedule}`,
-      { time }
+    let scheduleText = this.hass.localize(
+      "ui.panel.config.backup.overview.settings.schedule_never"
     );
+
+    if (
+      this.config.schedule.recurrence === BackupScheduleRecurrence.DAILY ||
+      (this.config.schedule.recurrence ===
+        BackupScheduleRecurrence.CUSTOM_DAYS &&
+        this.config.schedule.days.length === 7)
+    ) {
+      scheduleText = this.hass.localize(
+        `ui.panel.config.backup.overview.settings.schedule_${!this.config.schedule.time ? "optimized_" : ""}daily`,
+        {
+          time,
+        }
+      );
+    } else if (
+      this.config.schedule.recurrence ===
+        BackupScheduleRecurrence.CUSTOM_DAYS &&
+      this.config.schedule.days.length !== 0
+    ) {
+      scheduleText = this.hass.localize(
+        `ui.panel.config.backup.overview.settings.schedule_${!this.config.schedule.time ? "optimized_" : ""}days`,
+        {
+          count: this.config.schedule.days.length,
+          days: this.config.schedule.days
+            .slice(0, -1)
+            .map((dayCode) => this.hass.localize(`ui.weekdays.${dayCode}`))
+            .join(", "),
+          last_day: this.hass.localize(
+            `ui.weekdays.${this.config.schedule.days[this.config.schedule.days.length - 1]}`
+          ),
+          time,
+        }
+      );
+    }
 
     let copiesText = this.hass.localize(
       `ui.panel.config.backup.overview.settings.schedule_copies_all`

@@ -21,7 +21,7 @@ import type {
   BackupMutableConfig,
 } from "../../../../data/backup";
 import {
-  BackupScheduleState,
+  BackupScheduleRecurrence,
   CLOUD_AGENT,
   CORE_LOCAL_AGENT,
   downloadEmergencyKit,
@@ -68,8 +68,9 @@ const RECOMMENDED_CONFIG: BackupConfig = {
     days: null,
   },
   schedule: {
-    state: BackupScheduleState.DAILY,
+    recurrence: BackupScheduleRecurrence.DAILY,
     time: null,
+    days: [],
   },
   last_attempted_automatic_backup: null,
   last_completed_automatic_backup: null,

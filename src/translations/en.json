@@ -1875,7 +1875,14 @@
       "thursday": "Thursday",
       "friday": "Friday",
       "saturday": "Saturday",
-      "sunday": "Sunday"
+      "sunday": "Sunday",
+      "mon": "[%key:ui::weekdays::monday%]",
+      "tue": "[%key:ui::weekdays::tuesday%]",
+      "wed": "[%key:ui::weekdays::wednesday%]",
+      "thu": "[%key:ui::weekdays::thursday%]",
+      "fri": "[%key:ui::weekdays::friday%]",
+      "sat": "[%key:ui::weekdays::saturday%]",
+      "sun": "[%key:ui::weekdays::sunday%]"
     },
     "errors": {
       "config": {
@@ -2408,9 +2415,9 @@
             "addons": "Add-ons"
           },
           "schedule": {
-            "use_automatic_backups": "Use automatic backups",
-            "day": "Day",
             "schedule": "Schedule",
+            "backup_every": "Backup every",
+            "custom_schedule": "Custom schedule",
             "time": "Time",
             "custom_time": "Custom time",
             "custom_time_label": "Backup at",
@@ -2420,14 +2427,9 @@
             "schedule_time_optimal_description": "By default Home Assistant picks the optimal time between {time_range_start} and {time_range_end}.",
             "tip": "You can create your own custom backup automation with the {backup_create} action",
             "schedule_options": {
+              "never": "Never",
               "daily": "Daily",
-              "mon": "Monday",
-              "tue": "Tuesday",
-              "wed": "Wednesday",
-              "thu": "Thursday",
-              "fri": "Friday",
-              "sat": "Saturday",
-              "sun": "Sunday"
+              "custom_days": "Custom days"
             },
             "time_options": {
               "default": "System optimal",
@@ -2520,6 +2522,10 @@
               }
             },
             "summary": {
+              "no_automatic_backup": "No automatic backups scheduled",
+              "next_automatic_backup": "Next automatic backup {day} at {time}",
+              "today": "today",
+              "tomorrow": "tomorrow",
               "next_backup_description": {
                 "daily": "Next automatic backup tomorrow at {time}",
                 "mon": "Next automatic backup next Monday at {time}",
@@ -2556,21 +2562,9 @@
               "schedule_copies_backups": "and keep {count} {count, plural,\n one {backup}\n other {backups}\n}",
               "schedule_copies_days": "and keep {count} {count, plural,\n one {day}\n other {days}\n}",
               "schedule_daily": "Daily at {time}",
-              "schedule_mon": "Weekly on Mondays at {time}",
-              "schedule_tue": "Weekly on Tuesdays at {time}",
-              "schedule_wed": "Weekly on Wednesdays at {time}",
-              "schedule_thu": "Weekly on Thursdays at {time}",
-              "schedule_fri": "Weekly on Fridays at {time}",
-              "schedule_sat": "Weekly on Saturdays at {time}",
-              "schedule_sun": "Weekly on Sundays at {time}",
+              "schedule_days": "Every {count, plural,\n one {{last_day}}\n other {{days} and {last_day}}\n} at {time}",
               "schedule_optimized_daily": "Daily",
-              "schedule_optimized_mon": "Weekly on Mondays",
-              "schedule_optimized_tue": "Weekly on Tuesdays",
-              "schedule_optimized_wed": "Weekly on Wednesdays",
-              "schedule_optimized_thu": "Weekly on Thursdays",
-              "schedule_optimized_fri": "Weekly on Fridays",
-              "schedule_optimized_sat": "Weekly on Saturdays",
-              "schedule_optimized_sun": "Weekly on Sundays",
+              "schedule_optimized_days": "Every {count, plural,\n one {{last_day}}\n other {{days} and {last_day}}\n}",
               "schedule_never": "Automatic backups are not scheduled",
               "data": "Home Assistant data that is included",
               "data_settings_history": "Settings and history",

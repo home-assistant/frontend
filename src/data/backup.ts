@@ -13,17 +13,23 @@ import { domainToName } from "./integration";
 import type { FrontendLocaleData } from "./translation";
 import checkValidDate from "../common/datetime/check_valid_date";
 
-export const enum BackupScheduleState {
+export const enum BackupScheduleRecurrence {
   NEVER = "never",
   DAILY = "daily",
-  MONDAY = "mon",
-  TUESDAY = "tue",
-  WEDNESDAY = "wed",
-  THURSDAY = "thu",
-  FRIDAY = "fri",
-  SATURDAY = "sat",
-  SUNDAY = "sun",
+  CUSTOM_DAYS = "custom_days",
 }
+
+export type BackupDay = "mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun";
+
+export const BACKUP_DAYS: BackupDay[] = [
+  "mon",
+  "tue",
+  "wed",
+  "thu",
+  "fri",
+  "sat",
+  "sun",
+];
 
 export interface BackupConfig {
   last_attempted_automatic_backup: string | null;
@@ -43,8 +49,9 @@ export interface BackupConfig {
     days?: number | null;
   };
   schedule: {
-    state: BackupScheduleState;
+    recurrence: BackupScheduleRecurrence;
     time?: string | null;
+    days: BackupDay[];
   };
 }
 
@@ -63,8 +70,9 @@ export interface BackupMutableConfig {
     days?: number | null;
   };
   schedule?: {
-    state: BackupScheduleState;
+    recurrence: BackupScheduleRecurrence;
     time?: string | null;
+    days?: BackupDay[] | null;
   };
 }
 
