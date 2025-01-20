@@ -296,8 +296,8 @@ export class SystemLogCard extends LitElement {
 
     .card-content {
       border-top: 1px solid var(--divider-color);
-      padding-top: 12px;
-      padding-bottom: 12px;
+      padding-top: 16px;
+      padding-bottom: 16px;
     }
 
     .row-secondary {
