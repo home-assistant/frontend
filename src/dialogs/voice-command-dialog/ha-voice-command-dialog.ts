@@ -320,7 +320,7 @@ export class HaVoiceCommandDialog extends LitElement {
           min-height: 399px;
         }
         ha-tip {
-          padding-bottom: 14px;
+          padding-bottom: 16px;
         }
       `,
     ];
