@@ -1,7 +1,6 @@
 import { mdiAlertOutline } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-md-dialog";
@@ -26,7 +25,14 @@ class DialogBox extends LitElement {
 
   @query("ha-md-dialog") private _dialog?: HaMdDialog;
 
+  private _closePromise?: Promise<void>;
+
+  private _closeResolve?: () => void;
+
   public async showDialog(params: DialogBoxParams): Promise<void> {
+    if (this._closePromise) {
+      await this._closePromise;
+    }
     this._params = params;
   }
 
@@ -110,9 +116,7 @@ class DialogBox extends LitElement {
             @click=${this._confirm}
             ?dialogInitialFocus=${!this._params.prompt &&
             !this._params.destructive}
-            class=${classMap({
-              destructive: this._params.destructive || false,
-            })}
+            ?destructive=${this._params.destructive}
           >
             ${this._params.confirmText
               ? this._params.confirmText
@@ -131,21 +135,24 @@ class DialogBox extends LitElement {
 
   private _dismiss(): void {
     this._closeState = "canceled";
-    this._closeDialog();
     this._cancel();
+    this._closeDialog();
   }
 
   private _confirm(): void {
     this._closeState = "confirmed";
-    this._closeDialog();
     if (this._params!.confirm) {
       this._params!.confirm(this._textField?.value);
     }
+    this._closeDialog();
   }
 
   private _closeDialog() {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
     this._dialog?.close();
+    this._closePromise = new Promise((resolve) => {
+      this._closeResolve = resolve;
+    });
   }
 
   private _dialogClosed() {
@@ -155,6 +162,8 @@ class DialogBox extends LitElement {
     }
     this._closeState = undefined;
     this._params = undefined;
+    this._closeResolve?.();
+    this._closeResolve = undefined;
   }
 
   static styles = css`
@@ -174,9 +183,6 @@ class DialogBox extends LitElement {
     }
     .secondary {
       color: var(--secondary-text-color);
-    }
-    .destructive {
-      --mdc-theme-primary: var(--error-color);
     }
     ha-textfield {
       width: 100%;

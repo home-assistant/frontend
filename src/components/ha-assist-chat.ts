@@ -483,11 +483,9 @@ export class HaAssistChat extends LitElement {
       flex: 1;
       display: flex;
       flex-direction: column;
-      min-height: var(--ha-assist-chat-min-height, 415px);
     }
     ha-textfield {
       display: block;
-      margin: 0 24px 16px;
     }
     .messages {
       flex: 1;
@@ -500,7 +498,7 @@ export class HaAssistChat extends LitElement {
       bottom: 0px;
       right: 0px;
       left: 0px;
-      padding: 24px;
+      padding: 0px 10px 16px;
       box-sizing: border-box;
       overflow-y: auto;
       max-height: 100%;
@@ -534,7 +532,7 @@ export class HaAssistChat extends LitElement {
       float: var(--float-end);
       text-align: right;
       border-bottom-right-radius: 0px;
-      background-color: var(--primary-color);
+      background-color: var(--chat-background-color-user, var(--primary-color));
       color: var(--text-primary-color);
       direction: var(--direction);
     }
@@ -545,7 +543,10 @@ export class HaAssistChat extends LitElement {
       margin-inline-start: initial;
       float: var(--float-start);
       border-bottom-left-radius: 0px;
-      background-color: var(--secondary-background-color);
+      background-color: var(
+        --chat-background-color-hass,
+        var(--secondary-background-color)
+      );
 
       color: var(--primary-text-color);
       direction: var(--direction);

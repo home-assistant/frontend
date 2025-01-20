@@ -323,18 +323,10 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       height: 100%;
       box-sizing: border-box;
     }
-
     hui-image.clickable {
       cursor: pointer;
     }
-
     .box {
-      /* start paper-font-common-nowrap style */
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      /* end paper-font-common-nowrap style */
-
       position: absolute;
       left: 0;
       right: 0;
@@ -344,27 +336,31 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
         rgba(0, 0, 0, 0.3)
       );
       padding: 4px 8px;
-      font-size: 16px;
-      line-height: 40px;
-      color: var(--ha-picture-card-text-color, white);
       display: flex;
       justify-content: space-between;
       flex-direction: row;
     }
-
     .box .title {
       font-weight: 500;
       margin-left: 8px;
       margin-inline-start: 8px;
       margin-inline-end: initial;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      font-size: 16px;
+      line-height: 40px;
+      color: var(--ha-picture-card-text-color, white);
+      align-self: center;
     }
-
+    ha-state-icon {
+      font-size: 0;
+    }
     ha-icon-button {
       --mdc-icon-button-size: 40px;
       --disabled-text-color: currentColor;
       color: var(--ha-picture-icon-button-color, #a9a9a9);
     }
-
     ha-icon-button.state-on {
       color: var(--ha-picture-icon-button-on-color, white);
     }
@@ -379,6 +375,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      color: var(--ha-picture-card-text-color, white);
     }
     .row {
       display: flex;

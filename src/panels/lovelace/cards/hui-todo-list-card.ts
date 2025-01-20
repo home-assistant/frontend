@@ -20,6 +20,7 @@ import memoizeOne from "memoize-one";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import "../../../components/ha-card";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-checkbox";
@@ -42,6 +43,7 @@ import {
   moveItem,
   subscribeItems,
   updateItem,
+  TodoSortMode,
 } from "../../../data/todo";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
@@ -123,16 +125,54 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     return undefined;
   }
 
-  private _getCheckedItems = memoizeOne((items?: TodoItem[]): TodoItem[] =>
-    items
-      ? items.filter((item) => item.status === TodoItemStatus.Completed)
-      : []
+  private _sortItems(items: TodoItem[], sort?: string) {
+    if (sort === TodoSortMode.ALPHA_ASC || sort === TodoSortMode.ALPHA_DESC) {
+      const sortOrder = sort === TodoSortMode.ALPHA_ASC ? 1 : -1;
+      return items.sort(
+        (a, b) =>
+          sortOrder *
+          caseInsensitiveStringCompare(
+            a.summary,
+            b.summary,
+            this.hass?.locale.language
+          )
+      );
+    }
+    if (
+      sort === TodoSortMode.DUEDATE_ASC ||
+      sort === TodoSortMode.DUEDATE_DESC
+    ) {
+      const sortOrder = sort === TodoSortMode.DUEDATE_ASC ? 1 : -1;
+      return items.sort((a, b) => {
+        const aDue = this._getDueDate(a) ?? Infinity;
+        const bDue = this._getDueDate(b) ?? Infinity;
+        if (aDue === bDue) {
+          return 0;
+        }
+        return aDue < bDue ? -sortOrder : sortOrder;
+      });
+    }
+    return items;
+  }
+
+  private _getCheckedItems = memoizeOne(
+    (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
+      items
+        ? this._sortItems(
+            items.filter((item) => item.status === TodoItemStatus.Completed),
+            sort
+          )
+        : []
   );
 
-  private _getUncheckedItems = memoizeOne((items?: TodoItem[]): TodoItem[] =>
-    items
-      ? items.filter((item) => item.status === TodoItemStatus.NeedsAction)
-      : []
+  private _getUncheckedItems = memoizeOne(
+    (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
+      items
+        ? this._sortItems(
+            items.filter((item) => item.status === TodoItemStatus.NeedsAction),
+            sort
+          )
+        : []
   );
 
   public willUpdate(
@@ -185,8 +225,14 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
     const unavailable = isUnavailableState(stateObj.state);
 
-    const checkedItems = this._getCheckedItems(this._items);
-    const uncheckedItems = this._getUncheckedItems(this._items);
+    const checkedItems = this._getCheckedItems(
+      this._items,
+      this._config.display_order
+    );
+    const uncheckedItems = this._getUncheckedItems(
+      this._items,
+      this._config.display_order
+    );
 
     return html`
       <ha-card
@@ -235,7 +281,9 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                         "ui.panel.lovelace.cards.todo-list.unchecked_items"
                       )}
                     </h2>
-                    ${this._todoListSupportsFeature(
+                    ${(!this._config.display_order ||
+                      this._config.display_order === TodoSortMode.NONE) &&
+                    this._todoListSupportsFeature(
                       TodoListEntityFeature.MOVE_TODO_ITEM
                     )
                       ? html`<ha-button-menu @closed=${stopPropagation}>
@@ -316,6 +364,14 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     `;
   }
 
+  private _getDueDate(item: TodoItem): Date | undefined {
+    return item.due
+      ? item.due.includes("T")
+        ? new Date(item.due)
+        : endOfDay(new Date(`${item.due}T00:00:00`))
+      : undefined;
+  }
+
   private _renderItems(items: TodoItem[], unavailable = false) {
     return html`
       ${repeat(
@@ -331,11 +387,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
             );
           const showReorder =
             item.status !== TodoItemStatus.Completed && this._reordering;
-          const due = item.due
-            ? item.due.includes("T")
-              ? new Date(item.due)
-              : endOfDay(new Date(`${item.due}T00:00:00`))
-            : undefined;
+          const due = this._getDueDate(item);
           const today =
             due && !item.due!.includes("T") && isSameDay(new Date(), due);
           return html`

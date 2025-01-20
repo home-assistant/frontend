@@ -29,6 +29,7 @@ import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import type { VoiceCommandDialogParams } from "./show-ha-voice-command-dialog";
+import "../../components/ha-tip";
 
 @customElement("ha-voice-command-dialog")
 export class HaVoiceCommandDialog extends LitElement {
@@ -51,6 +52,8 @@ export class HaVoiceCommandDialog extends LitElement {
 
   @state() private _errorLoadAssist?: "not_found" | "unknown";
 
+  @state() private _hint?: string;
+
   private _startListening = false;
 
   public async showDialog(
@@ -68,6 +71,7 @@ export class HaVoiceCommandDialog extends LitElement {
 
     this._startListening = params.start_listening;
     this._opened = true;
+    this._hint = params.hint;
   }
 
   public async closeDialog(): Promise<void> {
@@ -185,6 +189,9 @@ export class HaVoiceCommandDialog extends LitElement {
                   size="large"
                 ></ha-circular-progress>
               </div>`}
+        ${this._hint
+          ? html`<ha-tip .hass=${this.hass}>${this._hint}</ha-tip>`
+          : nothing}
       </ha-dialog>
     `;
   }
@@ -247,7 +254,7 @@ export class HaVoiceCommandDialog extends LitElement {
       css`
         ha-dialog {
           --mdc-dialog-max-width: 500px;
-          --mdc-dialog-max-height: 500px;
+          --mdc-dialog-max-height: 550px;
           --dialog-content-padding: 0;
         }
         ha-dialog-header a {
@@ -307,6 +314,13 @@ export class HaVoiceCommandDialog extends LitElement {
         .pipelines-loading {
           display: flex;
           justify-content: center;
+        }
+        ha-assist-chat {
+          margin: 0 24px 16px;
+          min-height: 399px;
+        }
+        ha-tip {
+          padding-bottom: 16px;
         }
       `,
     ];
