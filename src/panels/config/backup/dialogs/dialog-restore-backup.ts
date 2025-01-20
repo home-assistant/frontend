@@ -222,7 +222,7 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
       <ha-button @click=${this.closeDialog}>
         ${this.hass.localize("ui.common.cancel")}
       </ha-button>
-      <ha-button @click=${this._restoreBackup} class="destructive">
+      <ha-button @click=${this._restoreBackup} destructive>
         ${this.hass.localize(
           "ui.panel.config.backup.dialogs.restore.actions.restore"
         )}
@@ -349,9 +349,6 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
         }
         .content p {
           margin: 0 0 16px;
-        }
-        .destructive {
-          --mdc-theme-primary: var(--error-color);
         }
         .centered {
           display: flex;
