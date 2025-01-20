@@ -625,7 +625,7 @@ class HaPanelHistory extends LitElement {
 
         .content {
           padding: 0 16px 16px;
-          padding-bottom: max(env(safe-area-inset-bottom), 16px);
+          padding-bottom: max(var(--safe-area-bottom), 16px);
         }
 
         :host([virtualize]) {

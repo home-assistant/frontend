@@ -792,10 +792,10 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
 
         ha-dialog {
           --mdc-dialog-min-width: calc(
-            100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
+            100vw - var(--safe-area-right) - var(--safe-area-left)
           );
           --mdc-dialog-max-width: calc(
-            100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
+            100vw - var(--safe-area-right) - var(--safe-area-left)
           );
           --mdc-dialog-min-height: 100%;
           --mdc-dialog-max-height: 100%;
