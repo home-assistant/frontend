@@ -132,9 +132,9 @@ class HassioDashboard extends LitElement {
         }
         ha-fab.non-tabs {
           position: fixed;
-          right: calc(16px + env(safe-area-inset-right));
-          bottom: calc(16px + env(safe-area-inset-bottom));
-          inset-inline-end: calc(16px + env(safe-area-inset-right));
+          right: calc(16px + var(--safe-area-inset-right));
+          bottom: calc(16px + var(--safe-area-inset-bottom));
+          inset-inline-end: calc(16px + var(--safe-area-inset-right));
           inset-inline-start: initial;
           z-index: 1;
         }
