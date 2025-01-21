@@ -156,9 +156,11 @@ export class HuiCardPicker extends LitElement {
         })}
       >
         ${this._filter
-          ? this._filterCards(this._cards, this._filter).map(
-              (cardElement: CardElement) => cardElement.element
-            )
+          ? html` <div class="cards-container">
+              ${this._filterCards(this._cards, this._filter).map(
+                (cardElement: CardElement) => cardElement.element
+              )}
+            </div>`
           : html`
               <div class="cards-container">
                 ${suggestedCards.length > 0
