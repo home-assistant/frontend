@@ -2,7 +2,8 @@ import type { HassConfig } from "home-assistant-js-websocket";
 import type { XAXisOption } from "echarts/types/dist/shared";
 import type { FrontendLocaleData } from "../../data/translation";
 import {
-  formatDateMonthYearShort,
+  formatDateMonth,
+  formatDateMonthYear,
   formatDateVeryShort,
   formatDateWeekdayShort,
 } from "../../common/datetime/format_date";
@@ -15,19 +16,21 @@ export function getLabelFormatter(
 ) {
   return (value: number | Date) => {
     const date = new Date(value);
+    if (dayDifference > 88) {
+      return date.getMonth() === 0
+        ? `{bold|${formatDateMonthYear(date, locale, config)}}`
+        : formatDateMonth(date, locale, config);
+    }
     if (dayDifference > 35) {
-      // month year
       return date.getDate() === 1
-        ? `{bold|${formatDateMonthYearShort(date, locale, config)}}`
+        ? `{bold|${formatDateVeryShort(date, locale, config)}}`
         : formatDateVeryShort(date, locale, config);
     }
     if (dayDifference > 7) {
-      // date
       const label = formatDateVeryShort(date, locale, config);
       return date.getDate() === 1 ? `{bold|${label}}` : label;
     }
     if (dayDifference > 2) {
-      // weekday
       return formatDateWeekdayShort(date, locale, config);
     }
     // show only date for the beginning of the day

@@ -184,11 +184,11 @@ function formatTooltip(
     })
     .filter(Boolean);
   let footer = "";
-  if (sumPositive > 0 && countPositive > 1 && formatTotal) {
-    footer = `<br><b>${formatTotal(sumPositive)}</b>`;
+  if (sumPositive !== 0 && countPositive > 1 && formatTotal) {
+    footer += `<br><b>${formatTotal(sumPositive)}</b>`;
   }
-  if (sumNegative > 0 && countNegative > 1 && formatTotal) {
-    footer = `<br><b>${formatTotal(sumNegative)}</b>`;
+  if (sumNegative !== 0 && countNegative > 1 && formatTotal) {
+    footer += `<br><b>${formatTotal(sumNegative)}</b>`;
   }
   return values.length > 0 ? `${title}${values.join("<br>")}${footer}` : "";
 }
