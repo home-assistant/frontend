@@ -152,8 +152,12 @@ export const updateBackupConfig = (
   config: BackupMutableConfig
 ) => hass.callWS({ type: "backup/config/update", ...config });
 
-export const getBackupDownloadUrl = (id: string, agentId: string) =>
-  `/api/backup/download/${id}?agent_id=${agentId}`;
+export const getBackupDownloadUrl = (
+  id: string,
+  agentId: string,
+  password?: string | null
+) =>
+  `/api/backup/download/${id}?agent_id=${agentId}${password ? `&password=${password}` : ""}`;
 
 export const fetchBackupInfo = (hass: HomeAssistant): Promise<BackupInfo> =>
   hass.callWS({
@@ -245,6 +249,19 @@ export const getPreferredAgentForDownload = (agents: string[]) => {
 
   return agents[0];
 };
+
+export const canDecryptBackupOnDownload = (
+  hass: HomeAssistant,
+  backup_id: string,
+  agent_id: string,
+  password: string
+) =>
+  hass.callWS({
+    type: "backup/can_decrypt_on_download",
+    backup_id,
+    agent_id,
+    password,
+  });
 
 export const CORE_LOCAL_AGENT = "backup.local";
 export const HASSIO_LOCAL_AGENT = "hassio.local";

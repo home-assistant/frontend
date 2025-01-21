@@ -33,15 +33,12 @@ import "../../../components/ha-icon-next";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
-import { getSignedPath } from "../../../data/auth";
 import type { BackupConfig, BackupContent } from "../../../data/backup";
 import {
   computeBackupAgentName,
   deleteBackup,
   generateBackup,
   generateBackupWithAutomaticSettings,
-  getBackupDownloadUrl,
-  getPreferredAgentForDownload,
   isLocalAgent,
   isNetworkMountAgent,
 } from "../../../data/backup";
@@ -60,10 +57,10 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { bytesToString } from "../../../util/bytes-to-string";
-import { fileDownload } from "../../../util/file_download";
 import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
 import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
+import { downloadBackup } from "./helper/download_backup";
 
 interface BackupRow extends DataTableRowData, BackupContent {
   formatted_type: string;
@@ -487,12 +484,12 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   }
 
   private async _downloadBackup(backup: BackupContent): Promise<void> {
-    const preferedAgent = getPreferredAgentForDownload(backup!.agent_ids!);
-    const signedUrl = await getSignedPath(
+    downloadBackup(
       this.hass,
-      getBackupDownloadUrl(backup.backup_id, preferedAgent)
+      this,
+      backup,
+      this.config?.create_backup.password
     );
-    fileDownload(signedUrl.path);
   }
 
   private async _deleteBackup(backup: BackupContent): Promise<void> {
