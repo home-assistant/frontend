@@ -6,6 +6,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { SeriesOption } from "echarts/types/dist/shared";
+import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { round } from "../../../common/number/round";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
@@ -385,16 +386,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                   <div class="card-content">
                     <ha-chart-base
                       .hass=${this.hass}
-                      .data=${[
-                        {
-                          ...DATA_SET_CONFIG,
-                          id: "cpu",
-                          name: this.hass.localize(
-                            "ui.panel.config.hardware.processor"
-                          ),
-                          data: this._cpuEntries,
-                        } as SeriesOption,
-                      ]}
+                      .data=${this._getChartData(this._cpuEntries)}
                       .options=${this._chartOptions}
                     ></ha-chart-base>
                   </div>
@@ -419,16 +411,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                   <div class="card-content">
                     <ha-chart-base
                       .hass=${this.hass}
-                      .data=${[
-                        {
-                          ...DATA_SET_CONFIG,
-                          id: "memory",
-                          name: this.hass.localize(
-                            "ui.panel.config.hardware.memory"
-                          ),
-                          data: this._memoryEntries,
-                        } as SeriesOption,
-                      ]}
+                      .data=${this._getChartData(this._memoryEntries)}
                       .options=${this._chartOptions}
                     ></ha-chart-base>
                   </div>
@@ -483,6 +466,20 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
   private async _showRestartDialog() {
     showRestartDialog(this);
   }
+
+  private _getChartData = memoizeOne(
+    (entries: [number, number | null][]): SeriesOption[] => [
+      {
+        ...DATA_SET_CONFIG,
+        id: entries === this._cpuEntries ? "cpu" : "memory",
+        name:
+          entries === this._cpuEntries
+            ? this.hass.localize("ui.panel.config.hardware.processor")
+            : this.hass.localize("ui.panel.config.hardware.memory"),
+        data: entries,
+      } as SeriesOption,
+    ]
+  );
 
   static styles = [
     haStyle,
