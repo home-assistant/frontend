@@ -527,7 +527,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           { number: scripts.length }
         )}
         has-filters
-        .initialGroupColumn=${this._activeGrouping || "category"}
+        .initialGroupColumn=${this._activeGrouping ?? "category"}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._activeSorting}
         .columnOrder=${this._activeColumnOrder}
@@ -1253,7 +1253,7 @@ ${rejected
   }
 
   private _handleGroupingChanged(ev: CustomEvent) {
-    this._activeGrouping = ev.detail.value;
+    this._activeGrouping = ev.detail.value ?? "";
   }
 
   private _handleCollapseChanged(ev: CustomEvent) {
