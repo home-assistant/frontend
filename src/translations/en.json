@@ -2401,7 +2401,8 @@
             "media": "Media",
             "share_folder": "Share folder",
             "local_addons": "Local add-ons folder",
-            "addons": "Add-ons"
+            "addons": "Add-ons",
+            "ssl": "SSL certificates"
           },
           "schedule": {
             "use_automatic_backups": "Use automatic backups",
