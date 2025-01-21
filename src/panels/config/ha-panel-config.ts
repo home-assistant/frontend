@@ -549,7 +549,7 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
           ),
       },
       bluetooth: {
-        tag: "bluetooth-device-page",
+        tag: "bluetooth-config-panel",
         load: () =>
           import(
             "./integrations/integration-panels/bluetooth/bluetooth-config-panel"
