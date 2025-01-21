@@ -167,7 +167,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       return html`<onboarding-welcome
         .localize=${this.localize}
         .language=${this.language}
-        .supervisor=${this._supervisor}
+        ?supervisor=${this._supervisor}
       ></onboarding-welcome>`;
     }
 
@@ -179,7 +179,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     if (step.step === "user") {
       return html`<onboarding-create-user
         .localize=${this.localize}
-        .language=${this.language}
+        .language=${this.language ?? ""}
       >
       </onboarding-create-user>`;
     }
