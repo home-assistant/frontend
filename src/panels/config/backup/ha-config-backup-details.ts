@@ -20,15 +20,16 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
-import { getSignedPath } from "../../../data/auth";
-import type { BackupContentExtended, BackupData } from "../../../data/backup";
+import type {
+  BackupConfig,
+  BackupContentExtended,
+  BackupData,
+} from "../../../data/backup";
 import {
   compareAgents,
   computeBackupAgentName,
   deleteBackup,
   fetchBackupDetails,
-  getBackupDownloadUrl,
-  getPreferredAgentForDownload,
   isLocalAgent,
   isNetworkMountAgent,
 } from "../../../data/backup";
@@ -37,11 +38,11 @@ import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { bytesToString } from "../../../util/bytes-to-string";
-import { fileDownload } from "../../../util/file_download";
-import { showConfirmationDialog } from "../../lovelace/custom-card-helpers";
 import "./components/ha-backup-data-picker";
 import { showRestoreBackupDialog } from "./dialogs/show-dialog-restore-backup";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import { downloadBackup } from "./helper/download_backup";
 
 interface Agent {
   id: string;
@@ -66,6 +67,8 @@ class HaConfigBackupDetails extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: "backup-id" }) public backupId!: string;
+
+  @property({ attribute: false }) public config?: BackupConfig;
 
   @state() private _backup?: BackupContentExtended | null;
 
@@ -377,13 +380,13 @@ class HaConfigBackupDetails extends LitElement {
   }
 
   private async _downloadBackup(agentId?: string): Promise<void> {
-    const preferedAgent =
-      agentId ?? getPreferredAgentForDownload(this._backup!.agent_ids!);
-    const signedUrl = await getSignedPath(
+    await downloadBackup(
       this.hass,
-      getBackupDownloadUrl(this._backup!.backup_id, preferedAgent)
+      this,
+      this._backup!,
+      this.config?.create_backup.password,
+      agentId
     );
-    fileDownload(signedUrl.path);
   }
 
   private async _deleteBackup(): Promise<void> {
