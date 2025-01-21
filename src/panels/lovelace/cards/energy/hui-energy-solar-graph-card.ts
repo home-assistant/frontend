@@ -42,7 +42,7 @@ export class HuiEnergySolarGraphCard
 
   @state() private _config?: EnergySolarGraphCardConfig;
 
-  @state() private _chartData: ECOption["series"] = [];
+  @state() private _chartData: ECOption["series"][] = [];
 
   @state() private _start = startOfToday();
 
