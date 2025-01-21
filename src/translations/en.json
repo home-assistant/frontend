@@ -2378,7 +2378,7 @@
             },
             "download": {
               "decryption_unsupported_title": "Decryption unsupported",
-              "decryption_unsupported": "Decryption is not supported for this backup. The backup will be encrypted downloaded and can't be opened. To restore it, you will need the encryption key.",
+              "decryption_unsupported": "Decryption is not supported for this backup. The downloaded backup will remain encrypted and can't be opened. To restore it, you will need the encryption key.",
               "incorrect_entered_encryption_key": "The entered encryption key was incorrect, try again or download the encrypted backup. The encrypted backup can't be opened. To restore it, you will need the encryption key.",
               "download_encrypted": "Download encrypted",
               "incorrect_current_encryption_key": "This backup is encrypted with a different encryption key than the current one, please enter the encryption key of this backup.",
