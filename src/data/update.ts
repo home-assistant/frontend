@@ -207,32 +207,31 @@ export const computeUpdateStateDisplay = (
   return hass.formatEntityState(stateObj);
 };
 
-export const isAddonUpdate = (
-  stateObj: UpdateEntity,
-  entitySources: EntitySources
-): boolean => {
-  const entity_id = stateObj.entity_id;
-  const domain = entitySources[entity_id]?.domain;
-  if (domain !== "hassio") {
-    return false;
-  }
-  const title = stateObj.attributes.title || "";
-  return ![
-    HOME_ASSISTANT_CORE_TITLE,
-    HOME_ASSISTANT_SUPERVISOR_TITLE,
-    HOME_ASSISTANT_OS_TITLE,
-  ].includes(title);
-};
+type UpdateType = "addon" | "home_assistant" | "generic";
 
-export const isHomeAssistantUpdate = (
+export const getUpdateType = (
   stateObj: UpdateEntity,
   entitySources: EntitySources
-): boolean => {
+): UpdateType => {
   const entity_id = stateObj.entity_id;
   const domain = entitySources[entity_id]?.domain;
   if (domain !== "hassio") {
-    return false;
+    return "generic";
   }
+
   const title = stateObj.attributes.title || "";
-  return title === HOME_ASSISTANT_CORE_TITLE;
+  if (title === HOME_ASSISTANT_CORE_TITLE) {
+    return "home_assistant";
+  }
+
+  if (
+    ![
+      HOME_ASSISTANT_CORE_TITLE,
+      HOME_ASSISTANT_SUPERVISOR_TITLE,
+      HOME_ASSISTANT_OS_TITLE,
+    ].includes(title)
+  ) {
+    return "addon";
+  }
+  return "generic";
 };

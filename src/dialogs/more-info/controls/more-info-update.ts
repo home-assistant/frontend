@@ -22,8 +22,7 @@ import type { EntitySources } from "../../../data/entity_sources";
 import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
 import type { UpdateEntity } from "../../../data/update";
 import {
-  isAddonUpdate,
-  isHomeAssistantUpdate,
+  getUpdateType,
   UpdateEntityFeature,
   updateIsInstalling,
   updateReleaseNotes,
@@ -66,11 +65,12 @@ class MoreInfoUpdate extends LitElement {
       return undefined;
     }
 
+    const updateType = this._entitySources
+      ? getUpdateType(this.stateObj, this._entitySources)
+      : "generic";
+
     // Automatic or manual for Home Assistant update
-    if (
-      this._entitySources &&
-      isHomeAssistantUpdate(this.stateObj, this._entitySources)
-    ) {
+    if (updateType === "home_assistant") {
       const isBackupConfigValid =
         !!this._backupConfig &&
         !!this._backupConfig.create_backup.password &&
@@ -116,10 +116,7 @@ class MoreInfoUpdate extends LitElement {
     }
 
     // Addon backup
-    if (
-      this._entitySources &&
-      isAddonUpdate(this.stateObj, this._entitySources)
-    ) {
+    if (updateType === "addon") {
       const version = this.stateObj.attributes.installed_version;
       return {
         title: this.hass.localize(
@@ -320,7 +317,8 @@ class MoreInfoUpdate extends LitElement {
     }
     if (supportsFeature(this.stateObj!, UpdateEntityFeature.BACKUP)) {
       this._fetchEntitySources().then(() => {
-        if (isHomeAssistantUpdate(this.stateObj!, this._entitySources!)) {
+        const type = getUpdateType(this.stateObj!, this._entitySources!);
+        if (type === "home_assistant") {
           this._fetchBackupConfig();
         }
       });
