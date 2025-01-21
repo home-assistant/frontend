@@ -22,8 +22,6 @@ import {
 } from "../../data/recorder";
 import type { HomeAssistant } from "../../types";
 import "./ha-chart-base";
-import { formatTime } from "../../common/datetime/format_time";
-import { formatDateVeryShort } from "../../common/datetime/format_date";
 import { computeRTL } from "../../common/util/compute_rtl";
 import type { ECOption } from "../../resources/echarts";
 import {
@@ -31,6 +29,7 @@ import {
   getNumberFormatOptions,
 } from "../../common/number/format_number";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
+import { getTimeAxisLabelConfig } from "./axis-label";
 
 export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
   mean: "mean",
@@ -82,6 +81,9 @@ export class StatisticsChart extends LitElement {
   public clickForMoreInfo = true;
 
   @property() public period?: string;
+
+  @property({ attribute: "days-to-show", type: Number })
+  public daysToShow?: number;
 
   @state() private _chartData: (LineSeriesOption | BarSeriesOption)[] = [];
 
@@ -186,29 +188,15 @@ export class StatisticsChart extends LitElement {
 
   private _createOptions() {
     const splitLineStyle = this.hass.themes?.darkMode ? { opacity: 0.15 } : {};
+    const dayDifference = this.daysToShow ?? 1;
     this._chartOptions = {
       xAxis: {
         type: "time",
-        axisLabel: {
-          formatter: (value: number) => {
-            const date = new Date(value);
-            // show only date for the beginning of the day
-            if (
-              date.getHours() === 0 &&
-              date.getMinutes() === 0 &&
-              date.getSeconds() === 0
-            ) {
-              return `{day|${formatDateVeryShort(date, this.hass.locale, this.hass.config)}}`;
-            }
-            return formatTime(date, this.hass.locale, this.hass.config);
-          },
-          rich: {
-            day: {
-              fontWeight: "bold",
-            },
-          },
-          hideOverlap: true,
-        },
+        axisLabel: getTimeAxisLabelConfig(
+          this.hass.locale,
+          this.hass.config,
+          dayDifference
+        ),
         axisLine: {
           show: false,
         },
@@ -216,6 +204,12 @@ export class StatisticsChart extends LitElement {
           show: true,
           lineStyle: splitLineStyle,
         },
+        minInterval:
+          dayDifference >= 89 // quarter
+            ? 28 * 3600 * 24 * 1000
+            : dayDifference > 2
+              ? 3600 * 24 * 1000
+              : undefined,
       },
       yAxis: {
         type: this.logarithmicScale ? "log" : "value",
@@ -253,22 +247,7 @@ export class StatisticsChart extends LitElement {
       //     ticks: {
       //       source: this.chartType === "bar" ? "data" : undefined,
       //     },
-      //     time: {
-      //       tooltipFormat: "datetime",
-      //       unit:
-      //         this.chartType === "bar" &&
-      //         this.period &&
-      //         ["hour", "day", "week", "month"].includes(this.period)
-      //           ? this.period
-      //           : undefined,
-      //     },
       //   },
-      //   y: {
-      //     beginAtZero: this.chartType === "bar",
-      //   },
-      // },
-      // elements: {
-      //   bar: { borderWidth: 1.5, borderRadius: 4 },
       // },
     };
   }

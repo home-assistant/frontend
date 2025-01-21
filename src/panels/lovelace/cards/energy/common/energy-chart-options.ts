@@ -10,6 +10,7 @@ import { formatNumber } from "../../../../../common/number/format_number";
 import { formatDateVeryShort } from "../../../../../common/datetime/format_date";
 import { formatTime } from "../../../../../common/datetime/format_time";
 import type { ECOption } from "../../../../../resources/echarts";
+import { getTimeAxisLabelConfig } from "../../../../../components/chart/axis-label";
 
 export function getSuggestedMax(dayDifference: number, end: Date): number {
   let suggestedMax = new Date(end);
@@ -57,26 +58,7 @@ export function getCommonOptions(
       type: "time",
       min: start.getTime(),
       max: getSuggestedMax(dayDifference, end),
-      axisLabel: {
-        formatter: (value: number) => {
-          const date = new Date(value);
-          // show only date for the beginning of the day
-          if (
-            date.getHours() === 0 &&
-            date.getMinutes() === 0 &&
-            date.getSeconds() === 0
-          ) {
-            return `{day|${formatDateVeryShort(date, locale, config)}}`;
-          }
-          return formatTime(date, locale, config);
-        },
-        rich: {
-          day: {
-            fontWeight: "bold",
-          },
-        },
-        hideOverlap: true,
-      },
+      axisLabel: getTimeAxisLabelConfig(locale, config, dayDifference),
       axisLine: {
         show: false,
       },
@@ -84,6 +66,12 @@ export function getCommonOptions(
         show: true,
         lineStyle: splitLineStyle,
       },
+      minInterval:
+        dayDifference >= 89 // quarter
+          ? 28 * 3600 * 24 * 1000
+          : dayDifference > 2
+            ? 3600 * 24 * 1000
+            : undefined,
     },
     yAxis: {
       type: "value",
@@ -139,23 +127,6 @@ export function getCommonOptions(
         );
       },
     },
-    // scales: {
-    //   x: {
-    //     time: {
-    //       tooltipFormat:
-    //         dayDifference > 35
-    //           ? "monthyear"
-    //           : dayDifference > 7
-    //             ? "date"
-    //             : dayDifference > 2
-    //               ? "weekday"
-    //               : dayDifference > 0
-    //                 ? "datetime"
-    //                 : "hour",
-    //       minUnit: getSuggestedPeriod(dayDifference),
-    //     },
-    //   },
-    // },
   };
   return options;
 }

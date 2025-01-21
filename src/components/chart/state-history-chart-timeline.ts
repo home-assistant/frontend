@@ -7,6 +7,7 @@ import type {
   TooltipFormatterCallback,
   TooltipPositionCallbackParams,
 } from "echarts/types/dist/shared";
+import { differenceInDays } from "date-fns";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import millisecondsToDuration from "../../common/datetime/milliseconds_to_duration";
 import { computeRTL } from "../../common/util/compute_rtl";
@@ -16,12 +17,11 @@ import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
 import { computeTimelineColor } from "./timeline-color";
 import type { ECOption } from "../../resources/echarts";
 import echarts from "../../resources/echarts";
-import { formatDateVeryShort } from "../../common/datetime/format_date";
-import { formatTime } from "../../common/datetime/format_time";
 import { luminosity } from "../../common/color/rgb";
 import { hex2rgb } from "../../common/color/convert-color";
 import { measureTextWidth } from "../../util/text";
 import { fireEvent } from "../../common/dom/fire_event";
+import { getTimeAxisLabelConfig } from "./axis-label";
 
 @customElement("state-history-chart-timeline")
 export class StateHistoryChartTimeline extends LitElement {
@@ -185,31 +185,23 @@ export class StateHistoryChartTimeline extends LitElement {
     const labelWidth = Math.max(narrow ? 70 : 170, this.paddingYAxis);
     const showNames = this.chunked || this.showNames;
     const rtl = computeRTL(this.hass);
+    const dayDifference = differenceInDays(this.endTime, this.startTime);
     this._chartOptions = {
       xAxis: {
         type: "time",
         min: this.startTime,
         max: this.endTime,
-        axisLabel: {
-          formatter: (value: number) => {
-            const date = new Date(value);
-            // show only date for the beginning of the day
-            if (
-              date.getHours() === 0 &&
-              date.getMinutes() === 0 &&
-              date.getSeconds() === 0
-            ) {
-              return `{day|${formatDateVeryShort(date, this.hass.locale, this.hass.config)}}`;
-            }
-            return formatTime(date, this.hass.locale, this.hass.config);
-          },
-          rich: {
-            day: {
-              fontWeight: "bold",
-            },
-          },
-          hideOverlap: true,
-        },
+        axisLabel: getTimeAxisLabelConfig(
+          this.hass.locale,
+          this.hass.config,
+          dayDifference
+        ),
+        minInterval:
+          dayDifference >= 89 // quarter
+            ? 28 * 3600 * 24 * 1000
+            : dayDifference > 2
+              ? 3600 * 24 * 1000
+              : undefined,
       },
       yAxis: {
         type: "category",

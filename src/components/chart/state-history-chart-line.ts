@@ -4,6 +4,7 @@ import { property, state } from "lit/decorators";
 import type { VisualMapComponentOption } from "echarts/components";
 import type { LineSeriesOption } from "echarts/charts";
 import type { YAXisOption } from "echarts/types/dist/shared";
+import { differenceInDays } from "date-fns";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { computeRTL } from "../../common/util/compute_rtl";
 
@@ -16,7 +17,7 @@ import {
   getNumberFormatOptions,
   formatNumber,
 } from "../../common/number/format_number";
-import { getLabelFormatter } from "./chart-label";
+import { getTimeAxisLabelConfig } from "./axis-label";
 import { measureTextWidth } from "../../util/text";
 import { fireEvent } from "../../common/dom/fire_event";
 
@@ -148,6 +149,7 @@ export class StateHistoryChartLine extends LitElement {
       changedProps.has("_chartData") ||
       changedProps.has("paddingYAxis")
     ) {
+      const dayDifference = differenceInDays(this.endTime, this.startTime);
       const rtl = computeRTL(this.hass);
       const splitLineStyle = this.hass.themes?.darkMode
         ? { opacity: 0.15 }
@@ -157,15 +159,11 @@ export class StateHistoryChartLine extends LitElement {
           type: "time",
           min: this.startTime,
           max: this.endTime,
-          axisLabel: {
-            formatter: getLabelFormatter(this.hass.locale, this.hass.config),
-            rich: {
-              day: {
-                fontWeight: "bold",
-              },
-            },
-            hideOverlap: true,
-          },
+          axisLabel: getTimeAxisLabelConfig(
+            this.hass.locale,
+            this.hass.config,
+            dayDifference
+          ),
           axisLine: {
             show: false,
           },
@@ -173,6 +171,12 @@ export class StateHistoryChartLine extends LitElement {
             show: true,
             lineStyle: splitLineStyle,
           },
+          minInterval:
+            dayDifference >= 89 // quarter
+              ? 28 * 3600 * 24 * 1000
+              : dayDifference > 2
+                ? 3600 * 24 * 1000
+                : undefined,
         },
         yAxis: {
           type: this.logarithmicScale ? "log" : "value",
