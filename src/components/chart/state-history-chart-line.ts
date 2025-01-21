@@ -164,6 +164,7 @@ export class StateHistoryChartLine extends LitElement {
                 fontWeight: "bold",
               },
             },
+            hideOverlap: true,
           },
           axisLine: {
             show: false,

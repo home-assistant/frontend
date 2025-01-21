@@ -182,12 +182,8 @@ export class StateHistoryChartTimeline extends LitElement {
 
   private _createOptions() {
     const narrow = this.narrow;
-    const labelWidth = narrow ? 105 : 185;
+    const labelWidth = Math.max(narrow ? 70 : 170, this.paddingYAxis);
     const showNames = this.chunked || this.showNames;
-    const labelPadding = Math.max(
-      showNames ? labelWidth : 1,
-      this.paddingYAxis
-    );
     const rtl = computeRTL(this.hass);
     this._chartOptions = {
       xAxis: {
@@ -212,6 +208,7 @@ export class StateHistoryChartTimeline extends LitElement {
               fontWeight: "bold",
             },
           },
+          hideOverlap: true,
         },
       },
       yAxis: {
@@ -240,13 +237,14 @@ export class StateHistoryChartTimeline extends LitElement {
             }
             return label;
           },
+          hideOverlap: true,
         },
       },
       grid: {
         top: 10,
         bottom: 30,
-        left: rtl ? 1 : labelPadding,
-        right: rtl ? labelPadding : 1,
+        left: rtl ? 1 : labelWidth,
+        right: rtl ? labelWidth : 1,
       },
       tooltip: {
         appendTo: document.body,

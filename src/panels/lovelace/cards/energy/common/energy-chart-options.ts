@@ -75,6 +75,7 @@ export function getCommonOptions(
             fontWeight: "bold",
           },
         },
+        hideOverlap: true,
       },
       axisLine: {
         show: false,
