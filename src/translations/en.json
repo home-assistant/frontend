@@ -5266,6 +5266,18 @@
           "qos": "QoS",
           "retain": "Retain"
         },
+        "bluetooth": {
+          "title": "Bluetooth",
+          "address": "Address",
+          "name": "Name",
+          "source": "Source",
+          "rssi": "RSSI",
+          "device_information": "Device information",
+          "advertisement_data": "Advertisement data",
+          "manufacturer_data": "Manufacturer data",
+          "service_data": "Service data",
+          "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
+        },
         "thread": {
           "other_networks": "Other networks",
           "my_network": "Preferred network",
