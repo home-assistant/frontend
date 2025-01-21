@@ -2187,7 +2187,11 @@
             "aliases_section": "Aliases",
             "no_aliases": "No configured aliases",
             "configured_aliases": "{count} configured {count, plural,\n  one {alias}\n  other {aliases}\n}",
-            "aliases_description": "Aliases are alternative names used in voice assistants to refer to this area."
+            "aliases_description": "Aliases are alternative names used in voice assistants to refer to this area.",
+            "temperature_entity": "Temperature sensor",
+            "temperature_entity_description": "Sensor that represents the area temperature.",
+            "humidity_entity": "Humidity sensor",
+            "humidity_entity_description": "Sensor that represents the area humidity."
           },
           "delete": {
             "confirmation_title": "Delete {name}?",
