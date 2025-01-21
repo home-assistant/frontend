@@ -1875,14 +1875,7 @@
       "thursday": "Thursday",
       "friday": "Friday",
       "saturday": "Saturday",
-      "sunday": "Sunday",
-      "mon": "[%key:ui::weekdays::monday%]",
-      "tue": "[%key:ui::weekdays::tuesday%]",
-      "wed": "[%key:ui::weekdays::wednesday%]",
-      "thu": "[%key:ui::weekdays::thursday%]",
-      "fri": "[%key:ui::weekdays::friday%]",
-      "sat": "[%key:ui::weekdays::saturday%]",
-      "sun": "[%key:ui::weekdays::sunday%]"
+      "sunday": "Sunday"
     },
     "errors": {
       "config": {
@@ -2526,17 +2519,6 @@
               "next_automatic_backup": "Next automatic backup {day} at {time}",
               "today": "today",
               "tomorrow": "tomorrow",
-              "next_backup_description": {
-                "daily": "Next automatic backup tomorrow at {time}",
-                "mon": "Next automatic backup next Monday at {time}",
-                "tue": "Next automatic backup next Tuesday at {time}",
-                "wed": "Next automatic backup next Wednesday at {time}",
-                "thu": "Next automatic backup next Thursday at {time}",
-                "fri": "Next automatic backup next Friday at {time}",
-                "sat": "Next automatic backup next Saturday at {time}",
-                "sun": "Next automatic backup next Sunday at {time}",
-                "never": "No automatic backups scheduled"
-              },
               "loading": "Loading backups...",
               "last_backup_failed_heading": "Last automatic backup failed",
               "last_backup_failed_description": "The last automatic backup triggered {relative_time} wasn't successful.",
@@ -2562,9 +2544,13 @@
               "schedule_copies_backups": "and keep {count} {count, plural,\n one {backup}\n other {backups}\n}",
               "schedule_copies_days": "and keep {count} {count, plural,\n one {day}\n other {days}\n}",
               "schedule_daily": "Daily at {time}",
-              "schedule_days": "Every {count, plural,\n one {{last_day}}\n other {{days} and {last_day}}\n} at {time}",
+              "schedule_days": "Every {days} at {time}",
+              "schedule_weekdays": "Every weekday at {time}",
+              "schedule_optimized_weekdays": "Every weekday",
+              "schedule_weekend": "Every weekends at {time}",
+              "schedule_optimized_weekend": "Every weekends",
               "schedule_optimized_daily": "Daily",
-              "schedule_optimized_days": "Every {count, plural,\n one {{last_day}}\n other {{days} and {last_day}}\n}",
+              "schedule_optimized_days": "Every {days}",
               "schedule_never": "Automatic backups are not scheduled",
               "data": "Home Assistant data that is included",
               "data_settings_history": "Settings and history",
@@ -2578,7 +2564,25 @@
               "locations_many": "Store in {count} off-site {count, plural,\n one {location}\n other {locations}\n}",
               "locations_local_only": "Local backup only",
               "locations_none": "No locations configured",
-              "system_optimal_time": "system optimal time"
+              "system_optimal_time": "system optimal time",
+              "weekdays": {
+                "mon": "[%key:ui::weekdays::monday%]",
+                "tue": "[%key:ui::weekdays::tuesday%]",
+                "wed": "[%key:ui::weekdays::wednesday%]",
+                "thu": "[%key:ui::weekdays::thursday%]",
+                "fri": "[%key:ui::weekdays::friday%]",
+                "sat": "[%key:ui::weekdays::saturday%]",
+                "sun": "[%key:ui::weekdays::sunday%]"
+              },
+              "short_weekdays": {
+                "mon": "Mo",
+                "tue": "Tu",
+                "wed": "We",
+                "thu": "Th",
+                "fri": "Fr",
+                "sat": "Sa",
+                "sun": "So"
+              }
             }
           },
           "backups": {

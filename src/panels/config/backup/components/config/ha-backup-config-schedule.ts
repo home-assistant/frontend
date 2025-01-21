@@ -18,6 +18,7 @@ import {
   BackupScheduleRecurrence,
   DEFAULT_OPTIMIZED_BACKUP_END_TIME,
   DEFAULT_OPTIMIZED_BACKUP_START_TIME,
+  sortWeekdays,
 } from "../../../../../data/backup";
 import type { HomeAssistant } from "../../../../../types";
 import "../../../../../components/ha-time-input";
@@ -26,6 +27,7 @@ import "../../../../../components/ha-expansion-panel";
 import "../../../../../components/ha-checkbox";
 import "../../../../../components/ha-formfield";
 import { formatTime } from "../../../../../common/datetime/format_time";
+import { documentationUrl } from "../../../../../util/documentation-url";
 
 export type BackupConfigSchedule = Pick<BackupConfig, "schedule" | "retention">;
 
@@ -220,7 +222,7 @@ class HaBackupConfigSchedule extends LitElement {
                     (day) => html`
                       <div>
                         <ha-formfield
-                          .label=${this.hass.localize(`ui.weekdays.${day}`)}
+                          .label=${this.hass.localize(`ui.panel.config.backup.overview.settings.weekdays.${day}`)}
                         >
                           <ha-checkbox
                             @change=${this._daysChanged}
@@ -317,7 +319,7 @@ class HaBackupConfigSchedule extends LitElement {
                       <ha-time-input
                         slot="end"
                         @value-changed=${this._timeChanged}
-                        .value=${data.time}
+                        .value=${data.time ?? undefined}
                         .locale=${this.hass.locale}
                       >
                       </ha-time-input>
@@ -338,7 +340,7 @@ class HaBackupConfigSchedule extends LitElement {
           <ha-md-select
             slot="end"
             @change=${this._retentionPresetChanged}
-            .value=${this._retentionPreset}
+            .value=${this._retentionPreset ?? ""}
           >
             ${RETENTION_PRESETS_OPTIONS.map(
               (option) => html`
@@ -371,11 +373,11 @@ class HaBackupConfigSchedule extends LitElement {
                 <ha-md-textfield
                   slot="end"
                   @change=${this._retentionValueChanged}
-                  .value=${data.retention.value}
+                  .value=${data.retention.value.toString()}
                   id="value"
                   type="number"
-                  .min=${MIN_VALUE}
-                  .max=${MAX_VALUE}
+                  .min=${MIN_VALUE.toString()}
+                  .max=${MAX_VALUE.toString()}
                   step="1"
                 >
                 </ha-md-textfield>
@@ -404,7 +406,10 @@ class HaBackupConfigSchedule extends LitElement {
         <ha-tip .hass=${this.hass}
           >${this.hass.localize("ui.panel.config.backup.schedule.tip", {
             backup_create: html`<a
-              href="https://www.home-assistant.io/integrations/backup#example-backing-up-every-night-at-300-am"
+              href=${documentationUrl(
+                this.hass,
+                "/integrations/backup#example-backing-up-every-night-at-300-am"
+              )}
               target="_blank"
               rel="noopener noreferrer"
               >backup.create</a
@@ -469,6 +474,8 @@ class HaBackupConfigSchedule extends LitElement {
     } else if (!target.checked && data.days.includes(value)) {
       days.splice(days.indexOf(value), 1);
     }
+
+    sortWeekdays(days);
 
     this._setData({
       ...data,

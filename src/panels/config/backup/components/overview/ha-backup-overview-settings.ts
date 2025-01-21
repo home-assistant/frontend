@@ -51,11 +51,13 @@ class HaBackupBackupsSummary extends LitElement {
       "ui.panel.config.backup.overview.settings.schedule_never"
     );
 
+    const configDays = this.config.schedule.days;
+
     if (
       this.config.schedule.recurrence === BackupScheduleRecurrence.DAILY ||
       (this.config.schedule.recurrence ===
         BackupScheduleRecurrence.CUSTOM_DAYS &&
-        this.config.schedule.days.length === 7)
+        configDays.length === 7)
     ) {
       scheduleText = this.hass.localize(
         `ui.panel.config.backup.overview.settings.schedule_${!this.config.schedule.time ? "optimized_" : ""}daily`,
@@ -66,22 +68,46 @@ class HaBackupBackupsSummary extends LitElement {
     } else if (
       this.config.schedule.recurrence ===
         BackupScheduleRecurrence.CUSTOM_DAYS &&
-      this.config.schedule.days.length !== 0
+      configDays.length !== 0
     ) {
-      scheduleText = this.hass.localize(
-        `ui.panel.config.backup.overview.settings.schedule_${!this.config.schedule.time ? "optimized_" : ""}days`,
-        {
-          count: this.config.schedule.days.length,
-          days: this.config.schedule.days
-            .slice(0, -1)
-            .map((dayCode) => this.hass.localize(`ui.weekdays.${dayCode}`))
-            .join(", "),
-          last_day: this.hass.localize(
-            `ui.weekdays.${this.config.schedule.days[this.config.schedule.days.length - 1]}`
-          ),
-          time,
-        }
-      );
+      if (
+        configDays.length === 2 &&
+        configDays.includes("sat") &&
+        configDays.includes("sun")
+      ) {
+        scheduleText = this.hass.localize(
+          `ui.panel.config.backup.overview.settings.schedule_${!this.config.schedule.time ? "optimized_" : ""}weekend`,
+          {
+            time,
+          }
+        );
+      } else if (
+        configDays.length === 5 &&
+        !configDays.includes("sat") &&
+        !configDays.includes("sun")
+      ) {
+        scheduleText = this.hass.localize(
+          `ui.panel.config.backup.overview.settings.schedule_${!this.config.schedule.time ? "optimized_" : ""}weekdays`,
+          {
+            time,
+          }
+        );
+      } else {
+        scheduleText = this.hass.localize(
+          `ui.panel.config.backup.overview.settings.schedule_${!this.config.schedule.time ? "optimized_" : ""}days`,
+          {
+            count: configDays.length,
+            days: configDays
+              .map((dayCode) =>
+                this.hass.localize(
+                  `ui.panel.config.backup.overview.settings.${configDays.length > 2 ? "short_weekdays" : "weekdays"}.${dayCode}`
+                )
+              )
+              .join(", "),
+            time,
+          }
+        );
+      }
     }
 
     let copiesText = this.hass.localize(

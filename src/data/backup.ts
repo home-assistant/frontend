@@ -31,6 +31,9 @@ export const BACKUP_DAYS: BackupDay[] = [
   "sun",
 ];
 
+export const sortWeekdays = (weekdays) =>
+  weekdays.sort((a, b) => BACKUP_DAYS.indexOf(a) - BACKUP_DAYS.indexOf(b));
+
 export interface BackupConfig {
   last_attempted_automatic_backup: string | null;
   last_completed_automatic_backup: string | null;
