@@ -319,7 +319,6 @@ class AddIntegrationDialog extends LitElement {
       open
       @closed=${this.closeDialog}
       scrimClickAction
-      escapeKeyAction
       hideActions
       .heading=${createCloseHeading(
         this.hass,
@@ -449,12 +448,14 @@ class AddIntegrationDialog extends LitElement {
           >
             <lit-virtualizer
               scroller
+              tabindex="-1"
               class="ha-scrollbar"
               style=${styleMap({
                 width: `${this._width}px`,
                 height: this._narrow ? "calc(100vh - 184px)" : "500px",
               })}
               @click=${this._integrationPicked}
+              @keypress=${this._handleKeyPress}
               .items=${integrations}
               .keyFunction=${this._keyFunction}
               .renderItem=${this._renderRow}
@@ -478,6 +479,7 @@ class AddIntegrationDialog extends LitElement {
         brand
         .hass=${this.hass}
         .integration=${integration}
+        tabindex="0"
       >
       </ha-integration-list-item>
     `;
@@ -532,6 +534,12 @@ class AddIntegrationDialog extends LitElement {
       return;
     }
     this._handleIntegrationPicked(listItem.integration);
+  }
+
+  private _handleKeyPress(ev) {
+    if (ev.key === "Enter") {
+      this._integrationPicked(ev);
+    }
   }
 
   private async _handleIntegrationPicked(integration: IntegrationListItem) {
