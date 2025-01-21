@@ -182,8 +182,10 @@ export class StateHistoryChartTimeline extends LitElement {
 
   private _createOptions() {
     const narrow = this.narrow;
-    const labelWidth = Math.max(narrow ? 70 : 170, this.paddingYAxis);
     const showNames = this.chunked || this.showNames;
+    const labelWidth = showNames
+      ? Math.max(narrow ? 70 : 170, this.paddingYAxis)
+      : 0;
     const rtl = computeRTL(this.hass);
     const dayDifference = differenceInDays(this.endTime, this.startTime);
     this._chartOptions = {
