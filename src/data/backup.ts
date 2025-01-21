@@ -11,22 +11,33 @@ import type { HomeAssistant } from "../types";
 import { fileDownload } from "../util/file_download";
 import { domainToName } from "./integration";
 import type { FrontendLocaleData } from "./translation";
+import checkValidDate from "../common/datetime/check_valid_date";
 
-export const enum BackupScheduleState {
+export const enum BackupScheduleRecurrence {
   NEVER = "never",
   DAILY = "daily",
-  MONDAY = "mon",
-  TUESDAY = "tue",
-  WEDNESDAY = "wed",
-  THURSDAY = "thu",
-  FRIDAY = "fri",
-  SATURDAY = "sat",
-  SUNDAY = "sun",
+  CUSTOM_DAYS = "custom_days",
 }
+
+export type BackupDay = "mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun";
+
+export const BACKUP_DAYS: BackupDay[] = [
+  "mon",
+  "tue",
+  "wed",
+  "thu",
+  "fri",
+  "sat",
+  "sun",
+];
+
+export const sortWeekdays = (weekdays) =>
+  weekdays.sort((a, b) => BACKUP_DAYS.indexOf(a) - BACKUP_DAYS.indexOf(b));
 
 export interface BackupConfig {
   last_attempted_automatic_backup: string | null;
   last_completed_automatic_backup: string | null;
+  next_automatic_backup: string | null;
   create_backup: {
     agent_ids: string[];
     include_addons: string[] | null;
@@ -41,7 +52,9 @@ export interface BackupConfig {
     days?: number | null;
   };
   schedule: {
-    state: BackupScheduleState;
+    recurrence: BackupScheduleRecurrence;
+    time?: string | null;
+    days: BackupDay[];
   };
 }
 
@@ -59,7 +72,11 @@ export interface BackupMutableConfig {
     copies?: number | null;
     days?: number | null;
   };
-  schedule?: BackupScheduleState;
+  schedule?: {
+    recurrence: BackupScheduleRecurrence;
+    time?: string | null;
+    days?: BackupDay[] | null;
+  };
 }
 
 export interface BackupAgent {
@@ -337,9 +354,34 @@ export const downloadEmergencyKit = (
     geneateEmergencyKitFileName(hass, appendFileName)
   );
 
+export const DEFAULT_OPTIMIZED_BACKUP_START_TIME = setMinutes(
+  setHours(new Date(), 4),
+  45
+);
+
+export const DEFAULT_OPTIMIZED_BACKUP_END_TIME = setMinutes(
+  setHours(new Date(), 5),
+  45
+);
+
 export const getFormattedBackupTime = memoizeOne(
-  (locale: FrontendLocaleData, config: HassConfig) => {
-    const date = setMinutes(setHours(new Date(), 4), 45);
-    return formatTime(date, locale, config);
+  (
+    locale: FrontendLocaleData,
+    config: HassConfig,
+    backupTime?: Date | string | null
+  ) => {
+    if (checkValidDate(backupTime as Date)) {
+      return formatTime(backupTime as Date, locale, config);
+    }
+    if (typeof backupTime === "string" && backupTime) {
+      const splitted = backupTime.split(":");
+      const date = setMinutes(
+        setHours(new Date(), parseInt(splitted[0])),
+        parseInt(splitted[1])
+      );
+      return formatTime(date, locale, config);
+    }
+
+    return `${formatTime(DEFAULT_OPTIMIZED_BACKUP_START_TIME, locale, config)} - ${formatTime(DEFAULT_OPTIMIZED_BACKUP_END_TIME, locale, config)}`;
   }
 );

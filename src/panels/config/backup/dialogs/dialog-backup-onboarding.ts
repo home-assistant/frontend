@@ -21,7 +21,7 @@ import type {
   BackupMutableConfig,
 } from "../../../../data/backup";
 import {
-  BackupScheduleState,
+  BackupScheduleRecurrence,
   CLOUD_AGENT,
   CORE_LOCAL_AGENT,
   downloadEmergencyKit,
@@ -68,10 +68,13 @@ const RECOMMENDED_CONFIG: BackupConfig = {
     days: null,
   },
   schedule: {
-    state: BackupScheduleState.DAILY,
+    recurrence: BackupScheduleRecurrence.DAILY,
+    time: null,
+    days: [],
   },
   last_attempted_automatic_backup: null,
   last_completed_automatic_backup: null,
+  next_automatic_backup: null,
 };
 
 @customElement("ha-dialog-backup-onboarding")
@@ -145,7 +148,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
         include_database: this._config.create_backup.include_database,
         agent_ids: this._config.create_backup.agent_ids,
       },
-      schedule: this._config.schedule.state,
+      schedule: this._config.schedule,
       retention: this._config.retention,
     };
 
