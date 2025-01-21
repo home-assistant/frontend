@@ -1285,7 +1285,7 @@
             "manual": "Create manual backup before update",
             "manual_description": "Includes Home Assistant settings and history.",
             "addon": "Keep backup of the last version",
-            "addon_description": "For easily restoring to version {version}.",
+            "addon_description": "For easily restoring to version {version}",
             "generic": "Create backup"
           }
         },
