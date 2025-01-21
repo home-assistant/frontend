@@ -4,6 +4,7 @@ import {
   mdiFolder,
   mdiPlayBoxMultiple,
   mdiPuzzle,
+  mdiShieldCheck,
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -36,6 +37,7 @@ const ITEM_ICONS = {
   database: mdiChartBox,
   media: mdiPlayBoxMultiple,
   share: mdiFolder,
+  ssl: mdiShieldCheck,
 };
 
 interface SelectedItems {
@@ -104,6 +106,8 @@ export class HaBackupDataPicker extends LitElement {
         return this.hass.localize(
           "ui.panel.config.backup.data_picker.share_folder"
         );
+      case "ssl":
+        return this.hass.localize("ui.panel.config.backup.data_picker.ssl");
       case "addons/local":
         return this.hass.localize(
           "ui.panel.config.backup.data_picker.local_addons"
@@ -279,7 +283,7 @@ export class HaBackupDataPicker extends LitElement {
                 <ha-backup-formfield-label
                   slot="label"
                   .label=${this.hass.localize(
-                    "ui.panel.config.backup.data_picker.local_addons"
+                    "ui.panel.config.backup.data_picker.addons"
                   )}
                   .iconPath=${mdiPuzzle}
                 >
