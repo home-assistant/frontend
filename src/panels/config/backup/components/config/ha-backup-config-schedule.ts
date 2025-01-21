@@ -559,7 +559,8 @@ class HaBackupConfigSchedule extends LitElement {
       min-width: 100px;
     }
     ha-expansion-panel {
-      padding: 0 8px;
+      --expansion-panel-summary-padding: 0 16px;
+      --expansion-panel-content-padding: 0 16px;
       margin-bottom: 16px;
     }
     ha-tip {
