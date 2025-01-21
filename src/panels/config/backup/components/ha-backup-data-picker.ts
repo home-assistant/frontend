@@ -171,15 +171,14 @@ export class HaBackupDataPicker extends LitElement {
     })
   );
 
-  private _itemChanged(ev: Event) {
+  private _homeassistantChanged(ev: Event) {
     const itemValues = this._parseValue(this.value);
 
     const checkbox = ev.currentTarget as HaCheckbox;
-    const section = (checkbox as any).section;
     if (checkbox.checked) {
-      itemValues[section].push(checkbox.id);
+      itemValues.homeassistant.push(checkbox.id);
     } else {
-      itemValues[section] = itemValues[section].filter(
+      itemValues.homeassistant = itemValues.homeassistant.filter(
         (id) => id !== checkbox.id
       );
     }
@@ -266,8 +265,7 @@ export class HaBackupDataPicker extends LitElement {
                         .checked=${selectedItems.homeassistant.includes(
                           item.id
                         )}
-                        .section=${"homeassistant"}
-                        @change=${this._itemChanged}
+                        @change=${this._homeassistantChanged}
                       ></ha-checkbox>
                     </ha-formfield>
                   `
