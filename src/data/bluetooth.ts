@@ -82,10 +82,8 @@ export const subscribeBluetoothAdvertisements = (
 ) =>
   createCollection<BluetoothDeviceData[]>(
     "_bluetoothDeviceRows",
-    () =>
-      new Promise<BluetoothDeviceData[]>((resolve) => {
-        resolve([]);
-      }), // empty array as initial state
+    () => Promise.resolve<BluetoothDeviceData[]>([]), // empty array as initial state
+
     subscribeUpdates,
     conn,
     onChange

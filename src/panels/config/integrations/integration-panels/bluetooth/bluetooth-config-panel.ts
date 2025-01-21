@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -19,8 +19,8 @@ import type { BluetoothDeviceData } from "../../../../../data/bluetooth";
 import { subscribeBluetoothAdvertisements } from "../../../../../data/bluetooth";
 import { showBluetoothDeviceInfoDialog } from "./show-dialog-bluetooth-device-info";
 
-@customElement("bluetooth-device-page")
-export class BluetoothDevicePage extends LitElement {
+@customElement("bluetooth-config-panel")
+export class BluetoothConfigPanel extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public route!: Route;
@@ -33,22 +33,8 @@ export class BluetoothDevicePage extends LitElement {
 
   private _unsub?: UnsubscribeFunc;
 
-  private _firstUpdatedCalled = false;
-
   public connectedCallback(): void {
     super.connectedCallback();
-    if (this.hass && this._firstUpdatedCalled) {
-      this._unsub = subscribeBluetoothAdvertisements(
-        this.hass.connection,
-        (data) => {
-          this._data = data;
-        }
-      );
-    }
-  }
-
-  protected firstUpdated(changedProperties: PropertyValues): void {
-    super.firstUpdated(changedProperties);
     if (this.hass) {
       this._unsub = subscribeBluetoothAdvertisements(
         this.hass.connection,
@@ -56,7 +42,6 @@ export class BluetoothDevicePage extends LitElement {
           this._data = data;
         }
       );
-      this._firstUpdatedCalled = true;
     }
   }
 
@@ -136,6 +121,6 @@ export class BluetoothDevicePage extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "bluetooth-device-page": BluetoothDevicePage;
+    "bluetooth-config-panel": BluetoothConfigPanel;
   }
 }
