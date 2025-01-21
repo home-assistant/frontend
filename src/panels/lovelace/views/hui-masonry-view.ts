@@ -80,6 +80,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
         .badges=${this.badges}
         .lovelace=${this.lovelace}
         .viewIndex=${this.index}
+        show-add-label
       ></hui-view-badges>
       <div
         id="columns"
