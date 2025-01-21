@@ -424,6 +424,7 @@ export class StatisticsChart extends LitElement {
           }
           statTypes.push(type);
           const series: LineSeriesOption | BarSeriesOption = {
+            id: `${statistic_id}-${type}`,
             type: this.chartType,
             data: [],
             name: name

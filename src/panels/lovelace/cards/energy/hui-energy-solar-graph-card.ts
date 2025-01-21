@@ -6,7 +6,6 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import type { BarSeriesOption, LineSeriesOption } from "echarts/charts";
-import type { SeriesOption } from "echarts/types/dist/shared";
 import { getEnergyColor } from "./common/color";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
@@ -43,7 +42,7 @@ export class HuiEnergySolarGraphCard
 
   @state() private _config?: EnergySolarGraphCardConfig;
 
-  @state() private _chartData: SeriesOption[] = [];
+  @state() private _chartData: ECOption["series"] = [];
 
   @state() private _start = startOfToday();
 
@@ -174,7 +173,7 @@ export class HuiEnergySolarGraphCard
       }
     }
 
-    const datasets: SeriesOption[] = [];
+    const datasets: ECOption["series"] = [];
 
     const computedStyles = getComputedStyle(this);
 

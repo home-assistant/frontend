@@ -67,7 +67,7 @@ export class StateHistoryChartLine extends LitElement {
 
   @state() private _chartOptions?: ECOption;
 
-  @state() private _yWidth = 0;
+  @state() private _yWidth = 25;
 
   private _chartTime: Date = new Date();
 
@@ -206,8 +206,8 @@ export class StateHistoryChartLine extends LitElement {
         },
         grid: {
           ...(this.showNames ? {} : { top: 30 }), // undefined is the same as 0
-          left: rtl ? 1 : Math.max(25, this.paddingYAxis, this._yWidth),
-          right: rtl ? Math.max(25, this.paddingYAxis, this._yWidth) : 1,
+          left: rtl ? 1 : Math.max(this.paddingYAxis, this._yWidth),
+          right: rtl ? Math.max(this.paddingYAxis, this._yWidth) : 1,
           bottom: 30,
         },
         visualMap: this._chartData
@@ -296,6 +296,7 @@ export class StateHistoryChartLine extends LitElement {
           colorIndex++;
         }
         data.push({
+          id: states.entity_id,
           data: [],
           type: "line",
           name: nameY,
