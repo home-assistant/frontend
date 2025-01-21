@@ -211,7 +211,7 @@ class HaBackupConfigSchedule extends LitElement {
               )}
               outlined
             >
-              <ha-md-list-item>
+              <ha-md-list-item class="days">
                 <span slot="headline">
                   ${this.hass.localize(
                     "ui.panel.config.backup.schedule.backup_every"
@@ -565,6 +565,12 @@ class HaBackupConfigSchedule extends LitElement {
     ha-tip {
       text-align: unset;
       margin: 16px 0;
+    }
+    ha-md-list-item.days {
+      --md-item-align-items: flex-start;
+    }
+    a {
+      color: var(--primary-color);
     }
   `;
 }
