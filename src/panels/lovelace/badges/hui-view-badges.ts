@@ -32,6 +32,9 @@ export class HuiViewBadges extends LitElement {
 
   @property({ attribute: false }) public viewIndex!: number;
 
+  @property({ type: Boolean, attribute: "show-add-label" })
+  public showAddLabel!: boolean;
+
   @state() _dragging = false;
 
   private _badgeConfigKeys = new WeakMap<HuiBadge, string>();
@@ -153,6 +156,11 @@ export class HuiViewBadges extends LitElement {
                       >
                         <ha-ripple></ha-ripple>
                         <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
+                        ${this.showAddLabel
+                          ? this.hass.localize(
+                              "ui.panel.lovelace.editor.section.add_badge"
+                            )
+                          : nothing}
                       </button>
                     `
                   : nothing}
@@ -201,6 +209,7 @@ export class HuiViewBadges extends LitElement {
       border-color: var(--primary-color);
       --mdc-icon-size: 18px;
       cursor: pointer;
+      font-size: 14px;
       color: var(--primary-text-color);
       --ha-ripple-color: var(--primary-color);
       --ha-ripple-hover-opacity: 0.04;
