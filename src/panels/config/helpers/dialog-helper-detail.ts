@@ -137,6 +137,7 @@ export class DialogHelperDetail extends LitElement {
     this._error = undefined;
     this._domain = undefined;
     this._params = undefined;
+    this._filter = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
