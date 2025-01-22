@@ -1,9 +1,12 @@
-import { mdiClose, mdiFolderUpload } from "@mdi/js";
+import { mdiClose } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import {
+  fireEvent,
+  type HASSDomEvent,
+} from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-expansion-panel";
@@ -21,8 +24,7 @@ import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showAlertDialog } from "../../../lovelace/custom-card-helpers";
 import type { UploadBackupDialogParams } from "./show-dialog-upload-backup";
-
-const SUPPORTED_FORMAT = "application/x-tar";
+import { SUPPORTED_FORMAT } from "../components/ha-backup-upload";
 
 interface FormData {
   file?: File;
@@ -78,13 +80,18 @@ export class DialogUploadBackup
     }
 
     return html`
-      <ha-md-dialog open @closed=${this._dialogClosed}>
+      <ha-md-dialog
+        open
+        @closed=${this._dialogClosed}
+        .disable-cancel-action=${this._uploading}
+      >
         <ha-dialog-header slot="headline">
           <ha-icon-button
             slot="navigationIcon"
             .label=${this.hass.localize("ui.dialogs.generic.close")}
             .path=${mdiClose}
             @click=${this.closeDialog}
+            .disabled=${this._uploading}
           ></ha-icon-button>
 
           <span slot="title">
@@ -92,28 +99,22 @@ export class DialogUploadBackup
           </span>
         </ha-dialog-header>
         <div slot="content">
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : nothing}
-          <ha-file-upload
+          <ha-backup-upload
             .hass=${this.hass}
+            .error=${this._error}
             .uploading=${this._uploading}
-            .icon=${mdiFolderUpload}
-            accept=${SUPPORTED_FORMAT}
-            .label=${this.hass.localize(
-              "ui.panel.config.backup.dialogs.upload.input_label"
-            )}
-            .supports=${this.hass.localize(
-              "ui.panel.config.backup.dialogs.upload.supports_tar"
-            )}
             @file-picked=${this._filePicked}
-          ></ha-file-upload>
+            @files-cleared=${this._filesCleared}
+          ></ha-backup-upload>
         </div>
         <div slot="actions">
-          <ha-button @click=${this.closeDialog}
+          <ha-button @click=${this.closeDialog} .disabled=${this._uploading}
             >${this.hass.localize("ui.common.cancel")}</ha-button
           >
-          <ha-button @click=${this._upload} .disabled=${!this._formValid()}>
+          <ha-button
+            @click=${this._upload}
+            .disabled=${!this._formValid() || this._uploading}
+          >
             ${this.hass.localize(
               "ui.panel.config.backup.dialogs.upload.action"
             )}
@@ -123,7 +124,7 @@ export class DialogUploadBackup
     `;
   }
 
-  private async _filePicked(ev: CustomEvent<{ files: File[] }>): Promise<void> {
+  private _filePicked(ev: HASSDomEvent<{ files: File[] }>) {
     this._error = undefined;
     const file = ev.detail.files[0];
 
@@ -131,6 +132,11 @@ export class DialogUploadBackup
       ...this._formData!,
       file,
     };
+  }
+
+  private _filesCleared() {
+    this._error = undefined;
+    this._formData = INITIAL_DATA;
   }
 
   private async _upload() {
