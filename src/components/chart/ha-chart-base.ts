@@ -191,7 +191,7 @@ export class HaChartBase extends LitElement {
       this.options?.xAxis) as XAXisOption;
     const yAxis = (this.options?.yAxis?.[0] ??
       this.options?.yAxis) as YAXisOption;
-    if (xAxis.type === "value" || yAxis.type === "category") {
+    if (xAxis.type === "value" && yAxis.type === "category") {
       // vertical data zoom doesn't work well in this case and horizontal is pointless
       return undefined;
     }
