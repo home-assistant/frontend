@@ -316,7 +316,13 @@ export const updateHassioAddon = async (
   slug: string,
   backup: boolean
 ): Promise<void> => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
+  if (atLeastVersion(hass.config.version, 2025, 2, 0)) {
+    await hass.callWS({
+      type: "hassio/update/addon",
+      addon: slug,
+      backup: backup,
+    });
+  } else if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
     await hass.callWS({
       type: "supervisor/api",
       endpoint: `/store/addons/${slug}/update`,
