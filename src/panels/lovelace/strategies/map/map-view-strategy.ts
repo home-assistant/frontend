@@ -14,7 +14,6 @@ const getMapEntities = (hass: HomeAssistant) => {
   const locationEntities: string[] = [];
   Object.values(hass.states).forEach((entity) => {
     if (
-      entity.state === "home" ||
       !("latitude" in entity.attributes) ||
       !("longitude" in entity.attributes)
     ) {

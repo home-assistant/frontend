@@ -17,6 +17,7 @@ export class HaMdListItem extends MdListItem {
       }
       md-item {
         overflow: var(--md-item-overflow, hidden);
+        align-items: var(--md-item-align-items, center);
       }
     `,
   ];

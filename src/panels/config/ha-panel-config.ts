@@ -548,6 +548,13 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
             "./integrations/integration-panels/thread/thread-config-panel"
           ),
       },
+      bluetooth: {
+        tag: "bluetooth-config-panel",
+        load: () =>
+          import(
+            "./integrations/integration-panels/bluetooth/bluetooth-config-panel"
+          ),
+      },
       application_credentials: {
         tag: "ha-config-application-credentials",
         load: () =>

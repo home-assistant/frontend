@@ -308,7 +308,7 @@ class HaConfigBackupSettings extends LitElement {
         password: this._config!.create_backup.password,
       },
       retention: this._config!.retention,
-      schedule: this._config!.schedule.state,
+      schedule: this._config!.schedule,
     });
     fireEvent(this, "ha-refresh-backup-config");
   }
