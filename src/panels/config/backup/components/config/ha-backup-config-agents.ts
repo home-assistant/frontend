@@ -1,9 +1,10 @@
-import { mdiHarddisk, mdiNas } from "@mdi/js";
+import { mdiCogOutline, mdiHarddisk, mdiNas } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
+import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
@@ -18,6 +19,7 @@ import {
 import type { CloudStatus } from "../../../../../data/cloud";
 import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
+import { navigate } from "../../../../../common/navigate";
 
 const DEFAULT_AGENTS = [];
 
@@ -28,6 +30,9 @@ class HaBackupConfigAgents extends LitElement {
   @property({ attribute: false }) public cloudStatus!: CloudStatus;
 
   @property({ attribute: false }) public agents: BackupAgent[] = [];
+
+  @property({ type: Boolean, attribute: "show-settings" }) public showSettings =
+    false;
 
   @state() private value?: string[];
 
@@ -112,6 +117,13 @@ class HaBackupConfigAgents extends LitElement {
                     ${description
                       ? html`<div slot="supporting-text">${description}</div>`
                       : nothing}
+
+                    <ha-icon-button
+                      id=${agentId}
+                      slot="end"
+                      path=${mdiCogOutline}
+                      @click=${this._showAgentSettings}
+                    ></ha-icon-button>
                     <ha-switch
                       slot="end"
                       id=${agentId}
@@ -131,6 +143,11 @@ class HaBackupConfigAgents extends LitElement {
             </p>
           `}
     `;
+  }
+
+  private _showAgentSettings(ev): void {
+    const agentId = ev.currentTarget.id;
+    navigate(`/config/backup/location/${agentId}`);
   }
 
   private _agentToggled(ev) {

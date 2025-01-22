@@ -124,6 +124,10 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
         tag: "ha-config-backup-settings",
         load: () => import("./ha-config-backup-settings"),
       },
+      location: {
+        tag: "ha-config-backup-location",
+        load: () => import("./ha-config-backup-location"),
+      },
     },
   };
 
@@ -138,11 +142,15 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
     pageEl.agents = this._agents;
     pageEl.fetching = this._fetching;
 
-    if (
-      (!changedProps || changedProps.has("route")) &&
-      this._currentPage === "details"
-    ) {
-      pageEl.backupId = this.routeTail.path.substr(1);
+    if (!changedProps || changedProps.has("route")) {
+      switch (this._currentPage) {
+        case "details":
+          pageEl.backupId = this.routeTail.path.substr(1);
+          break;
+        case "location":
+          pageEl.agentId = this.routeTail.path.substr(1);
+          break;
+      }
     }
   }
 

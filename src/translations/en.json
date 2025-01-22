@@ -2665,6 +2665,15 @@
               "backup_failed": "Backup failed",
               "download": "Download from this location"
             }
+          },
+          "location": {
+            "header": "Location",
+            "not_found": "Not found",
+            "not_found_description": "Location matching ''{backupId}'' not found",
+            "error": "Could not fetch location details",
+            "encryption": {
+              "title": "Encryption"
+            }
           }
         },
         "tag": {

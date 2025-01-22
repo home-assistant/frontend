@@ -182,6 +182,7 @@ class HaConfigBackupSettings extends LitElement {
                 .cloudStatus=${this.cloudStatus}
                 .agents=${this.agents}
                 @value-changed=${this._agentsConfigChanged}
+                show-settings
               ></ha-backup-config-agents>
               ${!this._config.create_backup.agent_ids.length
                 ? html`
