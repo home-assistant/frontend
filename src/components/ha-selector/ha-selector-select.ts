@@ -156,7 +156,7 @@ export class HaSelectSelector extends LitElement {
                 no-style
                 .disabled=${!this.selector.select.reorder}
                 @item-moved=${this._itemMoved}
-                handle-selector="[data-handle]"
+                handle-selector="button.primary.action"
               >
                 <ha-chip-set>
                   ${repeat(
@@ -172,7 +172,6 @@ export class HaSelectSelector extends LitElement {
                           @remove=${this._removeItem}
                           .label=${label}
                           selected
-                          data-handle
                         >
                           ${this.selector.select?.reorder
                             ? html`
