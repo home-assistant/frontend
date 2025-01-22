@@ -156,6 +156,7 @@ export class HaSelectSelector extends LitElement {
                 no-style
                 .disabled=${!this.selector.select.reorder}
                 @item-moved=${this._itemMoved}
+                handle-selector="[data-handle]"
               >
                 <ha-chip-set>
                   ${repeat(
@@ -171,13 +172,13 @@ export class HaSelectSelector extends LitElement {
                           @remove=${this._removeItem}
                           .label=${label}
                           selected
+                          data-handle
                         >
                           ${this.selector.select?.reorder
                             ? html`
                                 <ha-svg-icon
                                   slot="icon"
                                   .path=${mdiDrag}
-                                  data-handle
                                 ></ha-svg-icon>
                               `
                             : nothing}
