@@ -2544,7 +2544,8 @@
               "no_backup_heading": "No automatic backup available",
               "no_backup_description": "You have no automatic backups yet.",
               "backup_too_old_heading": "No backup for {count} {count, plural,\n one {day}\n other {days}\n}",
-              "backup_success_heading": "Backed up"
+              "backup_success_heading": "Backed up",
+              "additional_backup_description": "No successful automatic backup has been done since {date}. To avoid losing data, an additional backup has been scheduled."
             },
             "backups": {
               "title": "My backups",

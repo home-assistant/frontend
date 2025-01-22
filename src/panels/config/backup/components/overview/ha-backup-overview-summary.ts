@@ -18,7 +18,11 @@ import {
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import "../ha-backup-summary-card";
-import { formatDateWeekday } from "../../../../../common/datetime/format_date";
+import {
+  formatDate,
+  formatDateWeekday,
+} from "../../../../../common/datetime/format_date";
+import { showAlertDialog } from "../../../../lovelace/custom-card-helpers";
 
 const OVERDUE_MARGIN_HOURS = 3;
 
@@ -94,6 +98,9 @@ class HaBackupOverviewBackups extends LitElement {
       this.hass.config,
       nextAutomaticDate || this.config.schedule.time
     );
+
+    const showAdditionalBackupDescription =
+      this.config.next_automatic_backup_additional;
 
     const nextBackupDescription =
       this.config.schedule.recurrence === BackupScheduleRecurrence.NEVER ||
@@ -202,7 +209,11 @@ class HaBackupOverviewBackups extends LitElement {
                 )}
               </span>
             </ha-md-list-item>
-            ${this._renderNextBackupDescription(nextBackupDescription)}
+            ${this._renderNextBackupDescription(
+              nextBackupDescription,
+              lastCompletedDate,
+              showAdditionalBackupDescription
+            )}
           </ha-md-list>
         </ha-backup-summary-card>
       `;
@@ -302,17 +313,51 @@ class HaBackupOverviewBackups extends LitElement {
             <ha-svg-icon slot="start" .path=${mdiBackupRestore}></ha-svg-icon>
             <span slot="headline">${lastSuccessfulBackupDescription}</span>
           </ha-md-list-item>
-          ${this._renderNextBackupDescription(nextBackupDescription)}
+          ${this._renderNextBackupDescription(
+            nextBackupDescription,
+            lastCompletedDate,
+            showAdditionalBackupDescription
+          )}
         </ha-md-list>
       </ha-backup-summary-card>
     `;
   }
 
-  private _renderNextBackupDescription(nextBackupDescription: string) {
+  private _renderNextBackupDescription(
+    nextBackupDescription: string,
+    lastCompletedDate: Date,
+    showTip = false
+  ) {
+    // handle edge case that there is an additional backup scheduled
+    const openAdditionalBackupDescriptionDialog = showTip
+      ? () => {
+          showAlertDialog(this, {
+            text: this.hass.localize(
+              "ui.panel.config.backup.overview.summary.additional_backup_description",
+              {
+                date: formatDate(
+                  lastCompletedDate,
+                  this.hass.locale,
+                  this.hass.config
+                ),
+              }
+            ),
+          });
+        }
+      : undefined;
+
     return nextBackupDescription
-      ? html` <ha-md-list-item>
+      ? html`<ha-md-list-item>
           <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
-          <span slot="headline">${nextBackupDescription}</span>
+          <span>
+            <span
+              slot="headline"
+              class=${showTip ? "tip" : ""}
+              @click=${openAdditionalBackupDescriptionDialog}
+            >
+              ${nextBackupDescription}
+            </span>
+          </span>
         </ha-md-list-item>`
       : nothing;
   }
@@ -345,6 +390,10 @@ class HaBackupOverviewBackups extends LitElement {
           --md-list-item-top-space: 8px;
           --md-list-item-bottom-space: 8px;
           --md-list-item-one-line-container-height: 40x;
+        }
+        .tip {
+          text-decoration: underline;
+          cursor: pointer;
         }
         span.skeleton {
           position: relative;

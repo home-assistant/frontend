@@ -75,6 +75,7 @@ const RECOMMENDED_CONFIG: BackupConfig = {
   last_attempted_automatic_backup: null,
   last_completed_automatic_backup: null,
   next_automatic_backup: null,
+  next_automatic_backup_additional: false,
 };
 
 @customElement("ha-dialog-backup-onboarding")
