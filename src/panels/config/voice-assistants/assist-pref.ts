@@ -8,7 +8,7 @@ import {
   mdiStar,
   mdiTrashCan,
 } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -121,7 +121,9 @@ export class AssistPref extends LitElement {
             class="icon-link"
           >
             <ha-icon-button
-              label="Learn how it works"
+              .label=${this.hass.localize(
+                "ui.panel.config.voice_assistants.assistants.pipeline.link_learn_how_it_works"
+              )}
               .path=${mdiHelpCircle}
             ></ha-icon-button>
           </a>
@@ -266,7 +268,7 @@ export class AssistPref extends LitElement {
     }
     try {
       await setExposeNewEntities(this.hass, "conversation", toggle.checked);
-    } catch (err: any) {
+    } catch (_err: any) {
       toggle.checked = !toggle.checked;
     }
   }
@@ -352,71 +354,69 @@ export class AssistPref extends LitElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      a {
-        color: var(--primary-color);
-      }
-      .header-actions {
-        position: absolute;
-        right: 0px;
-        inset-inline-end: 0px;
-        inset-inline-start: initial;
-        top: 24px;
-        display: flex;
-        flex-direction: row;
-      }
-      .header-actions .icon-link {
-        margin-top: -16px;
-        margin-right: 8px;
-        margin-inline-end: 8px;
-        margin-inline-start: initial;
-        direction: var(--direction);
-        color: var(--secondary-text-color);
-      }
-      ha-list-item {
-        --mdc-list-item-meta-size: auto;
-        --mdc-list-item-meta-display: flex;
-        --mdc-list-side-padding-right: 8px;
-        --mdc-list-side-padding-left: 16px;
-      }
+  static styles = css`
+    a {
+      color: var(--primary-color);
+    }
+    .header-actions {
+      position: absolute;
+      right: 0px;
+      inset-inline-end: 0px;
+      inset-inline-start: initial;
+      top: 24px;
+      display: flex;
+      flex-direction: row;
+    }
+    .header-actions .icon-link {
+      margin-top: -16px;
+      margin-right: 8px;
+      margin-inline-end: 8px;
+      margin-inline-start: initial;
+      direction: var(--direction);
+      color: var(--secondary-text-color);
+    }
+    ha-list-item {
+      --mdc-list-item-meta-size: auto;
+      --mdc-list-item-meta-display: flex;
+      --mdc-list-side-padding-right: 8px;
+      --mdc-list-side-padding-left: 16px;
+    }
 
-      ha-list-item.danger {
-        color: var(--error-color);
-        border-top: 1px solid var(--divider-color);
-      }
+    ha-list-item.danger {
+      color: var(--error-color);
+      border-top: 1px solid var(--divider-color);
+    }
 
-      ha-button-menu a {
-        text-decoration: none;
-      }
+    ha-button-menu a {
+      text-decoration: none;
+    }
 
-      ha-svg-icon {
-        color: currentColor;
-        width: 16px;
-      }
+    ha-svg-icon {
+      color: currentColor;
+      width: 16px;
+    }
 
-      .add {
-        margin: 0 16px 16px;
-      }
-      .card-actions {
-        display: flex;
-      }
-      .card-actions a {
-        text-decoration: none;
-      }
-      .card-header {
-        display: flex;
-        align-items: center;
-        padding-bottom: 0;
-      }
-      img {
-        height: 28px;
-        margin-right: 16px;
-        margin-inline-end: 16px;
-        margin-inline-start: initial;
-      }
-    `;
-  }
+    .add {
+      margin: 0 16px 16px;
+    }
+    .card-actions {
+      display: flex;
+    }
+    .card-actions a {
+      text-decoration: none;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      padding-bottom: 0;
+    }
+    img {
+      height: 28px;
+      margin-right: 16px;
+      margin-inline-end: 16px;
+      margin-inline-start: initial;
+    }
+  `;
 }
 
 declare global {

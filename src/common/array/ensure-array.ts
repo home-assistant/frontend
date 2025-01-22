@@ -10,8 +10,9 @@ type NonNullUndefined<T> = T extends undefined
  */
 export function ensureArray(value: undefined): undefined;
 export function ensureArray(value: null): null;
-export function ensureArray<T>(value: T | T[]): NonNullUndefined<T>[];
-export function ensureArray<T>(value: T | readonly T[]): NonNullUndefined<T>[];
+export function ensureArray<T>(
+  value: T | T[] | readonly T[]
+): NonNullUndefined<T>[];
 export function ensureArray(value) {
   if (value === undefined || value === null || Array.isArray(value)) {
     return value;

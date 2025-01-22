@@ -53,8 +53,8 @@ const HIDE_DOMAIN = new Set([
 const HIDE_PLATFORM = new Set(["mobile_app"]);
 
 interface SplittedByAreaDevice {
-  areasWithEntities: { [areaId: string]: HassEntity[] };
-  devicesWithEntities: { [deviceId: string]: HassEntity[] };
+  areasWithEntities: Record<string, HassEntity[]>;
+  devicesWithEntities: Record<string, HassEntity[]>;
   otherEntities: HassEntities;
 }
 
@@ -132,7 +132,7 @@ export const computeCards = (
   const cards: LovelaceCardConfig[] = [];
 
   // For entity card
-  const entitiesConf: Array<string | EntityConfig> = [];
+  const entitiesConf: (string | EntityConfig)[] = [];
 
   const titlePrefix = entityCardOptions.title
     ? entityCardOptions.title.toLowerCase()
@@ -365,7 +365,7 @@ export const generateViewConfig = (
   icon: string | undefined,
   entities: HassEntities
 ): LovelaceViewConfig => {
-  const ungroupedEntitites: { [domain: string]: string[] } = {};
+  const ungroupedEntitites: Record<string, string[]> = {};
 
   // Organize ungrouped entities in ungrouped things
   for (const entityId of Object.keys(entities)) {

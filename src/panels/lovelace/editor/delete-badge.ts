@@ -3,7 +3,10 @@ import type { Lovelace } from "../types";
 import { deleteBadge } from "./config-util";
 import type { LovelaceCardPath } from "./lovelace-path";
 
-export type DeleteBadgeParams = { path: LovelaceCardPath; silent: boolean };
+export interface DeleteBadgeParams {
+  path: LovelaceCardPath;
+  silent: boolean;
+}
 
 export async function performDeleteBadge(
   hass: HomeAssistant,

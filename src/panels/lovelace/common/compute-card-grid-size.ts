@@ -32,10 +32,10 @@ export const DEFAULT_GRID_SIZE = {
   rows: "auto",
 } as CardGridSize;
 
-export type CardGridSize = {
+export interface CardGridSize {
   rows: number | "auto";
   columns: number | "full";
-};
+}
 
 export const isPreciseMode = (options: LovelaceGridOptions) =>
   typeof options.columns === "number" && options.columns % 3 !== 0;

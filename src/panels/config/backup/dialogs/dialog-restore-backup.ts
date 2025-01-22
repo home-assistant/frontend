@@ -29,10 +29,10 @@ import type {
 } from "../../../../data/backup_manager";
 import { subscribeBackupEvents } from "../../../../data/backup_manager";
 
-type FormData = {
+interface FormData {
   encryption_key_type: "config" | "custom";
   custom_encryption_key: string;
-};
+}
 
 const INITIAL_DATA: FormData = {
   encryption_key_type: "config",
@@ -90,6 +90,7 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
 
   public closeDialog() {
     this._dialog?.close();
+    return true;
   }
 
   private _dialogClosed() {
@@ -221,7 +222,7 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
       <ha-button @click=${this.closeDialog}>
         ${this.hass.localize("ui.common.cancel")}
       </ha-button>
-      <ha-button @click=${this._restoreBackup} class="destructive">
+      <ha-button @click=${this._restoreBackup} destructive>
         ${this.hass.localize(
           "ui.panel.config.backup.dialogs.restore.actions.restore"
         )}
@@ -348,9 +349,6 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
         }
         .content p {
           margin: 0 0 16px;
-        }
-        .destructive {
-          --mdc-theme-primary: var(--error-color);
         }
         .centered {
           display: flex;

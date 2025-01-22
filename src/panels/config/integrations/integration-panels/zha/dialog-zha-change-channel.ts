@@ -50,10 +50,11 @@ class DialogZHAChangeChannel extends LitElement implements HassDialog {
     this._newChannel = "auto";
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     this._params = undefined;
     this._newChannel = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+    return true;
   }
 
   protected render(): TemplateResult | typeof nothing {

@@ -1,10 +1,4 @@
-import {
-  css,
-  type CSSResultGroup,
-  html,
-  LitElement,
-  type TemplateResult,
-} from "lit";
+import { css, html, LitElement, type TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import type { LovelaceConfig } from "../../../../src/data/lovelace/config/types";
@@ -59,7 +53,8 @@ class HcLovelace extends LitElement {
 
     return html`
       <hui-view-container .hass=${this.hass} .theme=${viewConfig.theme}>
-        <hui-view-background .background=${background}> </hui-view-background>
+        <hui-view-background .hass=${this.hass} .background=${background}>
+        </hui-view-background>
         <hui-view
           .hass=${this.hass}
           .lovelace=${lovelace}
@@ -116,20 +111,18 @@ class HcLovelace extends LitElement {
     return undefined;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      hui-view-container {
-        display: flex;
-        position: relative;
-        min-height: 100vh;
-        box-sizing: border-box;
-      }
-      hui-view {
-        flex: 1 1 100%;
-        max-width: 100%;
-      }
-    `;
-  }
+  static styles = css`
+    hui-view-container {
+      display: flex;
+      position: relative;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+    hui-view-container > * {
+      flex: 1 1 100%;
+      max-width: 100%;
+    }
+  `;
 }
 
 export interface CastViewChanged {

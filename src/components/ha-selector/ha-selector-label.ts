@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ensureArray } from "../../common/array/ensure-array";
@@ -71,14 +70,12 @@ export class HaLabelSelector extends LitElement {
     fireEvent(this, "value-changed", { value });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-labels-picker {
-        display: block;
-        width: 100%;
-      }
-    `;
-  }
+  static styles = css`
+    ha-labels-picker {
+      display: block;
+      width: 100%;
+    }
+  `;
 }
 
 declare global {

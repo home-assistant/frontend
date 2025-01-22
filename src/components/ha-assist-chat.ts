@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, LitElement, html, nothing } from "lit";
 import { mdiAlertCircle, mdiMicrophone, mdiSend } from "@mdi/js";
 import { customElement, property, query, state } from "lit/decorators";
@@ -28,6 +28,9 @@ export class HaAssistChat extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public pipeline?: AssistPipeline;
+
+  @property({ type: Boolean, attribute: "disable-speech" })
+  public disableSpeech = false;
 
   @property({ type: Boolean, attribute: false })
   public startListening?: boolean;
@@ -103,7 +106,7 @@ export class HaAssistChat extends LitElement {
             )
           : true);
     const supportsMicrophone = AudioRecorder.isSupported;
-    const supportsSTT = this.pipeline?.stt_engine;
+    const supportsSTT = this.pipeline?.stt_engine && !this.disableSpeech;
 
     return html`
       ${controlHA
@@ -475,161 +478,160 @@ export class HaAssistChat extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        min-height: var(--ha-assist-chat-min-height, 415px);
-      }
-      ha-textfield {
-        display: block;
-        margin: 0 24px 16px;
-      }
-      .messages {
-        flex: 1;
-        display: block;
-        box-sizing: border-box;
-        position: relative;
-      }
-      .messages-container {
-        position: absolute;
-        bottom: 0px;
-        right: 0px;
-        left: 0px;
-        padding: 24px;
-        box-sizing: border-box;
-        overflow-y: auto;
-        max-height: 100%;
-      }
+  static styles = css`
+    :host {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    ha-textfield {
+      display: block;
+    }
+    .messages {
+      flex: 1;
+      display: block;
+      box-sizing: border-box;
+      position: relative;
+    }
+    .messages-container {
+      position: absolute;
+      bottom: 0px;
+      right: 0px;
+      left: 0px;
+      padding: 0px 10px 16px;
+      box-sizing: border-box;
+      overflow-y: auto;
+      max-height: 100%;
+    }
+    .message {
+      white-space: pre-line;
+      font-size: 18px;
+      clear: both;
+      margin: 8px 0;
+      padding: 8px;
+      border-radius: 15px;
+    }
+
+    @media all and (max-width: 450px), all and (max-height: 500px) {
       .message {
-        white-space: pre-line;
-        font-size: 18px;
-        clear: both;
-        margin: 8px 0;
-        padding: 8px;
-        border-radius: 15px;
+        font-size: 16px;
       }
+    }
 
-      @media all and (max-width: 450px), all and (max-height: 500px) {
-        .message {
-          font-size: 16px;
-        }
-      }
+    .message p {
+      margin: 0;
+    }
+    .message p:not(:last-child) {
+      margin-bottom: 8px;
+    }
 
-      .message p {
-        margin: 0;
-      }
-      .message p:not(:last-child) {
-        margin-bottom: 8px;
-      }
+    .message.user {
+      margin-left: 24px;
+      margin-inline-start: 24px;
+      margin-inline-end: initial;
+      float: var(--float-end);
+      text-align: right;
+      border-bottom-right-radius: 0px;
+      background-color: var(--chat-background-color-user, var(--primary-color));
+      color: var(--text-primary-color);
+      direction: var(--direction);
+    }
 
-      .message.user {
-        margin-left: 24px;
-        margin-inline-start: 24px;
-        margin-inline-end: initial;
-        float: var(--float-end);
-        text-align: right;
-        border-bottom-right-radius: 0px;
-        background-color: var(--primary-color);
-        color: var(--text-primary-color);
-        direction: var(--direction);
-      }
+    .message.hass {
+      margin-right: 24px;
+      margin-inline-end: 24px;
+      margin-inline-start: initial;
+      float: var(--float-start);
+      border-bottom-left-radius: 0px;
+      background-color: var(
+        --chat-background-color-hass,
+        var(--secondary-background-color)
+      );
 
-      .message.hass {
-        margin-right: 24px;
-        margin-inline-end: 24px;
-        margin-inline-start: initial;
-        float: var(--float-start);
-        border-bottom-left-radius: 0px;
-        background-color: var(--secondary-background-color);
+      color: var(--primary-text-color);
+      direction: var(--direction);
+    }
 
-        color: var(--primary-text-color);
-        direction: var(--direction);
-      }
+    .message.user a {
+      color: var(--text-primary-color);
+    }
 
-      .message.user a {
-        color: var(--text-primary-color);
-      }
+    .message.hass a {
+      color: var(--primary-text-color);
+    }
 
-      .message.hass a {
-        color: var(--primary-text-color);
-      }
+    .message.error {
+      background-color: var(--error-color);
+      color: var(--text-primary-color);
+    }
 
-      .message.error {
-        background-color: var(--error-color);
-        color: var(--text-primary-color);
+    .bouncer {
+      width: 48px;
+      height: 48px;
+      position: absolute;
+    }
+    .double-bounce1,
+    .double-bounce2 {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background-color: var(--primary-color);
+      opacity: 0.2;
+      position: absolute;
+      top: 0;
+      left: 0;
+      -webkit-animation: sk-bounce 2s infinite ease-in-out;
+      animation: sk-bounce 2s infinite ease-in-out;
+    }
+    .double-bounce2 {
+      -webkit-animation-delay: -1s;
+      animation-delay: -1s;
+    }
+    @-webkit-keyframes sk-bounce {
+      0%,
+      100% {
+        -webkit-transform: scale(0);
       }
+      50% {
+        -webkit-transform: scale(1);
+      }
+    }
+    @keyframes sk-bounce {
+      0%,
+      100% {
+        transform: scale(0);
+        -webkit-transform: scale(0);
+      }
+      50% {
+        transform: scale(1);
+        -webkit-transform: scale(1);
+      }
+    }
 
-      .bouncer {
-        width: 48px;
-        height: 48px;
-        position: absolute;
-      }
-      .double-bounce1,
-      .double-bounce2 {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        background-color: var(--primary-color);
-        opacity: 0.2;
-        position: absolute;
-        top: 0;
-        left: 0;
-        -webkit-animation: sk-bounce 2s infinite ease-in-out;
-        animation: sk-bounce 2s infinite ease-in-out;
-      }
-      .double-bounce2 {
-        -webkit-animation-delay: -1s;
-        animation-delay: -1s;
-      }
-      @-webkit-keyframes sk-bounce {
-        0%,
-        100% {
-          -webkit-transform: scale(0);
-        }
-        50% {
-          -webkit-transform: scale(1);
-        }
-      }
-      @keyframes sk-bounce {
-        0%,
-        100% {
-          transform: scale(0);
-          -webkit-transform: scale(0);
-        }
-        50% {
-          transform: scale(1);
-          -webkit-transform: scale(1);
-        }
-      }
+    .listening-icon {
+      position: relative;
+      color: var(--secondary-text-color);
+      margin-right: -24px;
+      margin-inline-end: -24px;
+      margin-inline-start: initial;
+      direction: var(--direction);
+      transform: scaleX(var(--scale-direction));
+    }
 
-      .listening-icon {
-        position: relative;
-        color: var(--secondary-text-color);
-        margin-right: -24px;
-        margin-inline-end: -24px;
-        margin-inline-start: initial;
-        direction: var(--direction);
-        transform: scaleX(var(--scale-direction));
-      }
+    .listening-icon[active] {
+      color: var(--primary-color);
+    }
 
-      .listening-icon[active] {
-        color: var(--primary-color);
-      }
-
-      .unsupported {
-        color: var(--error-color);
-        position: absolute;
-        --mdc-icon-size: 16px;
-        right: 5px;
-        inset-inline-end: 5px;
-        inset-inline-start: initial;
-        top: 0px;
-      }
-    `;
-  }
+    .unsupported {
+      color: var(--error-color);
+      position: absolute;
+      --mdc-icon-size: 16px;
+      right: 5px;
+      inset-inline-end: 5px;
+      inset-inline-start: initial;
+      top: 0px;
+    }
+  `;
 }
 
 declare global {

@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -133,29 +133,27 @@ export class HaNumberSelector extends LitElement {
     fireEvent(this, "value-changed", { value });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .input {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        direction: ltr;
-      }
-      ha-slider {
-        flex: 1;
-        margin-right: 16px;
-        margin-inline-end: 16px;
-        margin-inline-start: 0;
-      }
-      ha-textfield {
-        --ha-textfield-input-width: 40px;
-      }
-      .single {
-        --ha-textfield-input-width: unset;
-        flex: 1;
-      }
-    `;
-  }
+  static styles = css`
+    .input {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      direction: ltr;
+    }
+    ha-slider {
+      flex: 1;
+      margin-right: 16px;
+      margin-inline-end: 16px;
+      margin-inline-start: 0;
+    }
+    ha-textfield {
+      --ha-textfield-input-width: 40px;
+    }
+    .single {
+      --ha-textfield-input-width: unset;
+      flex: 1;
+    }
+  `;
 }
 
 declare global {

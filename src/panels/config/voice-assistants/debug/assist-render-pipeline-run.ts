@@ -73,7 +73,7 @@ const renderProgress = (
   hass: HomeAssistant,
   pipelineRun: PipelineRun,
   stage: PipelineRun["stage"],
-  start_suffix: string = "-start"
+  start_suffix = "-start"
 ) => {
   const startEvent = pipelineRun.events.find(
     (ev) => ev.type === `${stage}` + start_suffix
@@ -148,7 +148,7 @@ export class AssistPipelineDebug extends LitElement {
         ) || "ready"
       : "ready";
 
-    const messages: Array<{ from: string; text: string }> = [];
+    const messages: { from: string; text: string }[] = [];
 
     const userMessage =
       (this.pipelineRun.init_options &&

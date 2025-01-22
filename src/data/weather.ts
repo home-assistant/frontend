@@ -562,13 +562,13 @@ const isForecastTwiceDaily = (
   return undefined;
 };
 
-export type WeatherUnits = {
+export interface WeatherUnits {
   precipitation_unit: string[];
   pressure_unit: string[];
   temperature_unit: string[];
   visibility_unit: string[];
   wind_speed_unit: string[];
-};
+}
 
 export const getWeatherConvertibleUnits = (
   hass: HomeAssistant

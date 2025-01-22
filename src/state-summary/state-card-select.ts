@@ -1,5 +1,5 @@
 import "@material/mwc-list/mwc-list-item";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { stopPropagation } from "../common/dom/stop_propagation";
@@ -48,22 +48,20 @@ class StateCardSelect extends LitElement {
     setSelectOption(this.hass, this.stateObj.entity_id, option);
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: flex;
-      }
+  static styles = css`
+    :host {
+      display: flex;
+    }
 
-      state-badge {
-        float: left;
-        margin-top: 10px;
-      }
+    state-badge {
+      float: left;
+      margin-top: 10px;
+    }
 
-      ha-select {
-        width: 100%;
-      }
-    `;
-  }
+    ha-select {
+      width: 100%;
+    }
+  `;
 }
 
 declare global {

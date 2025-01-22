@@ -121,7 +121,7 @@ class ErrorLogCard extends LitElement {
 
   @state() private _loadingPrevState?: "loading" | "end" | "loaded";
 
-  @state() private _noSearchResults: boolean = false;
+  @state() private _noSearchResults = false;
 
   @state() private _numberOfLines?: number;
 

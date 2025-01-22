@@ -8,7 +8,7 @@ export default class MediaPlayerEntity {
 
   public stateObj: HassEntity;
 
-  private _attr: { [key: string]: any };
+  private _attr: Record<string, any>;
 
   constructor(hass: HomeAssistant, stateObj: HassEntity) {
     this.hass = hass;

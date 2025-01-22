@@ -104,7 +104,7 @@ class HuiClimateSwingHorizontalModesCardFeature
 
     try {
       await this._setMode(swingHorizontalMode);
-    } catch (err) {
+    } catch (_err) {
       this._currentSwingHorizontalMode = oldSwingHorizontalMode;
     }
   }

@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -81,13 +81,11 @@ export class HaEventAction extends LitElement implements ActionElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-textfield {
-        display: block;
-      }
-    `;
-  }
+  static styles = css`
+    ha-textfield {
+      display: block;
+    }
+  `;
 }
 
 declare global {

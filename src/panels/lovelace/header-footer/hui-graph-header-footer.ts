@@ -1,5 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -67,7 +67,7 @@ export class HuiGraphHeaderFooter
 
   private _interval?: number;
 
-  private _subscribed?: Promise<(() => Promise<void>) | void>;
+  private _subscribed?: Promise<(() => Promise<void>) | undefined>;
 
   public getCardSize(): number {
     return 3;
@@ -170,6 +170,7 @@ export class HuiGraphHeaderFooter
     ).catch((err) => {
       this._subscribed = undefined;
       this._error = err;
+      return undefined;
     });
     this._setRedrawTimer();
   }
@@ -213,25 +214,23 @@ export class HuiGraphHeaderFooter
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-circular-progress {
-        position: absolute;
-        top: calc(50% - 14px);
-      }
-      .container {
-        display: flex;
-        justify-content: center;
-        position: relative;
-        padding-bottom: 20%;
-      }
-      .info {
-        position: absolute;
-        top: calc(50% - 16px);
-        color: var(--secondary-text-color);
-      }
-    `;
-  }
+  static styles = css`
+    ha-circular-progress {
+      position: absolute;
+      top: calc(50% - 14px);
+    }
+    .container {
+      display: flex;
+      justify-content: center;
+      position: relative;
+      padding-bottom: 20%;
+    }
+    .info {
+      position: absolute;
+      top: calc(50% - 16px);
+      color: var(--secondary-text-color);
+    }
+  `;
 }
 
 declare global {

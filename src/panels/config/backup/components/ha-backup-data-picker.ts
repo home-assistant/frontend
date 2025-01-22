@@ -4,8 +4,9 @@ import {
   mdiFolder,
   mdiPlayBoxMultiple,
   mdiPuzzle,
+  mdiShieldCheck,
 } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -25,23 +26,24 @@ import "./ha-backup-addons-picker";
 import type { BackupAddonItem } from "./ha-backup-addons-picker";
 import "./ha-backup-formfield-label";
 
-type CheckBoxItem = {
+interface CheckBoxItem {
   label: string;
   id: string;
   version?: string;
-};
+}
 
 const ITEM_ICONS = {
   config: mdiCog,
   database: mdiChartBox,
   media: mdiPlayBoxMultiple,
   share: mdiFolder,
+  ssl: mdiShieldCheck,
 };
 
-type SelectedItems = {
+interface SelectedItems {
   homeassistant: string[];
   addons: string[];
-};
+}
 
 @customElement("ha-backup-data-picker")
 export class HaBackupDataPicker extends LitElement {
@@ -104,6 +106,8 @@ export class HaBackupDataPicker extends LitElement {
         return this.hass.localize(
           "ui.panel.config.backup.data_picker.share_folder"
         );
+      case "ssl":
+        return this.hass.localize("ui.panel.config.backup.data_picker.ssl");
       case "addons/local":
         return this.hass.localize(
           "ui.panel.config.backup.data_picker.local_addons"
@@ -167,15 +171,14 @@ export class HaBackupDataPicker extends LitElement {
     })
   );
 
-  private _itemChanged(ev: Event) {
+  private _homeassistantChanged(ev: Event) {
     const itemValues = this._parseValue(this.value);
 
     const checkbox = ev.currentTarget as HaCheckbox;
-    const section = (checkbox as any).section;
     if (checkbox.checked) {
-      itemValues[section].push(checkbox.id);
+      itemValues.homeassistant.push(checkbox.id);
     } else {
-      itemValues[section] = itemValues[section].filter(
+      itemValues.homeassistant = itemValues.homeassistant.filter(
         (id) => id !== checkbox.id
       );
     }
@@ -262,8 +265,7 @@ export class HaBackupDataPicker extends LitElement {
                         .checked=${selectedItems.homeassistant.includes(
                           item.id
                         )}
-                        .section=${"homeassistant"}
-                        @change=${this._itemChanged}
+                        @change=${this._homeassistantChanged}
                       ></ha-checkbox>
                     </ha-formfield>
                   `
@@ -279,7 +281,7 @@ export class HaBackupDataPicker extends LitElement {
                 <ha-backup-formfield-label
                   slot="label"
                   .label=${this.hass.localize(
-                    "ui.panel.config.backup.data_picker.local_addons"
+                    "ui.panel.config.backup.data_picker.addons"
                   )}
                   .iconPath=${mdiPuzzle}
                 >
@@ -305,28 +307,26 @@ export class HaBackupDataPicker extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .section {
-        margin-left: -16px;
-        margin-inline-start: -16px;
-        margin-inline-end: initial;
-      }
-      .items {
-        padding-left: 40px;
-        padding-inline-start: 40px;
-        padding-inline-end: initial;
-        display: flex;
-        flex-direction: column;
-      }
-      ha-backup-addons-picker {
-        display: block;
-        padding-left: 40px;
-        padding-inline-start: 40px;
-        padding-inline-end: initial;
-      }
-    `;
-  }
+  static styles = css`
+    .section {
+      margin-left: -16px;
+      margin-inline-start: -16px;
+      margin-inline-end: initial;
+    }
+    .items {
+      padding-left: 40px;
+      padding-inline-start: 40px;
+      padding-inline-end: initial;
+      display: flex;
+      flex-direction: column;
+    }
+    ha-backup-addons-picker {
+      display: block;
+      padding-left: 40px;
+      padding-inline-start: 40px;
+      padding-inline-end: initial;
+    }
+  `;
 }
 
 declare global {

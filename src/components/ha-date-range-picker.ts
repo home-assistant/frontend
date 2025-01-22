@@ -21,7 +21,7 @@ import {
   addMilliseconds,
   isToday,
 } from "date-fns";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -39,9 +39,7 @@ import "./ha-textarea";
 import "./ha-icon-button-next";
 import "./ha-icon-button-prev";
 
-export interface DateRangePickerRanges {
-  [key: string]: [Date, Date];
-}
+export type DateRangePickerRanges = Record<string, [Date, Date]>;
 
 @customElement("ha-date-range-picker")
 export class HaDateRangePicker extends LitElement {
@@ -420,8 +418,8 @@ export class HaDateRangePicker extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
+  static styles = css`
+
       ha-icon-button {
         direction: var(--direction);
       }
@@ -462,7 +460,6 @@ export class HaDateRangePicker extends LitElement {
         }
       }
     `;
-  }
 }
 
 declare global {

@@ -110,7 +110,7 @@ import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { isHelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
 
-type HelperItem = {
+interface HelperItem {
   id: string;
   name: string;
   icon?: string;
@@ -122,7 +122,7 @@ type HelperItem = {
   category: string | undefined;
   label_entries: LabelRegistryEntry[];
   disabled?: boolean;
-};
+}
 
 // This groups items by a key but only returns last entry per key.
 const groupByOne = <T>(
@@ -204,7 +204,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   @state() private _activeFilters?: string[];
 
-  @state() private _helperManifests?: { [domain: string]: IntegrationManifest };
+  @state() private _helperManifests?: Record<string, IntegrationManifest>;
 
   @storage({
     storage: "sessionStorage",
@@ -656,7 +656,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         ).length}
         .columns=${this._columns(this.hass.localize)}
         .data=${helpers}
-        .initialGroupColumn=${this._activeGrouping || "category"}
+        .initialGroupColumn=${this._activeGrouping ?? "category"}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._activeSorting}
         .columnOrder=${this._activeColumnOrder}
@@ -767,7 +767,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                   </ha-assist-chip>`
                 : html`<ha-icon-button
                     .path=${mdiDotsVertical}
-                    .label=${"ui.panel.config.automation.picker.bulk_action"}
+                    .label=${this.hass.localize(
+                      "ui.panel.config.automation.picker.bulk_action"
+                    )}
                     slot="trigger"
                   ></ha-icon-button>`
             }
@@ -875,7 +877,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         Array.isArray(filter) &&
         filter.length
       ) {
-        const labelItems: Set<string> = new Set();
+        const labelItems = new Set<string>();
         this._stateItems
           .filter((stateItem) =>
             this._entityReg
@@ -901,7 +903,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         Array.isArray(filter) &&
         filter.length
       ) {
-        const categoryItems: Set<string> = new Set();
+        const categoryItems = new Set<string>();
         this._stateItems
           .filter(
             (stateItem) =>
@@ -1043,7 +1045,7 @@ ${rejected
       fetchIntegrationManifests(this.hass),
     ]);
 
-    const manifests: { [domain: string]: IntegrationManifest } = {};
+    const manifests: Record<string, IntegrationManifest> = {};
 
     for (const manifest of fetchedManifests) {
       if (manifest.integration_type === "helper") {
@@ -1262,7 +1264,7 @@ ${rejected
   }
 
   private _handleGroupingChanged(ev: CustomEvent) {
-    this._activeGrouping = ev.detail.value;
+    this._activeGrouping = ev.detail.value ?? "";
   }
 
   private _handleCollapseChanged(ev: CustomEvent) {

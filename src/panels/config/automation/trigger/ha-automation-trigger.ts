@@ -1,6 +1,6 @@
 import { mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -34,7 +34,7 @@ export default class HaAutomationTrigger extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @state() private _showReorder: boolean = false;
+  @state() private _showReorder = false;
 
   @storage({
     key: "automationClipboard",
@@ -266,46 +266,44 @@ export default class HaAutomationTrigger extends LitElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .triggers {
-        padding: 16px;
-        margin: -16px;
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-      }
-      .sortable-ghost {
-        background: none;
-        border-radius: var(--ha-card-border-radius, 12px);
-      }
-      .sortable-drag {
-        background: none;
-      }
-      ha-automation-trigger-row {
-        display: block;
-        scroll-margin-top: 48px;
-      }
-      ha-svg-icon {
-        height: 20px;
-      }
-      .handle {
-        padding: 12px;
-        cursor: move; /* fallback if grab cursor is unsupported */
-        cursor: grab;
-      }
-      .handle ha-svg-icon {
-        pointer-events: none;
-        height: 24px;
-      }
-      .buttons {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        order: 1;
-      }
-    `;
-  }
+  static styles = css`
+    .triggers {
+      padding: 16px;
+      margin: -16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .sortable-ghost {
+      background: none;
+      border-radius: var(--ha-card-border-radius, 12px);
+    }
+    .sortable-drag {
+      background: none;
+    }
+    ha-automation-trigger-row {
+      display: block;
+      scroll-margin-top: 48px;
+    }
+    ha-svg-icon {
+      height: 20px;
+    }
+    .handle {
+      padding: 12px;
+      cursor: move; /* fallback if grab cursor is unsupported */
+      cursor: grab;
+    }
+    .handle ha-svg-icon {
+      pointer-events: none;
+      height: 24px;
+    }
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      order: 1;
+    }
+  `;
 }
 
 declare global {

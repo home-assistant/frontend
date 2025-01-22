@@ -1,4 +1,4 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { HomeAssistant } from "../../../../src/types";
@@ -24,31 +24,29 @@ class HcLaunchScreen extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-        height: 100vh;
-        background-color: #f2f4f9;
-        font-size: 24px;
-      }
-      .container {
-        display: flex;
-        flex-direction: column;
-        text-align: center;
-        align-items: center;
-        height: 100%;
-        justify-content: space-evenly;
-      }
-      img {
-        max-width: 80%;
-        object-fit: cover;
-      }
-      .status {
-        color: #1d2126;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+      height: 100vh;
+      background-color: #f2f4f9;
+      font-size: 24px;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      align-items: center;
+      height: 100%;
+      justify-content: space-evenly;
+    }
+    img {
+      max-width: 80%;
+      object-fit: cover;
+    }
+    .status {
+      color: #1d2126;
+    }
+  `;
 }
 
 declare global {

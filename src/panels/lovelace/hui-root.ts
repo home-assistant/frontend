@@ -97,7 +97,7 @@ class HUIRoot extends LitElement {
 
   @state() private _curView?: number | "hass-unused-entities";
 
-  private _viewCache?: { [viewId: string]: HUIView };
+  private _viewCache?: Record<string, HUIView>;
 
   private _debouncedConfigChanged: () => void;
 
@@ -474,7 +474,8 @@ class HUIRoot extends LitElement {
           id="view"
           @ll-rebuild=${this._debouncedConfigChanged}
         >
-          <hui-view-background .background=${background}> </hui-view-background>
+          <hui-view-background .hass=${this.hass} .background=${background}>
+          </hui-view-background>
         </hui-view-container>
       </div>
     `;
@@ -729,7 +730,12 @@ class HUIRoot extends LitElement {
   }
 
   private _showVoiceCommandDialog(): void {
-    showVoiceCommandDialog(this, this.hass, { pipeline_id: "last_used" });
+    showVoiceCommandDialog(this, this.hass, {
+      pipeline_id: "last_used",
+      hint: this.hass.enableShortcuts
+        ? this.hass.localize("ui.tips.key_a_hint")
+        : undefined,
+    });
   }
 
   private _handleEnableEditMode(ev: CustomEvent<RequestSelectedDetail>): void {
@@ -815,7 +821,7 @@ class HUIRoot extends LitElement {
         try {
           await deleteDashboard(this.hass!, dashboard!.id);
           return true;
-        } catch (err: any) {
+        } catch (_err: any) {
           return false;
         }
       },

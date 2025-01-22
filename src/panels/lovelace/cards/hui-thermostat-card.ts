@@ -1,6 +1,6 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { mdiDotsVertical } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -181,77 +181,75 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     };
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        position: relative;
-        display: block;
-        height: 100%;
-      }
-      ha-card {
-        position: relative;
-        height: 100%;
-        width: 100%;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: space-between;
-      }
+  static styles = css`
+    :host {
+      position: relative;
+      display: block;
+      height: 100%;
+    }
+    ha-card {
+      position: relative;
+      height: 100%;
+      width: 100%;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-      .title {
-        width: 100%;
-        font-size: 18px;
-        line-height: 36px;
-        padding: 8px 30px 8px 30px;
-        margin: 0;
-        text-align: center;
-        box-sizing: border-box;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        flex: none;
-      }
+    .title {
+      width: 100%;
+      font-size: 18px;
+      line-height: 36px;
+      padding: 8px 30px 8px 30px;
+      margin: 0;
+      text-align: center;
+      box-sizing: border-box;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: none;
+    }
 
-      .container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        overflow: hidden;
-        max-width: 100%;
-        box-sizing: border-box;
-        flex: 1;
-      }
+    .container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      max-width: 100%;
+      box-sizing: border-box;
+      flex: 1;
+    }
 
-      .container:before {
-        content: "";
-        display: block;
-        padding-top: 100%;
-      }
+    .container:before {
+      content: "";
+      display: block;
+      padding-top: 100%;
+    }
 
-      .container > * {
-        padding: 8px;
-      }
+    .container > * {
+      padding: 8px;
+    }
 
-      .more-info {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        right: 0;
-        inset-inline-end: 0px;
-        inset-inline-start: initial;
-        border-radius: 100%;
-        color: var(--secondary-text-color);
-        direction: var(--direction);
-      }
+    .more-info {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      right: 0;
+      inset-inline-end: 0px;
+      inset-inline-start: initial;
+      border-radius: 100%;
+      color: var(--secondary-text-color);
+      direction: var(--direction);
+    }
 
-      hui-card-features {
-        width: 100%;
-        flex: none;
-      }
-    `;
-  }
+    hui-card-features {
+      width: 100%;
+      flex: none;
+    }
+  `;
 }
 
 declare global {

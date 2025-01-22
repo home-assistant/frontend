@@ -1,5 +1,5 @@
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -204,7 +204,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
           }
         }
       );
-    } catch (e) {
+    } catch (_e) {
       this._entry = null;
     }
   }
@@ -348,103 +348,101 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-card {
-        padding-bottom: 16px;
-        position: relative;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        box-sizing: border-box;
-        --alarm-state-color: var(--state-inactive-color);
-      }
+  static styles = css`
+    ha-card {
+      padding-bottom: 16px;
+      position: relative;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-sizing: border-box;
+      --alarm-state-color: var(--state-inactive-color);
+    }
 
-      ha-assist-chip {
-        --ha-assist-chip-filled-container-color: var(--alarm-state-color);
-        --primary-text-color: var(--text-primary-color);
-      }
+    ha-assist-chip {
+      --ha-assist-chip-filled-container-color: var(--alarm-state-color);
+      --primary-text-color: var(--text-primary-color);
+    }
 
-      .card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-        box-sizing: border-box;
-      }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      box-sizing: border-box;
+    }
 
-      .triggered,
-      .arming,
-      .pending {
-        animation: pulse 1s infinite;
-      }
+    .triggered,
+    .arming,
+    .pending {
+      animation: pulse 1s infinite;
+    }
 
-      @keyframes pulse {
-        0% {
-          opacity: 1;
-        }
-        50% {
-          opacity: 0;
-        }
-        100% {
-          opacity: 1;
-        }
+    @keyframes pulse {
+      0% {
+        opacity: 1;
       }
+      50% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
 
-      ha-textfield {
-        display: block;
-        margin: 8px;
-        max-width: 150px;
-        text-align: center;
-      }
+    ha-textfield {
+      display: block;
+      margin: 8px;
+      max-width: 150px;
+      text-align: center;
+    }
 
-      .state {
-        margin-left: 16px;
-        margin-inline-start: 16px;
-        margin-inline-end: initial;
-        position: relative;
-        bottom: 16px;
-        color: var(--alarm-state-color);
-        animation: none;
-      }
+    .state {
+      margin-left: 16px;
+      margin-inline-start: 16px;
+      margin-inline-end: initial;
+      position: relative;
+      bottom: 16px;
+      color: var(--alarm-state-color);
+      animation: none;
+    }
 
-      #keypad {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        margin: auto;
-        width: 100%;
-        max-width: 300px;
-        direction: ltr;
-      }
+    #keypad {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: auto;
+      width: 100%;
+      max-width: 300px;
+      direction: ltr;
+    }
 
-      #keypad mwc-button {
-        padding: 8px;
-        width: 30%;
-        box-sizing: border-box;
-      }
+    #keypad mwc-button {
+      padding: 8px;
+      width: 30%;
+      box-sizing: border-box;
+    }
 
-      .actions {
-        margin: 0;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
+    .actions {
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
 
-      .actions mwc-button {
-        margin: 0 4px 4px;
-      }
+    .actions mwc-button {
+      margin: 0 4px 4px;
+    }
 
-      mwc-button#disarm {
-        color: var(--error-color);
-      }
+    mwc-button#disarm {
+      color: var(--error-color);
+    }
 
-      mwc-button.numberkey {
-        --mdc-typography-button-font-size: var(--keypad-font-size, 0.875rem);
-      }
-    `;
-  }
+    mwc-button.numberkey {
+      --mdc-typography-button-font-size: var(--keypad-font-size, 0.875rem);
+    }
+  `;
 }
 
 declare global {

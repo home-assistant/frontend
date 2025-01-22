@@ -98,7 +98,7 @@ class HaAddonPicker extends LitElement {
           "ui.components.addon-picker.error.no_supervisor"
         );
       }
-    } catch (err: any) {
+    } catch (_err: any) {
       this._error = this.hass.localize(
         "ui.components.addon-picker.error.fetch_addons"
       );

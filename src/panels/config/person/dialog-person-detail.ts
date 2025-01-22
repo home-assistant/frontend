@@ -115,6 +115,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
     }
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+    return true;
   }
 
   protected render() {

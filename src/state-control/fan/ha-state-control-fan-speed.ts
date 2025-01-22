@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -136,31 +135,29 @@ export class HaStateControlFanSpeed extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-control-slider {
-        height: 45vh;
-        max-height: 320px;
-        min-height: 200px;
-        --control-slider-thickness: 130px;
-        --control-slider-border-radius: 36px;
-        --control-slider-color: var(--primary-color);
-        --control-slider-background: var(--disabled-color);
-        --control-slider-background-opacity: 0.2;
-        --control-slider-tooltip-font-size: 20px;
-      }
-      ha-control-select {
-        height: 45vh;
-        max-height: 320px;
-        min-height: 200px;
-        --control-select-thickness: 130px;
-        --control-select-border-radius: 36px;
-        --control-select-color: var(--primary-color);
-        --control-select-background: var(--disabled-color);
-        --control-select-background-opacity: 0.2;
-      }
-    `;
-  }
+  static styles = css`
+    ha-control-slider {
+      height: 45vh;
+      max-height: 320px;
+      min-height: 200px;
+      --control-slider-thickness: 130px;
+      --control-slider-border-radius: 36px;
+      --control-slider-color: var(--primary-color);
+      --control-slider-background: var(--disabled-color);
+      --control-slider-background-opacity: 0.2;
+      --control-slider-tooltip-font-size: 20px;
+    }
+    ha-control-select {
+      height: 45vh;
+      max-height: 320px;
+      min-height: 200px;
+      --control-select-thickness: 130px;
+      --control-select-border-radius: 36px;
+      --control-select-color: var(--primary-color);
+      --control-select-background: var(--disabled-color);
+      --control-select-background-opacity: 0.2;
+    }
+  `;
 }
 
 declare global {

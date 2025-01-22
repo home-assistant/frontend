@@ -12,7 +12,7 @@ import {
   mdiVolumePlus,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stateActive } from "../../../common/entity/state_active";
@@ -395,34 +395,32 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-      }
-      .flex {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-      .volume {
-        display: flex;
-        align-items: center;
-        flex-grow: 2;
-        flex-shrink: 2;
-      }
-      .controls {
-        white-space: nowrap;
-        direction: ltr;
-      }
-      ha-slider {
-        flex-grow: 2;
-        flex-shrink: 2;
-        width: 100%;
-        margin: 0 -8px 0 1px;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+    }
+    .flex {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .volume {
+      display: flex;
+      align-items: center;
+      flex-grow: 2;
+      flex-shrink: 2;
+    }
+    .controls {
+      white-space: nowrap;
+      direction: ltr;
+    }
+    ha-slider {
+      flex-grow: 2;
+      flex-shrink: 2;
+      width: 100%;
+      margin: 0 -8px 0 1px;
+    }
+  `;
 }
 
 declare global {

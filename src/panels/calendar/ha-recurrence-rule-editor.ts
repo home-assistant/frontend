@@ -138,7 +138,7 @@ export class RecurrenceRuleEditor extends LitElement {
     let rrule: Partial<Options> | undefined;
     try {
       rrule = RRule.parseString(this.value);
-    } catch (ex) {
+    } catch (_err) {
       // unsupported rrule string
       this._freq = undefined;
       return;

@@ -291,9 +291,10 @@ export interface ShorthandNotCondition extends ShorthandBaseCondition {
   not: Condition[];
 }
 
-export interface AutomationElementGroup {
-  [key: string]: { icon?: string; members?: AutomationElementGroup };
-}
+export type AutomationElementGroup = Record<
+  string,
+  { icon?: string; members?: AutomationElementGroup }
+>;
 
 export type Condition =
   | StateCondition
@@ -366,7 +367,7 @@ export const saveAutomationConfig = (
   hass: HomeAssistant,
   id: string,
   config: AutomationConfig
-) => hass.callApi<void>("POST", `config/automation/config/${id}`, config);
+) => hass.callApi<undefined>("POST", `config/automation/config/${id}`, config);
 
 export const normalizeAutomationConfig = <
   T extends Partial<AutomationConfig> | AutomationConfig,
@@ -519,8 +520,8 @@ export const testCondition = (
     variables,
   });
 
-export type AutomationClipboard = {
+export interface AutomationClipboard {
   trigger?: Trigger;
   condition?: Condition;
   action?: Action;
-};
+}

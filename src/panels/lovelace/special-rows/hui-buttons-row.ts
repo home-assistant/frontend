@@ -38,7 +38,7 @@ export class HuiButtonsRow extends LitElement implements LovelaceRow {
     );
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult | undefined {
     return html`
       <hui-buttons-base
         .hass=${this.hass}

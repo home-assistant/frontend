@@ -17,9 +17,7 @@ export interface CustomIconHelpers {
 }
 
 export interface CustomIconsWindow {
-  customIcons?: {
-    [key: string]: CustomIconHelpers;
-  };
+  customIcons?: Record<string, CustomIconHelpers>;
 }
 
 const customIconsWindow = window as CustomIconsWindow;

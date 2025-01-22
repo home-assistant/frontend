@@ -91,6 +91,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
+import { autoCaseNoun } from "../../../common/translations/auto_case_noun";
 
 const OVERRIDE_DEVICE_CLASSES = {
   cover: [
@@ -1135,10 +1136,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
           text: this.hass!.localize(
             "ui.dialogs.entity_registry.editor.switch_as_x_confirm",
             {
-              domain: domainToName(
-                this.hass.localize,
-                this._switchAsDomain
-              ).toLowerCase(),
+              domain: autoCaseNoun(
+                domainToName(this.hass.localize, this._switchAsDomain),
+                this.hass.locale.language
+              ),
             }
           ),
         })
@@ -1160,7 +1161,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
             );
             showMoreInfoDialog(parent, { entityId: entry.entity_id });
             close = false;
-          } catch (err) {
+          } catch (_err) {
             // ignore
           }
         }
@@ -1177,23 +1178,23 @@ export class EntityRegistrySettingsEditor extends LitElement {
               ? this.hass!.localize(
                   "ui.dialogs.entity_registry.editor.switch_as_x_remove_confirm",
                   {
-                    domain: domainToName(
-                      this.hass.localize,
-                      domain
-                    ).toLowerCase(),
+                    domain: autoCaseNoun(
+                      domainToName(this.hass.localize, domain),
+                      this.hass.locale.language
+                    ),
                   }
                 )
               : this.hass!.localize(
                   "ui.dialogs.entity_registry.editor.switch_as_x_change_confirm",
                   {
-                    domain_1: domainToName(
-                      this.hass.localize,
-                      domain
-                    ).toLowerCase(),
-                    domain_2: domainToName(
-                      this.hass.localize,
-                      this._switchAsDomain
-                    ).toLowerCase(),
+                    domain_1: autoCaseNoun(
+                      domainToName(this.hass.localize, domain),
+                      this.hass.locale.language
+                    ),
+                    domain_2: autoCaseNoun(
+                      domainToName(this.hass.localize, this._switchAsDomain),
+                      this.hass.locale.language
+                    ),
                   }
                 ),
         })
@@ -1226,7 +1227,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
               );
               showMoreInfoDialog(parent, { entityId: entry.entity_id });
               close = false;
-            } catch (err) {
+            } catch (_err) {
               // ignore
             }
           }

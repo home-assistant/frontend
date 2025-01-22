@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -31,38 +30,36 @@ class PersonBadge extends LitElement {
     </div>`;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        width: 40px;
-        height: 40px;
-        display: block;
-      }
-      .picture {
-        width: 100%;
-        height: 100%;
-        background-size: cover;
-        border-radius: 50%;
-      }
-      .initials {
-        display: inline-flex;
-        justify-content: center;
-        align-items: center;
-        box-sizing: border-box;
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        background-color: var(--light-primary-color);
-        text-decoration: none;
-        color: var(--text-light-primary-color, var(--primary-text-color));
-        overflow: hidden;
-        font-size: var(--person-badge-font-size, 1em);
-      }
-      .initials.long {
-        font-size: 80%;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      width: 40px;
+      height: 40px;
+      display: block;
+    }
+    .picture {
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      border-radius: 50%;
+    }
+    .initials {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      box-sizing: border-box;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background-color: var(--light-primary-color);
+      text-decoration: none;
+      color: var(--text-light-primary-color, var(--primary-text-color));
+      overflow: hidden;
+      font-size: var(--person-badge-font-size, 1em);
+    }
+    .initials.long {
+      font-size: 80%;
+    }
+  `;
 }
 
 declare global {

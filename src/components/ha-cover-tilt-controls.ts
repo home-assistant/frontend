@@ -1,5 +1,4 @@
 import { mdiArrowBottomLeft, mdiArrowTopRight, mdiStop } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -84,16 +83,14 @@ class HaCoverTiltControls extends LitElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        white-space: nowrap;
-      }
-      .invisible {
-        visibility: hidden !important;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      white-space: nowrap;
+    }
+    .invisible {
+      visibility: hidden !important;
+    }
+  `;
 }
 
 declare global {
