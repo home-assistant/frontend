@@ -419,47 +419,46 @@ export class HaDateRangePicker extends LitElement {
   }
 
   static styles = css`
+    ha-icon-button {
+      direction: var(--direction);
+    }
 
-      ha-icon-button {
-        direction: var(--direction);
-      }
+    .date-range-inputs {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-      .date-range-inputs {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
+    .date-range-ranges {
+      border-right: 1px solid var(--divider-color);
+    }
 
-      .date-range-ranges {
-        border-right: 1px solid var(--divider-color);
-      }
+    .date-range-footer {
+      display: flex;
+      justify-content: flex-end;
+      padding: 8px;
+      border-top: 1px solid var(--divider-color);
+    }
 
-      .date-range-footer {
-        display: flex;
-        justify-content: flex-end;
-        padding: 8px;
-        border-top: 1px solid var(--divider-color);
-      }
-
+    ha-textarea {
+      display: inline-block;
+      width: 340px;
+    }
+    @media only screen and (max-width: 460px) {
       ha-textarea {
-        display: inline-block;
-        width: 340px;
+        width: 100%;
       }
-      @media only screen and (max-width: 460px) {
-        ha-textarea {
-          width: 100%;
-        }
-        .date-range-inputs {
-          gap: 0px;
-        }
+      .date-range-inputs {
+        gap: 0px;
       }
-      @media only screen and (max-width: 800px) {
-        .date-range-ranges {
-          border-right: none;
-          border-bottom: 1px solid var(--divider-color);
-        }
+    }
+    @media only screen and (max-width: 800px) {
+      .date-range-ranges {
+        border-right: none;
+        border-bottom: 1px solid var(--divider-color);
       }
-    `;
+    }
+  `;
 }
 
 declare global {
