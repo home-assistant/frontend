@@ -5,6 +5,7 @@ import type { VisualMapComponentOption } from "echarts/components";
 import type { LineSeriesOption } from "echarts/charts";
 import type { YAXisOption } from "echarts/types/dist/shared";
 import { differenceInDays } from "date-fns";
+import { styleMap } from "lit/directives/style-map";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { computeRTL } from "../../common/util/compute_rtl";
 
@@ -60,6 +61,8 @@ export class StateHistoryChartLine extends LitElement {
 
   @property({ attribute: "fit-y-data", type: Boolean }) public fitYData = false;
 
+  @property({ type: String }) public height?: string;
+
   @state() private _chartData: LineSeriesOption[] = [];
 
   @state() private _entityIds: string[] = [];
@@ -78,6 +81,8 @@ export class StateHistoryChartLine extends LitElement {
         .hass=${this.hass}
         .data=${this._chartData}
         .options=${this._chartOptions}
+        .height=${this.height}
+        style=${styleMap({ height: this.height })}
       ></ha-chart-base>
     `;
   }
@@ -185,6 +190,7 @@ export class StateHistoryChartLine extends LitElement {
           max: this.fitYData ? this.maxYAxis : undefined,
           position: rtl ? "right" : "left",
           scale: true,
+          nameGap: 2,
           splitLine: {
             show: true,
             lineStyle: splitLineStyle,

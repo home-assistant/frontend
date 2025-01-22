@@ -73,6 +73,7 @@ export function getCommonOptions(
     yAxis: {
       type: "value",
       name: unit,
+      nameGap: 5,
       axisLabel: {
         formatter: (value: number) => formatNumber(Math.abs(value), locale),
       },

@@ -26,7 +26,7 @@ export class HaChartBase extends LitElement {
 
   @property({ attribute: false }) public options?: ECOption;
 
-  @property({ type: Number }) public height?: number;
+  @property({ type: String }) public height?: string;
 
   @property({ attribute: "external-hidden", type: Boolean })
   public externalHidden = false;
@@ -139,7 +139,7 @@ export class HaChartBase extends LitElement {
       <div
         class="chart-container"
         style=${styleMap({
-          height: `${this.height ?? this._getDefaultHeight()}px`,
+          height: this.height ?? `${this._getDefaultHeight()}px`,
         })}
       >
         <div class="chart"></div>

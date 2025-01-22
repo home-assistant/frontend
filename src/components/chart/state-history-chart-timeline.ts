@@ -65,7 +65,7 @@ export class StateHistoryChartTimeline extends LitElement {
       <ha-chart-base
         .hass=${this.hass}
         .options=${this._chartOptions}
-        .height=${this.data.length * 30 + 30}
+        .height=${`${this.data.length * 30 + 30}px`}
         .data=${this._chartData}
       ></ha-chart-base>
     `;

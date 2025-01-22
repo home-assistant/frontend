@@ -2,6 +2,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, eventOptions, property, state } from "lit/decorators";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
+import { styleMap } from "lit/directives/style-map";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import type {
@@ -69,6 +70,8 @@ export class StateHistoryCharts extends LitElement {
 
   @property({ attribute: "fit-y-data", type: Boolean }) public fitYData = false;
 
+  @property({ type: String }) public height?: string;
+
   private _computedStartTime!: Date;
 
   private _computedEndTime!: Date;
@@ -133,7 +136,10 @@ export class StateHistoryCharts extends LitElement {
       return html``;
     }
     if (!Array.isArray(item)) {
-      return html`<div class="entry-container">
+      return html`<div
+        class="entry-container"
+        style=${styleMap({ height: this.height })}
+      >
         <state-history-chart-line
           .hass=${this.hass}
           .unit=${item.unit}
@@ -151,6 +157,7 @@ export class StateHistoryCharts extends LitElement {
           .maxYAxis=${this.maxYAxis}
           .fitYData=${this.fitYData}
           @y-width-changed=${this._yWidthChanged}
+          .height=${this.height}
         ></state-history-chart-line>
       </div> `;
     }

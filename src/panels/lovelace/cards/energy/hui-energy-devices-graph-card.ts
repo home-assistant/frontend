@@ -86,7 +86,7 @@ export class HuiEnergyDevicesGraphCard
             .hass=${this.hass}
             .data=${this._chartData}
             .options=${this._createOptions(this.hass.themes?.darkMode)}
-            .height=${(this._chartData[0]?.data?.length || 0) * 28 + 50}
+            .height=${`${(this._chartData[0]?.data?.length || 0) * 28 + 50}px`}
           ></ha-chart-base>
         </div>
       </ha-card>

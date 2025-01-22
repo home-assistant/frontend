@@ -280,6 +280,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
                   .minYAxis=${this._config.min_y_axis}
                   .maxYAxis=${this._config.max_y_axis}
                   .fitYData=${this._config.fit_y_data || false}
+                  height="100%"
                 ></state-history-charts>
               `}
         </div>
@@ -289,6 +290,8 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   static styles = css`
     ha-card {
+      display: flex;
+      flex-direction: column;
       height: 100%;
     }
     .card-header {
@@ -302,9 +305,13 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     }
     .content {
       padding: 16px;
+      flex: 1;
     }
     .has-header {
       padding-top: 0;
+    }
+    state-history-charts {
+      height: 100%;
     }
   `;
 }

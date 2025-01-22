@@ -6,6 +6,7 @@ import type {
   BarSeriesOption,
   LineSeriesOption,
 } from "echarts/types/dist/shared";
+import { styleMap } from "lit/directives/style-map";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 
@@ -85,6 +86,8 @@ export class StatisticsChart extends LitElement {
   @property({ attribute: "days-to-show", type: Number })
   public daysToShow?: number;
 
+  @property({ type: String }) public height?: string;
+
   @state() private _chartData: (LineSeriesOption | BarSeriesOption)[] = [];
 
   @state() private _legendData: string[] = [];
@@ -155,6 +158,8 @@ export class StatisticsChart extends LitElement {
         .hass=${this.hass}
         .data=${this._chartData}
         .options=${this._chartOptions}
+        .height=${this.height}
+        style=${styleMap({ height: this.height })}
       ></ha-chart-base>
     `;
   }
