@@ -11,7 +11,6 @@ export const updateCore = async (hass: HomeAssistant, backup: boolean) => {
     await hass.callWS({
       type: "hassio/update/core",
       backup: backup,
-      version: null,
     });
     return;
   }
