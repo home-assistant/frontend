@@ -4,7 +4,6 @@ import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiCalendar } from "@mdi/js";
 import {
-  addHours,
   addDays,
   subMinutes,
   subHours,
