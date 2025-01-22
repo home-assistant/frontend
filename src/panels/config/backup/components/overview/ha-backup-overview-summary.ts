@@ -350,9 +350,7 @@ class HaBackupOverviewBackups extends LitElement {
     return nextBackupDescription
       ? html`<ha-md-list-item>
           <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
-          <span slot="headline" class=${showTip ? "tip" : ""}>
-            ${nextBackupDescription}
-          </span>
+          <span slot="headline">${nextBackupDescription}</span>
 
           ${showTip
             ? html` <ha-icon-button
@@ -393,10 +391,6 @@ class HaBackupOverviewBackups extends LitElement {
           --md-list-item-top-space: 8px;
           --md-list-item-bottom-space: 8px;
           --md-list-item-one-line-container-height: 40x;
-        }
-        .tip {
-          text-decoration: underline;
-          cursor: pointer;
         }
         span.skeleton {
           position: relative;
