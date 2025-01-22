@@ -216,7 +216,7 @@ export class HaChartBase extends LitElement {
     // we should create our own theme but this is a quick fix for now
     const splitLineStyle = darkMode ? { color: "#333" } : {};
 
-    return {
+    const options = {
       animation: !this._reducedMotion,
       darkMode,
       aria: {
@@ -251,6 +251,22 @@ export class HaChartBase extends LitElement {
           : undefined
       ) as YAXisOption[],
     };
+
+    const isMobile = window.matchMedia(
+      "all and (max-width: 450px), all and (max-height: 500px)"
+    ).matches;
+    if (isMobile && options.tooltip) {
+      // mobile charts are full width so we need to confine the tooltip to the chart
+      const tooltips = Array.isArray(options.tooltip)
+        ? options.tooltip
+        : [options.tooltip];
+      tooltips.forEach((tooltip) => {
+        tooltip.confine = true;
+        tooltip.appendTo = undefined;
+      });
+      options.tooltip = tooltips;
+    }
+    return options;
   }
 
   private _getDefaultHeight() {
