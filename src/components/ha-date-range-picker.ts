@@ -370,10 +370,9 @@ export class HaDateRangePicker extends LitElement {
   }
 
   static styles = css`
-
-      ha-icon-button {
-        direction: var(--direction);
-      }
+    ha-icon-button {
+      direction: var(--direction);
+    }
 
     .date-range-inputs {
       display: flex;
