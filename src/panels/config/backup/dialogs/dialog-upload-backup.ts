@@ -24,15 +24,11 @@ import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showAlertDialog } from "../../../lovelace/custom-card-helpers";
 import type { UploadBackupDialogParams } from "./show-dialog-upload-backup";
-import { SUPPORTED_FORMAT } from "../components/ha-backup-upload";
-
-interface FormData {
-  file?: File;
-}
-
-const INITIAL_DATA: FormData = {
-  file: undefined,
-};
+import {
+  INITIAL_FORM_DATA,
+  SUPPORTED_FORMAT,
+  type BackupFileFormData,
+} from "../components/ha-backup-upload";
 
 @customElement("ha-dialog-upload-backup")
 export class DialogUploadBackup
@@ -47,13 +43,13 @@ export class DialogUploadBackup
 
   @state() private _error?: string;
 
-  @state() private _formData?: FormData;
+  @state() private _formData?: BackupFileFormData;
 
   @query("ha-md-dialog") private _dialog?: HaMdDialog;
 
   public async showDialog(params: UploadBackupDialogParams): Promise<void> {
     this._params = params;
-    this._formData = INITIAL_DATA;
+    this._formData = INITIAL_FORM_DATA;
   }
 
   private _dialogClosed() {
@@ -136,7 +132,7 @@ export class DialogUploadBackup
 
   private _filesCleared() {
     this._error = undefined;
-    this._formData = INITIAL_DATA;
+    this._formData = INITIAL_FORM_DATA;
   }
 
   private async _upload() {
@@ -160,7 +156,7 @@ export class DialogUploadBackup
 
     this._uploading = true;
     try {
-      await uploadBackup(this.hass!, file, agentIds);
+      await uploadBackup(file, agentIds, this.hass);
       this._params!.submit?.();
       this.closeDialog();
     } catch (err: any) {

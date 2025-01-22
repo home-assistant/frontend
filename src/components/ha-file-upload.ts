@@ -11,6 +11,7 @@ import "./ha-icon-button";
 import { blankBeforePercent } from "../common/translations/blank_before_percent";
 import { ensureArray } from "../common/array/ensure-array";
 import { bytesToString } from "../util/bytes-to-string";
+import type { LocalizeFunc } from "../common/translations/localize";
 
 declare global {
   interface HASSDomEvents {
@@ -43,6 +44,8 @@ export class HaFileUpload extends LitElement {
 
   @property({ type: Number }) public progress?: number;
 
+  @property({ attribute: false }) public localize?: LocalizeFunc;
+
   @property({ type: Boolean, attribute: "auto-open-file-dialog" })
   public autoOpenFileDialog = false;
 
@@ -73,23 +76,22 @@ export class HaFileUpload extends LitElement {
   }
 
   public render(): TemplateResult {
+    const localize = this.localize || this.hass!.localize;
     return html`
       ${this.uploading
         ? html`<div class="container">
             <div class="uploading">
               <span class="header"
                 >${this.value
-                  ? this.hass?.localize(
-                      "ui.components.file-upload.uploading_name",
-                      { name: this._name }
-                    )
-                  : this.hass?.localize(
-                      "ui.components.file-upload.uploading"
-                    )}</span
+                  ? localize("ui.components.file-upload.uploading_name", {
+                      name: this._name,
+                    })
+                  : localize("ui.components.file-upload.uploading")}</span
               >
               ${this.progress
                 ? html`<div class="progress">
-                    ${this.progress}${blankBeforePercent(this.hass!.locale)}%
+                    ${this.progress}${this.hass &&
+                    blankBeforePercent(this.hass!.locale)}%
                   </div>`
                 : nothing}
             </div>
@@ -116,14 +118,11 @@ export class HaFileUpload extends LitElement {
                     .path=${this.icon || mdiFileUpload}
                   ></ha-svg-icon>
                   <ha-button unelevated @click=${this._openFilePicker}>
-                    ${this.label ||
-                    this.hass?.localize("ui.components.file-upload.label")}
+                    ${this.label || localize("ui.components.file-upload.label")}
                   </ha-button>
                   <span class="secondary"
                     >${this.secondary ||
-                    this.hass?.localize(
-                      "ui.components.file-upload.secondary"
-                    )}</span
+                    localize("ui.components.file-upload.secondary")}</span
                   >
                   <span class="supports">${this.supports}</span>`
               : typeof this.value === "string"
@@ -136,8 +135,7 @@ export class HaFileUpload extends LitElement {
                     </div>
                     <ha-icon-button
                       @click=${this._clearValue}
-                      .label=${this.hass?.localize("ui.common.delete") ||
-                      "Delete"}
+                      .label=${localize("ui.common.delete")}
                       .path=${mdiDelete}
                     ></ha-icon-button>
                   </div>`
@@ -155,8 +153,7 @@ export class HaFileUpload extends LitElement {
                         </div>
                         <ha-icon-button
                           @click=${this._clearValue}
-                          .label=${this.hass?.localize("ui.common.delete") ||
-                          "Delete"}
+                          .label=${localize("ui.common.delete")}
                           .path=${mdiDelete}
                         ></ha-icon-button>
                       </div>`

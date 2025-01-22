@@ -8172,9 +8172,15 @@
         },
         "restore": {
           "header": "Restore a backup",
+          "upload_backup": "[%key:ui::panel::config::backup::dialogs::upload::title%]",
+          "upload_backup_action": "[%key:ui::panel::config::backup::dialogs::upload::action%]",
+          "unsupported": {
+            "title": "[%key:ui::panel::config::backup::dialogs::upload::unsupported::title%]",
+            "text": "[%key:ui::panel::config::backup::dialogs::upload::unsupported::text%]"
+          },
+          "ok": "[%key:ui::common::ok%]",
           "in_progress": "Restore in progress",
           "failed": "Restore failed",
-          "upload_backup": "[%key:supervisor::backup::upload_backup%]",
           "upload_supports": "Supports .TAR files",
           "upload_drop": "[%key:ui::components::file-upload::secondary%]",
           "show_log": "Show full log",

@@ -8,8 +8,17 @@ import {
   fireEvent,
   type HASSDomEvent,
 } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 
 export const SUPPORTED_FORMAT = "application/x-tar";
+
+export interface BackupFileFormData {
+  file?: File;
+}
+
+export const INITIAL_FORM_DATA: BackupFileFormData = {
+  file: undefined,
+};
 
 @customElement("ha-backup-upload")
 class HaBackupUpload extends LitElement {
@@ -19,9 +28,13 @@ class HaBackupUpload extends LitElement {
 
   @property() public error?: string;
 
-  @state() public formData?: FormData;
+  @property({ attribute: false }) public localize?: LocalizeFunc;
+
+  @state() public formData?: BackupFileFormData;
 
   render() {
+    const localize = this.localize || this.hass.localize;
+
     return html`
       ${this.error
         ? html`<ha-alert alert-type="error">${this.error}</ha-alert>`
@@ -31,10 +44,9 @@ class HaBackupUpload extends LitElement {
         .uploading=${this.uploading}
         .icon=${mdiFolderUpload}
         accept=${SUPPORTED_FORMAT}
-        .label=${this.hass.localize(
-          "ui.panel.config.backup.dialogs.upload.input_label"
-        )}
-        .supports=${this.hass.localize(
+        .localize=${localize}
+        .label=${localize("ui.panel.config.backup.dialogs.upload.input_label")}
+        .supports=${localize(
           "ui.panel.config.backup.dialogs.upload.supports_tar"
         )}
         @file-picked=${this._filePicked}

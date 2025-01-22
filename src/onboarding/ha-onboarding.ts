@@ -41,6 +41,7 @@ import "./onboarding-analytics";
 import "./onboarding-create-user";
 import "./onboarding-loading";
 import "./onboarding-welcome";
+import "./onboarding-restore-backup";
 import "./onboarding-welcome-links";
 import { makeDialogManager } from "../dialogs/make-dialog-manager";
 import { navigate } from "../common/navigate";
@@ -159,6 +160,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       return html`<onboarding-restore-backup
         .hass=${this.hass}
         .localize=${this.localize}
+        ?supervisor=${this._supervisor}
       >
       </onboarding-restore-backup>`;
     }
@@ -167,7 +169,6 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       return html`<onboarding-welcome
         .localize=${this.localize}
         .language=${this.language}
-        ?supervisor=${this._supervisor}
       ></onboarding-welcome>`;
     }
 
@@ -272,10 +273,6 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         "Home Assistant OS",
         "Home Assistant Supervised",
       ].includes(response.installation_type);
-      if (this._supervisor) {
-        // Only load if we have supervisor
-        import("./onboarding-restore-backup");
-      }
     } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error(
