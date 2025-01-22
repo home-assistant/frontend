@@ -1,4 +1,4 @@
-import { mdiBackupRestore, mdiCalendar } from "@mdi/js";
+import { mdiBackupRestore, mdiCalendar, mdiInformation } from "@mdi/js";
 import { addHours, differenceInDays, isToday, isTomorrow } from "date-fns";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -10,6 +10,7 @@ import "../../../../../components/ha-card";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/ha-icon-button";
 import type { BackupConfig, BackupContent } from "../../../../../data/backup";
 import {
   BackupScheduleRecurrence,
@@ -349,15 +350,17 @@ class HaBackupOverviewBackups extends LitElement {
     return nextBackupDescription
       ? html`<ha-md-list-item>
           <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
-          <span>
-            <span
-              slot="headline"
-              class=${showTip ? "tip" : ""}
-              @click=${openAdditionalBackupDescriptionDialog}
-            >
-              ${nextBackupDescription}
-            </span>
+          <span slot="headline" class=${showTip ? "tip" : ""}>
+            ${nextBackupDescription}
           </span>
+
+          ${showTip
+            ? html` <ha-icon-button
+                slot="end"
+                @click=${openAdditionalBackupDescriptionDialog}
+                .path=${mdiInformation}
+              ></ha-icon-button>`
+            : nothing}
         </ha-md-list-item>`
       : nothing;
   }
