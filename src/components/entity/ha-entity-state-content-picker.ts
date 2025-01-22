@@ -178,7 +178,7 @@ class HaEntityStatePicker extends LitElement {
               no-style
               @item-moved=${this._moveItem}
               .disabled=${this.disabled}
-              handle-selector="[data-handle]"
+              handle-selector="button.primary.action"
             >
               <ha-chip-set>
                 ${repeat(
@@ -194,7 +194,6 @@ class HaEntityStatePicker extends LitElement {
                         @remove=${this._removeItem}
                         .label=${label}
                         selected
-                        data-handle
                       >
                         <ha-svg-icon slot="icon" .path=${mdiDrag}></ha-svg-icon>
                         ${label}
