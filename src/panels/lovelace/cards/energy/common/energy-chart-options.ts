@@ -45,12 +45,10 @@ export function getCommonOptions(
   unit?: string,
   compareStart?: Date,
   compareEnd?: Date,
-  darkMode?: boolean,
   formatTotal?: (total: number) => string
 ): ECOption {
   const dayDifference = differenceInDays(end, start);
   const compare = compareStart !== undefined && compareEnd !== undefined;
-  const splitLineStyle = darkMode ? { opacity: 0.15 } : {};
 
   const options: ECOption = {
     xAxis: {
@@ -64,7 +62,6 @@ export function getCommonOptions(
       },
       splitLine: {
         show: true,
-        lineStyle: splitLineStyle,
       },
       minInterval:
         dayDifference >= 89 // quarter
@@ -78,6 +75,9 @@ export function getCommonOptions(
       name: unit,
       axisLabel: {
         formatter: (value: number) => formatNumber(Math.abs(value), locale),
+      },
+      splitLine: {
+        show: true,
       },
     },
     grid: {

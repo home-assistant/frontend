@@ -108,8 +108,7 @@ export class HuiEnergyUsageGraphCard
               this.hass.locale,
               this.hass.config,
               this._compareStart,
-              this._compareEnd,
-              this.hass.themes.darkMode
+              this._compareEnd
             )}
             chart-type="bar"
           ></ha-chart-base>
@@ -145,8 +144,7 @@ export class HuiEnergyUsageGraphCard
       locale: FrontendLocaleData,
       config: HassConfig,
       compareStart?: Date,
-      compareEnd?: Date,
-      darkMode?: boolean
+      compareEnd?: Date
     ): ECOption => {
       const commonOptions = getCommonOptions(
         start,
@@ -156,7 +154,6 @@ export class HuiEnergyUsageGraphCard
         "kWh",
         compareStart,
         compareEnd,
-        darkMode,
         this._formatTotal
       );
       const options: ECOption = {

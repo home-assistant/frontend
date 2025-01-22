@@ -176,7 +176,6 @@ export class HuiEnergyDevicesDetailGraphCard
         unit,
         compareStart,
         compareEnd,
-        this.hass.themes?.darkMode,
         this._formatTotal
       );
 

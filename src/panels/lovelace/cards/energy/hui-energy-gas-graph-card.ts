@@ -104,8 +104,7 @@ export class HuiEnergyGasGraphCard
               this.hass.config,
               this._unit,
               this._compareStart,
-              this._compareEnd,
-              this.hass.themes.darkMode
+              this._compareEnd
             )}
             chart-type="bar"
           ></ha-chart-base>
@@ -137,8 +136,7 @@ export class HuiEnergyGasGraphCard
       config: HassConfig,
       unit?: string,
       compareStart?: Date,
-      compareEnd?: Date,
-      darkMode?: boolean
+      compareEnd?: Date
     ): ECOption =>
       getCommonOptions(
         start,
@@ -148,7 +146,6 @@ export class HuiEnergyGasGraphCard
         unit,
         compareStart,
         compareEnd,
-        darkMode,
         this._formatTotal
       )
   );

@@ -206,14 +206,50 @@ export class HaChartBase extends LitElement {
   }
 
   private _createOptions(): ECOption {
+    const darkMode = this.hass.themes?.darkMode ?? false;
+    const xAxis = Array.isArray(this.options?.xAxis)
+      ? this.options?.xAxis
+      : [this.options?.xAxis];
+    const yAxis = Array.isArray(this.options?.yAxis)
+      ? this.options?.yAxis
+      : [this.options?.yAxis];
+    // we should create our own theme but this is a quick fix for now
+    const splitLineStyle = darkMode ? { color: "#333" } : {};
+
     return {
       animation: !this._reducedMotion,
-      darkMode: this.hass.themes?.darkMode,
+      darkMode,
       aria: {
         show: true,
       },
       dataZoom: this._getDataZoomConfig(),
       ...this.options,
+      xAxis: xAxis.map((axis) =>
+        axis
+          ? {
+              ...axis,
+              splitLine: axis.splitLine
+                ? {
+                    ...axis.splitLine,
+                    lineStyle: splitLineStyle,
+                  }
+                : undefined,
+            }
+          : undefined
+      ) as XAXisOption[],
+      yAxis: yAxis.map((axis) =>
+        axis
+          ? {
+              ...axis,
+              splitLine: axis.splitLine
+                ? {
+                    ...axis.splitLine,
+                    lineStyle: splitLineStyle,
+                  }
+                : undefined,
+            }
+          : undefined
+      ) as YAXisOption[],
     };
   }
 
