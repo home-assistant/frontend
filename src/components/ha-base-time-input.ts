@@ -337,6 +337,7 @@ export class HaBaseTimeInput extends LitElement {
     }
     .time-input-wrap {
       display: flex;
+      flex: 1;
       border-radius: var(--mdc-shape-small, 4px) var(--mdc-shape-small, 4px) 0 0;
       overflow: hidden;
       position: relative;
@@ -345,6 +346,7 @@ export class HaBaseTimeInput extends LitElement {
     }
     ha-textfield {
       width: 55px;
+      flex-grow: 1;
       text-align: center;
       --mdc-shape-small: 0;
       --text-field-appearance: none;

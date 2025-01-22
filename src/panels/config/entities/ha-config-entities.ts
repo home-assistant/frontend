@@ -694,7 +694,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
     const includeAddDeviceFab =
       filteredDomains.size === 1 &&
-      (PROTOCOL_INTEGRATIONS as ReadonlyArray<string>).includes(
+      (PROTOCOL_INTEGRATIONS as readonly string[]).includes(
         [...filteredDomains][0]
       );
 
@@ -816,7 +816,9 @@ ${
         </ha-assist-chip>`
       : html`<ha-icon-button
           .path=${mdiDotsVertical}
-          .label=${"ui.panel.config.automation.picker.bulk_action"}
+          .label=${this.hass.localize(
+            "ui.panel.config.automation.picker.bulk_action"
+          )}
           slot="trigger"
         ></ha-icon-button>`
   }
@@ -1397,7 +1399,7 @@ ${rejected
       );
     if (
       filteredDomains.size === 1 &&
-      (PROTOCOL_INTEGRATIONS as ReadonlyArray<string>).includes(
+      (PROTOCOL_INTEGRATIONS as readonly string[]).includes(
         [...filteredDomains][0]
       )
     ) {

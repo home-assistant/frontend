@@ -10,7 +10,7 @@ import type {
   ComboBoxLightValueChangedEvent,
 } from "@vaadin/combo-box/vaadin-combo-box-light";
 import { registerStyles } from "@vaadin/vaadin-themable-mixin/register-styles";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -324,49 +324,47 @@ export class HaComboBox extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-        width: 100%;
-      }
-      vaadin-combo-box-light {
-        position: relative;
-        --vaadin-combo-box-overlay-max-height: calc(45vh - 56px);
-      }
-      ha-textfield {
-        width: 100%;
-      }
-      ha-textfield > ha-icon-button {
-        --mdc-icon-button-size: 24px;
-        padding: 2px;
-        color: var(--secondary-text-color);
-      }
-      ha-svg-icon {
-        color: var(--input-dropdown-icon-color);
-        position: absolute;
-        cursor: pointer;
-      }
-      .toggle-button {
-        right: 12px;
-        top: -10px;
-        inset-inline-start: initial;
-        inset-inline-end: 12px;
-        direction: var(--direction);
-      }
-      :host([opened]) .toggle-button {
-        color: var(--primary-color);
-      }
-      .clear-button {
-        --mdc-icon-size: 20px;
-        top: -7px;
-        right: 36px;
-        inset-inline-start: initial;
-        inset-inline-end: 36px;
-        direction: var(--direction);
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+      width: 100%;
+    }
+    vaadin-combo-box-light {
+      position: relative;
+      --vaadin-combo-box-overlay-max-height: calc(45vh - 56px);
+    }
+    ha-textfield {
+      width: 100%;
+    }
+    ha-textfield > ha-icon-button {
+      --mdc-icon-button-size: 24px;
+      padding: 2px;
+      color: var(--secondary-text-color);
+    }
+    ha-svg-icon {
+      color: var(--input-dropdown-icon-color);
+      position: absolute;
+      cursor: pointer;
+    }
+    .toggle-button {
+      right: 12px;
+      top: -10px;
+      inset-inline-start: initial;
+      inset-inline-end: 12px;
+      direction: var(--direction);
+    }
+    :host([opened]) .toggle-button {
+      color: var(--primary-color);
+    }
+    .clear-button {
+      --mdc-icon-size: 20px;
+      top: -7px;
+      right: 36px;
+      inset-inline-start: initial;
+      inset-inline-end: 36px;
+      direction: var(--direction);
+    }
+  `;
 }
 
 declare global {

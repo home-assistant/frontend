@@ -1039,7 +1039,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         this.hass,
         this.domain
       );
-    } catch (err: any) {
+    } catch (_err: any) {
       // No issue, as diagnostics are not required
     }
   }
@@ -1310,7 +1310,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     try {
       return (await fetchApplicationCredentialsConfigEntry(this.hass, entryId))
         .application_credentials_id;
-    } catch (err: any) {
+    } catch (_err: any) {
       // We won't prompt the user to remove credentials
       return null;
     }

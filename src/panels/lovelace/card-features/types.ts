@@ -174,6 +174,6 @@ export type LovelaceCardFeatureConfig =
   | VacuumCommandsCardFeatureConfig
   | WaterHeaterOperationModesCardFeatureConfig;
 
-export type LovelaceCardFeatureContext = {
+export interface LovelaceCardFeatureContext {
   entity_id?: string;
-};
+}

@@ -1,5 +1,5 @@
 import { dump } from "js-yaml";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -113,7 +113,7 @@ class MQTTMessages extends LitElement {
     if (typeof payload === "string") {
       try {
         o = JSON.parse(payload);
-      } catch (err: any) {
+      } catch (_err: any) {
         o = null;
       }
     }
@@ -131,8 +131,7 @@ class MQTTMessages extends LitElement {
     this._open = !this._open;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
+  static styles = css`
       .expander {
         cursor: pointer;
         position: relative;
@@ -179,7 +178,6 @@ class MQTTMessages extends LitElement {
         font-family: var(--code-font-family, monospace);
       }
     `;
-  }
 }
 
 declare global {

@@ -20,7 +20,7 @@ const addFromAction = (entities: Set<string>, actionConfig: ActionConfig) => {
   if (!Array.isArray(entityIds)) {
     entityIds = [entityIds];
   }
-  for (const entityId of entityIds as Array<string>) {
+  for (const entityId of entityIds as string[]) {
     entities.add(entityId);
   }
 };
@@ -84,7 +84,7 @@ export const calcUnusedEntities = (
   hass: HomeAssistant,
   usedEntities: Set<string>
 ): Set<string> => {
-  const unusedEntities: Set<string> = new Set();
+  const unusedEntities = new Set<string>();
 
   for (const entity of Object.keys(hass.states)) {
     if (

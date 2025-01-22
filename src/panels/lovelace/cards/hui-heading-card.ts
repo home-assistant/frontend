@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -127,93 +126,88 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-card {
-        background: none;
-        backdrop-filter: none;
-        -webkit-backdrop-filter: none;
-        border: none;
-        box-shadow: none;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-        height: 100%;
-      }
-      [role="button"] {
-        cursor: pointer;
-      }
-      ha-icon-next {
-        display: inline-block;
-        transition: transform 180ms ease-in-out;
-      }
-      .container {
-        padding: 2px 4px;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        overflow: hidden;
-        gap: 8px;
-      }
-      .content:hover ha-icon-next {
-        transform: translateX(calc(4px * var(--scale-direction)));
-      }
-      .container .content {
-        flex: 1 0 fill;
-        min-width: 100px;
-      }
-      .container .content:not(:has(p)) {
-        min-width: fit-content;
-      }
-      .container .badges {
-        flex: 0 0;
-      }
-      .content {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 8px;
-        color: var(--ha-heading-card-title-color, var(--primary-text-color));
-        font-size: var(--ha-heading-card-title-font-size, 16px);
-        font-weight: var(--ha-heading-card-title-font-weight, 400);
-        line-height: var(--ha-heading-card-title-line-height, 24px);
-        letter-spacing: 0.1px;
-        --mdc-icon-size: 18px;
-      }
-      .content ha-icon,
-      .content ha-icon-next {
-        display: flex;
-        flex: none;
-      }
-      .content p {
-        margin: 0;
-        font-style: normal;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        flex-shrink: 1;
-        min-width: 0;
-      }
-      .content.subtitle {
-        color: var(
-          --ha-heading-card-subtitle-color,
-          var(--secondary-text-color)
-        );
-        font-size: var(--ha-heading-card-subtitle-font-size, 14px);
-        font-weight: var(--ha-heading-card-subtitle-font-weight, 500);
-        line-height: var(--ha-heading-card-subtitle-line-height, 20px);
-      }
-      .badges {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: flex-end;
-        gap: 4px 10px;
-      }
-    `;
-  }
+  static styles = css`
+    ha-card {
+      background: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      height: 100%;
+    }
+    [role="button"] {
+      cursor: pointer;
+    }
+    ha-icon-next {
+      display: inline-block;
+      transition: transform 180ms ease-in-out;
+    }
+    .container {
+      padding: 2px 4px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      overflow: hidden;
+      gap: 8px;
+    }
+    .content:hover ha-icon-next {
+      transform: translateX(calc(4px * var(--scale-direction)));
+    }
+    .container .content {
+      flex: 1 0 fill;
+      min-width: 100px;
+    }
+    .container .content:not(:has(p)) {
+      min-width: fit-content;
+    }
+    .container .badges {
+      flex: 0 0;
+    }
+    .content {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+      color: var(--ha-heading-card-title-color, var(--primary-text-color));
+      font-size: var(--ha-heading-card-title-font-size, 16px);
+      font-weight: var(--ha-heading-card-title-font-weight, 400);
+      line-height: var(--ha-heading-card-title-line-height, 24px);
+      letter-spacing: 0.1px;
+      --mdc-icon-size: 18px;
+    }
+    .content ha-icon,
+    .content ha-icon-next {
+      display: flex;
+      flex: none;
+    }
+    .content p {
+      margin: 0;
+      font-style: normal;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex-shrink: 1;
+      min-width: 0;
+    }
+    .content.subtitle {
+      color: var(--ha-heading-card-subtitle-color, var(--secondary-text-color));
+      font-size: var(--ha-heading-card-subtitle-font-size, 14px);
+      font-weight: var(--ha-heading-card-subtitle-font-weight, 500);
+      line-height: var(--ha-heading-card-subtitle-line-height, 20px);
+    }
+    .badges {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 4px 10px;
+    }
+  `;
 }
 
 declare global {

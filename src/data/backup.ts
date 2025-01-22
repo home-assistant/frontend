@@ -11,22 +11,34 @@ import type { HomeAssistant } from "../types";
 import { fileDownload } from "../util/file_download";
 import { domainToName } from "./integration";
 import type { FrontendLocaleData } from "./translation";
+import checkValidDate from "../common/datetime/check_valid_date";
 
-export const enum BackupScheduleState {
+export const enum BackupScheduleRecurrence {
   NEVER = "never",
   DAILY = "daily",
-  MONDAY = "mon",
-  TUESDAY = "tue",
-  WEDNESDAY = "wed",
-  THURSDAY = "thu",
-  FRIDAY = "fri",
-  SATURDAY = "sat",
-  SUNDAY = "sun",
+  CUSTOM_DAYS = "custom_days",
 }
+
+export type BackupDay = "mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun";
+
+export const BACKUP_DAYS: BackupDay[] = [
+  "mon",
+  "tue",
+  "wed",
+  "thu",
+  "fri",
+  "sat",
+  "sun",
+];
+
+export const sortWeekdays = (weekdays) =>
+  weekdays.sort((a, b) => BACKUP_DAYS.indexOf(a) - BACKUP_DAYS.indexOf(b));
 
 export interface BackupConfig {
   last_attempted_automatic_backup: string | null;
   last_completed_automatic_backup: string | null;
+  next_automatic_backup: string | null;
+  next_automatic_backup_additional?: boolean;
   create_backup: {
     agent_ids: string[];
     include_addons: string[] | null;
@@ -41,7 +53,9 @@ export interface BackupConfig {
     days?: number | null;
   };
   schedule: {
-    state: BackupScheduleState;
+    recurrence: BackupScheduleRecurrence;
+    time?: string | null;
+    days: BackupDay[];
   };
 }
 
@@ -59,7 +73,11 @@ export interface BackupMutableConfig {
     copies?: number | null;
     days?: number | null;
   };
-  schedule?: BackupScheduleState;
+  schedule?: {
+    recurrence: BackupScheduleRecurrence;
+    time?: string | null;
+    days?: BackupDay[] | null;
+  };
 }
 
 export interface BackupAgent {
@@ -106,7 +124,7 @@ export interface BackupAgentsInfo {
   agents: BackupAgent[];
 }
 
-export type GenerateBackupParams = {
+export interface GenerateBackupParams {
   agent_ids: string[];
   include_addons?: string[];
   include_all_addons?: boolean;
@@ -115,9 +133,9 @@ export type GenerateBackupParams = {
   include_homeassistant?: boolean;
   name?: string;
   password?: string;
-};
+}
 
-export type RestoreBackupParams = {
+export interface RestoreBackupParams {
   backup_id: string;
   agent_id: string;
   password?: string;
@@ -125,7 +143,7 @@ export type RestoreBackupParams = {
   restore_database?: boolean;
   restore_folders?: string[];
   restore_homeassistant?: boolean;
-};
+}
 
 export const fetchBackupConfig = (hass: HomeAssistant) =>
   hass.callWS<{ config: BackupConfig }>({ type: "backup/config/info" });
@@ -135,8 +153,12 @@ export const updateBackupConfig = (
   config: BackupMutableConfig
 ) => hass.callWS({ type: "backup/config/update", ...config });
 
-export const getBackupDownloadUrl = (id: string, agentId: string) =>
-  `/api/backup/download/${id}?agent_id=${agentId}`;
+export const getBackupDownloadUrl = (
+  id: string,
+  agentId: string,
+  password?: string | null
+) =>
+  `/api/backup/download/${id}?agent_id=${agentId}${password ? `&password=${password}` : ""}`;
 
 export const fetchBackupInfo = (hass: HomeAssistant): Promise<BackupInfo> =>
   hass.callWS({
@@ -228,6 +250,19 @@ export const getPreferredAgentForDownload = (agents: string[]) => {
 
   return agents[0];
 };
+
+export const canDecryptBackupOnDownload = (
+  hass: HomeAssistant,
+  backup_id: string,
+  agent_id: string,
+  password: string
+) =>
+  hass.callWS({
+    type: "backup/can_decrypt_on_download",
+    backup_id,
+    agent_id,
+    password,
+  });
 
 export const CORE_LOCAL_AGENT = "backup.local";
 export const HASSIO_LOCAL_AGENT = "hassio.local";
@@ -337,9 +372,34 @@ export const downloadEmergencyKit = (
     geneateEmergencyKitFileName(hass, appendFileName)
   );
 
+export const DEFAULT_OPTIMIZED_BACKUP_START_TIME = setMinutes(
+  setHours(new Date(), 4),
+  45
+);
+
+export const DEFAULT_OPTIMIZED_BACKUP_END_TIME = setMinutes(
+  setHours(new Date(), 5),
+  45
+);
+
 export const getFormattedBackupTime = memoizeOne(
-  (locale: FrontendLocaleData, config: HassConfig) => {
-    const date = setMinutes(setHours(new Date(), 4), 45);
-    return formatTime(date, locale, config);
+  (
+    locale: FrontendLocaleData,
+    config: HassConfig,
+    backupTime?: Date | string | null
+  ) => {
+    if (checkValidDate(backupTime as Date)) {
+      return formatTime(backupTime as Date, locale, config);
+    }
+    if (typeof backupTime === "string" && backupTime) {
+      const splitted = backupTime.split(":");
+      const date = setMinutes(
+        setHours(new Date(), parseInt(splitted[0])),
+        parseInt(splitted[1])
+      );
+      return formatTime(date, locale, config);
+    }
+
+    return `${formatTime(DEFAULT_OPTIMIZED_BACKUP_START_TIME, locale, config)} - ${formatTime(DEFAULT_OPTIMIZED_BACKUP_END_TIME, locale, config)}`;
   }
 );

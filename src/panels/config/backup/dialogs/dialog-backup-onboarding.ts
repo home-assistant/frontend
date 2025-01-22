@@ -21,7 +21,7 @@ import type {
   BackupMutableConfig,
 } from "../../../../data/backup";
 import {
-  BackupScheduleState,
+  BackupScheduleRecurrence,
   CLOUD_AGENT,
   CORE_LOCAL_AGENT,
   downloadEmergencyKit,
@@ -68,10 +68,14 @@ const RECOMMENDED_CONFIG: BackupConfig = {
     days: null,
   },
   schedule: {
-    state: BackupScheduleState.DAILY,
+    recurrence: BackupScheduleRecurrence.DAILY,
+    time: null,
+    days: [],
   },
   last_attempted_automatic_backup: null,
   last_completed_automatic_backup: null,
+  next_automatic_backup: null,
+  next_automatic_backup_additional: false,
 };
 
 @customElement("ha-dialog-backup-onboarding")
@@ -116,7 +120,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
     this._opened = true;
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     if (this._params!.cancel) {
       this._params!.cancel();
     }
@@ -127,6 +131,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
     this._step = undefined;
     this._config = undefined;
     this._params = undefined;
+    return true;
   }
 
   private get _firstStep(): Step {
@@ -144,7 +149,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
         include_database: this._config.create_backup.include_database,
         agent_ids: this._config.create_backup.agent_ids,
       },
-      schedule: this._config.schedule.state,
+      schedule: this._config.schedule,
       retention: this._config.retention,
     };
 

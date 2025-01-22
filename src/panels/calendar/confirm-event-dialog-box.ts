@@ -1,5 +1,3 @@
-import "@material/mwc-button/mwc-button";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -9,6 +7,7 @@ import "../../components/ha-switch";
 import { RecurrenceRange } from "../../data/calendar";
 import type { HomeAssistant } from "../../types";
 import type { ConfirmEventDialogBoxParams } from "./show-confirm-event-dialog-box";
+import "../../components/ha-button";
 
 @customElement("confirm-event-dialog-box")
 class ConfirmEventDialogBox extends LitElement {
@@ -41,26 +40,26 @@ class ConfirmEventDialogBox extends LitElement {
         <div>
           <p>${this._params.text}</p>
         </div>
-        <mwc-button @click=${this._dismiss} slot="secondaryAction">
+        <ha-button @click=${this._dismiss} slot="secondaryAction">
           ${this.hass.localize("ui.dialogs.generic.cancel")}
-        </mwc-button>
-        <mwc-button
+        </ha-button>
+        <ha-button
           slot="primaryAction"
           @click=${this._confirm}
           dialogInitialFocus
-          class="destructive"
+          destructive
         >
           ${this._params.confirmText}
-        </mwc-button>
+        </ha-button>
         ${this._params.confirmFutureText
           ? html`
-              <mwc-button
+              <ha-button
                 @click=${this._confirmFuture}
-                class="destructive"
                 slot="primaryAction"
+                destructive
               >
                 ${this._params.confirmFutureText}
-              </mwc-button>
+              </ha-button>
             `
           : ""}
       </ha-dialog>
@@ -103,42 +102,37 @@ class ConfirmEventDialogBox extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host([inert]) {
-        pointer-events: initial !important;
-        cursor: initial !important;
-      }
-      a {
-        color: var(--primary-color);
-      }
-      p {
-        margin: 0;
-        color: var(--primary-text-color);
-      }
-      .no-bottom-padding {
-        padding-bottom: 0;
-      }
-      .secondary {
-        color: var(--secondary-text-color);
-      }
-      .destructive {
-        --mdc-theme-primary: var(--error-color);
-      }
+  static styles = css`
+    :host([inert]) {
+      pointer-events: initial !important;
+      cursor: initial !important;
+    }
+    a {
+      color: var(--primary-color);
+    }
+    p {
+      margin: 0;
+      color: var(--primary-text-color);
+    }
+    .no-bottom-padding {
+      padding-bottom: 0;
+    }
+    .secondary {
+      color: var(--secondary-text-color);
+    }
+    ha-dialog {
+      /* Place above other dialogs */
+      --dialog-z-index: 104;
+    }
+    @media all and (min-width: 600px) {
       ha-dialog {
-        /* Place above other dialogs */
-        --dialog-z-index: 104;
+        --mdc-dialog-min-width: 400px;
       }
-      @media all and (min-width: 600px) {
-        ha-dialog {
-          --mdc-dialog-min-width: 400px;
-        }
-      }
-      ha-textfield {
-        width: 100%;
-      }
-    `;
-  }
+    }
+    ha-textfield {
+      width: 100%;
+    }
+  `;
 }
 
 declare global {

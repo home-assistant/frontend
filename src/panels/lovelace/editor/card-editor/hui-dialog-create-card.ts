@@ -198,7 +198,7 @@ export class HuiCreateDialogCard
 
         ha-dialog {
           --mdc-dialog-max-width: 845px;
-          --dialog-content-padding: 2px 24px 20px 24px;
+          --dialog-content-padding: 0 24px 20px 24px;
           --dialog-z-index: 6;
         }
 

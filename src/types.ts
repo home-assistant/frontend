@@ -136,9 +136,7 @@ export interface PanelInfo<T = Record<string, any> | null> {
   config_panel_domain?: string;
 }
 
-export interface Panels {
-  [name: string]: PanelInfo;
-}
+export type Panels = Record<string, PanelInfo>;
 
 export interface CalendarViewChanged {
   end: Date;
@@ -168,9 +166,7 @@ export interface Translation {
 
 export interface TranslationMetadata {
   fragments: string[];
-  translations: {
-    [lang: string]: Translation;
-  };
+  translations: Record<string, Translation>;
 }
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
@@ -194,9 +190,7 @@ export interface Notification {
   created_at: string;
 }
 
-export interface Resources {
-  [language: string]: Record<string, string>;
-}
+export type Resources = Record<string, Record<string, string>>;
 
 export interface Context {
   id: string;
@@ -221,10 +215,10 @@ export interface HomeAssistant {
   connection: Connection;
   connected: boolean;
   states: HassEntities;
-  entities: { [id: string]: EntityRegistryDisplayEntry };
-  devices: { [id: string]: DeviceRegistryEntry };
-  areas: { [id: string]: AreaRegistryEntry };
-  floors: { [id: string]: FloorRegistryEntry };
+  entities: Record<string, EntityRegistryDisplayEntry>;
+  devices: Record<string, DeviceRegistryEntry>;
+  areas: Record<string, AreaRegistryEntry>;
+  floors: Record<string, FloorRegistryEntry>;
   services: HassServices;
   config: HassConfig;
   themes: Themes;

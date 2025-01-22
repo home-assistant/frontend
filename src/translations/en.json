@@ -1118,6 +1118,9 @@
         "last_updated": "Last updated",
         "remaining_time": "Remaining time",
         "install_status": "Install status"
+      },
+      "multi-textfield": {
+        "add_item": "Add {item}"
       }
     },
     "dialogs": {
@@ -1463,7 +1466,7 @@
           "enabled_description": "Disabled entities will not be added to Home Assistant.",
           "enabled_delay_confirm": "The enabled entities will be added to Home Assistant in {delay} seconds",
           "enabled_restart_confirm": "Restart Home Assistant to finish enabling the entities",
-          "hidden_explanation": "Hidden entities will not be shown on your dashboard or included when indirectly referenced (ie via an area or device). Their history is still tracked and you can still interact with them with actions.",
+          "hidden_explanation": "Hidden entities will not be included in auto-populated dashboards or when their area, device or label is referenced. Their history is still tracked and you can still interact with them with actions.",
           "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this entity?",
           "update": "Update",
@@ -2187,7 +2190,11 @@
             "aliases_section": "Aliases",
             "no_aliases": "No configured aliases",
             "configured_aliases": "{count} configured {count, plural,\n  one {alias}\n  other {aliases}\n}",
-            "aliases_description": "Aliases are alternative names used in voice assistants to refer to this area."
+            "aliases_description": "Aliases are alternative names used in voice assistants to refer to this area.",
+            "temperature_entity": "Temperature sensor",
+            "temperature_entity_description": "Sensor that represents the area temperature.",
+            "humidity_entity": "Humidity sensor",
+            "humidity_entity_description": "Sensor that represents the area humidity."
           },
           "delete": {
             "confirmation_title": "Delete {name}?",
@@ -2375,6 +2382,15 @@
             "show_encryption_key": {
               "title": "Encryption key",
               "description": "Make sure you save the encryption key in a secure place so you always have access to your backups."
+            },
+            "download": {
+              "decryption_unsupported_title": "Decryption unsupported",
+              "decryption_unsupported": "Decryption is not supported for this backup. The downloaded backup will remain encrypted and can't be opened. To restore it, you will need the encryption key.",
+              "incorrect_entered_encryption_key": "The entered encryption key was incorrect, try again or download the encrypted backup. The encrypted backup can't be opened. To restore it, you will need the encryption key.",
+              "download_encrypted": "Download encrypted",
+              "incorrect_current_encryption_key": "This backup is encrypted with a different encryption key than the current one, please enter the encryption key of this backup.",
+              "error_check_title": "Error checking backup",
+              "error_check_description": "An error occurred while checking the backup, please try again. Error message: {error}"
             }
           },
           "agents": {
@@ -2389,7 +2405,7 @@
             "ha_settings_description": "The bare minimum needed to restore the system.",
             "ha_settings_included_description": "The bare minimum needed to restore the system. It is always included in automatic backup data.",
             "history": "History",
-            "history_description": "This can include large filesize camera recordings.",
+            "history_description": "Historical data of your sensors, including your energy dashboard.",
             "media": "Media",
             "media_description": "For example, camera recordings.",
             "share_folder": "Share folder",
@@ -2408,23 +2424,33 @@
             "media": "Media",
             "share_folder": "Share folder",
             "local_addons": "Local add-ons folder",
-            "addons": "Add-ons"
+            "addons": "Add-ons",
+            "ssl": "SSL certificates"
           },
           "schedule": {
-            "use_automatic_backups": "Use automatic backups",
             "schedule": "Schedule",
+            "backup_every": "Backup every",
+            "custom_schedule": "Custom schedule",
+            "time": "Time",
+            "custom_time": "Custom time",
+            "custom_time_label": "Backup at",
+            "custom_time_description": "The optimal time is after Home Assistant finished cleaning up the database. This is done at {time}.",
             "schedule_description": "How often you want to create a backup.",
+            "schedule_time_description": "When the backup creation starts.",
+            "schedule_time_optimal_description": "By default Home Assistant picks the optimal time between {time_range_start} and {time_range_end}.",
+            "tip": "You can create your own custom backup automation with the {backup_create} action",
             "schedule_options": {
-              "daily": "Daily at {time}",
-              "mon": "Monday at {time}",
-              "tue": "Tuesday at {time}",
-              "wed": "Wednesday at {time}",
-              "thu": "Thursday at {time}",
-              "fri": "Friday at {time}",
-              "sat": "Saturday at {time}",
-              "sun": "Sunday at {time}"
+              "never": "Never",
+              "daily": "Daily",
+              "custom_days": "Custom days"
+            },
+            "time_options": {
+              "default": "System optimal",
+              "custom": "Custom"
             },
             "retention": "Retention",
+            "custom_retention": "Custom retention",
+            "custom_retention_label": "Clean up every",
             "retention_description": "Based on the maximum number of backups or how many days they should be kept.",
             "retention_presets": {
               "copies_3": "3 backups",
@@ -2509,17 +2535,10 @@
               }
             },
             "summary": {
-              "next_backup_description": {
-                "daily": "Next automatic backup tomorrow at {time}",
-                "mon": "Next automatic backup next Monday at {time}",
-                "tue": "Next automatic backup next Tuesday at {time}",
-                "wed": "Next automatic backup next Wednesday at {time}",
-                "thu": "Next automatic backup next Thursday at {time}",
-                "fri": "Next automatic backup next Friday at {time}",
-                "sat": "Next automatic backup next Saturday at {time}",
-                "sun": "Next automatic backup next Sunday at {time}",
-                "never": "No automatic backups scheduled"
-              },
+              "no_automatic_backup": "No automatic backups scheduled",
+              "next_automatic_backup": "Next automatic backup {day} at {time}",
+              "today": "today",
+              "tomorrow": "tomorrow",
               "loading": "Loading backups...",
               "last_backup_failed_heading": "Last automatic backup failed",
               "last_backup_failed_description": "The last automatic backup triggered {relative_time} wasn't successful.",
@@ -2528,7 +2547,8 @@
               "no_backup_heading": "No automatic backup available",
               "no_backup_description": "You have no automatic backups yet.",
               "backup_too_old_heading": "No backup for {count} {count, plural,\n one {day}\n other {days}\n}",
-              "backup_success_heading": "Backed up"
+              "backup_success_heading": "Backed up",
+              "additional_backup_description": "No successful automatic backup has been done since {date}. To avoid losing data, an additional backup has been scheduled."
             },
             "backups": {
               "title": "My backups",
@@ -2545,13 +2565,13 @@
               "schedule_copies_backups": "and keep {count} {count, plural,\n one {backup}\n other {backups}\n}",
               "schedule_copies_days": "and keep {count} {count, plural,\n one {day}\n other {days}\n}",
               "schedule_daily": "Daily at {time}",
-              "schedule_mon": "Weekly on Mondays at {time}",
-              "schedule_tue": "Weekly on Tuesdays at {time}",
-              "schedule_wed": "Weekly on Wednesdays at {time}",
-              "schedule_thu": "Weekly on Thursdays at {time}",
-              "schedule_fri": "Weekly on Fridays at {time}",
-              "schedule_sat": "Weekly on Saturdays at {time}",
-              "schedule_sun": "Weekly on Sundays at {time}",
+              "schedule_days": "Every {days} at {time}",
+              "schedule_weekdays": "Every weekday at {time}",
+              "schedule_optimized_weekdays": "Every weekday",
+              "schedule_weekend": "Every weekends at {time}",
+              "schedule_optimized_weekend": "Every weekends",
+              "schedule_optimized_daily": "Daily",
+              "schedule_optimized_days": "Every {days}",
               "schedule_never": "Automatic backups are not scheduled",
               "data": "Home Assistant data that is included",
               "data_settings_history": "Settings and history",
@@ -2564,7 +2584,26 @@
               "locations_one": "Store in {name}",
               "locations_many": "Store in {count} off-site {count, plural,\n one {location}\n other {locations}\n}",
               "locations_local_only": "Local backup only",
-              "locations_none": "No locations configured"
+              "locations_none": "No locations configured",
+              "system_optimal_time": "system optimal time",
+              "weekdays": {
+                "mon": "[%key:ui::weekdays::monday%]",
+                "tue": "[%key:ui::weekdays::tuesday%]",
+                "wed": "[%key:ui::weekdays::wednesday%]",
+                "thu": "[%key:ui::weekdays::thursday%]",
+                "fri": "[%key:ui::weekdays::friday%]",
+                "sat": "[%key:ui::weekdays::saturday%]",
+                "sun": "[%key:ui::weekdays::sunday%]"
+              },
+              "short_weekdays": {
+                "mon": "Mo",
+                "tue": "Tu",
+                "wed": "We",
+                "thu": "Th",
+                "fri": "Fr",
+                "sat": "Sa",
+                "sun": "So"
+              }
             }
           },
           "backups": {
@@ -2936,6 +2975,7 @@
           "built_using": "Built using",
           "icons_by": "Icons by",
           "frontend_version_label": "Frontend",
+          "proud_part_of": "Proud part of",
           "custom_uis": "Custom UIs:",
           "system_health_error": "System Health component is not loaded. Add 'system_health:' to configuration.yaml",
           "documentation": "Documentation",
@@ -3114,6 +3154,7 @@
           "assistants": {
             "caption": "Assistants",
             "pipeline": {
+              "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]",
               "add_assistant": "Add assistant",
               "exposed_entities": "[%key:ui::panel::config::cloud::account::google::exposed_entities%]",
               "assist_devices": "{number} Assist {number, plural,\n  one {device}\n  other {devices}\n}",
@@ -3413,7 +3454,7 @@
             "run": "Run actions",
             "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
             "show_trace": "Traces",
-            "show_info": "Information",
+            "show_info": "More info",
             "default_name": "New automation",
             "missing_name": "Cannot save automation without a name",
             "traces_not_available": "Automations need an ID for history to be tracked. Add an ID to your automation to make it available in traces.",
@@ -4939,6 +4980,7 @@
           "rename_input_label": "Entry name",
           "search": "Search integrations",
           "search_brand": "Search for a brand name",
+          "search_helper": "Search for a helper",
           "add_zwave_js_device": "Add Z-Wave device",
           "add_zha_device": "Add Zigbee device",
           "add_matter_device": "Add Matter device",
@@ -5211,7 +5253,7 @@
         "mqtt": {
           "title": "MQTT",
           "settings_title": "MQTT settings",
-          "reconfigure": "Re-configure MQTT",
+          "option_flow": "Configure MQTT options",
           "description_publish": "Publish a packet",
           "topic": "Topic",
           "payload": "Payload (template allowed)",
@@ -5227,6 +5269,18 @@
           "message_received": "Message {id} received on {topic} at {time}:",
           "qos": "QoS",
           "retain": "Retain"
+        },
+        "bluetooth": {
+          "title": "Bluetooth",
+          "address": "Address",
+          "name": "Name",
+          "source": "Source",
+          "rssi": "RSSI",
+          "device_information": "Device information",
+          "advertisement_data": "Advertisement data",
+          "manufacturer_data": "Manufacturer data",
+          "service_data": "Service data",
+          "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
         },
         "thread": {
           "other_networks": "Other networks",
@@ -6422,7 +6476,7 @@
           "edit_card": {
             "header": "Card configuration",
             "typed_header": "{type} Card configuration",
-            "pick_card": "Which card would you like to add?",
+            "pick_card": "Add to dashboard",
             "pick_card_title": "Which card would you like to add to {name}",
             "toggle_editor": "Toggle editor",
             "unsaved_changes": "You have unsaved changes",
@@ -6963,7 +7017,16 @@
               "name": "To-do list",
               "description": "The To-do list card allows you to add, edit, check-off, and remove items from your to-do list.",
               "integration_not_loaded": "This card requires the `todo` integration to be set up.",
-              "hide_completed": "Hide completed items"
+              "hide_completed": "Hide completed items",
+              "display_order": "Display Order",
+              "sort_modes": {
+                "none": "Default",
+                "manual": "Manual",
+                "alpha_asc": "Alphabetical (A-Z)",
+                "alpha_desc": "Alphabetical (Z-A)",
+                "duedate_asc": "Due Date (Soonest First)",
+                "duedate_desc": "Due Date (Latest First)"
+              }
             },
             "thermostat": {
               "name": "Thermostat",
@@ -7240,7 +7303,6 @@
           },
           "cardpicker": {
             "no_description": "No description available.",
-            "custom_card": "Custom",
             "domain": "Domain",
             "entity": "Entity",
             "by_entity": "By entity",
@@ -7528,7 +7590,7 @@
         "create_list": "Create list",
         "delete_list": "Delete list",
         "add_item": "Add item",
-        "information": "Information",
+        "information": "More info",
         "delete_confirm_title": "Remove {name}?",
         "delete_confirm_text": "Are you sure you want to remove this list and all of its items?",
         "restart_confirm": "Restart Home Assistant to finish removing this to-do list"

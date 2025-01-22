@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -55,7 +55,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   private _interval?: number;
 
-  private _subscribed?: Promise<(() => Promise<void>) | void>;
+  private _subscribed?: Promise<(() => Promise<void>) | undefined>;
 
   public getCardSize(): number {
     return this._config?.title ? 2 : 0 + 2 * (this._entityIds?.length || 1);
@@ -143,6 +143,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     ).catch((err) => {
       this._subscribed = undefined;
       this._error = err;
+      return undefined;
     });
 
     await this._fetchStatistics(sensorNumericDeviceClasses);
@@ -286,28 +287,26 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-card {
-        height: 100%;
-      }
-      .card-header {
-        justify-content: space-between;
-        display: flex;
-      }
-      .card-header ha-icon-next {
-        --mdc-icon-button-size: 24px;
-        line-height: 24px;
-        color: var(--primary-text-color);
-      }
-      .content {
-        padding: 16px;
-      }
-      .has-header {
-        padding-top: 0;
-      }
-    `;
-  }
+  static styles = css`
+    ha-card {
+      height: 100%;
+    }
+    .card-header {
+      justify-content: space-between;
+      display: flex;
+    }
+    .card-header ha-icon-next {
+      --mdc-icon-button-size: 24px;
+      line-height: 24px;
+      color: var(--primary-text-color);
+    }
+    .content {
+      padding: 16px;
+    }
+    .has-header {
+      padding-top: 0;
+    }
+  `;
 }
 
 declare global {

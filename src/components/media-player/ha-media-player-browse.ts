@@ -1106,7 +1106,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           position: absolute;
           transition: color 0.5s;
           border-radius: 50%;
-          top: calc(50% - 50px);
+          top: calc(50% - 40px);
           right: calc(50% - 35px);
           opacity: 0;
           transition: opacity 0.1s ease-out;
@@ -1115,14 +1115,17 @@ export class HaMediaPlayerBrowse extends LitElement {
         .child .play:not(.can_expand) {
           --mdc-icon-button-size: 70px;
           --mdc-icon-size: 48px;
+          background-color: var(--primary-color);
+          color: var(--text-primary-color);
+        }
+
+        ha-card:hover .image {
+          filter: brightness(70%);
+          transition: filter 0.5s;
         }
 
         ha-card:hover .play {
           opacity: 1;
-        }
-
-        ha-card:hover .play:not(.can_expand) {
-          color: var(--primary-color);
         }
 
         ha-card:hover .play.can_expand {
@@ -1137,10 +1140,6 @@ export class HaMediaPlayerBrowse extends LitElement {
           transition:
             bottom 0.1s ease-out,
             opacity 0.1s ease-out;
-        }
-
-        .child .play:hover {
-          color: var(--primary-color);
         }
 
         .child .title {

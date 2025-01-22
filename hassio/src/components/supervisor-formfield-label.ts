@@ -1,4 +1,4 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../src/components/ha-svg-icon";
@@ -30,29 +30,27 @@ class SupervisorFormfieldLabel extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: flex;
-        align-items: center;
-      }
-      .label {
-        margin-right: 4px;
-        margin-inline-end: 4px;
-        margin-inline-start: initial;
-      }
-      .version {
-        color: var(--secondary-text-color);
-      }
-      .icon {
-        max-height: 22px;
-        max-width: 22px;
-        margin-right: 8px;
-        margin-inline-end: 8px;
-        margin-inline-start: initial;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: flex;
+      align-items: center;
+    }
+    .label {
+      margin-right: 4px;
+      margin-inline-end: 4px;
+      margin-inline-start: initial;
+    }
+    .version {
+      color: var(--secondary-text-color);
+    }
+    .icon {
+      max-height: 22px;
+      max-width: 22px;
+      margin-right: 8px;
+      margin-inline-end: 8px;
+      margin-inline-start: initial;
+    }
+  `;
 }
 
 declare global {

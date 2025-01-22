@@ -66,13 +66,13 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
 
   @state() private _systemStatusData?: SystemStatusStreamMessage;
 
-  @state() private _configEntries?: { [id: string]: ConfigEntry };
+  @state() private _configEntries?: Record<string, ConfigEntry>;
 
   private _memoryEntries: { x: number; y: number | null }[] = [];
 
   private _cpuEntries: { x: number; y: number | null }[] = [];
 
-  public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
+  public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
     const subs = [
       subscribeConfigEntries(
         this.hass,
@@ -103,7 +103,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
             ...(fullUpdate ? [] : Object.values(this._configEntries || {})),
             ...newEntries,
           ];
-          const configEntries: { [id: string]: ConfigEntry } = {};
+          const configEntries: Record<string, ConfigEntry> = {};
           for (const entry of entries) {
             configEntries[entry.entry_id] = entry;
           }

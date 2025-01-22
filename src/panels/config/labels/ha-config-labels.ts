@@ -338,7 +338,7 @@ export class HaConfigLabels extends LitElement {
         (label) => label.label_id !== selectedLabel.label_id
       );
       return true;
-    } catch (err: any) {
+    } catch (_err: any) {
       return false;
     }
   }

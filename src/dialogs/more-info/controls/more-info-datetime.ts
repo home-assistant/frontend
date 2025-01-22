@@ -1,6 +1,5 @@
 import { format } from "date-fns";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-date-input";
@@ -66,20 +65,18 @@ class MoreInfoDatetime extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-      }
-      ha-date-input + ha-time-input {
-        margin-left: 4px;
-        margin-inline-start: 4px;
-        margin-inline-end: initial;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    ha-date-input + ha-time-input {
+      margin-left: 4px;
+      margin-inline-start: 4px;
+      margin-inline-end: initial;
+    }
+  `;
 }
 
 declare global {

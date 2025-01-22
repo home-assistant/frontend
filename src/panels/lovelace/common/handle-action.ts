@@ -15,14 +15,14 @@ declare global {
   }
 }
 
-export type ActionConfigParams = {
+export interface ActionConfigParams {
   entity?: string;
   camera_image?: string;
   image_entity?: string;
   hold_action?: ActionConfig;
   tap_action?: ActionConfig;
   double_tap_action?: ActionConfig;
-};
+}
 
 export const handleAction = async (
   node: HTMLElement,

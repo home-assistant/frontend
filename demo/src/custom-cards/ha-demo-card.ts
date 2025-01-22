@@ -32,6 +32,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
     return this._hidden ? 0 : 2;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   public setConfig(_config: LovelaceCardConfig) {}
 
   protected render() {

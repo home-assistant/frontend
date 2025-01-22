@@ -29,6 +29,7 @@ import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import type { VoiceCommandDialogParams } from "./show-ha-voice-command-dialog";
+import "../../components/ha-tip";
 
 @customElement("ha-voice-command-dialog")
 export class HaVoiceCommandDialog extends LitElement {
@@ -51,6 +52,8 @@ export class HaVoiceCommandDialog extends LitElement {
 
   @state() private _errorLoadAssist?: "not_found" | "unknown";
 
+  @state() private _hint?: string;
+
   private _startListening = false;
 
   public async showDialog(
@@ -68,6 +71,7 @@ export class HaVoiceCommandDialog extends LitElement {
 
     this._startListening = params.start_listening;
     this._opened = true;
+    this._hint = params.hint;
   }
 
   public async closeDialog(): Promise<void> {
@@ -164,27 +168,29 @@ export class HaVoiceCommandDialog extends LitElement {
           </a>
         </ha-dialog-header>
 
-        ${this._pipeline
-          ? html`
-              <ha-assist-chat
-                .hass=${this.hass}
-                .pipeline=${this._pipeline}
-                .startListening=${this._startListening}
-              >
-              </ha-assist-chat>
-            `
-          : html`<div class="pipelines-loading">
-              <ha-circular-progress
-                indeterminate
-                size="large"
-              ></ha-circular-progress>
-            </div>`}
         ${this._errorLoadAssist
           ? html`<ha-alert alert-type="error">
               ${this.hass.localize(
                 `ui.dialogs.voice_command.${this._errorLoadAssist}_error_load_assist`
               )}
             </ha-alert>`
+          : this._pipeline
+            ? html`
+                <ha-assist-chat
+                  .hass=${this.hass}
+                  .pipeline=${this._pipeline}
+                  .startListening=${this._startListening}
+                >
+                </ha-assist-chat>
+              `
+            : html`<div class="pipelines-loading">
+                <ha-circular-progress
+                  indeterminate
+                  size="large"
+                ></ha-circular-progress>
+              </div>`}
+        ${this._hint
+          ? html`<ha-tip .hass=${this.hass}>${this._hint}</ha-tip>`
           : nothing}
       </ha-dialog>
     `;
@@ -218,9 +224,20 @@ export class HaVoiceCommandDialog extends LitElement {
   }
 
   private async _getPipeline() {
+    this._pipeline = undefined;
+    this._errorLoadAssist = undefined;
+    const pipelineId = this._pipelineId!;
     try {
-      this._pipeline = await getAssistPipeline(this.hass, this._pipelineId);
+      const pipeline = await getAssistPipeline(this.hass, pipelineId);
+      // Verify the pipeline is still the same.
+      if (pipelineId === this._pipelineId) {
+        this._pipeline = pipeline;
+      }
     } catch (e: any) {
+      if (pipelineId !== this._pipelineId) {
+        return;
+      }
+
       if (e.code === "not_found") {
         this._errorLoadAssist = "not_found";
       } else {
@@ -237,7 +254,7 @@ export class HaVoiceCommandDialog extends LitElement {
       css`
         ha-dialog {
           --mdc-dialog-max-width: 500px;
-          --mdc-dialog-max-height: 500px;
+          --mdc-dialog-max-height: 550px;
           --dialog-content-padding: 0;
         }
         ha-dialog-header a {
@@ -297,6 +314,13 @@ export class HaVoiceCommandDialog extends LitElement {
         .pipelines-loading {
           display: flex;
           justify-content: center;
+        }
+        ha-assist-chat {
+          margin: 0 24px 16px;
+          min-height: 399px;
+        }
+        ha-tip {
+          padding-bottom: 16px;
         }
       `,
     ];

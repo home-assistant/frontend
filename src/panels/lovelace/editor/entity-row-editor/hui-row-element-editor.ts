@@ -22,7 +22,7 @@ export class HuiRowElementEditor extends HuiTypedElementEditor<LovelaceRowConfig
   }
 
   protected async getConfigElement(): Promise<LovelaceRowEditor | undefined> {
-    if (this.configElementType! === GENERIC_ROW_TYPE) {
+    if (this.configElementType === GENERIC_ROW_TYPE) {
       return document.createElement("hui-generic-entity-row-editor");
     }
 

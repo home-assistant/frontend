@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -97,7 +97,7 @@ export class HaLanguagePicker extends LitElement {
                 type: "language",
                 fallback: "code",
               }).of(lang)!;
-            } catch (err) {
+            } catch (_err) {
               label = lang;
             }
           }
@@ -167,13 +167,11 @@ export class HaLanguagePicker extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-select {
-        width: 100%;
-      }
-    `;
-  }
+  static styles = css`
+    ha-select {
+      width: 100%;
+    }
+  `;
 
   private _changed(ev): void {
     const target = ev.target as HaSelect;

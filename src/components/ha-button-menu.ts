@@ -1,7 +1,7 @@
 import type { Button } from "@material/mwc-button";
 import "@material/mwc-menu";
 import type { Corner, Menu, MenuCorner } from "@material/mwc-menu";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { mainWindow } from "../common/dom/get_main_window";
@@ -103,17 +103,15 @@ export class HaButtonMenu extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: inline-block;
-        position: relative;
-      }
-      ::slotted([disabled]) {
-        color: var(--disabled-text-color);
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: inline-block;
+      position: relative;
+    }
+    ::slotted([disabled]) {
+      color: var(--disabled-text-color);
+    }
+  `;
 }
 
 declare global {

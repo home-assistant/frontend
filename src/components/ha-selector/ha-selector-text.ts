@@ -1,5 +1,4 @@
 import { mdiEye, mdiEyeOff } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ensureArray } from "../../common/array/ensure-array";
@@ -51,6 +50,7 @@ export class HaTextSelector extends LitElement {
           .inputType=${this.selector.text?.type}
           .inputSuffix=${this.selector.text?.suffix}
           .inputPrefix=${this.selector.text?.prefix}
+          .helper=${this.helper}
           .autocomplete=${this.selector.text?.autocomplete}
           @value-changed=${this._handleChange}
         >
@@ -126,29 +126,27 @@ export class HaTextSelector extends LitElement {
     fireEvent(this, "value-changed", { value });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-        position: relative;
-      }
-      ha-textarea,
-      ha-textfield {
-        width: 100%;
-      }
-      ha-icon-button {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        inset-inline-start: initial;
-        inset-inline-end: 8px;
-        --mdc-icon-button-size: 40px;
-        --mdc-icon-size: 20px;
-        color: var(--secondary-text-color);
-        direction: var(--direction);
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+      position: relative;
+    }
+    ha-textarea,
+    ha-textfield {
+      width: 100%;
+    }
+    ha-icon-button {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      inset-inline-start: initial;
+      inset-inline-end: 8px;
+      --mdc-icon-button-size: 40px;
+      --mdc-icon-size: 20px;
+      color: var(--secondary-text-color);
+      direction: var(--direction);
+    }
+  `;
 }
 
 declare global {

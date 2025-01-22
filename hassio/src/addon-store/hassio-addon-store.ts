@@ -1,7 +1,7 @@
 import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -211,35 +211,33 @@ export class HassioAddonStore extends LitElement {
     this._filter = e.detail.value;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      hassio-addon-repository {
-        margin-top: 24px;
-      }
-      .search {
-        position: sticky;
-        top: 0;
-        z-index: 2;
-      }
-      search-input {
-        display: block;
-        --mdc-text-field-fill-color: var(--sidebar-background-color);
-        --mdc-text-field-idle-line-color: var(--divider-color);
-      }
-      .advanced {
-        padding: 12px;
-        display: flex;
-        flex-wrap: wrap;
-        color: var(--primary-text-color);
-      }
-      .advanced a {
-        margin-left: 0.5em;
-        margin-inline-start: 0.5em;
-        margin-inline-end: initial;
-        color: var(--primary-color);
-      }
-    `;
-  }
+  static styles = css`
+    hassio-addon-repository {
+      margin-top: 24px;
+    }
+    .search {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+    search-input {
+      display: block;
+      --mdc-text-field-fill-color: var(--sidebar-background-color);
+      --mdc-text-field-idle-line-color: var(--divider-color);
+    }
+    .advanced {
+      padding: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      color: var(--primary-text-color);
+    }
+    .advanced a {
+      margin-left: 0.5em;
+      margin-inline-start: 0.5em;
+      margin-inline-end: initial;
+      color: var(--primary-color);
+    }
+  `;
 }
 
 declare global {

@@ -1,5 +1,4 @@
 import { mdiHelpCircle } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -78,30 +77,28 @@ export class CloudICEServersPref extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      a {
-        color: var(--primary-color);
-      }
-      .header-actions {
-        position: absolute;
-        right: 16px;
-        inset-inline-end: 16px;
-        inset-inline-start: initial;
-        top: 24px;
-        display: flex;
-        flex-direction: row;
-      }
-      .header-actions .icon-link {
-        margin-top: -16px;
-        margin-right: 8px;
-        margin-inline-end: 8px;
-        margin-inline-start: initial;
-        direction: var(--direction);
-        color: var(--secondary-text-color);
-      }
-    `;
-  }
+  static styles = css`
+    a {
+      color: var(--primary-color);
+    }
+    .header-actions {
+      position: absolute;
+      right: 16px;
+      inset-inline-end: 16px;
+      inset-inline-start: initial;
+      top: 24px;
+      display: flex;
+      flex-direction: row;
+    }
+    .header-actions .icon-link {
+      margin-top: -16px;
+      margin-right: 8px;
+      margin-inline-end: 8px;
+      margin-inline-start: initial;
+      direction: var(--direction);
+      color: var(--secondary-text-color);
+    }
+  `;
 }
 
 declare global {

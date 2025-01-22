@@ -9,7 +9,7 @@ import {
   mdiStop,
   mdiVolumeHigh,
 } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -560,173 +560,171 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: flex;
-        height: 100px;
-        box-sizing: border-box;
-        background: var(
-          --ha-card-background,
-          var(--card-background-color, white)
-        );
-        border-top: 1px solid var(--divider-color);
-        padding-bottom: env(safe-area-inset-bottom);
-      }
+  static styles = css`
+    :host {
+      display: flex;
+      height: 100px;
+      box-sizing: border-box;
+      background: var(
+        --ha-card-background,
+        var(--card-background-color, white)
+      );
+      border-top: 1px solid var(--divider-color);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
 
-      mwc-linear-progress {
-        width: 100%;
-        padding: 0 4px;
-        --mdc-theme-primary: var(--secondary-text-color);
-      }
+    mwc-linear-progress {
+      width: 100%;
+      padding: 0 4px;
+      --mdc-theme-primary: var(--secondary-text-color);
+    }
 
-      ha-button-menu ha-button[slot="trigger"] {
-        line-height: 1;
-        --mdc-theme-primary: var(--primary-text-color);
-        --mdc-icon-size: 16px;
-      }
+    ha-button-menu ha-button[slot="trigger"] {
+      line-height: 1;
+      --mdc-theme-primary: var(--primary-text-color);
+      --mdc-icon-size: 16px;
+    }
 
-      .info {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        width: 100%;
-        margin-right: 16px;
-        margin-inline-end: 16px;
-        margin-inline-start: initial;
+    .info {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      margin-right: 16px;
+      margin-inline-end: 16px;
+      margin-inline-start: initial;
 
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
-      }
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
 
-      .pointer {
-        cursor: pointer;
-      }
+    .pointer {
+      cursor: pointer;
+    }
 
-      .secondary,
-      .progress {
-        color: var(--secondary-text-color);
-      }
+    .secondary,
+    .progress {
+      color: var(--secondary-text-color);
+    }
 
-      .choose-player {
-        flex: 1;
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        padding: 16px;
-      }
+    .choose-player {
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 16px;
+    }
 
-      .controls {
-        height: 48px;
-        padding-bottom: 4px;
-      }
+    .controls {
+      height: 48px;
+      padding-bottom: 4px;
+    }
 
-      .controls-progress {
-        flex: 2;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        direction: ltr;
-      }
+    .controls-progress {
+      flex: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      direction: ltr;
+    }
 
-      .progress {
-        display: flex;
-        width: 100%;
-        align-items: center;
-      }
+    .progress {
+      display: flex;
+      width: 100%;
+      align-items: center;
+    }
 
-      mwc-linear-progress[wide] {
-        margin: 0 4px;
-      }
+    mwc-linear-progress[wide] {
+      margin: 0 4px;
+    }
 
-      .media-info {
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
-        padding-left: 16px;
-        padding-inline-start: 16px;
-        padding-inline-end: initial;
-        width: 100%;
-      }
+    .media-info {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      padding-left: 16px;
+      padding-inline-start: 16px;
+      padding-inline-end: initial;
+      width: 100%;
+    }
 
-      hui-marquee {
-        font-size: 1.2em;
-        margin: 0px 0 4px;
-      }
+    hui-marquee {
+      font-size: 1.2em;
+      margin: 0px 0 4px;
+    }
 
-      img {
-        height: 100%;
-      }
+    img {
+      height: 100%;
+    }
 
-      .app img {
-        height: 68px;
-        margin: 16px 0 16px 16px;
-      }
+    .app img {
+      height: 68px;
+      margin: 16px 0 16px 16px;
+    }
 
-      :host([narrow]) {
-        height: 57px;
-      }
+    :host([narrow]) {
+      height: 57px;
+    }
 
-      :host([narrow]) .controls-progress {
-        flex: unset;
-        min-width: 48px;
-      }
+    :host([narrow]) .controls-progress {
+      flex: unset;
+      min-width: 48px;
+    }
 
-      :host([narrow]) .controls-progress.buffering {
-        flex: 1;
-      }
+    :host([narrow]) .controls-progress.buffering {
+      flex: 1;
+    }
 
-      :host([narrow]) .media-info {
-        padding-left: 8px;
-        padding-inline-start: 8px;
-        padding-inline-end: initial;
-      }
+    :host([narrow]) .media-info {
+      padding-left: 8px;
+      padding-inline-start: 8px;
+      padding-inline-end: initial;
+    }
 
-      :host([narrow]) .controls {
-        display: flex;
-        padding-bottom: 0;
-        --mdc-icon-size: 30px;
-      }
+    :host([narrow]) .controls {
+      display: flex;
+      padding-bottom: 0;
+      --mdc-icon-size: 30px;
+    }
 
-      :host([narrow]) .choose-player {
-        padding-left: 0;
-        padding-right: 8px;
-        padding-inline-start: 0;
-        padding-inline-end: 8px;
-        min-width: 48px;
-        flex: unset;
-        justify-content: center;
-      }
+    :host([narrow]) .choose-player {
+      padding-left: 0;
+      padding-right: 8px;
+      padding-inline-start: 0;
+      padding-inline-end: 8px;
+      min-width: 48px;
+      flex: unset;
+      justify-content: center;
+    }
 
-      :host([narrow]) .choose-player.browser {
-        justify-content: flex-end;
-      }
+    :host([narrow]) .choose-player.browser {
+      justify-content: flex-end;
+    }
 
-      :host([narrow]) mwc-linear-progress {
-        padding: 0;
-        position: absolute;
-        top: -4px;
-        left: 0;
-      }
+    :host([narrow]) mwc-linear-progress {
+      padding: 0;
+      position: absolute;
+      top: -4px;
+      left: 0;
+    }
 
-      ha-list-item[selected] {
-        font-weight: bold;
-      }
+    ha-list-item[selected] {
+      font-weight: bold;
+    }
 
-      span[slot="icon"] {
-        display: flex;
-        align-items: center;
-      }
+    span[slot="icon"] {
+      display: flex;
+      align-items: center;
+    }
 
-      ha-svg-icon[slot="trailingIcon"] {
-        margin-inline-start: 8px !important;
-        margin-inline-end: 0px !important;
-        direction: var(--direction);
-      }
-    `;
-  }
+    ha-svg-icon[slot="trailingIcon"] {
+      margin-inline-start: 8px !important;
+      margin-inline-end: 0px !important;
+      direction: var(--direction);
+    }
+  `;
 }
 
 declare global {

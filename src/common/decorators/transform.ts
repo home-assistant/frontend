@@ -5,9 +5,7 @@ import { shallowEqual } from "../util/shallow-equal";
 /**
  * Transform function type.
  */
-export interface Transformer<T = any, V = any> {
-  (value: V): T;
-}
+export type Transformer<T = any, V = any> = (value: V) => T;
 
 type ReactiveTransformElement = ReactiveElement & {
   _transformers: Map<PropertyKey, Transformer>;

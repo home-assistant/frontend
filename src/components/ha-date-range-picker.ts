@@ -35,9 +35,7 @@ import "./ha-textarea";
 import "./ha-icon-button-next";
 import "./ha-icon-button-prev";
 
-export interface DateRangePickerRanges {
-  [key: string]: [Date, Date];
-}
+export type DateRangePickerRanges = Record<string, [Date, Date]>;
 
 @customElement("ha-date-range-picker")
 export class HaDateRangePicker extends LitElement {
@@ -234,7 +232,7 @@ export class HaDateRangePicker extends LitElement {
                         this.hass.locale,
                         this.hass.config
                       )) +
-                  " - \n" +
+                  (window.innerWidth >= 459 ? " - " : " - \n") +
                   (isThisYear(this.endDate)
                     ? formatShortDateTime(
                         this.endDate,
@@ -372,9 +370,10 @@ export class HaDateRangePicker extends LitElement {
   }
 
   static styles = css`
-    ha-icon-button {
-      direction: var(--direction);
-    }
+
+      ha-icon-button {
+        direction: var(--direction);
+      }
 
     .date-range-inputs {
       display: flex;
@@ -415,6 +414,7 @@ export class HaDateRangePicker extends LitElement {
         max-height: calc(70vh - 330px);
         min-height: 160px;
       }
+
       :host([header-position]) .date-range-ranges {
         max-height: calc(90vh - 430px);
       }

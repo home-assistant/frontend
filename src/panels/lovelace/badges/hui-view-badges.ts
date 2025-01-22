@@ -1,5 +1,5 @@
 import { mdiPlus } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -31,6 +31,9 @@ export class HuiViewBadges extends LitElement {
   @property({ attribute: false }) public badges: HuiBadge[] = [];
 
   @property({ attribute: false }) public viewIndex!: number;
+
+  @property({ type: Boolean, attribute: "show-add-label" })
+  public showAddLabel!: boolean;
 
   @state() _dragging = false;
 
@@ -153,6 +156,11 @@ export class HuiViewBadges extends LitElement {
                       >
                         <ha-ripple></ha-ripple>
                         <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
+                        ${this.showAddLabel
+                          ? this.hass.localize(
+                              "ui.panel.lovelace.editor.section.add_badge"
+                            )
+                          : nothing}
                       </button>
                     `
                   : nothing}
@@ -163,55 +171,54 @@ export class HuiViewBadges extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host([hidden]) {
-        display: none !important;
-      }
+  static styles = css`
+    :host([hidden]) {
+      display: none !important;
+    }
 
-      .badges {
-        display: flex;
-        align-items: flex-start;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 8px;
-        margin: 0;
-      }
+    .badges {
+      display: flex;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin: 0;
+    }
 
-      hui-badge-edit-mode {
-        display: block;
-        position: relative;
-        min-width: 36px;
-        min-height: 36px;
-      }
+    hui-badge-edit-mode {
+      display: block;
+      position: relative;
+      min-width: 36px;
+      min-height: 36px;
+    }
 
-      .add {
-        position: relative;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 8px;
-        height: 36px;
-        padding: 6px 20px 6px 20px;
-        box-sizing: border-box;
-        width: auto;
-        border-radius: 18px;
-        background-color: transparent;
-        border-width: 2px;
-        border-style: dashed;
-        border-color: var(--primary-color);
-        --mdc-icon-size: 18px;
-        cursor: pointer;
-        color: var(--primary-text-color);
-        --ha-ripple-color: var(--primary-color);
-        --ha-ripple-hover-opacity: 0.04;
-        --ha-ripple-pressed-opacity: 0.12;
-      }
-      .add:focus {
-        border-style: solid;
-      }
-    `;
-  }
+    .add {
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+      height: 36px;
+      padding: 6px 20px 6px 20px;
+      box-sizing: border-box;
+      width: auto;
+      border-radius: 18px;
+      background-color: transparent;
+      border-width: 2px;
+      border-style: dashed;
+      border-color: var(--primary-color);
+      --mdc-icon-size: 18px;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--primary-text-color);
+      --ha-ripple-color: var(--primary-color);
+      --ha-ripple-hover-opacity: 0.04;
+      --ha-ripple-pressed-opacity: 0.12;
+    }
+    .add:focus {
+      border-style: solid;
+    }
+  `;
 }
 
 declare global {

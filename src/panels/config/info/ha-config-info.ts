@@ -95,7 +95,7 @@ class HaConfigInfo extends LitElement {
 
   protected render(): TemplateResult {
     const hass = this.hass;
-    const customUiList: Array<{ name: string; url: string; version: string }> =
+    const customUiList: { name: string; url: string; version: string }[] =
       (window as any).CUSTOM_UI_LIST || [];
 
     return html`
@@ -156,7 +156,9 @@ class HaConfigInfo extends LitElement {
             </ul>
           </ha-card>
           <ha-card outlined class="ohf">
-            <div>Proud part of</div>
+            <div>
+              ${this.hass.localize("ui.panel.config.info.proud_part_of")}
+            </div>
             <a
               href="https://www.openhomefoundation.org"
               target="_blank"

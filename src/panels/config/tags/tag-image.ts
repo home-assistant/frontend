@@ -1,5 +1,4 @@
 import { mdiNfcVariant } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-svg-icon";
@@ -47,38 +46,36 @@ export class HaTagImage extends LitElement {
     </div>`;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .image {
-        height: 100%;
-        width: 100%;
-        background-size: cover;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+  static styles = css`
+    .image {
+      height: 100%;
+      width: 100%;
+      background-size: cover;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .container {
+      height: 40px;
+      width: 40px;
+      border-radius: 50%;
+    }
+    :host(.just-scanned) .container {
+      animation: glow 10s;
+    }
+    @keyframes glow {
+      0% {
+        box-shadow: 0px 0px 24px 0px rgba(var(--rgb-primary-color), 0);
       }
-      .container {
-        height: 40px;
-        width: 40px;
-        border-radius: 50%;
+      10% {
+        box-shadow: 0px 0px 24px 0px rgba(var(--rgb-primary-color), 1);
       }
-      :host(.just-scanned) .container {
-        animation: glow 10s;
+      100% {
+        box-shadow: 0px 0px 24px 0px rgba(var(--rgb-primary-color), 0);
       }
-      @keyframes glow {
-        0% {
-          box-shadow: 0px 0px 24px 0px rgba(var(--rgb-primary-color), 0);
-        }
-        10% {
-          box-shadow: 0px 0px 24px 0px rgba(var(--rgb-primary-color), 1);
-        }
-        100% {
-          box-shadow: 0px 0px 24px 0px rgba(var(--rgb-primary-color), 0);
-        }
-      }
-    `;
-  }
+    }
+  `;
 }
 
 declare global {

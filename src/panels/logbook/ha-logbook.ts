@@ -76,7 +76,7 @@ export class HaLogbook extends LitElement {
 
   @state() private _error?: string;
 
-  private _subscribed?: Promise<(() => Promise<void>) | void>;
+  private _subscribed?: Promise<(() => Promise<void>) | undefined>;
 
   private _liveUpdatesEnabled = true;
 
@@ -261,25 +261,25 @@ export class HaLogbook extends LitElement {
   private _calculateLogbookPeriod() {
     const now = new Date();
     if ("range" in this.time) {
-      return <LogbookTimePeriod>{
+      return {
         now: now,
         startTime: this.time.range[0],
         endTime: this.time.range[1],
         purgeBeforePythonTime: undefined,
-      };
+      } as LogbookTimePeriod;
     }
     if ("recent" in this.time) {
       const purgeBeforePythonTime = findStartOfRecentTime(
         now,
         this.time.recent
       );
-      return <LogbookTimePeriod>{
+      return {
         now: now,
         startTime: new Date(purgeBeforePythonTime * 1000),
         // end streaming one year from now
         endTime: new Date(now.getTime() + 86400 * 365 * 1000),
         purgeBeforePythonTime: findStartOfRecentTime(now, this.time.recent),
-      };
+      } as LogbookTimePeriod;
     }
     throw new Error("Unexpected time specified");
   }
@@ -309,6 +309,7 @@ export class HaLogbook extends LitElement {
     ).catch((err) => {
       this._subscribed = undefined;
       this._error = err;
+      return undefined;
     });
     return true;
   }

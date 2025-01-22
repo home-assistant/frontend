@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/entity/ha-entity-toggle";
@@ -51,13 +51,11 @@ class HuiHumidifierEntityRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-humidifier-state {
-        text-align: right;
-      }
-    `;
-  }
+  static styles = css`
+    ha-humidifier-state {
+      text-align: right;
+    }
+  `;
 }
 
 declare global {

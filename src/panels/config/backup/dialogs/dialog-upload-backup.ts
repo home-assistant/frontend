@@ -24,9 +24,9 @@ import type { UploadBackupDialogParams } from "./show-dialog-upload-backup";
 
 const SUPPORTED_FORMAT = "application/x-tar";
 
-type FormData = {
+interface FormData {
   file?: File;
-};
+}
 
 const INITIAL_DATA: FormData = {
   file: undefined,
@@ -65,6 +65,7 @@ export class DialogUploadBackup
 
   public closeDialog() {
     this._dialog?.close();
+    return true;
   }
 
   private _formValid() {

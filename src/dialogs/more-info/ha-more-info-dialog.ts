@@ -12,7 +12,7 @@ import {
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -47,9 +47,7 @@ import {
 } from "./const";
 import "./controls/more-info-default";
 import "./ha-more-info-history-and-logbook";
-import type { MoreInfoHistoryAndLogbook } from "./ha-more-info-history-and-logbook";
 import "./ha-more-info-info";
-import type { MoreInfoInfo } from "./ha-more-info-info";
 import "./ha-more-info-settings";
 import "./more-info-content";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
@@ -63,12 +61,12 @@ export interface MoreInfoDialogParams {
 
 type View = "info" | "history" | "settings" | "related";
 
-type ChildView = {
+interface ChildView {
   viewTag: string;
   viewTitle?: string;
   viewImport?: () => Promise<unknown>;
   viewParams?: any;
-};
+}
 
 declare global {
   interface HASSDomEvents {
@@ -99,8 +97,7 @@ export class MoreInfoDialog extends LitElement {
 
   @state() private _infoEditMode = false;
 
-  @query("ha-more-info-info, ha-more-info-history-and-logbook")
-  private _history?: MoreInfoInfo | MoreInfoHistoryAndLogbook;
+  @state() private _isEscapeEnabled = true;
 
   @state() private _sensorNumericDeviceClasses?: string[] = [];
 
@@ -126,7 +123,7 @@ export class MoreInfoDialog extends LitElement {
         this.hass,
         this._entityId
       );
-    } catch (e) {
+    } catch (_e) {
       this._entry = null;
     }
   }
@@ -137,6 +134,9 @@ export class MoreInfoDialog extends LitElement {
     this._childView = undefined;
     this._infoEditMode = false;
     this._initialView = DEFAULT_VIEW;
+    this._isEscapeEnabled = true;
+    window.removeEventListener("dialog-closed", this._enableEscapeKeyClose);
+    window.removeEventListener("show-dialog", this._disableEscapeKeyClose);
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -296,6 +296,7 @@ export class MoreInfoDialog extends LitElement {
         open
         @closed=${this.closeDialog}
         @opened=${this._handleOpened}
+        .escapeKeyAction=${this._isEscapeEnabled ? undefined : ""}
         .heading=${title}
         hideActions
         flexContent
@@ -547,8 +548,17 @@ export class MoreInfoDialog extends LitElement {
   }
 
   private _handleOpened() {
-    this._history?.resize({ aspectRatio: 2 });
+    window.addEventListener("dialog-closed", this._enableEscapeKeyClose);
+    window.addEventListener("show-dialog", this._disableEscapeKeyClose);
   }
+
+  private _enableEscapeKeyClose = () => {
+    this._isEscapeEnabled = true;
+  };
+
+  private _disableEscapeKeyClose = () => {
+    this._isEscapeEnabled = false;
+  };
 
   static get styles() {
     return [

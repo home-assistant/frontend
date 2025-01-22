@@ -77,8 +77,9 @@ class HassioBackupDialog
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     this._dialog?.close();
+    return true;
   }
 
   private _localize(key: BackupOrRestoreKey) {

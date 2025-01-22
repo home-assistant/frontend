@@ -37,7 +37,10 @@ const SCHEMA = [
   },
 ] as const;
 
-type FormData = { new_password?: string; password_confirm?: string };
+interface FormData {
+  new_password?: string;
+  password_confirm?: string;
+}
 
 @customElement("dialog-admin-change-password")
 class DialogAdminChangePassword extends LitElement {

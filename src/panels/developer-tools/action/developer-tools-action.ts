@@ -577,7 +577,7 @@ class HaPanelDevAction extends LitElement {
         let value: any = "";
         try {
           value = load(field.example);
-        } catch (err: any) {
+        } catch (_err: any) {
           value =
             this.hass.localize(
               `component.${domain}.services.${serviceName}.fields.${field.key}.example`
