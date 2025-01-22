@@ -38,6 +38,7 @@ export interface BackupConfig {
   last_attempted_automatic_backup: string | null;
   last_completed_automatic_backup: string | null;
   next_automatic_backup: string | null;
+  next_automatic_backup_additional?: boolean;
   create_backup: {
     agent_ids: string[];
     include_addons: string[] | null;
