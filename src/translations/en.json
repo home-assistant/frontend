@@ -806,6 +806,8 @@
         "select": "Select",
         "select_date_range": "Select time period",
         "ranges": {
+          "last_30_minutes": "Last 30 minutes",
+          "last_2_hours": "Last 2 hours",
           "today": "Today",
           "yesterday": "Yesterday",
           "this_week": "This week",
