@@ -281,8 +281,10 @@ export class HaChartBase extends LitElement {
   private _handleWheel(e: WheelEvent) {
     // if the window is not focused, we don't receive the keydown events but scroll still works
     if (!this.options?.dataZoom) {
-      e.preventDefault();
       const modifierPressed = (isMac && e.metaKey) || (!isMac && e.ctrlKey);
+      if (modifierPressed) {
+        e.preventDefault();
+      }
       if (modifierPressed !== this._modifierPressed) {
         this._modifierPressed = modifierPressed;
         this.chart?.setOption({
