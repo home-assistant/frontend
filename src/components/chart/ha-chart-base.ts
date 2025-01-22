@@ -141,6 +141,7 @@ export class HaChartBase extends LitElement {
         style=${styleMap({
           height: this.height ?? `${this._getDefaultHeight()}px`,
         })}
+        @wheel=${this._handleWheel}
       >
         <div class="chart"></div>
         ${this._isZoomed
@@ -275,6 +276,20 @@ export class HaChartBase extends LitElement {
 
   private _handleZoomReset() {
     this.chart?.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
+  }
+
+  private _handleWheel(e: WheelEvent) {
+    // if the window is not focused, we don't receive the keydown events but scroll still works
+    if (!this.options?.dataZoom) {
+      e.preventDefault();
+      const modifierPressed = (isMac && e.metaKey) || (!isMac && e.ctrlKey);
+      if (modifierPressed !== this._modifierPressed) {
+        this._modifierPressed = modifierPressed;
+        this.chart?.setOption({
+          dataZoom: this._getDataZoomConfig(),
+        });
+      }
+    }
   }
 
   static styles = css`
