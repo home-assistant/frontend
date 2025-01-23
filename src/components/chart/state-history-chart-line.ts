@@ -1,19 +1,26 @@
-import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
 import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
 import { property, state } from "lit/decorators";
+import type { VisualMapComponentOption } from "echarts/components";
+import type { LineSeriesOption } from "echarts/charts";
+import type { YAXisOption } from "echarts/types/dist/shared";
+import { differenceInDays } from "date-fns";
+import { styleMap } from "lit/directives/style-map";
 import { getGraphColorByIndex } from "../../common/color/colors";
-import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTL } from "../../common/util/compute_rtl";
-import {
-  formatNumber,
-  numberFormatToLocale,
-  getNumberFormatOptions,
-} from "../../common/number/format_number";
+
 import type { LineChartEntity, LineChartState } from "../../data/history";
 import type { HomeAssistant } from "../../types";
 import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
-import { clickIsTouch } from "./click_is_touch";
+import type { ECOption } from "../../resources/echarts";
+import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
+import {
+  getNumberFormatOptions,
+  formatNumber,
+} from "../../common/number/format_number";
+import { getTimeAxisLabelConfig } from "./axis-label";
+import { measureTextWidth } from "../../util/text";
+import { fireEvent } from "../../common/dom/fire_event";
 
 const safeParseFloat = (value) => {
   const parsed = parseFloat(value);
@@ -54,15 +61,17 @@ export class StateHistoryChartLine extends LitElement {
 
   @property({ attribute: "fit-y-data", type: Boolean }) public fitYData = false;
 
-  @state() private _chartData?: ChartData<"line">;
+  @property({ type: String }) public height?: string;
+
+  @state() private _chartData: LineSeriesOption[] = [];
 
   @state() private _entityIds: string[] = [];
 
   private _datasetToDataIndex: number[] = [];
 
-  @state() private _chartOptions?: ChartOptions;
+  @state() private _chartOptions?: ECOption;
 
-  @state() private _yWidth = 0;
+  @state() private _yWidth = 25;
 
   private _chartTime: Date = new Date();
 
@@ -72,171 +81,54 @@ export class StateHistoryChartLine extends LitElement {
         .hass=${this.hass}
         .data=${this._chartData}
         .options=${this._chartOptions}
-        .paddingYAxis=${this.paddingYAxis - this._yWidth}
-        chart-type="line"
+        .height=${this.height}
+        style=${styleMap({ height: this.height })}
       ></ha-chart-base>
     `;
   }
 
+  private _renderTooltip(params) {
+    return params
+      .map((param, index: number) => {
+        let value = `${formatNumber(
+          param.value[1] as number,
+          this.hass.locale,
+          getNumberFormatOptions(
+            undefined,
+            this.hass.entities[this._entityIds[param.seriesIndex]]
+          )
+        )} ${this.unit}`;
+        const dataIndex = this._datasetToDataIndex[param.seriesIndex];
+        const data = this.data[dataIndex];
+        if (data.statistics && data.statistics.length > 0) {
+          value += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+          const source =
+            data.states.length === 0 ||
+            param.value[0] < data.states[0].last_changed
+              ? `${this.hass.localize(
+                  "ui.components.history_charts.source_stats"
+                )}`
+              : `${this.hass.localize(
+                  "ui.components.history_charts.source_history"
+                )}`;
+          value += source;
+        }
+
+        const time =
+          index === 0
+            ? formatDateTimeWithSeconds(
+                new Date(param.value[0]),
+                this.hass.locale,
+                this.hass.config
+              ) + "<br>"
+            : "";
+        return `${time}${param.marker} ${param.seriesName}: ${value}
+      `;
+      })
+      .join("<br>");
+  }
+
   public willUpdate(changedProps: PropertyValues) {
-    if (
-      !this.hasUpdated ||
-      changedProps.has("showNames") ||
-      changedProps.has("startTime") ||
-      changedProps.has("endTime") ||
-      changedProps.has("unit") ||
-      changedProps.has("logarithmicScale") ||
-      changedProps.has("minYAxis") ||
-      changedProps.has("maxYAxis") ||
-      changedProps.has("fitYData")
-    ) {
-      this._chartOptions = {
-        parsing: false,
-        interaction: {
-          mode: "nearest",
-          axis: "xy",
-        },
-        scales: {
-          x: {
-            type: "time",
-            adapters: {
-              date: {
-                locale: this.hass.locale,
-                config: this.hass.config,
-              },
-            },
-            min: this.startTime,
-            max: this.endTime,
-            ticks: {
-              maxRotation: 0,
-              sampleSize: 5,
-              autoSkipPadding: 20,
-              major: {
-                enabled: true,
-              },
-              font: (context) =>
-                context.tick && context.tick.major
-                  ? ({ weight: "bold" } as any)
-                  : {},
-            },
-            time: {
-              tooltipFormat: "datetimeseconds",
-            },
-          },
-          y: {
-            suggestedMin: this.fitYData ? this.minYAxis : null,
-            suggestedMax: this.fitYData ? this.maxYAxis : null,
-            min: this.fitYData ? null : this.minYAxis,
-            max: this.fitYData ? null : this.maxYAxis,
-            ticks: {
-              maxTicksLimit: 7,
-            },
-            title: {
-              display: true,
-              text: this.unit,
-            },
-            afterUpdate: (y) => {
-              if (this._yWidth !== Math.floor(y.width)) {
-                this._yWidth = Math.floor(y.width);
-                fireEvent(this, "y-width-changed", {
-                  value: this._yWidth,
-                  chartIndex: this.chartIndex,
-                });
-              }
-            },
-            position: computeRTL(this.hass) ? "right" : "left",
-            type: this.logarithmicScale ? "logarithmic" : "linear",
-          },
-        },
-        plugins: {
-          tooltip: {
-            callbacks: {
-              label: (context) => {
-                let label = `${context.dataset.label}: ${formatNumber(
-                  context.parsed.y,
-                  this.hass.locale,
-                  getNumberFormatOptions(
-                    undefined,
-                    this.hass.entities[this._entityIds[context.datasetIndex]]
-                  )
-                )} ${this.unit}`;
-                const dataIndex =
-                  this._datasetToDataIndex[context.datasetIndex];
-                const data = this.data[dataIndex];
-                if (data.statistics && data.statistics.length > 0) {
-                  const source =
-                    data.states.length === 0 ||
-                    context.parsed.x < data.states[0].last_changed
-                      ? `\n${this.hass.localize(
-                          "ui.components.history_charts.source_stats"
-                        )}`
-                      : `\n${this.hass.localize(
-                          "ui.components.history_charts.source_history"
-                        )}`;
-                  label += source;
-                }
-                return label;
-              },
-            },
-          },
-          filler: {
-            propagate: true,
-          },
-          legend: {
-            display: this.showNames,
-            labels: {
-              usePointStyle: true,
-            },
-          },
-        },
-        elements: {
-          line: {
-            tension: 0.1,
-            borderWidth: 1.5,
-          },
-          point: {
-            hitRadius: 50,
-          },
-        },
-        segment: {
-          borderColor: (context) => {
-            // render stat data with a slightly transparent line
-            const dataIndex = this._datasetToDataIndex[context.datasetIndex];
-            const data = this.data[dataIndex];
-            return data.statistics &&
-              data.statistics.length > 0 &&
-              (data.states.length === 0 ||
-                context.p0.parsed.x < data.states[0].last_changed)
-              ? this._chartData!.datasets[dataIndex].borderColor + "7F"
-              : undefined;
-          },
-        },
-        // @ts-expect-error
-        locale: numberFormatToLocale(this.hass.locale),
-        onClick: (e: any) => {
-          if (!this.clickForMoreInfo || clickIsTouch(e)) {
-            return;
-          }
-
-          const chart = e.chart;
-
-          const points = chart.getElementsAtEventForMode(
-            e,
-            "nearest",
-            { intersect: true },
-            true
-          );
-
-          if (points.length) {
-            const firstPoint = points[0];
-            fireEvent(this, "hass-more-info", {
-              entityId: this._entityIds[firstPoint.datasetIndex],
-            });
-            chart.canvas.dispatchEvent(new Event("mouseout")); // to hide tooltip
-          }
-        },
-      };
-    }
     if (
       changedProps.has("data") ||
       changedProps.has("startTime") ||
@@ -248,13 +140,130 @@ export class StateHistoryChartLine extends LitElement {
       // so the X axis grows even if there is no new data
       this._generateData();
     }
+
+    if (
+      !this.hasUpdated ||
+      changedProps.has("showNames") ||
+      changedProps.has("startTime") ||
+      changedProps.has("endTime") ||
+      changedProps.has("unit") ||
+      changedProps.has("logarithmicScale") ||
+      changedProps.has("minYAxis") ||
+      changedProps.has("maxYAxis") ||
+      changedProps.has("fitYData") ||
+      changedProps.has("_chartData") ||
+      changedProps.has("paddingYAxis") ||
+      changedProps.has("_yWidth")
+    ) {
+      const dayDifference = differenceInDays(this.endTime, this.startTime);
+      const rtl = computeRTL(this.hass);
+      const splitLineStyle = this.hass.themes?.darkMode
+        ? { opacity: 0.15 }
+        : {};
+      this._chartOptions = {
+        xAxis: {
+          type: "time",
+          min: this.startTime,
+          max: this.endTime,
+          axisLabel: getTimeAxisLabelConfig(
+            this.hass.locale,
+            this.hass.config,
+            dayDifference
+          ),
+          axisLine: {
+            show: false,
+          },
+          splitLine: {
+            show: true,
+            lineStyle: splitLineStyle,
+          },
+          minInterval:
+            dayDifference >= 89 // quarter
+              ? 28 * 3600 * 24 * 1000
+              : dayDifference > 2
+                ? 3600 * 24 * 1000
+                : undefined,
+        },
+        yAxis: {
+          type: this.logarithmicScale ? "log" : "value",
+          name: this.unit,
+          min: this.fitYData ? this.minYAxis : undefined,
+          max: this.fitYData ? this.maxYAxis : undefined,
+          position: rtl ? "right" : "left",
+          scale: true,
+          nameGap: 3,
+          splitLine: {
+            show: true,
+            lineStyle: splitLineStyle,
+          },
+          axisLabel: {
+            margin: 5,
+            formatter: (value: number) => {
+              const label = formatNumber(value, this.hass.locale);
+              const width = measureTextWidth(label, 12) + 5;
+              if (width > this._yWidth) {
+                this._yWidth = width;
+                fireEvent(this, "y-width-changed", {
+                  value: this._yWidth,
+                  chartIndex: this.chartIndex,
+                });
+              }
+              return label;
+            },
+          },
+        } as YAXisOption,
+        legend: {
+          show: this.showNames,
+          icon: "circle",
+          padding: [20, 0],
+        },
+        grid: {
+          ...(this.showNames ? {} : { top: 30 }), // undefined is the same as 0
+          left: rtl ? 1 : Math.max(this.paddingYAxis, this._yWidth),
+          right: rtl ? Math.max(this.paddingYAxis, this._yWidth) : 1,
+          bottom: 30,
+        },
+        visualMap: this._chartData
+          .map((_, seriesIndex) => {
+            const dataIndex = this._datasetToDataIndex[seriesIndex];
+            const data = this.data[dataIndex];
+            if (!data.statistics || data.statistics.length === 0) {
+              return false;
+            }
+            // render stat data with a slightly transparent line
+            const firstStateTS =
+              data.states[0]?.last_changed ?? this.endTime.getTime();
+            return {
+              show: false,
+              seriesIndex,
+              dimension: 0,
+              pieces: [
+                {
+                  max: firstStateTS - 0.01,
+                  colorAlpha: 0.5,
+                },
+                {
+                  min: firstStateTS,
+                  colorAlpha: 1,
+                },
+              ],
+            };
+          })
+          .filter(Boolean) as VisualMapComponentOption[],
+        tooltip: {
+          trigger: "axis",
+          appendTo: document.body,
+          formatter: this._renderTooltip.bind(this),
+        },
+      };
+    }
   }
 
   private _generateData() {
     let colorIndex = 0;
     const computedStyles = getComputedStyle(this);
     const entityStates = this.data;
-    const datasets: ChartDataset<"line">[] = [];
+    const datasets: LineSeriesOption[] = [];
     const entityIds: string[] = [];
     const datasetToDataIndex: number[] = [];
     if (entityStates.length === 0) {
@@ -270,7 +279,7 @@ export class StateHistoryChartLine extends LitElement {
       // array containing [value1, value2, etc]
       let prevValues: any[] | null = null;
 
-      const data: ChartDataset<"line">[] = [];
+      const data: LineSeriesOption[] = [];
 
       const pushData = (timestamp: Date, datavalues: any[] | null) => {
         if (!datavalues) return;
@@ -287,9 +296,9 @@ export class StateHistoryChartLine extends LitElement {
             // to the chart for the previous value. Otherwise the gap will
             // be too big. It will go from the start of the previous data
             // value until the start of the next data value.
-            d.data.push({ x: timestamp.getTime(), y: prevValues[i] });
+            d.data!.push([timestamp, prevValues[i]]);
           }
-          d.data.push({ x: timestamp.getTime(), y: datavalues[i] });
+          d.data!.push([timestamp, datavalues[i]]);
         });
         prevValues = datavalues;
       };
@@ -300,13 +309,25 @@ export class StateHistoryChartLine extends LitElement {
           colorIndex++;
         }
         data.push({
-          label: nameY,
-          fill: fill ? "origin" : false,
-          borderColor: color,
-          backgroundColor: color + "7F",
-          stepped: "before",
-          pointRadius: 0,
+          id: nameY,
           data: [],
+          type: "line",
+          name: nameY,
+          color,
+          symbol: "circle",
+          step: "end",
+          symbolSize: 1,
+          lineStyle: {
+            width: fill ? 0 : 1.5,
+          },
+          areaStyle: fill
+            ? {
+                color: color + "7F",
+              }
+            : undefined,
+          tooltip: {
+            show: !fill,
+          },
         });
         entityIds.push(states.entity_id);
         datasetToDataIndex.push(dataIdx);
@@ -575,9 +596,7 @@ export class StateHistoryChartLine extends LitElement {
       Array.prototype.push.apply(datasets, data);
     });
 
-    this._chartData = {
-      datasets,
-    };
+    this._chartData = datasets;
     this._entityIds = entityIds;
     this._datasetToDataIndex = datasetToDataIndex;
   }

@@ -1,21 +1,15 @@
-import type {
-  ChartData,
-  ChartDataset,
-  ChartOptions,
-  ChartType,
-} from "chart.js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import type {
+  BarSeriesOption,
+  LineSeriesOption,
+} from "echarts/types/dist/shared";
+import { styleMap } from "lit/directives/style-map";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { fireEvent } from "../../common/dom/fire_event";
-import {
-  formatNumber,
-  numberFormatToLocale,
-  getNumberFormatOptions,
-} from "../../common/number/format_number";
+
 import type {
   Statistics,
   StatisticsMetaData,
@@ -25,13 +19,18 @@ import {
   getDisplayUnit,
   getStatisticLabel,
   getStatisticMetadata,
-  isExternalStatistic,
   statisticsHaveType,
 } from "../../data/recorder";
 import type { HomeAssistant } from "../../types";
 import "./ha-chart-base";
-import type { ChartDatasetExtra } from "./ha-chart-base";
-import { clickIsTouch } from "./click_is_touch";
+import { computeRTL } from "../../common/util/compute_rtl";
+import type { ECOption } from "../../resources/echarts";
+import {
+  formatNumber,
+  getNumberFormatOptions,
+} from "../../common/number/format_number";
+import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
+import { getTimeAxisLabelConfig } from "./axis-label";
 
 export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
   mean: "mean",
@@ -62,7 +61,7 @@ export class StatisticsChart extends LitElement {
   @property({ attribute: false, type: Array })
   public statTypes: StatisticType[] = ["sum", "min", "mean", "max"];
 
-  @property({ attribute: false }) public chartType: ChartType = "line";
+  @property({ attribute: false }) public chartType: "line" | "bar" = "line";
 
   @property({ attribute: false, type: Number }) public minYAxis?: number;
 
@@ -84,15 +83,18 @@ export class StatisticsChart extends LitElement {
 
   @property() public period?: string;
 
-  @state() private _chartData: ChartData = { datasets: [] };
+  @property({ attribute: "days-to-show", type: Number })
+  public daysToShow?: number;
 
-  @state() private _chartDatasetExtra: ChartDatasetExtra[] = [];
+  @property({ type: String }) public height?: string;
+
+  @state() private _chartData: (LineSeriesOption | BarSeriesOption)[] = [];
+
+  @state() private _legendData: string[] = [];
 
   @state() private _statisticIds: string[] = [];
 
-  @state() private _chartOptions?: ChartOptions;
-
-  @state() private _hiddenStats = new Set<string>();
+  @state() private _chartOptions?: ECOption;
 
   private _computedStyle?: CSSStyleDeclaration;
 
@@ -101,8 +103,13 @@ export class StatisticsChart extends LitElement {
   }
 
   public willUpdate(changedProps: PropertyValues) {
-    if (changedProps.has("legendMode")) {
-      this._hiddenStats.clear();
+    if (
+      changedProps.has("statisticsData") ||
+      changedProps.has("statTypes") ||
+      changedProps.has("chartType") ||
+      changedProps.has("hideLegend")
+    ) {
+      this._generateData();
     }
     if (
       !this.hasUpdated ||
@@ -116,15 +123,6 @@ export class StatisticsChart extends LitElement {
       changedProps.has("hideLegend")
     ) {
       this._createOptions();
-    }
-    if (
-      changedProps.has("statisticsData") ||
-      changedProps.has("statTypes") ||
-      changedProps.has("chartType") ||
-      changedProps.has("hideLegend") ||
-      changedProps.has("_hiddenStats")
-    ) {
-      this._generateData();
     }
   }
 
@@ -157,146 +155,105 @@ export class StatisticsChart extends LitElement {
 
     return html`
       <ha-chart-base
-        external-hidden
         .hass=${this.hass}
         .data=${this._chartData}
-        .extraData=${this._chartDatasetExtra}
         .options=${this._chartOptions}
-        .chartType=${this.chartType}
-        @dataset-hidden=${this._datasetHidden}
-        @dataset-unhidden=${this._datasetUnhidden}
+        .height=${this.height}
+        style=${styleMap({ height: this.height })}
       ></ha-chart-base>
     `;
   }
 
-  private _datasetHidden(ev) {
-    ev.stopPropagation();
-    this._hiddenStats.add(this._statisticIds[ev.detail.index]);
-    this.requestUpdate("_hiddenStats");
-  }
+  private _renderTooltip(params: any) {
+    return params
+      .map((param, index: number) => {
+        const value = `${formatNumber(
+          // max series has 3 values, as the second value is the max-min to form a band
+          (param.value[2] ?? param.value[1]) as number,
+          this.hass.locale,
+          getNumberFormatOptions(
+            undefined,
+            this.hass.entities[this._statisticIds[param.seriesIndex]]
+          )
+        )} ${this.unit}`;
 
-  private _datasetUnhidden(ev) {
-    ev.stopPropagation();
-    this._hiddenStats.delete(this._statisticIds[ev.detail.index]);
-    this.requestUpdate("_hiddenStats");
-  }
-
-  private _createOptions(unit?: string) {
-    this._chartOptions = {
-      parsing: false,
-      interaction: {
-        mode: "nearest",
-        axis: "x",
-      },
-      scales: {
-        x: {
-          type: "time",
-          adapters: {
-            date: {
-              locale: this.hass.locale,
-              config: this.hass.config,
-            },
-          },
-          ticks: {
-            source: this.chartType === "bar" ? "data" : undefined,
-            maxRotation: 0,
-            sampleSize: 5,
-            autoSkipPadding: 20,
-            major: {
-              enabled: true,
-            },
-            font: (context) =>
-              context.tick && context.tick.major
-                ? ({ weight: "bold" } as any)
-                : {},
-          },
-          time: {
-            tooltipFormat: "datetime",
-            unit:
-              this.chartType === "bar" &&
-              this.period &&
-              ["hour", "day", "week", "month"].includes(this.period)
-                ? this.period
-                : undefined,
-          },
-        },
-        y: {
-          beginAtZero: this.chartType === "bar",
-          ticks: {
-            maxTicksLimit: 7,
-          },
-          title: {
-            display: unit || this.unit,
-            text: unit || this.unit,
-          },
-          type: this.logarithmicScale ? "logarithmic" : "linear",
-          min: this.fitYData ? null : this.minYAxis,
-          max: this.fitYData ? null : this.maxYAxis,
-        },
-      },
-      plugins: {
-        tooltip: {
-          callbacks: {
-            label: (context) =>
-              `${context.dataset.label}: ${formatNumber(
-                context.parsed.y,
+        const time =
+          index === 0
+            ? formatDateTimeWithSeconds(
+                new Date(param.value[0]),
                 this.hass.locale,
-                getNumberFormatOptions(
-                  undefined,
-                  this.hass.entities[this._statisticIds[context.datasetIndex]]
-                )
-              )} ${
-                // @ts-ignore
-                context.dataset.unit || ""
-              }`,
-          },
+                this.hass.config
+              ) + "<br>"
+            : "";
+        return `${time}${param.marker} ${param.seriesName}: ${value}
+      `;
+      })
+      .join("<br>");
+  }
+
+  private _createOptions() {
+    const splitLineStyle = this.hass.themes?.darkMode ? { opacity: 0.15 } : {};
+    const dayDifference = this.daysToShow ?? 1;
+    this._chartOptions = {
+      xAxis: {
+        type: "time",
+        axisLabel: getTimeAxisLabelConfig(
+          this.hass.locale,
+          this.hass.config,
+          dayDifference
+        ),
+        axisLine: {
+          show: false,
         },
-        filler: {
-          propagate: true,
+        splitLine: {
+          show: true,
+          lineStyle: splitLineStyle,
         },
-        legend: {
-          display: !this.hideLegend,
-          labels: {
-            usePointStyle: true,
-          },
+        minInterval:
+          dayDifference >= 89 // quarter
+            ? 28 * 3600 * 24 * 1000
+            : dayDifference > 2
+              ? 3600 * 24 * 1000
+              : undefined,
+      },
+      yAxis: {
+        type: this.logarithmicScale ? "log" : "value",
+        name: this.unit,
+        position: computeRTL(this.hass) ? "right" : "left",
+        // @ts-ignore
+        scale: this.chartType !== "bar",
+        min: this.fitYData ? undefined : this.minYAxis,
+        max: this.fitYData ? undefined : this.maxYAxis,
+        splitLine: {
+          show: true,
+          lineStyle: splitLineStyle,
         },
       },
-      elements: {
-        line: {
-          tension: 0.4,
-          cubicInterpolationMode: "monotone",
-          borderWidth: 1.5,
-        },
-        bar: { borderWidth: 1.5, borderRadius: 4 },
-        point: {
-          hitRadius: 50,
-        },
+      legend: {
+        show: !this.hideLegend,
+        icon: "circle",
+        padding: [20, 0],
+        data: this._legendData,
       },
-      // @ts-expect-error
-      locale: numberFormatToLocale(this.hass.locale),
-      onClick: (e: any) => {
-        if (!this.clickForMoreInfo || clickIsTouch(e)) {
-          return;
-        }
-
-        const chart = e.chart;
-
-        const points = chart.getElementsAtEventForMode(
-          e,
-          "nearest",
-          { intersect: true },
-          true
-        );
-
-        if (points.length) {
-          const firstPoint = points[0];
-          const statisticId = this._statisticIds[firstPoint.datasetIndex];
-          if (!isExternalStatistic(statisticId)) {
-            fireEvent(this, "hass-more-info", { entityId: statisticId });
-            chart.canvas.dispatchEvent(new Event("mouseout")); // to hide tooltip
-          }
-        }
+      grid: {
+        ...(this.hideLegend ? { top: this.unit ? 30 : 5 } : {}), // undefined is the same as 0
+        left: 20,
+        right: 1,
+        bottom: 0,
+        containLabel: true,
       },
+      tooltip: {
+        trigger: "axis",
+        appendTo: document.body,
+        formatter: this._renderTooltip.bind(this),
+      },
+      // scales: {
+      //   x: {
+      //     ticks: {
+      //       source: this.chartType === "bar" ? "data" : undefined,
+      //     },
+      //   },
+      // },
     };
   }
 
@@ -325,8 +282,8 @@ export class StatisticsChart extends LitElement {
 
     let colorIndex = 0;
     const statisticsData = Object.entries(this.statisticsData);
-    const totalDataSets: ChartDataset<"line">[] = [];
-    const totalDatasetExtras: ChartDatasetExtra[] = [];
+    const totalDataSets: LineSeriesOption[] = [];
+    const legendData: string[] = [];
     const statisticIds: string[] = [];
     let endTime: Date;
 
@@ -372,19 +329,19 @@ export class StatisticsChart extends LitElement {
       }
 
       // array containing [value1, value2, etc]
-      let prevValues: (number | null)[] | null = null;
+      let prevValues: (number | null)[][] | null = null;
       let prevEndTime: Date | undefined;
 
       // The datasets for the current statistic
-      const statDataSets: ChartDataset<"line">[] = [];
-      const statDatasetExtras: ChartDatasetExtra[] = [];
+      const statDataSets: (LineSeriesOption | BarSeriesOption)[] = [];
+      const statLegendData: string[] = [];
 
       const pushData = (
         start: Date,
         end: Date,
-        dataValues: (number | null)[] | null
+        dataValues: (number | null)[][]
       ) => {
-        if (!dataValues) return;
+        if (!dataValues.length) return;
         if (start > end) {
           // Drop data points that are after the requested endTime. This could happen if
           // endTime is "now" and client time is not in sync with server time.
@@ -399,11 +356,10 @@ export class StatisticsChart extends LitElement {
           ) {
             // if the end of the previous data doesn't match the start of the current data,
             // we have to draw a gap so add a value at the end time, and then an empty value.
-            d.data.push({ x: prevEndTime.getTime(), y: prevValues[i]! });
-            // @ts-expect-error
-            d.data.push({ x: prevEndTime.getTime(), y: null });
+            d.data!.push([prevEndTime, ...prevValues[i]!]);
+            d.data!.push([prevEndTime, null]);
           }
-          d.data.push({ x: start.getTime(), y: dataValues[i]! });
+          d.data!.push([start, ...dataValues[i]!]);
         });
         prevValues = dataValues;
         prevEndTime = end;
@@ -438,23 +394,25 @@ export class StatisticsChart extends LitElement {
           })
         : this.statTypes;
 
-      let displayed_legend = false;
+      let displayedLegend = false;
       sortedTypes.forEach((type) => {
         if (statisticsHaveType(stats, type)) {
           const band = drawBands && (type === "min" || type === "max");
           if (!this.hideLegend) {
-            const show_legend = hasMean
+            const showLegend = hasMean
               ? type === "mean"
-              : displayed_legend === false;
-            statDatasetExtras.push({
-              legend_label: name,
-              show_legend,
-            });
-            displayed_legend = displayed_legend || show_legend;
+              : displayedLegend === false;
+            if (showLegend) {
+              statLegendData.push(name);
+            }
+            displayedLegend = displayedLegend || showLegend;
           }
           statTypes.push(type);
-          statDataSets.push({
-            label: name
+          const series: LineSeriesOption | BarSeriesOption = {
+            id: `${statistic_id}-${type}`,
+            type: this.chartType,
+            data: [],
+            name: name
               ? `${name} (${this.hass.localize(
                   `ui.components.statistics_charts.statistic_types.${type}`
                 )})
@@ -462,25 +420,26 @@ export class StatisticsChart extends LitElement {
               : this.hass.localize(
                   `ui.components.statistics_charts.statistic_types.${type}`
                 ),
-            fill: drawBands
-              ? type === "min" && hasMean
-                ? "+1"
-                : type === "max"
-                  ? "-1"
-                  : false
-              : false,
-            borderColor:
-              band && hasMean ? color + (this.hideLegend ? "00" : "7F") : color,
-            backgroundColor: band ? color + "3F" : color + "7F",
-            pointRadius: 0,
-            hidden: !this.hideLegend
-              ? this._hiddenStats.has(statistic_id)
-              : false,
-            data: [],
-            // @ts-ignore
-            unit: meta?.unit_of_measurement,
-            band,
-          });
+            symbol: "circle",
+            symbolSize: 0,
+            lineStyle: {
+              width: 1.5,
+            },
+            color: band && hasMean ? color + "3F" : color,
+          };
+          if (band) {
+            series.stack = "band";
+            (series as LineSeriesOption).symbol = "none";
+            (series as LineSeriesOption).lineStyle = {
+              opacity: 0,
+            };
+            if (drawBands && type === "max") {
+              (series as LineSeriesOption).areaStyle = {
+                color: color + "3F",
+              };
+            }
+          }
+          statDataSets.push(series);
           statisticIds.push(statistic_id);
         }
       });
@@ -494,37 +453,39 @@ export class StatisticsChart extends LitElement {
           return;
         }
         prevDate = startDate;
-        const dataValues: (number | null)[] = [];
+        const dataValues: (number | null)[][] = [];
         statTypes.forEach((type) => {
-          let val: number | null | undefined;
+          const val: (number | null)[] = [];
           if (type === "sum") {
             if (firstSum === null || firstSum === undefined) {
-              val = 0;
+              val.push(0);
               firstSum = stat.sum;
             } else {
-              val = (stat.sum || 0) - firstSum;
+              val.push((stat.sum || 0) - firstSum);
             }
+          } else if (type === "max") {
+            const max = stat.max || 0;
+            val.push(max - (stat.min || 0));
+            val.push(max);
           } else {
-            val = stat[type];
+            val.push(stat[type] ?? null);
           }
-          dataValues.push(val ?? null);
+          dataValues.push(val);
         });
         pushData(startDate, new Date(stat.end), dataValues);
       });
 
       // Concat two arrays
       Array.prototype.push.apply(totalDataSets, statDataSets);
-      Array.prototype.push.apply(totalDatasetExtras, statDatasetExtras);
+      Array.prototype.push.apply(legendData, statLegendData);
     });
 
     if (unit) {
-      this._createOptions(unit);
+      this.unit = unit;
     }
 
-    this._chartData = {
-      datasets: totalDataSets,
-    };
-    this._chartDatasetExtra = totalDatasetExtras;
+    this._chartData = totalDataSets;
+    this._legendData = legendData;
     this._statisticIds = statisticIds;
   }
 

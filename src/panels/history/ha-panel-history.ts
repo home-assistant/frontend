@@ -196,6 +196,7 @@ class HaPanelHistory extends LitElement {
                     .historyData=${this._mungedStateHistory}
                     .startTime=${this._startDate}
                     .endTime=${this._endDate}
+                    .narrow=${this.narrow}
                   >
                   </state-history-charts>
                 `}
