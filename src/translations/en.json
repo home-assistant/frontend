@@ -369,7 +369,8 @@
       "copied_clipboard": "Copied to clipboard",
       "name": "Name",
       "optional": "optional",
-      "default": "Default"
+      "default": "Default",
+      "dont_save": "Don't save"
     },
     "components": {
       "selectors": {
@@ -3473,6 +3474,12 @@
               "placeholder": "Optional description",
               "add": "Add description"
             },
+            "leave": {
+              "unsaved_new_title": "Save new automation?",
+              "unsaved_new_text": "You can save your changes, or delete this automation. You can't undo this action.",
+              "unsaved_confirm_title": "Save changes?",
+              "unsaved_confirm_text": "You have made some changes in this automation. You can save these changes, or discard them and leave. You can't undo this action."
+            },
             "icon": "Icon",
             "blueprint": {
               "header": "Blueprint",
@@ -3699,7 +3706,7 @@
                 },
                 "time": {
                   "type_value": "Fixed time",
-                  "type_input": "Value of a date/time helper, time entity or timestamp-class sensor",
+                  "type_input": "Value of a date/time helper or timestamp-class sensor",
                   "label": "Time",
                   "at": "At time",
                   "offset": "[%key:ui::panel::config::automation::editor::triggers::type::sun::offset%]",
@@ -3713,6 +3720,7 @@
                 },
                 "time_pattern": {
                   "label": "Time pattern",
+                  "help": "Prefix the value with \"/\" to match whenever the value is divisible by that number. Use \"*\" to match any value.",
                   "hours": "Hours",
                   "minutes": "Minutes",
                   "seconds": "Seconds",

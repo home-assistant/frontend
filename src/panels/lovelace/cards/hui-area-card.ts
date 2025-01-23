@@ -376,7 +376,20 @@ export class HuiAreaCard
         return;
       }
       this._deviceClasses[domain].forEach((deviceClass) => {
+        let areaSensorEntityId: string | null = null;
+        switch (deviceClass) {
+          case "temperature":
+            areaSensorEntityId = area.temperature_entity_id;
+            break;
+          case "humidity":
+            areaSensorEntityId = area.humidity_entity_id;
+            break;
+        }
+        const areaEntity = areaSensorEntityId
+          ? this.hass.states[areaSensorEntityId]
+          : undefined;
         if (
+          areaEntity ||
           entitiesByDomain[domain].some(
             (entity) => entity.attributes.device_class === deviceClass
           )
@@ -388,7 +401,9 @@ export class HuiAreaCard
                 .domain=${domain}
                 .deviceClass=${deviceClass}
               ></ha-domain-icon>
-              ${this._average(domain, deviceClass)}
+              ${areaEntity
+                ? this.hass.formatEntityState(areaEntity)
+                : this._average(domain, deviceClass)}
             </div>
           `);
         }
