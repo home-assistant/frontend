@@ -3718,6 +3718,7 @@
                 },
                 "time_pattern": {
                   "label": "Time pattern",
+                  "help": "Prefix the value with \"/\" to match whenever the value is divisible by that number. Use \"*\" to match any value.",
                   "hours": "Hours",
                   "minutes": "Minutes",
                   "seconds": "Seconds",
