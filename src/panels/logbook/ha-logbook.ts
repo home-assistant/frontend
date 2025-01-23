@@ -288,8 +288,6 @@ export class HaLogbook extends LitElement {
     if (this._subscribed) {
       return true;
     }
-    // Ensure any previous subscription is cleaned up
-    await this._unsubscribe();
     this._subscribed = subscribeLogbook(
       this.hass,
       (streamMessage) => {
