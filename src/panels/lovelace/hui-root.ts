@@ -474,7 +474,8 @@ class HUIRoot extends LitElement {
           id="view"
           @ll-rebuild=${this._debouncedConfigChanged}
         >
-          <hui-view-background .background=${background}> </hui-view-background>
+          <hui-view-background .hass=${this.hass} .background=${background}>
+          </hui-view-background>
         </hui-view-container>
       </div>
     `;

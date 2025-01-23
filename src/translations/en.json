@@ -2605,7 +2605,7 @@
               "protected_not_encrypted": "Not encrypted"
             },
             "restore": {
-              "title": "Selected what to restore",
+              "title": "Select what to restore",
               "action": "Restore"
             },
             "locations": {
