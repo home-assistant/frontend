@@ -9,9 +9,11 @@ import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { TimeTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import type { TriggerElement } from "../ha-automation-trigger-row";
+import { computeDomain } from "../../../../../common/entity/compute_domain";
 
 const MODE_TIME = "time";
 const MODE_ENTITY = "entity";
+const VALID_DOMAINS = ["sensor", "input_datetime"];
 
 @customElement("ha-automation-trigger-time")
 export class HaTimeTrigger extends LitElement implements TriggerElement {
@@ -33,8 +35,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
   private _schema = memoizeOne(
     (
       localize: LocalizeFunc,
-      inputMode: typeof MODE_TIME | typeof MODE_ENTITY,
-      showOffset: boolean
+      inputMode: typeof MODE_TIME | typeof MODE_ENTITY
     ) =>
       [
         {
@@ -65,16 +66,13 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
                   entity: {
                     filter: [
                       { domain: "input_datetime" },
-                      { domain: "time" },
                       { domain: "sensor", device_class: "timestamp" },
                     ],
                   },
                 },
               },
+              { name: "offset", selector: { text: {} } },
             ] as const)),
-        ...(showOffset
-          ? ([{ name: "offset", selector: { text: {} } }] as const)
-          : ([] as const)),
       ] as const
   );
 
@@ -107,9 +105,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
       const entity =
         typeof at === "object"
           ? at.entity_id
-          : at?.startsWith("input_datetime.") ||
-              at?.startsWith("time.") ||
-              at?.startsWith("sensor.")
+          : at && VALID_DOMAINS.includes(computeDomain(at))
             ? at
             : undefined;
       const time = entity ? undefined : (at as string | undefined);
@@ -132,9 +128,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
     }
 
     const data = this._data(this._inputMode, at);
-    const showOffset =
-      data.mode === MODE_ENTITY && data.entity?.startsWith("sensor.");
-    const schema = this._schema(this.hass.localize, data.mode, !!showOffset);
+    const schema = this._schema(this.hass.localize, data.mode);
 
     return html`
       <ha-form
@@ -157,9 +151,6 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
       delete newValue.offset;
     } else {
       delete newValue.time;
-      if (!newValue.entity?.startsWith("sensor.")) {
-        delete newValue.offset;
-      }
     }
     fireEvent(this, "value-changed", {
       value: {
