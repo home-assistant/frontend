@@ -76,7 +76,7 @@ export class HaLogbook extends LitElement {
 
   @state() private _error?: string;
 
-  private _subscribed?: Promise<(() => Promise<void>) | undefined>;
+  private _subscribed?: (() => Promise<void>) | undefined;
 
   private _liveUpdatesEnabled = true;
 
@@ -211,7 +211,7 @@ export class HaLogbook extends LitElement {
   private async _unsubscribe(): Promise<void> {
     if (this._subscribed) {
       try {
-        const unsub = await this._subscribed;
+        const unsub = this._subscribed;
         if (unsub) {
           await unsub();
           this._subscribed = undefined;
@@ -288,7 +288,7 @@ export class HaLogbook extends LitElement {
     if (this._subscribed) {
       return true;
     }
-    this._subscribed = subscribeLogbook(
+    this._subscribed = await subscribeLogbook(
       this.hass,
       (streamMessage) => {
         // "recent" means start time is a sliding window
