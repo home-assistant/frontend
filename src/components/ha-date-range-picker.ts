@@ -120,7 +120,7 @@ export class HaDateRangePicker extends LitElement {
               weekStartsOn,
             }
           ),
-          calcDate(today, endOfMinute,  this.hass.locale, this.hass.config, {
+          calcDate(today, endOfMinute, this.hass.locale, this.hass.config, {
             weekStartsOn,
           }),
         ],
@@ -136,7 +136,7 @@ export class HaDateRangePicker extends LitElement {
               weekStartsOn,
             }
           ),
-          calcDate(today, endOfHour,  this.hass.locale, this.hass.config, {
+          calcDate(today, endOfHour, this.hass.locale, this.hass.config, {
             weekStartsOn,
           }),
         ],
