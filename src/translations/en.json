@@ -8173,12 +8173,41 @@
         "restore": {
           "header": "Restore a backup",
           "upload_backup": "[%key:ui::panel::config::backup::dialogs::upload::title%]",
-          "upload_backup_action": "[%key:ui::panel::config::backup::dialogs::upload::action%]",
           "unsupported": {
             "title": "[%key:ui::panel::config::backup::dialogs::upload::unsupported::title%]",
             "text": "[%key:ui::panel::config::backup::dialogs::upload::unsupported::text%]"
           },
           "ok": "[%key:ui::common::ok%]",
+          "upload_input_label": "[%key:ui::panel::config::backup::dialogs::upload::input_label%]",
+          "upload_supports_tar": "[%key:ui::panel::config::backup::dialogs::upload::supports_tar%]",
+          "upload_secondary": "[%key:ui::components::file-upload::secondary%]",
+          "delete": "[%key:ui::common::delete%]",
+          "uploading_name": "[%key:ui::components::file-upload::uploading_name%]",
+          "uploading": "[%key:ui::components::file-upload::uploading%]",
+          "details": {
+            "summary": {
+              "title": "[%key:ui::panel::config::backup::details::summary::title%]",
+              "size": "[%key:ui::panel::config::backup::details::summary::size%]",
+              "created": "[%key:ui::panel::config::backup::details::summary::created%]",
+              "protection": "[%key:ui::panel::config::backup::details::summary::protection%]",
+              "protected_encrypted_aes_128": "[%key:ui::panel::config::backup::details::summary::protected_encrypted_aes_128%]",
+              "protected_not_encrypted": "[%key:ui::panel::config::backup::details::summary::protected_not_encrypted%]"
+            },
+            "restore": {
+              "title": "[%key:ui::panel::config::backup::details::restore::title%]",
+              "action": "[%key:ui::panel::config::backup::details::restore::action%]"
+            },
+            "data_picker": {
+              "settings": "[%key:ui::panel::config::backup::data_picker::settings%]",
+              "settings_and_history": "[%key:ui::panel::config::backup::data_picker::settings_and_history%]",
+              "media": "[%key:ui::panel::config::backup::data_picker::media%]",
+              "share_folder": "[%key:ui::panel::config::backup::data_picker::share_folder%]",
+              "local_addons": "[%key:ui::panel::config::backup::data_picker::local_addons%]",
+              "addons": "[%key:ui::panel::config::backup::data_picker::addons%]",
+              "ssl": "[%key:ui::panel::config::backup::data_picker::ssl%]"
+            }
+          },
+          "restore_no_home_assistant": "[%key:supervisor::backup::restore_no_home_assistant%]",
           "in_progress": "Restore in progress",
           "failed": "Restore failed",
           "upload_supports": "Supports .TAR files",
@@ -8205,7 +8234,6 @@
           "retry": "Retry",
           "restore_start_failed": "[%key:supervisor::backup::restore_start_failed%]",
           "no_backup_found": "[%key:supervisor::backup::no_backup_found%]",
-          "restore_no_home_assistant": "[%key:supervisor::backup::restore_no_home_assistant%]",
           "unnamed_backup": "[%key:supervisor::backup::unnamed_backup%]"
         }
       },

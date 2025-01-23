@@ -99,6 +99,12 @@ export class DialogUploadBackup
             .hass=${this.hass}
             .error=${this._error}
             .uploading=${this._uploading}
+            .label=${this.hass.localize(
+              "ui.panel.config.backup.dialogs.upload.input_label"
+            )}
+            .supports=${this.hass.localize(
+              "ui.panel.config.backup.dialogs.upload.supports_tar"
+            )}
             @file-picked=${this._filePicked}
             @files-cleared=${this._filesCleared}
           ></ha-backup-upload>

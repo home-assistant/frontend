@@ -24,6 +24,8 @@ declare global {
 export class HaFileUpload extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property({ attribute: false }) public localize?: LocalizeFunc;
+
   @property() public accept!: string;
 
   @property() public icon?: string;
@@ -43,8 +45,6 @@ export class HaFileUpload extends LitElement {
   @property({ type: Boolean }) public uploading = false;
 
   @property({ type: Number }) public progress?: number;
-
-  @property({ attribute: false }) public localize?: LocalizeFunc;
 
   @property({ type: Boolean, attribute: "auto-open-file-dialog" })
   public autoOpenFileDialog = false;
@@ -83,10 +83,15 @@ export class HaFileUpload extends LitElement {
             <div class="uploading">
               <span class="header"
                 >${this.value
-                  ? localize("ui.components.file-upload.uploading_name", {
-                      name: this._name,
-                    })
-                  : localize("ui.components.file-upload.uploading")}</span
+                  ? localize(
+                      "ui.panel.page-onboarding.restore.uploading_name",
+                      {
+                        name: this._name,
+                      }
+                    )
+                  : localize(
+                      "ui.panel.page-onboarding.restore.uploading"
+                    )}</span
               >
               ${this.progress
                 ? html`<div class="progress">
@@ -135,7 +140,9 @@ export class HaFileUpload extends LitElement {
                     </div>
                     <ha-icon-button
                       @click=${this._clearValue}
-                      .label=${localize("ui.common.delete")}
+                      .label=${localize(
+                        "ui.panel.page-onboarding.restore.delete"
+                      )}
                       .path=${mdiDelete}
                     ></ha-icon-button>
                   </div>`
@@ -153,7 +160,9 @@ export class HaFileUpload extends LitElement {
                         </div>
                         <ha-icon-button
                           @click=${this._clearValue}
-                          .label=${localize("ui.common.delete")}
+                          .label=${localize(
+                            "ui.panel.page-onboarding.restore.delete"
+                          )}
                           .path=${mdiDelete}
                         ></ha-icon-button>
                       </div>`

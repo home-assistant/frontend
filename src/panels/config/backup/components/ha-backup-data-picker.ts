@@ -47,23 +47,25 @@ interface SelectedItems {
 
 @customElement("ha-backup-data-picker")
 export class HaBackupDataPicker extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public data!: BackupData;
 
   @property({ attribute: false }) public value?: BackupData;
 
+  @property({ attribute: false }) public localize?: LocalizeFunc;
+
   @state() public _addonIcons: Record<string, boolean> = {};
 
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
-    if (isComponentLoaded(this.hass, "hassio")) {
+    if (this.hass && isComponentLoaded(this.hass, "hassio")) {
       this._fetchAddonInfo();
     }
   }
 
   private async _fetchAddonInfo() {
-    const { addons } = await fetchHassioAddonsInfo(this.hass);
+    const { addons } = await fetchHassioAddonsInfo(this.hass!);
     this._addonIcons = addons.reduce<Record<string, boolean>>(
       (acc, addon) => ({
         ...acc,
@@ -74,16 +76,18 @@ export class HaBackupDataPicker extends LitElement {
   }
 
   private _homeAssistantItems = memoizeOne(
-    (data: BackupData, _localize: LocalizeFunc) => {
+    (data: BackupData, localize: LocalizeFunc) => {
       const items: CheckBoxItem[] = [];
 
       if (data.homeassistant_included) {
         items.push({
           label: data.database_included
-            ? this.hass.localize(
-                "ui.panel.config.backup.data_picker.settings_and_history"
+            ? localize(
+                "ui.panel.page-onboarding.restore.details.data_picker.settings_and_history"
               )
-            : this.hass.localize("ui.panel.config.backup.data_picker.settings"),
+            : localize(
+                "ui.panel.page-onboarding.restore.details.data_picker.settings"
+              ),
           id: "config",
           version: data.homeassistant_version,
         });
@@ -99,18 +103,22 @@ export class HaBackupDataPicker extends LitElement {
   );
 
   private _localizeFolder(folder: string): string {
+    const localize = this.localize || this.hass!.localize;
+
     switch (folder) {
       case "media":
-        return this.hass.localize("ui.panel.config.backup.data_picker.media");
+        return localize(
+          "ui.panel.page-onboarding.restore.details.data_picker.media"
+        );
       case "share":
-        return this.hass.localize(
-          "ui.panel.config.backup.data_picker.share_folder"
+        return localize(
+          "ui.panel.page-onboarding.restore.details.data_picker.share_folder"
         );
       case "ssl":
-        return this.hass.localize("ui.panel.config.backup.data_picker.ssl");
+        return localize("ui.panel.page-onboarding.restore.details.data_picker.ssl");
       case "addons/local":
-        return this.hass.localize(
-          "ui.panel.config.backup.data_picker.local_addons"
+        return localize(
+          "ui.panel.page-onboarding.restore.details.data_picker.local_addons"
         );
     }
     return capitalizeFirstLetter(folder);
@@ -215,14 +223,13 @@ export class HaBackupDataPicker extends LitElement {
   }
 
   protected render() {
-    const homeAssistantItems = this._homeAssistantItems(
-      this.data,
-      this.hass.localize
-    );
+    const localize = this.localize || this.hass!.localize;
+
+    const homeAssistantItems = this._homeAssistantItems(this.data, localize);
 
     const addonsItems = this._addonsItems(
       this.data,
-      this.hass.localize,
+      localize,
       this._addonIcons
     );
 
@@ -280,8 +287,8 @@ export class HaBackupDataPicker extends LitElement {
               <ha-formfield>
                 <ha-backup-formfield-label
                   slot="label"
-                  .label=${this.hass.localize(
-                    "ui.panel.config.backup.data_picker.addons"
+                  .label=${localize(
+                    "ui.panel.page-onboarding.restore.details.data_picker.addons"
                   )}
                   .iconPath=${mdiPuzzle}
                 >
@@ -296,6 +303,7 @@ export class HaBackupDataPicker extends LitElement {
               </ha-formfield>
               <ha-backup-addons-picker
                 .hass=${this.hass}
+                .localize=${localize}
                 .value=${selectedItems.addons}
                 @value-changed=${this._addonsChanged}
                 .addons=${addonsItems}

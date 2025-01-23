@@ -161,6 +161,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         .hass=${this.hass}
         .localize=${this.localize}
         ?supervisor=${this._supervisor}
+        .language=${this.language}
       >
       </onboarding-restore-backup>`;
     }

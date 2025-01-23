@@ -8,7 +8,6 @@ import {
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { navigate } from "../../../common/navigate";
 import "../../../components/ha-alert";
@@ -27,6 +26,7 @@ import type {
   BackupContentExtended,
   BackupData,
 } from "../../../data/backup";
+import "./components/ha-backup-details";
 import {
   compareAgents,
   computeBackupAgentName,
@@ -36,11 +36,9 @@ import {
   isLocalAgent,
   isNetworkMountAgent,
 } from "../../../data/backup";
-import type { HassioAddonInfo } from "../../../data/hassio/addon";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import { bytesToString } from "../../../util/bytes-to-string";
 import "./components/ha-backup-data-picker";
 import { showRestoreBackupDialog } from "./dialogs/show-dialog-restore-backup";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -92,8 +90,6 @@ class HaConfigBackupDetails extends LitElement {
   @state() private _error?: string;
 
   @state() private _selectedData?: BackupData;
-
-  @state() private _addonsInfo?: HassioAddonInfo[];
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
@@ -153,69 +149,7 @@ class HaConfigBackupDetails extends LitElement {
             : !this._backup
               ? html`<ha-circular-progress active></ha-circular-progress>`
               : html`
-                  <ha-card>
-                    <div class="card-header">
-                      ${this.hass.localize(
-                        "ui.panel.config.backup.details.summary.title"
-                      )}
-                    </div>
-                    <div class="card-content">
-                      <ha-md-list class="summary">
-                        <ha-md-list-item>
-                          <span slot="headline">
-                            ${this.hass.localize(
-                              "ui.panel.config.backup.details.summary.size"
-                            )}
-                          </span>
-                          <span slot="supporting-text">
-                            ${bytesToString(computeBackupSize(this._backup))}
-                          </span>
-                        </ha-md-list-item>
-                        <ha-md-list-item>
-                          <span slot="headline">
-                            ${this.hass.localize(
-                              "ui.panel.config.backup.details.summary.created"
-                            )}
-                          </span>
-                          <span slot="supporting-text">
-                            ${formatDateTime(
-                              new Date(this._backup.date),
-                              this.hass.locale,
-                              this.hass.config
-                            )}
-                          </span>
-                        </ha-md-list-item>
-                      </ha-md-list>
-                    </div>
-                  </ha-card>
-                  <ha-card>
-                    <div class="card-header">
-                      ${this.hass.localize(
-                        "ui.panel.config.backup.details.restore.title"
-                      )}
-                    </div>
-                    <div class="card-content">
-                      <ha-backup-data-picker
-                        .hass=${this.hass}
-                        .data=${this._backup}
-                        .value=${this._selectedData}
-                        @value-changed=${this._selectedBackupChanged}
-                        .addonsInfo=${this._addonsInfo}
-                      >
-                      </ha-backup-data-picker>
-                    </div>
-                    <div class="card-actions">
-                      <ha-button
-                        @click=${this._restore}
-                        .disabled=${this._isRestoreDisabled()}
-                        class="danger"
-                      >
-                        ${this.hass.localize(
-                          "ui.panel.config.backup.details.restore.action"
-                        )}
-                      </ha-button>
-                    </div>
-                  </ha-card>
+                  <ha-backup-details></ha-backup-details>
                   <ha-card>
                     <div class="card-header">
                       ${this.hass.localize(
@@ -340,23 +274,6 @@ class HaConfigBackupDetails extends LitElement {
     `;
   }
 
-  private _selectedBackupChanged(ev: CustomEvent) {
-    ev.stopPropagation();
-    this._selectedData = ev.detail.value;
-  }
-
-  private _isRestoreDisabled() {
-    return (
-      !this._selectedData ||
-      !(
-        this._selectedData?.database_included ||
-        this._selectedData?.homeassistant_included ||
-        this._selectedData.addons.length ||
-        this._selectedData.folders.length
-      )
-    );
-  }
-
   private _restore() {
     if (!this._backup || !this._selectedData) {
       return;
@@ -454,13 +371,6 @@ class HaConfigBackupDetails extends LitElement {
     ha-md-list-item ha-svg-icon[slot="start"] {
       --mdc-icon-size: 48px;
       color: var(--primary-text-color);
-    }
-    ha-md-list.summary ha-md-list-item {
-      --md-list-item-supporting-text-size: 1rem;
-      --md-list-item-label-text-size: 0.875rem;
-
-      --md-list-item-label-text-color: var(--secondary-text-color);
-      --md-list-item-supporting-text-color: var(--primary-text-color);
     }
     .warning {
       color: var(--error-color);
