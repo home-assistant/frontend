@@ -239,7 +239,7 @@
     "@lit/reactive-element": "1.6.3",
     "@fullcalendar/daygrid": "6.1.15",
     "globals": "15.14.0",
-    "tslib": "^2.3.0"
+    "tslib": "2.8.1"
   },
   "packageManager": "yarn@4.6.0"
 }
