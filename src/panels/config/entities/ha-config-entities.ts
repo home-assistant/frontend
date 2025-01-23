@@ -23,10 +23,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoize from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
-import {
-  formatShortDateTime,
-  formatShortDateTimeWithYear,
-} from "../../../common/datetime/format_date_time";
+import { formatShortDateTimeWithConditionalYear } from "../../../common/datetime/format_date_time";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -411,27 +408,14 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         sortable: true,
         filterable: true,
         minWidth: "128px",
-        template: (entry) => {
-          if (!entry.created_at) {
-            return "—";
-          }
-
-          const createdAt = new Date(entry.created_at * 1000);
-          const wasLastYear =
-            createdAt.getFullYear() < new Date().getFullYear();
-
-          return wasLastYear
-            ? formatShortDateTimeWithYear(
-                createdAt,
+        template: (entry) =>
+          entry.created_at
+            ? formatShortDateTimeWithConditionalYear(
+                new Date(entry.created_at * 1000),
                 this.hass.locale,
                 this.hass.config
               )
-            : formatShortDateTime(
-                createdAt,
-                this.hass.locale,
-                this.hass.config
-              );
-        },
+            : "-",
       },
       modified_at: {
         title: localize("ui.panel.config.generic.headers.modified_at"),
@@ -439,27 +423,14 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         sortable: true,
         filterable: true,
         minWidth: "128px",
-        template: (entry) => {
-          if (!entry.modified_at) {
-            return "—";
-          }
-
-          const modifiedAt = new Date(entry.modified_at * 1000);
-          const wasLastYear =
-            modifiedAt.getFullYear() < new Date().getFullYear();
-
-          return wasLastYear
-            ? formatShortDateTimeWithYear(
-                modifiedAt,
+        template: (entry) =>
+          entry.modified_at
+            ? formatShortDateTimeWithConditionalYear(
+                new Date(entry.modified_at * 1000),
                 this.hass.locale,
                 this.hass.config
               )
-            : formatShortDateTime(
-                modifiedAt,
-                this.hass.locale,
-                this.hass.config
-              );
-        },
+            : "-",
       },
       available: {
         title: localize("ui.panel.config.entities.picker.headers.availability"),
