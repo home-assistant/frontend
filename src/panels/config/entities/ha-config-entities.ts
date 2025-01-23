@@ -23,7 +23,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoize from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
-import { formatShortDateTime } from "../../../common/datetime/format_date_time";
+import { formatShortDateTimeWithYear } from "../../../common/datetime/format_date_time";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -410,7 +410,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         minWidth: "128px",
         template: (entry) =>
           entry.created_at
-            ? formatShortDateTime(
+            ? formatShortDateTimeWithYear(
                 new Date(entry.created_at * 1000),
                 this.hass.locale,
                 this.hass.config
@@ -425,7 +425,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         minWidth: "128px",
         template: (entry) =>
           entry.modified_at
-            ? formatShortDateTime(
+            ? formatShortDateTimeWithYear(
                 new Date(entry.modified_at * 1000),
                 this.hass.locale,
                 this.hass.config
