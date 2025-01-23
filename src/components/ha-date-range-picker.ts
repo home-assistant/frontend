@@ -120,15 +120,9 @@ export class HaDateRangePicker extends LitElement {
               weekStartsOn,
             }
           ),
-          calcDate(
-            today,
-            endOfMinute, 
-            this.hass.locale, 
-            this.hass.config,
-            {
-              weekStartsOn,
-            }
-          )
+          calcDate(today, endOfMinute,  this.hass.locale, this.hass.config, {
+            weekStartsOn,
+          }),
         ],
         [this.hass.localize(
           "ui.components.date-range-picker.ranges.last_2_hours"
@@ -142,15 +136,9 @@ export class HaDateRangePicker extends LitElement {
               weekStartsOn,
             }
           ),
-          calcDate(
-            today,
-            endOfHour,
-            this.hass.locale,
-            this.hass.config,
-            {
-              weekStartsOn,
-            }
-          )
+          calcDate(today, endOfHour,  this.hass.locale, this.hass.config, {
+            weekStartsOn,
+          }),
         ],
         [this.hass.localize("ui.components.date-range-picker.ranges.today")]: [
           calcDate(today, startOfDay, this.hass.locale, this.hass.config, {
