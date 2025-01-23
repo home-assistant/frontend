@@ -108,11 +108,13 @@ export class HaDateRangePicker extends LitElement {
       );
 
       this._ranges = {
-        [this.hass.localize("ui.components.date-range-picker.ranges.last_30_minutes")]: [
+        [this.hass.localize(
+          "ui.components.date-range-picker.ranges.last_30_minutes"
+        )]: [
           calcDate(
             subMinutes(today, 30),
-            startOfMinute, 
-            this.hass.locale, 
+            startOfMinute,
+            this.hass.locale,
             this.hass.config,
             {
               weekStartsOn,
@@ -128,7 +130,9 @@ export class HaDateRangePicker extends LitElement {
             }
           )
         ],
-        [this.hass.localize("ui.components.date-range-picker.ranges.last_2_hours")]: [
+        [this.hass.localize(
+          "ui.components.date-range-picker.ranges.last_2_hours"
+        )]: [
           calcDate(
             subHours(today, 2),
             startOfHour, 
