@@ -4,6 +4,7 @@ import type {
   ChartData,
   ChartOptions,
   TooltipModel,
+  UpdateMode,
 } from "chart.js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, nothing, LitElement } from "lit";
@@ -19,12 +20,6 @@ import { isMac } from "../../util/is_mac";
 import "../ha-icon-button";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
-
-export interface ChartResizeOptions {
-  aspectRatio?: number;
-  height?: number;
-  width?: number;
-}
 
 interface Tooltip
   extends Omit<TooltipModel<any>, "tooltipPosition" | "hasValue" | "getProps"> {
@@ -61,8 +56,6 @@ export class HaChartBase extends LitElement {
   @property({ attribute: "external-hidden", type: Boolean })
   public externalHidden = false;
 
-  @state() private _chartHeight?: number;
-
   @state() private _legendHeight?: number;
 
   @state() private _tooltip?: Tooltip;
@@ -96,34 +89,8 @@ export class HaChartBase extends LitElement {
     }
   }
 
-  public updateChart = (
-    mode:
-      | "resize"
-      | "reset"
-      | "none"
-      | "hide"
-      | "show"
-      | "default"
-      | "active"
-      | undefined
-  ): void => {
+  public updateChart = (mode?: UpdateMode): void => {
     this.chart?.update(mode);
-  };
-
-  public resize = (options?: ChartResizeOptions): void => {
-    if (options?.aspectRatio && !options.height) {
-      options.height = Math.round(
-        (options.width ?? this.clientWidth) / options.aspectRatio
-      );
-    } else if (options?.aspectRatio && !options.width) {
-      options.width = Math.round(
-        (options.height ?? this.clientHeight) * options.aspectRatio
-      );
-    }
-    this.chart?.resize(
-      options?.width ?? this.clientWidth,
-      options?.height ?? this.clientHeight
-    );
   };
 
   protected firstUpdated() {
@@ -267,96 +234,84 @@ export class HaChartBase extends LitElement {
           </div>`
         : ""}
       <div
-        class="animation-container"
+        class="chart-container"
         style=${styleMap({
-          height: `${this.height || this._chartHeight || 0}px`,
-          overflow: this._chartHeight ? "initial" : "hidden",
+          height: `${this.height ?? this._getDefaultHeight()}px`,
+          "padding-left": `${this._paddingYAxisInternal}px`,
+          "padding-right": 0,
+          "padding-inline-start": `${this._paddingYAxisInternal}px`,
+          "padding-inline-end": 0,
         })}
+        @wheel=${this._handleChartScroll}
       >
-        <div
-          class="chart-container"
-          style=${styleMap({
-            height: `${
-              this.height ?? this._chartHeight ?? this.clientWidth / 2
-            }px`,
-            "padding-left": `${this._paddingYAxisInternal}px`,
-            "padding-right": 0,
-            "padding-inline-start": `${this._paddingYAxisInternal}px`,
-            "padding-inline-end": 0,
+        <canvas
+          class=${classMap({
+            "not-zoomed": !this._isZoomed,
           })}
-          @wheel=${this._handleChartScroll}
+        ></canvas>
+        <div
+          class="zoom-hint ${classMap({
+            visible: this._showZoomHint,
+          })}"
         >
-          <canvas
-            class=${classMap({
-              "not-zoomed": !this._isZoomed,
-            })}
-          ></canvas>
-          <div
-            class="zoom-hint ${classMap({
-              visible: this._showZoomHint,
-            })}"
-          >
-            <div>
-              ${isMac
-                ? this.hass.localize(
-                    "ui.components.history_charts.zoom_hint_mac"
-                  )
-                : this.hass.localize("ui.components.history_charts.zoom_hint")}
-            </div>
+          <div>
+            ${isMac
+              ? this.hass.localize("ui.components.history_charts.zoom_hint_mac")
+              : this.hass.localize("ui.components.history_charts.zoom_hint")}
           </div>
-          ${this._isZoomed && this.chartType !== "timeline"
-            ? html`<ha-icon-button
-                class="zoom-reset"
-                .path=${mdiRestart}
-                @click=${this._handleZoomReset}
-                title=${this.hass.localize(
-                  "ui.components.history_charts.zoom_reset"
-                )}
-              ></ha-icon-button>`
-            : nothing}
-          ${this._tooltip
-            ? html`<div
-                class="chart-tooltip ${classMap({
-                  [this._tooltip.yAlign]: true,
-                })}"
-                style=${styleMap({
-                  top: this._tooltip.top,
-                  left: this._tooltip.left,
-                })}
-              >
-                <div class="title">${this._tooltip.title}</div>
-                ${this._tooltip.beforeBody
-                  ? html`<div class="before-body">
-                      ${this._tooltip.beforeBody}
-                    </div>`
-                  : ""}
-                <div>
-                  <ul>
-                    ${this._tooltip.body.map(
-                      (item, i) =>
-                        html`<li>
-                          <div
-                            class="bullet"
-                            style=${styleMap({
-                              backgroundColor: this._tooltip!.labelColors[i]
-                                .backgroundColor as string,
-                              borderColor: this._tooltip!.labelColors[i]
-                                .borderColor as string,
-                            })}
-                          ></div>
-                          ${item.lines.join("\n")}
-                        </li>`
-                    )}
-                  </ul>
-                </div>
-                ${this._tooltip.footer.length
-                  ? html`<div class="footer">
-                      ${this._tooltip.footer.map((item) => html`${item}<br />`)}
-                    </div>`
-                  : ""}
-              </div>`
-            : ""}
         </div>
+        ${this._isZoomed && this.chartType !== "timeline"
+          ? html`<ha-icon-button
+              class="zoom-reset"
+              .path=${mdiRestart}
+              @click=${this._handleZoomReset}
+              title=${this.hass.localize(
+                "ui.components.history_charts.zoom_reset"
+              )}
+            ></ha-icon-button>`
+          : nothing}
+        ${this._tooltip
+          ? html`<div
+              class="chart-tooltip ${classMap({
+                [this._tooltip.yAlign]: true,
+              })}"
+              style=${styleMap({
+                top: this._tooltip.top,
+                left: this._tooltip.left,
+              })}
+            >
+              <div class="title">${this._tooltip.title}</div>
+              ${this._tooltip.beforeBody
+                ? html`<div class="before-body">
+                    ${this._tooltip.beforeBody}
+                  </div>`
+                : ""}
+              <div>
+                <ul>
+                  ${this._tooltip.body.map(
+                    (item, i) =>
+                      html`<li>
+                        <div
+                          class="bullet"
+                          style=${styleMap({
+                            backgroundColor: this._tooltip!.labelColors[i]
+                              .backgroundColor as string,
+                            borderColor: this._tooltip!.labelColors[i]
+                              .borderColor as string,
+                          })}
+                        ></div>
+                        ${item.lines.join("\n")}
+                      </li>`
+                  )}
+                </ul>
+              </div>
+              ${this._tooltip.footer.length
+                ? html`<div class="footer">
+                    ${this._tooltip.footer.map((item) => html`${item}<br />`)}
+                  </div>`
+                : ""}
+            </div>`
+          : ""}
       </div>
     `;
   }
@@ -471,11 +426,11 @@ export class HaChartBase extends LitElement {
       ...(this.plugins || []),
       {
         id: "resizeHook",
-        resize: (chart) => {
-          const change = chart.height - (this._chartHeight ?? 0);
-          if (!this._chartHeight || change > 12 || change < -12) {
-            // hysteresis to prevent infinite render loops
-            this._chartHeight = chart.height;
+        resize: (chart: Chart) => {
+          if (!this.height) {
+            // lock the height
+            // this removes empty space below the chart
+            this.height = chart.height;
           }
         },
         legend: {
@@ -484,6 +439,10 @@ export class HaChartBase extends LitElement {
         },
       },
     ];
+  }
+
+  private _getDefaultHeight() {
+    return this.clientWidth / 2;
   }
 
   private _handleChartScroll(ev: MouseEvent) {
@@ -572,11 +531,6 @@ export class HaChartBase extends LitElement {
       :host {
         display: block;
         position: relative;
-      }
-      .animation-container {
-        overflow: hidden;
-        height: 0;
-        transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
       }
       .chart-container {
         position: relative;

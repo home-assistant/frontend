@@ -209,7 +209,7 @@ class HaBackupConfigData extends LitElement {
                 </span>
                 <span slot="supporting-text">
                   ${this.hass.localize(
-                    "ui.panel.config.backup.data.history_description"
+                    "ui.panel.config.backup.data.media_description"
                   )}
                 </span>
                 <ha-switch
