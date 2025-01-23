@@ -309,7 +309,7 @@ export class StateHistoryChartLine extends LitElement {
           colorIndex++;
         }
         data.push({
-          id: states.entity_id,
+          id: nameY,
           data: [],
           type: "line",
           name: nameY,
