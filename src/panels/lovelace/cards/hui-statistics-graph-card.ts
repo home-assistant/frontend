@@ -131,6 +131,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
   getGridOptions(): LovelaceGridOptions {
     return {
       columns: 12,
+      rows: 5,
       min_columns: 8,
       min_rows: 4,
     };
@@ -277,6 +278,8 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
             .fitYData=${this._config.fit_y_data || false}
             .hideLegend=${this._config.hide_legend || false}
             .logarithmicScale=${this._config.logarithmic_scale || false}
+            .daysToShow=${this._config.days_to_show || DEFAULT_DAYS_TO_SHOW}
+            height="100%"
           ></statistics-chart>
         </div>
       </ha-card>
@@ -352,13 +355,19 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
   static styles = css`
     ha-card {
+      display: flex;
+      flex-direction: column;
       height: 100%;
     }
     .content {
       padding: 16px;
+      flex: 1;
     }
     .has-header {
       padding-top: 0;
+    }
+    statistics-chart {
+      height: 100%;
     }
   `;
 }

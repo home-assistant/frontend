@@ -1,11 +1,11 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { getGraphColorByIndex } from "../../../common/color/colors";
-import { hex2rgb, lab2hex, rgb2lab } from "../../../common/color/convert-color";
-import { labBrighten } from "../../../common/color/lab";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { stateColorProperties } from "../../../common/entity/state_color";
-import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
-import { computeCssValue } from "../../../resources/css-variables";
+import { getGraphColorByIndex } from "../../common/color/colors";
+import { hex2rgb, lab2hex, rgb2lab } from "../../common/color/convert-color";
+import { labBrighten } from "../../common/color/lab";
+import { computeDomain } from "../../common/entity/compute_domain";
+import { stateColorProperties } from "../../common/entity/state_color";
+import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
+import { computeCssValue } from "../../resources/css-variables";
 
 const DOMAIN_STATE_SHADES: Record<string, Record<string, number>> = {
   media_player: {
