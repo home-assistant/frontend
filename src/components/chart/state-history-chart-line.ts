@@ -152,7 +152,8 @@ export class StateHistoryChartLine extends LitElement {
       changedProps.has("maxYAxis") ||
       changedProps.has("fitYData") ||
       changedProps.has("_chartData") ||
-      changedProps.has("paddingYAxis")
+      changedProps.has("paddingYAxis") ||
+      changedProps.has("_yWidth")
     ) {
       const dayDifference = differenceInDays(this.endTime, this.startTime);
       const rtl = computeRTL(this.hass);
@@ -190,15 +191,16 @@ export class StateHistoryChartLine extends LitElement {
           max: this.fitYData ? this.maxYAxis : undefined,
           position: rtl ? "right" : "left",
           scale: true,
-          nameGap: 2,
+          nameGap: 3,
           splitLine: {
             show: true,
             lineStyle: splitLineStyle,
           },
           axisLabel: {
+            margin: 5,
             formatter: (value: number) => {
               const label = formatNumber(value, this.hass.locale);
-              const width = measureTextWidth(label, 12);
+              const width = measureTextWidth(label, 12) + 5;
               if (width > this._yWidth) {
                 this._yWidth = width;
                 fireEvent(this, "y-width-changed", {

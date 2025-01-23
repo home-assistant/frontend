@@ -219,9 +219,10 @@ export class StateHistoryChartTimeline extends LitElement {
           show: showNames,
           width: labelWidth,
           overflow: "truncate",
+          margin: 5,
           // @ts-ignore this is a valid option
           formatter: (label: string) => {
-            const width = Math.min(measureTextWidth(label, 12), labelWidth);
+            const width = Math.min(measureTextWidth(label, 12) + 5, labelWidth);
             if (width > this._yWidth) {
               this._yWidth = width;
               fireEvent(this, "y-width-changed", {
