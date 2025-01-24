@@ -3306,39 +3306,49 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@module-federation/runtime-tools@npm:0.5.1":
-  version: 0.5.1
-  resolution: "@module-federation/runtime-tools@npm:0.5.1"
-  dependencies:
-    "@module-federation/runtime": "npm:0.5.1"
-    "@module-federation/webpack-bundler-runtime": "npm:0.5.1"
-  checksum: 10/3c88a7ac45b369e82ccea104db952ab81709a11733b602cf5f1d35b299d1d2f0ce679afc0fd4105386345e727a8f67e141480f708f244fa8c40f898a917c694b
+"@module-federation/error-codes@npm:0.8.4":
+  version: 0.8.4
+  resolution: "@module-federation/error-codes@npm:0.8.4"
+  checksum: 10/1550fccd7ff88f0e23b83717ff45784298b65300482c234a1347aefc4bc6761e222abb81eb0f8a0369d84e032ecdbc2d742811916ed0146489391802cba877bb
   languageName: node
   linkType: hard
 
-"@module-federation/runtime@npm:0.5.1":
-  version: 0.5.1
-  resolution: "@module-federation/runtime@npm:0.5.1"
+"@module-federation/runtime-tools@npm:0.8.4":
+  version: 0.8.4
+  resolution: "@module-federation/runtime-tools@npm:0.8.4"
   dependencies:
-    "@module-federation/sdk": "npm:0.5.1"
-  checksum: 10/c5b998fdbf6c8ceee2f204d501f8cbe8b4356e4d0a03e767c49107ff6b2a11a077bb4fd17d042dfb050d483eca1baf9b50663e53d3ee9bd8148865be3bb63dcc
+    "@module-federation/runtime": "npm:0.8.4"
+    "@module-federation/webpack-bundler-runtime": "npm:0.8.4"
+  checksum: 10/a1b38be13e849c81319bd7e6070fd6f335f146ae372d7eff3e244ad47f7c058ec030bb2502e069bc5ac347fb90e1b37315d2b43233c927f8685d688a9b40b897
   languageName: node
   linkType: hard
 
-"@module-federation/sdk@npm:0.5.1":
-  version: 0.5.1
-  resolution: "@module-federation/sdk@npm:0.5.1"
-  checksum: 10/7569f53f7e0d64ecfb57750d44dac93ba267f35b18921ff84ef2cc12a600690a28460cb2a5b9f2a3e0218b5e45879c16ab980c48930f82065f2c27f476ac3c6e
+"@module-federation/runtime@npm:0.8.4":
+  version: 0.8.4
+  resolution: "@module-federation/runtime@npm:0.8.4"
+  dependencies:
+    "@module-federation/error-codes": "npm:0.8.4"
+    "@module-federation/sdk": "npm:0.8.4"
+  checksum: 10/57f702afa22ae4f497fd8f2542ad1c4ab6aeda2b6ddc3fea74b74fb4f69ddac04bdf5e155e699a8d6a99bda59a8227b955fecf13492b967873121797553fc0d2
   languageName: node
   linkType: hard
 
-"@module-federation/webpack-bundler-runtime@npm:0.5.1":
-  version: 0.5.1
-  resolution: "@module-federation/webpack-bundler-runtime@npm:0.5.1"
+"@module-federation/sdk@npm:0.8.4":
+  version: 0.8.4
+  resolution: "@module-federation/sdk@npm:0.8.4"
   dependencies:
-    "@module-federation/runtime": "npm:0.5.1"
-    "@module-federation/sdk": "npm:0.5.1"
-  checksum: 10/ba09e67a6d8f49a88a1660fbd2553de0d6a3524064cd12870688c79a04ac139ed8faf1657f8f805008b29c56db7c0254b64c0793ffc96d522ab1177d28a365bf
+    isomorphic-rslog: "npm:0.0.6"
+  checksum: 10/9b83139e8de0bb2bbb143d6a870aa10d81b740d2b1363bf56448ba0b61bd2d1c2328b9b936a1aff1975359fe8689cdac528b7f7ae60fd6d288d33823c39afc31
+  languageName: node
+  linkType: hard
+
+"@module-federation/webpack-bundler-runtime@npm:0.8.4":
+  version: 0.8.4
+  resolution: "@module-federation/webpack-bundler-runtime@npm:0.8.4"
+  dependencies:
+    "@module-federation/runtime": "npm:0.8.4"
+    "@module-federation/sdk": "npm:0.8.4"
+  checksum: 10/d4336e1408c1006e518adb24b3165201e770ac14844f6ea892c626c1d65a9554f53d96ee01cb833f60813a952a28fd23703614ffa0f23b7fdd1dd6f16a269002
   languageName: node
   linkType: hard
 
@@ -4177,82 +4187,82 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rspack/binding-darwin-arm64@npm:1.1.8":
-  version: 1.1.8
-  resolution: "@rspack/binding-darwin-arm64@npm:1.1.8"
+"@rspack/binding-darwin-arm64@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@rspack/binding-darwin-arm64@npm:1.2.0"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@rspack/binding-darwin-x64@npm:1.1.8":
-  version: 1.1.8
-  resolution: "@rspack/binding-darwin-x64@npm:1.1.8"
+"@rspack/binding-darwin-x64@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@rspack/binding-darwin-x64@npm:1.2.0"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-arm64-gnu@npm:1.1.8":
-  version: 1.1.8
-  resolution: "@rspack/binding-linux-arm64-gnu@npm:1.1.8"
+"@rspack/binding-linux-arm64-gnu@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@rspack/binding-linux-arm64-gnu@npm:1.2.0"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-arm64-musl@npm:1.1.8":
-  version: 1.1.8
-  resolution: "@rspack/binding-linux-arm64-musl@npm:1.1.8"
+"@rspack/binding-linux-arm64-musl@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@rspack/binding-linux-arm64-musl@npm:1.2.0"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-x64-gnu@npm:1.1.8":
-  version: 1.1.8
-  resolution: "@rspack/binding-linux-x64-gnu@npm:1.1.8"
+"@rspack/binding-linux-x64-gnu@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@rspack/binding-linux-x64-gnu@npm:1.2.0"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-x64-musl@npm:1.1.8":
-  version: 1.1.8
-  resolution: "@rspack/binding-linux-x64-musl@npm:1.1.8"
+"@rspack/binding-linux-x64-musl@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@rspack/binding-linux-x64-musl@npm:1.2.0"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@rspack/binding-win32-arm64-msvc@npm:1.1.8":
-  version: 1.1.8
-  resolution: "@rspack/binding-win32-arm64-msvc@npm:1.1.8"
+"@rspack/binding-win32-arm64-msvc@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@rspack/binding-win32-arm64-msvc@npm:1.2.0"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@rspack/binding-win32-ia32-msvc@npm:1.1.8":
-  version: 1.1.8
-  resolution: "@rspack/binding-win32-ia32-msvc@npm:1.1.8"
+"@rspack/binding-win32-ia32-msvc@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@rspack/binding-win32-ia32-msvc@npm:1.2.0"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
 
-"@rspack/binding-win32-x64-msvc@npm:1.1.8":
-  version: 1.1.8
-  resolution: "@rspack/binding-win32-x64-msvc@npm:1.1.8"
+"@rspack/binding-win32-x64-msvc@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@rspack/binding-win32-x64-msvc@npm:1.2.0"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"@rspack/binding@npm:1.1.8":
-  version: 1.1.8
-  resolution: "@rspack/binding@npm:1.1.8"
+"@rspack/binding@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@rspack/binding@npm:1.2.0"
   dependencies:
-    "@rspack/binding-darwin-arm64": "npm:1.1.8"
-    "@rspack/binding-darwin-x64": "npm:1.1.8"
-    "@rspack/binding-linux-arm64-gnu": "npm:1.1.8"
-    "@rspack/binding-linux-arm64-musl": "npm:1.1.8"
-    "@rspack/binding-linux-x64-gnu": "npm:1.1.8"
-    "@rspack/binding-linux-x64-musl": "npm:1.1.8"
-    "@rspack/binding-win32-arm64-msvc": "npm:1.1.8"
-    "@rspack/binding-win32-ia32-msvc": "npm:1.1.8"
-    "@rspack/binding-win32-x64-msvc": "npm:1.1.8"
+    "@rspack/binding-darwin-arm64": "npm:1.2.0"
+    "@rspack/binding-darwin-x64": "npm:1.2.0"
+    "@rspack/binding-linux-arm64-gnu": "npm:1.2.0"
+    "@rspack/binding-linux-arm64-musl": "npm:1.2.0"
+    "@rspack/binding-linux-x64-gnu": "npm:1.2.0"
+    "@rspack/binding-linux-x64-musl": "npm:1.2.0"
+    "@rspack/binding-win32-arm64-msvc": "npm:1.2.0"
+    "@rspack/binding-win32-ia32-msvc": "npm:1.2.0"
+    "@rspack/binding-win32-x64-msvc": "npm:1.2.0"
   dependenciesMeta:
     "@rspack/binding-darwin-arm64":
       optional: true
@@ -4272,51 +4282,57 @@ __metadata:
       optional: true
     "@rspack/binding-win32-x64-msvc":
       optional: true
-  checksum: 10/694de94cbde004cd9011303d33b1e08cdbaf6029b167fdd65b582f17b8e099e67aa6bc4fd1c83cb2ab7c5ea83b0a59f071e796ed05e723479865a10cac33158a
+  checksum: 10/0a56175de6b9b2b5b926705d4c9f1244161bfd8b1ea40564854d27244fa85583cde31117e90e56fb6ad60bb14c7dd6adab776f609eeb350d3c9eb1ad7593e0a9
   languageName: node
   linkType: hard
 
-"@rspack/cli@npm:1.1.8":
-  version: 1.1.8
-  resolution: "@rspack/cli@npm:1.1.8"
+"@rspack/cli@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@rspack/cli@npm:1.2.0"
   dependencies:
     "@discoveryjs/json-ext": "npm:^0.5.7"
-    "@rspack/dev-server": "npm:1.0.9"
+    "@rspack/dev-server": "npm:1.0.10"
     colorette: "npm:2.0.19"
     exit-hook: "npm:^4.0.0"
     interpret: "npm:^3.1.1"
     rechoir: "npm:^0.8.0"
-    semver: "npm:^7.6.2"
     webpack-bundle-analyzer: "npm:4.6.1"
     yargs: "npm:17.6.2"
   peerDependencies:
     "@rspack/core": ^1.0.0-alpha || ^1.x
+    "@rspack/tracing": ^1.x
+  peerDependenciesMeta:
+    "@rspack/tracing":
+      optional: true
   bin:
     rspack: bin/rspack.js
-  checksum: 10/dbfa4622792537c2092cf9e3792cb46ab59a1f237e196f6f8e0a3fe9a3abbbf079b2c0e9dfef87d2b977910547bf1ab013171612ef4c8e0aa29c1f4f6243a779
+  checksum: 10/566c80c175ac451778d0d71eb9511256e8abc2d36ee199692e317b2d40ff3b2d5ed6a553640a1d8b780121a1a4140f01524c98d4f3a8ecdb8f2dba18bb145763
   languageName: node
   linkType: hard
 
-"@rspack/core@npm:1.1.8":
-  version: 1.1.8
-  resolution: "@rspack/core@npm:1.1.8"
+"@rspack/core@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@rspack/core@npm:1.2.0"
   dependencies:
-    "@module-federation/runtime-tools": "npm:0.5.1"
-    "@rspack/binding": "npm:1.1.8"
+    "@module-federation/runtime-tools": "npm:0.8.4"
+    "@rspack/binding": "npm:1.2.0"
     "@rspack/lite-tapable": "npm:1.0.1"
     caniuse-lite: "npm:^1.0.30001616"
   peerDependencies:
+    "@rspack/tracing": ^1.x
     "@swc/helpers": ">=0.5.1"
   peerDependenciesMeta:
+    "@rspack/tracing":
+      optional: true
     "@swc/helpers":
       optional: true
-  checksum: 10/fd3c8be0a47228d96b739852a7dbfa956896397d05486fe7fe2ce35797d468a3bd45f20ccdc464c73a6e21edafa9233b35e141903ed98eda5fcc962b8a855b4f
+  checksum: 10/476280c67ceff81b3740db13fbc73a3e834fe927679378a24c8072ec45e9217b2af12edd01224d08caeb62e9a39c19c905c6e78bbf503a34ba04e120a9ab617a
   languageName: node
   linkType: hard
 
-"@rspack/dev-server@npm:1.0.9":
-  version: 1.0.9
-  resolution: "@rspack/dev-server@npm:1.0.9"
+"@rspack/dev-server@npm:1.0.10":
+  version: 1.0.10
+  resolution: "@rspack/dev-server@npm:1.0.10"
   dependencies:
     chokidar: "npm:^3.6.0"
     connect-history-api-fallback: "npm:^2.0.0"
@@ -4329,7 +4345,7 @@ __metadata:
     ws: "npm:^8.16.0"
   peerDependencies:
     "@rspack/core": "*"
-  checksum: 10/9f993c1d1110dd451347cd92b9b5d6bbb4b1bf72c64bab35a16bc797232d8ed39da7b65f21e63ff972448c9e377d5caceb25092983695f9259388f7bca1925ba
+  checksum: 10/c8354f1c71bc790cb3f9d9496a674e1b18bbd9c2c70bded81369187a5593469141c608fbc037f35fc9d628b2616f6266eaecc626fb07797a2d79d3a1ecb58598
   languageName: node
   linkType: hard
 
@@ -9194,8 +9210,8 @@ __metadata:
     "@polymer/polymer": "npm:3.5.2"
     "@replit/codemirror-indentation-markers": "npm:6.5.3"
     "@rsdoctor/rspack-plugin": "npm:0.4.13"
-    "@rspack/cli": "npm:1.1.8"
-    "@rspack/core": "npm:1.1.8"
+    "@rspack/cli": "npm:1.2.0"
+    "@rspack/core": "npm:1.2.0"
     "@thomasloven/round-slider": "npm:0.6.0"
     "@types/babel__plugin-transform-runtime": "npm:7.9.5"
     "@types/chromecast-caf-receiver": "npm:6.0.20"
@@ -10217,6 +10233,13 @@ __metadata:
     node-fetch: "npm:^2.6.1"
     whatwg-fetch: "npm:^3.4.1"
   checksum: 10/568fe0307528c63405c44dd3873b7b6c96c0d19ff795cb15846e728b6823bdbc68cc8c97ac23324509661316f12f551e43dac2929bc7030b8bc4d6aa1158b857
+  languageName: node
+  linkType: hard
+
+"isomorphic-rslog@npm:0.0.6":
+  version: 0.0.6
+  resolution: "isomorphic-rslog@npm:0.0.6"
+  checksum: 10/3845525005054dde6876e844a2a499eb715628e57d7389ff6a5dac21a482e643b8e0e3abfbb0e6ed7613720e321d17befade4b42e1c2d62fbb76103a530c9c8f
   languageName: node
   linkType: hard
 
@@ -12935,7 +12958,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^7.3.5, semver@npm:^7.5.3, semver@npm:^7.6.0, semver@npm:^7.6.2, semver@npm:^7.6.3":
+"semver@npm:^7.3.5, semver@npm:^7.5.3, semver@npm:^7.6.0, semver@npm:^7.6.3":
   version: 7.6.3
   resolution: "semver@npm:7.6.3"
   bin:
