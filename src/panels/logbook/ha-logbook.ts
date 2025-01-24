@@ -76,7 +76,7 @@ export class HaLogbook extends LitElement {
 
   @state() private _error?: string;
 
-  private _subscribed?: Promise<(() => Promise<void>) | undefined>;
+  private _subscribed?: (() => Promise<void>) | undefined;
 
   private _liveUpdatesEnabled = true;
 
@@ -211,12 +211,9 @@ export class HaLogbook extends LitElement {
   private async _unsubscribe(): Promise<void> {
     if (this._subscribed) {
       try {
-        const unsub = await this._subscribed;
-        if (unsub) {
-          await unsub();
-          this._subscribed = undefined;
-          this._pendingStreamMessages = [];
-        }
+        await this._subscribed();
+        this._subscribed = undefined;
+        this._pendingStreamMessages = [];
       } catch (err: any) {
         // eslint-disable-next-line
         console.error("Error unsubscribing:", err);
@@ -284,34 +281,34 @@ export class HaLogbook extends LitElement {
     throw new Error("Unexpected time specified");
   }
 
-  private async _subscribeLogbookPeriod(logbookPeriod: LogbookTimePeriod) {
+  private async _subscribeLogbookPeriod(
+    logbookPeriod: LogbookTimePeriod
+  ): Promise<void> {
     if (this._subscribed) {
-      return true;
+      return;
     }
-    // Ensure any previous subscription is cleaned up
-    await this._unsubscribe();
-    this._subscribed = subscribeLogbook(
-      this.hass,
-      (streamMessage) => {
-        // "recent" means start time is a sliding window
-        // so we need to calculate an expireTime to
-        // purge old events
-        if (!this._subscribed) {
-          // Message came in before we had a chance to unload
-          return;
-        }
-        this._processOrQueueStreamMessage(streamMessage);
-      },
-      logbookPeriod.startTime.toISOString(),
-      logbookPeriod.endTime.toISOString(),
-      this.entityIds,
-      this.deviceIds
-    ).catch((err) => {
+    try {
+      this._subscribed = await subscribeLogbook(
+        this.hass,
+        (streamMessage) => {
+          // "recent" means start time is a sliding window
+          // so we need to calculate an expireTime to
+          // purge old events
+          if (!this._subscribed) {
+            // Message came in before we had a chance to unload
+            return;
+          }
+          this._processOrQueueStreamMessage(streamMessage);
+        },
+        logbookPeriod.startTime.toISOString(),
+        logbookPeriod.endTime.toISOString(),
+        this.entityIds,
+        this.deviceIds
+      );
+    } catch (err: any) {
       this._subscribed = undefined;
       this._error = err;
-      return undefined;
-    });
-    return true;
+    }
   }
 
   private async _getLogBookData() {
