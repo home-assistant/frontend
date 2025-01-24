@@ -5275,6 +5275,10 @@
         },
         "bluetooth": {
           "title": "Bluetooth",
+          "settings_title": "Bluetooth settings",
+          "option_flow": "Configure Bluetooth options",
+          "advertisement_monitor": "Advertisement Monitor",
+          "advertisement_monitor_details": "The advertisement monitor listens for Bluetooth advertisements and displays the data in a structured format.",
           "address": "Address",
           "name": "Name",
           "source": "Source",
