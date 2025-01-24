@@ -28,7 +28,7 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { formatShortDateTime } from "../../../common/datetime/format_date_time";
+import { formatShortDateTimeWithConditionalYear } from "../../../common/datetime/format_date_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -324,7 +324,11 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             const dayDifference = differenceInDays(now, date);
             return html`
               ${dayDifference > 3
-                ? formatShortDateTime(date, locale, this.hass.config)
+                ? formatShortDateTimeWithConditionalYear(
+                    date,
+                    this.hass.locale,
+                    this.hass.config
+                  )
                 : relativeTime(date, locale)}
             `;
           },
