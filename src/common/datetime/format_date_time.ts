@@ -65,6 +65,18 @@ const formatShortDateTimeMem = memoizeOne(
     })
 );
 
+export const formatShortDateTimeWithConditionalYear = (
+  dateObj: Date,
+  locale: FrontendLocaleData,
+  config: HassConfig
+) => {
+  const now = new Date();
+  if (now.getFullYear() === dateObj.getFullYear()) {
+    return formatShortDateTime(dateObj, locale, config);
+  }
+  return formatShortDateTimeWithYear(dateObj, locale, config);
+};
+
 // August 9, 2021, 8:23:15 AM
 export const formatDateTimeWithSeconds = (
   dateObj: Date,
