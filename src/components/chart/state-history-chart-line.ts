@@ -21,6 +21,7 @@ import {
 import { getTimeAxisLabelConfig } from "./axis-label";
 import { measureTextWidth } from "../../util/text";
 import { fireEvent } from "../../common/dom/fire_event";
+import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../data/climate";
 
 const safeParseFloat = (value) => {
   const parsed = parseFloat(value);
@@ -345,12 +346,16 @@ export class StateHistoryChartLine extends LitElement {
         const isHeating =
           domain === "climate" && hasHvacAction
             ? (entityState: LineChartState) =>
-                entityState.attributes?.hvac_action === "heating"
+                CLIMATE_HVAC_ACTION_TO_MODE[
+                  entityState.attributes?.hvac_action
+                ] === "heat"
             : (entityState: LineChartState) => entityState.state === "heat";
         const isCooling =
           domain === "climate" && hasHvacAction
             ? (entityState: LineChartState) =>
-                entityState.attributes?.hvac_action === "cooling"
+                CLIMATE_HVAC_ACTION_TO_MODE[
+                  entityState.attributes?.hvac_action
+                ] === "cool"
             : (entityState: LineChartState) => entityState.state === "cool";
 
         const hasHeat = states.states.some(isHeating);
