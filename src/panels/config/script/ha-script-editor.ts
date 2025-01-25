@@ -924,7 +924,7 @@ export class HaScriptEditor extends SubscribeMixin(
 
     await this._saveScript(id);
     if (!this.scriptId) {
-      navigate(`/config/automation/edit/${id}`, { replace: true });
+      navigate(`/config/script/edit/${id}`, { replace: true });
     }
   }
 
