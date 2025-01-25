@@ -1,5 +1,4 @@
 import { customElement, property } from "lit/decorators";
-import { navigate } from "../../../../../common/navigate";
 import type { RouterOptions } from "../../../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../../../layouts/hass-router-page";
 import type { HomeAssistant } from "../../../../../types";
@@ -37,15 +36,6 @@ class BluetoothConfigDashboardRouter extends HassRouterPage {
     el.isWide = this.isWide;
     el.narrow = this.narrow;
     el.configEntryId = this._configEntry;
-
-    const searchParams = new URLSearchParams(window.location.search);
-    if (this._configEntry && !searchParams.has("config_entry")) {
-      searchParams.append("config_entry", this._configEntry);
-      navigate(
-        `${this.routeTail.prefix}${this.routeTail.path}?${searchParams.toString()}`,
-        { replace: true }
-      );
-    }
   }
 }
 
