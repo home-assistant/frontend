@@ -86,36 +86,11 @@ export class BluetoothConfigDashboard extends LitElement {
           -webkit-user-select: initial;
           -moz-user-select: initial;
         }
-
         .content {
           padding: 24px 0 32px;
           max-width: 600px;
           margin: 0 auto;
           direction: ltr;
-        }
-        .panel-dev-bluetooth-fields {
-          display: flex;
-          justify-content: space-between;
-          flex-wrap: wrap;
-        }
-        ha-select {
-          width: 96px;
-          margin: 0 8px;
-        }
-        ha-textfield {
-          flex: 1;
-        }
-        @media screen and (max-width: 600px) {
-          ha-select {
-            margin-left: 0px;
-            margin-inline-start: 0px;
-            margin-inline-end: initial;
-            margin-top: 8px;
-          }
-          ha-textfield {
-            flex: auto;
-            width: 100%;
-          }
         }
         ha-card:first-child {
           margin-bottom: 16px;
