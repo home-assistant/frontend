@@ -82,7 +82,11 @@ export class EnergyDeviceSettings extends LitElement {
               "ui.panel.config.energy.device_consumption.devices"
             )}
           </h3>
-          <ha-sortable handle-selector=".row" @item-moved=${this._itemMoved}>
+          <ha-sortable
+            handle-selector=".row"
+            @item-moved=${this._itemMoved}
+            filter="ha-icon-button"
+          >
             <div class="devices">
               ${repeat(
                 this.preferences.device_consumption,
