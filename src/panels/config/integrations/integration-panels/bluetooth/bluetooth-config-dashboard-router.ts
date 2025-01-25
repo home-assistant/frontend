@@ -41,7 +41,10 @@ class BluetoothConfigDashboardRouter extends HassRouterPage {
     const searchParams = new URLSearchParams(window.location.search);
     if (this._configEntry && !searchParams.has("config_entry")) {
       searchParams.append("config_entry", this._configEntry);
-      navigate(`${this.routeTail.prefix}${this.routeTail.path}?${searchParams.toString()}`, { replace: true });
+      navigate(
+        `${this.routeTail.prefix}${this.routeTail.path}?${searchParams.toString()}`,
+        { replace: true }
+      );
     }
   }
 }
