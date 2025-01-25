@@ -4398,7 +4398,13 @@
             "save_script": "Save script",
             "sequence": "Sequence",
             "sequence_sentence": "The sequence of actions of this script.",
-            "link_available_actions": "Learn more about available actions."
+            "link_available_actions": "Learn more about available actions.",
+            "leave": {
+              "unsaved_new_title": "Save new script?",
+              "unsaved_new_text": "You can save your changes, or delete this script. You can't undo this action.",
+              "unsaved_confirm_title": "Save changes?",
+              "unsaved_confirm_text": "You have made some changes in this script. You can save these changes, or discard them and leave. You can't undo this action."
+            }
           },
           "trace": {
             "edit_script": "Edit script"
