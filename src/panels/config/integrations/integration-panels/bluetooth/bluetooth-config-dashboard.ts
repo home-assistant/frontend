@@ -37,6 +37,10 @@ export class BluetoothConfigDashboard extends LitElement {
 
   @state() private _connectionAllocationsError?: string;
 
+  private _configEntry = new URLSearchParams(window.location.search).get(
+    "config_entry"
+  );
+
   private _unsubConnectionAllocations?: (() => Promise<void>) | undefined;
 
   public connectedCallback(): void {
@@ -47,7 +51,7 @@ export class BluetoothConfigDashboard extends LitElement {
   }
 
   private async _subscribeBluetoothConnectionAllocations(): Promise<void> {
-    if (this._unsubConnectionAllocations) {
+    if (this._unsubConnectionAllocations || !this._configEntry) {
       return;
     }
     try {
@@ -56,11 +60,12 @@ export class BluetoothConfigDashboard extends LitElement {
           this.hass.connection,
           (data) => {
             this._connectionAllocationData = data;
-          }
+          },
+          this._configEntry
         );
     } catch (err: any) {
       this._unsubConnectionAllocations = undefined;
-      this._connectionAllocationsError = err;
+      this._connectionAllocationsError = err.message;
     }
   }
 
@@ -167,11 +172,10 @@ export class BluetoothConfigDashboard extends LitElement {
   }
 
   private async _openOptionFlow() {
-    const searchParams = new URLSearchParams(window.location.search);
-    if (!searchParams.has("config_entry")) {
+    const configEntryId = this._configEntry;
+    if (!configEntryId) {
       return;
     }
-    const configEntryId = searchParams.get("config_entry") as string;
     const configEntries = await getConfigEntries(this.hass, {
       domain: "bluetooth",
     });

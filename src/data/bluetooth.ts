@@ -99,17 +99,16 @@ export const subscribeBluetoothAdvertisements = (
 export const subscribeBluetoothConnectionAllocations = (
   conn: Connection,
   onChange: (bluetoothAllocationsData: BluetoothAllocationsData[]) => void,
-  source?: string
+  configEntryId?: string
 ): Promise<() => Promise<void>> => {
   const params: any = {
     type: "bluetooth/subscribe_connection_allocations",
   };
-  if (source) {
-    params.source = source;
+  if (configEntryId) {
+    params.config_entry_id = configEntryId;
   }
-  const x = conn.subscribeMessage<BluetoothAllocationsData[]>(
+  return conn.subscribeMessage<BluetoothAllocationsData[]>(
     (bluetoothAllocationsData) => onChange(bluetoothAllocationsData),
     params
   );
-  return x;
 };
