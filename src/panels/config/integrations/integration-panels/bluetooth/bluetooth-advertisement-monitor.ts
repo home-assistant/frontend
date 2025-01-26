@@ -19,8 +19,8 @@ import type { BluetoothDeviceData } from "../../../../../data/bluetooth";
 import { subscribeBluetoothAdvertisements } from "../../../../../data/bluetooth";
 import { showBluetoothDeviceInfoDialog } from "./show-dialog-bluetooth-device-info";
 
-@customElement("bluetooth-config-panel")
-export class BluetoothConfigPanel extends LitElement {
+@customElement("bluetooth-advertisement-monitor")
+export class BluetoothAdvertisementMonitorPanel extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public route!: Route;
@@ -121,6 +121,6 @@ export class BluetoothConfigPanel extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "bluetooth-config-panel": BluetoothConfigPanel;
+    "bluetooth-advertisement-monitor": BluetoothAdvertisementMonitorPanel;
   }
 }
