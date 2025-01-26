@@ -12,20 +12,12 @@ import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { subscribeBluetoothConnectionAllocations } from "../../../../../data/bluetooth";
-
 import {
   getValueInPercentage,
   roundWithOneDecimal,
 } from "../../../../../util/calculate";
-import "../../../../../components/ha-fab";
-import "../../../../../components/ha-icon-button";
-import "../../../../../layouts/hass-tabs-subpage-data-table";
-import type { BluetoothAllocationsData } from "../../../../../data/bluetooth";
-import "../../../../../components/ha-alert";
-import "../../../../../components/ha-button-menu";
 import "../../../../../components/ha-metric";
-import "../../../../../components/ha-svg-icon";
-import "../../../../../components/ha-icon-next";
+import type { BluetoothAllocationsData } from "../../../../../data/bluetooth";
 
 @customElement("bluetooth-config-dashboard")
 export class BluetoothConfigDashboard extends LitElement {
