@@ -113,10 +113,15 @@ export class BluetoothConfigDashboard extends LitElement {
           </ha-card>
           <ha-card
             .header=${this.hass.localize(
-              "ui.panel.config.bluetooth.connection_slot_allocations"
+              "ui.panel.config.bluetooth.connection_slot_allocations_monitor"
             )}
           >
             <div class="card-content">
+              <p>
+                ${this.hass.localize(
+                  "ui.panel.config.bluetooth.connection_slot_allocations_monitor_details"
+                )}
+              </p>
               ${this._renderConnectionAllocations()}
             </div>
           </ha-card>
@@ -190,7 +195,7 @@ export class BluetoothConfigDashboard extends LitElement {
           margin: 0 auto;
           direction: ltr;
         }
-        ha-card:first-child {
+        ha-card {
           margin-bottom: 16px;
         }
       `,
