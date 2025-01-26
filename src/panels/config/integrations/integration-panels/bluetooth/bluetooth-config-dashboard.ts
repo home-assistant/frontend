@@ -157,7 +157,7 @@ export class BluetoothConfigDashboard extends LitElement {
     return html`
       <ha-metric
         .heading=${this.hass.localize(
-          "ui.panel.config.bluetooth.connection_slot_allocations"
+          "ui.panel.config.bluetooth.used_connection_slot_allocations"
         )}
         .value=${this._getUsedAllocations(allocationsUsed, allocationsTotal)}
         .tooltip=${`${allocationsUsed}/${allocationsTotal}`}
