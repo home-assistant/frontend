@@ -50,8 +50,8 @@ export class HaDateRangePicker extends LitElement {
   @property({ attribute: "auto-apply", type: Boolean })
   public autoApply = false;
 
-  @property({ attribute: "time-picker", type: Boolean })
-  public timePicker = true;
+  @property({ attribute: "no-time-picker", type: Boolean })
+  public noTimePicker = false;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -195,7 +195,7 @@ export class HaDateRangePicker extends LitElement {
       <date-range-picker
         ?disabled=${this.disabled}
         ?auto-apply=${this.autoApply}
-        time-picker=${this.timePicker}
+        time-picker=${!this.noTimePicker}
         twentyfour-hours=${this._hour24format}
         start-date=${this.startDate.toISOString()}
         end-date=${this.endDate.toISOString()}
