@@ -244,6 +244,9 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       start_date: now.toISOString(),
     })}`;
 
+    const columns = this._config.grid_options?.columns ?? 12;
+    const narrow = Number.isNaN(columns) || Number(columns) <= 12;
+
     return html`
       <ha-card>
         ${this._config.title
@@ -284,6 +287,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
                   .height=${this._config.grid_options?.rows
                     ? "100%"
                     : undefined}
+                  .narrow=${narrow}
                 ></state-history-charts>
               `}
         </div>
