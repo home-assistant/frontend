@@ -29,7 +29,14 @@ interface BluetoothAdvertisementSubscriptionMessage {
   remove?: BluetoothRemoveDeviceData[];
 }
 
-const subscribeUpdates = (
+export interface BluetoothAllocationsData {
+  source: string;
+  slots: number;
+  free: number;
+  allocated: string[];
+}
+
+const subscribeBluetoothAdvertisementsUpdates = (
   conn: Connection,
   store: Store<BluetoothDeviceData[]>
 ): Promise<UnsubscribeFunc> =>
@@ -84,7 +91,25 @@ export const subscribeBluetoothAdvertisements = (
     "_bluetoothDeviceRows",
     () => Promise.resolve<BluetoothDeviceData[]>([]), // empty array as initial state
 
-    subscribeUpdates,
+    subscribeBluetoothAdvertisementsUpdates,
     conn,
     onChange
   );
+
+export const subscribeBluetoothConnectionAllocations = (
+  conn: Connection,
+  onChange: (bluetoothAllocationsData: BluetoothAllocationsData[]) => void,
+  source?: string
+): Promise<() => Promise<void>> => {
+  const params: any = {
+    type: "bluetooth/subscribe_connection_allocations",
+  };
+  if (source) {
+    params.source = source;
+  }
+  const x = conn.subscribeMessage<BluetoothAllocationsData[]>(
+    (bluetoothAllocationsData) => onChange(bluetoothAllocationsData),
+    params
+  );
+  return x;
+};
