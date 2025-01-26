@@ -281,7 +281,9 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
                   .minYAxis=${this._config.min_y_axis}
                   .maxYAxis=${this._config.max_y_axis}
                   .fitYData=${this._config.fit_y_data || false}
-                  height="100%"
+                  .height=${this._config.grid_options?.rows
+                    ? "100%"
+                    : undefined}
                 ></state-history-charts>
               `}
         </div>

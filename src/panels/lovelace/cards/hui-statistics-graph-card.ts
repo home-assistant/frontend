@@ -279,7 +279,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
             .hideLegend=${this._config.hide_legend || false}
             .logarithmicScale=${this._config.logarithmic_scale || false}
             .daysToShow=${this._config.days_to_show || DEFAULT_DAYS_TO_SHOW}
-            height="100%"
+            .height=${this._config.grid_options?.rows ? "100%" : undefined}
           ></statistics-chart>
         </div>
       </ha-card>
