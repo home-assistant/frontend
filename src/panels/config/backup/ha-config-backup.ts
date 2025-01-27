@@ -88,11 +88,7 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
 
   private async _fetchBackupInfo() {
     const info = await fetchBackupInfo(this.hass);
-    this._backups = info.backups.map((backup) => ({
-      ...backup,
-      agent_ids: backup.agent_ids?.sort(compareAgents),
-      failed_agent_ids: backup.failed_agent_ids?.sort(compareAgents),
-    }));
+    this._backups = info.backups;
   }
 
   private async _fetchBackupConfig() {
