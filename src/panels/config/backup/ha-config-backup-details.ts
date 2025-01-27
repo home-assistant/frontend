@@ -229,9 +229,9 @@ class HaConfigBackupDetails extends LitElement {
                             agentId,
                             this.agents
                           );
-                          const failed = !agent.success;
-                          const unencrypted = agent.protected;
                           const success = agent.success;
+                          const failed = !agent.success;
+                          const unencrypted = !agent.protected;
 
                           return html`
                             <ha-md-list-item>
