@@ -12,6 +12,7 @@ import { fileDownload } from "../util/file_download";
 import { domainToName } from "./integration";
 import type { FrontendLocaleData } from "./translation";
 import checkValidDate from "../common/datetime/check_valid_date";
+import { handleFetchPromise } from "../util/hass-call-api";
 
 export const enum BackupScheduleRecurrence {
   NEVER = "never",
@@ -228,7 +229,7 @@ export const uploadBackup = async (
   file: File,
   agentIds: string[],
   hass?: HomeAssistant
-): Promise<void> => {
+): Promise<{ backup_id: string }> => {
   const fd = new FormData();
   fd.append("file", file);
 
@@ -239,17 +240,15 @@ export const uploadBackup = async (
 
   const fetchMethod = hass ? hass.fetchWithAuth : fetch;
 
-  const resp = await fetchMethod(
-    `/api/${!hass ? "onboarding/" : ""}backup/upload?${params.toString()}`,
-    {
-      method: "POST",
-      body: fd,
-    }
+  return handleFetchPromise(
+    fetchMethod(
+      `/api/${!hass ? "onboarding/" : ""}backup/upload?${params.toString()}`,
+      {
+        method: "POST",
+        body: fd,
+      }
+    )
   );
-
-  if (!resp.ok) {
-    throw new Error(`${resp.status} ${resp.statusText}`);
-  }
 };
 
 export const getPreferredAgentForDownload = (agents: string[]) => {

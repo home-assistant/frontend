@@ -55,6 +55,9 @@ export class HaBackupDataPicker extends LitElement {
 
   @property({ attribute: false }) public localize?: LocalizeFunc;
 
+  @property({ type: Boolean, attribute: "addons-disabled" })
+  public addonsDisabled = false;
+
   @state() public _addonIcons: Record<string, boolean> = {};
 
   protected firstUpdated(changedProps: PropertyValues): void {
@@ -281,7 +284,7 @@ export class HaBackupDataPicker extends LitElement {
             </div>
           `
         : nothing}
-      ${addonsItems.length
+      ${addonsItems.length && !this.addonsDisabled
         ? html`
             <div class="section">
               <ha-formfield>

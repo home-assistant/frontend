@@ -3,6 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "./restore-backup/onboarding-restore-backup-upload";
 import "./restore-backup/onboarding-restore-backup-details";
+import "./restore-backup/onboarding-restore-backup-restore";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-card";
 import "../components/ha-icon-button-arrow-prev";
@@ -13,7 +14,9 @@ import { removeSearchParam } from "../common/url/search-params";
 import { navigate } from "../common/navigate";
 import { onBoardingStyles } from "./styles";
 import { fetchBackupOnboardingInfo } from "../data/backup_onboarding";
-import type { BackupContentExtended } from "../data/backup";
+import type { BackupContentExtended, BackupData } from "../data/backup";
+
+const STORAGE_BACKUP_ID_KEY = "onboarding-restore-backup-backup-id";
 
 @customElement("onboarding-restore-backup")
 class OnboardingRestoreBackup extends LitElement {
@@ -27,6 +30,8 @@ class OnboardingRestoreBackup extends LitElement {
     "loading";
 
   @state() private _backup?: BackupContentExtended;
+
+  @state() private _selectedData?: BackupData;
 
   @state() private _error?: string;
 
@@ -67,10 +72,22 @@ class OnboardingRestoreBackup extends LitElement {
           ? html`<onboarding-restore-backup-details
               .localize=${this.localize}
               .backup=${this._backup!}
+              @show-backup-upload=${this._reupload}
+              @backup-restore=${this._restore}
+              ?supervisor=${this.supervisor}
             ></onboarding-restore-backup-details>`
           : nothing
       }
-      ${this._view === "restore" ? html`<div>Restore in progress</div>` : nothing}
+      ${
+        this._view === "restore"
+          ? html`<onboarding-restore-backup-restore
+              .localize=${this.localize}
+              .backup=${this._backup!}
+              ?supervisor=${this.supervisor}
+              .selectedData=${this._selectedData!}
+            ></onboarding-restore-backup-restore>`
+          : nothing
+      }
     `;
   }
 
@@ -83,24 +100,35 @@ class OnboardingRestoreBackup extends LitElement {
   private async _loadBackupInfo() {
     try {
       const backupInfo = await fetchBackupOnboardingInfo();
+      const backupId = localStorage.getItem(STORAGE_BACKUP_ID_KEY);
 
-      if (!backupInfo.last_non_idle_event) {
+      if (!backupInfo.last_non_idle_event || !backupId) {
         this._view = "upload";
         return;
       }
 
+      this._backup = backupInfo.backups.find(
+        ({ backup_id }) => backup_id === backupId
+      );
+
       if (
-        backupInfo.last_non_idle_event.manager_state === "receive_backup" &&
-        backupInfo.backups.length > 0
+        this._backup &&
+        backupInfo.last_non_idle_event.manager_state === "receive_backup"
       ) {
-        this._backup = backupInfo.backups[0];
         this._view = "details";
         return;
       }
 
-      if (backupInfo.last_non_idle_event.manager_state === "restore_backup") {
+      if (
+        this._backup &&
+        backupInfo.last_non_idle_event.manager_state === "restore_backup"
+      ) {
         this._view = "restore";
+        return;
       }
+
+      // fallback to upload
+      this._view = "upload";
     } catch (err: any) {
       this._error = err?.message || "Cannot get backup info";
       this._view = "upload";
@@ -109,12 +137,29 @@ class OnboardingRestoreBackup extends LitElement {
     }
   }
 
-  private async _backupUploaded() {
+  private async _backupUploaded(ev: CustomEvent) {
+    localStorage.setItem(STORAGE_BACKUP_ID_KEY, ev.detail.backupId);
     await this._loadBackupInfo();
   }
 
-  private _back(): void {
+  private _back() {
+    // TODO add ha confirm when there is a backup uploaded
     navigate(`${location.pathname}?${removeSearchParam("page")}`);
+  }
+
+  private _restore(ev: CustomEvent) {
+    if (!this._backup || !ev.detail.selectedData) {
+      return;
+    }
+    this._selectedData = ev.detail.selectedData;
+
+    this._view = "restore";
+  }
+
+  private _reupload() {
+    this._backup = undefined;
+    localStorage.removeItem(STORAGE_BACKUP_ID_KEY);
+    this._view = "upload";
   }
 
   static styles = [

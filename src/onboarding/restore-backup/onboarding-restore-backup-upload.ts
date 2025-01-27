@@ -12,6 +12,11 @@ import {
 } from "../../data/backup";
 import type { LocalizeFunc } from "../../common/translations/localize";
 
+declare global {
+  interface HASSDomEvents {
+    "backup-uploaded": { backupId: string };
+  }
+}
 @customElement("onboarding-restore-backup-upload")
 class OnboardingRestoreBackupUpload extends LitElement {
   @property({ type: Boolean }) public supervisor = false;
@@ -73,8 +78,8 @@ class OnboardingRestoreBackupUpload extends LitElement {
 
     this._uploading = true;
     try {
-      await uploadBackup(file, agentIds);
-      fireEvent(this, "backup-uploaded");
+      const { backup_id } = await uploadBackup(file, agentIds);
+      fireEvent(this, "backup-uploaded", { backupId: backup_id });
     } catch (err: any) {
       this._error = err.message;
       this._uploading = false;
@@ -90,8 +95,6 @@ class OnboardingRestoreBackupUpload extends LitElement {
         }
         .card-header {
           padding-bottom: 8px;
-        }
-        .card-content {
         }
         .card-actions {
           display: flex;

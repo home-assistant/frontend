@@ -24,9 +24,9 @@ import type {
   BackupConfig,
   BackupContentAgent,
   BackupContentExtended,
-  BackupData,
 } from "../../../data/backup";
-import "./components/ha-backup-details";
+import "./components/ha-backup-details-summary";
+import "./components/ha-backup-details-restore";
 import {
   compareAgents,
   computeBackupAgentName,
@@ -89,8 +89,6 @@ class HaConfigBackupDetails extends LitElement {
 
   @state() private _error?: string;
 
-  @state() private _selectedData?: BackupData;
-
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
 
@@ -149,7 +147,13 @@ class HaConfigBackupDetails extends LitElement {
             : !this._backup
               ? html`<ha-circular-progress active></ha-circular-progress>`
               : html`
-                  <ha-backup-details></ha-backup-details>
+                  <ha-backup-details-summary
+                    .backup=${this._backup}
+                  ></ha-backup-details-summary>
+                  <ha-backup-details-restore
+                    .backup=${this._backup}
+                    @backup-restore=${this._restore}
+                  ></ha-backup-details-restore>
                   <ha-card>
                     <div class="card-header">
                       ${this.hass.localize(
@@ -274,13 +278,13 @@ class HaConfigBackupDetails extends LitElement {
     `;
   }
 
-  private _restore() {
-    if (!this._backup || !this._selectedData) {
+  private _restore(ev: CustomEvent) {
+    if (!this._backup || !ev.detail.selectedData) {
       return;
     }
     showRestoreBackupDialog(this, {
       backup: this._backup,
-      selectedData: this._selectedData,
+      selectedData: ev.detail.selectedData,
     });
   }
 

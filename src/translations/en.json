@@ -8185,17 +8185,25 @@
           "uploading_name": "[%key:ui::components::file-upload::uploading_name%]",
           "uploading": "[%key:ui::components::file-upload::uploading%]",
           "details": {
+            "home_assistant_missing": "This backup does not include your Home Assistant configuration, you cannot use it to restore your instance.",
+            "addons_unsupported": "This backup includes add-ons, which are not supported in this installation method of Home Assistant. You can still restore the backup, but the add-ons will not be restored.",
             "summary": {
               "title": "[%key:ui::panel::config::backup::details::summary::title%]",
               "size": "[%key:ui::panel::config::backup::details::summary::size%]",
               "created": "[%key:ui::panel::config::backup::details::summary::created%]",
               "protection": "[%key:ui::panel::config::backup::details::summary::protection%]",
               "protected_encrypted_aes_128": "[%key:ui::panel::config::backup::details::summary::protected_encrypted_aes_128%]",
-              "protected_not_encrypted": "[%key:ui::panel::config::backup::details::summary::protected_not_encrypted%]"
+              "protected_not_encrypted": "[%key:ui::panel::config::backup::details::summary::protected_not_encrypted%]",
+              "upload_another": "Upload another"
             },
             "restore": {
               "title": "[%key:ui::panel::config::backup::details::restore::title%]",
-              "action": "[%key:ui::panel::config::backup::details::restore::action%]"
+              "action": "[%key:ui::panel::config::backup::details::restore::action%]",
+              "encryption": {
+                "title": "[%key:ui::panel::config::backup::dialogs::restore::encryption::different_key%]",
+                "incorrect_key": "[%key:ui::panel::config::backup::dialogs::restore::encryption::incorrect_key%]",
+                "input_label": "[%key:ui::panel::config::backup::dialogs::restore::encryption::input_label%]"
+              }
             },
             "data_picker": {
               "settings": "[%key:ui::panel::config::backup::data_picker::settings%]",
