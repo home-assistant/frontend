@@ -2,7 +2,6 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, eventOptions, property, state } from "lit/decorators";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import { styleMap } from "lit/directives/style-map";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import type {
@@ -136,7 +135,7 @@ export class StateHistoryCharts extends LitElement {
       return html``;
     }
     if (!Array.isArray(item)) {
-      return html`<div class="entry-container" style=${styleMap({ flex: 1 })}>
+      return html`<div class="entry-container">
         <state-history-chart-line
           .hass=${this.hass}
           .unit=${item.unit}
@@ -300,6 +299,7 @@ export class StateHistoryCharts extends LitElement {
 
     .entry-container {
       width: 100%;
+      flex: 1;
     }
 
     .entry-container:hover {
