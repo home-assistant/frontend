@@ -195,11 +195,15 @@ export class HuiGenericEntityRow extends LitElement {
       flex-direction: row;
     }
     .info {
-      margin-left: 16px;
-      margin-right: 8px;
-      margin-inline-start: 16px;
-      margin-inline-end: 8px;
+      padding-left: 16px;
+      padding-right: 8px;
+      padding-inline-start: 16px;
+      padding-inline-end: 8px;
       flex: 1 1 30%;
+      min-height: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
     .info,
     .info > * {
@@ -233,6 +237,9 @@ export class HuiGenericEntityRow extends LitElement {
     }
     .value {
       direction: ltr;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
     }
   `;
 }
