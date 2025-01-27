@@ -2404,6 +2404,7 @@
             "cloud_agent_no_subcription": "You currently do not have an active Home Assistant Cloud subscription.",
             "network_mount_agent_description": "Network storage",
             "no_agents": "No locations configured",
+            "encryption_turned_off": "Encryption turned off",
             "local_agent": "This system"
           },
           "data": {
@@ -2650,10 +2651,7 @@
             "summary": {
               "title": "Backup",
               "size": "Size",
-              "created": "Created",
-              "protection": "Protection",
-              "protected_encrypted_aes_128": "Encrypted AES-128",
-              "protected_not_encrypted": "Not encrypted"
+              "created": "Created"
             },
             "restore": {
               "title": "Select what to restore",
@@ -2661,8 +2659,8 @@
             },
             "locations": {
               "title": "Locations",
-              "backup_stored": "Backup stored",
               "backup_failed": "Backup failed",
+              "encryption_turned_off": "Encryption turned off",
               "download": "Download from this location"
             }
           },

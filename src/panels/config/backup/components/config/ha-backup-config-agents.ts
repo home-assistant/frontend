@@ -9,7 +9,10 @@ import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-switch";
-import type { BackupAgent } from "../../../../../data/backup";
+import type {
+  BackupAgent,
+  BackupAgentsConfig,
+} from "../../../../../data/backup";
 import {
   CLOUD_AGENT,
   computeBackupAgentName,
@@ -33,6 +36,8 @@ class HaBackupConfigAgents extends LitElement {
 
   @property({ type: Boolean, attribute: "show-settings" }) public showSettings =
     false;
+
+  @property({ type: Array }) public config?: BackupAgentsConfig;
 
   @state() private value?: string[];
 
@@ -58,6 +63,20 @@ class HaBackupConfigAgents extends LitElement {
         "ui.panel.config.backup.agents.cloud_agent_description"
       );
     }
+
+    const encryptionTurnedOff = this.config?.[agentId]?.protected === false;
+
+    if (encryptionTurnedOff) {
+      return html`
+        <span class="dot warning"></span>
+        <span>
+          ${this.hass.localize(
+            "ui.panel.config.backup.agents.encryption_turned_off"
+          )}
+        </span>
+      `;
+    }
+
     if (isNetworkMountAgent(agentId)) {
       return this.hass.localize(
         "ui.panel.config.backup.agents.network_mount_agent_description"
@@ -85,6 +104,7 @@ class HaBackupConfigAgents extends LitElement {
                   agentId === CLOUD_AGENT &&
                   this.cloudStatus.logged_in &&
                   !this.cloudStatus.active_subscription;
+
                 return html`
                   <ha-md-list-item>
                     ${isLocalAgent(agentId)
@@ -196,6 +216,25 @@ class HaBackupConfigAgents extends LitElement {
     ha-md-list-item ha-svg-icon[slot="start"] {
       --mdc-icon-size: 48px;
       color: var(--primary-text-color);
+    }
+    ha-md-list-item [slot="supporting-text"] {
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      gap: 8px;
+      line-height: normal;
+    }
+    .dot {
+      display: block;
+      position: relative;
+      width: 8px;
+      height: 8px;
+      background-color: var(--disabled-color);
+      border-radius: 50%;
+      flex: none;
+    }
+    .dot.warning {
+      background-color: var(--warning-color);
     }
   `;
 }
