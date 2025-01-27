@@ -1276,7 +1276,17 @@
           "install": "Install",
           "update": "Update",
           "auto_update_enabled_title": "Can not skip version",
-          "auto_update_enabled_text": "Automatic updates for this item have been enabled; skipping it is, therefore, unavailable. You can either install this update now or wait for Home Assistant to do it automatically."
+          "auto_update_enabled_text": "Automatic updates for this item have been enabled; skipping it is, therefore, unavailable. You can either install this update now or wait for Home Assistant to do it automatically.",
+          "create_backup": {
+            "automatic": "Automatic backup before update",
+            "automatic_description_last": "Last automatic backup {relative_time}.",
+            "automatic_description_none": "No automatic backup yet.",
+            "manual": "Create manual backup before update",
+            "manual_description": "Includes Home Assistant settings and history.",
+            "addon": "Keep backup of the last version",
+            "addon_description": "For easily restoring to version {version}",
+            "generic": "Create backup"
+          }
         },
         "updater": {
           "title": "Update instructions"
@@ -8478,7 +8488,12 @@
       "open_release_notes": "Open release notes",
       "description": "You have {version} installed. Press update to update to version {newest_version}",
       "updating": "Updating {name} to version {version}",
-      "no_update": "No update available for {name}"
+      "no_update": "No update available for {name}",
+      "create_backup": {
+        "addon": "[%key:ui::dialogs::more_info_control::update::create_backup::addon%]",
+        "addon_description": "[%key:ui::dialogs::more_info_control::update::create_backup::addon_description%]",
+        "generic": "[%key:ui::dialogs::more_info_control::update::create_backup::generic%]"
+      }
     },
     "confirm": {
       "restart": {
