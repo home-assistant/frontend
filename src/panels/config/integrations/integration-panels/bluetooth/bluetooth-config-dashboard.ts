@@ -127,7 +127,9 @@ export class BluetoothConfigDashboard extends LitElement {
 
   private _renderConnectionAllocations() {
     if (this._connectionAllocationsError) {
-      return html`<ha-alert alert-type="error">${this._connectionAllocationsError}</ha-alert>`;
+      return html`<ha-alert alert-type="error"
+        >${this._connectionAllocationsError}</ha-alert
+      >`;
     }
     if (this._connectionAllocationData.length === 0) {
       return html`<div>
