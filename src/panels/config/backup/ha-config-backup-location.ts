@@ -177,6 +177,16 @@ class HaConfigBackupDetails extends LitElement {
                                 </ha-md-list-item>
                               `
                             : html`
+                                <ha-alert
+                                  alert-type="warning"
+                                  .title=${this.hass.localize(
+                                    "ui.panel.config.backup.location.encryption.warning_encryption_turn_off"
+                                  )}
+                                >
+                                  ${this.hass.localize(
+                                    "ui.panel.config.backup.location.encryption.warning_encryption_turn_off_description"
+                                  )}
+                                </ha-alert>
                                 <ha-md-list-item>
                                   <span slot="headline">
                                     ${this.hass.localize(

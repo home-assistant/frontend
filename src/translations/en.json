@@ -2686,7 +2686,9 @@
               "encryption_turn_off": "Turn off",
               "encryption_turn_off_confirm_title": "Turn encryption off?",
               "encryption_turn_off_confirm_text": "All your next backups will not be encrypted for this location. Please keep your backups private and secure.",
-              "encryption_turn_off_confirm_action": "Turn encryption off"
+              "encryption_turn_off_confirm_action": "Turn encryption off",
+              "warning_encryption_turn_off": "Encryption turned off",
+              "warning_encryption_turn_off_description": "All your next backups will not be encrypted."
             }
           }
         },
