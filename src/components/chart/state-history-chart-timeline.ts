@@ -154,10 +154,6 @@ export class StateHistoryChartTimeline extends LitElement {
     };
 
   public willUpdate(changedProps: PropertyValues) {
-    if (!this.hasUpdated) {
-      this._createOptions();
-    }
-
     if (
       changedProps.has("startTime") ||
       changedProps.has("endTime") ||
@@ -171,10 +167,12 @@ export class StateHistoryChartTimeline extends LitElement {
     }
 
     if (
+      !this.hasUpdated ||
       changedProps.has("startTime") ||
       changedProps.has("endTime") ||
       changedProps.has("showNames") ||
-      changedProps.has("paddingYAxis")
+      changedProps.has("paddingYAxis") ||
+      changedProps.has("_yWidth")
     ) {
       this._createOptions();
     }
@@ -183,9 +181,11 @@ export class StateHistoryChartTimeline extends LitElement {
   private _createOptions() {
     const narrow = this.narrow;
     const showNames = this.chunked || this.showNames;
+    const maxInternalLabelWidth = narrow ? 70 : 165;
     const labelWidth = showNames
-      ? Math.max(narrow ? 70 : 170, this.paddingYAxis)
+      ? Math.max(this.paddingYAxis, this._yWidth)
       : 0;
+    const labelMargin = 5;
     const rtl = computeRTL(this.hass);
     const dayDifference = differenceInDays(this.endTime, this.startTime);
     this._chartOptions = {
@@ -217,12 +217,14 @@ export class StateHistoryChartTimeline extends LitElement {
         },
         axisLabel: {
           show: showNames,
-          width: labelWidth,
+          width: labelWidth - labelMargin,
           overflow: "truncate",
-          margin: 5,
-          // @ts-ignore this is a valid option
+          margin: labelMargin,
           formatter: (label: string) => {
-            const width = Math.min(measureTextWidth(label, 12) + 5, labelWidth);
+            const width = Math.min(
+              measureTextWidth(label, 12) + labelMargin,
+              maxInternalLabelWidth
+            );
             if (width > this._yWidth) {
               this._yWidth = width;
               fireEvent(this, "y-width-changed", {

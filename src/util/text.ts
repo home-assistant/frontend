@@ -21,5 +21,5 @@ export function measureTextWidth(
   }
 
   context.font = `${fontSize}px ${fontFamily}`;
-  return context.measureText(text).width;
+  return Math.ceil(context.measureText(text).width);
 }
