@@ -10,16 +10,22 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
-import type { BackupAgent, BackupConfig } from "../../../data/backup";
+import type {
+  BackupAgent,
+  BackupAgentConfig,
+  BackupConfig,
+} from "../../../data/backup";
 import {
   CLOUD_AGENT,
   computeBackupAgentName,
   fetchBackupAgentsInfo,
+  updateBackupConfig,
 } from "../../../data/backup";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import "./components/ha-backup-data-picker";
 import { showConfirmationDialog } from "../../lovelace/custom-card-helpers";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 @customElement("ha-config-backup-location")
 class HaConfigBackupDetails extends LitElement {
@@ -37,9 +43,6 @@ class HaConfigBackupDetails extends LitElement {
 
   @state() private _error?: string;
 
-  // Todo update with api call
-  @state() private _encrypted = true;
-
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
 
@@ -55,7 +58,7 @@ class HaConfigBackupDetails extends LitElement {
       return nothing;
     }
 
-    const encrypted = this._encrypted;
+    const encrypted = this._isEncryptionTurnedOn();
 
     return html`
       <hass-subpage
@@ -90,6 +93,24 @@ class HaConfigBackupDetails extends LitElement {
             : !this.agentId
               ? html`<ha-circular-progress active></ha-circular-progress>`
               : html`
+                  ${CLOUD_AGENT === this.agentId
+                    ? html`
+                        <ha-card>
+                          <div class="card-header">
+                            ${this.hass.localize(
+                              "ui.panel.config.backup.location.configuration.title"
+                            )}
+                          </div>
+                          <div class="card-content">
+                            <p>
+                              ${this.hass.localize(
+                                "ui.panel.config.backup.location.configuration.cloud_description"
+                              )}
+                            </p>
+                          </div>
+                        </ha-card>
+                      `
+                    : nothing}
                   <ha-card>
                     <div class="card-header">
                       ${this.hass.localize(
@@ -97,63 +118,87 @@ class HaConfigBackupDetails extends LitElement {
                       )}
                     </div>
                     <div class="card-content">
+                      <p>
+                        ${this.hass.localize(
+                          "ui.panel.config.backup.location.encryption.description"
+                        )}
+                      </p>
                       <ha-md-list>
                         ${CLOUD_AGENT === this.agentId
                           ? html`
                               <ha-md-list-item>
                                 <span slot="headline">
                                   ${this.hass.localize(
-                                    "ui.panel.config.backup.location.encryption.encryption"
+                                    "ui.panel.config.backup.location.encryption.location_encrypted"
                                   )}
                                 </span>
                                 <span slot="supporting-text">
                                   ${this.hass.localize(
-                                    `ui.panel.config.backup.location.encryption.cloud_forced_encryption`
+                                    "ui.panel.config.backup.location.encryption.location_encrypted_cloud_description"
                                   )}
                                 </span>
-                                <ha-switch
+                                <a
+                                  href="https://www.nabucasa.com/config/backups/"
+                                  target="_blank"
                                   slot="end"
-                                  checked
-                                  disabled
-                                ></ha-switch>
+                                  rel="noreferrer noopener"
+                                >
+                                  <ha-button>
+                                    ${this.hass.localize(
+                                      "ui.panel.config.backup.location.encryption.location_encrypted_cloud_learn_more"
+                                    )}
+                                  </ha-button>
+                                </a>
                               </ha-md-list-item>
                             `
-                          : html`
-                              <ha-md-list-item>
-                                <span slot="headline">
-                                  ${this.hass.localize(
-                                    "ui.panel.config.backup.location.encryption.encryption"
-                                  )}
-                                </span>
-                                <span slot="supporting-text">
-                                  ${this.hass.localize(
-                                    `ui.panel.config.backup.location.encryption.encryption_description_${encrypted ? "on" : "off"}`
-                                  )}
-                                </span>
-                                ${encrypted
-                                  ? html`
-                                      <ha-button
-                                        slot="end"
-                                        @click=${this._turnOffEncryption}
-                                        destructive
-                                      >
-                                        ${this.hass.localize(
-                                          "ui.panel.config.backup.location.encryption.encryption_turn_off"
-                                        )}
-                                      </ha-button>
-                                    `
-                                  : html`
-                                      <ha-button
-                                        slot="end"
-                                        @click=${this._turnOnEncryption}
-                                      >
-                                        ${this.hass.localize(
-                                          "ui.panel.config.backup.location.encryption.encryption_turn_on"
-                                        )}
-                                      </ha-button>
-                                    `}
-                              </ha-md-list-item>
-                            `}
+                          : encrypted
+                            ? html`
+                                <ha-md-list-item>
+                                  <span slot="headline">
+                                    ${this.hass.localize(
+                                      "ui.panel.config.backup.location.encryption.location_encrypted"
+                                    )}
+                                  </span>
+                                  <span slot="supporting-text">
+                                    ${this.hass.localize(
+                                      `ui.panel.config.backup.location.encryption.location_encrypted_description`
+                                    )}
+                                  </span>
+
+                                  <ha-button
+                                    slot="end"
+                                    @click=${this._turnOffEncryption}
+                                    destructive
+                                  >
+                                    ${this.hass.localize(
+                                      "ui.panel.config.backup.location.encryption.encryption_turn_off"
+                                    )}
+                                  </ha-button>
+                                </ha-md-list-item>
+                              `
+                            : html`
+                                <ha-md-list-item>
+                                  <span slot="headline">
+                                    ${this.hass.localize(
+                                      "ui.panel.config.backup.location.encryption.location_unencrypted"
+                                    )}
+                                  </span>
+                                  <span slot="supporting-text">
+                                    ${this.hass.localize(
+                                      `ui.panel.config.backup.location.encryption.location_unencrypted_description`
+                                    )}
+                                  </span>
+
+                                  <ha-button
+                                    slot="end"
+                                    @click=${this._turnOnEncryption}
+                                  >
+                                    ${this.hass.localize(
+                                      "ui.panel.config.backup.location.encryption.encryption_turn_on"
+                                    )}
+                                  </ha-button>
+                                </ha-md-list-item>
+                              `}
                       </ha-md-list>
                     </div>
                   </ha-card>
@@ -161,6 +206,17 @@ class HaConfigBackupDetails extends LitElement {
         </div>
       </hass-subpage>
     `;
+  }
+
+  private _isEncryptionTurnedOn() {
+    const agentConfig = this.config?.agents[this.agentId] as
+      | BackupAgentConfig
+      | undefined;
+
+    if (!agentConfig) {
+      return true;
+    }
+    return agentConfig.protected;
   }
 
   private async _fetchAgent() {
@@ -180,9 +236,22 @@ class HaConfigBackupDetails extends LitElement {
     }
   }
 
+  private async _updateAgentEncryption(value: boolean) {
+    const agentsConfig = {
+      ...this.config?.agents,
+      [this.agentId]: {
+        ...this.config?.agents[this.agentId],
+        protected: value,
+      },
+    };
+    await updateBackupConfig(this.hass, {
+      agents: agentsConfig,
+    });
+    fireEvent(this, "ha-refresh-backup-config");
+  }
+
   private _turnOnEncryption() {
-    this._encrypted = true;
-    // Todo call api
+    this._updateAgentEncryption(true);
   }
 
   private async _turnOffEncryption() {
@@ -200,8 +269,7 @@ class HaConfigBackupDetails extends LitElement {
       destructive: true,
     });
     if (response) {
-      this._encrypted = false;
-      // Todo call api
+      this._updateAgentEncryption(false);
     }
   }
 

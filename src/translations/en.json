@@ -2669,17 +2669,24 @@
             "not_found": "Not found",
             "not_found_description": "Location matching ''{backupId}'' not found",
             "error": "Could not fetch location details",
+            "configuration": {
+              "title": "Configuration",
+              "cloud_description": "Home Assistant Cloud backup stores only one backup. The oldest backups are deleted."
+            },
             "encryption": {
               "title": "Encryption",
-              "encryption": "Location encryption",
-              "encryption_description_on": "The backups stored in this location are encrypted.",
-              "encryption_description_off": "The backups stored in this location are unencrypted.",
+              "description": "All your backups are encrypted by default to keep your data private and secure.",
+              "location_encrypted": "This location is encrypted",
+              "location_unencrypted": "This location is unencrypted",
+              "location_encrypted_description": "Your data private and secure by securing it with your encryption key.",
+              "location_encrypted_cloud_description": "Home Assistant Cloud is the privacy-focused cloud. This is why it will only accept encrypted backups and why we don’t store your encryption key.",
+              "location_encrypted_cloud_learn_more": "Learn more",
+              "location_unencrypted_description": "Please keep your backups private and secure.",
               "encryption_turn_on": "Turn on",
               "encryption_turn_off": "Turn off",
               "encryption_turn_off_confirm_title": "Turn encryption off?",
-              "encryption_turn_off_confirm_text": "All your next backups will not be encrypted on this system and network storager. Please keep your backups private and secure.",
-              "encryption_turn_off_confirm_action": "Turn encryption off",
-              "cloud_forced_encryption": "This backups are forced to be encrypted by Home Assistant Cloud."
+              "encryption_turn_off_confirm_text": "All your next backups will not be encrypted on This system. Please keep your backups private and secure.",
+              "encryption_turn_off_confirm_action": "Turn encryption off"
             }
           }
         },

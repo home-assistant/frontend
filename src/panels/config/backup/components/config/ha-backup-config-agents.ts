@@ -1,4 +1,4 @@
-import { mdiCogOutline, mdiHarddisk, mdiNas } from "@mdi/js";
+import { mdiCog, mdiHarddisk, mdiNas } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -141,7 +141,7 @@ class HaBackupConfigAgents extends LitElement {
                     <ha-icon-button
                       id=${agentId}
                       slot="end"
-                      path=${mdiCogOutline}
+                      path=${mdiCog}
                       @click=${this._showAgentSettings}
                     ></ha-icon-button>
                     <ha-switch
