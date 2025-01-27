@@ -136,10 +136,7 @@ export class StateHistoryCharts extends LitElement {
       return html``;
     }
     if (!Array.isArray(item)) {
-      return html`<div
-        class="entry-container"
-        style=${styleMap({ height: this.height })}
-      >
+      return html`<div class="entry-container" style=${styleMap({ flex: 1 })}>
         <state-history-chart-line
           .hass=${this.hass}
           .unit=${item.unit}
@@ -157,7 +154,7 @@ export class StateHistoryCharts extends LitElement {
           .maxYAxis=${this.maxYAxis}
           .fitYData=${this.fitYData}
           @y-width-changed=${this._yWidthChanged}
-          .height=${this.height}
+          .height=${this.virtualize ? undefined : this.height}
         ></state-history-chart-line>
       </div> `;
     }
@@ -281,7 +278,8 @@ export class StateHistoryCharts extends LitElement {
 
   static styles = css`
     :host {
-      display: block;
+      display: flex;
+      flex-direction: column;
       /* height of single timeline chart = 60px */
       min-height: 60px;
     }

@@ -123,7 +123,8 @@ export class StatisticsChart extends LitElement {
       changedProps.has("maxYAxis") ||
       changedProps.has("fitYData") ||
       changedProps.has("logarithmicScale") ||
-      changedProps.has("hideLegend")
+      changedProps.has("hideLegend") ||
+      changedProps.has("_legendData")
     ) {
       this._createOptions();
     }
@@ -263,13 +264,6 @@ export class StatisticsChart extends LitElement {
         appendTo: document.body,
         formatter: this._renderTooltip.bind(this),
       },
-      // scales: {
-      //   x: {
-      //     ticks: {
-      //       source: this.chartType === "bar" ? "data" : undefined,
-      //     },
-      //   },
-      // },
     };
   }
 
@@ -512,7 +506,10 @@ export class StatisticsChart extends LitElement {
     });
 
     this._chartData = totalDataSets;
-    this._legendData = legendData;
+    if (legendData.length !== this._legendData.length) {
+      // only update the legend if it has changed or it will trigger options update
+      this._legendData = legendData;
+    }
     this._statisticIds = statisticIds;
   }
 
