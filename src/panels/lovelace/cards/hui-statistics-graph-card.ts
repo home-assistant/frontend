@@ -132,8 +132,8 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     return {
       columns: 12,
       rows: 5,
-      min_columns: 8,
-      min_rows: 4,
+      min_columns: 6,
+      min_rows: 3,
     };
   }
 
