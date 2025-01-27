@@ -912,7 +912,7 @@
         "play-media": "Play media",
         "pick-media": "Pick media",
         "no_items": "No items",
-        "not_shown": "{count} incompatible {count, plural,\n  one {item}\n  other {items}\n} hidden",
+        "not_shown": "{count} {count, plural,\n  one {item}\n  other {items}\n} incompatible with the currently selected player {count, plural,\n  one {is}\n  other {are}\n} hidden",
         "choose_player": "Choose player",
         "media-player-browser": "Media",
         "web-browser": "Web browser",
