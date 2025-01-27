@@ -240,8 +240,8 @@ export class StateHistoryChartTimeline extends LitElement {
       grid: {
         top: 10,
         bottom: 30,
-        left: rtl ? 5 : labelWidth,
-        right: rtl ? labelWidth : 5,
+        left: rtl ? 1 : labelWidth,
+        right: rtl ? labelWidth : 1,
       },
       tooltip: {
         appendTo: document.body,
