@@ -78,7 +78,12 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
     this._error = undefined;
     this._state = undefined;
     this._stage = undefined;
-    if (this._params.backup.protected) {
+
+    const agentIds = Object.keys(this._params.backup.agents);
+    const preferedAgent = getPreferredAgentForDownload(agentIds);
+    const isProtected = this._params.backup.agents[preferedAgent]?.protected;
+
+    if (isProtected) {
       this._backupEncryptionKey = await this._fetchEncryptionKey();
       if (!this._backupEncryptionKey) {
         this._step = STEPS[1];
@@ -322,9 +327,8 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
       return;
     }
 
-    const preferedAgent = getPreferredAgentForDownload(
-      this._params.backup.agent_ids!
-    );
+    const agentIds = Object.keys(this._params.backup.agents);
+    const preferedAgent = getPreferredAgentForDownload(agentIds);
 
     const { addons, database_included, homeassistant_included, folders } =
       this._params.selectedData;
