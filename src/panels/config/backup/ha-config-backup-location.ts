@@ -37,9 +37,9 @@ class HaConfigBackupDetails extends LitElement {
 
   @property({ attribute: false }) public config?: BackupConfig;
 
-  @state() private _agent?: BackupAgent | null;
+  @property({ attribute: false }) public agents: BackupAgent[] = [];
 
-  @state() private _agentIds?: string[];
+  @state() private _agent?: BackupAgent | null;
 
   @state() private _error?: string;
 
@@ -69,7 +69,7 @@ class HaConfigBackupDetails extends LitElement {
           computeBackupAgentName(
             this.hass.localize,
             this.agentId,
-            this._agentIds
+            this.agents
           )) ||
         this.hass.localize("ui.panel.config.backup.location.header")}
       >
@@ -238,7 +238,6 @@ class HaConfigBackupDetails extends LitElement {
         throw new Error("Agent not found");
       }
       this._agent = agent;
-      this._agentIds = agents.map((a) => a.agent_id);
     } catch (err: any) {
       this._error =
         err?.message ||
