@@ -7,12 +7,15 @@ import type { EChartsType } from "echarts/core";
 import type { DataZoomComponentOption } from "echarts/components";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type { XAXisOption, YAXisOption } from "echarts/types/dist/shared";
+import { consume } from "@lit-labs/context";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HomeAssistant } from "../../types";
 import { isMac } from "../../util/is_mac";
 import "../ha-icon-button";
 import type { ECOption } from "../../resources/echarts";
 import { listenMediaQuery } from "../../common/dom/media_query";
+import type { Themes } from "../../data/ws-themes";
+import { themesContext } from "../../data/context";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 
@@ -30,6 +33,10 @@ export class HaChartBase extends LitElement {
 
   @property({ attribute: "external-hidden", type: Boolean })
   public externalHidden = false;
+
+  @state()
+  @consume({ context: themesContext, subscribe: true })
+  _themes!: Themes;
 
   @state() private _isZoomed = false;
 
@@ -110,6 +117,10 @@ export class HaChartBase extends LitElement {
     if (!this.hasUpdated || !this.chart) {
       return;
     }
+    if (changedProps.has("_themes")) {
+      this._setupChart();
+      return;
+    }
     if (changedProps.has("data")) {
       this.chart.setOption(
         { series: this.data },
@@ -163,11 +174,14 @@ export class HaChartBase extends LitElement {
     const container = this.renderRoot.querySelector(".chart") as HTMLDivElement;
     this._loading = true;
     try {
+      if (this.chart) {
+        this.chart.dispose();
+      }
       const echarts = (await import("../../resources/echarts")).default;
 
       this.chart = echarts.init(
         container,
-        this.hass.themes?.darkMode ? "dark" : "light"
+        this._themes.darkMode ? "dark" : "light"
       );
       this.chart.on("legendselectchanged", (params: any) => {
         if (this.externalHidden) {
@@ -210,7 +224,7 @@ export class HaChartBase extends LitElement {
   }
 
   private _createOptions(): ECOption {
-    const darkMode = this.hass.themes?.darkMode ?? false;
+    const darkMode = this._themes.darkMode ?? false;
     const xAxis = Array.isArray(this.options?.xAxis)
       ? this.options?.xAxis
       : [this.options?.xAxis];
