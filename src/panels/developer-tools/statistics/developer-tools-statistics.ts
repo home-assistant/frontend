@@ -3,7 +3,7 @@ import {
   mdiArrowDown,
   mdiArrowUp,
   mdiClose,
-  mdiCog,
+  mdiTableCog,
   mdiFormatListChecks,
   mdiMenuDown,
   mdiSlopeUphill,
@@ -303,7 +303,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
       @click=${this._openSettings}
       .title=${localize("ui.components.subpage-data-table.settings")}
     >
-      <ha-svg-icon slot="icon" .path=${mdiCog}></ha-svg-icon>
+      <ha-svg-icon slot="icon" .path=${mdiTableCog}></ha-svg-icon>
     </ha-assist-chip>`;
 
     return html`
