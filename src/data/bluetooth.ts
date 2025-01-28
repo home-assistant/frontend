@@ -85,7 +85,7 @@ const subscribeBluetoothAdvertisementsUpdates = (
 
 export const subscribeBluetoothAdvertisements = (
   conn: Connection,
-  onChange: (bluetoothDeviceData: BluetoothDeviceData[]) => void
+  callbackFunction: (bluetoothDeviceData: BluetoothDeviceData[]) => void
 ) =>
   createCollection<BluetoothDeviceData[]>(
     "_bluetoothDeviceRows",
@@ -93,22 +93,24 @@ export const subscribeBluetoothAdvertisements = (
 
     subscribeBluetoothAdvertisementsUpdates,
     conn,
-    onChange
+    callbackFunction
   );
 
 export const subscribeBluetoothConnectionAllocations = (
   conn: Connection,
-  onChange: (bluetoothAllocationsData: BluetoothAllocationsData[]) => void,
+  callbackFunction: (
+    bluetoothAllocationsData: BluetoothAllocationsData[]
+  ) => void,
   configEntryId?: string
 ): Promise<() => Promise<void>> => {
-  const params: any = {
+  const params: { type: string; config_entry_id?: string } = {
     type: "bluetooth/subscribe_connection_allocations",
   };
   if (configEntryId) {
     params.config_entry_id = configEntryId;
   }
   return conn.subscribeMessage<BluetoothAllocationsData[]>(
-    (bluetoothAllocationsData) => onChange(bluetoothAllocationsData),
+    (bluetoothAllocationsData) => callbackFunction(bluetoothAllocationsData),
     params
   );
 };
