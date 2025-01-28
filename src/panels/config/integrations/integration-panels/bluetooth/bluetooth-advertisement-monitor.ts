@@ -107,10 +107,11 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
     }
   );
 
-  private _dataWithIds = memoizeOne((data) =>
+  private _dataWithNamedSourceAndIds = memoizeOne((data) =>
     data.map((row) => ({
       ...row,
       id: row.address,
+      source: this._scanners[row.source]?.name || row.source,
     }))
   );
 
@@ -121,7 +122,7 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
         .narrow=${this.narrow}
         .route=${this.route}
         .columns=${this._columns(this.hass.localize)}
-        .data=${this._dataWithIds(this._data)}
+        .data=${this._dataWithNamedSourceAndIds(this._data)}
         @row-click=${this._handleRowClicked}
         clickable
       ></hass-tabs-subpage-data-table>
