@@ -37,7 +37,7 @@ class HaBackupConfigAgents extends LitElement {
   @property({ type: Boolean, attribute: "show-settings" }) public showSettings =
     false;
 
-  @property({ type: Array }) public config?: BackupAgentsConfig;
+  @property({ attribute: false }) public agentsConfig?: BackupAgentsConfig;
 
   @state() private value?: string[];
 
@@ -64,7 +64,8 @@ class HaBackupConfigAgents extends LitElement {
       );
     }
 
-    const encryptionTurnedOff = this.config?.[agentId]?.protected === false;
+    const encryptionTurnedOff =
+      this.agentsConfig?.[agentId]?.protected === false;
 
     if (encryptionTurnedOff) {
       return html`
@@ -137,13 +138,16 @@ class HaBackupConfigAgents extends LitElement {
                     ${description
                       ? html`<div slot="supporting-text">${description}</div>`
                       : nothing}
-
-                    <ha-icon-button
-                      id=${agentId}
-                      slot="end"
-                      path=${mdiCog}
-                      @click=${this._showAgentSettings}
-                    ></ha-icon-button>
+                    ${this.showSettings
+                      ? html`
+                          <ha-icon-button
+                            id=${agentId}
+                            slot="end"
+                            path=${mdiCog}
+                            @click=${this._showAgentSettings}
+                          ></ha-icon-button>
+                        `
+                      : nothing}
                     <ha-switch
                       slot="end"
                       id=${agentId}
