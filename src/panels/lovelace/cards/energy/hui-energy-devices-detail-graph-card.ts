@@ -326,14 +326,12 @@ export class HuiEnergyDevicesDetailGraphCard
     Object.keys(consumptionData.total).forEach((time) => {
       const value =
         consumptionData.total[time] - (totalDeviceConsumption[time] || 0);
-      if (value > 0) {
-        const dataPoint = [Number(time), value];
-        if (compare) {
-          dataPoint[2] = dataPoint[0];
-          dataPoint[0] += compareOffset;
-        }
-        untrackedConsumption.push(dataPoint);
+      const dataPoint = [Number(time), value];
+      if (compare) {
+        dataPoint[2] = dataPoint[0];
+        dataPoint[0] += compareOffset;
       }
+      untrackedConsumption.push(dataPoint);
     });
     const dataset: BarSeriesOption = {
       type: "bar",
