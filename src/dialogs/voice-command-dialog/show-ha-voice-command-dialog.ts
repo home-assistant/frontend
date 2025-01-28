@@ -6,7 +6,6 @@ const loadVoiceCommandDialog = () => import("./ha-voice-command-dialog");
 export interface VoiceCommandDialogParams {
   pipeline_id: "last_used" | "preferred" | string;
   start_listening?: boolean;
-  hint?: string;
 }
 
 export const showVoiceCommandDialog = (
@@ -32,7 +31,6 @@ export const showVoiceCommandDialog = (
       pipeline_id: dialogParams.pipeline_id,
       // Don't start listening by default for web
       start_listening: dialogParams.start_listening ?? false,
-      hint: dialogParams.hint,
     },
   });
 };
