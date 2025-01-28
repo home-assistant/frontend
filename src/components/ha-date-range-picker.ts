@@ -51,7 +51,7 @@ export class HaDateRangePicker extends LitElement {
   public autoApply = false;
 
   @property({ attribute: "time-picker", type: Boolean })
-  public timePicker = true;
+  public timePicker = false;
 
   @property({ type: Boolean }) public disabled = false;
 
