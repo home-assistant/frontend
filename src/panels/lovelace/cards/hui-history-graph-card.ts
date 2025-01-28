@@ -65,7 +65,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     return {
       columns: 12,
       min_columns: 6,
-      min_rows: (this._config?.entities?.length || 1) * 2,
+      min_rows: this._config?.entities?.length || 1,
     };
   }
 
