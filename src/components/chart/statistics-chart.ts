@@ -96,6 +96,8 @@ export class StatisticsChart extends LitElement {
 
   @state() private _chartOptions?: ECOption;
 
+  @state() private _hiddenStats = new Set<string>();
+
   private _computedStyle?: CSSStyleDeclaration;
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -107,7 +109,8 @@ export class StatisticsChart extends LitElement {
       changedProps.has("statisticsData") ||
       changedProps.has("statTypes") ||
       changedProps.has("chartType") ||
-      changedProps.has("hideLegend")
+      changedProps.has("hideLegend") ||
+      changedProps.has("_hiddenStats")
     ) {
       this._generateData();
     }
@@ -120,7 +123,8 @@ export class StatisticsChart extends LitElement {
       changedProps.has("maxYAxis") ||
       changedProps.has("fitYData") ||
       changedProps.has("logarithmicScale") ||
-      changedProps.has("hideLegend")
+      changedProps.has("hideLegend") ||
+      changedProps.has("_legendData")
     ) {
       this._createOptions();
     }
@@ -160,8 +164,21 @@ export class StatisticsChart extends LitElement {
         .options=${this._chartOptions}
         .height=${this.height}
         style=${styleMap({ height: this.height })}
+        external-hidden
+        @dataset-hidden=${this._datasetHidden}
+        @dataset-unhidden=${this._datasetUnhidden}
       ></ha-chart-base>
     `;
+  }
+
+  private _datasetHidden(ev: CustomEvent) {
+    this._hiddenStats.add(ev.detail.name);
+    this.requestUpdate("_hiddenStats");
+  }
+
+  private _datasetUnhidden(ev: CustomEvent) {
+    this._hiddenStats.delete(ev.detail.name);
+    this.requestUpdate("_hiddenStats");
   }
 
   private _renderTooltip(params: any) {
@@ -219,6 +236,10 @@ export class StatisticsChart extends LitElement {
       yAxis: {
         type: this.logarithmicScale ? "log" : "value",
         name: this.unit,
+        nameGap: 2,
+        nameTextStyle: {
+          align: "left",
+        },
         position: computeRTL(this.hass) ? "right" : "left",
         // @ts-ignore
         scale: this.chartType !== "bar",
@@ -247,13 +268,6 @@ export class StatisticsChart extends LitElement {
         appendTo: document.body,
         formatter: this._renderTooltip.bind(this),
       },
-      // scales: {
-      //   x: {
-      //     ticks: {
-      //       source: this.chartType === "bar" ? "data" : undefined,
-      //     },
-      //   },
-      // },
     };
   }
 
@@ -282,8 +296,8 @@ export class StatisticsChart extends LitElement {
 
     let colorIndex = 0;
     const statisticsData = Object.entries(this.statisticsData);
-    const totalDataSets: LineSeriesOption[] = [];
-    const legendData: string[] = [];
+    const totalDataSets: typeof this._chartData = [];
+    const legendData: { name: string; color: string }[] = [];
     const statisticIds: string[] = [];
     let endTime: Date;
 
@@ -334,7 +348,7 @@ export class StatisticsChart extends LitElement {
 
       // The datasets for the current statistic
       const statDataSets: (LineSeriesOption | BarSeriesOption)[] = [];
-      const statLegendData: string[] = [];
+      const statLegendData: { name: string; color: string }[] = [];
 
       const pushData = (
         start: Date,
@@ -403,7 +417,7 @@ export class StatisticsChart extends LitElement {
               ? type === "mean"
               : displayedLegend === false;
             if (showLegend) {
-              statLegendData.push(name);
+              statLegendData.push({ name, color });
             }
             displayedLegend = displayedLegend || showLegend;
           }
@@ -415,8 +429,7 @@ export class StatisticsChart extends LitElement {
             name: name
               ? `${name} (${this.hass.localize(
                   `ui.components.statistics_charts.statistic_types.${type}`
-                )})
-            `
+                )})`
               : this.hass.localize(
                   `ui.components.statistics_charts.statistic_types.${type}`
                 ),
@@ -472,7 +485,9 @@ export class StatisticsChart extends LitElement {
           }
           dataValues.push(val);
         });
-        pushData(startDate, new Date(stat.end), dataValues);
+        if (!this._hiddenStats.has(name)) {
+          pushData(startDate, new Date(stat.end), dataValues);
+        }
       });
 
       // Concat two arrays
@@ -484,8 +499,22 @@ export class StatisticsChart extends LitElement {
       this.unit = unit;
     }
 
+    legendData.forEach(({ name, color }) => {
+      // Add an empty series for the legend
+      totalDataSets.push({
+        id: name + "-legend",
+        name: name,
+        color,
+        type: this.chartType,
+        data: [],
+      });
+    });
+
     this._chartData = totalDataSets;
-    this._legendData = legendData;
+    if (legendData.length !== this._legendData.length) {
+      // only update the legend if it has changed or it will trigger options update
+      this._legendData = legendData.map(({ name }) => name);
+    }
     this._statisticIds = statisticIds;
   }
 

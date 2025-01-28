@@ -192,7 +192,10 @@ export class StateHistoryChartLine extends LitElement {
           max: this.fitYData ? this.maxYAxis : undefined,
           position: rtl ? "right" : "left",
           scale: true,
-          nameGap: 3,
+          nameGap: 2,
+          nameTextStyle: {
+            align: "left",
+          },
           splitLine: {
             show: true,
             lineStyle: splitLineStyle,

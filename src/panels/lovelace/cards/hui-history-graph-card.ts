@@ -64,7 +64,6 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   getGridOptions(): LovelaceGridOptions {
     return {
       columns: 12,
-      rows: 6,
       min_columns: 6,
       min_rows: this._config?.entities?.length || 1,
     };
@@ -244,6 +243,9 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       start_date: now.toISOString(),
     })}`;
 
+    const columns = this._config.grid_options?.columns ?? 12;
+    const narrow = Number.isNaN(columns) || Number(columns) < 12;
+
     return html`
       <ha-card>
         ${this._config.title
@@ -281,7 +283,10 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
                   .minYAxis=${this._config.min_y_axis}
                   .maxYAxis=${this._config.max_y_axis}
                   .fitYData=${this._config.fit_y_data || false}
-                  height="100%"
+                  .height=${this._config.grid_options?.rows
+                    ? "100%"
+                    : undefined}
+                  .narrow=${narrow}
                 ></state-history-charts>
               `}
         </div>
