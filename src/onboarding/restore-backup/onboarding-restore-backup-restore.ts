@@ -111,7 +111,12 @@ class OnboardingRestoreBackupRestore extends LitElement {
       button.actionSuccess();
     } catch (err: any) {
       button.actionError();
-      this._error = err.message || "Unknown error occurred";
+      if (err.body?.message === "incorrect_password") {
+        this._encryptionKeyWrong = true;
+      } else {
+        this._error =
+          err.body?.message || err.message || "Unknown error occurred";
+      }
     }
 
     button.progress = false;
@@ -123,7 +128,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
       haStyle,
       css`
         :host {
-          width: 100%;
+          padding: 28px 20px 0;
         }
         .card-header {
           padding-bottom: 8px;

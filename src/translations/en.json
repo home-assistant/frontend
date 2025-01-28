@@ -8218,6 +8218,7 @@
           "restore_no_home_assistant": "[%key:supervisor::backup::restore_no_home_assistant%]",
           "in_progress": "Restore in progress",
           "failed": "Restore failed",
+          "failed_description": "The last restore attempt failed. Please try it again.",
           "upload_supports": "Supports .TAR files",
           "upload_drop": "[%key:ui::components::file-upload::secondary%]",
           "show_log": "Show full log",
@@ -8242,7 +8243,12 @@
           "retry": "Retry",
           "restore_start_failed": "[%key:supervisor::backup::restore_start_failed%]",
           "no_backup_found": "[%key:supervisor::backup::no_backup_found%]",
-          "unnamed_backup": "[%key:supervisor::backup::unnamed_backup%]"
+          "unnamed_backup": "[%key:supervisor::backup::unnamed_backup%]",
+          "return_to_onboarding": {
+            "title": "Return to onboarding",
+            "text": "Are you sure you want to cancel the restore process and return to the onboarding?",
+            "yes": "Yes return"
+          }
         }
       },
       "custom": {

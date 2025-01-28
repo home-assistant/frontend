@@ -81,7 +81,10 @@ class OnboardingRestoreBackupUpload extends LitElement {
       const { backup_id } = await uploadBackup(file, agentIds);
       fireEvent(this, "backup-uploaded", { backupId: backup_id });
     } catch (err: any) {
-      this._error = err.message;
+      this._error =
+        typeof err.body === "string"
+          ? err.body
+          : err.body?.message || err.message || "Unknown error occurred";
       this._uploading = false;
     }
   }

@@ -20,20 +20,6 @@ class OnboardingRestoreBackupDetails extends LitElement {
 
   render() {
     return html`
-      ${this.backup.homeassistant_included
-        ? html`<ha-backup-details-restore
-            .backup=${this.backup}
-            .localize=${this.localize}
-            ?restore-disabled=${!this.backup.homeassistant_included}
-            ?addons-disabled=${!this.supervisor}
-          ></ha-backup-details-restore>`
-        : html`
-            <ha-alert alert-type="warning">
-              ${this.localize(
-                "ui.panel.page-onboarding.restore.details.home_assistant_missing"
-              )}
-            </ha-alert>
-          `}
       ${this.backup.homeassistant_included &&
       !this.supervisor &&
       this.backup.addons.length > 0
@@ -45,11 +31,21 @@ class OnboardingRestoreBackupDetails extends LitElement {
             </ha-alert>
           `
         : nothing}
-      <ha-backup-details-summary
-        show-upload-another
-        .backup=${this.backup}
-        .localize=${this.localize}
-      ></ha-backup-details-summary>
+      ${this.backup.homeassistant_included
+        ? html`<ha-backup-details-restore
+            .backup=${this.backup}
+            .localize=${this.localize}
+            ?restore-disabled=${!this.backup.homeassistant_included}
+            ?addons-disabled=${!this.supervisor}
+            ha-required
+          ></ha-backup-details-restore>`
+        : html`
+            <ha-alert alert-type="warning">
+              ${this.localize(
+                "ui.panel.page-onboarding.restore.details.home_assistant_missing"
+              )}
+            </ha-alert>
+          `}
     `;
   }
 

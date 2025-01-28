@@ -15,6 +15,7 @@ import { navigate } from "../common/navigate";
 import { onBoardingStyles } from "./styles";
 import { fetchBackupOnboardingInfo } from "../data/backup_onboarding";
 import type { BackupContentExtended, BackupData } from "../data/backup";
+import { showConfirmationDialog } from "../dialogs/generic/show-dialog-box";
 
 const STORAGE_BACKUP_ID_KEY = "onboarding-restore-backup-backup-id";
 
@@ -35,18 +36,30 @@ class OnboardingRestoreBackup extends LitElement {
 
   @state() private _error?: string;
 
+  @state() private _failed?: boolean;
+
   protected render(): TemplateResult {
     return html`
       <ha-icon-button-arrow-prev
         .label=${this.localize("ui.panel.page-onboarding.restore.no_backup_found")}
         @click=${this._back}
-        .disabled=${this._view === "restore"}
       ></ha-icon-button-arrow-prev>
       </ha-icon-button>
       <h1>${this.localize("ui.panel.page-onboarding.restore.header")}</h1>
       ${
         this._error
           ? html` <ha-alert alert-type="error">${this._error}</ha-alert>`
+          : nothing
+      }
+      ${
+        this._failed
+          ? html`<ha-alert
+              alert-type="error"
+              .title=${this.localize("ui.panel.page-onboarding.restore.failed")}
+              >${this.localize(
+                "ui.panel.page-onboarding.restore.failed_description"
+              )}</ha-alert
+            >`
           : nothing
       }
       ${
@@ -72,7 +85,6 @@ class OnboardingRestoreBackup extends LitElement {
           ? html`<onboarding-restore-backup-details
               .localize=${this.localize}
               .backup=${this._backup!}
-              @show-backup-upload=${this._reupload}
               @backup-restore=${this._restore}
               ?supervisor=${this.supervisor}
             ></onboarding-restore-backup-details>`
@@ -86,6 +98,16 @@ class OnboardingRestoreBackup extends LitElement {
               ?supervisor=${this.supervisor}
               .selectedData=${this._selectedData!}
             ></onboarding-restore-backup-restore>`
+          : nothing
+      }
+      ${
+        ["details", "restore"].includes(this._view) && this._backup
+          ? html` <ha-backup-details-summary
+              show-upload-another
+              .backup=${this._backup}
+              .localize=${this.localize}
+              @show-backup-upload=${this._reupload}
+            ></ha-backup-details-summary>`
           : nothing
       }
     `;
@@ -102,6 +124,14 @@ class OnboardingRestoreBackup extends LitElement {
       const backupInfo = await fetchBackupOnboardingInfo();
       const backupId = localStorage.getItem(STORAGE_BACKUP_ID_KEY);
 
+      const failedRestore =
+        backupInfo.last_non_idle_event?.manager_state === "restore_backup" &&
+        backupInfo.last_non_idle_event?.state === "failed";
+
+      if (failedRestore) {
+        this._failed = true;
+      }
+
       if (!backupInfo.last_non_idle_event || !backupId) {
         this._view = "upload";
         return;
@@ -113,7 +143,8 @@ class OnboardingRestoreBackup extends LitElement {
 
       if (
         this._backup &&
-        backupInfo.last_non_idle_event.manager_state === "receive_backup"
+        (backupInfo.last_non_idle_event.manager_state === "receive_backup" ||
+          failedRestore)
       ) {
         this._view = "details";
         return;
@@ -121,6 +152,7 @@ class OnboardingRestoreBackup extends LitElement {
 
       if (
         this._backup &&
+        this._selectedData &&
         backupInfo.last_non_idle_event.manager_state === "restore_backup"
       ) {
         this._view = "restore";
@@ -143,8 +175,27 @@ class OnboardingRestoreBackup extends LitElement {
   }
 
   private _back() {
-    // TODO add ha confirm when there is a backup uploaded
-    navigate(`${location.pathname}?${removeSearchParam("page")}`);
+    if (this._view === "upload") {
+      navigate(`${location.pathname}?${removeSearchParam("page")}`);
+    } else {
+      showConfirmationDialog(this, {
+        title: this.localize(
+          "ui.panel.page-onboarding.restore.return_to_onboarding.title"
+        ),
+        text: this.localize(
+          "ui.panel.page-onboarding.restore.return_to_onboarding.text"
+        ),
+        confirmText: this.localize(
+          "ui.panel.page-onboarding.restore.return_to_onboarding.yes"
+        ),
+        dismissText: this.localize("ui.panel.page-onboarding.restore.cancel"),
+        confirm: () => {
+          setTimeout(() => {
+            navigate(`${location.pathname}?${removeSearchParam("page")}`);
+          });
+        },
+      });
+    }
   }
 
   private _restore(ev: CustomEvent) {
@@ -181,6 +232,9 @@ class OnboardingRestoreBackup extends LitElement {
         display: flex;
         justify-content: center;
         padding: 32px;
+      }
+      ha-backup-details-summary {
+        margin: 0;
       }
     `,
   ];

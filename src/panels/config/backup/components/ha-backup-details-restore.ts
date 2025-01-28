@@ -33,7 +33,22 @@ class HaBackupDetailsRestore extends LitElement {
   @property({ type: Boolean, attribute: "addons-disabled" })
   public addonsDisabled = false;
 
+  @property({ type: Boolean, attribute: "ha-required" })
+  public haRequired = false;
+
   @state() private _selectedData?: BackupData;
+
+  protected willUpdate() {
+    if (!this.hasUpdated && this.haRequired) {
+      this._selectedData = {
+        homeassistant_included: true,
+        folders: [],
+        addons: [],
+        homeassistant_version: this.backup.homeassistant_version,
+        database_included: this.backup.database_included,
+      };
+    }
+  }
 
   render() {
     const localize = this.localize || this.hass!.localize;
@@ -51,6 +66,7 @@ class HaBackupDetailsRestore extends LitElement {
             .value=${this._selectedData}
             @value-changed=${this._selectedBackupChanged}
             ?addons-disabled=${this.addonsDisabled}
+            .requiredItems=${this.haRequired ? ["config"] : []}
           >
           </ha-backup-data-picker>
         </div>
@@ -98,7 +114,6 @@ class HaBackupDetailsRestore extends LitElement {
       margin: 0 auto;
       gap: 24px;
       display: grid;
-      margin-bottom: 24px;
     }
     .card-content {
       padding: 0 20px;

@@ -58,6 +58,9 @@ export class HaBackupDataPicker extends LitElement {
   @property({ type: Boolean, attribute: "addons-disabled" })
   public addonsDisabled = false;
 
+  @property({ type: Array, attribute: "required-items" })
+  public requiredItems: string[] = [];
+
   @state() public _addonIcons: Record<string, boolean> = {};
 
   protected firstUpdated(changedProps: PropertyValues): void {
@@ -257,6 +260,7 @@ export class HaBackupDataPicker extends LitElement {
                   selectedItems.homeassistant.length <
                     homeAssistantItems.length}
                   @change=${this._sectionChanged}
+                  ?disabled=${this.requiredItems.length > 0}
                 ></ha-checkbox>
               </ha-formfield>
               <div class="items">
@@ -276,6 +280,9 @@ export class HaBackupDataPicker extends LitElement {
                           item.id
                         )}
                         @change=${this._homeassistantChanged}
+                        ) || this.requiredItems.includes(item.id)}
+                        ?disabled=${this.requiredItems.includes(item.id)}
+                        .section=${"homeassistant"}
                       ></ha-checkbox>
                     </ha-formfield>
                   `
