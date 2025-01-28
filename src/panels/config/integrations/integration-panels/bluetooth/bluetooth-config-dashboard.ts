@@ -160,7 +160,9 @@ export class BluetoothConfigDashboard extends LitElement {
           "ui.panel.config.bluetooth.used_connection_slot_allocations"
         )}
         .value=${this._getUsedAllocations(allocationsUsed, allocationsTotal)}
-        .tooltip=${`${allocationsUsed}/${allocationsTotal}`}
+        .tooltip=${allocations.allocated.length > 0
+          ? `${allocationsUsed}/${allocationsTotal} (${allocations.allocated.join(", ")})`
+          : `${allocationsUsed}/${allocationsTotal}`}
       ></ha-metric>
     `;
   }
