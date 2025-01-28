@@ -293,7 +293,7 @@ export class StatisticsChart extends LitElement {
     let colorIndex = 0;
     const statisticsData = Object.entries(this.statisticsData);
     const totalDataSets: typeof this._chartData = [];
-    const legendData: string[] = [];
+    const legendData: { name: string; color: string }[] = [];
     const statisticIds: string[] = [];
     let endTime: Date;
 
@@ -344,7 +344,7 @@ export class StatisticsChart extends LitElement {
 
       // The datasets for the current statistic
       const statDataSets: (LineSeriesOption | BarSeriesOption)[] = [];
-      const statLegendData: string[] = [];
+      const statLegendData: { name: string; color: string }[] = [];
 
       const pushData = (
         start: Date,
@@ -413,7 +413,7 @@ export class StatisticsChart extends LitElement {
               ? type === "mean"
               : displayedLegend === false;
             if (showLegend) {
-              statLegendData.push(name);
+              statLegendData.push({ name, color });
             }
             displayedLegend = displayedLegend || showLegend;
           }
@@ -495,11 +495,12 @@ export class StatisticsChart extends LitElement {
       this.unit = unit;
     }
 
-    legendData.forEach((name) => {
+    legendData.forEach(({ name, color }) => {
       // Add an empty series for the legend
       totalDataSets.push({
         id: name + "-legend",
         name: name,
+        color,
         type: this.chartType,
         data: [],
       });
@@ -508,7 +509,7 @@ export class StatisticsChart extends LitElement {
     this._chartData = totalDataSets;
     if (legendData.length !== this._legendData.length) {
       // only update the legend if it has changed or it will trigger options update
-      this._legendData = legendData;
+      this._legendData = legendData.map(({ name }) => name);
     }
     this._statisticIds = statisticIds;
   }
