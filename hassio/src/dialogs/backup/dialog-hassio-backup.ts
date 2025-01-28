@@ -43,7 +43,7 @@ class HassioBackupDialog
   extends LitElement
   implements HassDialog<HassioBackupDialogParams>
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _error?: string;
 
