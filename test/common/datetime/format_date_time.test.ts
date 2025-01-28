@@ -49,6 +49,20 @@ describe("formatDateTime", () => {
       "November 18, 2017 at 23:12"
     );
   });
+
+  it("Formats date times without optional params", () => {
+    assert.strictEqual(
+      formatDateTime(dateObj),
+      new Intl.DateTimeFormat(undefined, {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hourCycle: "h23",
+      }).format(dateObj)
+    );
+  });
 });
 
 describe("formatDateTimeWithSeconds", () => {

@@ -9,20 +9,23 @@ import { useAmPm } from "./use_am_pm";
 // August 9, 2021, 8:23 AM
 export const formatDateTime = (
   dateObj: Date,
-  locale: FrontendLocaleData,
-  config: HassConfig
-) => formatDateTimeMem(locale, config.time_zone).format(dateObj);
+  locale?: FrontendLocaleData,
+  config?: HassConfig
+) => formatDateTimeMem(locale, config?.time_zone).format(dateObj);
 
 const formatDateTimeMem = memoizeOne(
-  (locale: FrontendLocaleData, serverTimeZone: string) =>
-    new Intl.DateTimeFormat(locale.language, {
+  (locale?: FrontendLocaleData, serverTimeZone?: string) =>
+    new Intl.DateTimeFormat(locale ? locale.language : undefined, {
       year: "numeric",
       month: "long",
       day: "numeric",
-      hour: useAmPm(locale) ? "numeric" : "2-digit",
+      hour: locale && useAmPm(locale) ? "numeric" : "2-digit",
       minute: "2-digit",
-      hourCycle: useAmPm(locale) ? "h12" : "h23",
-      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
+      hourCycle: locale && useAmPm(locale) ? "h12" : "h23",
+      timeZone:
+        locale && serverTimeZone
+          ? resolveTimeZone(locale.time_zone, serverTimeZone)
+          : undefined,
     })
 );
 
