@@ -14,9 +14,14 @@ import "../../../../../components/ha-icon-button";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
-import type { BluetoothDeviceData } from "../../../../../data/bluetooth";
-
-import { subscribeBluetoothAdvertisements } from "../../../../../data/bluetooth";
+import type {
+  BluetoothDeviceData,
+  BluetoothScannersDetails,
+} from "../../../../../data/bluetooth";
+import {
+  subscribeBluetoothAdvertisements,
+  subscribeBluetoothScannersDetails,
+} from "../../../../../data/bluetooth";
 import { showBluetoothDeviceInfoDialog } from "./show-dialog-bluetooth-device-info";
 
 @customElement("bluetooth-advertisement-monitor")
@@ -31,15 +36,25 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
 
   @state() private _data: BluetoothDeviceData[] = [];
 
-  private _unsub?: UnsubscribeFunc;
+  @state() private _scanners: BluetoothScannersDetails = {};
+
+  private _unsub_advertisements?: UnsubscribeFunc;
+
+  private _unsub_scanners?: UnsubscribeFunc;
 
   public connectedCallback(): void {
     super.connectedCallback();
     if (this.hass) {
-      this._unsub = subscribeBluetoothAdvertisements(
+      this._unsub_advertisements = subscribeBluetoothAdvertisements(
         this.hass.connection,
         (data) => {
           this._data = data;
+        }
+      );
+      this._unsub_scanners = subscribeBluetoothScannersDetails(
+        this.hass.connection,
+        (scanners) => {
+          this._scanners = scanners;
         }
       );
     }
@@ -47,9 +62,13 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    if (this._unsub) {
-      this._unsub();
-      this._unsub = undefined;
+    if (this._unsub_advertisements) {
+      this._unsub_advertisements();
+      this._unsub_advertisements = undefined;
+    }
+    if (this._unsub_scanners) {
+      this._unsub_scanners();
+      this._unsub_scanners = undefined;
     }
   }
 
