@@ -225,14 +225,6 @@ export class HaChartBase extends LitElement {
 
   private _createOptions(): ECOption {
     const darkMode = this._themes.darkMode ?? false;
-    const xAxis = Array.isArray(this.options?.xAxis)
-      ? this.options?.xAxis
-      : [this.options?.xAxis];
-    const yAxis = Array.isArray(this.options?.yAxis)
-      ? this.options?.yAxis
-      : [this.options?.yAxis];
-    // we should create our own theme but this is a quick fix for now
-    const splitLineStyle = darkMode ? { color: "#333" } : {};
 
     const options = {
       backgroundColor: "transparent",
@@ -245,36 +237,11 @@ export class HaChartBase extends LitElement {
       ...this.options,
       legend: this.options?.legend
         ? {
-            inactiveColor: darkMode ? "#444" : undefined,
+            // we should create our own theme but this is a quick fix for now
+            inactiveColor: darkMode ? "#444" : "#ccc",
             ...this.options.legend,
           }
         : undefined,
-      xAxis: xAxis.map((axis) =>
-        axis
-          ? {
-              ...axis,
-              splitLine: axis.splitLine
-                ? {
-                    ...axis.splitLine,
-                    lineStyle: splitLineStyle,
-                  }
-                : undefined,
-            }
-          : undefined
-      ) as XAXisOption[],
-      yAxis: yAxis.map((axis) =>
-        axis
-          ? {
-              ...axis,
-              splitLine: axis.splitLine
-                ? {
-                    ...axis.splitLine,
-                    lineStyle: splitLineStyle,
-                  }
-                : undefined,
-            }
-          : undefined
-      ) as YAXisOption[],
     };
 
     const isMobile = window.matchMedia(
