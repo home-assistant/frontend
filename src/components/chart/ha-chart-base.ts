@@ -243,6 +243,12 @@ export class HaChartBase extends LitElement {
       },
       dataZoom: this._getDataZoomConfig(),
       ...this.options,
+      legend: this.options?.legend
+        ? {
+            inactiveColor: darkMode ? "#444" : undefined,
+            ...this.options.legend,
+          }
+        : undefined,
       xAxis: xAxis.map((axis) =>
         axis
           ? {
