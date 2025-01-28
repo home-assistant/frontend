@@ -94,6 +94,7 @@ export class HaPanelLogbook extends LitElement {
               .startDate=${this._time.range[0]}
               .endDate=${this._time.range[1]}
               @change=${this._dateRangeChanged}
+              time-picker
             ></ha-date-range-picker>
 
             <ha-target-picker

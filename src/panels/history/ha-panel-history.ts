@@ -172,6 +172,7 @@ class HaPanelHistory extends LitElement {
               .startDate=${this._startDate}
               .endDate=${this._endDate}
               extended-presets
+              time-picker
               @change=${this._dateRangeChanged}
             ></ha-date-range-picker>
             <ha-target-picker
