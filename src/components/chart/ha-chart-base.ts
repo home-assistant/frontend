@@ -165,7 +165,10 @@ export class HaChartBase extends LitElement {
     try {
       const echarts = (await import("../../resources/echarts")).default;
 
-      this.chart = echarts.init(container);
+      this.chart = echarts.init(
+        container,
+        this.hass.themes?.darkMode ? "dark" : "light"
+      );
       this.chart.on("legendselectchanged", (params: any) => {
         if (this.externalHidden) {
           const isSelected = params.selected[params.name];
@@ -218,6 +221,7 @@ export class HaChartBase extends LitElement {
     const splitLineStyle = darkMode ? { color: "#333" } : {};
 
     const options = {
+      backgroundColor: "transparent",
       animation: !this._reducedMotion,
       darkMode,
       aria: {
