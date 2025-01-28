@@ -21,6 +21,7 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import type {
+  BackupAgent,
   BackupConfig,
   BackupContentExtended,
   BackupData,
@@ -69,6 +70,8 @@ class HaConfigBackupDetails extends LitElement {
   @property({ attribute: "backup-id" }) public backupId!: string;
 
   @property({ attribute: false }) public config?: BackupConfig;
+
+  @property({ attribute: false }) public agents: BackupAgent[] = [];
 
   @state() private _backup?: BackupContentExtended | null;
 
@@ -232,7 +235,7 @@ class HaConfigBackupDetails extends LitElement {
                           const name = computeBackupAgentName(
                             this.hass.localize,
                             agentId,
-                            this._backup!.agent_ids
+                            this.agents
                           );
 
                           return html`
