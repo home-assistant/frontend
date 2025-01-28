@@ -55,7 +55,7 @@ interface Agent {
 
 const computeAgents = (backup: BackupContentExtended) => {
   const agentIds = Object.keys(backup.agents);
-  const failedAgentIds = backup.failed_agent_ids || [];
+  const failedAgentIds = ["kitchen_sink.syncer"];
   return [
     ...agentIds.filter((id) => !failedAgentIds.includes(id)),
     ...failedAgentIds,
@@ -63,8 +63,8 @@ const computeAgents = (backup: BackupContentExtended) => {
     .map<Agent>((id) => ({
       id,
       success: !failedAgentIds.includes(id),
-      protected: backup.agents[id].protected,
-      size: backup.agents[id].size,
+      protected: backup.agents[id]?.protected ?? false,
+      size: backup.agents[id]?.size ?? 0,
     }))
     .sort((a, b) => compareAgents(a.id, b.id));
 };
@@ -284,14 +284,15 @@ class HaConfigBackupDetails extends LitElement {
                                       ? html`
                                           <div slot="supporting-text">
                                             <span class="dot warning"></span>
-                                            <span>
-                                              ${this.hass.localize(
-                                                "ui.panel.config.backup.details.locations.encryption_turned_off"
-                                              )}
-                                            </span>
+                                            <span> Unencrypted </span>
                                           </div>
                                         `
-                                      : nothing
+                                      : html`
+                                          <div slot="supporting-text">
+                                            <span class="dot success"></span>
+                                            <span> Encrypted </span>
+                                          </div>
+                                        `
                                 }
                               </div>
                               ${
