@@ -33,7 +33,11 @@ import "../../../components/ha-icon-next";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
-import type { BackupConfig, BackupContent } from "../../../data/backup";
+import type {
+  BackupAgent,
+  BackupConfig,
+  BackupContent,
+} from "../../../data/backup";
 import {
   computeBackupAgentName,
   deleteBackup,
@@ -85,6 +89,8 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public backups: BackupContent[] = [];
 
   @property({ attribute: false }) public config?: BackupConfig;
+
+  @property({ attribute: false }) public agents: BackupAgent[] = [];
 
   @state() private _selected: string[] = [];
 
@@ -169,7 +175,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
               const name = computeBackupAgentName(
                 this.hass.localize,
                 agentId,
-                backup.agent_ids
+                this.agents
               );
               if (isLocalAgent(agentId)) {
                 return html`

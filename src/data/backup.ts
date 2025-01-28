@@ -82,6 +82,7 @@ export interface BackupMutableConfig {
 
 export interface BackupAgent {
   agent_id: string;
+  name: string;
 }
 
 export interface BackupContent {
@@ -279,13 +280,18 @@ export const isNetworkMountAgent = (agentId: string) => {
 export const computeBackupAgentName = (
   localize: LocalizeFunc,
   agentId: string,
-  agentIds?: string[]
+  agents: BackupAgent[]
 ) => {
   if (isLocalAgent(agentId)) {
     return localize("ui.panel.config.backup.agents.local_agent");
   }
-  const [domain, name] = agentId.split(".");
 
+  const agent = agents.find((a) => a.agent_id === agentId);
+
+  const domain = agentId.split(".")[0];
+  const name = agent ? agent.name : agentId.split(".")[1];
+
+  // If it's a network mount agent, only show the name
   if (isNetworkMountAgent(agentId)) {
     return name;
   }
@@ -293,9 +299,8 @@ export const computeBackupAgentName = (
   const domainName = domainToName(localize, domain);
 
   // If there are multiple agents for a domain, show the name
-  const showName = agentIds
-    ? agentIds.filter((a) => a.split(".")[0] === domain).length > 1
-    : true;
+  const showName =
+    agents.filter((a) => a.agent_id.split(".")[0] === domain).length > 1;
 
   return showName ? `${domainName}: ${name}` : domainName;
 };
