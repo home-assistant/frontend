@@ -236,6 +236,10 @@ export class StatisticsChart extends LitElement {
       yAxis: {
         type: this.logarithmicScale ? "log" : "value",
         name: this.unit,
+        nameGap: 2,
+        nameTextStyle: {
+          align: "left",
+        },
         position: computeRTL(this.hass) ? "right" : "left",
         // @ts-ignore
         scale: this.chartType !== "bar",
