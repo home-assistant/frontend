@@ -49,25 +49,20 @@ class HaBackupDetailsSummary extends LitElement {
                 ${bytesToString(this.backup.size)}
               </span>
             </ha-md-list-item>
-            ${this.hass
-              ? // TODO - make this work in onboarding
-                html`
-                  <ha-md-list-item>
-                    <span slot="headline">
-                      ${localize(
-                        "ui.panel.page-onboarding.restore.details.summary.created"
-                      )}
-                    </span>
-                    <span slot="supporting-text">
-                      ${formatDateTime(
-                        new Date(this.backup.date),
-                        this.hass.locale,
-                        this.hass.config
-                      )}
-                    </span>
-                  </ha-md-list-item>
-                `
-              : nothing}
+            <ha-md-list-item>
+              <span slot="headline">
+                ${localize(
+                  "ui.panel.page-onboarding.restore.details.summary.created"
+                )}
+              </span>
+              <span slot="supporting-text">
+                ${formatDateTime(
+                  new Date(this.backup.date),
+                  this.hass?.locale,
+                  this.hass?.config
+                )}
+              </span>
+            </ha-md-list-item>
             <ha-md-list-item>
               <span slot="headline">
                 ${localize(

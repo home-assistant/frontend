@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import "./restore-backup/onboarding-restore-backup-upload";
 import "./restore-backup/onboarding-restore-backup-details";
 import "./restore-backup/onboarding-restore-backup-restore";
+import "./restore-backup/onboarding-restore-backup-status";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-card";
 import "../components/ha-icon-button-arrow-prev";
@@ -13,11 +14,16 @@ import "./onboarding-loading";
 import { removeSearchParam } from "../common/url/search-params";
 import { navigate } from "../common/navigate";
 import { onBoardingStyles } from "./styles";
-import { fetchBackupOnboardingInfo } from "../data/backup_onboarding";
+import {
+  fetchBackupOnboardingInfo,
+  type BackupOnboardingInfo,
+} from "../data/backup_onboarding";
 import type { BackupContentExtended, BackupData } from "../data/backup";
 import { showConfirmationDialog } from "../dialogs/generic/show-dialog-box";
 
 const STORAGE_BACKUP_ID_KEY = "onboarding-restore-backup-backup-id";
+const STORAGE_RESTORE_RUNNING = "onboarding-restore-running";
+const STATUS_INTERVAL_IN_MS = 5000;
 
 @customElement("onboarding-restore-backup")
 class OnboardingRestoreBackup extends LitElement {
@@ -27,10 +33,16 @@ class OnboardingRestoreBackup extends LitElement {
 
   @property({ type: Boolean }) public supervisor = false;
 
-  @state() private _view: "loading" | "upload" | "details" | "restore" =
-    "loading";
+  @state() private _view:
+    | "loading"
+    | "upload"
+    | "details"
+    | "restore"
+    | "status" = "loading";
 
   @state() private _backup?: BackupContentExtended;
+
+  @state() private _backupInfo?: BackupOnboardingInfo;
 
   @state() private _selectedData?: BackupData;
 
@@ -40,10 +52,16 @@ class OnboardingRestoreBackup extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-icon-button-arrow-prev
-        .label=${this.localize("ui.panel.page-onboarding.restore.no_backup_found")}
-        @click=${this._back}
-      ></ha-icon-button-arrow-prev>
+      ${
+        this._view !== "status" || this._failed
+          ? html` <ha-icon-button-arrow-prev
+              .label=${this.localize(
+                "ui.panel.page-onboarding.restore.no_backup_found"
+              )}
+              @click=${this._back}
+            ></ha-icon-button-arrow-prev>`
+          : nothing
+      }
       </ha-icon-button>
       <h1>${this.localize("ui.panel.page-onboarding.restore.header")}</h1>
       ${
@@ -52,12 +70,12 @@ class OnboardingRestoreBackup extends LitElement {
           : nothing
       }
       ${
-        this._failed
+        this._failed && this._view !== "status"
           ? html`<ha-alert
               alert-type="error"
               .title=${this.localize("ui.panel.page-onboarding.restore.failed")}
               >${this.localize(
-                "ui.panel.page-onboarding.restore.failed_description"
+                `ui.panel.page-onboarding.restore.${this._backupInfo?.last_non_idle_event?.reason === "password_incorrect" ? "failed_wrong_password_description" : "failed_description"}`
               )}</ha-alert
             >`
           : nothing
@@ -97,7 +115,16 @@ class OnboardingRestoreBackup extends LitElement {
               .backup=${this._backup!}
               ?supervisor=${this.supervisor}
               .selectedData=${this._selectedData!}
+              @restore-started=${this._getRestoreStatus}
             ></onboarding-restore-backup-restore>`
+          : nothing
+      }
+      ${
+        this._view === "status" && this._backupInfo
+          ? html`<onboarding-restore-backup-status
+              .localize=${this.localize}
+              .backupInfo=${this._backupInfo}
+            ></onboarding-restore-backup-status>`
           : nothing
       }
       ${
@@ -120,31 +147,52 @@ class OnboardingRestoreBackup extends LitElement {
   }
 
   private async _loadBackupInfo() {
+    const backupId = localStorage.getItem(STORAGE_BACKUP_ID_KEY);
+    const restoreRunning = localStorage.getItem(STORAGE_RESTORE_RUNNING);
+
     try {
-      const backupInfo = await fetchBackupOnboardingInfo();
-      const backupId = localStorage.getItem(STORAGE_BACKUP_ID_KEY);
+      const {
+        last_non_idle_event: lastNonIdleEvent,
+        state: currentState,
+        backups,
+      } = await fetchBackupOnboardingInfo();
+
+      this._backupInfo = {
+        state: currentState,
+        last_non_idle_event: lastNonIdleEvent,
+      };
+
+      if (backupId) {
+        this._backup = backups.find(({ backup_id }) => backup_id === backupId);
+      }
 
       const failedRestore =
-        backupInfo.last_non_idle_event?.manager_state === "restore_backup" &&
-        backupInfo.last_non_idle_event?.state === "failed";
+        lastNonIdleEvent?.manager_state === "restore_backup" &&
+        lastNonIdleEvent?.state === "failed";
 
       if (failedRestore) {
         this._failed = true;
       }
 
-      if (!backupInfo.last_non_idle_event || !backupId) {
+      if (restoreRunning) {
+        this._view = "status";
+        if (failedRestore || currentState !== "restore_backup") {
+          this._failed = true;
+          localStorage.removeItem(STORAGE_RESTORE_RUNNING);
+        } else {
+          this._scheduleLoadBackupInfo();
+        }
+        return;
+      }
+
+      if (!lastNonIdleEvent || !backupId) {
         this._view = "upload";
         return;
       }
 
-      this._backup = backupInfo.backups.find(
-        ({ backup_id }) => backup_id === backupId
-      );
-
       if (
         this._backup &&
-        (backupInfo.last_non_idle_event.manager_state === "receive_backup" ||
-          failedRestore)
+        (lastNonIdleEvent.manager_state === "receive_backup" || failedRestore)
       ) {
         this._view = "details";
         return;
@@ -153,7 +201,7 @@ class OnboardingRestoreBackup extends LitElement {
       if (
         this._backup &&
         this._selectedData &&
-        backupInfo.last_non_idle_event.manager_state === "restore_backup"
+        lastNonIdleEvent.manager_state === "restore_backup"
       ) {
         this._view = "restore";
         return;
@@ -162,11 +210,27 @@ class OnboardingRestoreBackup extends LitElement {
       // fallback to upload
       this._view = "upload";
     } catch (err: any) {
+      if (restoreRunning) {
+        if (err.error === "Request error") {
+          this._scheduleLoadBackupInfo();
+          return;
+        }
+
+        // core seems to be back up restored
+        if (err.status_code === 404) {
+          localStorage.removeItem(STORAGE_RESTORE_RUNNING);
+          localStorage.removeItem(STORAGE_BACKUP_ID_KEY);
+          location.reload();
+        }
+      }
+
       this._error = err?.message || "Cannot get backup info";
       this._view = "upload";
-
-      // TODO handle no connection error during restore process
     }
+  }
+
+  private _scheduleLoadBackupInfo() {
+    setTimeout(() => this._loadBackupInfo(), STATUS_INTERVAL_IN_MS);
   }
 
   private async _backupUploaded(ev: CustomEvent) {
@@ -174,8 +238,17 @@ class OnboardingRestoreBackup extends LitElement {
     await this._loadBackupInfo();
   }
 
+  private async _getRestoreStatus() {
+    if (this._backupInfo) {
+      this._backupInfo.state = "restore_backup";
+    }
+    this._view = "status";
+    localStorage.setItem(STORAGE_RESTORE_RUNNING, "true");
+    await this._loadBackupInfo();
+  }
+
   private _back() {
-    if (this._view === "upload") {
+    if (this._view === "upload" || (this._view === "status" && this._failed)) {
       navigate(`${location.pathname}?${removeSearchParam("page")}`);
     } else {
       showConfirmationDialog(this, {

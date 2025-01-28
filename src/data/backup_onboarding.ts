@@ -6,14 +6,27 @@ import type {
   RestoreBackupState,
 } from "./backup_manager";
 
-export interface BackupOnboardingConfig {
-  backups: BackupContentExtended[];
+type RestoreFailedReason =
+  | "backup_agent_error"
+  | "backup_reader_writer_error"
+  | "password_incorrect"
+  | "decrypt_on_download_not_supported"
+  | "backup_manager_error"
+  | "unknown"
+  | "unknown_error";
+
+export interface BackupOnboardingInfo {
   state: BackupManagerState;
   last_non_idle_event?: {
     manager_state: BackupManagerState;
     stage: RestoreBackupStage | null;
     state: RestoreBackupState;
+    reason: RestoreFailedReason | null;
   } | null;
+}
+
+export interface BackupOnboardingConfig extends BackupOnboardingInfo {
+  backups: BackupContentExtended[];
 }
 
 export const fetchBackupOnboardingInfo = async () =>

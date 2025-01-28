@@ -14,7 +14,13 @@ import {
 } from "../../data/backup";
 import { restoreOnboardingBackup } from "../../data/backup_onboarding";
 import type { HaProgressButton } from "../../components/buttons/ha-progress-button";
+import { fireEvent } from "../../common/dom/fire_event";
 
+declare global {
+  interface HASSDomEvents {
+    "restore-started";
+  }
+}
 @customElement("onboarding-restore-backup-restore")
 class OnboardingRestoreBackupRestore extends LitElement {
   @property({ attribute: false }) public localize!: LocalizeFunc;
@@ -109,6 +115,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
         restore_folders: this.selectedData.folders,
       });
       button.actionSuccess();
+      fireEvent(this, "restore-started");
     } catch (err: any) {
       button.actionError();
       if (err.body?.message === "incorrect_password") {
@@ -117,10 +124,9 @@ class OnboardingRestoreBackupRestore extends LitElement {
         this._error =
           err.body?.message || err.message || "Unknown error occurred";
       }
+      button.progress = false;
+      this._loading = false;
     }
-
-    button.progress = false;
-    this._loading = false;
   }
 
   static get styles(): CSSResultGroup {
