@@ -403,7 +403,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         (category) =>
           html`<ha-md-menu-item
             .value=${category.category_id}
-            @click=${this._handleBulkCategory}
+            .clickAction=${this._handleBulkCategory}
           >
             ${category.icon
               ? html`<ha-icon slot="start" .icon=${category.icon}></ha-icon>`
@@ -411,7 +411,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             <div slot="headline">${category.name}</div>
           </ha-md-menu-item>`
       )}
-      <ha-md-menu-item .value=${null} @click=${this._handleBulkCategory}>
+      <ha-md-menu-item .value=${null} .clickAction=${this._handleBulkCategory}>
         <div slot="headline">
           ${this.hass.localize(
             "ui.panel.config.automation.picker.bulk_actions.no_category"
@@ -419,7 +419,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         </div>
       </ha-md-menu-item>
       <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-      <ha-md-menu-item @click=${this._bulkCreateCategory}>
+      <ha-md-menu-item .clickAction=${this._bulkCreateCategory}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.category.editor.add")}
         </div>
@@ -456,7 +456,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         </ha-md-menu-item>`;
       })}
       <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-      <ha-md-menu-item @click=${this._bulkCreateLabel}>
+      <ha-md-menu-item .clickAction=${this._bulkCreateLabel}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.labels.add_label")}
         </div></ha-md-menu-item
@@ -466,7 +466,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         (area) =>
           html`<ha-md-menu-item
             .value=${area.area_id}
-            @click=${this._handleBulkArea}
+            .clickAction=${this._handleBulkArea}
           >
             ${area.icon
               ? html`<ha-icon slot="start" .icon=${area.icon}></ha-icon>`
@@ -477,7 +477,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             <div slot="headline">${area.name}</div>
           </ha-md-menu-item>`
       )}
-      <ha-md-menu-item .value=${null} @click=${this._handleBulkArea}>
+      <ha-md-menu-item .value=${null} .clickAction=${this._handleBulkArea}>
         <div slot="headline">
           ${this.hass.localize(
             "ui.panel.config.devices.picker.bulk_actions.no_area"
@@ -485,7 +485,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         </div>
       </ha-md-menu-item>
       <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-      <ha-md-menu-item @click=${this._bulkCreateArea}>
+      <ha-md-menu-item .clickAction=${this._bulkCreateArea}>
         <div slot="headline">
           ${this.hass.localize(
             "ui.panel.config.devices.picker.bulk_actions.add_area"
@@ -760,7 +760,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                   </ha-sub-menu>`
                 : nothing
             }
-            <ha-md-menu-item @click=${this._handleBulkEnable}>
+            <ha-md-menu-item .clickAction=${this._handleBulkEnable}>
               <ha-svg-icon slot="start" .path=${mdiToggleSwitch}></ha-svg-icon>
               <div slot="headline">
                 ${this.hass.localize(
@@ -768,7 +768,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                 )}
               </div>
             </ha-md-menu-item>
-            <ha-md-menu-item @click=${this._handleBulkDisable}>
+            <ha-md-menu-item .clickAction=${this._handleBulkDisable}>
               <ha-svg-icon
                 slot="start"
                 .path=${mdiToggleSwitchOffOutline}
@@ -1243,10 +1243,10 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     }
   }
 
-  private async _handleBulkCategory(ev) {
-    const category = ev.currentTarget.value;
+  private _handleBulkCategory = async (item) => {
+    const category = item.value;
     this._bulkAddCategory(category);
-  }
+  };
 
   private async _bulkAddCategory(category: string) {
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
@@ -1309,10 +1309,10 @@ ${rejected
     }
   }
 
-  private async _handleBulkArea(ev) {
-    const area = ev.currentTarget.value;
+  private _handleBulkArea = (item) => {
+    const area = item.value;
     this._bulkAddArea(area);
-  }
+  };
 
   private async _bulkAddArea(area: string) {
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
@@ -1339,7 +1339,7 @@ ${rejected
     }
   }
 
-  private async _bulkCreateArea() {
+  private _bulkCreateArea = async () => {
     showAreaRegistryDetailDialog(this, {
       createEntry: async (values) => {
         const area = await createAreaRegistryEntry(this.hass, values);
@@ -1347,9 +1347,9 @@ ${rejected
         return area;
       },
     });
-  }
+  };
 
-  private async _handleBulkEnable() {
+  private _handleBulkEnable = async () => {
     const promises: Promise<ServiceCallResponse>[] = [];
     this._selected.forEach((entityId) => {
       promises.push(turnOnOffEntity(this.hass, entityId, true));
@@ -1368,9 +1368,9 @@ ${rejected
         >`,
       });
     }
-  }
+  };
 
-  private async _handleBulkDisable() {
+  private _handleBulkDisable = async () => {
     const promises: Promise<ServiceCallResponse>[] = [];
     this._selected.forEach((entityId) => {
       promises.push(turnOnOffEntity(this.hass, entityId, false));
@@ -1389,9 +1389,9 @@ ${rejected
         >`,
       });
     }
-  }
+  };
 
-  private async _bulkCreateCategory() {
+  private _bulkCreateCategory = async () => {
     showCategoryRegistryDetailDialog(this, {
       scope: "automation",
       createEntry: async (values) => {
@@ -1404,9 +1404,9 @@ ${rejected
         return category;
       },
     });
-  }
+  };
 
-  private _bulkCreateLabel() {
+  private _bulkCreateLabel = () => {
     showLabelDetailDialog(this, {
       createEntry: async (values) => {
         const label = await createLabelRegistryEntry(this.hass, values);
@@ -1414,7 +1414,7 @@ ${rejected
         return label;
       },
     });
-  }
+  };
 
   private _handleSortingChanged(ev: CustomEvent) {
     this._activeSorting = ev.detail;
