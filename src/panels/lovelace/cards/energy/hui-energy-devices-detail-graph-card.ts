@@ -335,6 +335,7 @@ export class HuiEnergyDevicesDetailGraphCard
     });
     const dataset: BarSeriesOption = {
       type: "bar",
+      cursor: "default",
       id: compare ? "compare-untracked" : "untracked",
       name: this.hass.localize(
         "ui.panel.lovelace.cards.energy.energy_devices_detail_graph.untracked_consumption"
@@ -417,6 +418,7 @@ export class HuiEnergyDevicesDetailGraphCard
 
       data.push({
         type: "bar",
+        cursor: "default",
         id: compare
           ? `compare-${source.stat_consumption}`
           : source.stat_consumption,

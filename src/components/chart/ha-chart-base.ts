@@ -6,7 +6,11 @@ import { mdiRestart } from "@mdi/js";
 import type { EChartsType } from "echarts/core";
 import type { DataZoomComponentOption } from "echarts/components";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import type { XAXisOption, YAXisOption } from "echarts/types/dist/shared";
+import type {
+  ECElementEvent,
+  XAXisOption,
+  YAXisOption,
+} from "echarts/types/dist/shared";
 import { consume } from "@lit-labs/context";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HomeAssistant } from "../../types";
@@ -197,6 +201,15 @@ export class HaChartBase extends LitElement {
         const { start, end } = e.batch?.[0] ?? e;
         this._isZoomed = start !== 0 || end !== 100;
       });
+      this.chart.on("click", (e: ECElementEvent) => {
+        fireEvent(this, "chart-click", e);
+      });
+      this.chart.on("mousemove", (e: ECElementEvent) => {
+        if (e.componentType === "series" && e.componentSubType === "custom") {
+          // custom series do not support cursor style so we need to set it manually
+          this.chart?.getZr()?.setCursorStyle("default");
+        }
+      });
       this.chart.setOption({ ...this._createOptions(), series: this.data });
     } finally {
       this._loading = false;
@@ -318,5 +331,6 @@ declare global {
   interface HASSDomEvents {
     "dataset-hidden": { name: string };
     "dataset-unhidden": { name: string };
+    "chart-click": ECElementEvent;
   }
 }

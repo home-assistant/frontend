@@ -246,6 +246,7 @@ export class HuiEnergyWaterGraphCard
 
       data.push({
         type: "bar",
+        cursor: "default",
         id: compare
           ? "compare-" + source.stat_energy_from
           : source.stat_energy_from,

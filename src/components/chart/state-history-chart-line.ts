@@ -316,6 +316,7 @@ export class StateHistoryChartLine extends LitElement {
           id: nameY,
           data: [],
           type: "line",
+          cursor: "default",
           name: nameY,
           color,
           symbol: "circle",
