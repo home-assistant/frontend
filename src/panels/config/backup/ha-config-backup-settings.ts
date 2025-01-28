@@ -16,7 +16,7 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-alert";
 import "../../../components/ha-password-field";
 import "../../../components/ha-svg-icon";
-import type { BackupConfig } from "../../../data/backup";
+import type { BackupAgent, BackupConfig } from "../../../data/backup";
 import { updateBackupConfig } from "../../../data/backup";
 import type { CloudStatus } from "../../../data/cloud";
 import "../../../layouts/hass-subpage";
@@ -38,6 +38,8 @@ class HaConfigBackupSettings extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public config?: BackupConfig;
+
+  @property({ attribute: false }) public agents: BackupAgent[] = [];
 
   @state() private _config?: BackupConfig;
 
@@ -178,6 +180,7 @@ class HaConfigBackupSettings extends LitElement {
                 .hass=${this.hass}
                 .value=${this._config.create_backup.agent_ids}
                 .cloudStatus=${this.cloudStatus}
+                .agents=${this.agents}
                 @value-changed=${this._agentsConfigChanged}
               ></ha-backup-config-agents>
               ${!this._config.create_backup.agent_ids.length

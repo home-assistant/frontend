@@ -1,9 +1,14 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { BackupConfig, BackupContent } from "../../../data/backup";
+import type {
+  BackupAgent,
+  BackupConfig,
+  BackupContent,
+} from "../../../data/backup";
 import {
   compareAgents,
+  fetchBackupAgentsInfo,
   fetchBackupConfig,
   fetchBackupInfo,
 } from "../../../data/backup";
@@ -41,6 +46,8 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
 
   @state() private _backups: BackupContent[] = [];
 
+  @state() private _agents: BackupAgent[] = [];
+
   @state() private _fetching = false;
 
   @state() private _config?: BackupConfig;
@@ -54,15 +61,20 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
     this.addEventListener("ha-refresh-backup-config", () => {
       this._fetchBackupConfig();
     });
+    this.addEventListener("ha-refresh-backup-agents", () => {
+      this._fetchBackupAgents();
+    });
   }
 
   private _fetchAll() {
     this._fetching = true;
-    Promise.all([this._fetchBackupInfo(), this._fetchBackupConfig()]).finally(
-      () => {
-        this._fetching = false;
-      }
-    );
+    Promise.all([
+      this._fetchBackupInfo(),
+      this._fetchBackupConfig(),
+      this._fetchBackupAgents(),
+    ]).finally(() => {
+      this._fetching = false;
+    });
   }
 
   public connectedCallback() {
@@ -70,6 +82,7 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
     if (this.hasUpdated) {
       this._fetchBackupInfo();
       this._fetchBackupConfig();
+      this._fetchBackupAgents();
     }
   }
 
@@ -85,6 +98,11 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
   private async _fetchBackupConfig() {
     const { config } = await fetchBackupConfig(this.hass);
     this._config = config;
+  }
+
+  private async _fetchBackupAgents() {
+    const { agents } = await fetchBackupAgentsInfo(this.hass);
+    this._agents = agents.sort((a, b) => compareAgents(a.agent_id, b.agent_id));
   }
 
   protected routerOptions: RouterOptions = {
@@ -117,6 +135,7 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
     pageEl.manager = this._manager;
     pageEl.backups = this._backups;
     pageEl.config = this._config;
+    pageEl.agents = this._agents;
     pageEl.fetching = this._fetching;
 
     if (

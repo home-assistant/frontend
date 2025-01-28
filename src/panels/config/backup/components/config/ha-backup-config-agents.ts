@@ -1,18 +1,17 @@
 import { mdiHarddisk, mdiNas } from "@mdi/js";
-import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-switch";
+import type { BackupAgent } from "../../../../../data/backup";
 import {
   CLOUD_AGENT,
-  compareAgents,
   computeBackupAgentName,
-  fetchBackupAgentsInfo,
   isLocalAgent,
   isNetworkMountAgent,
 } from "../../../../../data/backup";
@@ -28,22 +27,16 @@ class HaBackupConfigAgents extends LitElement {
 
   @property({ attribute: false }) public cloudStatus!: CloudStatus;
 
-  @state() private _agentIds: string[] = [];
+  @property({ attribute: false }) public agents: BackupAgent[] = [];
 
   @state() private value?: string[];
 
-  protected firstUpdated(_changedProperties: PropertyValues): void {
-    super.firstUpdated(_changedProperties);
-    this._fetchAgents();
-  }
-
-  private async _fetchAgents() {
-    const { agents } = await fetchBackupAgentsInfo(this.hass);
-    this._agentIds = agents
-      .map((agent) => agent.agent_id)
-      .filter((id) => id !== CLOUD_AGENT || this.cloudStatus.logged_in)
-      .sort(compareAgents);
-  }
+  private _availableAgents = memoizeOne(
+    (agents: BackupAgent[], cloudStatus: CloudStatus) =>
+      agents.filter(
+        (agent) => agent.agent_id !== CLOUD_AGENT || cloudStatus.logged_in
+      )
+  );
 
   private get _value() {
     return this.value ?? DEFAULT_AGENTS;
@@ -69,16 +62,18 @@ class HaBackupConfigAgents extends LitElement {
   }
 
   protected render() {
+    const agents = this._availableAgents(this.agents, this.cloudStatus);
     return html`
-      ${this._agentIds.length > 0
+      ${agents.length > 0
         ? html`
             <ha-md-list>
-              ${this._agentIds.map((agentId) => {
+              ${agents.map((agent) => {
+                const agentId = agent.agent_id;
                 const domain = computeDomain(agentId);
                 const name = computeBackupAgentName(
                   this.hass.localize,
                   agentId,
-                  this._agentIds
+                  this.agents
                 );
                 const description = this._description(agentId);
                 const noCloudSubscription =
@@ -130,9 +125,11 @@ class HaBackupConfigAgents extends LitElement {
               })}
             </ha-md-list>
           `
-        : html`<p>
-            ${this.hass.localize("ui.panel.config.backup.agents.no_agents")}
-          </p>`}
+        : html`
+            <p>
+              ${this.hass.localize("ui.panel.config.backup.agents.no_agents")}
+            </p>
+          `}
     `;
   }
 
@@ -147,9 +144,14 @@ class HaBackupConfigAgents extends LitElement {
       this.value = this._value.filter((agent) => agent !== agentId);
     }
 
+    const availableAgents = this._availableAgents(
+      this.agents,
+      this.cloudStatus
+    );
+
     // Ensure we don't have duplicates, agents exist in the list and cloud is logged in
     this.value = [...new Set(this.value)]
-      .filter((agent) => this._agentIds.some((id) => id === agent))
+      .filter((id) => availableAgents.some((agent) => agent.agent_id === id))
       .filter(
         (id) =>
           id !== CLOUD_AGENT ||

@@ -9,7 +9,7 @@ import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
-import type { BackupConfig } from "../../../../../data/backup";
+import type { BackupAgent, BackupConfig } from "../../../../../data/backup";
 import {
   BackupScheduleRecurrence,
   computeBackupAgentName,
@@ -24,6 +24,8 @@ class HaBackupBackupsSummary extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public config!: BackupConfig;
+
+  @property({ attribute: false }) public agents!: BackupAgent[];
 
   private _configure() {
     navigate("/config/backup/settings");
@@ -160,7 +162,7 @@ class HaBackupBackupsSummary extends LitElement {
         const name = computeBackupAgentName(
           this.hass.localize,
           offsiteLocations[0],
-          offsiteLocations
+          this.agents
         );
         return this.hass.localize(
           "ui.panel.config.backup.overview.settings.locations_one",
