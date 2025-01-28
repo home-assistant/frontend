@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-alert";
@@ -43,13 +44,13 @@ class HaConfigBackupDetails extends LitElement {
 
   @state() private _error?: string;
 
-  protected firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
-
-    if (this.agentId) {
-      this._fetchAgent();
-    } else {
-      this._error = "Agent id not defined";
+  protected updated(changedProps: PropertyValues): void {
+    if (changedProps.has("agentId")) {
+      if (this.agentId) {
+        this._fetchAgent();
+      } else {
+        this._error = "Agent id not defined";
+      }
     }
   }
 
