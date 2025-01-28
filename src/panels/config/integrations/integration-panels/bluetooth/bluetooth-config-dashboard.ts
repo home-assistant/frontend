@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-code-editor";
 import "../../../../../components/ha-formfield";
@@ -11,12 +11,63 @@ import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-d
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
+import { subscribeBluetoothConnectionAllocations } from "../../../../../data/bluetooth";
+import {
+  getValueInPercentage,
+  roundWithOneDecimal,
+} from "../../../../../util/calculate";
+import "../../../../../components/ha-metric";
+import type { BluetoothAllocationsData } from "../../../../../data/bluetooth";
 
 @customElement("bluetooth-config-dashboard")
 export class BluetoothConfigDashboard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
+
+  @state() private _connectionAllocationData: BluetoothAllocationsData[] = [];
+
+  @state() private _connectionAllocationsError?: string;
+
+  private _configEntry = new URLSearchParams(window.location.search).get(
+    "config_entry"
+  );
+
+  private _unsubConnectionAllocations?: (() => Promise<void>) | undefined;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this.hass) {
+      this._subscribeBluetoothConnectionAllocations();
+    }
+  }
+
+  private async _subscribeBluetoothConnectionAllocations(): Promise<void> {
+    if (this._unsubConnectionAllocations || !this._configEntry) {
+      return;
+    }
+    try {
+      this._unsubConnectionAllocations =
+        await subscribeBluetoothConnectionAllocations(
+          this.hass.connection,
+          (data) => {
+            this._connectionAllocationData = data;
+          },
+          this._configEntry
+        );
+    } catch (err: any) {
+      this._unsubConnectionAllocations = undefined;
+      this._connectionAllocationsError = err.message;
+    }
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._unsubConnectionAllocations) {
+      this._unsubConnectionAllocations();
+      this._unsubConnectionAllocations = undefined;
+    }
+  }
 
   protected render(): TemplateResult {
     return html`
@@ -57,17 +108,68 @@ export class BluetoothConfigDashboard extends LitElement {
               >
             </div>
           </ha-card>
+          <ha-card
+            .header=${this.hass.localize(
+              "ui.panel.config.bluetooth.connection_slot_allocations_monitor"
+            )}
+          >
+            <div class="card-content">
+              ${this._renderConnectionAllocations()}
+            </div>
+          </ha-card>
         </div>
       </hass-subpage>
     `;
   }
 
+  private _getUsedAllocations = (used: number, total: number) =>
+    roundWithOneDecimal(getValueInPercentage(used, 0, total));
+
+  private _renderConnectionAllocations() {
+    if (this._connectionAllocationsError) {
+      return html`<ha-alert alert-type="error"
+        >${this._connectionAllocationsError}</ha-alert
+      >`;
+    }
+    if (this._connectionAllocationData.length === 0) {
+      return html`<div>
+        ${this.hass.localize(
+          "ui.panel.config.bluetooth.no_connection_slot_allocations"
+        )}
+      </div>`;
+    }
+    const allocations = this._connectionAllocationData[0];
+    const allocationsUsed = allocations.slots - allocations.free;
+    const allocationsTotal = allocations.slots;
+    if (allocationsTotal === 0) {
+      return html`<div>
+        ${this.hass.localize(
+          "ui.panel.config.bluetooth.no_active_connection_support"
+        )}
+      </div>`;
+    }
+    return html`
+      <p>
+        ${this.hass.localize(
+          "ui.panel.config.bluetooth.connection_slot_allocations_monitor_details",
+          { slots: allocationsTotal }
+        )}
+      </p>
+      <ha-metric
+        .heading=${this.hass.localize(
+          "ui.panel.config.bluetooth.used_connection_slot_allocations"
+        )}
+        .value=${this._getUsedAllocations(allocationsUsed, allocationsTotal)}
+        .tooltip=${`${allocationsUsed}/${allocationsTotal}`}
+      ></ha-metric>
+    `;
+  }
+
   private async _openOptionFlow() {
-    const searchParams = new URLSearchParams(window.location.search);
-    if (!searchParams.has("config_entry")) {
+    const configEntryId = this._configEntry;
+    if (!configEntryId) {
       return;
     }
-    const configEntryId = searchParams.get("config_entry") as string;
     const configEntries = await getConfigEntries(this.hass, {
       domain: "bluetooth",
     });
@@ -92,7 +194,7 @@ export class BluetoothConfigDashboard extends LitElement {
           margin: 0 auto;
           direction: ltr;
         }
-        ha-card:first-child {
+        ha-card {
           margin-bottom: 16px;
         }
       `,
