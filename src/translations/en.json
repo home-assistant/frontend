@@ -8194,7 +8194,8 @@
               "protection": "[%key:ui::panel::config::backup::details::summary::protection%]",
               "protected_encrypted_aes_128": "[%key:ui::panel::config::backup::details::summary::protected_encrypted_aes_128%]",
               "protected_not_encrypted": "[%key:ui::panel::config::backup::details::summary::protected_not_encrypted%]",
-              "upload_another": "Upload another"
+              "upload_another": "Upload another",
+              "home": "Home"
             },
             "restore": {
               "title": "[%key:ui::panel::config::backup::details::restore::title%]",
@@ -8219,7 +8220,7 @@
           "in_progress": "Restore in progress",
           "in_progress_description": "The restore process is running in the background. Home Assistant will automatically start again once the restore is complete. Please be patient, this can take a while. Do not close or refresh this page.",
           "failed": "Restore failed",
-          "failed_status_description": "It was not able to restore the backup. Please try again.",
+          "failed_status_description": "The backup could not be restored. Please try again.",
           "failed_description": "The last restore attempt failed. Please try it again.",
           "failed_wrong_password_description": "The last restore attempt failed, because the encryption key was incorrect. Please try it again.",
           "upload_supports": "Supports .TAR files",

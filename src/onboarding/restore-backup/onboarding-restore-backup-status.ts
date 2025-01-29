@@ -1,11 +1,15 @@
-import { css, html, LitElement, type CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../components/ha-card";
 import "../../components/ha-circular-progress";
 import "../../components/ha-alert";
+import "../../components/ha-button";
 import { haStyle } from "../../resources/styles";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import type { BackupOnboardingInfo } from "../../data/backup_onboarding";
+import { fireEvent } from "../../common/dom/fire_event";
+import { navigate } from "../../common/navigate";
+import { removeSearchParam } from "../../common/url/search-params";
 
 declare global {
   interface HASSDomEvents {
@@ -44,10 +48,40 @@ class OnboardingRestoreBackupStatus extends LitElement {
                     "ui.panel.page-onboarding.restore.failed_status_description"
                   )}
                 </ha-alert>
+                ${this.backupInfo.last_non_idle_event?.reason
+                  ? html`
+                      <div class="failed">
+                        <h4>Error:</h4>
+                        ${this.backupInfo.last_non_idle_event?.reason}
+                      </div>
+                    `
+                  : nothing}
               `}
         </div>
+        ${this.backupInfo.state !== "restore_backup"
+          ? html`<div class="card-actions">
+              <ha-button @click=${this._uploadAnother} class="danger">
+                ${this.localize(
+                  `ui.panel.page-onboarding.restore.details.summary.upload_another`
+                )}
+              </ha-button>
+              <ha-button @click=${this._home} class="danger">
+                ${this.localize(
+                  `ui.panel.page-onboarding.restore.details.summary.home`
+                )}
+              </ha-button>
+            </div>`
+          : nothing}
       </ha-card>
     `;
+  }
+
+  private _uploadAnother() {
+    fireEvent(this, "show-backup-upload");
+  }
+
+  private _home() {
+    navigate(`${location.pathname}?${removeSearchParam("page")}`);
   }
 
   static get styles(): CSSResultGroup {
@@ -60,6 +94,10 @@ class OnboardingRestoreBackupStatus extends LitElement {
         .card-header {
           padding-bottom: 8px;
         }
+        .card-actions {
+          display: flex;
+          justify-content: flex-end;
+        }
         .loading {
           display: flex;
           justify-content: center;
@@ -68,6 +106,10 @@ class OnboardingRestoreBackupStatus extends LitElement {
         p {
           text-align: center;
           padding: 0 16px;
+          font-size: 16px;
+        }
+        .failed {
+          padding: 16px 0;
           font-size: 16px;
         }
       `,

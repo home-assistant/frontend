@@ -123,6 +123,7 @@ class OnboardingRestoreBackup extends LitElement {
           ? html`<onboarding-restore-backup-status
               .localize=${this.localize}
               .backupInfo=${this._backupInfo}
+              @show-backup-upload=${this._reupload}
             ></onboarding-restore-backup-status>`
           : nothing
       }
