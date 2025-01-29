@@ -55,7 +55,7 @@ interface Agent {
 
 const computeAgents = (backup: BackupContentExtended) => {
   const agentIds = Object.keys(backup.agents);
-  const failedAgentIds = ["kitchen_sink.syncer"];
+  const failedAgentIds = backup.failed_agent_ids ?? [];
   return [
     ...agentIds.filter((id) => !failedAgentIds.includes(id)),
     ...failedAgentIds,
