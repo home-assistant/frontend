@@ -17,6 +17,7 @@ import { getEnergyDataCollection } from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
   getStatisticLabel,
+  isExternalStatistic,
 } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
@@ -236,7 +237,11 @@ export class HuiEnergyDevicesGraphCard
   }
 
   private _handleChartClick(e: CustomEvent<ECElementEvent>): void {
-    if (e.detail.targetType === "axisLabel" && e.detail.value) {
+    if (
+      e.detail.targetType === "axisLabel" &&
+      e.detail.value &&
+      !isExternalStatistic(e.detail.value as string)
+    ) {
       fireEvent(this, "hass-more-info", {
         entityId: e.detail.value as string,
       });
