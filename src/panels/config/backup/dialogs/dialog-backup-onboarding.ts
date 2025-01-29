@@ -72,6 +72,7 @@ const RECOMMENDED_CONFIG: BackupConfig = {
     time: null,
     days: [],
   },
+  agents: {},
   last_attempted_automatic_backup: null,
   last_completed_automatic_backup: null,
   next_automatic_backup: null,

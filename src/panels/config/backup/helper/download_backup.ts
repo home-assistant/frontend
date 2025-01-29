@@ -42,11 +42,10 @@ const downloadEncryptedBackup = async (
       confirmText: "Download encrypted",
     })
   ) {
-    triggerDownload(
-      hass,
-      backup.backup_id,
-      agentId ?? getPreferredAgentForDownload(backup.agent_ids!)
-    );
+    const agentIds = Object.keys(backup.agents);
+    const preferedAgent = agentId ?? getPreferredAgentForDownload(agentIds);
+
+    triggerDownload(hass, backup.backup_id, preferedAgent);
   }
 };
 
@@ -83,10 +82,11 @@ export const downloadBackup = async (
   agentId?: string,
   userProvided = false
 ): Promise<void> => {
-  const preferedAgent =
-    agentId ?? getPreferredAgentForDownload(backup.agent_ids!);
+  const agentIds = Object.keys(backup.agents);
+  const preferedAgent = agentId ?? getPreferredAgentForDownload(agentIds);
+  const isProtected = backup.agents[preferedAgent]?.protected;
 
-  if (backup.protected) {
+  if (isProtected) {
     if (encryptionKey) {
       try {
         await canDecryptBackupOnDownload(

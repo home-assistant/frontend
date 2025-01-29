@@ -179,7 +179,8 @@ class HaBackupOverviewBackups extends LitElement {
                                 now,
                                 true
                               ),
-                              count: lastUploadedBackup.agent_ids?.length ?? 0,
+                              count: Object.keys(lastUploadedBackup.agents)
+                                .length,
                             }
                           )
                         : nextBackupDescription}
@@ -265,7 +266,8 @@ class HaBackupOverviewBackups extends LitElement {
                               now,
                               true
                             ),
-                            count: lastUploadedBackup.agent_ids?.length ?? 0,
+                            count: Object.keys(lastUploadedBackup.agents)
+                              .length,
                           }
                         )
                       : nextBackupDescription}
@@ -286,7 +288,7 @@ class HaBackupOverviewBackups extends LitElement {
           now,
           true
         ),
-        count: lastBackup.agent_ids?.length ?? 0,
+        count: Object.keys(lastBackup.agents).length,
       }
     );
 
