@@ -1,14 +1,18 @@
-import { mdiHarddisk, mdiNas } from "@mdi/js";
+import { mdiCog, mdiHarddisk, mdiNas } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
+import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-switch";
-import type { BackupAgent } from "../../../../../data/backup";
+import type {
+  BackupAgent,
+  BackupAgentsConfig,
+} from "../../../../../data/backup";
 import {
   CLOUD_AGENT,
   computeBackupAgentName,
@@ -18,6 +22,7 @@ import {
 import type { CloudStatus } from "../../../../../data/cloud";
 import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
+import { navigate } from "../../../../../common/navigate";
 
 const DEFAULT_AGENTS = [];
 
@@ -28,6 +33,11 @@ class HaBackupConfigAgents extends LitElement {
   @property({ attribute: false }) public cloudStatus!: CloudStatus;
 
   @property({ attribute: false }) public agents: BackupAgent[] = [];
+
+  @property({ attribute: false }) public agentsConfig?: BackupAgentsConfig;
+
+  @property({ type: Boolean, attribute: "show-settings" }) public showSettings =
+    false;
 
   @state() private value?: string[];
 
@@ -53,6 +63,21 @@ class HaBackupConfigAgents extends LitElement {
         "ui.panel.config.backup.agents.cloud_agent_description"
       );
     }
+
+    const encryptionTurnedOff =
+      this.agentsConfig?.[agentId]?.protected === false;
+
+    if (encryptionTurnedOff) {
+      return html`
+        <span class="dot warning"></span>
+        <span>
+          ${this.hass.localize(
+            "ui.panel.config.backup.agents.encryption_turned_off"
+          )}
+        </span>
+      `;
+    }
+
     if (isNetworkMountAgent(agentId)) {
       return this.hass.localize(
         "ui.panel.config.backup.agents.network_mount_agent_description"
@@ -80,6 +105,7 @@ class HaBackupConfigAgents extends LitElement {
                   agentId === CLOUD_AGENT &&
                   this.cloudStatus.logged_in &&
                   !this.cloudStatus.active_subscription;
+
                 return html`
                   <ha-md-list-item>
                     ${isLocalAgent(agentId)
@@ -112,6 +138,16 @@ class HaBackupConfigAgents extends LitElement {
                     ${description
                       ? html`<div slot="supporting-text">${description}</div>`
                       : nothing}
+                    ${this.showSettings
+                      ? html`
+                          <ha-icon-button
+                            id=${agentId}
+                            slot="end"
+                            path=${mdiCog}
+                            @click=${this._showAgentSettings}
+                          ></ha-icon-button>
+                        `
+                      : nothing}
                     <ha-switch
                       slot="end"
                       id=${agentId}
@@ -131,6 +167,11 @@ class HaBackupConfigAgents extends LitElement {
             </p>
           `}
     `;
+  }
+
+  private _showAgentSettings(ev): void {
+    const agentId = ev.currentTarget.id;
+    navigate(`/config/backup/location/${agentId}`);
   }
 
   private _agentToggled(ev) {
@@ -179,6 +220,25 @@ class HaBackupConfigAgents extends LitElement {
     ha-md-list-item ha-svg-icon[slot="start"] {
       --mdc-icon-size: 48px;
       color: var(--primary-text-color);
+    }
+    ha-md-list-item [slot="supporting-text"] {
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      gap: 8px;
+      line-height: normal;
+    }
+    .dot {
+      display: block;
+      position: relative;
+      width: 8px;
+      height: 8px;
+      background-color: var(--disabled-color);
+      border-radius: 50%;
+      flex: none;
+    }
+    .dot.warning {
+      background-color: var(--warning-color);
     }
   `;
 }

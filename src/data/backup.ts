@@ -57,6 +57,7 @@ export interface BackupConfig {
     time?: string | null;
     days: BackupDay[];
   };
+  agents: BackupAgentsConfig;
 }
 
 export interface BackupMutableConfig {
@@ -78,6 +79,13 @@ export interface BackupMutableConfig {
     time?: string | null;
     days?: BackupDay[] | null;
   };
+  agents?: BackupAgentsConfig;
+}
+
+export type BackupAgentsConfig = Record<string, BackupAgentConfig>;
+
+export interface BackupAgentConfig {
+  protected: boolean;
 }
 
 export interface BackupAgent {
@@ -85,13 +93,16 @@ export interface BackupAgent {
   name: string;
 }
 
+export interface BackupContentAgent {
+  size: number;
+  protected: boolean;
+}
+
 export interface BackupContent {
   backup_id: string;
   date: string;
   name: string;
-  protected: boolean;
-  size: number;
-  agent_ids?: string[];
+  agents: Record<string, BackupContentAgent>;
   failed_agent_ids?: string[];
   with_automatic_settings: boolean;
 }
@@ -304,6 +315,9 @@ export const computeBackupAgentName = (
 
   return showName ? `${domainName}: ${name}` : domainName;
 };
+
+export const computeBackupSize = (backup: BackupContent) =>
+  Math.max(...Object.values(backup.agents).map((agent) => agent.size));
 
 export const compareAgents = (a: string, b: string) => {
   const isLocalA = isLocalAgent(a);

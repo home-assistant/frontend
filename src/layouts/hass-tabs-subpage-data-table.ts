@@ -355,7 +355,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                   ></ha-assist-chip>
                   <ha-md-menu-item
                     .value=${undefined}
-                    @click=${this._selectAll}
+                    .clickAction=${this._selectAll}
                   >
                     <div slot="headline">
                       ${localize("ui.components.subpage-data-table.select_all")}
@@ -363,7 +363,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                   </ha-md-menu-item>
                   <ha-md-menu-item
                     .value=${undefined}
-                    @click=${this._selectNone}
+                    .clickAction=${this._selectNone}
                   >
                     <div slot="headline">
                       ${localize(
@@ -374,7 +374,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                   <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
                   <ha-md-menu-item
                     .value=${undefined}
-                    @click=${this._disableSelectMode}
+                    .clickAction=${this._disableSelectMode}
                   >
                     <div slot="headline">
                       ${localize(
@@ -500,7 +500,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
             ? html`
                 <ha-md-menu-item
                   .value=${id}
-                  @click=${this._handleGroupBy}
+                  .clickAction=${this._handleGroupBy}
                   .selected=${id === this._groupColumn}
                   class=${classMap({ selected: id === this._groupColumn })}
                 >
@@ -511,7 +511,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
         )}
         <ha-md-menu-item
           .value=${undefined}
-          @click=${this._handleGroupBy}
+          .clickAction=${this._handleGroupBy}
           .selected=${this._groupColumn === undefined}
           class=${classMap({ selected: this._groupColumn === undefined })}
         >
@@ -519,7 +519,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
         </ha-md-menu-item>
         <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
         <ha-md-menu-item
-          @click=${this._collapseAllGroups}
+          .clickAction=${this._collapseAllGroups}
           .disabled=${this._groupColumn === undefined}
         >
           <ha-svg-icon
@@ -529,7 +529,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
           ${localize("ui.components.subpage-data-table.collapse_all_groups")}
         </ha-md-menu-item>
         <ha-md-menu-item
-          @click=${this._expandAllGroups}
+          .clickAction=${this._expandAllGroups}
           .disabled=${this._groupColumn === undefined}
         >
           <ha-svg-icon
@@ -546,6 +546,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                 <ha-md-menu-item
                   .value=${id}
                   @click=${this._handleSortBy}
+                  @keydown=${this._handleSortBy}
                   keep-open
                   .selected=${id === this._sortColumn}
                   class=${classMap({ selected: id === this._sortColumn })}
@@ -623,6 +624,8 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   }
 
   private _handleSortBy(ev) {
+    if (ev.type === "keydown" && ev.key !== "Enter" && ev.key !== " ") return;
+
     const columnId = ev.currentTarget.value;
     if (!this._sortDirection || this._sortColumn !== columnId) {
       this._sortDirection = "asc";
@@ -639,9 +642,9 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     });
   }
 
-  private _handleGroupBy(ev) {
-    this._setGroupColumn(ev.currentTarget.value);
-  }
+  private _handleGroupBy = (item) => {
+    this._setGroupColumn(item.value);
+  };
 
   private _setGroupColumn(columnId: string) {
     this._groupColumn = columnId;
@@ -665,30 +668,30 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     });
   }
 
-  private _collapseAllGroups() {
+  private _collapseAllGroups = () => {
     this._dataTable.collapseAllGroups();
-  }
+  };
 
-  private _expandAllGroups() {
+  private _expandAllGroups = () => {
     this._dataTable.expandAllGroups();
-  }
+  };
 
   private _enableSelectMode() {
     this._selectMode = true;
   }
 
-  private _disableSelectMode() {
+  private _disableSelectMode = () => {
     this._selectMode = false;
     this._dataTable.clearSelection();
-  }
+  };
 
-  private _selectAll() {
+  private _selectAll = () => {
     this._dataTable.selectAll();
-  }
+  };
 
-  private _selectNone() {
+  private _selectNone = () => {
     this._dataTable.clearSelection();
-  }
+  };
 
   private _handleSearchChange(ev: CustomEvent) {
     if (this.filter === ev.detail.value) {

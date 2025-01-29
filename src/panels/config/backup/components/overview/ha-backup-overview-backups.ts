@@ -8,7 +8,10 @@ import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
-import type { BackupContent } from "../../../../../data/backup";
+import {
+  computeBackupSize,
+  type BackupContent,
+} from "../../../../../data/backup";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { bytesToString } from "../../../../../util/bytes-to-string";
@@ -22,7 +25,7 @@ const computeBackupStats = (backups: BackupContent[]): BackupStats =>
   backups.reduce(
     (stats, backup) => {
       stats.count++;
-      stats.size += backup.size;
+      stats.size += computeBackupSize(backup);
       return stats;
     },
     { count: 0, size: 0 }

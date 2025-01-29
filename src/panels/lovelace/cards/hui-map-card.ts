@@ -460,6 +460,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       width: 100%;
       height: 100%;
       background: inherit;
+      border-radius: var(--ha-card-border-radius, 12px);
+      overflow: hidden;
     }
 
     ha-icon-button {
