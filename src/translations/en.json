@@ -2678,19 +2678,19 @@
             "encryption": {
               "title": "Encryption",
               "description": "All your backups are encrypted by default to keep your data private and secure.",
-              "location_encrypted": "This location is encrypted",
-              "location_unencrypted": "This location is unencrypted",
-              "location_encrypted_description": "Your data private and secure by securing it with your encryption key.",
+              "location_encrypted": "This location contains encrypted backups",
+              "location_unencrypted": "This location contains unencrypted backups",
+              "location_encrypted_description": "Your data is private and secure by encrypting backups with your encryption key.",
               "location_encrypted_cloud_description": "Home Assistant Cloud is the privacy-focused cloud. This is why it will only accept encrypted backups and why we don’t store your encryption key.",
               "location_encrypted_cloud_learn_more": "Learn more",
               "location_unencrypted_description": "Please keep your backups private and secure.",
               "encryption_turn_on": "Turn on",
               "encryption_turn_off": "Turn off",
               "encryption_turn_off_confirm_title": "Turn encryption off?",
-              "encryption_turn_off_confirm_text": "All your next backups will not be encrypted for this location. Please keep your backups private and secure.",
+              "encryption_turn_off_confirm_text": "After confirming, backups created will be unencrypted for this location. Please ensure your backups remain private and secure.",
               "encryption_turn_off_confirm_action": "Turn encryption off",
               "warning_encryption_turn_off": "Encryption turned off",
-              "warning_encryption_turn_off_description": "All your next backups will not be encrypted."
+              "warning_encryption_turn_off_description": "Backups will be unencrypted."
             }
           }
         },
