@@ -13,22 +13,31 @@ export const formatDateTime = (
   config: HassConfig
 ) => formatDateTimeMem(locale, config?.time_zone).format(dateObj);
 
-export const formatDateTimeWithBrowserDefaults = (dateObj: Date) =>
-  formatDateTimeMem().format(dateObj);
-
 const formatDateTimeMem = memoizeOne(
-  (locale?: FrontendLocaleData, serverTimeZone?: string) =>
-    new Intl.DateTimeFormat(locale ? locale.language : undefined, {
+  (locale: FrontendLocaleData, serverTimeZone: string) =>
+    new Intl.DateTimeFormat(locale.language, {
       year: "numeric",
       month: "long",
       day: "numeric",
       hour: locale && useAmPm(locale) ? "numeric" : "2-digit",
       minute: "2-digit",
       hourCycle: locale && useAmPm(locale) ? "h12" : "h23",
-      timeZone:
-        locale && serverTimeZone
-          ? resolveTimeZone(locale.time_zone, serverTimeZone)
-          : undefined,
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
+    })
+);
+
+export const formatDateTimeWithBrowserDefaults = (dateObj: Date) =>
+  formatDateTimeWithBrowserDefaultsMem().format(dateObj);
+
+const formatDateTimeWithBrowserDefaultsMem = memoizeOne(
+  () =>
+    new Intl.DateTimeFormat(undefined, {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23",
     })
 );
 
