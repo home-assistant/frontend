@@ -84,7 +84,7 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
           hideable: false,
           moveable: false,
           direction: "asc",
-          flex: 2,
+          flex: 1,
         },
         name: {
           title: localize("ui.panel.config.bluetooth.name"),
