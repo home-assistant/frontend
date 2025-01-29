@@ -7,7 +7,6 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-state-icon";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import type {
