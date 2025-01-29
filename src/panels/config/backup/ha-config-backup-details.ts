@@ -23,6 +23,7 @@ import "../../../components/ha-md-list-item";
 import type {
   BackupAgent,
   BackupConfig,
+  BackupContentAgent,
   BackupContentExtended,
   BackupData,
 } from "../../../data/backup";
@@ -46,10 +47,8 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { downloadBackup } from "./helper/download_backup";
 
-interface Agent {
+interface Agent extends BackupContentAgent {
   id: string;
-  protected: boolean;
-  size: number;
   success: boolean;
 }
 
@@ -60,12 +59,17 @@ const computeAgents = (backup: BackupContentExtended) => {
     ...agentIds.filter((id) => !failedAgentIds.includes(id)),
     ...failedAgentIds,
   ]
-    .map<Agent>((id) => ({
-      id,
-      success: !failedAgentIds.includes(id),
-      protected: backup.agents[id]?.protected ?? false,
-      size: backup.agents[id]?.size ?? 0,
-    }))
+    .map<Agent>((id) => {
+      const agent: BackupContentAgent = backup.agents[id] ?? {
+        protected: false,
+        size: 0,
+      };
+      return {
+        ...agent,
+        id: id,
+        success: !failedAgentIds.includes(id),
+      };
+    })
     .sort((a, b) => compareAgents(a.id, b.id));
 };
 
