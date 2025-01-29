@@ -8191,9 +8191,6 @@
               "title": "[%key:ui::panel::config::backup::details::summary::title%]",
               "size": "[%key:ui::panel::config::backup::details::summary::size%]",
               "created": "[%key:ui::panel::config::backup::details::summary::created%]",
-              "protection": "[%key:ui::panel::config::backup::details::summary::protection%]",
-              "protected_encrypted_aes_128": "[%key:ui::panel::config::backup::details::summary::protected_encrypted_aes_128%]",
-              "protected_not_encrypted": "[%key:ui::panel::config::backup::details::summary::protected_not_encrypted%]",
               "upload_another": "Upload another",
               "home": "Home"
             },

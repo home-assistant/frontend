@@ -41,6 +41,9 @@ class OnboardingRestoreBackupRestore extends LitElement {
   @state() private _loading = false;
 
   render() {
+    const agentId = this.supervisor ? HASSIO_LOCAL_AGENT : CORE_LOCAL_AGENT;
+    const backupProtected = this.backup.agents[agentId].protected;
+
     return html`
       ${this.backup.homeassistant_included &&
       !this.supervisor &&
@@ -65,8 +68,8 @@ class OnboardingRestoreBackupRestore extends LitElement {
               "ui.panel.page-onboarding.restore.confirm_restore_full_backup_text"
             )}
           </p>
-          ${this.backup.protected
-            ? html` <p>
+          ${backupProtected
+            ? html`<p>
                   ${this.localize(
                     "ui.panel.page-onboarding.restore.details.restore.encryption.title"
                   )}
@@ -93,7 +96,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
         <div class="card-actions">
           <ha-progress-button
             ?disabled=${this._loading ||
-            (this.backup.protected && this._encryptionKey === "")}
+            (backupProtected && this._encryptionKey === "")}
             @click=${this._startRestore}
           >
             ${this.localize(

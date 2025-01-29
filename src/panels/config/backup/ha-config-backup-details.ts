@@ -30,7 +30,6 @@ import "./components/ha-backup-details-restore";
 import {
   compareAgents,
   computeBackupAgentName,
-  computeBackupSize,
   deleteBackup,
   fetchBackupDetails,
   isLocalAgent,

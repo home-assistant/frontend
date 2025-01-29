@@ -6,12 +6,14 @@ import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-button";
 import type { HomeAssistant } from "../../../../types";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
-import { bytesToString } from "../../../../util/bytes-to-string";
 import {
   formatDateTime,
   formatDateTimeWithBrowserDefaults,
 } from "../../../../common/datetime/format_date_time";
-import type { BackupContentExtended } from "../../../../data/backup";
+import {
+  computeBackupSize,
+  type BackupContentExtended,
+} from "../../../../data/backup";
 import { fireEvent } from "../../../../common/dom/fire_event";
 
 declare global {
@@ -57,7 +59,7 @@ class HaBackupDetailsSummary extends LitElement {
                 )}
               </span>
               <span slot="supporting-text">
-                ${bytesToString(this.backup.size)}
+                ${computeBackupSize(this.backup)}
               </span>
             </ha-md-list-item>
             <ha-md-list-item>
@@ -67,22 +69,6 @@ class HaBackupDetailsSummary extends LitElement {
                 )}
               </span>
               <span slot="supporting-text"> ${formattedDate} </span>
-            </ha-md-list-item>
-            <ha-md-list-item>
-              <span slot="headline">
-                ${this.localize(
-                  `ui.panel.${this.translationKeyPanel}.details.summary.protection`
-                )}
-              </span>
-              <span slot="supporting-text">
-                ${this.localize(
-                  `ui.panel.${this.translationKeyPanel}.details.summary.${
-                    this.backup.protected
-                      ? "protected_encrypted_aes_128"
-                      : "protected_not_encrypted"
-                  }`
-                )}
-              </span>
             </ha-md-list-item>
           </ha-md-list>
         </div>
