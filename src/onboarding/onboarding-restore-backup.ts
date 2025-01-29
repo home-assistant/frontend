@@ -104,7 +104,6 @@ class OnboardingRestoreBackup extends LitElement {
               .localize=${this.localize}
               .backup=${this._backup!}
               @backup-restore=${this._restore}
-              ?supervisor=${this.supervisor}
             ></onboarding-restore-backup-details>`
           : nothing
       }
@@ -197,16 +196,10 @@ class OnboardingRestoreBackup extends LitElement {
         this._backup &&
         (lastNonIdleEvent.manager_state === "receive_backup" || failedRestore)
       ) {
-        this._view = "details";
-        return;
-      }
-
-      if (
-        this._backup &&
-        this._selectedData &&
-        lastNonIdleEvent.manager_state === "restore_backup"
-      ) {
-        this._view = "restore";
+        this._view =
+          !this.supervisor && this._backup.homeassistant_included
+            ? "restore"
+            : "details";
         return;
       }
 

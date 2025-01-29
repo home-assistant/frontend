@@ -42,12 +42,23 @@ class OnboardingRestoreBackupRestore extends LitElement {
 
   render() {
     return html`
+      ${this.backup.homeassistant_included &&
+      !this.supervisor &&
+      (this.backup.addons.length > 0 || this.backup.folders.length > 0)
+        ? html`<div class="supervisor-warning">
+            <ha-alert alert-type="warning">
+              ${this.localize(
+                "ui.panel.page-onboarding.restore.details.backup_unsupported"
+              )}
+            </ha-alert>
+          </div> `
+        : nothing}
       <ha-card
         .header=${this.localize("ui.panel.page-onboarding.restore.restore")}
       >
         <div class="card-content">
           ${this._error
-            ? html` <ha-alert alert-type="error"> ${this._error} </ha-alert> `
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert> `
             : nothing}
           <p>
             ${this.localize(
@@ -142,6 +153,9 @@ class OnboardingRestoreBackupRestore extends LitElement {
         .card-actions {
           display: flex;
           justify-content: flex-end;
+        }
+        .supervisor-warning {
+          margin-bottom: 16px;
         }
       `,
     ];

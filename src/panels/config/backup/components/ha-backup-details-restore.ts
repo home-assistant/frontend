@@ -27,12 +27,6 @@ class HaBackupDetailsRestore extends LitElement {
 
   @property({ type: Object }) public backup!: BackupContentExtended;
 
-  @property({ type: Boolean, attribute: "restore-disabled" })
-  public restoreDisabled = false;
-
-  @property({ type: Boolean, attribute: "addons-disabled" })
-  public addonsDisabled = false;
-
   @property({ type: Boolean, attribute: "ha-required" })
   public haRequired = false;
 
@@ -70,7 +64,6 @@ class HaBackupDetailsRestore extends LitElement {
             .data=${this.backup}
             .value=${this._selectedData}
             @value-changed=${this._selectedBackupChanged}
-            ?addons-disabled=${this.addonsDisabled}
             .requiredItems=${this.haRequired ? ["config"] : []}
           >
           </ha-backup-data-picker>
@@ -101,7 +94,6 @@ class HaBackupDetailsRestore extends LitElement {
 
   private _isRestoreDisabled() {
     return (
-      this.restoreDisabled ||
       !this._selectedData ||
       !(
         this._selectedData?.database_included ||

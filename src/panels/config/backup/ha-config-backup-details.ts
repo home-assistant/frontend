@@ -39,7 +39,6 @@ import {
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import "./components/ha-backup-data-picker";
 import { showRestoreBackupDialog } from "./dialogs/show-dialog-restore-backup";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
@@ -388,9 +387,6 @@ class HaConfigBackupDetails extends LitElement {
     }
     ha-button.danger {
       --mdc-theme-primary: var(--error-color);
-    }
-    ha-backup-data-picker {
-      display: block;
     }
     ha-md-list-item [slot="supporting-text"] {
       display: flex;
