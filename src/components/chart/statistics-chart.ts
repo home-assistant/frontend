@@ -424,6 +424,7 @@ export class StatisticsChart extends LitElement {
           const series: LineSeriesOption | BarSeriesOption = {
             id: `${statistic_id}-${type}`,
             type: this.chartType,
+            cursor: "default",
             data: [],
             name: name
               ? `${name} (${this.hass.localize(
