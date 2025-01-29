@@ -800,8 +800,8 @@ class ErrorLogCard extends LitElement {
       font-family: var(--code-font-family, monospace);
       clear: both;
       text-align: start;
-      padding-top: 12px;
-      padding-bottom: 12px;
+      padding-top: 16px;
+      padding-bottom: 16px;
       overflow-y: scroll;
       min-height: var(--error-log-card-height, calc(100vh - 240px));
       max-height: var(--error-log-card-height, calc(100vh - 240px));
