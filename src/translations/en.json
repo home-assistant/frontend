@@ -6893,7 +6893,7 @@
             },
             "humidifier": {
               "name": "Humidifier",
-              "description": "The Humidifier card gives control of a humidifier entity for humidifying or dehumdifying, allowing you to set its mode and desired humidity.",
+              "description": "The Humidifier card gives control of a humidifier entity for humidifying or dehumidifying, allowing you to set its mode and desired humidity.",
               "show_current_as_primary": "Show current humidity as primary information"
             },
             "iframe": {
