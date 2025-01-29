@@ -54,7 +54,7 @@ class OnboardingRestoreBackupDetails extends LitElement {
       haStyle,
       css`
         :host {
-          width: 100%;
+          padding: 28px 20px 0;
         }
         .card-header {
           padding-bottom: 8px;

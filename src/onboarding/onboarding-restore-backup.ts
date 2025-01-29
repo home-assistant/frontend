@@ -54,7 +54,7 @@ class OnboardingRestoreBackup extends LitElement {
     return html`
       ${
         this._view !== "status" || this._failed
-          ? html` <ha-icon-button-arrow-prev
+          ? html`<ha-icon-button-arrow-prev
               .label=${this.localize(
                 "ui.panel.page-onboarding.restore.no_backup_found"
               )}
@@ -129,12 +129,14 @@ class OnboardingRestoreBackup extends LitElement {
       }
       ${
         ["details", "restore"].includes(this._view) && this._backup
-          ? html` <ha-backup-details-summary
-              show-upload-another
-              .backup=${this._backup}
-              .localize=${this.localize}
-              @show-backup-upload=${this._reupload}
-            ></ha-backup-details-summary>`
+          ? html`<div class="backup-summary-wrapper">
+              <ha-backup-details-summary
+                show-upload-another
+                .backup=${this._backup}
+                .localize=${this.localize}
+                @show-backup-upload=${this._reupload}
+              ></ha-backup-details-summary>
+            </div>`
           : nothing
       }
     `;
@@ -306,8 +308,9 @@ class OnboardingRestoreBackup extends LitElement {
         justify-content: center;
         padding: 32px;
       }
-      ha-backup-details-summary {
-        margin: 0;
+      .backup-summary-wrapper {
+        margin-top: 24px;
+        padding: 0 20px;
       }
     `,
   ];
