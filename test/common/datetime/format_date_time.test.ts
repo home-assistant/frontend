@@ -4,6 +4,7 @@ import {
   formatDateTime,
   formatDateTimeWithSeconds,
   formatDateTimeNumeric,
+  formatDateTimeWithBrowserDefaults,
 } from "../../../src/common/datetime/format_date_time";
 import {
   NumberFormat,
@@ -52,7 +53,7 @@ describe("formatDateTime", () => {
 
   it("Formats date times without optional params", () => {
     assert.strictEqual(
-      formatDateTime(dateObj),
+      formatDateTimeWithBrowserDefaults(dateObj),
       new Intl.DateTimeFormat(undefined, {
         year: "numeric",
         month: "long",

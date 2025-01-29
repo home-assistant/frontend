@@ -9,9 +9,12 @@ import { useAmPm } from "./use_am_pm";
 // August 9, 2021, 8:23 AM
 export const formatDateTime = (
   dateObj: Date,
-  locale?: FrontendLocaleData,
-  config?: HassConfig
+  locale: FrontendLocaleData,
+  config: HassConfig
 ) => formatDateTimeMem(locale, config?.time_zone).format(dateObj);
+
+export const formatDateTimeWithBrowserDefaults = (dateObj: Date) =>
+  formatDateTimeMem().format(dateObj);
 
 const formatDateTimeMem = memoizeOne(
   (locale?: FrontendLocaleData, serverTimeZone?: string) =>

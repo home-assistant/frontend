@@ -7,7 +7,10 @@ import "../../../../components/ha-button";
 import type { HomeAssistant } from "../../../../types";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { bytesToString } from "../../../../util/bytes-to-string";
-import { formatDateTime } from "../../../../common/datetime/format_date_time";
+import {
+  formatDateTime,
+  formatDateTimeWithBrowserDefaults,
+} from "../../../../common/datetime/format_date_time";
 import type { BackupContentExtended } from "../../../../data/backup";
 import { fireEvent } from "../../../../common/dom/fire_event";
 
@@ -33,6 +36,11 @@ class HaBackupDetailsSummary extends LitElement {
   public showUploadAnother = false;
 
   render() {
+    const backupDate = new Date(this.backup.date);
+    const formattedDate = this.hass
+      ? formatDateTime(backupDate, this.hass.locale, this.hass.config)
+      : formatDateTimeWithBrowserDefaults(backupDate);
+
     return html`
       <ha-card>
         <div class="card-header">
@@ -58,13 +66,7 @@ class HaBackupDetailsSummary extends LitElement {
                   `ui.panel.${this.translationKeyPanel}.details.summary.created`
                 )}
               </span>
-              <span slot="supporting-text">
-                ${formatDateTime(
-                  new Date(this.backup.date),
-                  this.hass?.locale,
-                  this.hass?.config
-                )}
-              </span>
+              <span slot="supporting-text"> ${formattedDate} </span>
             </ha-md-list-item>
             <ha-md-list-item>
               <span slot="headline">
