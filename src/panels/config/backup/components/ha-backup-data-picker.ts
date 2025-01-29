@@ -121,7 +121,9 @@ export class HaBackupDataPicker extends LitElement {
           "ui.panel.page-onboarding.restore.details.data_picker.share_folder"
         );
       case "ssl":
-        return localize("ui.panel.page-onboarding.restore.details.data_picker.ssl");
+        return localize(
+          "ui.panel.page-onboarding.restore.details.data_picker.ssl"
+        );
       case "addons/local":
         return localize(
           "ui.panel.page-onboarding.restore.details.data_picker.local_addons"
@@ -280,7 +282,9 @@ export class HaBackupDataPicker extends LitElement {
                           item.id
                         )}
                         @change=${this._homeassistantChanged}
-                        ) || this.requiredItems.includes(item.id)}
+                        )
+                        ||
+                        this.requiredItems.includes(item.id)}
                         ?disabled=${this.requiredItems.includes(item.id)}
                         .section=${"homeassistant"}
                       ></ha-checkbox>
