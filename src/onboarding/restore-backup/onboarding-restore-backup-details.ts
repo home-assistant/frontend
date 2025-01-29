@@ -35,6 +35,7 @@ class OnboardingRestoreBackupDetails extends LitElement {
         ? html`<ha-backup-details-restore
             .backup=${this.backup}
             .localize=${this.localize}
+            translation-key-panel="page-onboarding.restore"
             ?restore-disabled=${!this.backup.homeassistant_included}
             ?addons-disabled=${!this.supervisor}
             ha-required

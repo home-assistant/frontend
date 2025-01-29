@@ -36,6 +36,10 @@ class HaBackupDetailsRestore extends LitElement {
   @property({ type: Boolean, attribute: "ha-required" })
   public haRequired = false;
 
+  @property({ attribute: "translation-key-panel" }) public translationKeyPanel:
+    | "page-onboarding.restore"
+    | "config.backup" = "config.backup";
+
   @state() private _selectedData?: BackupData;
 
   protected willUpdate() {
@@ -51,15 +55,16 @@ class HaBackupDetailsRestore extends LitElement {
   }
 
   render() {
-    const localize = this.localize || this.hass!.localize;
-
     return html`
       <ha-card>
         <div class="card-header">
-          ${localize("ui.panel.page-onboarding.restore.details.restore.title")}
+          ${this.localize(
+            `ui.panel.${this.translationKeyPanel}.details.restore.title`
+          )}
         </div>
         <div class="card-content">
           <ha-backup-data-picker
+            .translationKeyPanel=${this.translationKeyPanel}
             .localize=${this.localize}
             .hass=${this.hass}
             .data=${this.backup}
@@ -76,8 +81,8 @@ class HaBackupDetailsRestore extends LitElement {
             .disabled=${this._isRestoreDisabled()}
             class="danger"
           >
-            ${localize(
-              "ui.panel.page-onboarding.restore.details.restore.action"
+            ${this.localize(
+              `ui.panel.${this.translationKeyPanel}.details.restore.action`
             )}
           </ha-button>
         </div>

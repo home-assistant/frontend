@@ -149,10 +149,14 @@ class HaConfigBackupDetails extends LitElement {
               : html`
                   <ha-backup-details-summary
                     .backup=${this._backup}
+                    .hass=${this.hass}
+                    .localize=${this.hass.localize}
                   ></ha-backup-details-summary>
                   <ha-backup-details-restore
                     .backup=${this._backup}
                     @backup-restore=${this._restore}
+                    .hass=${this.hass}
+                    .localize=${this.hass.localize}
                   ></ha-backup-details-restore>
                   <ha-card>
                     <div class="card-header">

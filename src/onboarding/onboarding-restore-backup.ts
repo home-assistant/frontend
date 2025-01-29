@@ -131,6 +131,7 @@ class OnboardingRestoreBackup extends LitElement {
         ["details", "restore"].includes(this._view) && this._backup
           ? html`<div class="backup-summary-wrapper">
               <ha-backup-details-summary
+                translation-key-panel="page-onboarding.restore"
                 show-upload-another
                 .backup=${this._backup}
                 .localize=${this.localize}

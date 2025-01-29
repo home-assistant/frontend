@@ -61,6 +61,10 @@ export class HaBackupDataPicker extends LitElement {
   @property({ type: Array, attribute: "required-items" })
   public requiredItems: string[] = [];
 
+  @property({ attribute: "translation-key-panel" }) public translationKeyPanel:
+    | "page-onboarding.restore"
+    | "config.backup" = "config.backup";
+
   @state() public _addonIcons: Record<string, boolean> = {};
 
   protected firstUpdated(changedProps: PropertyValues): void {
@@ -87,13 +91,9 @@ export class HaBackupDataPicker extends LitElement {
 
       if (data.homeassistant_included) {
         items.push({
-          label: data.database_included
-            ? localize(
-                "ui.panel.page-onboarding.restore.details.data_picker.settings_and_history"
-              )
-            : localize(
-                "ui.panel.page-onboarding.restore.details.data_picker.settings"
-              ),
+          label: localize(
+            `ui.panel.${this.translationKeyPanel}.data_picker.${data.database_included ? "settings_and_history" : "settings"}`
+          ),
           id: "config",
           version: data.homeassistant_version,
         });
@@ -114,19 +114,17 @@ export class HaBackupDataPicker extends LitElement {
     switch (folder) {
       case "media":
         return localize(
-          "ui.panel.page-onboarding.restore.details.data_picker.media"
+          `ui.panel.${this.translationKeyPanel}.data_picker.media`
         );
       case "share":
         return localize(
-          "ui.panel.page-onboarding.restore.details.data_picker.share_folder"
+          `ui.panel.${this.translationKeyPanel}.data_picker.share_folder`
         );
       case "ssl":
-        return localize(
-          "ui.panel.page-onboarding.restore.details.data_picker.ssl"
-        );
+        return localize(`ui.panel.${this.translationKeyPanel}.data_picker.ssl`);
       case "addons/local":
         return localize(
-          "ui.panel.page-onboarding.restore.details.data_picker.local_addons"
+          `ui.panel.${this.translationKeyPanel}.data_picker.local_addons`
         );
     }
     return capitalizeFirstLetter(folder);
@@ -302,7 +300,7 @@ export class HaBackupDataPicker extends LitElement {
                 <ha-backup-formfield-label
                   slot="label"
                   .label=${localize(
-                    "ui.panel.page-onboarding.restore.details.data_picker.addons"
+                    `ui.panel.${this.translationKeyPanel}.data_picker.addons`
                   )}
                   .iconPath=${mdiPuzzle}
                 >
@@ -317,7 +315,6 @@ export class HaBackupDataPicker extends LitElement {
               </ha-formfield>
               <ha-backup-addons-picker
                 .hass=${this.hass}
-                .localize=${localize}
                 .value=${selectedItems.addons}
                 @value-changed=${this._addonsChanged}
                 .addons=${addonsItems}

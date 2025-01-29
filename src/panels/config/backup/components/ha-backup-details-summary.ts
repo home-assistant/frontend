@@ -26,23 +26,27 @@ class HaBackupDetailsSummary extends LitElement {
 
   @property({ type: Object }) public backup!: BackupContentExtended;
 
+  @property({ attribute: "translation-key-panel" }) public translationKeyPanel:
+    | "page-onboarding.restore"
+    | "config.backup" = "config.backup";
+
   @property({ type: Boolean, attribute: "show-upload-another" })
   public showUploadAnother = false;
 
   render() {
-    const localize = this.localize || this.hass!.localize;
-
     return html`
       <ha-card>
         <div class="card-header">
-          ${localize("ui.panel.page-onboarding.restore.details.summary.title")}
+          ${this.localize(
+            `ui.panel.${this.translationKeyPanel}.details.summary.title`
+          )}
         </div>
         <div class="card-content">
           <ha-md-list class="summary">
             <ha-md-list-item>
               <span slot="headline">
-                ${localize(
-                  "ui.panel.page-onboarding.restore.details.summary.size"
+                ${this.localize(
+                  `ui.panel.${this.translationKeyPanel}.details.summary.size`
                 )}
               </span>
               <span slot="supporting-text">
@@ -51,8 +55,8 @@ class HaBackupDetailsSummary extends LitElement {
             </ha-md-list-item>
             <ha-md-list-item>
               <span slot="headline">
-                ${localize(
-                  "ui.panel.page-onboarding.restore.details.summary.created"
+                ${this.localize(
+                  `ui.panel.${this.translationKeyPanel}.details.summary.created`
                 )}
               </span>
               <span slot="supporting-text">
@@ -65,27 +69,27 @@ class HaBackupDetailsSummary extends LitElement {
             </ha-md-list-item>
             <ha-md-list-item>
               <span slot="headline">
-                ${localize(
-                  "ui.panel.page-onboarding.restore.details.summary.protection"
+                ${this.localize(
+                  `ui.panel.${this.translationKeyPanel}.details.summary.protection`
                 )}
               </span>
               <span slot="supporting-text">
-                ${this.backup.protected
-                  ? localize(
-                      "ui.panel.page-onboarding.restore.details.summary.protected_encrypted_aes_128"
-                    )
-                  : localize(
-                      "ui.panel.page-onboarding.restore.details.summary.protected_not_encrypted"
-                    )}
+                ${this.localize(
+                  `ui.panel.${this.translationKeyPanel}.details.summary.${
+                    this.backup.protected
+                      ? "protected_encrypted_aes_128"
+                      : "protected_not_encrypted"
+                  }`
+                )}
               </span>
             </ha-md-list-item>
           </ha-md-list>
         </div>
         ${this.showUploadAnother
-          ? html` <div class="card-actions">
+          ? html`<div class="card-actions">
               <ha-button @click=${this._uploadAnother} class="danger">
-                ${localize(
-                  "ui.panel.page-onboarding.restore.details.summary.upload_another"
+                ${this.localize(
+                  `ui.panel.page-onboarding.restore.details.summary.upload_another`
                 )}
               </ha-button>
             </div>`
