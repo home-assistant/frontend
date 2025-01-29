@@ -1,5 +1,4 @@
 import type { ActionDetail } from "@material/mwc-list";
-import { classMap } from "lit/directives/class-map";
 import {
   mdiDelete,
   mdiDotsVertical,
@@ -274,11 +273,34 @@ class HaConfigBackupDetails extends LitElement {
                               }
                               <div slot="headline">${name}</div>
                                 <div slot="supporting-text">
-                                  <span class=${classMap({ dot: true, error: failed, warning: unencrypted, success: !failed && !unencrypted })}></span>
-                                    ${this.hass.localize(
-                                      `ui.panel.config.backup.details.locations.${failed ? "backup_failed" : unencrypted ? "unencrypted" : "encrypted"}`
-                                    )}
-                                  </span>
+                                   ${
+                                     failed
+                                       ? html`
+                                           <span class="dot error"></span>
+                                           <span>
+                                             ${this.hass.localize(
+                                               "ui.panel.config.backup.details.locations.backup_failed"
+                                             )}
+                                           </span>
+                                         `
+                                       : unencrypted
+                                         ? html`
+                                             <span class="dot warning"></span>
+                                             <span>
+                                               ${this.hass.localize(
+                                                 "ui.panel.config.backup.details.locations.unencrypted"
+                                               )}</span
+                                             >
+                                           `
+                                         : html`
+                                             <span class="dot success"></span>
+                                             <span
+                                               >${this.hass.localize(
+                                                 "ui.panel.config.backup.details.locations.encrypted"
+                                               )}</span
+                                             >
+                                           `
+                                   }
                                 </div>
                               </div>
                               ${
