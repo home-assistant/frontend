@@ -39,7 +39,9 @@ import type {
   BackupContent,
 } from "../../../data/backup";
 import {
+  compareAgents,
   computeBackupAgentName,
+  computeBackupSize,
   deleteBackup,
   generateBackup,
   generateBackupWithAutomaticSettings,
@@ -68,6 +70,8 @@ import { downloadBackup } from "./helper/download_backup";
 
 interface BackupRow extends DataTableRowData, BackupContent {
   formatted_type: string;
+  size: number;
+  agent_ids: string[];
 }
 
 type BackupType = "automatic" | "manual";
@@ -291,6 +295,8 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         const type = backup.with_automatic_settings ? "automatic" : "manual";
         return {
           ...backup,
+          size: computeBackupSize(backup),
+          agent_ids: Object.keys(backup.agents).sort(compareAgents),
           formatted_type: localize(`ui.panel.config.backup.type.${type}`),
         };
       });
