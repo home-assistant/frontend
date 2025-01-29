@@ -34,10 +34,10 @@ class HaBackupConfigAgents extends LitElement {
 
   @property({ attribute: false }) public agents: BackupAgent[] = [];
 
+  @property({ attribute: false }) public agentsConfig?: BackupAgentsConfig;
+
   @property({ type: Boolean, attribute: "show-settings" }) public showSettings =
     false;
-
-  @property({ attribute: false }) public agentsConfig?: BackupAgentsConfig;
 
   @state() private value?: string[];
 
