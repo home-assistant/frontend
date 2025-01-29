@@ -502,6 +502,7 @@ export class HuiEnergyUsageGraphCard
         data.push({
           id: compare ? "compare-" + statId : statId,
           type: "bar",
+          cursor: "default",
           name:
             type in labels
               ? labels[type]

@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import type {
   CustomSeriesOption,
   CustomSeriesRenderItem,
+  ECElementEvent,
   TooltipFormatterCallback,
   TooltipPositionCallbackParams,
 } from "echarts/types/dist/shared";
@@ -67,6 +68,7 @@ export class StateHistoryChartTimeline extends LitElement {
         .options=${this._chartOptions}
         .height=${`${this.data.length * 30 + 30}px`}
         .data=${this._chartData}
+        @chart-click=${this._handleChartClick}
       ></ha-chart-base>
     `;
   }
@@ -215,6 +217,7 @@ export class StateHistoryChartTimeline extends LitElement {
         type: "category",
         inverse: true,
         position: rtl ? "right" : "left",
+        triggerEvent: true,
         axisTick: {
           show: false,
         },
@@ -357,6 +360,17 @@ export class StateHistoryChartTimeline extends LitElement {
     });
 
     this._chartData = datasets;
+  }
+
+  private _handleChartClick(e: CustomEvent<ECElementEvent>): void {
+    if (e.detail.targetType === "axisLabel") {
+      const dataset = this.data[e.detail.dataIndex];
+      if (dataset) {
+        fireEvent(this, "hass-more-info", {
+          entityId: dataset.entity_id,
+        });
+      }
+    }
   }
 
   static styles = css`
