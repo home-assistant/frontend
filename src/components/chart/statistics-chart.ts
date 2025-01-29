@@ -181,11 +181,11 @@ export class StatisticsChart extends LitElement {
     this.requestUpdate("_hiddenStats");
   }
 
-  private _renderTooltip(params: any) {
-    return params
+  private _renderTooltip = (params: any) =>
+    params
       .map((param, index: number) => {
         const value = `${formatNumber(
-          // max series has 3 values, as the second value is the max-min to form a band
+          // max series can have 3 values, as the second value is the max-min to form a band
           (param.value[2] ?? param.value[1]) as number,
           this.hass.locale,
           getNumberFormatOptions(
@@ -203,10 +203,9 @@ export class StatisticsChart extends LitElement {
               ) + "<br>"
             : "";
         return `${time}${param.marker} ${param.seriesName}: ${value}
-      `;
+  `;
       })
       .join("<br>");
-  }
 
   private _createOptions() {
     const splitLineStyle = this.hass.themes?.darkMode ? { opacity: 0.15 } : {};
@@ -266,7 +265,7 @@ export class StatisticsChart extends LitElement {
       tooltip: {
         trigger: "axis",
         appendTo: document.body,
-        formatter: this._renderTooltip.bind(this),
+        formatter: this._renderTooltip,
       },
     };
   }
@@ -438,10 +437,21 @@ export class StatisticsChart extends LitElement {
             lineStyle: {
               width: 1.5,
             },
-            color: band && hasMean ? color + "3F" : color,
+            itemStyle:
+              this.chartType === "bar"
+                ? {
+                    borderRadius: [4, 4, 0, 0],
+                    borderColor:
+                      band && hasMean
+                        ? color + (this.hideLegend ? "00" : "7F")
+                        : color,
+                    borderWidth: 1.5,
+                  }
+                : undefined,
+            color: band ? color + "3F" : color + "7F",
           };
-          if (band) {
-            series.stack = "band";
+          if (band && this.chartType === "line") {
+            series.stack = `band-${statistic_id}`;
             (series as LineSeriesOption).symbol = "none";
             (series as LineSeriesOption).lineStyle = {
               opacity: 0,
@@ -476,7 +486,7 @@ export class StatisticsChart extends LitElement {
             } else {
               val.push((stat.sum || 0) - firstSum);
             }
-          } else if (type === "max") {
+          } else if (type === "max" && this.chartType === "line") {
             const max = stat.max || 0;
             val.push(max - (stat.min || 0));
             val.push(max);
