@@ -2661,7 +2661,9 @@
               "title": "Locations",
               "backup_failed": "Backup failed",
               "encryption_turned_off": "Encryption turned off",
-              "download": "Download from this location"
+              "download": "Download from this location",
+              "unencrypted": "unencrypted",
+              "encrypted": "Encrypted"
             }
           },
           "location": {

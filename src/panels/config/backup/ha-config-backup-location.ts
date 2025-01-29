@@ -232,7 +232,6 @@ class HaConfigBackupDetails extends LitElement {
 
   private async _fetchAgent() {
     try {
-      // Todo fetch agent details
       const { agents } = await fetchBackupAgentsInfo(this.hass);
       const agent = agents.find((a) => a.agent_id === this.agentId);
       if (!agent) {
