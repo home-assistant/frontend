@@ -5,12 +5,9 @@ import { SUPPORTED_FORMAT } from "../../panels/config/backup/components/ha-backu
 import { haStyle } from "../../resources/styles";
 import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
-import {
-  CORE_LOCAL_AGENT,
-  HASSIO_LOCAL_AGENT,
-  uploadBackup,
-} from "../../data/backup";
+import { CORE_LOCAL_AGENT, HASSIO_LOCAL_AGENT } from "../../data/backup";
 import type { LocalizeFunc } from "../../common/translations/localize";
+import { uploadOnboardingBackup } from "../../data/backup_onboarding";
 
 declare global {
   interface HASSDomEvents {
@@ -78,7 +75,7 @@ class OnboardingRestoreBackupUpload extends LitElement {
 
     this._uploading = true;
     try {
-      const { backup_id } = await uploadBackup(file, agentIds);
+      const { backup_id } = await uploadOnboardingBackup(file, agentIds);
       fireEvent(this, "backup-uploaded", { backupId: backup_id });
     } catch (err: any) {
       this._error =

@@ -228,7 +228,7 @@ export const restoreBackup = (
 export const uploadBackup = async (
   file: File,
   agentIds: string[],
-  hass?: HomeAssistant
+  hass: HomeAssistant
 ): Promise<{ backup_id: string }> => {
   const fd = new FormData();
   fd.append("file", file);
@@ -238,16 +238,11 @@ export const uploadBackup = async (
     return acc;
   }, new URLSearchParams());
 
-  const fetchMethod = hass ? hass.fetchWithAuth : fetch;
-
   return handleFetchPromise(
-    fetchMethod(
-      `/api/${!hass ? "onboarding/" : ""}backup/upload?${params.toString()}`,
-      {
-        method: "POST",
-        body: fd,
-      }
-    )
+    hass.fetchWithAuth(`/api/backup/upload?${params.toString()}`, {
+      method: "POST",
+      body: fd,
+    })
   );
 };
 

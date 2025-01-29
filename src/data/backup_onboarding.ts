@@ -52,3 +52,23 @@ export const restoreOnboardingBackup = async (
       body: JSON.stringify(params),
     })
   );
+
+export const uploadOnboardingBackup = async (
+  file: File,
+  agentIds: string[]
+): Promise<{ backup_id: string }> => {
+  const fd = new FormData();
+  fd.append("file", file);
+
+  const params = agentIds.reduce((acc, agentId) => {
+    acc.append("agent_id", agentId);
+    return acc;
+  }, new URLSearchParams());
+
+  return handleFetchPromise(
+    fetch(`/api/onboarding/backup/upload?${params.toString()}`, {
+      method: "POST",
+      body: fd,
+    })
+  );
+};
