@@ -10,7 +10,6 @@ import "../../../../components/ha-formfield";
 import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
 import "./ha-backup-formfield-label";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 
 export interface BackupAddonItem {
   slug: string;
@@ -25,8 +24,6 @@ export class HaBackupAddonsPicker extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public addons!: BackupAddonItem[];
-
-  @property({ attribute: false }) public localize?: LocalizeFunc;
 
   @property({ attribute: false }) public value?: string[];
 
