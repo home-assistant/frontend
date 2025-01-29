@@ -251,25 +251,20 @@ class HaBackupConfigSchedule extends LitElement {
                 >
                 <span slot="supporting-text">
                   ${this.hass.localize(
-                    "ui.panel.config.backup.schedule.schedule_time_description"
+                    "ui.panel.config.backup.schedule.schedule_time_description",
+                    {
+                      time_range_start: formatTime(
+                        DEFAULT_OPTIMIZED_BACKUP_START_TIME,
+                        this.hass.locale,
+                        this.hass.config
+                      ),
+                      time_range_end: formatTime(
+                        DEFAULT_OPTIMIZED_BACKUP_END_TIME,
+                        this.hass.locale,
+                        this.hass.config
+                      ),
+                    }
                   )}
-                  ${data.time_option === BackupScheduleTime.DEFAULT
-                    ? this.hass.localize(
-                        "ui.panel.config.backup.schedule.schedule_time_optimal_description",
-                        {
-                          time_range_start: formatTime(
-                            DEFAULT_OPTIMIZED_BACKUP_START_TIME,
-                            this.hass.locale,
-                            this.hass.config
-                          ),
-                          time_range_end: formatTime(
-                            DEFAULT_OPTIMIZED_BACKUP_END_TIME,
-                            this.hass.locale,
-                            this.hass.config
-                          ),
-                        }
-                      )
-                    : nothing}
                 </span>
 
                 <ha-md-select
