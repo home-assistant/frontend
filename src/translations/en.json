@@ -2662,7 +2662,7 @@
               "backup_failed": "Backup failed",
               "encryption_turned_off": "Encryption turned off",
               "download": "Download from this location",
-              "unencrypted": "unencrypted",
+              "unencrypted": "Unencrypted",
               "encrypted": "Encrypted"
             }
           },
