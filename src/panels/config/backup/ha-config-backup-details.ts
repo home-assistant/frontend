@@ -266,38 +266,42 @@ class HaConfigBackupDetails extends LitElement {
                                           })}
                                           crossorigin="anonymous"
                                           referrerpolicy="no-referrer"
-                                          alt=""
+                                          alt=${`${domain} logo`}
                                           slot="start"
                                         />
                                       `
                               }
                               <div slot="headline">${name}</div>
-                                ${
-                                  failed
-                                    ? html`
-                                        <div slot="supporting-text">
-                                          <span class="dot error"></span>
-                                          <span>
-                                            ${this.hass.localize(
-                                              "ui.panel.config.backup.details.locations.backup_failed"
-                                            )}
-                                          </span>
-                                        </div>
-                                      `
-                                    : unencrypted
-                                      ? html`
-                                          <div slot="supporting-text">
-                                            <span class="dot warning"></span>
-                                            <span> Unencrypted </span>
-                                          </div>
-                                        `
-                                      : html`
-                                          <div slot="supporting-text">
-                                            <span class="dot success"></span>
-                                            <span> Encrypted </span>
-                                          </div>
-                                        `
-                                }
+                                <div slot="supporting-text">
+                                   ${
+                                     failed
+                                       ? html`
+                                           <span class="dot error"></span>
+                                           <span>
+                                             ${this.hass.localize(
+                                               "ui.panel.config.backup.details.locations.backup_failed"
+                                             )}
+                                           </span>
+                                         `
+                                       : unencrypted
+                                         ? html`
+                                             <span class="dot warning"></span>
+                                             <span>
+                                               ${this.hass.localize(
+                                                 "ui.panel.config.backup.details.locations.unencrypted"
+                                               )}</span
+                                             >
+                                           `
+                                         : html`
+                                             <span class="dot success"></span>
+                                             <span
+                                               >${this.hass.localize(
+                                                 "ui.panel.config.backup.details.locations.encrypted"
+                                               )}</span
+                                             >
+                                           `
+                                   }
+                                </div>
                               </div>
                               ${
                                 success
