@@ -196,10 +196,18 @@ class OnboardingRestoreBackup extends LitElement {
         this._backup &&
         (lastNonIdleEvent.manager_state === "receive_backup" || failedRestore)
       ) {
-        this._view =
-          !this.supervisor && this._backup.homeassistant_included
-            ? "restore"
-            : "details";
+        if (!this.supervisor && this._backup.homeassistant_included) {
+          this._selectedData = {
+            homeassistant_included: true,
+            folders: [],
+            addons: [],
+            homeassistant_version: this._backup.homeassistant_version,
+            database_included: this._backup.database_included,
+          };
+          this._view = "restore";
+        } else {
+          this._view = "details";
+        }
         return;
       }
 
