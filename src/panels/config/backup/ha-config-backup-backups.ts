@@ -376,7 +376,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         .route=${this.route}
         @row-click=${this._showBackupDetails}
         .columns=${this._columns(this.hass.localize, maxAgents)}
-        .data=${this._data(this.backups, this._filters, this.hass.localize)}
+        .data=${data}
         .noDataText=${this.hass.localize("ui.panel.config.backup.no_backups")}
         .searchLabel=${this.hass.localize(
           "ui.panel.config.backup.picker.search"
