@@ -378,8 +378,9 @@ class HaBackupConfigData extends LitElement {
     }
     @media all and (max-width: 450px) {
       ha-md-select {
-        min-width: 160px;
-        width: 160px;
+        min-width: 140px;
+        width: 140px;
+        --md-filled-field-content-space: 0;
       }
     }
   `;
