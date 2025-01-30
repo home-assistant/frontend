@@ -192,8 +192,8 @@ export class StateHistoryChartLine extends LitElement {
           nameTextStyle: {
             align: "left",
           },
-          splitLine: {
-            show: true,
+          axisLine: {
+            show: false,
           },
           axisLabel: {
             margin: 5,

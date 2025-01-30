@@ -135,7 +135,7 @@ export class StateHistoryCharts extends LitElement {
       return html``;
     }
     if (!Array.isArray(item)) {
-      return html`<div class="entry-container">
+      return html`<div class="entry-container line">
         <state-history-chart-line
           .hass=${this.hass}
           .unit=${item.unit}
@@ -299,6 +299,9 @@ export class StateHistoryCharts extends LitElement {
 
     .entry-container {
       width: 100%;
+    }
+
+    .entry-container.line {
       flex: 1;
     }
 
