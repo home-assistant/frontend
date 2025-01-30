@@ -5330,6 +5330,8 @@
           "name": "Name",
           "source": "Source",
           "rssi": "RSSI",
+          "source_address": "Source address",
+          "device": "Device",
           "device_information": "Device information",
           "advertisement_data": "Advertisement data",
           "manufacturer_data": "Manufacturer data",
