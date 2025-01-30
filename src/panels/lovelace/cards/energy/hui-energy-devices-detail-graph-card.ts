@@ -334,10 +334,12 @@ export class HuiEnergyDevicesDetailGraphCard
       }
       untrackedConsumption.push(dataPoint);
     });
+    // random id to always add untracked at the end
+    const order = Date.now();
     const dataset: BarSeriesOption = {
       type: "bar",
       cursor: "default",
-      id: compare ? "compare-untracked" : "untracked",
+      id: compare ? `compare-untracked-${order}` : `untracked-${order}`,
       name: this.hass.localize(
         "ui.panel.lovelace.cards.energy.energy_devices_detail_graph.untracked_consumption"
       ),
@@ -420,9 +422,10 @@ export class HuiEnergyDevicesDetailGraphCard
       data.push({
         type: "bar",
         cursor: "default",
+        // add order to id, otherwise echarts refuses to reorder them
         id: compare
-          ? `compare-${source.stat_consumption}`
-          : source.stat_consumption,
+          ? `compare-${source.stat_consumption}-${order}`
+          : `${source.stat_consumption}-${order}`,
         name:
           source.name ||
           getStatisticLabel(
@@ -439,7 +442,9 @@ export class HuiEnergyDevicesDetailGraphCard
         stack: compare ? "devicesCompare" : "devices",
       });
     });
-    return data;
+    return sorted_devices.map(
+      (device) => data.find((d) => (d.id as string).includes(device))!
+    );
   }
 
   static styles = css`
