@@ -88,7 +88,7 @@ export class HuiEnergyDevicesGraphCard
           <ha-chart-base
             .hass=${this.hass}
             .data=${this._chartData}
-            .options=${this._createOptions(this.hass.themes?.darkMode)}
+            .options=${this._createOptions(this._chartData)}
             .height=${`${(this._chartData[0]?.data?.length || 0) * 28 + 50}px`}
             @chart-click=${this._handleChartClick}
           ></ha-chart-base>
@@ -110,18 +110,17 @@ export class HuiEnergyDevicesGraphCard
   }
 
   private _createOptions = memoizeOne(
-    (darkMode: boolean): ECOption => ({
+    (data: BarSeriesOption[]): ECOption => ({
       xAxis: {
         type: "value",
         name: "kWh",
-        splitLine: {
-          lineStyle: darkMode ? { opacity: 0.15 } : {},
-        },
       },
       yAxis: {
         type: "category",
         inverse: true,
         triggerEvent: true,
+        // take order from data
+        data: data[0]?.data?.map((d: any) => d.value[1]),
         axisLabel: {
           formatter: this._getDeviceName.bind(this),
           overflow: "truncate",
