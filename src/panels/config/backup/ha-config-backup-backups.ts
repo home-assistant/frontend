@@ -141,7 +141,10 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   };
 
   private _columns = memoizeOne(
-    (localize: LocalizeFunc): DataTableColumnContainer<BackupRow> => ({
+    (
+      localize: LocalizeFunc,
+      maxAgents: number
+    ): DataTableColumnContainer<BackupRow> => ({
       name: {
         title: localize("ui.panel.config.backup.name"),
         main: true,
@@ -172,54 +175,75 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
       locations: {
         title: localize("ui.panel.config.backup.locations"),
         showNarrow: true,
-        minWidth: "60px",
-        template: (backup) => html`
-          <div style="display: flex; gap: 4px;">
-            ${(backup.agent_ids || []).map((agentId) => {
-              const name = computeBackupAgentName(
-                this.hass.localize,
-                agentId,
-                this.agents
-              );
-              if (isLocalAgent(agentId)) {
+        // 24 icon size, 4 gap, 16 left and right padding
+        minWidth: `${maxAgents * 24 + (maxAgents - 1) * 4 + 32}px`,
+        template: (backup) => {
+          const agentIds = [...backup.agent_ids];
+          const displayedAgentIds =
+            agentIds.length > maxAgents
+              ? [...agentIds].splice(0, maxAgents - 1)
+              : agentIds;
+          const agentsMore = Math.max(
+            agentIds.length - displayedAgentIds.length,
+            0
+          );
+          return html`
+            <div style="display: flex; gap: 4px;">
+              ${displayedAgentIds.map((agentId) => {
+                const name = computeBackupAgentName(
+                  this.hass.localize,
+                  agentId,
+                  this.agents
+                );
+                if (isLocalAgent(agentId)) {
+                  return html`
+                    <ha-svg-icon
+                      .path=${mdiHarddisk}
+                      title=${name}
+                      style="flex-shrink: 0;"
+                    ></ha-svg-icon>
+                  `;
+                }
+                if (isNetworkMountAgent(agentId)) {
+                  return html`
+                    <ha-svg-icon
+                      .path=${mdiNas}
+                      title=${name}
+                      style="flex-shrink: 0;"
+                    ></ha-svg-icon>
+                  `;
+                }
+                const domain = computeDomain(agentId);
                 return html`
-                  <ha-svg-icon
-                    .path=${mdiHarddisk}
+                  <img
                     title=${name}
+                    .src=${brandsUrl({
+                      domain,
+                      type: "icon",
+                      useFallback: true,
+                      darkOptimized: this.hass.themes?.darkMode,
+                    })}
+                    height="24"
+                    crossorigin="anonymous"
+                    referrerpolicy="no-referrer"
+                    alt=${name}
+                    slot="graphic"
                     style="flex-shrink: 0;"
-                  ></ha-svg-icon>
+                  />
                 `;
-              }
-              if (isNetworkMountAgent(agentId)) {
-                return html`
-                  <ha-svg-icon
-                    .path=${mdiNas}
-                    title=${name}
-                    style="flex-shrink: 0;"
-                  ></ha-svg-icon>
-                `;
-              }
-              const domain = computeDomain(agentId);
-              return html`
-                <img
-                  title=${name}
-                  .src=${brandsUrl({
-                    domain,
-                    type: "icon",
-                    useFallback: true,
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
-                  height="24"
-                  crossorigin="anonymous"
-                  referrerpolicy="no-referrer"
-                  alt=${name}
-                  slot="graphic"
-                  style="flex-shrink: 0;"
-                />
-              `;
-            })}
-          </div>
-        `,
+              })}
+              ${agentsMore
+                ? html`
+                    <span
+                      style="display: flex; align-items: center; font-size: 14px;"
+                    >
+                      +${agentsMore}
+                    </span>
+                  `
+                : nothing}
+            </div>
+          `;
+        },
       },
       actions: {
         title: "",
@@ -293,19 +317,27 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
       }
       return filteredBackups.map((backup) => {
         const type = backup.with_automatic_settings ? "automatic" : "manual";
+        const agentIds = Object.keys(backup.agents);
         return {
           ...backup,
           size: computeBackupSize(backup),
-          agent_ids: Object.keys(backup.agents).sort(compareAgents),
+          agent_ids: agentIds.sort(compareAgents),
           formatted_type: localize(`ui.panel.config.backup.type.${type}`),
         };
       });
     }
   );
 
+  private _maxAgents = memoizeOne((data: BackupRow[]): number =>
+    Math.max(...data.map((row) => row.agent_ids.length))
+  );
+
   protected render(): TemplateResult {
     const backupInProgress =
       "state" in this.manager && this.manager.state === "in_progress";
+
+    const data = this._data(this.backups, this._filters, this.hass.localize);
+    const maxAgents = Math.min(this._maxAgents(data), this.narrow ? 3 : 5);
 
     return html`
       <hass-tabs-subpage-data-table
@@ -343,7 +375,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         @selection-changed=${this._handleSelectionChanged}
         .route=${this.route}
         @row-click=${this._showBackupDetails}
-        .columns=${this._columns(this.hass.localize)}
+        .columns=${this._columns(this.hass.localize, maxAgents)}
         .data=${this._data(this.backups, this._filters, this.hass.localize)}
         .noDataText=${this.hass.localize("ui.panel.config.backup.no_backups")}
         .searchLabel=${this.hass.localize(
