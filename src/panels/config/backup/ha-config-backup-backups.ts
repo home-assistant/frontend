@@ -178,7 +178,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         // 24 icon size, 4 gap, 16 left and right padding
         minWidth: `${maxAgents * 24 + (maxAgents - 1) * 4 + 32}px`,
         template: (backup) => {
-          const agentIds = [...backup.agent_ids];
+          const agentIds = backup.agent_ids;
           const displayedAgentIds =
             agentIds.length > maxAgents
               ? [...agentIds].splice(0, maxAgents - 1)
