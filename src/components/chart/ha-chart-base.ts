@@ -20,6 +20,7 @@ import type { ECOption } from "../../resources/echarts";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import type { Themes } from "../../data/ws-themes";
 import { themesContext } from "../../data/context";
+import { getAllGraphColors } from "../../common/color/colors";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 
@@ -183,10 +184,9 @@ export class HaChartBase extends LitElement {
       }
       const echarts = (await import("../../resources/echarts")).default;
 
-      this.chart = echarts.init(
-        container,
-        this._themes.darkMode ? "dark" : "light"
-      );
+      echarts.registerTheme("custom", this._createTheme());
+
+      this.chart = echarts.init(container, "custom");
       this.chart.on("legendselectchanged", (params: any) => {
         if (this.externalHidden) {
           const isSelected = params.selected[params.name];
@@ -237,24 +237,14 @@ export class HaChartBase extends LitElement {
   }
 
   private _createOptions(): ECOption {
-    const darkMode = this._themes.darkMode ?? false;
-
     const options = {
-      backgroundColor: "transparent",
       animation: !this._reducedMotion,
-      darkMode,
+      darkMode: this._themes.darkMode ?? false,
       aria: {
         show: true,
       },
       dataZoom: this._getDataZoomConfig(),
       ...this.options,
-      legend: this.options?.legend
-        ? {
-            // we should create our own theme but this is a quick fix for now
-            inactiveColor: darkMode ? "#444" : "#ccc",
-            ...this.options.legend,
-          }
-        : undefined,
     };
 
     const isMobile = window.matchMedia(
@@ -272,6 +262,181 @@ export class HaChartBase extends LitElement {
       options.tooltip = tooltips;
     }
     return options;
+  }
+
+  private _createTheme() {
+    const style = getComputedStyle(this);
+    return {
+      color: getAllGraphColors(style),
+      backgroundColor: "transparent",
+      textStyle: {
+        color: style.getPropertyValue("--primary-text-color"),
+      },
+      title: {
+        textStyle: {
+          color: style.getPropertyValue("--primary-text-color"),
+        },
+        subtextStyle: {
+          color: style.getPropertyValue("--secondary-text-color"),
+        },
+      },
+      line: {
+        lineStyle: {
+          width: 1.5,
+        },
+        symbolSize: 1,
+        symbol: "circle",
+        smooth: false,
+      },
+      bar: {
+        itemStyle: {
+          barBorderWidth: 1.5,
+        },
+      },
+      categoryAxis: {
+        axisLine: {
+          show: false,
+        },
+        axisTick: {
+          show: false,
+        },
+        axisLabel: {
+          show: true,
+          color: style.getPropertyValue("--primary-text-color"),
+        },
+        splitLine: {
+          show: false,
+          lineStyle: {
+            color: style.getPropertyValue("--divider-color"),
+          },
+        },
+        splitArea: {
+          show: false,
+          areaStyle: {
+            color: [
+              style.getPropertyValue("--divider-color") + "3F",
+              style.getPropertyValue("--divider-color") + "7F",
+            ],
+          },
+        },
+      },
+      valueAxis: {
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: style.getPropertyValue("--divider-color"),
+          },
+        },
+        axisTick: {
+          show: true,
+          lineStyle: {
+            color: style.getPropertyValue("--divider-color"),
+          },
+        },
+        axisLabel: {
+          show: true,
+          color: style.getPropertyValue("--primary-text-color"),
+        },
+        splitLine: {
+          show: true,
+          lineStyle: {
+            color: style.getPropertyValue("--divider-color"),
+          },
+        },
+        splitArea: {
+          show: false,
+          areaStyle: {
+            color: [
+              style.getPropertyValue("--divider-color") + "3F",
+              style.getPropertyValue("--divider-color") + "7F",
+            ],
+          },
+        },
+      },
+      logAxis: {
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: style.getPropertyValue("--divider-color"),
+          },
+        },
+        axisTick: {
+          show: true,
+          lineStyle: {
+            color: style.getPropertyValue("--divider-color"),
+          },
+        },
+        axisLabel: {
+          show: true,
+          color: style.getPropertyValue("--primary-text-color"),
+        },
+        splitLine: {
+          show: true,
+          lineStyle: {
+            color: style.getPropertyValue("--divider-color"),
+          },
+        },
+        splitArea: {
+          show: false,
+          areaStyle: {
+            color: [
+              style.getPropertyValue("--divider-color") + "3F",
+              style.getPropertyValue("--divider-color") + "7F",
+            ],
+          },
+        },
+      },
+      timeAxis: {
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: style.getPropertyValue("--divider-color"),
+          },
+        },
+        axisTick: {
+          show: true,
+          lineStyle: {
+            color: style.getPropertyValue("--divider-color"),
+          },
+        },
+        axisLabel: {
+          show: true,
+          color: style.getPropertyValue("--primary-text-color"),
+        },
+        splitLine: {
+          show: true,
+          lineStyle: {
+            color: style.getPropertyValue("--divider-color"),
+          },
+        },
+        splitArea: {
+          show: false,
+          areaStyle: {
+            color: [
+              style.getPropertyValue("--divider-color") + "3F",
+              style.getPropertyValue("--divider-color") + "7F",
+            ],
+          },
+        },
+      },
+      legend: {
+        textStyle: {
+          color: style.getPropertyValue("--primary-text-color"),
+        },
+        inactiveColor: style.getPropertyValue("--disabled-text-color"),
+      },
+      tooltip: {
+        axisPointer: {
+          lineStyle: {
+            color: style.getPropertyValue("--divider-color"),
+          },
+          crossStyle: {
+            color: style.getPropertyValue("--divider-color"),
+          },
+        },
+      },
+      timeline: {},
+    };
   }
 
   private _getDefaultHeight() {
