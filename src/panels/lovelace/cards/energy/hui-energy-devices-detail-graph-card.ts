@@ -314,8 +314,9 @@ export class HuiEnergyDevicesDetailGraphCard
 
     processedData.forEach((device) => {
       device.data.forEach((datapoint) => {
-        totalDeviceConsumption[datapoint[0]] =
-          (totalDeviceConsumption[datapoint[0]] || 0) + datapoint[1];
+        totalDeviceConsumption[datapoint[compare ? 2 : 0]] =
+          (totalDeviceConsumption[datapoint[compare ? 2 : 0]] || 0) +
+          datapoint[1];
       });
     });
     const compareOffset = compare
