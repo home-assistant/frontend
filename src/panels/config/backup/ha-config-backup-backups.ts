@@ -143,7 +143,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   private _columns = memoizeOne(
     (
       localize: LocalizeFunc,
-      maxAgents: number
+      maxDisplayedAgents: number
     ): DataTableColumnContainer<BackupRow> => ({
       name: {
         title: localize("ui.panel.config.backup.name"),
@@ -176,12 +176,12 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         title: localize("ui.panel.config.backup.locations"),
         showNarrow: true,
         // 24 icon size, 4 gap, 16 left and right padding
-        minWidth: `${maxAgents * 24 + (maxAgents - 1) * 4 + 32}px`,
+        minWidth: `${maxDisplayedAgents * 24 + (maxDisplayedAgents - 1) * 4 + 32}px`,
         template: (backup) => {
           const agentIds = backup.agent_ids;
           const displayedAgentIds =
-            agentIds.length > maxAgents
-              ? [...agentIds].splice(0, maxAgents - 1)
+            agentIds.length > maxDisplayedAgents
+              ? [...agentIds].splice(0, maxDisplayedAgents - 1)
               : agentIds;
           const agentsMore = Math.max(
             agentIds.length - displayedAgentIds.length,
@@ -337,7 +337,10 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
       "state" in this.manager && this.manager.state === "in_progress";
 
     const data = this._data(this.backups, this._filters, this.hass.localize);
-    const maxAgents = Math.min(this._maxAgents(data), this.narrow ? 3 : 5);
+    const maxDisplayedAgents = Math.min(
+      this._maxAgents(data),
+      this.narrow ? 3 : 5
+    );
 
     return html`
       <hass-tabs-subpage-data-table
@@ -375,7 +378,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         @selection-changed=${this._handleSelectionChanged}
         .route=${this.route}
         @row-click=${this._showBackupDetails}
-        .columns=${this._columns(this.hass.localize, maxAgents)}
+        .columns=${this._columns(this.hass.localize, maxDisplayedAgents)}
         .data=${data}
         .noDataText=${this.hass.localize("ui.panel.config.backup.no_backups")}
         .searchLabel=${this.hass.localize(
