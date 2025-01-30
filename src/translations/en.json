@@ -2678,8 +2678,8 @@
             "encryption": {
               "title": "Encryption",
               "description": "All your backups are encrypted by default to keep your data private and secure.",
-              "location_encrypted": "This location contains encrypted backups",
-              "location_unencrypted": "This location contains unencrypted backups",
+              "location_encrypted": "Backups made to this location will be encrypted",
+              "location_unencrypted": "Backups made to this location will be unencrypted",
               "location_encrypted_description": "Your data is private and secure by encrypting backups with your encryption key.",
               "location_encrypted_cloud_description": "Home Assistant Cloud is the privacy-focused cloud. This is why it will only accept encrypted backups and why we don’t store your encryption key.",
               "location_encrypted_cloud_learn_more": "Learn more",
