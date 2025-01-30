@@ -50,8 +50,8 @@ class HaConfigBackupSettings extends LitElement {
     }
   }
 
-  protected firstUpdated(_changedProperties: PropertyValues): void {
-    super.firstUpdated(_changedProperties);
+  public connectedCallback(): void {
+    super.connectedCallback();
     this._scrollToSection();
   }
 
