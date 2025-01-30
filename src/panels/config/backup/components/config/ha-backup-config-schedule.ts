@@ -403,11 +403,11 @@ class HaBackupConfigSchedule extends LitElement {
             backup_create: html`<a
               href=${documentationUrl(
                 this.hass,
-                "/integrations/backup#example-backing-up-every-night-at-300-am"
+                "/integrations/backup/#action-backupcreate_automatic"
               )}
               target="_blank"
               rel="noopener noreferrer"
-              >backup.create</a
+              >backup.create_automatic</a
             >`,
           })}</ha-tip
         >
