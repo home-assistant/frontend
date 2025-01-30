@@ -197,9 +197,12 @@ export class StateHistoryChartTimeline extends LitElement {
         max: this.endTime,
         axisTick: {
           show: true,
-          lineStyle: {
-            opacity: 0.4,
-          },
+        },
+        splitLine: {
+          show: false,
+        },
+        axisLine: {
+          show: false,
         },
         axisLabel: getTimeAxisLabelConfig(
           this.hass.locale,
