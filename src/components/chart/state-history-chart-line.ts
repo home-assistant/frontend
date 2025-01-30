@@ -158,9 +158,6 @@ export class StateHistoryChartLine extends LitElement {
     ) {
       const dayDifference = differenceInDays(this.endTime, this.startTime);
       const rtl = computeRTL(this.hass);
-      const splitLineStyle = this.hass.themes?.darkMode
-        ? { opacity: 0.15 }
-        : {};
       this._chartOptions = {
         xAxis: {
           type: "time",
@@ -176,7 +173,6 @@ export class StateHistoryChartLine extends LitElement {
           },
           splitLine: {
             show: true,
-            lineStyle: splitLineStyle,
           },
           minInterval:
             dayDifference >= 89 // quarter
@@ -196,9 +192,8 @@ export class StateHistoryChartLine extends LitElement {
           nameTextStyle: {
             align: "left",
           },
-          splitLine: {
-            show: true,
-            lineStyle: splitLineStyle,
+          axisLine: {
+            show: false,
           },
           axisLabel: {
             margin: 5,
