@@ -439,7 +439,7 @@ export class HuiEnergyDevicesDetailGraphCard
         stack: compare ? "devicesCompare" : "devices",
       });
     });
-    return data;
+    return sorted_devices.map((device) => data.find((d) => d.id === device));
   }
 
   static styles = css`
