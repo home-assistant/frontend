@@ -106,6 +106,9 @@ export class HaConfigApplicationCredentials extends LitElement {
         },
         actions: {
           title: "",
+          label: localize(
+            "ui.panel.config.generic.headers.actions"
+          ),
           type: "overflow-menu",
           showNarrow: true,
           hideable: false,
