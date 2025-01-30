@@ -545,6 +545,12 @@ class HaBackupConfigSchedule extends LitElement {
       ha-md-select,
       ha-time-input {
         min-width: 160px;
+        width: 160px;
+        --md-filled-field-content-space: 0;
+      }
+      ha-time-input {
+        min-width: 120px;
+        width: 120px;
       }
     }
     ha-md-textfield#value {
@@ -552,6 +558,16 @@ class HaBackupConfigSchedule extends LitElement {
     }
     ha-md-select#type {
       min-width: 100px;
+    }
+    @media all and (max-width: 450px) {
+      ha-md-textfield#value {
+        min-width: 60px;
+        margin: 0 -8px;
+      }
+      ha-md-select#type {
+        min-width: 120px;
+        width: 120px;
+      }
     }
     ha-expansion-panel {
       --expansion-panel-summary-padding: 0 16px;
