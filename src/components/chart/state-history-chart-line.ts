@@ -187,11 +187,24 @@ export class StateHistoryChartLine extends LitElement {
     ) {
       const dayDifference = differenceInDays(this.endTime, this.startTime);
       const rtl = computeRTL(this.hass);
-      const minYAxis =
-        // log(0) is -Infinity, so we need to set a minimum value
-        this.logarithmicScale && typeof this.minYAxis === "number"
-          ? Math.max(this.minYAxis, 0.1)
-          : this.minYAxis;
+      let minYAxis: number | ((values: { min: number }) => number) | undefined =
+        this.minYAxis;
+      let maxYAxis: number | ((values: { max: number }) => number) | undefined =
+        this.maxYAxis;
+      if (this.logarithmicScale) {
+        if (typeof minYAxis === "number") {
+          // log(0) is -Infinity, so we need to set a minimum value
+          minYAxis = Math.max(minYAxis, 0.1);
+        } else {
+          // auto scaling doesn't work with logarithmic scale, so we need to do it manually
+          minYAxis = ({ min }) => (min > 0 ? min * 0.95 : min * 1.05);
+        }
+        if (typeof maxYAxis === "number") {
+          maxYAxis = Math.max(maxYAxis, 0.1);
+        } else {
+          maxYAxis = ({ max }) => (max > 0 ? max * 1.05 : max * 0.95);
+        }
+      }
       this._chartOptions = {
         xAxis: {
           type: "time",
@@ -220,12 +233,12 @@ export class StateHistoryChartLine extends LitElement {
           name: this.unit,
           min:
             this.fitYData && typeof minYAxis === "number"
-              ? ({ min }) => Math.min(min, minYAxis!)
+              ? ({ min }) => Math.min(min, minYAxis as number)
               : minYAxis,
           max:
-            this.fitYData && typeof this.maxYAxis === "number"
-              ? ({ max }) => Math.max(max, this.maxYAxis!)
-              : this.maxYAxis,
+            this.fitYData && typeof maxYAxis === "number"
+              ? ({ max }) => Math.max(max, maxYAxis as number)
+              : maxYAxis,
           position: rtl ? "right" : "left",
           scale: true,
           nameGap: 2,
