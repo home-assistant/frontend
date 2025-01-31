@@ -455,7 +455,11 @@ export class StatisticsChart extends LitElement {
                     borderWidth: 1.5,
                   }
                 : undefined,
-            color: band ? color + "3F" : color + "7F",
+            color: band
+              ? color + "3F"
+              : this.chartType === "bar"
+                ? color + "7F"
+                : color,
           };
           if (band && this.chartType === "line") {
             series.stack = `band-${statistic_id}`;
