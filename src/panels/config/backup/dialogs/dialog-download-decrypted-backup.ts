@@ -48,9 +48,6 @@ class DialogDownloadDecryptedBackup extends LitElement implements HassDialog {
   }
 
   private _dialogClosed() {
-    if (this._params!.cancel) {
-      this._params!.cancel();
-    }
     if (this._opened) {
       fireEvent(this, "dialog-closed", { dialog: this.localName });
     }
