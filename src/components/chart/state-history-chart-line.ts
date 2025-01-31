@@ -187,7 +187,7 @@ export class StateHistoryChartLine extends LitElement {
           min: this.fitYData ? this.minYAxis : undefined,
           max: this.fitYData ? this.maxYAxis : undefined,
           position: rtl ? "right" : "left",
-          scale: true,
+          scale: this.fitYData,
           nameGap: 2,
           nameTextStyle: {
             align: "left",
