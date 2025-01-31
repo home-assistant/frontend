@@ -200,7 +200,8 @@ export class HuiGenericEntityRow extends LitElement {
       padding-inline-start: 16px;
       padding-inline-end: 8px;
       flex: 1 1 30%;
-      min-height: 40px;
+    }
+    .info:not(:has(.secondary)) {
       line-height: 40px;
     }
     .info,
@@ -235,7 +236,6 @@ export class HuiGenericEntityRow extends LitElement {
     }
     .value {
       direction: ltr;
-      min-height: 40px;
       line-height: 40px;
     }
   `;
