@@ -132,7 +132,9 @@ export class StateHistoryChartTimeline extends LitElement {
       const { value, name, marker } = Array.isArray(params)
         ? params[0]
         : params;
-      const title = `<h4 style="text-align: center; margin: 0;">${value![0]}</h4>`;
+      const title = value![0]
+        ? `<h4 style="text-align: center; margin: 0;">${value![0]}</h4>`
+        : "";
       const durationInMs = value![2] - value![1];
       const formattedDuration = `${this.hass.localize(
         "ui.components.history_charts.duration"
@@ -281,8 +283,9 @@ export class StateHistoryChartTimeline extends LitElement {
       let prevState: string | null = null;
       let locState: string | null = null;
       let prevLastChanged = startTime;
-      const entityDisplay: string =
-        names[stateInfo.entity_id] || stateInfo.name;
+      const entityDisplay: string = this.showNames
+        ? names[stateInfo.entity_id] || stateInfo.name
+        : "";
 
       const dataRow: unknown[] = [];
       stateInfo.data.forEach((entityState) => {
