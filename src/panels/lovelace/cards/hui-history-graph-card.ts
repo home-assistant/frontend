@@ -244,7 +244,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     })}`;
 
     const columns = this._config.grid_options?.columns ?? 12;
-    const narrow = Number.isNaN(columns) || Number(columns) < 12;
+    const narrow = Number.isNaN(columns) || Number(columns) <= 12;
 
     return html`
       <ha-card>
