@@ -537,20 +537,22 @@ class HaBackupConfigSchedule extends LitElement {
     ha-md-list-item {
       --md-item-overflow: visible;
     }
-    ha-md-select,
-    ha-time-input {
+    ha-md-select {
       min-width: 210px;
     }
+    ha-time-input {
+      min-width: 194px;
+      --time-input-flex: 1;
+    }
     @media all and (max-width: 450px) {
-      ha-md-select,
-      ha-time-input {
+      ha-md-select {
         min-width: 160px;
         width: 160px;
         --md-filled-field-content-space: 0;
       }
       ha-time-input {
-        min-width: 120px;
-        width: 120px;
+        min-width: 145px;
+        width: 145px;
       }
     }
     ha-md-textfield#value {
