@@ -247,9 +247,15 @@ export class StatisticsChart extends LitElement {
         },
         position: computeRTL(this.hass) ? "right" : "left",
         // @ts-ignore
-        scale: this.chartType !== "bar",
-        min: this.fitYData ? undefined : this.minYAxis,
-        max: this.fitYData ? undefined : this.maxYAxis,
+        scale: true,
+        min:
+          this.fitYData && typeof this.minYAxis === "number"
+            ? ({ min }) => Math.min(min, this.minYAxis!)
+            : this.minYAxis,
+        max:
+          this.fitYData && typeof this.maxYAxis === "number"
+            ? ({ max }) => Math.max(max, this.maxYAxis!)
+            : this.maxYAxis,
         splitLine: {
           show: true,
           lineStyle: splitLineStyle,
