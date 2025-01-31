@@ -350,7 +350,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         type: "icon",
         sortable: true,
         minWidth: "88px",
-        maxWidth: "88px",        
+        maxWidth: "88px",
         showNarrow: true,
         template: (helper) => html`
           ${!helper.editable
