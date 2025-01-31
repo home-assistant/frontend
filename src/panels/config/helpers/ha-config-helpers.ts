@@ -346,9 +346,11 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         groupable: true,
       },
       editable: {
-        title: "",
-        label: localize("ui.panel.config.helpers.picker.headers.editable"),
+        title: localize("ui.panel.config.helpers.picker.headers.editable"),
         type: "icon",
+        sortable: true,
+        minWidth: "88px",
+        maxWidth: "88px",        
         showNarrow: true,
         template: (helper) => html`
           ${!helper.editable
