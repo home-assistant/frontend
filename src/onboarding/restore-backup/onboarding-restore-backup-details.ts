@@ -45,6 +45,9 @@ class OnboardingRestoreBackupDetails extends LitElement {
         .card-header {
           padding-bottom: 8px;
         }
+        ha-backup-details-restore {
+          display: block;
+        }
       `,
     ];
   }
