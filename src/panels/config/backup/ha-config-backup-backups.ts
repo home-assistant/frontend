@@ -531,12 +531,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   }
 
   private async _downloadBackup(backup: BackupContent): Promise<void> {
-    downloadBackup(
-      this.hass,
-      this,
-      backup,
-      this.config?.create_backup.password
-    );
+    downloadBackup(this.hass, this, backup, this.config);
   }
 
   private async _deleteBackup(backup: BackupContent): Promise<void> {
