@@ -455,14 +455,14 @@ export class StatisticsChart extends LitElement {
                     borderWidth: 1.5,
                   }
                 : undefined,
-            color: band ? color + "3F" : color + "7F",
+            color:
+              band && hasMean ? color + (this.hideLegend ? "00" : "7F") : color,
           };
           if (band && this.chartType === "line") {
             series.stack = `band-${statistic_id}`;
+            series.stackStrategy = "all";
             (series as LineSeriesOption).symbol = "none";
-            (series as LineSeriesOption).lineStyle = {
-              opacity: 0,
-            };
+            (series as LineSeriesOption).lineStyle = { width: 1.5 };
             if (drawBands && type === "max") {
               (series as LineSeriesOption).areaStyle = {
                 color: color + "3F",
@@ -495,7 +495,7 @@ export class StatisticsChart extends LitElement {
             }
           } else if (type === "max" && this.chartType === "line") {
             const max = stat.max || 0;
-            val.push(max - (stat.min || 0));
+            val.push(Math.abs(max - (stat.min || 0)));
             val.push(max);
           } else {
             val.push(stat[type] ?? null);
