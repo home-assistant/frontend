@@ -8245,10 +8245,11 @@
           "restore_start_failed": "[%key:supervisor::backup::restore_start_failed%]",
           "no_backup_found": "[%key:supervisor::backup::no_backup_found%]",
           "unnamed_backup": "[%key:supervisor::backup::unnamed_backup%]",
-          "return_to_onboarding": {
-            "title": "Return to onboarding",
+          "cancel_restore": {
+            "title": "Cancel restore process?",
             "text": "Are you sure you want to cancel the restore process and return to the onboarding?",
-            "yes": "Yes return"
+            "yes": "[%key:ui::common::yes%]",
+            "no": "[%key:ui::common::no%]"
           }
         }
       },

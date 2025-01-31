@@ -262,15 +262,17 @@ class OnboardingRestoreBackup extends LitElement {
     } else {
       showConfirmationDialog(this, {
         title: this.localize(
-          "ui.panel.page-onboarding.restore.return_to_onboarding.title"
+          "ui.panel.page-onboarding.restore.cancel_restore.title"
         ),
         text: this.localize(
-          "ui.panel.page-onboarding.restore.return_to_onboarding.text"
+          "ui.panel.page-onboarding.restore.cancel_restore.text"
         ),
         confirmText: this.localize(
-          "ui.panel.page-onboarding.restore.return_to_onboarding.yes"
+          "ui.panel.page-onboarding.restore.cancel_restore.yes"
         ),
-        dismissText: this.localize("ui.panel.page-onboarding.restore.cancel"),
+        dismissText: this.localize(
+          "ui.panel.page-onboarding.restore.cancel_restore.no"
+        ),
         confirm: () => {
           setTimeout(() => {
             navigate(`${location.pathname}?${removeSearchParam("page")}`);
