@@ -158,6 +158,11 @@ export class StateHistoryChartLine extends LitElement {
     ) {
       const dayDifference = differenceInDays(this.endTime, this.startTime);
       const rtl = computeRTL(this.hass);
+      const minYAxis =
+        // log(0) is -Infinity, so we need to set a minimum value
+        this.logarithmicScale && typeof this.minYAxis === "number"
+          ? Math.max(this.minYAxis, 0.1)
+          : this.minYAxis;
       this._chartOptions = {
         xAxis: {
           type: "time",
@@ -185,9 +190,9 @@ export class StateHistoryChartLine extends LitElement {
           type: this.logarithmicScale ? "log" : "value",
           name: this.unit,
           min:
-            this.fitYData && typeof this.minYAxis === "number"
-              ? ({ min }) => Math.min(min, this.minYAxis!)
-              : this.minYAxis,
+            this.fitYData && typeof minYAxis === "number"
+              ? ({ min }) => Math.min(min, minYAxis!)
+              : minYAxis,
           max:
             this.fitYData && typeof this.maxYAxis === "number"
               ? ({ max }) => Math.max(max, this.maxYAxis!)
