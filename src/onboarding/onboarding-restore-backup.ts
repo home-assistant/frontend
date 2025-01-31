@@ -216,7 +216,11 @@ class OnboardingRestoreBackup extends LitElement {
       this._view = "upload";
     } catch (err: any) {
       if (restoreRunning) {
-        if (err.error === "Request error") {
+        if (
+          err.error === "Request error" ||
+          // core can restart but haven't loaded the backup integration yet
+          (err.status_code === 500 && err.body?.error === "backup_disabled")
+        ) {
           this._scheduleLoadBackupInfo();
           return;
         }

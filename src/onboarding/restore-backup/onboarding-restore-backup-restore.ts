@@ -131,6 +131,13 @@ class OnboardingRestoreBackupRestore extends LitElement {
       button.actionSuccess();
       fireEvent(this, "restore-started");
     } catch (err: any) {
+      if (err.error === "Request error") {
+        // core can shutdown before we get a response
+        button.actionSuccess();
+        fireEvent(this, "restore-started");
+        return;
+      }
+
       button.actionError();
       if (err.body?.message === "incorrect_password") {
         this._encryptionKeyWrong = true;
