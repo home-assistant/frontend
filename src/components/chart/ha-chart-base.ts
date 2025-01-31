@@ -440,7 +440,7 @@ export class HaChartBase extends LitElement {
   }
 
   private _getDefaultHeight() {
-    return Math.max(this.clientWidth / 2, 400);
+    return Math.max(this.clientWidth / 2, 300);
   }
 
   private _handleZoomReset() {
@@ -470,7 +470,7 @@ export class HaChartBase extends LitElement {
     }
     .chart-container {
       position: relative;
-      max-height: var(--chart-max-height, 400px);
+      max-height: var(--chart-max-height, 300px);
     }
     .chart {
       width: 100%;
