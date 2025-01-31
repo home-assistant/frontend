@@ -184,10 +184,16 @@ export class StateHistoryChartLine extends LitElement {
         yAxis: {
           type: this.logarithmicScale ? "log" : "value",
           name: this.unit,
-          min: this.fitYData ? this.minYAxis : undefined,
-          max: this.fitYData ? this.maxYAxis : undefined,
+          min:
+            this.fitYData && typeof this.minYAxis === "number"
+              ? ({ min }) => Math.min(min, this.minYAxis!)
+              : this.minYAxis,
+          max:
+            this.fitYData && typeof this.maxYAxis === "number"
+              ? ({ max }) => Math.max(max, this.maxYAxis!)
+              : this.maxYAxis,
           position: rtl ? "right" : "left",
-          scale: this.fitYData,
+          scale: true,
           nameGap: 2,
           nameTextStyle: {
             align: "left",
