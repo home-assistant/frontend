@@ -56,6 +56,8 @@ export class StatisticsChart extends LitElement {
 
   @property() public unit?: string;
 
+  @property({ attribute: false }) public startTime?: Date;
+
   @property({ attribute: false }) public endTime?: Date;
 
   @property({ attribute: false, type: Array })
@@ -124,6 +126,8 @@ export class StatisticsChart extends LitElement {
       changedProps.has("fitYData") ||
       changedProps.has("logarithmicScale") ||
       changedProps.has("hideLegend") ||
+      changedProps.has("startTime") ||
+      changedProps.has("endTime") ||
       changedProps.has("_legendData")
     ) {
       this._createOptions();
@@ -218,6 +222,8 @@ export class StatisticsChart extends LitElement {
           this.hass.config,
           dayDifference
         ),
+        min: this.startTime,
+        max: this.endTime,
         axisLine: {
           show: false,
         },
