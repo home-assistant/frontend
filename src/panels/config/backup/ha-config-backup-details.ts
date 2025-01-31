@@ -401,13 +401,7 @@ class HaConfigBackupDetails extends LitElement {
   }
 
   private async _downloadBackup(agentId?: string): Promise<void> {
-    await downloadBackup(
-      this.hass,
-      this,
-      this._backup!,
-      this.config?.create_backup.password,
-      agentId
-    );
+    await downloadBackup(this.hass, this, this._backup!, this.config, agentId);
   }
 
   private async _deleteBackup(): Promise<void> {
