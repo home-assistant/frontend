@@ -6,7 +6,10 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import "../../../components/ha-card";
 import { getEnergyDataCollection } from "../../../data/energy";
-import { getSuggestedPeriod } from "./energy/common/energy-chart-options";
+import {
+  getSuggestedMax,
+  getSuggestedPeriod,
+} from "./energy/common/energy-chart-options";
 import type {
   Statistics,
   StatisticsMetaData,
@@ -274,10 +277,19 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
             .unit=${this._unit}
             .minYAxis=${this._config.min_y_axis}
             .maxYAxis=${this._config.max_y_axis}
+            .startTime=${this._energyStart}
+            .endTime=${this._energyEnd && this._energyStart
+              ? getSuggestedMax(
+                  differenceInDays(this._energyEnd, this._energyStart),
+                  this._energyEnd
+                )
+              : undefined}
             .fitYData=${this._config.fit_y_data || false}
             .hideLegend=${this._config.hide_legend || false}
             .logarithmicScale=${this._config.logarithmic_scale || false}
-            .daysToShow=${this._config.days_to_show || DEFAULT_DAYS_TO_SHOW}
+            .daysToShow=${this._energyStart && this._energyEnd
+              ? differenceInDays(this._energyEnd, this._energyStart)
+              : this._config.days_to_show || DEFAULT_DAYS_TO_SHOW}
             .height=${this._config.grid_options?.rows ? "100%" : undefined}
           ></statistics-chart>
         </div>
