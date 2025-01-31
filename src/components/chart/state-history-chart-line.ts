@@ -107,7 +107,7 @@ export class StateHistoryChartLine extends LitElement {
       }
       // If the datapoint is not found, we need to find the last datapoint before the current time
       const lastData = dataset.data?.find(
-        (point) => point && point[0] > time && point[1]
+        (point) => point && point[0] <= time && point[1]
       );
       if (!lastData) return;
       datapoints.push({
