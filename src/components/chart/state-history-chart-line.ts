@@ -88,45 +88,68 @@ export class StateHistoryChartLine extends LitElement {
     `;
   }
 
-  private _renderTooltip(params) {
-    return params
-      .map((param, index: number) => {
-        let value = `${formatNumber(
-          param.value[1] as number,
-          this.hass.locale,
-          getNumberFormatOptions(
-            undefined,
-            this.hass.entities[this._entityIds[param.seriesIndex]]
-          )
-        )} ${this.unit}`;
-        const dataIndex = this._datasetToDataIndex[param.seriesIndex];
-        const data = this.data[dataIndex];
-        if (data.statistics && data.statistics.length > 0) {
-          value += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-          const source =
-            data.states.length === 0 ||
-            param.value[0] < data.states[0].last_changed
-              ? `${this.hass.localize(
-                  "ui.components.history_charts.source_stats"
-                )}`
-              : `${this.hass.localize(
-                  "ui.components.history_charts.source_history"
-                )}`;
-          value += source;
-        }
+  private _renderTooltip(params: any) {
+    const time = params[0].axisValue;
+    const title =
+      formatDateTimeWithSeconds(
+        new Date(time),
+        this.hass.locale,
+        this.hass.config
+      ) + "<br>";
+    const datapoints: Record<string, any>[] = [];
+    this._chartData.forEach((dataset, index) => {
+      const param = params.find(
+        (p: Record<string, any>) => p.seriesIndex === index
+      );
+      if (param) {
+        datapoints.push(param);
+        return;
+      }
+      // If the datapoint is not found, we need to find the last datapoint before the current time
+      const lastData = dataset.data?.find(
+        (point) => point && point[0] > time && point[1]
+      );
+      if (!lastData) return;
+      datapoints.push({
+        seriesName: dataset.name,
+        seriesIndex: index,
+        value: lastData,
+        // HTML copied from echarts. May change based on options
+        marker: `<span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:${dataset.color};"></span>`,
+      });
+    });
+    return (
+      title +
+      datapoints
+        .map((param) => {
+          let value = `${formatNumber(
+            param.value[1] as number,
+            this.hass.locale,
+            getNumberFormatOptions(
+              undefined,
+              this.hass.entities[this._entityIds[param.seriesIndex]]
+            )
+          )} ${this.unit}`;
+          const dataIndex = this._datasetToDataIndex[param.seriesIndex];
+          const data = this.data[dataIndex];
+          if (data.statistics && data.statistics.length > 0) {
+            value += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+            const source =
+              data.states.length === 0 ||
+              param.value[0] < data.states[0].last_changed
+                ? `${this.hass.localize(
+                    "ui.components.history_charts.source_stats"
+                  )}`
+                : `${this.hass.localize(
+                    "ui.components.history_charts.source_history"
+                  )}`;
+            value += source;
+          }
 
-        const time =
-          index === 0
-            ? formatDateTimeWithSeconds(
-                new Date(param.value[0]),
-                this.hass.locale,
-                this.hass.config
-              ) + "<br>"
-            : "";
-        return `${time}${param.marker} ${param.seriesName}: ${value}
-      `;
-      })
-      .join("<br>");
+          return `${param.marker} ${param.seriesName}: ${value}`;
+        })
+        .join("<br>")
+    );
   }
 
   public willUpdate(changedProps: PropertyValues) {
