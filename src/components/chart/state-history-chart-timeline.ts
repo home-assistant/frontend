@@ -183,7 +183,7 @@ export class StateHistoryChartTimeline extends LitElement {
   private _createOptions() {
     const narrow = this.narrow;
     const showNames = this.chunked || this.showNames;
-    const maxInternalLabelWidth = narrow ? 70 : 165;
+    const maxInternalLabelWidth = narrow ? 105 : 185;
     const labelWidth = showNames
       ? Math.max(this.paddingYAxis, this._yWidth)
       : 0;
