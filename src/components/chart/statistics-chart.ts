@@ -185,9 +185,12 @@ export class StatisticsChart extends LitElement {
     this.requestUpdate("_hiddenStats");
   }
 
-  private _renderTooltip = (params: any) =>
-    params
+  private _renderTooltip = (params: any) => {
+    const rendered: Record<string, boolean> = {};
+    return params
       .map((param, index: number) => {
+        if (rendered[param.seriesName]) return "";
+        rendered[param.seriesName] = true;
         const value = `${formatNumber(
           // max series can have 3 values, as the second value is the max-min to form a band
           (param.value[2] ?? param.value[1]) as number,
@@ -206,10 +209,11 @@ export class StatisticsChart extends LitElement {
                 this.hass.config
               ) + "<br>"
             : "";
-        return `${time}${param.marker} ${param.seriesName}: ${value}
-  `;
+        return `${time}${param.marker} ${param.seriesName}: ${value}`;
       })
+      .filter(Boolean)
       .join("<br>");
+  };
 
   private _createOptions() {
     const splitLineStyle = this.hass.themes?.darkMode ? { opacity: 0.15 } : {};
