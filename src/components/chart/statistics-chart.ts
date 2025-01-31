@@ -375,10 +375,12 @@ export class StatisticsChart extends LitElement {
           ) {
             // if the end of the previous data doesn't match the start of the current data,
             // we have to draw a gap so add a value at the end time, and then an empty value.
-            d.data!.push([prevEndTime, ...prevValues[i]!]);
+            d.data!.push(
+              this._transformDataValue([prevEndTime, ...prevValues[i]!])
+            );
             d.data!.push([prevEndTime, null]);
           }
-          d.data!.push([start, ...dataValues[i]!]);
+          d.data!.push(this._transformDataValue([start, ...dataValues[i]!]));
         });
         prevValues = dataValues;
         prevEndTime = end;
@@ -533,6 +535,13 @@ export class StatisticsChart extends LitElement {
       this._legendData = legendData.map(({ name }) => name);
     }
     this._statisticIds = statisticIds;
+  }
+
+  private _transformDataValue(val: [Date, ...(number | null)[]]) {
+    if (this.chartType === "bar" && val[1] && val[1] < 0) {
+      return { value: val, itemStyle: { borderRadius: [0, 0, 4, 4] } };
+    }
+    return val;
   }
 
   static styles = css`
