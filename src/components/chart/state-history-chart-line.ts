@@ -152,7 +152,10 @@ export class StateHistoryChartLine extends LitElement {
             value += source;
           }
 
-          return `${param.marker} ${param.seriesName}: ${value}`;
+          if (param.seriesName) {
+            return `${param.marker} ${param.seriesName}: ${value}`;
+          }
+          return `${param.marker} ${value}`;
         })
         .join("<br>")
     );
@@ -410,13 +413,21 @@ export class StateHistoryChartLine extends LitElement {
               entityState.attributes.target_temp_low
         );
         addDataSet(
-          `${this.hass.localize("ui.card.climate.current_temperature", {
-            name: name,
-          })}`
+          this.showNames
+            ? this.hass.localize("ui.card.climate.current_temperature", {
+                name: name,
+              })
+            : this.hass.localize(
+                "component.climate.entity_component._.state_attributes.current_temperature.name"
+              )
         );
         if (hasHeat) {
           addDataSet(
-            `${this.hass.localize("ui.card.climate.heating", { name: name })}`,
+            this.showNames
+              ? this.hass.localize("ui.card.climate.heating", { name: name })
+              : this.hass.localize(
+                  "component.climate.entity_component._.state_attributes.hvac_action.state.heating"
+                ),
             computedStyles.getPropertyValue("--state-climate-heat-color"),
             true
           );
@@ -425,7 +436,11 @@ export class StateHistoryChartLine extends LitElement {
         }
         if (hasCool) {
           addDataSet(
-            `${this.hass.localize("ui.card.climate.cooling", { name: name })}`,
+            this.showNames
+              ? this.hass.localize("ui.card.climate.cooling", { name: name })
+              : this.hass.localize(
+                  "component.climate.entity_component._.state_attributes.hvac_action.state.cooling"
+                ),
             computedStyles.getPropertyValue("--state-climate-cool-color"),
             true
           );
@@ -435,22 +450,37 @@ export class StateHistoryChartLine extends LitElement {
 
         if (hasTargetRange) {
           addDataSet(
-            `${this.hass.localize("ui.card.climate.target_temperature_mode", {
-              name: name,
-              mode: this.hass.localize("ui.card.climate.high"),
-            })}`
+            this.showNames
+              ? this.hass.localize("ui.card.climate.target_temperature_mode", {
+                  name: name,
+                  mode: this.hass.localize("ui.card.climate.high"),
+                })
+              : this.hass.localize(
+                  "component.climate.entity_component._.state_attributes.target_temp_high.name"
+                )
           );
           addDataSet(
-            `${this.hass.localize("ui.card.climate.target_temperature_mode", {
-              name: name,
-              mode: this.hass.localize("ui.card.climate.low"),
-            })}`
+            this.showNames
+              ? this.hass.localize("ui.card.climate.target_temperature_mode", {
+                  name: name,
+                  mode: this.hass.localize("ui.card.climate.low"),
+                })
+              : this.hass.localize(
+                  "component.climate.entity_component._.state_attributes.target_temp_low.name"
+                )
           );
         } else {
           addDataSet(
-            `${this.hass.localize("ui.card.climate.target_temperature_entity", {
-              name: name,
-            })}`
+            this.showNames
+              ? this.hass.localize(
+                  "ui.card.climate.target_temperature_entity",
+                  {
+                    name: name,
+                  }
+                )
+              : this.hass.localize(
+                  "component.climate.entity_component._.state_attributes.temperature.name"
+                )
           );
         }
 
@@ -503,19 +533,27 @@ export class StateHistoryChartLine extends LitElement {
           );
 
         addDataSet(
-          `${this.hass.localize("ui.card.humidifier.target_humidity_entity", {
-            name: name,
-          })}`
+          this.showNames
+            ? this.hass.localize("ui.card.humidifier.target_humidity_entity", {
+                name: name,
+              })
+            : this.hass.localize(
+                "component.humidifier.entity_component._.state_attributes.humidity.name"
+              )
         );
 
         if (hasCurrent) {
           addDataSet(
-            `${this.hass.localize(
-              "ui.card.humidifier.current_humidity_entity",
-              {
-                name: name,
-              }
-            )}`
+            this.showNames
+              ? this.hass.localize(
+                  "ui.card.humidifier.current_humidity_entity",
+                  {
+                    name: name,
+                  }
+                )
+              : this.hass.localize(
+                  "component.humidifier.entity_component._.state_attributes.current_humidity.name"
+                )
           );
         }
 
@@ -523,25 +561,37 @@ export class StateHistoryChartLine extends LitElement {
         // If action attribute is not available, we shade the area when the device is on
         if (hasHumidifying) {
           addDataSet(
-            `${this.hass.localize("ui.card.humidifier.humidifying", {
-              name: name,
-            })}`,
+            this.showNames
+              ? this.hass.localize("ui.card.humidifier.humidifying", {
+                  name: name,
+                })
+              : this.hass.localize(
+                  "component.humidifier.entity_component._.state_attributes.action.state.humidifying"
+                ),
             computedStyles.getPropertyValue("--state-humidifier-on-color"),
             true
           );
         } else if (hasDrying) {
           addDataSet(
-            `${this.hass.localize("ui.card.humidifier.drying", {
-              name: name,
-            })}`,
+            this.showNames
+              ? this.hass.localize("ui.card.humidifier.drying", {
+                  name: name,
+                })
+              : this.hass.localize(
+                  "component.humidifier.entity_component._.state_attributes.action.state.drying"
+                ),
             computedStyles.getPropertyValue("--state-humidifier-on-color"),
             true
           );
         } else {
           addDataSet(
-            `${this.hass.localize("ui.card.humidifier.on_entity", {
-              name: name,
-            })}`,
+            this.showNames
+              ? this.hass.localize("ui.card.humidifier.on_entity", {
+                  name: name,
+                })
+              : this.hass.localize(
+                  "component.humidifier.entity_component._.state.on"
+                ),
             undefined,
             true
           );
@@ -574,7 +624,7 @@ export class StateHistoryChartLine extends LitElement {
           pushData(new Date(entityState.last_changed), series);
         });
       } else {
-        addDataSet(name);
+        addDataSet(this.showNames ? name : "");
 
         let lastValue: number;
         let lastDate: Date;
