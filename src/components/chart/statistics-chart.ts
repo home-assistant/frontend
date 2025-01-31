@@ -430,6 +430,7 @@ export class StatisticsChart extends LitElement {
           const series: LineSeriesOption | BarSeriesOption = {
             id: `${statistic_id}-${type}`,
             type: this.chartType,
+            smooth: this.chartType === "line",
             cursor: "default",
             data: [],
             name: name
