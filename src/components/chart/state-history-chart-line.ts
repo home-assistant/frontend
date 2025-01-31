@@ -191,19 +191,19 @@ export class StateHistoryChartLine extends LitElement {
         this.minYAxis;
       let maxYAxis: number | ((values: { max: number }) => number) | undefined =
         this.maxYAxis;
-      if (this.logarithmicScale) {
-        if (typeof minYAxis === "number") {
-          // log(0) is -Infinity, so we need to set a minimum value
-          minYAxis = Math.max(minYAxis, 0.1);
-        } else {
-          // auto scaling doesn't work with logarithmic scale, so we need to do it manually
-          minYAxis = ({ min }) => (min > 0 ? min * 0.95 : min * 1.05);
+      if (typeof minYAxis === "number") {
+        if (this.fitYData) {
+          minYAxis = ({ min }) => Math.min(min, this.minYAxis!);
         }
-        if (typeof maxYAxis === "number") {
-          maxYAxis = Math.max(maxYAxis, 0.1);
-        } else {
-          maxYAxis = ({ max }) => (max > 0 ? max * 1.05 : max * 0.95);
+      } else if (this.logarithmicScale) {
+        minYAxis = ({ min }) => (min > 0 ? min * 0.95 : min * 1.05);
+      }
+      if (typeof maxYAxis === "number") {
+        if (this.fitYData) {
+          maxYAxis = ({ max }) => Math.max(max, this.maxYAxis!);
         }
+      } else if (this.logarithmicScale) {
+        maxYAxis = ({ max }) => (max > 0 ? max * 1.05 : max * 0.95);
       }
       this._chartOptions = {
         xAxis: {
@@ -231,14 +231,8 @@ export class StateHistoryChartLine extends LitElement {
         yAxis: {
           type: this.logarithmicScale ? "log" : "value",
           name: this.unit,
-          min:
-            this.fitYData && typeof minYAxis === "number"
-              ? ({ min }) => Math.min(min, minYAxis as number)
-              : minYAxis,
-          max:
-            this.fitYData && typeof maxYAxis === "number"
-              ? ({ max }) => Math.max(max, maxYAxis as number)
-              : maxYAxis,
+          min: this._clampYAxis(minYAxis),
+          max: this._clampYAxis(maxYAxis),
           position: rtl ? "right" : "left",
           scale: true,
           nameGap: 2,
@@ -656,6 +650,19 @@ export class StateHistoryChartLine extends LitElement {
     this._chartData = datasets;
     this._entityIds = entityIds;
     this._datasetToDataIndex = datasetToDataIndex;
+  }
+
+  private _clampYAxis(value?: number | ((values: any) => number)) {
+    if (this.logarithmicScale) {
+      // log(0) is -Infinity, so we need to set a minimum value
+      if (typeof value === "number") {
+        return Math.max(value, 0.1);
+      }
+      if (typeof value === "function") {
+        return (values: any) => Math.max(value(values), 0.1);
+      }
+    }
+    return value;
   }
 }
 customElements.define("state-history-chart-line", StateHistoryChartLine);

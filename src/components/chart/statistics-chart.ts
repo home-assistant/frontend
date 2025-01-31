@@ -218,6 +218,24 @@ export class StatisticsChart extends LitElement {
   private _createOptions() {
     const splitLineStyle = this.hass.themes?.darkMode ? { opacity: 0.15 } : {};
     const dayDifference = this.daysToShow ?? 1;
+    let minYAxis: number | ((values: { min: number }) => number) | undefined =
+      this.minYAxis;
+    let maxYAxis: number | ((values: { max: number }) => number) | undefined =
+      this.maxYAxis;
+    if (typeof minYAxis === "number") {
+      if (this.fitYData) {
+        minYAxis = ({ min }) => Math.min(min, this.minYAxis!);
+      }
+    } else if (this.logarithmicScale) {
+      minYAxis = ({ min }) => (min > 0 ? min * 0.95 : min * 1.05);
+    }
+    if (typeof maxYAxis === "number") {
+      if (this.fitYData) {
+        maxYAxis = ({ max }) => Math.max(max, this.maxYAxis!);
+      }
+    } else if (this.logarithmicScale) {
+      maxYAxis = ({ max }) => (max > 0 ? max * 1.05 : max * 0.95);
+    }
     this._chartOptions = {
       xAxis: {
         type: "time",
@@ -252,14 +270,8 @@ export class StatisticsChart extends LitElement {
         position: computeRTL(this.hass) ? "right" : "left",
         // @ts-ignore
         scale: true,
-        min:
-          this.fitYData && typeof this.minYAxis === "number"
-            ? ({ min }) => Math.min(min, this.minYAxis!)
-            : this.minYAxis,
-        max:
-          this.fitYData && typeof this.maxYAxis === "number"
-            ? ({ max }) => Math.max(max, this.maxYAxis!)
-            : this.maxYAxis,
+        min: this._clampYAxis(minYAxis),
+        max: this._clampYAxis(maxYAxis),
         splitLine: {
           show: true,
           lineStyle: splitLineStyle,
@@ -554,6 +566,19 @@ export class StatisticsChart extends LitElement {
       return { value: val, itemStyle: { borderRadius: [0, 0, 4, 4] } };
     }
     return val;
+  }
+
+  private _clampYAxis(value?: number | ((values: any) => number)) {
+    if (this.logarithmicScale) {
+      // log(0) is -Infinity, so we need to set a minimum value
+      if (typeof value === "number") {
+        return Math.max(value, 0.1);
+      }
+      if (typeof value === "function") {
+        return (values: any) => Math.max(value(values), 0.1);
+      }
+    }
+    return value;
   }
 
   static styles = css`
