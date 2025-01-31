@@ -142,7 +142,6 @@ export class HaChartBase extends LitElement {
           "dataZoom",
           "dataset",
           "tooltip",
-          "legend",
           "grid",
           "visualMap",
         ],
