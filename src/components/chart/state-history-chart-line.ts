@@ -98,6 +98,7 @@ export class StateHistoryChartLine extends LitElement {
       ) + "<br>";
     const datapoints: Record<string, any>[] = [];
     this._chartData.forEach((dataset, index) => {
+      if (dataset.tooltip?.show === false) return;
       const param = params.find(
         (p: Record<string, any>) => p.seriesIndex === index
       );
