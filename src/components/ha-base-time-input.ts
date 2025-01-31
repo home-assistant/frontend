@@ -329,15 +329,12 @@ export class HaBaseTimeInput extends LitElement {
     :host([clearable]) {
       position: relative;
     }
-    :host {
-      display: block;
-    }
     .time-input-wrap-wrap {
       display: flex;
     }
     .time-input-wrap {
       display: flex;
-      flex: 1;
+      flex: var(--time-input-flex, unset);
       border-radius: var(--mdc-shape-small, 4px) var(--mdc-shape-small, 4px) 0 0;
       overflow: hidden;
       position: relative;
