@@ -25,7 +25,7 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { formatShortDateTime } from "../../../common/datetime/format_date_time";
+import { formatShortDateTimeWithConditionalYear } from "../../../common/datetime/format_date_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -304,7 +304,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
             return html`
               ${script.last_triggered
                 ? dayDifference > 3
-                  ? formatShortDateTime(
+                  ? formatShortDateTimeWithConditionalYear(
                       date,
                       this.hass.locale,
                       this.hass.config
