@@ -1,12 +1,6 @@
 import "@material/mwc-tab";
 import "@material/mwc-tab-bar";
-import {
-  mdiEye,
-  mdiGauge,
-  mdiThermometer,
-  mdiWaterPercent,
-  mdiWeatherWindy,
-} from "@mdi/js";
+import { mdiEye, mdiGauge, mdiWaterPercent, mdiWeatherWindy } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -244,7 +238,7 @@ class MoreInfoWeather extends LitElement {
               </div>
             </div>
           `
-        : ""}
+        : nothing}
       ${this._showValue(this.stateObj.attributes.humidity)
         ? html`
             <div class="flex">
@@ -260,7 +254,7 @@ class MoreInfoWeather extends LitElement {
               </div>
             </div>
           `
-        : ""}
+        : nothing}
       ${this._showValue(this.stateObj.attributes.wind_speed)
         ? html`
             <div class="flex">
@@ -278,7 +272,7 @@ class MoreInfoWeather extends LitElement {
               </div>
             </div>
           `
-        : ""}
+        : nothing}
       ${this._showValue(this.stateObj.attributes.visibility)
         ? html`
             <div class="flex">
@@ -294,7 +288,7 @@ class MoreInfoWeather extends LitElement {
               </div>
             </div>
           `
-        : ""}
+        : nothing}
       ${forecast
         ? html`
             <div class="section">
@@ -368,7 +362,7 @@ class MoreInfoWeather extends LitElement {
                                 )}
                               </div>
                             `
-                          : ""}
+                          : nothing}
                         <div class="temp">
                           ${this._showValue(item.temperature)
                             ? html`${formatNumber(
@@ -384,23 +378,23 @@ class MoreInfoWeather extends LitElement {
                                 this.hass!.locale
                               )}°`
                             : hourly
-                              ? ""
+                              ? nothing
                               : "—"}
                         </div>
                       </div>
                     `
-                  : ""
+                  : nothing
               )}
             </div>
           `
-        : ""}
+        : nothing}
       ${this.stateObj.attributes.attribution
         ? html`
             <div class="attribution">
               ${this.stateObj.attributes.attribution}
             </div>
           `
-        : ""}
+        : nothing}
     `;
   }
 
