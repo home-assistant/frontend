@@ -134,15 +134,17 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
 
     const domain: string = computeDomain(this._config.entity);
     let image: string | undefined = this._config.image;
-    switch (domain) {
-      case "image":
-        image = computeImageUrl(stateObj as ImageEntity);
-        break;
-      case "person":
-        if ((stateObj as PersonEntity).attributes.entity_picture) {
-          image = (stateObj as PersonEntity).attributes.entity_picture;
-        }
-        break;
+    if (!image) {
+      switch (domain) {
+        case "image":
+          image = computeImageUrl(stateObj as ImageEntity);
+          break;
+        case "person":
+          if ((stateObj as PersonEntity).attributes.entity_picture) {
+            image = (stateObj as PersonEntity).attributes.entity_picture;
+          }
+          break;
+      }
     }
 
     return html`
