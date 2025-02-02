@@ -2,7 +2,7 @@ import type { PaperIconButtonElement } from "@polymer/paper-icon-button/paper-ic
 import type { PaperTabElement } from "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
 import type { PaperTabsElement } from "@polymer/paper-tabs/paper-tabs";
-import { customElement } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import type { HomeAssistant, Constructor } from "../types";
 import { computeRTLDirection } from "../common/util/compute_rtl";
 
