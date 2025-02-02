@@ -279,6 +279,8 @@ export class StatisticsChart extends LitElement {
       },
       legend: {
         show: !this.hideLegend,
+        type: "scroll",
+        animationDurationUpdate: 400,
         icon: "circle",
         padding: [20, 0],
         data: this._legendData,
