@@ -22,6 +22,9 @@ import type { PictureEntityCardConfig } from "./types";
 import type { CameraEntity } from "../../../data/camera";
 import type { PersonEntity } from "../../../data/person";
 
+export const STUB_IMAGE =
+  "https://demo.home-assistant.io/stub_config/bedroom.png";
+
 @customElement("hui-picture-entity-card")
 class HuiPictureEntityCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -46,7 +49,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     return {
       type: "picture-entity",
       entity: foundEntities[0] || "",
-      image: "https://demo.home-assistant.io/stub_config/bedroom.png",
+      image: STUB_IMAGE,
     };
   }
 
