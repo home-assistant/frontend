@@ -124,7 +124,7 @@ export class HuiPictureEntityCardEditor
       delete config.image;
     }
 
-    fireEvent(this, "config-changed", { config: ev.detail.value });
+    fireEvent(this, "config-changed", { config });
   }
 
   private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
