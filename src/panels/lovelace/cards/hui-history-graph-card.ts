@@ -259,6 +259,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
         <div
           class="content ${classMap({
             "has-header": !!this._config.title,
+            "has-rows": !!this._config.grid_options?.rows,
           })}"
         >
           ${this._error
@@ -318,6 +319,9 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     }
     state-history-charts {
       height: 100%;
+    }
+    .has-rows {
+      --chart-max-height: 100%;
     }
   `;
 }
