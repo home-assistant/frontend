@@ -90,11 +90,11 @@ export class HaTabs extends PaperTabs {
     this.$.tabsContainer.scrollLeft += dx;
 
     const scrollLeft = this.$.tabsContainer.scrollLeft;
-    const dirRTL = computeRTLDirection(this.hass!) === 'rtl';
+    const dirRTL = computeRTLDirection(this.hass!) === "rtl";
 
     const boolCondition1 = Math.abs(scrollLeft) < this._firstTabWidth;
     const boolCondition2 =
-      (Math.abs(scrollLeft) + this._lastTabWidth) > this._tabContainerScrollSize;
+      Math.abs(scrollLeft) + this._lastTabWidth > this._tabContainerScrollSize;
 
     this._leftHidden = !dirRTL ? boolCondition1 : boolCondition2;
     this._rightHidden = !dirRTL ? boolCondition2 : boolCondition1;
