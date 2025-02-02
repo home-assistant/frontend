@@ -18,9 +18,11 @@ export class HaTabs extends PaperTabs {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   private _firstTabWidth = 0;
+
   private _lastTabWidth = 0;
 
   private _lastLeftHiddenState = false;
+
   private _lastRightHiddenState = false;
 
   static get template(): HTMLTemplateElement {
@@ -90,23 +92,21 @@ export class HaTabs extends PaperTabs {
     const scrollLeft = this.$.tabsContainer.scrollLeft;
     const dirRTL = computeRTLDirection(this.hass!) === 'rtl';
 
-    const boolCondition_1 = Math.abs(scrollLeft) < this._firstTabWidth;
-    const boolCondition_2 =
+    const boolCondition1 = Math.abs(scrollLeft) < this._firstTabWidth;
+    const boolCondition2 =
       (Math.abs(scrollLeft) + this._lastTabWidth) > this._tabContainerScrollSize;
 
-    this._leftHidden = !dirRTL ? boolCondition_1 : boolCondition_2;
-    this._rightHidden = !dirRTL ? boolCondition_2 : boolCondition_1;
+    this._leftHidden = !dirRTL ? boolCondition1 : boolCondition2;
+    this._rightHidden = !dirRTL ? boolCondition2 : boolCondition1;
 
     if (!dirRTL) {
       if (this._lastLeftHiddenState !== this._leftHidden) {
         this._lastLeftHiddenState = this._leftHidden;
         this.$.tabsContainer.scrollLeft += this._leftHidden ? -23 : 23;
       }
-    } else {
-      if (this._lastRightHiddenState !== this._rightHidden) {
-        this._lastRightHiddenState = this._rightHidden;
-        this.$.tabsContainer.scrollLeft -= this._rightHidden ? -23 : 23;
-      }
+    } else if (this._lastRightHiddenState !== this._rightHidden) {
+      this._lastRightHiddenState = this._rightHidden;
+      this.$.tabsContainer.scrollLeft -= this._rightHidden ? -23 : 23;
     }
   }
 }
