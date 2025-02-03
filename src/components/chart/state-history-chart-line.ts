@@ -267,7 +267,8 @@ export class StateHistoryChartLine extends LitElement {
             margin: 5,
             formatter: (value: number) => {
               const label = formatNumber(value, this.hass.locale);
-              const width = measureTextWidth(label, 12) + 5;
+              // adding 5px extra because preview is not accurate #24027
+              const width = measureTextWidth(label, 12) + 5 + 5;
               if (width > this._yWidth) {
                 this._yWidth = width;
                 fireEvent(this, "y-width-changed", {
