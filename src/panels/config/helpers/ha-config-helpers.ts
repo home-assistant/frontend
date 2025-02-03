@@ -958,7 +958,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _handleBulkCategory = async (item) => {
+  private _handleBulkCategory = (item) => {
     const category = item.value;
     this._bulkAddCategory(category);
   };
