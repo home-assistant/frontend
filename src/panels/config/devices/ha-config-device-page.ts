@@ -1073,7 +1073,14 @@ export class HaConfigDevicePage extends LitElement {
       (ent) => computeDomain(ent.entity_id) === "assist_satellite"
     );
 
+    const domains = this._integrations(
+      device,
+      this.entries,
+      this.manifests
+    ).map((int) => int.domain);
+
     if (
+      !domains.includes("voip") &&
       assistSatellite &&
       assistSatelliteSupportsSetupFlow(
         this.hass.states[assistSatellite.entity_id]
@@ -1087,12 +1094,6 @@ export class HaConfigDevicePage extends LitElement {
         icon: mdiMicrophone,
       });
     }
-
-    const domains = this._integrations(
-      device,
-      this.entries,
-      this.manifests
-    ).map((int) => int.domain);
 
     if (domains.includes("mqtt")) {
       const mqtt = await import(
