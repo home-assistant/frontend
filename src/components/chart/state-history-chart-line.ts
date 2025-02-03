@@ -4,7 +4,6 @@ import { property, state } from "lit/decorators";
 import type { VisualMapComponentOption } from "echarts/components";
 import type { LineSeriesOption } from "echarts/charts";
 import type { YAXisOption } from "echarts/types/dist/shared";
-import { differenceInDays } from "date-fns";
 import { styleMap } from "lit/directives/style-map";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { computeRTL } from "../../common/util/compute_rtl";
@@ -18,7 +17,6 @@ import {
   getNumberFormatOptions,
   formatNumber,
 } from "../../common/number/format_number";
-import { getTimeAxisLabelConfig } from "./axis-label";
 import { measureTextWidth } from "../../util/text";
 import { fireEvent } from "../../common/dom/fire_event";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../data/climate";
@@ -206,7 +204,6 @@ export class StateHistoryChartLine extends LitElement {
       changedProps.has("paddingYAxis") ||
       changedProps.has("_yWidth")
     ) {
-      const dayDifference = differenceInDays(this.endTime, this.startTime);
       const rtl = computeRTL(this.hass);
       let minYAxis: number | ((values: { min: number }) => number) | undefined =
         this.minYAxis;
@@ -231,23 +228,6 @@ export class StateHistoryChartLine extends LitElement {
           type: "time",
           min: this.startTime,
           max: this.endTime,
-          axisLabel: getTimeAxisLabelConfig(
-            this.hass.locale,
-            this.hass.config,
-            dayDifference
-          ),
-          axisLine: {
-            show: false,
-          },
-          splitLine: {
-            show: true,
-          },
-          minInterval:
-            dayDifference >= 89 // quarter
-              ? 28 * 3600 * 24 * 1000
-              : dayDifference > 2
-                ? 3600 * 24 * 1000
-                : undefined,
         },
         yAxis: {
           type: this.logarithmicScale ? "log" : "value",
