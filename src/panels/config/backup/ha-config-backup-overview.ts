@@ -221,8 +221,7 @@ class HaConfigBackupOverview extends LitElement {
           gap: 24px;
           display: flex;
           flex-direction: column;
-          margin-bottom: 24px;
-          margin-bottom: 72px;
+          margin-bottom: calc(env(safe-area-inset-bottom) + 72px);
         }
         .card-actions {
           display: flex;
