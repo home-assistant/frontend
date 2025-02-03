@@ -72,6 +72,8 @@ export class StateHistoryChartLine extends LitElement {
 
   @state() private _chartOptions?: ECOption;
 
+  private _hiddenStats = new Set<string>();
+
   @state() private _yWidth = 25;
 
   private _chartTime: Date = new Date();
@@ -84,6 +86,9 @@ export class StateHistoryChartLine extends LitElement {
         .options=${this._chartOptions}
         .height=${this.height}
         style=${styleMap({ height: this.height })}
+        external-hidden
+        @dataset-hidden=${this._datasetHidden}
+        @dataset-unhidden=${this._datasetUnhidden}
       ></ha-chart-base>
     `;
   }
@@ -98,7 +103,11 @@ export class StateHistoryChartLine extends LitElement {
       ) + "<br>";
     const datapoints: Record<string, any>[] = [];
     this._chartData.forEach((dataset, index) => {
-      if (dataset.tooltip?.show === false) return;
+      if (
+        dataset.tooltip?.show === false ||
+        this._hiddenStats.has(dataset.name as string)
+      )
+        return;
       const param = params.find(
         (p: Record<string, any>) => p.seriesIndex === index
       );
@@ -160,6 +169,14 @@ export class StateHistoryChartLine extends LitElement {
         })
         .join("<br>")
     );
+  }
+
+  private _datasetHidden(ev: CustomEvent) {
+    this._hiddenStats.add(ev.detail.name);
+  }
+
+  private _datasetUnhidden(ev: CustomEvent) {
+    this._hiddenStats.delete(ev.detail.name);
   }
 
   public willUpdate(changedProps: PropertyValues) {
@@ -264,6 +281,8 @@ export class StateHistoryChartLine extends LitElement {
         } as YAXisOption,
         legend: {
           show: this.showNames,
+          type: "scroll",
+          animationDurationUpdate: 400,
           icon: "circle",
           padding: [20, 0],
         },
@@ -632,7 +651,7 @@ export class StateHistoryChartLine extends LitElement {
           pushData(new Date(entityState.last_changed), series);
         });
       } else {
-        addDataSet(this.showNames ? name : "");
+        addDataSet(name);
 
         let lastValue: number;
         let lastDate: Date;
