@@ -287,7 +287,7 @@ export class StatisticsChart extends LitElement {
       },
       grid: {
         ...(this.hideLegend ? { top: this.unit ? 30 : 5 } : {}), // undefined is the same as 0
-        left: 20,
+        left: 5,
         right: 1,
         bottom: 0,
         containLabel: true,
