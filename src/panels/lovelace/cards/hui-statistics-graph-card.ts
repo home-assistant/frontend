@@ -258,6 +258,8 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
+    const hasFixedHeight = typeof this._config.grid_options?.rows === "number";
+
     return html`
       <ha-card .header=${this._config.title}>
         <div
@@ -290,7 +292,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
             .daysToShow=${this._energyStart && this._energyEnd
               ? differenceInDays(this._energyEnd, this._energyStart)
               : this._config.days_to_show || DEFAULT_DAYS_TO_SHOW}
-            .height=${this._config.grid_options?.rows ? "100%" : undefined}
+            .height=${hasFixedHeight ? "100%" : undefined}
           ></statistics-chart>
         </div>
       </ha-card>
