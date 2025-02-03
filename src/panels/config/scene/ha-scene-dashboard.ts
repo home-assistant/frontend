@@ -932,7 +932,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _handleBulkCategory = async (item) => {
+  private _handleBulkCategory = (item) => {
     const category = item.value;
     this._bulkAddCategory(category);
   };
@@ -1028,7 +1028,7 @@ ${rejected
     }
   }
 
-  private _bulkCreateArea = async () => {
+  private _bulkCreateArea = () => {
     showAreaRegistryDetailDialog(this, {
       createEntry: async (values) => {
         const area = await createAreaRegistryEntry(this.hass, values);
@@ -1133,7 +1133,7 @@ ${rejected
     });
   }
 
-  private _bulkCreateCategory = async () => {
+  private _bulkCreateCategory = () => {
     showCategoryRegistryDetailDialog(this, {
       scope: "scene",
       createEntry: async (values) => {

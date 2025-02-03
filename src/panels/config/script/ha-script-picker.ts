@@ -977,7 +977,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
     this._selected = ev.detail.value;
   }
 
-  private _handleBulkCategory = async (item) => {
+  private _handleBulkCategory = (item) => {
     const category = item.value;
     this._bulkAddCategory(category);
   };
@@ -1185,7 +1185,7 @@ ${rejected
     }
   }
 
-  private _bulkCreateCategory = async () => {
+  private _bulkCreateCategory = () => {
     showCategoryRegistryDetailDialog(this, {
       scope: "script",
       createEntry: async (values) => {
@@ -1240,7 +1240,7 @@ ${rejected
     }
   }
 
-  private _bulkCreateArea = async () => {
+  private _bulkCreateArea = () => {
     showAreaRegistryDetailDialog(this, {
       createEntry: async (values) => {
         const area = await createAreaRegistryEntry(this.hass, values);
