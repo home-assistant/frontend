@@ -132,6 +132,7 @@ export class StateHistoryChartLine extends LitElement {
         marker: `<span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:${dataset.color};"></span>`,
       });
     });
+    const unit = this.unit ? ` ${this.unit}` : "";
     return (
       title +
       datapoints
@@ -143,7 +144,7 @@ export class StateHistoryChartLine extends LitElement {
               undefined,
               this.hass.entities[this._entityIds[param.seriesIndex]]
             )
-          )} ${this.unit}`;
+          )}${unit}`;
           const dataIndex = this._datasetToDataIndex[param.seriesIndex];
           const data = this.data[dataIndex];
           if (data.statistics && data.statistics.length > 0) {
