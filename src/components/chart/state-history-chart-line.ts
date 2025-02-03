@@ -372,13 +372,18 @@ export class StateHistoryChartLine extends LitElement {
         prevValues = datavalues;
       };
 
-      const addDataSet = (nameY: string, color?: string, fill = false) => {
+      const addDataSet = (
+        id: string,
+        nameY: string,
+        color?: string,
+        fill = false
+      ) => {
         if (!color) {
           color = getGraphColorByIndex(colorIndex, computedStyles);
           colorIndex++;
         }
         data.push({
-          id: nameY,
+          id,
           data: [],
           type: "line",
           cursor: "default",
@@ -440,6 +445,7 @@ export class StateHistoryChartLine extends LitElement {
               entityState.attributes.target_temp_low
         );
         addDataSet(
+          states.entity_id + "-current_temperature",
           this.showNames
             ? this.hass.localize("ui.card.climate.current_temperature", {
                 name: name,
@@ -450,6 +456,7 @@ export class StateHistoryChartLine extends LitElement {
         );
         if (hasHeat) {
           addDataSet(
+            states.entity_id + "-heating",
             this.showNames
               ? this.hass.localize("ui.card.climate.heating", { name: name })
               : this.hass.localize(
@@ -463,6 +470,7 @@ export class StateHistoryChartLine extends LitElement {
         }
         if (hasCool) {
           addDataSet(
+            states.entity_id + "-cooling",
             this.showNames
               ? this.hass.localize("ui.card.climate.cooling", { name: name })
               : this.hass.localize(
@@ -477,6 +485,7 @@ export class StateHistoryChartLine extends LitElement {
 
         if (hasTargetRange) {
           addDataSet(
+            states.entity_id + "-target_temperature_mode",
             this.showNames
               ? this.hass.localize("ui.card.climate.target_temperature_mode", {
                   name: name,
@@ -487,6 +496,7 @@ export class StateHistoryChartLine extends LitElement {
                 )
           );
           addDataSet(
+            states.entity_id + "-target_temperature_mode_low",
             this.showNames
               ? this.hass.localize("ui.card.climate.target_temperature_mode", {
                   name: name,
@@ -498,6 +508,7 @@ export class StateHistoryChartLine extends LitElement {
           );
         } else {
           addDataSet(
+            states.entity_id + "-target_temperature",
             this.showNames
               ? this.hass.localize(
                   "ui.card.climate.target_temperature_entity",
@@ -560,6 +571,7 @@ export class StateHistoryChartLine extends LitElement {
           );
 
         addDataSet(
+          states.entity_id + "-target_humidity",
           this.showNames
             ? this.hass.localize("ui.card.humidifier.target_humidity_entity", {
                 name: name,
@@ -571,6 +583,7 @@ export class StateHistoryChartLine extends LitElement {
 
         if (hasCurrent) {
           addDataSet(
+            states.entity_id + "-current_humidity",
             this.showNames
               ? this.hass.localize(
                   "ui.card.humidifier.current_humidity_entity",
@@ -588,6 +601,7 @@ export class StateHistoryChartLine extends LitElement {
         // If action attribute is not available, we shade the area when the device is on
         if (hasHumidifying) {
           addDataSet(
+            states.entity_id + "-humidifying",
             this.showNames
               ? this.hass.localize("ui.card.humidifier.humidifying", {
                   name: name,
@@ -600,6 +614,7 @@ export class StateHistoryChartLine extends LitElement {
           );
         } else if (hasDrying) {
           addDataSet(
+            states.entity_id + "-drying",
             this.showNames
               ? this.hass.localize("ui.card.humidifier.drying", {
                   name: name,
@@ -612,6 +627,7 @@ export class StateHistoryChartLine extends LitElement {
           );
         } else {
           addDataSet(
+            states.entity_id + "-on",
             this.showNames
               ? this.hass.localize("ui.card.humidifier.on_entity", {
                   name: name,
@@ -651,7 +667,7 @@ export class StateHistoryChartLine extends LitElement {
           pushData(new Date(entityState.last_changed), series);
         });
       } else {
-        addDataSet(name);
+        addDataSet(states.entity_id, name);
 
         let lastValue: number;
         let lastDate: Date;
