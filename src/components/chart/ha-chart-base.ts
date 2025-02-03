@@ -2,6 +2,7 @@ import type { PropertyValues } from "lit";
 import { css, html, nothing, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { classMap } from "lit/directives/class-map";
 import { mdiRestart } from "@mdi/js";
 import type { EChartsType } from "echarts/core";
 import type { DataZoomComponentOption } from "echarts/components";
@@ -12,6 +13,7 @@ import type {
   YAXisOption,
 } from "echarts/types/dist/shared";
 import { consume } from "@lit-labs/context";
+import { differenceInMinutes } from "date-fns";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HomeAssistant } from "../../types";
 import { isMac } from "../../util/is_mac";
@@ -21,6 +23,7 @@ import { listenMediaQuery } from "../../common/dom/media_query";
 import type { Themes } from "../../data/ws-themes";
 import { themesContext } from "../../data/context";
 import { getAllGraphColors } from "../../common/color/colors";
+import { formatTimeLabel } from "./axis-label";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 
@@ -44,6 +47,10 @@ export class HaChartBase extends LitElement {
   _themes!: Themes;
 
   @state() private _isZoomed = false;
+
+  @state() private _zoomRatio = 1;
+
+  @state() private _minutesDifference = 24 * 60;
 
   private _modifierPressed = false;
 
@@ -152,7 +159,10 @@ export class HaChartBase extends LitElement {
   protected render() {
     return html`
       <div
-        class="chart-container"
+        class=${classMap({
+          "chart-container": true,
+          "has-legend": !!this.options?.legend,
+        })}
         style=${styleMap({
           height: this.height ?? `${this._getDefaultHeight()}px`,
         })}
@@ -172,6 +182,14 @@ export class HaChartBase extends LitElement {
       </div>
     `;
   }
+
+  private _formatTimeLabel = (value: number | Date) =>
+    formatTimeLabel(
+      value,
+      this.hass.locale,
+      this.hass.config,
+      this._minutesDifference * this._zoomRatio
+    );
 
   private async _setupChart() {
     if (this._loading) return;
@@ -199,6 +217,7 @@ export class HaChartBase extends LitElement {
       this.chart.on("datazoom", (e: any) => {
         const { start, end } = e.batch?.[0] ?? e;
         this._isZoomed = start !== 0 || end !== 100;
+        this._zoomRatio = (end - start) / 100;
       });
       this.chart.on("click", (e: ECElementEvent) => {
         fireEvent(this, "chart-click", e);
@@ -236,6 +255,45 @@ export class HaChartBase extends LitElement {
   }
 
   private _createOptions(): ECOption {
+    let xAxis = this.options?.xAxis;
+    if (xAxis && !Array.isArray(xAxis) && xAxis.type === "time") {
+      if (xAxis.max && xAxis.min) {
+        this._minutesDifference = differenceInMinutes(
+          xAxis.max as Date,
+          xAxis.min as Date
+        );
+      }
+      const dayDifference = this._minutesDifference / 60 / 24;
+      let minInterval: number | undefined;
+      if (dayDifference) {
+        minInterval =
+          dayDifference >= 89 // quarter
+            ? 28 * 3600 * 24 * 1000
+            : dayDifference > 2
+              ? 3600 * 24 * 1000
+              : undefined;
+      }
+      xAxis = {
+        ...xAxis,
+        axisLabel: {
+          formatter: this._formatTimeLabel,
+          rich: {
+            bold: {
+              fontWeight: "bold",
+            },
+          },
+          hideOverlap: true,
+          ...xAxis.axisLabel,
+        },
+        axisLine: {
+          show: false,
+        },
+        splitLine: {
+          show: true,
+        },
+        minInterval,
+      } as XAXisOption;
+    }
     const options = {
       animation: !this._reducedMotion,
       darkMode: this._themes.darkMode ?? false,
@@ -244,6 +302,7 @@ export class HaChartBase extends LitElement {
       },
       dataZoom: this._getDataZoomConfig(),
       ...this.options,
+      xAxis,
     };
 
     const isMobile = window.matchMedia(
@@ -484,6 +543,9 @@ export class HaChartBase extends LitElement {
       --mdc-icon-button-size: 32px;
       color: var(--primary-color);
       border: 1px solid var(--divider-color);
+    }
+    .has-legend .zoom-reset {
+      top: 64px;
     }
   `;
 }
