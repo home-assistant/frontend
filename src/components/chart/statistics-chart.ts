@@ -30,7 +30,6 @@ import {
   getNumberFormatOptions,
 } from "../../common/number/format_number";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
-import { getTimeAxisLabelConfig } from "./axis-label";
 
 export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
   mean: "mean",
@@ -216,7 +215,6 @@ export class StatisticsChart extends LitElement {
   };
 
   private _createOptions() {
-    const splitLineStyle = this.hass.themes?.darkMode ? { opacity: 0.15 } : {};
     const dayDifference = this.daysToShow ?? 1;
     let minYAxis: number | ((values: { min: number }) => number) | undefined =
       this.minYAxis;
@@ -236,29 +234,32 @@ export class StatisticsChart extends LitElement {
     } else if (this.logarithmicScale) {
       maxYAxis = ({ max }) => (max > 0 ? max * 1.05 : max * 0.95);
     }
+    const endTime = this.endTime ?? new Date();
+    let startTime = this.startTime;
+
+    if (!startTime) {
+      // Calculate default start time based on dayDifference
+      startTime = new Date(
+        endTime.getTime() - dayDifference * 24 * 3600 * 1000
+      );
+
+      // Check chart data for earlier points
+      this._chartData.forEach((series) => {
+        if (!Array.isArray(series.data)) return;
+        series.data.forEach((point) => {
+          const timestamp = Array.isArray(point) ? point[0] : point.value?.[0];
+          if (new Date(timestamp) < startTime!) {
+            startTime = new Date(timestamp);
+          }
+        });
+      });
+    }
+
     this._chartOptions = {
       xAxis: {
         type: "time",
-        axisLabel: getTimeAxisLabelConfig(
-          this.hass.locale,
-          this.hass.config,
-          dayDifference
-        ),
-        min: this.startTime,
-        max: this.endTime,
-        axisLine: {
-          show: false,
-        },
-        splitLine: {
-          show: true,
-          lineStyle: splitLineStyle,
-        },
-        minInterval:
-          dayDifference >= 89 // quarter
-            ? 28 * 3600 * 24 * 1000
-            : dayDifference > 2
-              ? 3600 * 24 * 1000
-              : undefined,
+        min: startTime,
+        max: endTime,
       },
       yAxis: {
         type: this.logarithmicScale ? "log" : "value",
@@ -274,7 +275,6 @@ export class StatisticsChart extends LitElement {
         max: this._clampYAxis(maxYAxis),
         splitLine: {
           show: true,
-          lineStyle: splitLineStyle,
         },
       },
       legend: {
@@ -348,6 +348,7 @@ export class StatisticsChart extends LitElement {
     if (endTime > new Date()) {
       endTime = new Date();
     }
+    this.endTime = endTime;
 
     let unit: string | undefined | null;
 
