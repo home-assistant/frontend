@@ -474,7 +474,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
           flex-wrap: nowrap;
           justify-content: space-between;
           align-items: center;
-          padding: 0px 16px;
+          padding: 0 16px;
         }
 
         .content + .forecast {
@@ -557,7 +557,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         .forecast {
           display: flex;
           justify-content: space-around;
-          padding: 0px 16px;
+          padding: 0 16px;
         }
 
         .forecast > div {
@@ -566,7 +566,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
         .forecast .icon,
         .forecast .temp {
-          margin: 0px 0;
+          margin: 0;
         }
 
         .forecast .temp {
