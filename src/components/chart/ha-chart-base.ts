@@ -143,15 +143,7 @@ export class HaChartBase extends LitElement {
       this.chart.setOption(this._createOptions(), {
         lazyUpdate: true,
         // if we replace the whole object, it will reset the dataZoom
-        replaceMerge: [
-          "xAxis",
-          "yAxis",
-          "dataZoom",
-          "dataset",
-          "tooltip",
-          "grid",
-          "visualMap",
-        ],
+        replaceMerge: ["grid"],
       });
     }
   }
@@ -503,6 +495,7 @@ export class HaChartBase extends LitElement {
 
   private _handleZoomReset() {
     this.chart?.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
+    this._modifierPressed = false;
   }
 
   private _handleWheel(e: WheelEvent) {

@@ -33,10 +33,7 @@ export const loggingMixin = <T extends Constructor<HassBaseEl>>(
             ev.message.includes("ResizeObserver loop limit exceeded")) ||
           ev.message.includes(
             "ResizeObserver loop completed with undelivered notifications"
-          ) ||
-          (ev.error.stack.includes("DataZoomModel") &&
-            (ev.message.includes("undefined") ||
-              ev.message.includes("Cannot read properties of null")))
+          )
         ) {
           ev.preventDefault();
           ev.stopImmediatePropagation();
