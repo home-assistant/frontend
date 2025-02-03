@@ -286,7 +286,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                     this._todoListSupportsFeature(
                       TodoListEntityFeature.MOVE_TODO_ITEM
                     )
-                      ? html`<ha-button-menu @closed=${stopPropagation}>
+                      ? html`<ha-button-menu @closed=${stopPropagation} fixed>
                           <ha-icon-button
                             slot="trigger"
                             .path=${mdiDotsVertical}
@@ -330,7 +330,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                       ${this._todoListSupportsFeature(
                         TodoListEntityFeature.DELETE_TODO_ITEM
                       )
-                        ? html`<ha-button-menu @closed=${stopPropagation}>
+                        ? html`<ha-button-menu @closed=${stopPropagation} fixed>
                             <ha-icon-button
                               slot="trigger"
                               .path=${mdiDotsVertical}
@@ -648,6 +648,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     ha-card {
       height: 100%;
       box-sizing: border-box;
+      overflow-y: auto;
     }
 
     .has-header {
