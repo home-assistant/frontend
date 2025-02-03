@@ -39,9 +39,11 @@ import type {
   BackupContent,
 } from "../../../data/backup";
 import {
+  BACKUP_TYPE_ORDER,
   compareAgents,
   computeBackupAgentName,
   computeBackupSize,
+  computeBackupType,
   deleteBackup,
   generateBackup,
   generateBackupWithAutomaticSettings,
@@ -73,10 +75,6 @@ interface BackupRow extends DataTableRowData, BackupContent {
   size: number;
   agent_ids: string[];
 }
-
-type BackupType = "automatic" | "manual";
-
-const TYPE_ORDER: BackupType[] = ["automatic", "manual"];
 
 @customElement("ha-config-backup-backups")
 class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
@@ -279,7 +277,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   private _groupOrder = memoizeOne(
     (activeGrouping: string | undefined, localize: LocalizeFunc) =>
       activeGrouping === "formatted_type"
-        ? TYPE_ORDER.map((type) =>
+        ? BACKUP_TYPE_ORDER.map((type) =>
             localize(`ui.panel.config.backup.type.${type}`)
           )
         : undefined
@@ -308,15 +306,13 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
       const typeFilter = filters["ha-filter-states"] as string[] | undefined;
       let filteredBackups = backups;
       if (typeFilter?.length) {
-        filteredBackups = filteredBackups.filter(
-          (backup) =>
-            (backup.with_automatic_settings &&
-              typeFilter.includes("automatic")) ||
-            (!backup.with_automatic_settings && typeFilter.includes("manual"))
-        );
+        filteredBackups = filteredBackups.filter((backup) => {
+          const type = computeBackupType(backup);
+          return typeFilter.includes(type);
+        });
       }
       return filteredBackups.map((backup) => {
-        const type = backup.with_automatic_settings ? "automatic" : "manual";
+        const type = computeBackupType(backup);
         const agentIds = Object.keys(backup.agents);
         return {
           ...backup,
@@ -461,7 +457,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   }
 
   private _states = memoizeOne((localize: LocalizeFunc) =>
-    TYPE_ORDER.map((type) => ({
+    BACKUP_TYPE_ORDER.map((type) => ({
       value: type,
       label: localize(`ui.panel.config.backup.type.${type}`),
     }))

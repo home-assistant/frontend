@@ -105,6 +105,7 @@ export interface BackupContent {
   agents: Record<string, BackupContentAgent>;
   failed_agent_ids?: string[];
   with_automatic_settings: boolean;
+  addon_update?: boolean;
 }
 
 export interface BackupData {
@@ -318,6 +319,24 @@ export const computeBackupAgentName = (
 
 export const computeBackupSize = (backup: BackupContent) =>
   Math.max(...Object.values(backup.agents).map((agent) => agent.size));
+
+export type BackupType = "automatic" | "manual" | "addon_update";
+
+export const BACKUP_TYPE_ORDER: BackupType[] = [
+  "automatic",
+  "manual",
+  "addon_update",
+];
+
+export const computeBackupType = (backup: BackupContent): BackupType => {
+  if (backup.with_automatic_settings) {
+    return "automatic";
+  }
+  if (backup.addon_update) {
+    return "addon_update";
+  }
+  return "manual";
+};
 
 export const compareAgents = (a: string, b: string) => {
   const isLocalA = isLocalAgent(a);
