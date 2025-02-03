@@ -37,6 +37,7 @@ export const downloadBackup = async (
 
   if (!isProtected) {
     downloadBackupFile(hass, backup.backup_id, preferedAgent);
+    return;
   }
 
   const encryptionKey = backupConfig?.create_backup?.password;
