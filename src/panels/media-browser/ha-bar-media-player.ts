@@ -462,7 +462,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
   }
 
   private _openMoreInfo() {
-    if (this._browserPlayer) {
+    if (this.entityId === BROWSER_PLAYER) {
       return;
     }
     fireEvent(this, "hass-more-info", { entityId: this.entityId });
