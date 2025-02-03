@@ -186,6 +186,7 @@ export class StatisticsChart extends LitElement {
 
   private _renderTooltip = (params: any) => {
     const rendered: Record<string, boolean> = {};
+    const unit = this.unit ? ` ${this.unit}` : "";
     return params
       .map((param, index: number) => {
         if (rendered[param.seriesName]) return "";
@@ -198,7 +199,7 @@ export class StatisticsChart extends LitElement {
             undefined,
             this.hass.entities[this._statisticIds[param.seriesIndex]]
           )
-        )} ${this.unit}`;
+        )}${unit}`;
 
         const time =
           index === 0
