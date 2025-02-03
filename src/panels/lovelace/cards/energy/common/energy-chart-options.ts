@@ -10,7 +10,6 @@ import { formatNumber } from "../../../../../common/number/format_number";
 import { formatDateVeryShort } from "../../../../../common/datetime/format_date";
 import { formatTime } from "../../../../../common/datetime/format_time";
 import type { ECOption } from "../../../../../resources/echarts";
-import { getTimeAxisLabelConfig } from "../../../../../components/chart/axis-label";
 
 export function getSuggestedMax(dayDifference: number, end: Date): number {
   let suggestedMax = new Date(end);
@@ -52,23 +51,9 @@ export function getCommonOptions(
 
   const options: ECOption = {
     xAxis: {
-      id: "xAxisMain",
       type: "time",
-      min: start.getTime(),
-      max: getSuggestedMax(dayDifference, end),
-      axisLabel: getTimeAxisLabelConfig(locale, config, dayDifference),
-      axisLine: {
-        show: false,
-      },
-      splitLine: {
-        show: true,
-      },
-      minInterval:
-        dayDifference >= 89 // quarter
-          ? 28 * 3600 * 24 * 1000
-          : dayDifference > 2
-            ? 3600 * 24 * 1000
-            : undefined,
+      min: start,
+      max: end,
     },
     yAxis: {
       type: "value",

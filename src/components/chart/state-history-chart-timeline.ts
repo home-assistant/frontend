@@ -8,7 +8,6 @@ import type {
   TooltipFormatterCallback,
   TooltipPositionCallbackParams,
 } from "echarts/types/dist/shared";
-import { differenceInDays } from "date-fns";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import millisecondsToDuration from "../../common/datetime/milliseconds_to_duration";
 import { computeRTL } from "../../common/util/compute_rtl";
@@ -22,7 +21,6 @@ import { luminosity } from "../../common/color/rgb";
 import { hex2rgb } from "../../common/color/convert-color";
 import { measureTextWidth } from "../../util/text";
 import { fireEvent } from "../../common/dom/fire_event";
-import { getTimeAxisLabelConfig } from "./axis-label";
 
 @customElement("state-history-chart-timeline")
 export class StateHistoryChartTimeline extends LitElement {
@@ -191,7 +189,6 @@ export class StateHistoryChartTimeline extends LitElement {
       : 0;
     const labelMargin = 5;
     const rtl = computeRTL(this.hass);
-    const dayDifference = differenceInDays(this.endTime, this.startTime);
     this._chartOptions = {
       xAxis: {
         type: "time",
@@ -203,20 +200,6 @@ export class StateHistoryChartTimeline extends LitElement {
         splitLine: {
           show: false,
         },
-        axisLine: {
-          show: false,
-        },
-        axisLabel: getTimeAxisLabelConfig(
-          this.hass.locale,
-          this.hass.config,
-          dayDifference
-        ),
-        minInterval:
-          dayDifference >= 89 // quarter
-            ? 28 * 3600 * 24 * 1000
-            : dayDifference > 2
-              ? 3600 * 24 * 1000
-              : undefined,
       },
       yAxis: {
         type: "category",
