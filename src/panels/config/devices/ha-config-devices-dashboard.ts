@@ -626,7 +626,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         (area) =>
           html`<ha-md-menu-item
             .value=${area.area_id}
-            @click=${this._handleBulkArea}
+            .clickAction=${this._handleBulkArea}
           >
             ${area.icon
               ? html`<ha-icon slot="start" .icon=${area.icon}></ha-icon>`
@@ -637,7 +637,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
             <div slot="headline">${area.name}</div>
           </ha-md-menu-item>`
       )}
-      <ha-md-menu-item .value=${null} @click=${this._handleBulkArea}>
+      <ha-md-menu-item .value=${null} .clickAction=${this._handleBulkArea}>
         <div slot="headline">
           ${this.hass.localize(
             "ui.panel.config.devices.picker.bulk_actions.no_area"
@@ -645,7 +645,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         </div>
       </ha-md-menu-item>
       <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-      <ha-md-menu-item @click=${this._bulkCreateArea}>
+      <ha-md-menu-item .clickAction=${this._bulkCreateArea}>
         <div slot="headline">
           ${this.hass.localize(
             "ui.panel.config.devices.picker.bulk_actions.add_area"
@@ -684,7 +684,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         </ha-md-menu-item>`;
       })}
       <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-      <ha-md-menu-item @click=${this._bulkCreateLabel}>
+      <ha-md-menu-item .clickAction=${this._bulkCreateLabel}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.labels.add_label")}
         </div></ha-md-menu-item
@@ -969,10 +969,10 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
     this._selected = ev.detail.value;
   }
 
-  private async _handleBulkArea(ev) {
-    const area = ev.currentTarget.value;
+  private _handleBulkArea = (item) => {
+    const area = item.value;
     this._bulkAddArea(area);
-  }
+  };
 
   private async _bulkAddArea(area: string) {
     const promises: Promise<DeviceRegistryEntry>[] = [];
@@ -999,7 +999,7 @@ ${rejected
     }
   }
 
-  private async _bulkCreateArea() {
+  private _bulkCreateArea = () => {
     showAreaRegistryDetailDialog(this, {
       createEntry: async (values) => {
         const area = await createAreaRegistryEntry(this.hass, values);
@@ -1007,7 +1007,7 @@ ${rejected
         return area;
       },
     });
-  }
+  };
 
   private async _handleBulkLabel(ev) {
     const label = ev.currentTarget.value;
@@ -1045,7 +1045,7 @@ ${rejected
     }
   }
 
-  private _bulkCreateLabel() {
+  private _bulkCreateLabel = () => {
     showLabelDetailDialog(this, {
       createEntry: async (values) => {
         const label = await createLabelRegistryEntry(this.hass, values);
@@ -1053,7 +1053,7 @@ ${rejected
         return label;
       },
     });
-  }
+  };
 
   private _handleSortingChanged(ev: CustomEvent) {
     this._activeSorting = ev.detail;
