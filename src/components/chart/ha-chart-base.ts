@@ -540,7 +540,7 @@ export class HaChartBase extends LitElement {
     }
     .chart-container {
       position: relative;
-      max-height: var(--chart-max-height, 300px);
+      max-height: var(--chart-max-height, 350px);
     }
     .chart {
       width: 100%;
