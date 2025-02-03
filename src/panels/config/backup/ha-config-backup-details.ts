@@ -31,6 +31,7 @@ import {
   compareAgents,
   computeBackupAgentName,
   computeBackupSize,
+  computeBackupType,
   deleteBackup,
   fetchBackupDetails,
   isLocalAgent,
@@ -161,6 +162,18 @@ class HaConfigBackupDetails extends LitElement {
                     </div>
                     <div class="card-content">
                       <ha-md-list class="summary">
+                        <ha-md-list-item>
+                          <span slot="headline">
+                            ${this.hass.localize(
+                              "ui.panel.config.backup.backup_type"
+                            )}
+                          </span>
+                          <span slot="supporting-text">
+                            ${this.hass.localize(
+                              `ui.panel.config.backup.type.${computeBackupType(this._backup)}`
+                            )}
+                          </span>
+                        </ha-md-list-item>
                         <ha-md-list-item>
                           <span slot="headline">
                             ${this.hass.localize(
