@@ -462,6 +462,9 @@ export class StatisticsChart extends LitElement {
             displayedLegend = displayedLegend || showLegend;
           }
           statTypes.push(type);
+          const borderColor =
+            band && hasMean ? color + (this.hideLegend ? "00" : "7F") : color;
+          const backgroundColor = band ? color + "3F" : color + "7F";
           const series: LineSeriesOption | BarSeriesOption = {
             id: `${statistic_id}-${type}`,
             type: this.chartType,
@@ -485,21 +488,16 @@ export class StatisticsChart extends LitElement {
               this.chartType === "bar"
                 ? {
                     borderRadius: [4, 4, 0, 0],
-                    borderColor:
-                      band && hasMean
-                        ? color + (this.hideLegend ? "00" : "7F")
-                        : color,
+                    borderColor,
                     borderWidth: 1.5,
                   }
                 : undefined,
-            color:
-              band && hasMean ? color + (this.hideLegend ? "00" : "7F") : color,
+            color: this.chartType === "bar" ? backgroundColor : borderColor,
           };
           if (band && this.chartType === "line") {
             series.stack = `band-${statistic_id}`;
             series.stackStrategy = "all";
             (series as LineSeriesOption).symbol = "none";
-            (series as LineSeriesOption).lineStyle = { width: 1.5 };
             if (drawBands && type === "max") {
               (series as LineSeriesOption).areaStyle = {
                 color: color + "3F",
