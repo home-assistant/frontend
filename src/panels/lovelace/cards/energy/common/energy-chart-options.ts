@@ -1,11 +1,15 @@
 import type { HassConfig } from "home-assistant-js-websocket";
 import {
-  addHours,
+  differenceInMonths,
   subHours,
   differenceInDays,
   differenceInYears,
   startOfYear,
   addMilliseconds,
+  startOfMonth,
+  addYears,
+  addMonths,
+  addHours,
 } from "date-fns";
 import type {
   BarSeriesOption,
@@ -260,14 +264,18 @@ export function getCompareTransform(start: Date, compareStart?: Date) {
     return (ts: Date) => ts;
   }
   const compareYearDiff = differenceInYears(start, compareStart);
-  const compareIsYear =
-    compareYearDiff !== 0 && start.getTime() === startOfYear(start).getTime();
-  if (compareIsYear) {
-    return (ts: Date) => {
-      const newDate = new Date(ts);
-      newDate.setFullYear(start.getFullYear());
-      return newDate;
-    };
+  if (
+    compareYearDiff !== 0 &&
+    start.getTime() === startOfYear(start).getTime()
+  ) {
+    return (ts: Date) => addYears(ts, compareYearDiff);
+  }
+  const compareMonthDiff = differenceInMonths(start, compareStart);
+  if (
+    compareMonthDiff !== 0 &&
+    start.getTime() === startOfMonth(start).getTime()
+  ) {
+    return (ts: Date) => addMonths(ts, compareMonthDiff);
   }
   const compareOffset = start.getTime() - compareStart.getTime();
   return (ts: Date) => addMilliseconds(ts, compareOffset);
