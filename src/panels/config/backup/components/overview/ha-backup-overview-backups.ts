@@ -3,6 +3,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
@@ -10,9 +11,9 @@ import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import type { BackupContent, BackupType } from "../../../../../data/backup";
 import {
-  BACKUP_TYPE_ORDER,
   computeBackupSize,
   computeBackupType,
+  getBackupTypes,
 } from "../../../../../data/backup";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
@@ -46,17 +47,21 @@ class HaBackupOverviewBackups extends LitElement {
   @property({ attribute: false }) public backups: BackupContent[] = [];
 
   private _stats = memoizeOne(
-    (backups: BackupContent[]): [BackupType, BackupStats][] =>
-      BACKUP_TYPE_ORDER.map((type) => {
+    (
+      backups: BackupContent[],
+      isHassio: boolean
+    ): [BackupType, BackupStats][] =>
+      getBackupTypes(isHassio).map((type) => {
         const backupsOfType = backups.filter(
-          (backup) => computeBackupType(backup) === type
+          (backup) => computeBackupType(backup, isHassio) === type
         );
         return [type, computeBackupStats(backupsOfType)] as const;
       })
   );
 
   render() {
-    const stats = this._stats(this.backups);
+    const isHassio = isComponentLoaded(this.hass, "hassio");
+    const stats = this._stats(this.backups, isHassio);
 
     return html`
       <ha-card class="my-backups">

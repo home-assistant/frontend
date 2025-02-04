@@ -1,6 +1,8 @@
+import { memoize } from "@fullcalendar/core/internal";
 import { setHours, setMinutes } from "date-fns";
 import type { HassConfig } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
+import checkValidDate from "../common/datetime/check_valid_date";
 import {
   formatDateTime,
   formatDateTimeNumeric,
@@ -11,7 +13,6 @@ import type { HomeAssistant } from "../types";
 import { fileDownload } from "../util/file_download";
 import { domainToName } from "./integration";
 import type { FrontendLocaleData } from "./translation";
-import checkValidDate from "../common/datetime/check_valid_date";
 
 export const enum BackupScheduleRecurrence {
   NEVER = "never",
@@ -104,8 +105,10 @@ export interface BackupContent {
   name: string;
   agents: Record<string, BackupContentAgent>;
   failed_agent_ids?: string[];
+  extra_metadata?: {
+    "supervisor.addon_update"?: boolean;
+  };
   with_automatic_settings: boolean;
-  addon_update?: boolean;
 }
 
 export interface BackupData {
@@ -322,17 +325,22 @@ export const computeBackupSize = (backup: BackupContent) =>
 
 export type BackupType = "automatic" | "manual" | "addon_update";
 
-export const BACKUP_TYPE_ORDER: BackupType[] = [
-  "automatic",
-  "manual",
-  "addon_update",
-];
+const BACKUP_TYPE_ORDER: BackupType[] = ["automatic", "manual", "addon_update"];
 
-export const computeBackupType = (backup: BackupContent): BackupType => {
+export const getBackupTypes = memoize((isHassio: boolean) =>
+  isHassio
+    ? BACKUP_TYPE_ORDER
+    : BACKUP_TYPE_ORDER.filter((type) => type !== "addon_update")
+);
+
+export const computeBackupType = (
+  backup: BackupContent,
+  isHassio: boolean
+): BackupType => {
   if (backup.with_automatic_settings) {
     return "automatic";
   }
-  if (backup.addon_update) {
+  if (isHassio && backup.extra_metadata?.["supervisor.addon_update"]) {
     return "addon_update";
   }
   return "manual";
