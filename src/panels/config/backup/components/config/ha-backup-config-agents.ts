@@ -1,4 +1,4 @@
-import { mdiCog, mdiHarddisk, mdiNas } from "@mdi/js";
+import { mdiCog, mdiDelete, mdiHarddisk, mdiNas } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -41,13 +41,6 @@ class HaBackupConfigAgents extends LitElement {
 
   @state() private value?: string[];
 
-  private _availableAgents = memoizeOne(
-    (agents: BackupAgent[], cloudStatus: CloudStatus) =>
-      agents.filter(
-        (agent) => agent.agent_id !== CLOUD_AGENT || cloudStatus.logged_in
-      )
-  );
-
   private get _value() {
     return this.value ?? DEFAULT_AGENTS;
   }
@@ -86,19 +79,84 @@ class HaBackupConfigAgents extends LitElement {
     return "";
   }
 
-  protected render() {
-    const agents = this._availableAgents(this.agents, this.cloudStatus);
+  private _availableAgents = memoizeOne(
+    (agents: BackupAgent[], cloudStatus: CloudStatus) =>
+      agents.filter(
+        (agent) => agent.agent_id !== CLOUD_AGENT || cloudStatus.logged_in
+      )
+  );
+
+  private _unavailableAgents = memoizeOne(
+    (
+      agents: BackupAgent[],
+      cloudStatus: CloudStatus,
+      selectedAgentIds: string[]
+    ) => {
+      const availableAgentIds = this._availableAgents(agents, cloudStatus).map(
+        (agent) => agent.agent_id
+      );
+
+      return selectedAgentIds
+        .filter((agent) => !availableAgentIds.includes(agent))
+        .map<BackupAgent>((id) => ({
+          agent_id: id,
+          name: id.split(".")[1] || id, // Use the id as name as it is not available in the list
+        }));
+    }
+  );
+
+  private _renderAgentIcon(agentId: string) {
+    if (isLocalAgent(agentId)) {
+      return html`
+        <ha-svg-icon .path=${mdiHarddisk} slot="start"></ha-svg-icon>
+      `;
+    }
+
+    if (isNetworkMountAgent(agentId)) {
+      return html`<ha-svg-icon .path=${mdiNas} slot="start"></ha-svg-icon>`;
+    }
+
+    const domain = computeDomain(agentId);
+
     return html`
-      ${agents.length > 0
+      <img
+        .src=${brandsUrl({
+          domain,
+          type: "icon",
+          useFallback: true,
+          darkOptimized: this.hass.themes?.darkMode,
+        })}
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+        alt=""
+        slot="start"
+      />
+    `;
+  }
+
+  protected render() {
+    const availableAgents = this._availableAgents(
+      this.agents,
+      this.cloudStatus
+    );
+    const unavailableAgents = this._unavailableAgents(
+      this.agents,
+      this.cloudStatus,
+      this._value
+    );
+
+    const allAgents = [...availableAgents, ...unavailableAgents];
+
+    return html`
+      ${allAgents.length > 0
         ? html`
             <ha-md-list>
-              ${agents.map((agent) => {
+              ${availableAgents.map((agent) => {
                 const agentId = agent.agent_id;
-                const domain = computeDomain(agentId);
                 const name = computeBackupAgentName(
                   this.hass.localize,
                   agentId,
-                  this.agents
+                  allAgents
                 );
                 const description = this._description(agentId);
                 const noCloudSubscription =
@@ -108,32 +166,7 @@ class HaBackupConfigAgents extends LitElement {
 
                 return html`
                   <ha-md-list-item>
-                    ${isLocalAgent(agentId)
-                      ? html`
-                          <ha-svg-icon .path=${mdiHarddisk} slot="start">
-                          </ha-svg-icon>
-                        `
-                      : isNetworkMountAgent(agentId)
-                        ? html`
-                            <ha-svg-icon
-                              .path=${mdiNas}
-                              slot="start"
-                            ></ha-svg-icon>
-                          `
-                        : html`
-                            <img
-                              .src=${brandsUrl({
-                                domain,
-                                type: "icon",
-                                useFallback: true,
-                                darkOptimized: this.hass.themes?.darkMode,
-                              })}
-                              crossorigin="anonymous"
-                              referrerpolicy="no-referrer"
-                              alt=""
-                              slot="start"
-                            />
-                          `}
+                    ${this._renderAgentIcon(agentId)}
                     <div slot="headline" class="name">${name}</div>
                     ${description
                       ? html`<div slot="supporting-text">${description}</div>`
@@ -151,14 +184,44 @@ class HaBackupConfigAgents extends LitElement {
                     <ha-switch
                       slot="end"
                       id=${agentId}
-                      .checked=${!noCloudSubscription &&
-                      this._value.includes(agentId)}
-                      .disabled=${noCloudSubscription}
+                      .checked=${this._value.includes(agentId)}
+                      .disabled=${noCloudSubscription &&
+                      !this._value.includes(agentId)}
                       @change=${this._agentToggled}
                     ></ha-switch>
                   </ha-md-list-item>
                 `;
               })}
+              ${unavailableAgents.length > 0 && this.showSettings
+                ? html`
+                    <p class="heading">
+                      ${this.hass.localize(
+                        "ui.panel.config.backup.agents.unavailable_agents"
+                      )}
+                    </p>
+                    ${unavailableAgents.map((agent) => {
+                      const agentId = agent.agent_id;
+                      const name = computeBackupAgentName(
+                        this.hass.localize,
+                        agentId,
+                        allAgents
+                      );
+
+                      return html`
+                        <ha-md-list-item>
+                          ${this._renderAgentIcon(agentId)}
+                          <div slot="headline" class="name">${name}</div>
+                          <ha-icon-button
+                            id=${agentId}
+                            slot="end"
+                            path=${mdiDelete}
+                            @click=${this._deleteAgent}
+                          ></ha-icon-button>
+                        </ha-md-list-item>
+                      `;
+                    })}
+                  `
+                : nothing}
             </ha-md-list>
           `
         : html`
@@ -174,6 +237,13 @@ class HaBackupConfigAgents extends LitElement {
     navigate(`/config/backup/location/${agentId}`);
   }
 
+  private _deleteAgent(ev): void {
+    ev.stopPropagation();
+    const agentId = ev.currentTarget.id;
+    this.value = this._value.filter((agent) => agent !== agentId);
+    fireEvent(this, "value-changed", { value: this.value });
+  }
+
   private _agentToggled(ev) {
     ev.stopPropagation();
     const value = ev.currentTarget.checked;
@@ -185,19 +255,8 @@ class HaBackupConfigAgents extends LitElement {
       this.value = this._value.filter((agent) => agent !== agentId);
     }
 
-    const availableAgents = this._availableAgents(
-      this.agents,
-      this.cloudStatus
-    );
-
     // Ensure we don't have duplicates, agents exist in the list and cloud is logged in
-    this.value = [...new Set(this.value)]
-      .filter((id) => availableAgents.some((agent) => agent.agent_id === id))
-      .filter(
-        (id) =>
-          id !== CLOUD_AGENT ||
-          (this.cloudStatus.logged_in && this.cloudStatus.active_subscription)
-      );
+    this.value = [...new Set(this.value)];
 
     fireEvent(this, "value-changed", { value: this.value });
   }
