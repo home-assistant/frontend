@@ -4591,6 +4591,7 @@
             "account_created": "Account created! Check your email for instructions on how to activate your account."
           },
           "account": {
+            "download_support_package": "Download support package",
             "reset_cloud_data": "Reset cloud data",
             "reset_data_confirm_title": "Reset cloud data?",
             "reset_data_confirm_text": "This will reset all your cloud settings. This includes your remote connection, Google Assistant and Amazon Alexa integrations. This action cannot be undone.",
