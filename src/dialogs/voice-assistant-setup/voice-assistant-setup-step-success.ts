@@ -85,7 +85,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
         <div class="rows">
           ${this.assistConfiguration &&
           this.assistConfiguration.available_wake_words.length > 1
-            ? html` <div class="row">
+            ? html`<div class="row">
                 <ha-select
                   .label=${"Wake word"}
                   @closed=${stopPropagation}
