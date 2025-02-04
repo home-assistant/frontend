@@ -1035,13 +1035,13 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
   private _renderSubEntry(configEntry: ConfigEntry, subEntry: SubConfigEntry) {
     const devices = this._getConfigEntryDevices(configEntry).filter((device) =>
-      device.config_subentries[configEntry.entry_id]?.includes(
+      device.config_entries_subentries[configEntry.entry_id]?.includes(
         subEntry.subentry_id
       )
     );
     const services = this._getConfigEntryServices(configEntry).filter(
       (device) =>
-        device.config_subentries[configEntry.entry_id]?.includes(
+        device.config_entries_subentries[configEntry.entry_id]?.includes(
           subEntry.subentry_id
         )
     );

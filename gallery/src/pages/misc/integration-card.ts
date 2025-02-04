@@ -217,7 +217,7 @@ const createDeviceRegistryEntries = (
   {
     entry_type: null,
     config_entries: [item.entry_id],
-    config_subentries: {},
+    config_entries_subentries: {},
     connections: [],
     manufacturer: "ESPHome",
     model: "Mock Device",

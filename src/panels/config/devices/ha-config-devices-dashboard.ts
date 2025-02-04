@@ -360,9 +360,11 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
           const configEntryId = this._filters.config_entry.value[0];
           outputDevices = outputDevices.filter(
             (device) =>
-              device.config_subentries[configEntryId] &&
+              device.config_entries_subentries[configEntryId] &&
               (filter.value as string[]).some((subEntryId) =>
-                device.config_subentries[configEntryId].includes(subEntryId)
+                device.config_entries_subentries[configEntryId].includes(
+                  subEntryId
+                )
               )
           );
           if (!this._subConfigEntries) {
