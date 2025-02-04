@@ -47,6 +47,7 @@ import { showRestoreBackupDialog } from "./dialogs/show-dialog-restore-backup";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { downloadBackup } from "./helper/download_backup";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
 interface Agent extends BackupContentAgent {
   id: string;
@@ -111,6 +112,8 @@ class HaConfigBackupDetails extends LitElement {
       return nothing;
     }
 
+    const isHassio = isComponentLoaded(this.hass, "hassio");
+
     return html`
       <hass-subpage
         back-path="/config/backup/backups"
@@ -170,7 +173,7 @@ class HaConfigBackupDetails extends LitElement {
                           </span>
                           <span slot="supporting-text">
                             ${this.hass.localize(
-                              `ui.panel.config.backup.type.${computeBackupType(this._backup)}`
+                              `ui.panel.config.backup.type.${computeBackupType(this._backup, isHassio)}`
                             )}
                           </span>
                         </ha-md-list-item>
