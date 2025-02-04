@@ -1,15 +1,22 @@
-import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import type {
   BarSeriesOption,
   LineSeriesOption,
 } from "echarts/types/dist/shared";
+import type { PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import memoizeOne from "memoize-one";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 
+import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
+import {
+  formatNumber,
+  getNumberFormatOptions,
+} from "../../common/number/format_number";
+import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
+import { computeRTL } from "../../common/util/compute_rtl";
 import type {
   Statistics,
   StatisticsMetaData,
@@ -21,15 +28,9 @@ import {
   getStatisticMetadata,
   statisticsHaveType,
 } from "../../data/recorder";
+import type { ECOption } from "../../resources/echarts";
 import type { HomeAssistant } from "../../types";
 import "./ha-chart-base";
-import { computeRTL } from "../../common/util/compute_rtl";
-import type { ECOption } from "../../resources/echarts";
-import {
-  formatNumber,
-  getNumberFormatOptions,
-} from "../../common/number/format_number";
-import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 
 export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
   mean: "mean",
@@ -186,20 +187,26 @@ export class StatisticsChart extends LitElement {
 
   private _renderTooltip = (params: any) => {
     const rendered: Record<string, boolean> = {};
-    const unit = this.unit ? ` ${this.unit}` : "";
+    const unit = this.unit
+      ? `${blankBeforeUnit(this.unit, this.hass.locale)}${this.unit}`
+      : "";
     return params
       .map((param, index: number) => {
         if (rendered[param.seriesName]) return "";
         rendered[param.seriesName] = true;
-        const value = `${formatNumber(
-          // max series can have 3 values, as the second value is the max-min to form a band
-          (param.value[2] ?? param.value[1]) as number,
-          this.hass.locale,
-          getNumberFormatOptions(
-            undefined,
-            this.hass.entities[this._statisticIds[param.seriesIndex]]
-          )
-        )}${unit}`;
+
+        const statisticId = this._statisticIds[param.seriesIndex];
+        const stateObj = this.hass.states[statisticId];
+        const entry = this.hass.entities[statisticId];
+        const stateValue = String(param.value[1]);
+
+        const value = stateObj
+          ? this.hass.formatEntityState(stateObj, stateValue)
+          : `${formatNumber(
+              stateValue,
+              this.hass.locale,
+              getNumberFormatOptions(undefined, entry)
+            )}${unit}`;
 
         const time =
           index === 0
