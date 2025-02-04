@@ -2223,7 +2223,8 @@
           "backup_type": "Type",
           "type": {
             "manual": "Manual",
-            "automatic": "Automatic"
+            "automatic": "Automatic",
+            "addon_update": "Add-on update"
           },
           "locations": "Locations",
           "create": {
@@ -2565,6 +2566,7 @@
               "title": "My backups",
               "automatic": "{count} automatic {count, plural,\n one {backup}\n other {backups}\n}",
               "manual": "{count} manual {count, plural,\n one {backup}\n other {backups}\n}",
+              "addon_update": "{count} add-on update {count, plural,\n one {backup}\n other {backups}\n}",
               "total_size": "{size} in total",
               "show_all": "Show all backups"
             },
