@@ -181,3 +181,6 @@ export const updateCloudGoogleEntityConfig = (
 
 export const cloudSyncGoogleAssistant = (hass: HomeAssistant) =>
   hass.callApi("POST", "cloud/google_actions/sync");
+
+export const fetchSupportPackage = (hass: HomeAssistant) =>
+  hass.callApi<string>("GET", "cloud/support_package");
