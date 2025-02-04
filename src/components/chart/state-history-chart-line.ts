@@ -20,6 +20,7 @@ import {
 import { measureTextWidth } from "../../util/text";
 import { fireEvent } from "../../common/dom/fire_event";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../data/climate";
+import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
 
 const safeParseFloat = (value) => {
   const parsed = parseFloat(value);
@@ -132,19 +133,25 @@ export class StateHistoryChartLine extends LitElement {
         marker: `<span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:${dataset.color};"></span>`,
       });
     });
-    const unit = this.unit ? ` ${this.unit}` : "";
+    const unit = this.unit
+      ? `${blankBeforeUnit(this.unit, this.hass.locale)}${this.unit}`
+      : "";
+
     return (
       title +
       datapoints
         .map((param) => {
-          let value = `${formatNumber(
-            param.value[1] as number,
-            this.hass.locale,
-            getNumberFormatOptions(
-              undefined,
-              this.hass.entities[this._entityIds[param.seriesIndex]]
-            )
-          )}${unit}`;
+          const entityId = this._entityIds[param.seriesIndex];
+          const stateObj = this.hass.states[entityId];
+          const entry = this.hass.entities[entityId];
+          const stateValue = String(param.value[1]);
+          let value = stateObj
+            ? this.hass.formatEntityState(stateObj, stateValue)
+            : `${formatNumber(
+                stateValue,
+                this.hass.locale,
+                getNumberFormatOptions(undefined, entry)
+              )}${unit}`;
           const dataIndex = this._datasetToDataIndex[param.seriesIndex];
           const data = this.data[dataIndex];
           if (data.statistics && data.statistics.length > 0) {
