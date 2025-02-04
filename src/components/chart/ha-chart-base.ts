@@ -248,43 +248,49 @@ export class HaChartBase extends LitElement {
 
   private _createOptions(): ECOption {
     let xAxis = this.options?.xAxis;
-    if (xAxis && !Array.isArray(xAxis) && xAxis.type === "time") {
-      if (xAxis.max && xAxis.min) {
-        this._minutesDifference = differenceInMinutes(
-          xAxis.max as Date,
-          xAxis.min as Date
-        );
-      }
-      const dayDifference = this._minutesDifference / 60 / 24;
-      let minInterval: number | undefined;
-      if (dayDifference) {
-        minInterval =
-          dayDifference >= 89 // quarter
-            ? 28 * 3600 * 24 * 1000
-            : dayDifference > 2
-              ? 3600 * 24 * 1000
-              : undefined;
-      }
-      xAxis = {
-        ...xAxis,
-        axisLabel: {
-          formatter: this._formatTimeLabel,
-          rich: {
-            bold: {
-              fontWeight: "bold",
-            },
+    if (xAxis) {
+      xAxis = Array.isArray(xAxis) ? xAxis : [xAxis];
+      xAxis = xAxis.map((axis: XAXisOption) => {
+        if (axis.type !== "time" || axis.show === false) {
+          return axis;
+        }
+        if (axis.max && axis.min) {
+          this._minutesDifference = differenceInMinutes(
+            axis.max as Date,
+            axis.min as Date
+          );
+        }
+        const dayDifference = this._minutesDifference / 60 / 24;
+        let minInterval: number | undefined;
+        if (dayDifference) {
+          minInterval =
+            dayDifference >= 89 // quarter
+              ? 28 * 3600 * 24 * 1000
+              : dayDifference > 2
+                ? 3600 * 24 * 1000
+                : undefined;
+        }
+        return {
+          axisLine: {
+            show: false,
           },
-          hideOverlap: true,
-          ...xAxis.axisLabel,
-        },
-        axisLine: {
-          show: false,
-        },
-        splitLine: {
-          show: true,
-        },
-        minInterval,
-      } as XAXisOption;
+          splitLine: {
+            show: true,
+          },
+          ...axis,
+          axisLabel: {
+            formatter: this._formatTimeLabel,
+            rich: {
+              bold: {
+                fontWeight: "bold",
+              },
+            },
+            hideOverlap: true,
+            ...axis.axisLabel,
+          },
+          minInterval,
+        } as XAXisOption;
+      });
     }
     const options = {
       animation: !this._reducedMotion,

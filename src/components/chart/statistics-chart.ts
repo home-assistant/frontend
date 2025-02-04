@@ -264,11 +264,17 @@ export class StatisticsChart extends LitElement {
     }
 
     this._chartOptions = {
-      xAxis: {
-        type: "time",
-        min: startTime,
-        max: endTime,
-      },
+      xAxis: [
+        {
+          type: "time",
+          min: startTime,
+          max: endTime,
+        },
+        {
+          type: "time",
+          show: false,
+        },
+      ],
       yAxis: {
         type: this.logarithmicScale ? "log" : "value",
         name: this.unit,
@@ -559,6 +565,7 @@ export class StatisticsChart extends LitElement {
         color,
         type: this.chartType,
         data: [],
+        xAxisIndex: 1,
       });
     });
 
