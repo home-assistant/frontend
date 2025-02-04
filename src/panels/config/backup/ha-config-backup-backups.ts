@@ -11,6 +11,7 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
@@ -42,9 +43,11 @@ import {
   compareAgents,
   computeBackupAgentName,
   computeBackupSize,
+  computeBackupType,
   deleteBackup,
   generateBackup,
   generateBackupWithAutomaticSettings,
+  getBackupTypes,
   isLocalAgent,
   isNetworkMountAgent,
 } from "../../../data/backup";
@@ -73,10 +76,6 @@ interface BackupRow extends DataTableRowData, BackupContent {
   size: number;
   agent_ids: string[];
 }
-
-type BackupType = "automatic" | "manual";
-
-const TYPE_ORDER: BackupType[] = ["automatic", "manual"];
 
 @customElement("ha-config-backup-backups")
 class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
@@ -277,9 +276,13 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   );
 
   private _groupOrder = memoizeOne(
-    (activeGrouping: string | undefined, localize: LocalizeFunc) =>
+    (
+      activeGrouping: string | undefined,
+      localize: LocalizeFunc,
+      isHassio: boolean
+    ) =>
       activeGrouping === "formatted_type"
-        ? TYPE_ORDER.map((type) =>
+        ? getBackupTypes(isHassio).map((type) =>
             localize(`ui.panel.config.backup.type.${type}`)
           )
         : undefined
@@ -303,20 +306,19 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     (
       backups: BackupContent[],
       filters: DataTableFiltersValues,
-      localize: LocalizeFunc
+      localize: LocalizeFunc,
+      isHassio: boolean
     ): BackupRow[] => {
       const typeFilter = filters["ha-filter-states"] as string[] | undefined;
       let filteredBackups = backups;
       if (typeFilter?.length) {
-        filteredBackups = filteredBackups.filter(
-          (backup) =>
-            (backup.with_automatic_settings &&
-              typeFilter.includes("automatic")) ||
-            (!backup.with_automatic_settings && typeFilter.includes("manual"))
-        );
+        filteredBackups = filteredBackups.filter((backup) => {
+          const type = computeBackupType(backup, isHassio);
+          return typeFilter.includes(type);
+        });
       }
       return filteredBackups.map((backup) => {
-        const type = backup.with_automatic_settings ? "automatic" : "manual";
+        const type = computeBackupType(backup, isHassio);
         const agentIds = Object.keys(backup.agents);
         return {
           ...backup,
@@ -335,8 +337,13 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   protected render(): TemplateResult {
     const backupInProgress =
       "state" in this.manager && this.manager.state === "in_progress";
-
-    const data = this._data(this.backups, this._filters, this.hass.localize);
+    const isHassio = isComponentLoaded(this.hass, "hassio");
+    const data = this._data(
+      this.backups,
+      this._filters,
+      this.hass.localize,
+      isHassio
+    );
     const maxDisplayedAgents = Math.min(
       this._maxAgents(data),
       this.narrow ? 3 : 5
@@ -371,7 +378,8 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         .initialCollapsedGroups=${this._activeCollapsed}
         .groupOrder=${this._groupOrder(
           this._activeGrouping,
-          this.hass.localize
+          this.hass.localize,
+          isHassio
         )}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
@@ -435,7 +443,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
           .hass=${this.hass}
           .label=${this.hass.localize("ui.panel.config.backup.backup_type")}
           .value=${this._filters["ha-filter-states"]}
-          .states=${this._states(this.hass.localize)}
+          .states=${this._states(this.hass.localize, isHassio)}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
           expanded
@@ -460,8 +468,8 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     `;
   }
 
-  private _states = memoizeOne((localize: LocalizeFunc) =>
-    TYPE_ORDER.map((type) => ({
+  private _states = memoizeOne((localize: LocalizeFunc, isHassio: boolean) =>
+    getBackupTypes(isHassio).map((type) => ({
       value: type,
       label: localize(`ui.panel.config.backup.type.${type}`),
     }))
