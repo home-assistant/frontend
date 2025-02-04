@@ -33,6 +33,7 @@ import { hasConfigChanged } from "../../common/has-changed";
 import {
   fillDataGapsAndRoundCaps,
   getCommonOptions,
+  getCompareTransform,
 } from "./common/energy-chart-options";
 import { storage } from "../../../../common/decorators/storage";
 import type { ECOption } from "../../../../resources/echarts";
@@ -319,18 +320,19 @@ export class HuiEnergyDevicesDetailGraphCard
           datapoint[1];
       });
     });
-    const compareOffset = compare
-      ? this._start.getTime() - this._compareStart!.getTime()
-      : 0;
+    const compareTransform = getCompareTransform(
+      this._start,
+      this._compareStart!
+    );
 
     const untrackedConsumption: BarSeriesOption["data"] = [];
     Object.keys(consumptionData.total).forEach((time) => {
       const value =
         consumptionData.total[time] - (totalDeviceConsumption[time] || 0);
-      const dataPoint = [Number(time), value];
+      const dataPoint: (Date | string | number)[] = [time, value];
       if (compare) {
         dataPoint[2] = dataPoint[0];
-        dataPoint[0] += compareOffset;
+        dataPoint[0] = compareTransform(new Date(time));
       }
       untrackedConsumption.push(dataPoint);
     });
