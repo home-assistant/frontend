@@ -4,7 +4,6 @@ import "@polymer/paper-tabs/paper-tabs";
 import type { PaperTabsElement } from "@polymer/paper-tabs/paper-tabs";
 import { customElement, property } from "lit/decorators";
 import type { HomeAssistant, Constructor } from "../types";
-import { computeRTLDirection } from "../common/util/compute_rtl";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const PaperTabs = customElements.get(
@@ -15,8 +14,6 @@ let subTemplate: HTMLTemplateElement;
 
 @customElement("ha-tabs")
 export class HaTabs extends PaperTabs {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   private _firstTabWidth = 0;
 
   private _lastTabWidth = 0;
@@ -90,7 +87,7 @@ export class HaTabs extends PaperTabs {
     this.$.tabsContainer.scrollLeft += dx;
 
     const scrollLeft = this.$.tabsContainer.scrollLeft;
-    const dirRTL = computeRTLDirection(this.hass!) === "rtl";
+    const dirRTL = this.dir === "rtl";
 
     const boolCondition1 = Math.abs(scrollLeft) < this._firstTabWidth;
     const boolCondition2 =
