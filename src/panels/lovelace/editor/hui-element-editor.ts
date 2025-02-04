@@ -121,6 +121,7 @@ export abstract class HuiElementEditor<
   protected willUpdate(changedProps: PropertyValues): void {
     if (changedProps.has("_config")) {
       if (changedProps.has("key")) {
+        this._guiMode = true;
         this.unloadConfigElement();
       }
       this._setConfig();
