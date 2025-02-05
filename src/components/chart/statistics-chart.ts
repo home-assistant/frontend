@@ -198,15 +198,18 @@ export class StatisticsChart extends LitElement {
         const statisticId = this._statisticIds[param.seriesIndex];
         const stateObj = this.hass.states[statisticId];
         const entry = this.hass.entities[statisticId];
-        const stateValue = String(param.value[1]);
+        // max series can have 3 values, as the second value is the max-min to form a band
+        const rawValue = String(param.value[2] ?? param.value[1]);
 
-        const value = stateObj
-          ? this.hass.formatEntityState(stateObj, stateValue)
-          : `${formatNumber(
-              stateValue,
-              this.hass.locale,
-              getNumberFormatOptions(undefined, entry)
-            )}${unit}`;
+        const options = getNumberFormatOptions(stateObj, entry) ?? {
+          maximumFractionDigits: 2,
+        };
+
+        const value = `${formatNumber(
+          rawValue,
+          this.hass.locale,
+          options
+        )}${unit}`;
 
         const time =
           index === 0
