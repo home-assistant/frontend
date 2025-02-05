@@ -214,7 +214,7 @@ export class StateHistoryChartTimeline extends LitElement {
         },
         axisLabel: {
           show: showNames,
-          width: labelWidth - labelMargin,
+          width: labelWidth,
           overflow: "truncate",
           margin: labelMargin,
           formatter: (id: string) => {
