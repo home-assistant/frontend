@@ -308,7 +308,7 @@ export class StatisticsChart extends LitElement {
       },
       grid: {
         ...(this.hideLegend ? { top: this.unit ? 30 : 5 } : {}), // undefined is the same as 0
-        left: 5,
+        left: 1,
         right: 1,
         bottom: 0,
         containLabel: true,
@@ -494,6 +494,7 @@ export class StatisticsChart extends LitElement {
                 ),
             symbol: "circle",
             symbolSize: 0,
+            animationDurationUpdate: 0,
             lineStyle: {
               width: 1.5,
             },
