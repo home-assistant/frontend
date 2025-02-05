@@ -302,6 +302,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     .card-header {
       justify-content: space-between;
       display: flex;
+      padding-bottom: 0;
     }
     .card-header ha-icon-next {
       --mdc-icon-button-size: 24px;
@@ -309,7 +310,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       color: var(--primary-text-color);
     }
     .content {
-      padding: 16px;
+      padding: 0 16px 8px 16px;
       flex: 1;
     }
     .has-header {
@@ -317,6 +318,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     }
     state-history-charts {
       height: 100%;
+      --timeline-top-margin: 16px;
     }
   `;
 }
