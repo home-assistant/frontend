@@ -23,6 +23,9 @@ export function measureTextWidth(
   context.font = `${fontSize}px ${fontFamily}`;
   const textMetrics = context.measureText(text);
   return Math.ceil(
-    textMetrics.actualBoundingBoxRight + textMetrics.actualBoundingBoxLeft
+    Math.max(
+      textMetrics.actualBoundingBoxRight + textMetrics.actualBoundingBoxLeft,
+      textMetrics.width
+    )
   );
 }
