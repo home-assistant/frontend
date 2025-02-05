@@ -199,7 +199,9 @@ export function fillDataGapsAndRoundCaps(datasets: BarSeriesOption[]) {
   const buckets = Array.from(
     new Set(
       datasets
-        .map((dataset) => dataset.data!.map((datapoint) => datapoint![0]))
+        .map((dataset) =>
+          dataset.data!.map((datapoint) => Number(datapoint![0]))
+        )
         .flat()
     )
   ).sort((a, b) => a - b);
