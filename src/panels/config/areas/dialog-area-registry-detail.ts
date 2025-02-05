@@ -166,7 +166,7 @@ class DialogAreaDetail extends LitElement {
         .header=${this.hass.localize(
           "ui.panel.config.areas.editor.aliases_section"
         )}
-        .expanded=${true}
+        expanded
       >
         <span slot="secondary">
           ${this.hass.localize(
@@ -189,7 +189,7 @@ class DialogAreaDetail extends LitElement {
         .header=${this.hass.localize(
           "ui.panel.config.areas.editor.related_entities_section"
         )}
-        .expanded=${true}
+        expanded
       >
         <span slot="secondary">
           ${this.hass.localize(
