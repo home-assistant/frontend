@@ -42,20 +42,20 @@ export interface Neighbor {
 }
 
 export interface Route {
-  dest_nwk: string,
-  route_status: RouteStatus,
-  memory_constrained: boolean,
-  many_to_one: boolean,
-  route_record_required: boolean,
-  next_hop: string,
+  dest_nwk: string;
+  route_status: RouteStatus;
+  memory_constrained: boolean;
+  many_to_one: boolean;
+  route_record_required: boolean;
+  next_hop: string;
 }
 
 export enum RouteStatus {
-    Active = "Active",
-    DiscoveryUnderway = "Discovery_Underway",
-    DiscoveryFailed = "Discovery_Failed",
-    Inactive = "Inactive",
-    ValidationUnderway = "Validation_Underway",
+  Active = "Active",
+  DiscoveryUnderway = "Discovery_Underway",
+  DiscoveryFailed = "Discovery_Failed",
+  Inactive = "Inactive",
+  ValidationUnderway = "Validation_Underway",
 }
 
 export interface ZHADeviceEndpoint {
