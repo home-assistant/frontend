@@ -379,6 +379,7 @@ export class StateHistoryChartLine extends LitElement {
           color,
           symbol: "circle",
           step: "end",
+          animationDurationUpdate: 0,
           symbolSize: 1,
           lineStyle: {
             width: fill ? 0 : 1.5,
