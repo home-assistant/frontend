@@ -329,6 +329,9 @@ class DialogAreaDetail extends LitElement {
     return [
       haStyleDialog,
       css`
+        ha-textfield {
+          display: block;
+        }
         ha-aliases-editor,
         ha-entity-picker,
         ha-floor-picker,
