@@ -496,7 +496,7 @@ export class HaChartBase extends LitElement {
   }
 
   private _getDefaultHeight() {
-    return this.clientWidth / 2;
+    return Math.max(this.clientWidth / 2, 250);
   }
 
   private _handleZoomReset() {
