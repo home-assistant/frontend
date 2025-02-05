@@ -448,6 +448,10 @@ class MoreInfoUpdate extends LitElement {
       box-sizing: border-box;
       margin-bottom: -16px;
       margin-top: -4px;
+      --md-sys-color-surface: var(
+        --ha-dialog-surface-background,
+        var(--mdc-theme-surface, #fff)
+      );
     }
 
     ha-md-list-item {
