@@ -128,7 +128,8 @@ export class StatisticsChart extends LitElement {
       changedProps.has("hideLegend") ||
       changedProps.has("startTime") ||
       changedProps.has("endTime") ||
-      changedProps.has("_legendData")
+      changedProps.has("_legendData") ||
+      changedProps.has("_chartData")
     ) {
       this._createOptions();
     }
@@ -246,21 +247,24 @@ export class StatisticsChart extends LitElement {
     let startTime = this.startTime;
 
     if (!startTime) {
-      // Calculate default start time based on dayDifference
-      startTime = new Date(
-        endTime.getTime() - dayDifference * 24 * 3600 * 1000
-      );
-
-      // Check chart data for earlier points
+      // set start time to the earliest point in the chart data
       this._chartData.forEach((series) => {
-        if (!Array.isArray(series.data)) return;
-        series.data.forEach((point) => {
-          const timestamp = Array.isArray(point) ? point[0] : point.value?.[0];
-          if (new Date(timestamp) < startTime!) {
-            startTime = new Date(timestamp);
-          }
-        });
+        if (!Array.isArray(series.data) || !series.data[0]) return;
+        const firstPoint = series.data[0] as any;
+        const timestamp = Array.isArray(firstPoint)
+          ? firstPoint[0]
+          : firstPoint.value?.[0];
+        if (timestamp && (!startTime || new Date(timestamp) < startTime)) {
+          startTime = new Date(timestamp);
+        }
       });
+
+      if (!startTime) {
+        // Calculate default start time based on dayDifference
+        startTime = new Date(
+          endTime.getTime() - dayDifference * 24 * 3600 * 1000
+        );
+      }
     }
 
     this._chartOptions = {
