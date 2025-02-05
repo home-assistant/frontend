@@ -173,7 +173,7 @@ class HaPanelHistory extends LitElement {
               .endDate=${this._endDate}
               extended-presets
               time-picker
-              @change=${this._dateRangeChanged}
+              @value-changed=${this._dateRangeChanged}
             ></ha-date-range-picker>
             <ha-target-picker
               .hass=${this.hass}
@@ -424,8 +424,8 @@ class HaPanelHistory extends LitElement {
   );
 
   private _dateRangeChanged(ev) {
-    this._startDate = ev.detail.startDate;
-    const endDate = ev.detail.endDate;
+    this._startDate = ev.detail.value.startDate;
+    const endDate = ev.detail.value.endDate;
     if (endDate.getHours() === 0 && endDate.getMinutes() === 0) {
       endDate.setDate(endDate.getDate() + 1);
       endDate.setMilliseconds(endDate.getMilliseconds() - 1);

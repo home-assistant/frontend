@@ -21,5 +21,11 @@ export function measureTextWidth(
   }
 
   context.font = `${fontSize}px ${fontFamily}`;
-  return Math.ceil(context.measureText(text).width);
+  const textMetrics = context.measureText(text);
+  return Math.ceil(
+    Math.max(
+      textMetrics.actualBoundingBoxRight + textMetrics.actualBoundingBoxLeft,
+      textMetrics.width
+    )
+  );
 }

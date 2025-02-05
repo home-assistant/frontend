@@ -2223,7 +2223,8 @@
           "backup_type": "Type",
           "type": {
             "manual": "Manual",
-            "automatic": "Automatic"
+            "automatic": "Automatic",
+            "addon_update": "Add-on update"
           },
           "locations": "Locations",
           "create": {
@@ -2392,17 +2393,23 @@
             "download": {
               "decryption_unsupported_title": "Decryption unsupported",
               "decryption_unsupported": "Decryption is not supported for this backup. The downloaded backup will remain encrypted and can't be opened. To restore it, you will need the encryption key.",
-              "incorrect_entered_encryption_key": "The entered encryption key was incorrect, try again or download the encrypted backup. The encrypted backup can't be opened. To restore it, you will need the encryption key.",
-              "download_encrypted": "Download encrypted",
-              "incorrect_current_encryption_key": "This backup is encrypted with a different encryption key than the current one, please enter the encryption key of this backup.",
               "error_check_title": "Error checking backup",
-              "error_check_description": "An error occurred while checking the backup, please try again. Error message: {error}"
+              "error_check_description": "An error occurred while checking the backup, please try again. Error message: {error}",
+              "title": "Download backup",
+              "description": "This backup is encrypted with a different encryption key than the current one, please enter the encryption key of this backup.",
+              "download_backup_encrypted": "You can still {download_it_encrypted}. To restore it, you will need the encryption key.",
+              "download_it_encrypted": "download the backup encrypted",
+              "encryption_key": "Encryption key",
+              "incorrect_encryption_key": "Incorrect encryption key",
+              "decryption_not_supported": "Decryption not supported",
+              "download": "Download"
             }
           },
           "agents": {
             "cloud_agent_description": "Note: It stores only the most recent backup, regardless of your retention settings, with a maximum size of 5 GB.",
             "cloud_agent_no_subcription": "You currently do not have an active Home Assistant Cloud subscription.",
             "network_mount_agent_description": "Network storage",
+            "unavailable_agents": "Unavailable locations",
             "no_agents": "No locations configured",
             "encryption_turned_off": "Encryption turned off",
             "local_agent": "This system"
@@ -2560,6 +2567,7 @@
               "title": "My backups",
               "automatic": "{count} automatic {count, plural,\n one {backup}\n other {backups}\n}",
               "manual": "{count} manual {count, plural,\n one {backup}\n other {backups}\n}",
+              "addon_update": "{count} add-on update {count, plural,\n one {backup}\n other {backups}\n}",
               "total_size": "{size} in total",
               "show_all": "Show all backups"
             },
@@ -2678,19 +2686,19 @@
             "encryption": {
               "title": "Encryption",
               "description": "All your backups are encrypted by default to keep your data private and secure.",
-              "location_encrypted": "This location is encrypted",
-              "location_unencrypted": "This location is unencrypted",
-              "location_encrypted_description": "Your data private and secure by securing it with your encryption key.",
+              "location_encrypted": "Backups made to this location will be encrypted",
+              "location_unencrypted": "Backups made to this location will be unencrypted",
+              "location_encrypted_description": "Your data is private and secure by encrypting backups with your encryption key.",
               "location_encrypted_cloud_description": "Home Assistant Cloud is the privacy-focused cloud. This is why it will only accept encrypted backups and why we don’t store your encryption key.",
               "location_encrypted_cloud_learn_more": "Learn more",
               "location_unencrypted_description": "Please keep your backups private and secure.",
               "encryption_turn_on": "Turn on",
               "encryption_turn_off": "Turn off",
               "encryption_turn_off_confirm_title": "Turn encryption off?",
-              "encryption_turn_off_confirm_text": "All your next backups will not be encrypted for this location. Please keep your backups private and secure.",
+              "encryption_turn_off_confirm_text": "After confirming, backups created will be unencrypted for this location. Please ensure your backups remain private and secure.",
               "encryption_turn_off_confirm_action": "Turn encryption off",
               "warning_encryption_turn_off": "Encryption turned off",
-              "warning_encryption_turn_off_description": "All your next backups will not be encrypted."
+              "warning_encryption_turn_off_description": "Backups will be unencrypted."
             }
           }
         },
@@ -4584,6 +4592,7 @@
             "account_created": "Account created! Check your email for instructions on how to activate your account."
           },
           "account": {
+            "download_support_package": "Download support package",
             "reset_cloud_data": "Reset cloud data",
             "reset_data_confirm_title": "Reset cloud data?",
             "reset_data_confirm_text": "This will reset all your cloud settings. This includes your remote connection, Google Assistant and Amazon Alexa integrations. This action cannot be undone.",
@@ -5330,6 +5339,8 @@
           "name": "Name",
           "source": "Source",
           "rssi": "RSSI",
+          "source_address": "Source address",
+          "device": "Device",
           "device_information": "Device information",
           "advertisement_data": "Advertisement data",
           "manufacturer_data": "Manufacturer data",

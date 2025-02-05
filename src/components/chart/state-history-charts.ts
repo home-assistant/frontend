@@ -135,7 +135,7 @@ export class StateHistoryCharts extends LitElement {
       return html``;
     }
     if (!Array.isArray(item)) {
-      return html`<div class="entry-container">
+      return html`<div class="entry-container line">
         <state-history-chart-line
           .hass=${this.hass}
           .unit=${item.unit}
@@ -157,7 +157,7 @@ export class StateHistoryCharts extends LitElement {
         ></state-history-chart-line>
       </div> `;
     }
-    return html`<div class="entry-container">
+    return html`<div class="entry-container timeline">
       <state-history-chart-timeline
         .hass=${this.hass}
         .data=${item}
@@ -299,6 +299,9 @@ export class StateHistoryCharts extends LitElement {
 
     .entry-container {
       width: 100%;
+    }
+
+    .entry-container.line {
       flex: 1;
     }
 
@@ -311,6 +314,10 @@ export class StateHistoryCharts extends LitElement {
       padding-right: 1px;
       padding-inline-start: 1px;
       padding-inline-end: 1px;
+    }
+
+    .entry-container.timeline:first-child {
+      margin-top: var(--timeline-top-margin);
     }
 
     .entry-container:not(:first-child) {

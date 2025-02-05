@@ -65,7 +65,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     return {
       columns: 12,
       min_columns: 6,
-      min_rows: this._config?.entities?.length || 1,
+      min_rows: 2,
     };
   }
 
@@ -244,7 +244,8 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     })}`;
 
     const columns = this._config.grid_options?.columns ?? 12;
-    const narrow = Number.isNaN(columns) || Number(columns) < 12;
+    const narrow = typeof columns === "number" && columns <= 12;
+    const hasFixedHeight = typeof this._config.grid_options?.rows === "number";
 
     return html`
       <ha-card>
@@ -259,6 +260,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
         <div
           class="content ${classMap({
             "has-header": !!this._config.title,
+            "has-rows": !!this._config.grid_options?.rows,
           })}"
         >
           ${this._error
@@ -283,9 +285,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
                   .minYAxis=${this._config.min_y_axis}
                   .maxYAxis=${this._config.max_y_axis}
                   .fitYData=${this._config.fit_y_data || false}
-                  .height=${this._config.grid_options?.rows
-                    ? "100%"
-                    : undefined}
+                  .height=${hasFixedHeight ? "100%" : undefined}
                   .narrow=${narrow}
                 ></state-history-charts>
               `}
@@ -303,6 +303,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     .card-header {
       justify-content: space-between;
       display: flex;
+      padding-bottom: 0;
     }
     .card-header ha-icon-next {
       --mdc-icon-button-size: 24px;
@@ -310,7 +311,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       color: var(--primary-text-color);
     }
     .content {
-      padding: 16px;
+      padding: 0 16px 8px 16px;
       flex: 1;
     }
     .has-header {
@@ -318,6 +319,10 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     }
     state-history-charts {
       height: 100%;
+      --timeline-top-margin: 16px;
+    }
+    .has-rows {
+      --chart-max-height: 100%;
     }
   `;
 }
