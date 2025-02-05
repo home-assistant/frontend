@@ -11,8 +11,8 @@ export interface ZHADevice {
   available: boolean;
   name: string;
   ieee: string;
-  nwk: string;
-  lqi: string;
+  nwk: number;
+  lqi: number;
   rssi: string;
   last_seen: string;
   manufacturer: string;
