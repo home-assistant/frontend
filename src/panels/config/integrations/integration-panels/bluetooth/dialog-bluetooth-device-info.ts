@@ -53,8 +53,6 @@ class DialogBluetoothDeviceInfo extends LitElement implements HassDialog {
     return html`
       <ha-dialog
         open
-        scrimClickAction
-        escapeKeyAction
         @closed=${this.closeDialog}
         .heading=${createCloseHeading(
           this.hass,

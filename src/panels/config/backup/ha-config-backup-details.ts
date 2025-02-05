@@ -31,6 +31,7 @@ import {
   compareAgents,
   computeBackupAgentName,
   computeBackupSize,
+  computeBackupType,
   deleteBackup,
   fetchBackupDetails,
   isLocalAgent,
@@ -46,6 +47,7 @@ import { showRestoreBackupDialog } from "./dialogs/show-dialog-restore-backup";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { downloadBackup } from "./helper/download_backup";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
 interface Agent extends BackupContentAgent {
   id: string;
@@ -110,6 +112,8 @@ class HaConfigBackupDetails extends LitElement {
       return nothing;
     }
 
+    const isHassio = isComponentLoaded(this.hass, "hassio");
+
     return html`
       <hass-subpage
         back-path="/config/backup/backups"
@@ -161,6 +165,18 @@ class HaConfigBackupDetails extends LitElement {
                     </div>
                     <div class="card-content">
                       <ha-md-list class="summary">
+                        <ha-md-list-item>
+                          <span slot="headline">
+                            ${this.hass.localize(
+                              "ui.panel.config.backup.backup_type"
+                            )}
+                          </span>
+                          <span slot="supporting-text">
+                            ${this.hass.localize(
+                              `ui.panel.config.backup.type.${computeBackupType(this._backup, isHassio)}`
+                            )}
+                          </span>
+                        </ha-md-list-item>
                         <ha-md-list-item>
                           <span slot="headline">
                             ${this.hass.localize(
@@ -401,13 +417,7 @@ class HaConfigBackupDetails extends LitElement {
   }
 
   private async _downloadBackup(agentId?: string): Promise<void> {
-    await downloadBackup(
-      this.hass,
-      this,
-      this._backup!,
-      this.config?.create_backup.password,
-      agentId
-    );
+    await downloadBackup(this.hass, this, this._backup!, this.config, agentId);
   }
 
   private async _deleteBackup(): Promise<void> {
