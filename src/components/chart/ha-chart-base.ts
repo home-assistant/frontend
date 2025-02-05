@@ -1,28 +1,28 @@
-import type { PropertyValues } from "lit";
-import { css, html, nothing, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { styleMap } from "lit/directives/style-map";
-import { classMap } from "lit/directives/class-map";
-import { mdiRestart } from "@mdi/js";
-import type { EChartsType } from "echarts/core";
-import type { DataZoomComponentOption } from "echarts/components";
+import { consume } from "@lit-labs/context";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
+import { mdiRestart } from "@mdi/js";
+import { differenceInMinutes } from "date-fns";
+import type { DataZoomComponentOption } from "echarts/components";
+import type { EChartsType } from "echarts/core";
 import type {
   ECElementEvent,
   XAXisOption,
   YAXisOption,
 } from "echarts/types/dist/shared";
-import { consume } from "@lit-labs/context";
-import { differenceInMinutes } from "date-fns";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
+import { getAllGraphColors } from "../../common/color/colors";
 import { fireEvent } from "../../common/dom/fire_event";
+import { listenMediaQuery } from "../../common/dom/media_query";
+import { themesContext } from "../../data/context";
+import type { Themes } from "../../data/ws-themes";
+import type { ECOption } from "../../resources/echarts";
 import type { HomeAssistant } from "../../types";
 import { isMac } from "../../util/is_mac";
 import "../ha-icon-button";
-import type { ECOption } from "../../resources/echarts";
-import { listenMediaQuery } from "../../common/dom/media_query";
-import type { Themes } from "../../data/ws-themes";
-import { themesContext } from "../../data/context";
-import { getAllGraphColors } from "../../common/color/colors";
 import { formatTimeLabel } from "./axis-label";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
@@ -487,6 +487,12 @@ export class HaChartBase extends LitElement {
         },
       },
       tooltip: {
+        backgroundColor: style.getPropertyValue("--card-background-color"),
+        borderColor: style.getPropertyValue("--divider-color"),
+        textStyle: {
+          color: style.getPropertyValue("--primary-text-color"),
+          fontSize: 12,
+        },
         axisPointer: {
           lineStyle: {
             color: style.getPropertyValue("--divider-color"),
