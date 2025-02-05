@@ -314,6 +314,7 @@ export class HaChartBase extends LitElement {
       tooltips.forEach((tooltip) => {
         tooltip.confine = true;
         tooltip.appendTo = undefined;
+        tooltip.triggerOn = "click";
       });
       options.tooltip = tooltips;
     }
