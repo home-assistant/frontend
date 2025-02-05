@@ -327,12 +327,13 @@ export class HuiEnergyDevicesDetailGraphCard
 
     const untrackedConsumption: BarSeriesOption["data"] = [];
     Object.keys(consumptionData.total).forEach((time) => {
+      const ts = Number(time);
       const value =
         consumptionData.total[time] - (totalDeviceConsumption[time] || 0);
-      const dataPoint: (Date | string | number)[] = [time, value];
+      const dataPoint: number[] = [ts, value];
       if (compare) {
         dataPoint[2] = dataPoint[0];
-        dataPoint[0] = compareTransform(new Date(time));
+        dataPoint[0] = compareTransform(new Date(ts)).getTime();
       }
       untrackedConsumption.push(dataPoint);
     });
@@ -377,9 +378,10 @@ export class HuiEnergyDevicesDetailGraphCard
     compare = false
   ) {
     const data: BarSeriesOption[] = [];
-    const compareOffset = compare
-      ? this._start.getTime() - this._compareStart!.getTime()
-      : 0;
+    const compareTransform = getCompareTransform(
+      this._start,
+      this._compareStart!
+    );
 
     devices.forEach((source, idx) => {
       const order = sorted_devices.indexOf(source.stat_consumption);
@@ -414,7 +416,7 @@ export class HuiEnergyDevicesDetailGraphCard
           const dataPoint = [point.start, point.change];
           if (compare) {
             dataPoint[2] = dataPoint[0];
-            dataPoint[0] += compareOffset;
+            dataPoint[0] = compareTransform(new Date(point.start)).getTime();
           }
           consumptionData.push(dataPoint);
           prevStart = point.start;
