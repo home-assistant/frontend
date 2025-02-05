@@ -480,6 +480,11 @@ export class HaChartBase extends LitElement {
           color: style.getPropertyValue("--primary-text-color"),
         },
         inactiveColor: style.getPropertyValue("--disabled-text-color"),
+        pageIconColor: style.getPropertyValue("--primary-text-color"),
+        pageIconInactiveColor: style.getPropertyValue("--disabled-text-color"),
+        pageTextStyle: {
+          color: style.getPropertyValue("--secondary-text-color"),
+        },
       },
       tooltip: {
         axisPointer: {
