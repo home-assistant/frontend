@@ -524,6 +524,7 @@ export class HaChartBase extends LitElement {
     :host {
       display: block;
       position: relative;
+      letter-spacing: normal;
     }
     .chart-container {
       position: relative;
