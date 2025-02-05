@@ -303,6 +303,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     .card-header {
       justify-content: space-between;
       display: flex;
+      padding-bottom: 0;
     }
     .card-header ha-icon-next {
       --mdc-icon-button-size: 24px;
