@@ -1,3 +1,4 @@
+import memoizeOne from "memoize-one";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../components/ha-card";
@@ -12,12 +13,6 @@ import type {
   BackupData,
 } from "../../../../data/backup";
 import { fireEvent } from "../../../../common/dom/fire_event";
-
-declare global {
-  interface HASSDomEvents {
-    "backup-restore": { selectedData?: BackupData };
-  }
-}
 
 @customElement("ha-backup-details-restore")
 class HaBackupDetailsRestore extends LitElement {
@@ -64,15 +59,15 @@ class HaBackupDetailsRestore extends LitElement {
             .data=${this.backup}
             .value=${this._selectedData}
             @value-changed=${this._selectedBackupChanged}
-            .requiredItems=${this.haRequired ? ["config"] : []}
+            .requiredItems=${this._isHomeAssistantRequired(this.haRequired)}
           >
           </ha-backup-data-picker>
         </div>
         <div class="card-actions">
           <ha-button
             @click=${this._restore}
-            .disabled=${this._isRestoreDisabled()}
-            class="danger"
+            .disabled=${this._isRestoreDisabled}
+            destructive
           >
             ${this.localize(
               `ui.panel.${this.translationKeyPanel}.details.restore.action`
@@ -92,9 +87,14 @@ class HaBackupDetailsRestore extends LitElement {
     this._selectedData = ev.detail.value;
   }
 
-  private _isRestoreDisabled() {
+  private _isHomeAssistantRequired = memoizeOne((required: boolean) =>
+    required ? ["config"] : []
+  );
+
+  private get _isRestoreDisabled(): boolean {
     return (
       !this._selectedData ||
+      (this.haRequired && !this._selectedData.homeassistant_included) ||
       !(
         this._selectedData?.database_included ||
         this._selectedData?.homeassistant_included ||
@@ -141,5 +141,8 @@ class HaBackupDetailsRestore extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-backup-details-restore": HaBackupDetailsRestore;
+  }
+  interface HASSDomEvents {
+    "backup-restore": { selectedData?: BackupData };
   }
 }
