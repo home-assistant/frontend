@@ -8267,6 +8267,7 @@
           "close": "[%key:ui::common::close%]",
           "cancel": "[%key:ui::common::cancel%]",
           "retry": "Retry",
+          "back": "[%key:ui::common::back%]",
           "restore_start_failed": "[%key:supervisor::backup::restore_start_failed%]",
           "no_backup_found": "[%key:supervisor::backup::no_backup_found%]",
           "unnamed_backup": "[%key:supervisor::backup::unnamed_backup%]",

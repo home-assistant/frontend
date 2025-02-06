@@ -20,9 +20,8 @@ import {
 } from "../data/backup_onboarding";
 import type { BackupContentExtended, BackupData } from "../data/backup";
 import { showConfirmationDialog } from "../dialogs/generic/show-dialog-box";
+import { storage } from "../common/decorators/storage";
 
-const STORAGE_BACKUP_ID_KEY = "onboarding-restore-backup-backup-id";
-const STORAGE_RESTORE_RUNNING = "onboarding-restore-running";
 const STATUS_INTERVAL_IN_MS = 5000;
 
 @customElement("onboarding-restore-backup")
@@ -50,14 +49,22 @@ class OnboardingRestoreBackup extends LitElement {
 
   @state() private _failed?: boolean;
 
+  @storage({
+    key: "onboarding-restore-backup-backup-id",
+  })
+  private _backupId?: string;
+
+  @storage({
+    key: "onboarding-restore-running",
+  })
+  private _restoreRunning?: boolean;
+
   protected render(): TemplateResult {
     return html`
       ${
         this._view !== "status" || this._failed
           ? html`<ha-icon-button-arrow-prev
-              .label=${this.localize(
-                "ui.panel.page-onboarding.restore.no_backup_found"
-              )}
+              .label=${this.localize("ui.panel.page-onboarding.restore.back")}
               @click=${this._back}
             ></ha-icon-button-arrow-prev>`
           : nothing
@@ -66,7 +73,7 @@ class OnboardingRestoreBackup extends LitElement {
       <h1>${this.localize("ui.panel.page-onboarding.restore.header")}</h1>
       ${
         this._error
-          ? html` <ha-alert alert-type="error">${this._error}</ha-alert>`
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
           : nothing
       }
       ${
@@ -85,38 +92,29 @@ class OnboardingRestoreBackup extends LitElement {
           ? html`<div class="loading">
               <ha-circular-progress indeterminate></ha-circular-progress>
             </div>`
-          : nothing
-      }
-      ${
-        this._view === "upload"
-          ? html`
-              <onboarding-restore-backup-upload
-                ?supervisor=${this.supervisor}
-                .localize=${this.localize}
-                @backup-uploaded=${this._backupUploaded}
-              ></onboarding-restore-backup-upload>
-            `
-          : nothing
-      }
-      ${
-        this._view === "details"
-          ? html`<onboarding-restore-backup-details
-              .localize=${this.localize}
-              .backup=${this._backup!}
-              @backup-restore=${this._restore}
-            ></onboarding-restore-backup-details>`
-          : nothing
-      }
-      ${
-        this._view === "restore"
-          ? html`<onboarding-restore-backup-restore
-              .localize=${this.localize}
-              .backup=${this._backup!}
-              ?supervisor=${this.supervisor}
-              .selectedData=${this._selectedData!}
-              @restore-started=${this._getRestoreStatus}
-            ></onboarding-restore-backup-restore>`
-          : nothing
+          : this._view === "upload"
+            ? html`
+                <onboarding-restore-backup-upload
+                  .supervisor=${this.supervisor}
+                  .localize=${this.localize}
+                  @backup-uploaded=${this._backupUploaded}
+                ></onboarding-restore-backup-upload>
+              `
+            : this._view === "details"
+              ? html`<onboarding-restore-backup-details
+                  .localize=${this.localize}
+                  .backup=${this._backup!}
+                  @backup-restore=${this._restore}
+                ></onboarding-restore-backup-details>`
+              : this._view === "restore"
+                ? html`<onboarding-restore-backup-restore
+                    .localize=${this.localize}
+                    .backup=${this._backup!}
+                    .supervisor=${this.supervisor}
+                    .selectedData=${this._selectedData!}
+                    @restore-started=${this._restoreStarted}
+                  ></onboarding-restore-backup-restore>`
+                : nothing
       }
       ${
         this._view === "status" && this._backupInfo
@@ -151,9 +149,6 @@ class OnboardingRestoreBackup extends LitElement {
   }
 
   private async _loadBackupInfo() {
-    const backupId = localStorage.getItem(STORAGE_BACKUP_ID_KEY);
-    const restoreRunning = localStorage.getItem(STORAGE_RESTORE_RUNNING);
-
     try {
       const {
         last_non_idle_event: lastNonIdleEvent,
@@ -166,8 +161,10 @@ class OnboardingRestoreBackup extends LitElement {
         last_non_idle_event: lastNonIdleEvent,
       };
 
-      if (backupId) {
-        this._backup = backups.find(({ backup_id }) => backup_id === backupId);
+      if (this._backupId) {
+        this._backup = backups.find(
+          ({ backup_id }) => backup_id === this._backupId
+        );
       }
 
       const failedRestore =
@@ -178,18 +175,18 @@ class OnboardingRestoreBackup extends LitElement {
         this._failed = true;
       }
 
-      if (restoreRunning) {
+      if (this._restoreRunning) {
         this._view = "status";
         if (failedRestore || currentState !== "restore_backup") {
           this._failed = true;
-          localStorage.removeItem(STORAGE_RESTORE_RUNNING);
+          this._restoreRunning = undefined;
         } else {
           this._scheduleLoadBackupInfo();
         }
         return;
       }
 
-      if (!lastNonIdleEvent || !backupId) {
+      if (!lastNonIdleEvent || !this._backupId) {
         this._view = "upload";
         return;
       }
@@ -216,7 +213,7 @@ class OnboardingRestoreBackup extends LitElement {
       // fallback to upload
       this._view = "upload";
     } catch (err: any) {
-      if (restoreRunning) {
+      if (this._restoreRunning) {
         if (
           err.error === "Request error" ||
           // core can restart but haven't loaded the backup integration yet
@@ -228,9 +225,10 @@ class OnboardingRestoreBackup extends LitElement {
 
         // core seems to be back up restored
         if (err.status_code === 404) {
-          localStorage.removeItem(STORAGE_RESTORE_RUNNING);
-          localStorage.removeItem(STORAGE_BACKUP_ID_KEY);
-          location.reload();
+          this._restoreRunning = undefined;
+          this._backupId = undefined;
+          window.location.replace("/");
+          return;
         }
       }
 
@@ -244,16 +242,16 @@ class OnboardingRestoreBackup extends LitElement {
   }
 
   private async _backupUploaded(ev: CustomEvent) {
-    localStorage.setItem(STORAGE_BACKUP_ID_KEY, ev.detail.backupId);
+    this._backupId = ev.detail.backupId;
     await this._loadBackupInfo();
   }
 
-  private async _getRestoreStatus() {
+  private async _restoreStarted() {
     if (this._backupInfo) {
       this._backupInfo.state = "restore_backup";
     }
     this._view = "status";
-    localStorage.setItem(STORAGE_RESTORE_RUNNING, "true");
+    this._restoreRunning = true;
     await this._loadBackupInfo();
   }
 
@@ -294,7 +292,7 @@ class OnboardingRestoreBackup extends LitElement {
 
   private _reupload() {
     this._backup = undefined;
-    localStorage.removeItem(STORAGE_BACKUP_ID_KEY);
+    this._backupId = undefined;
     this._view = "upload";
   }
 
