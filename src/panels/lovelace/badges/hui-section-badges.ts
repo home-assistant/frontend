@@ -210,7 +210,7 @@ export class HuiSectionBadges extends LitElement {
     .badges {
       display: flex;
       align-items: flex-start;
-      flex-wrap: wrap;
+      flex-wrap: var(--badges-wrap, wrap);
       justify-content: var(--badges-aligmnent, center);
       gap: 8px;
       margin: 0;

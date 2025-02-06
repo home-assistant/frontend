@@ -62,21 +62,23 @@ export class HeadingSection
         })}"
       >
         ${card
-          ? html`<div class="content">
-              ${editMode
-                ? html`
-                    <hui-card-edit-mode
-                      .hass=${this.hass}
-                      .lovelace=${this.lovelace!}
-                      .path=${cardPath}
-                      .hiddenOverlay=${this._dragging}
-                      no-duplicate
-                    >
-                      ${card}
-                    </hui-card-edit-mode>
-                  `
-                : card}
-            </div>`
+          ? html`
+              <div class="content">
+                ${editMode
+                  ? html`
+                      <hui-card-edit-mode
+                        .hass=${this.hass}
+                        .lovelace=${this.lovelace!}
+                        .path=${cardPath}
+                        .hiddenOverlay=${this._dragging}
+                        no-duplicate
+                      >
+                        ${card}
+                      </hui-card-edit-mode>
+                    `
+                  : card}
+              </div>
+            `
           : editMode
             ? html`
                 <button
@@ -131,10 +133,6 @@ export class HeadingSection
       haStyle,
       css`
         :host {
-          --base-column-count: 12;
-          --row-gap: var(--ha-section-grid-row-gap, 8px);
-          --column-gap: var(--ha-section-grid-column-gap, 8px);
-          --row-height: var(--ha-section-grid-row-height, 56px);
           display: flex;
           flex-direction: column;
           gap: var(--row-gap);
@@ -143,13 +141,14 @@ export class HeadingSection
           position: relative;
           display: flex;
           flex-direction: row;
-          gap: var(--column-gap);
+          gap: 24px;
         }
 
         .content {
           position: relative;
           flex: 1;
           display: flex;
+          padding-top: 48px;
         }
 
         .content > * {
@@ -164,17 +163,21 @@ export class HeadingSection
         }
 
         hui-section-badges {
-          --badges-aligmnent: flex-end;
           width: 100%;
-          height: 100%;
+          --badges-aligmnent: flex-end;
+          --badges-wrap: wrap;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 800px) {
           .container {
-            flex-direction: column-reverse;
-            hui-section-badges {
-              --badges-aligmnent: center;
-            }
+            flex-direction: column;
+          }
+          hui-section-badges {
+            --badges-aligmnent: center;
+            --badges-wrap: wrap;
           }
         }
 
