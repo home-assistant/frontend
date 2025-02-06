@@ -6122,7 +6122,12 @@
           },
           "network_adapter": "Network adapter",
           "network_adapter_info": "Configure which network adapters integrations will use. Currently this setting only affects multicast traffic. A restart is required for these settings to apply.",
-          "ip_information": "IP Information"
+          "ip_information": "IP Information",
+          "adapter": {
+            "auto_configure": "Auto configure",
+            "detected": "Detected",
+            "adapter": "Adapter"
+          }
         },
         "storage": {
           "caption": "Storage",
