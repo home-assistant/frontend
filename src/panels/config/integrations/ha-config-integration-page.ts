@@ -221,6 +221,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   protected willUpdate(changedProperties: PropertyValues): void {
     if (changedProperties.has("domain")) {
       this.hass.loadBackendTranslation("title", [this.domain]);
+      this.hass.loadBackendTranslation("config_subentries", [this.domain]);
       this._extraConfigEntries = undefined;
       this._fetchManifest();
       this._fetchDiagnostics();
@@ -949,7 +950,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 graphic="icon"
               >
                 <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-                Add ${flowType}</ha-md-menu-item
+                ${this.hass.localize(
+                  `component.${item.domain}.config_subentries.${flowType}.title`
+                )}</ha-md-menu-item
               >`
           )}
 
