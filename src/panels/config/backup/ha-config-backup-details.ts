@@ -42,6 +42,7 @@ import { showRestoreBackupDialog } from "./dialogs/show-dialog-restore-backup";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { downloadBackup } from "./helper/download_backup";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
 interface Agent extends BackupContentAgent {
   id: string;
@@ -102,6 +103,8 @@ class HaConfigBackupDetails extends LitElement {
       return nothing;
     }
 
+    const isHassio = isComponentLoaded(this.hass, "hassio");
+
     return html`
       <hass-subpage
         back-path="/config/backup/backups"
@@ -149,6 +152,7 @@ class HaConfigBackupDetails extends LitElement {
                     .backup=${this._backup}
                     .hass=${this.hass}
                     .localize=${this.hass.localize}
+                    .isHassio=${isHassio}
                   ></ha-backup-details-summary>
                   <ha-backup-details-restore
                     .backup=${this._backup}
@@ -206,38 +210,42 @@ class HaConfigBackupDetails extends LitElement {
                                           })}
                                           crossorigin="anonymous"
                                           referrerpolicy="no-referrer"
-                                          alt=""
+                                          alt=${`${domain} logo`}
                                           slot="start"
                                         />
                                       `
                               }
                               <div slot="headline">${name}</div>
-                                ${
-                                  failed
-                                    ? html`
-                                        <div slot="supporting-text">
-                                          <span class="dot error"></span>
-                                          <span>
-                                            ${this.hass.localize(
-                                              "ui.panel.config.backup.details.locations.backup_failed"
-                                            )}
-                                          </span>
-                                        </div>
-                                      `
-                                    : unencrypted
-                                      ? html`
-                                          <div slot="supporting-text">
-                                            <span class="dot warning"></span>
-                                            <span> Unencrypted </span>
-                                          </div>
-                                        `
-                                      : html`
-                                          <div slot="supporting-text">
-                                            <span class="dot success"></span>
-                                            <span> Encrypted </span>
-                                          </div>
-                                        `
-                                }
+                                <div slot="supporting-text">
+                                   ${
+                                     failed
+                                       ? html`
+                                           <span class="dot error"></span>
+                                           <span>
+                                             ${this.hass.localize(
+                                               "ui.panel.config.backup.details.locations.backup_failed"
+                                             )}
+                                           </span>
+                                         `
+                                       : unencrypted
+                                         ? html`
+                                             <span class="dot warning"></span>
+                                             <span>
+                                               ${this.hass.localize(
+                                                 "ui.panel.config.backup.details.locations.unencrypted"
+                                               )}</span
+                                             >
+                                           `
+                                         : html`
+                                             <span class="dot success"></span>
+                                             <span
+                                               >${this.hass.localize(
+                                                 "ui.panel.config.backup.details.locations.encrypted"
+                                               )}</span
+                                             >
+                                           `
+                                   }
+                                </div>
                               </div>
                               ${
                                 success
@@ -320,13 +328,7 @@ class HaConfigBackupDetails extends LitElement {
   }
 
   private async _downloadBackup(agentId?: string): Promise<void> {
-    await downloadBackup(
-      this.hass,
-      this,
-      this._backup!,
-      this.config?.create_backup.password,
-      agentId
-    );
+    await downloadBackup(this.hass, this, this._backup!, this.config, agentId);
   }
 
   private async _deleteBackup(): Promise<void> {

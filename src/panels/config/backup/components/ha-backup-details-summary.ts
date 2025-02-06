@@ -12,9 +12,11 @@ import {
 } from "../../../../common/datetime/format_date_time";
 import {
   computeBackupSize,
+  computeBackupType,
   type BackupContentExtended,
 } from "../../../../data/backup";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { bytesToString } from "../../../../util/bytes-to-string";
 
 declare global {
   interface HASSDomEvents {
@@ -29,6 +31,8 @@ class HaBackupDetailsSummary extends LitElement {
   @property({ attribute: false }) public localize!: LocalizeFunc;
 
   @property({ type: Object }) public backup!: BackupContentExtended;
+
+  @property({ type: Boolean, attribute: "hassio" }) public isHassio = false;
 
   @property({ attribute: "translation-key-panel" }) public translationKeyPanel:
     | "page-onboarding.restore"
@@ -55,11 +59,23 @@ class HaBackupDetailsSummary extends LitElement {
             <ha-md-list-item>
               <span slot="headline">
                 ${this.localize(
+                  `ui.panel.${this.translationKeyPanel}.backup_type`
+                )}
+              </span>
+              <span slot="supporting-text">
+                ${this.localize(
+                  `ui.panel.${this.translationKeyPanel}.type.${computeBackupType(this.backup, this.isHassio)}`
+                )}
+              </span>
+            </ha-md-list-item>
+            <ha-md-list-item>
+              <span slot="headline">
+                ${this.localize(
                   `ui.panel.${this.translationKeyPanel}.details.summary.size`
                 )}
               </span>
               <span slot="supporting-text">
-                ${computeBackupSize(this.backup)}
+                ${bytesToString(computeBackupSize(this.backup))}
               </span>
             </ha-md-list-item>
             <ha-md-list-item>

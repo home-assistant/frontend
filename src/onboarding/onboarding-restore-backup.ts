@@ -136,6 +136,7 @@ class OnboardingRestoreBackup extends LitElement {
                 .backup=${this._backup}
                 .localize=${this.localize}
                 @show-backup-upload=${this._reupload}
+                .isHassio=${this.supervisor}
               ></ha-backup-details-summary>
             </div>`
           : nothing

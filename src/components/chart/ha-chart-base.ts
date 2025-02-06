@@ -1,21 +1,29 @@
-import type { PropertyValues } from "lit";
-import { css, html, nothing, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { styleMap } from "lit/directives/style-map";
-import { mdiRestart } from "@mdi/js";
-import type { EChartsType } from "echarts/core";
-import type { DataZoomComponentOption } from "echarts/components";
-import { ResizeController } from "@lit-labs/observers/resize-controller";
-import type { XAXisOption, YAXisOption } from "echarts/types/dist/shared";
 import { consume } from "@lit-labs/context";
+import { ResizeController } from "@lit-labs/observers/resize-controller";
+import { mdiRestart } from "@mdi/js";
+import { differenceInMinutes } from "date-fns";
+import type { DataZoomComponentOption } from "echarts/components";
+import type { EChartsType } from "echarts/core";
+import type {
+  ECElementEvent,
+  XAXisOption,
+  YAXisOption,
+} from "echarts/types/dist/shared";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
+import { getAllGraphColors } from "../../common/color/colors";
 import { fireEvent } from "../../common/dom/fire_event";
+import { listenMediaQuery } from "../../common/dom/media_query";
+import { themesContext } from "../../data/context";
+import type { Themes } from "../../data/ws-themes";
+import type { ECOption } from "../../resources/echarts";
 import type { HomeAssistant } from "../../types";
 import { isMac } from "../../util/is_mac";
 import "../ha-icon-button";
-import type { ECOption } from "../../resources/echarts";
-import { listenMediaQuery } from "../../common/dom/media_query";
-import type { Themes } from "../../data/ws-themes";
-import { themesContext } from "../../data/context";
+import { formatTimeLabel } from "./axis-label";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 
@@ -39,6 +47,10 @@ export class HaChartBase extends LitElement {
   _themes!: Themes;
 
   @state() private _isZoomed = false;
+
+  @state() private _zoomRatio = 1;
+
+  @state() private _minutesDifference = 24 * 60;
 
   private _modifierPressed = false;
 
@@ -131,16 +143,7 @@ export class HaChartBase extends LitElement {
       this.chart.setOption(this._createOptions(), {
         lazyUpdate: true,
         // if we replace the whole object, it will reset the dataZoom
-        replaceMerge: [
-          "xAxis",
-          "yAxis",
-          "dataZoom",
-          "dataset",
-          "tooltip",
-          "legend",
-          "grid",
-          "visualMap",
-        ],
+        replaceMerge: ["grid"],
       });
     }
   }
@@ -148,7 +151,10 @@ export class HaChartBase extends LitElement {
   protected render() {
     return html`
       <div
-        class="chart-container"
+        class=${classMap({
+          "chart-container": true,
+          "has-legend": !!this.options?.legend,
+        })}
         style=${styleMap({
           height: this.height ?? `${this._getDefaultHeight()}px`,
         })}
@@ -169,6 +175,14 @@ export class HaChartBase extends LitElement {
     `;
   }
 
+  private _formatTimeLabel = (value: number | Date) =>
+    formatTimeLabel(
+      value,
+      this.hass.locale,
+      this.hass.config,
+      this._minutesDifference * this._zoomRatio
+    );
+
   private async _setupChart() {
     if (this._loading) return;
     const container = this.renderRoot.querySelector(".chart") as HTMLDivElement;
@@ -179,10 +193,9 @@ export class HaChartBase extends LitElement {
       }
       const echarts = (await import("../../resources/echarts")).default;
 
-      this.chart = echarts.init(
-        container,
-        this._themes.darkMode ? "dark" : "light"
-      );
+      echarts.registerTheme("custom", this._createTheme());
+
+      this.chart = echarts.init(container, "custom");
       this.chart.on("legendselectchanged", (params: any) => {
         if (this.externalHidden) {
           const isSelected = params.selected[params.name];
@@ -196,6 +209,16 @@ export class HaChartBase extends LitElement {
       this.chart.on("datazoom", (e: any) => {
         const { start, end } = e.batch?.[0] ?? e;
         this._isZoomed = start !== 0 || end !== 100;
+        this._zoomRatio = (end - start) / 100;
+      });
+      this.chart.on("click", (e: ECElementEvent) => {
+        fireEvent(this, "chart-click", e);
+      });
+      this.chart.on("mousemove", (e: ECElementEvent) => {
+        if (e.componentType === "series" && e.componentSubType === "custom") {
+          // custom series do not support cursor style so we need to set it manually
+          this.chart?.getZr()?.setCursorStyle("default");
+        }
       });
       this.chart.setOption({ ...this._createOptions(), series: this.data });
     } finally {
@@ -224,24 +247,60 @@ export class HaChartBase extends LitElement {
   }
 
   private _createOptions(): ECOption {
-    const darkMode = this._themes.darkMode ?? false;
-
+    let xAxis = this.options?.xAxis;
+    if (xAxis) {
+      xAxis = Array.isArray(xAxis) ? xAxis : [xAxis];
+      xAxis = xAxis.map((axis: XAXisOption) => {
+        if (axis.type !== "time" || axis.show === false) {
+          return axis;
+        }
+        if (axis.max && axis.min) {
+          this._minutesDifference = differenceInMinutes(
+            axis.max as Date,
+            axis.min as Date
+          );
+        }
+        const dayDifference = this._minutesDifference / 60 / 24;
+        let minInterval: number | undefined;
+        if (dayDifference) {
+          minInterval =
+            dayDifference >= 89 // quarter
+              ? 28 * 3600 * 24 * 1000
+              : dayDifference > 2
+                ? 3600 * 24 * 1000
+                : undefined;
+        }
+        return {
+          axisLine: {
+            show: false,
+          },
+          splitLine: {
+            show: true,
+          },
+          ...axis,
+          axisLabel: {
+            formatter: this._formatTimeLabel,
+            rich: {
+              bold: {
+                fontWeight: "bold",
+              },
+            },
+            hideOverlap: true,
+            ...axis.axisLabel,
+          },
+          minInterval,
+        } as XAXisOption;
+      });
+    }
     const options = {
-      backgroundColor: "transparent",
       animation: !this._reducedMotion,
-      darkMode,
+      darkMode: this._themes.darkMode ?? false,
       aria: {
         show: true,
       },
       dataZoom: this._getDataZoomConfig(),
       ...this.options,
-      legend: this.options?.legend
-        ? {
-            // we should create our own theme but this is a quick fix for now
-            inactiveColor: darkMode ? "#444" : "#ccc",
-            ...this.options.legend,
-          }
-        : undefined,
+      xAxis,
     };
 
     const isMobile = window.matchMedia(
@@ -255,18 +314,206 @@ export class HaChartBase extends LitElement {
       tooltips.forEach((tooltip) => {
         tooltip.confine = true;
         tooltip.appendTo = undefined;
+        tooltip.triggerOn = "click";
       });
       options.tooltip = tooltips;
     }
     return options;
   }
 
+  private _createTheme() {
+    const style = getComputedStyle(this);
+    return {
+      color: getAllGraphColors(style),
+      backgroundColor: "transparent",
+      textStyle: {
+        color: style.getPropertyValue("--primary-text-color"),
+      },
+      title: {
+        textStyle: {
+          color: style.getPropertyValue("--primary-text-color"),
+        },
+        subtextStyle: {
+          color: style.getPropertyValue("--secondary-text-color"),
+        },
+      },
+      line: {
+        lineStyle: {
+          width: 1.5,
+        },
+        symbolSize: 1,
+        symbol: "circle",
+        smooth: false,
+      },
+      bar: {
+        itemStyle: {
+          barBorderWidth: 1.5,
+        },
+      },
+      categoryAxis: {
+        axisLine: {
+          show: false,
+        },
+        axisTick: {
+          show: false,
+        },
+        axisLabel: {
+          show: true,
+          color: style.getPropertyValue("--primary-text-color"),
+        },
+        splitLine: {
+          show: false,
+          lineStyle: {
+            color: style.getPropertyValue("--divider-color"),
+          },
+        },
+        splitArea: {
+          show: false,
+          areaStyle: {
+            color: [
+              style.getPropertyValue("--divider-color") + "3F",
+              style.getPropertyValue("--divider-color") + "7F",
+            ],
+          },
+        },
+      },
+      valueAxis: {
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: style.getPropertyValue("--divider-color"),
+          },
+        },
+        axisTick: {
+          show: true,
+          lineStyle: {
+            color: style.getPropertyValue("--divider-color"),
+          },
+        },
+        axisLabel: {
+          show: true,
+          color: style.getPropertyValue("--primary-text-color"),
+        },
+        splitLine: {
+          show: true,
+          lineStyle: {
+            color: style.getPropertyValue("--divider-color"),
+          },
+        },
+        splitArea: {
+          show: false,
+          areaStyle: {
+            color: [
+              style.getPropertyValue("--divider-color") + "3F",
+              style.getPropertyValue("--divider-color") + "7F",
+            ],
+          },
+        },
+      },
+      logAxis: {
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: style.getPropertyValue("--divider-color"),
+          },
+        },
+        axisTick: {
+          show: true,
+          lineStyle: {
+            color: style.getPropertyValue("--divider-color"),
+          },
+        },
+        axisLabel: {
+          show: true,
+          color: style.getPropertyValue("--primary-text-color"),
+        },
+        splitLine: {
+          show: true,
+          lineStyle: {
+            color: style.getPropertyValue("--divider-color"),
+          },
+        },
+        splitArea: {
+          show: false,
+          areaStyle: {
+            color: [
+              style.getPropertyValue("--divider-color") + "3F",
+              style.getPropertyValue("--divider-color") + "7F",
+            ],
+          },
+        },
+      },
+      timeAxis: {
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: style.getPropertyValue("--divider-color"),
+          },
+        },
+        axisTick: {
+          show: true,
+          lineStyle: {
+            color: style.getPropertyValue("--divider-color"),
+          },
+        },
+        axisLabel: {
+          show: true,
+          color: style.getPropertyValue("--primary-text-color"),
+        },
+        splitLine: {
+          show: true,
+          lineStyle: {
+            color: style.getPropertyValue("--divider-color"),
+          },
+        },
+        splitArea: {
+          show: false,
+          areaStyle: {
+            color: [
+              style.getPropertyValue("--divider-color") + "3F",
+              style.getPropertyValue("--divider-color") + "7F",
+            ],
+          },
+        },
+      },
+      legend: {
+        textStyle: {
+          color: style.getPropertyValue("--primary-text-color"),
+        },
+        inactiveColor: style.getPropertyValue("--disabled-text-color"),
+        pageIconColor: style.getPropertyValue("--primary-text-color"),
+        pageIconInactiveColor: style.getPropertyValue("--disabled-text-color"),
+        pageTextStyle: {
+          color: style.getPropertyValue("--secondary-text-color"),
+        },
+      },
+      tooltip: {
+        backgroundColor: style.getPropertyValue("--card-background-color"),
+        borderColor: style.getPropertyValue("--divider-color"),
+        textStyle: {
+          color: style.getPropertyValue("--primary-text-color"),
+          fontSize: 12,
+        },
+        axisPointer: {
+          lineStyle: {
+            color: style.getPropertyValue("--divider-color"),
+          },
+          crossStyle: {
+            color: style.getPropertyValue("--divider-color"),
+          },
+        },
+      },
+      timeline: {},
+    };
+  }
+
   private _getDefaultHeight() {
-    return Math.max(this.clientWidth / 2, 400);
+    return Math.max(this.clientWidth / 2, 200);
   }
 
   private _handleZoomReset() {
     this.chart?.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
+    this._modifierPressed = false;
   }
 
   private _handleWheel(e: WheelEvent) {
@@ -289,10 +536,11 @@ export class HaChartBase extends LitElement {
     :host {
       display: block;
       position: relative;
+      letter-spacing: normal;
     }
     .chart-container {
       position: relative;
-      max-height: var(--chart-max-height, 400px);
+      max-height: var(--chart-max-height, 350px);
     }
     .chart {
       width: 100%;
@@ -308,6 +556,9 @@ export class HaChartBase extends LitElement {
       color: var(--primary-color);
       border: 1px solid var(--divider-color);
     }
+    .has-legend .zoom-reset {
+      top: 64px;
+    }
   `;
 }
 
@@ -318,5 +569,6 @@ declare global {
   interface HASSDomEvents {
     "dataset-hidden": { name: string };
     "dataset-unhidden": { name: string };
+    "chart-click": ECElementEvent;
   }
 }

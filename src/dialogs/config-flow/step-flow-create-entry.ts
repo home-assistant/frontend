@@ -65,7 +65,8 @@ class StepFlowCreateEntry extends LitElement {
 
     if (
       devices.length !== 1 ||
-      devices[0].primary_config_entry !== this.step.result?.entry_id
+      devices[0].primary_config_entry !== this.step.result?.entry_id ||
+      this.step.result.domain === "voip"
     ) {
       return;
     }

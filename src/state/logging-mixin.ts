@@ -29,21 +29,11 @@ export const loggingMixin = <T extends Constructor<HassBaseEl>>(
           return;
         }
         if (
-          // !__DEV__ &&
-          ev.message.includes("ResizeObserver loop limit exceeded") ||
+          (!__DEV__ &&
+            ev.message.includes("ResizeObserver loop limit exceeded")) ||
           ev.message.includes(
             "ResizeObserver loop completed with undelivered notifications"
-          ) ||
-          (ev.error.stack.includes("echarts") &&
-            (ev.message.includes(
-              "Cannot read properties of undefined (reading 'hostedBy')"
-            ) ||
-              ev.message.includes(
-                "Cannot read properties of undefined (reading 'scale')"
-              ) ||
-              ev.message.includes(
-                "Cannot read properties of null (reading 'innerHTML')"
-              )))
+          )
         ) {
           ev.preventDefault();
           ev.stopImmediatePropagation();

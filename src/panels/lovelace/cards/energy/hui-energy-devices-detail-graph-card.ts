@@ -33,6 +33,7 @@ import { hasConfigChanged } from "../../common/has-changed";
 import {
   fillDataGapsAndRoundCaps,
   getCommonOptions,
+  getCompareTransform,
 } from "./common/energy-chart-options";
 import { storage } from "../../../../common/decorators/storage";
 import type { ECOption } from "../../../../resources/echarts";
@@ -192,9 +193,10 @@ export class HuiEnergyDevicesDetailGraphCard
           icon: "circle",
         },
         grid: {
+          top: 45,
           bottom: 0,
-          left: 5,
-          right: 5,
+          left: 1,
+          right: 1,
           containLabel: true,
         },
       };
@@ -314,28 +316,34 @@ export class HuiEnergyDevicesDetailGraphCard
 
     processedData.forEach((device) => {
       device.data.forEach((datapoint) => {
-        totalDeviceConsumption[datapoint[0]] =
-          (totalDeviceConsumption[datapoint[0]] || 0) + datapoint[1];
+        totalDeviceConsumption[datapoint[compare ? 2 : 0]] =
+          (totalDeviceConsumption[datapoint[compare ? 2 : 0]] || 0) +
+          datapoint[1];
       });
     });
-    const compareOffset = compare
-      ? this._start.getTime() - this._compareStart!.getTime()
-      : 0;
+    const compareTransform = getCompareTransform(
+      this._start,
+      this._compareStart!
+    );
 
     const untrackedConsumption: BarSeriesOption["data"] = [];
     Object.keys(consumptionData.total).forEach((time) => {
+      const ts = Number(time);
       const value =
         consumptionData.total[time] - (totalDeviceConsumption[time] || 0);
-      const dataPoint = [Number(time), value];
+      const dataPoint: number[] = [ts, value];
       if (compare) {
         dataPoint[2] = dataPoint[0];
-        dataPoint[0] += compareOffset;
+        dataPoint[0] = compareTransform(new Date(ts)).getTime();
       }
       untrackedConsumption.push(dataPoint);
     });
+    // random id to always add untracked at the end
+    const order = Date.now();
     const dataset: BarSeriesOption = {
       type: "bar",
-      id: compare ? "compare-untracked" : "untracked",
+      cursor: "default",
+      id: compare ? `compare-untracked-${order}` : `untracked-${order}`,
       name: this.hass.localize(
         "ui.panel.lovelace.cards.energy.energy_devices_detail_graph.untracked_consumption"
       ),
@@ -371,9 +379,10 @@ export class HuiEnergyDevicesDetailGraphCard
     compare = false
   ) {
     const data: BarSeriesOption[] = [];
-    const compareOffset = compare
-      ? this._start.getTime() - this._compareStart!.getTime()
-      : 0;
+    const compareTransform = getCompareTransform(
+      this._start,
+      this._compareStart!
+    );
 
     devices.forEach((source, idx) => {
       const order = sorted_devices.indexOf(source.stat_consumption);
@@ -408,7 +417,7 @@ export class HuiEnergyDevicesDetailGraphCard
           const dataPoint = [point.start, point.change];
           if (compare) {
             dataPoint[2] = dataPoint[0];
-            dataPoint[0] += compareOffset;
+            dataPoint[0] = compareTransform(new Date(point.start)).getTime();
           }
           consumptionData.push(dataPoint);
           prevStart = point.start;
@@ -417,9 +426,11 @@ export class HuiEnergyDevicesDetailGraphCard
 
       data.push({
         type: "bar",
+        cursor: "default",
+        // add order to id, otherwise echarts refuses to reorder them
         id: compare
-          ? `compare-${source.stat_consumption}`
-          : source.stat_consumption,
+          ? `compare-${source.stat_consumption}-${order}`
+          : `${source.stat_consumption}-${order}`,
         name:
           source.name ||
           getStatisticLabel(
@@ -436,7 +447,9 @@ export class HuiEnergyDevicesDetailGraphCard
         stack: compare ? "devicesCompare" : "devices",
       });
     });
-    return data;
+    return sorted_devices.map(
+      (device) => data.find((d) => (d.id as string).includes(device))!
+    );
   }
 
   static styles = css`

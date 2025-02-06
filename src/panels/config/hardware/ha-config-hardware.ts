@@ -39,7 +39,6 @@ import { hardwareBrandsUrl } from "../../../util/brands-url";
 import { showhardwareAvailableDialog } from "./show-dialog-hardware-available";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import type { ECOption } from "../../../resources/echarts";
-import { getTimeAxisLabelConfig } from "../../../components/chart/axis-label";
 
 const DATASAMPLES = 60;
 
@@ -153,13 +152,6 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
       this._chartOptions = {
         xAxis: {
           type: "time",
-          axisLabel: getTimeAxisLabelConfig(this.hass.locale, this.hass.config),
-          splitLine: {
-            show: true,
-          },
-          axisLine: {
-            show: false,
-          },
         },
         yAxis: {
           type: "value",

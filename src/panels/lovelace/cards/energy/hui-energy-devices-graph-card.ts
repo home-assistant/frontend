@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import type { BarSeriesOption } from "echarts/charts";
+import type { ECElementEvent } from "echarts/types/dist/shared";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
 import {
   formatNumber,
@@ -16,6 +17,7 @@ import { getEnergyDataCollection } from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
   getStatisticLabel,
+  isExternalStatistic,
 } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
@@ -24,6 +26,7 @@ import type { EnergyDevicesGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import type { ECOption } from "../../../../resources/echarts";
 import "../../../../components/ha-card";
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 @customElement("hui-energy-devices-graph-card")
 export class HuiEnergyDevicesGraphCard
@@ -85,8 +88,9 @@ export class HuiEnergyDevicesGraphCard
           <ha-chart-base
             .hass=${this.hass}
             .data=${this._chartData}
-            .options=${this._createOptions(this.hass.themes?.darkMode)}
+            .options=${this._createOptions(this._chartData)}
             .height=${`${(this._chartData[0]?.data?.length || 0) * 28 + 50}px`}
+            @chart-click=${this._handleChartClick}
           ></ha-chart-base>
         </div>
       </ha-card>
@@ -106,17 +110,17 @@ export class HuiEnergyDevicesGraphCard
   }
 
   private _createOptions = memoizeOne(
-    (darkMode: boolean): ECOption => ({
+    (data: BarSeriesOption[]): ECOption => ({
       xAxis: {
         type: "value",
         name: "kWh",
-        splitLine: {
-          lineStyle: darkMode ? { opacity: 0.15 } : {},
-        },
       },
       yAxis: {
         type: "category",
         inverse: true,
+        triggerEvent: true,
+        // take order from data
+        data: data[0]?.data?.map((d: any) => d.value[1]),
         axisLabel: {
           formatter: this._getDeviceName.bind(this),
           overflow: "truncate",
@@ -167,6 +171,7 @@ export class HuiEnergyDevicesGraphCard
         },
         data: chartData,
         barWidth: compareData ? 10 : 20,
+        cursor: "default",
       },
     ];
 
@@ -181,6 +186,7 @@ export class HuiEnergyDevicesGraphCard
         },
         data: chartDataCompare,
         barWidth: 10,
+        cursor: "default",
       });
     }
 
@@ -227,6 +233,18 @@ export class HuiEnergyDevicesGraphCard
 
     this._chartData = datasets;
     await this.updateComplete;
+  }
+
+  private _handleChartClick(e: CustomEvent<ECElementEvent>): void {
+    if (
+      e.detail.targetType === "axisLabel" &&
+      e.detail.value &&
+      !isExternalStatistic(e.detail.value as string)
+    ) {
+      fireEvent(this, "hass-more-info", {
+        entityId: e.detail.value as string,
+      });
+    }
   }
 
   static styles = css`

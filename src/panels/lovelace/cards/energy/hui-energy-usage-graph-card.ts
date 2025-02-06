@@ -27,6 +27,7 @@ import { hasConfigChanged } from "../../common/has-changed";
 import {
   fillDataGapsAndRoundCaps,
   getCommonOptions,
+  getCompareTransform,
 } from "./common/energy-chart-options";
 import type { ECOption } from "../../../../resources/echarts";
 
@@ -476,9 +477,10 @@ export class HuiEnergyUsageGraphCard
       (a, b) => Number(a) - Number(b)
     );
 
-    const compareOffset = compare
-      ? this._start.getTime() - this._compareStart!.getTime()
-      : 0;
+    const compareTransform = getCompareTransform(
+      this._start,
+      this._compareStart!
+    );
 
     Object.entries(combinedData).forEach(([type, sources]) => {
       Object.entries(sources).forEach(([statId, source]) => {
@@ -494,7 +496,7 @@ export class HuiEnergyUsageGraphCard
           ];
           if (compare) {
             dataPoint[2] = dataPoint[0];
-            dataPoint[0] += compareOffset;
+            dataPoint[0] = compareTransform(dataPoint[0]);
           }
           points.push(dataPoint);
         }
@@ -502,6 +504,7 @@ export class HuiEnergyUsageGraphCard
         data.push({
           id: compare ? "compare-" + statId : statId,
           type: "bar",
+          cursor: "default",
           name:
             type in labels
               ? labels[type]

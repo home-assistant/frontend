@@ -50,9 +50,11 @@ class HaConfigBackupSettings extends LitElement {
     }
   }
 
-  protected firstUpdated(_changedProperties: PropertyValues): void {
-    super.firstUpdated(_changedProperties);
+  public connectedCallback(): void {
+    super.connectedCallback();
     this._scrollToSection();
+    // Update config the page is displayed (e.g. when coming back from a location detail page)
+    this._config = this.config;
   }
 
   private async _scrollToSection() {
