@@ -158,9 +158,8 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   private _renderStep() {
     if (this._restoring) {
       return html`<onboarding-restore-backup
-        .hass=${this.hass}
         .localize=${this.localize}
-        ?supervisor=${this._supervisor}
+        .supervisor=${this._supervisor ?? false}
         .language=${this.language}
       >
       </onboarding-restore-backup>`;
@@ -169,7 +168,6 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     if (this._init) {
       return html`<onboarding-welcome
         .localize=${this.localize}
-        .language=${this.language}
       ></onboarding-welcome>`;
     }
 
@@ -181,7 +179,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     if (step.step === "user") {
       return html`<onboarding-create-user
         .localize=${this.localize}
-        .language=${this.language ?? ""}
+        .language=${this.language}
       >
       </onboarding-create-user>`;
     }
@@ -238,7 +236,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       }
     }
     if (changedProps.has("language")) {
-      document.querySelector("html")!.setAttribute("lang", this.language!);
+      document.querySelector("html")!.setAttribute("lang", this.language);
     }
     if (changedProps.has("hass")) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
@@ -452,7 +450,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       subscribeOne(conn, subscribeUser),
     ]);
     this.initializeHass(auth, conn);
-    if (this.language && this.language !== this.hass!.language) {
+    if (this.language !== this.hass!.language) {
       this._updateHass({
         locale: { ...this.hass!.locale, language: this.language },
         language: this.language,
