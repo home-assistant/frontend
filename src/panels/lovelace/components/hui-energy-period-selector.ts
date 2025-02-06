@@ -182,6 +182,10 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         ],
         [this.hass.localize("ui.components.date-range-picker.ranges.now-24h")]:
           [subHours(today, 24), today],
+        [this.hass.localize("ui.components.date-range-picker.ranges.now-7d")]: [
+          subHours(today, 24 * 7),
+          today,
+        ],
         [this.hass.localize("ui.components.date-range-picker.ranges.now-30d")]:
           [subHours(today, 24 * 30), today],
         [this.hass.localize("ui.components.date-range-picker.ranges.now-365d")]:

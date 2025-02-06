@@ -809,10 +809,13 @@
         "ranges": {
           "today": "Today",
           "yesterday": "Yesterday",
+          "now-1h": "Last hour",
+          "now-12h": "Last 12 hours",
           "now-24h": "Last 24 hours",
           "this_week": "This week",
           "this_quarter": "This quarter",
           "this_month": "This month",
+          "now-7d": "Last 7 days",
           "now-30d": "Last 30 days",
           "this_year": "This year",
           "now-365d": "Last 365 days"
