@@ -193,9 +193,10 @@ export class HuiEnergyDevicesDetailGraphCard
           icon: "circle",
         },
         grid: {
+          top: 45,
           bottom: 0,
-          left: 5,
-          right: 5,
+          left: 1,
+          right: 1,
           containLabel: true,
         },
       };
