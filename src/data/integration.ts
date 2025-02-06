@@ -5,6 +5,7 @@ import type { HomeAssistant } from "../types";
 import { debounce } from "../common/util/debounce";
 
 export const integrationsWithPanel = {
+  bluetooth: "config/bluetooth",
   matter: "config/matter",
   mqtt: "config/mqtt",
   thread: "config/thread",

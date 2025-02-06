@@ -134,12 +134,15 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    let cardSize = 0;
+    let cardSize = 1;
     if (this._config?.show_current !== false) {
-      cardSize += 2;
+      cardSize += 1;
     }
     if (this._config?.show_forecast !== false) {
-      cardSize += 3;
+      cardSize += 1;
+    }
+    if (this._config?.forecast_type === "daily") {
+      cardSize += 1;
     }
     return cardSize;
   }
@@ -218,12 +221,19 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       this._forecastEvent,
       this._config?.forecast_type
     );
+
+    let itemsToShow = this._config?.forecast_slots ?? 5;
+    if (this._sizeController.value === "very-very-narrow") {
+      itemsToShow = Math.min(3, itemsToShow);
+    } else if (this._sizeController.value === "very-narrow") {
+      itemsToShow = Math.min(5, itemsToShow);
+    } else if (this._sizeController.value === "narrow") {
+      itemsToShow = Math.min(7, itemsToShow);
+    }
+
     const forecast =
       this._config?.show_forecast !== false && forecastData?.forecast?.length
-        ? forecastData.forecast.slice(
-            0,
-            this._sizeController.value === "very-very-narrow" ? 3 : 5
-          )
+        ? forecastData.forecast.slice(0, itemsToShow)
         : undefined;
     const weather = !forecast || this._config?.show_current !== false;
 
@@ -419,30 +429,24 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   }
 
   public getGridOptions(): LovelaceGridOptions {
-    if (
-      this._config?.show_current !== false &&
-      this._config?.show_forecast !== false
-    ) {
-      return {
-        columns: 12,
-        rows: 4,
-        min_columns: 6,
-        min_rows: 4,
-      };
+    let rows = 1;
+    let min_rows = 1;
+    if (this._config?.show_current !== false) {
+      rows += 1;
+      min_rows += 1;
     }
     if (this._config?.show_forecast !== false) {
-      return {
-        columns: 12,
-        rows: 3,
-        min_columns: 6,
-        min_rows: 3,
-      };
+      rows += 1;
+      min_rows += 1;
+    }
+    if (this._config?.forecast_type === "daily") {
+      rows += 1;
     }
     return {
       columns: 12,
-      rows: 2,
+      rows: rows,
       min_columns: 6,
-      min_rows: 2,
+      min_rows: min_rows,
     };
   }
 
@@ -462,7 +466,6 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
           display: flex;
           flex-direction: column;
           justify-content: center;
-          padding: 16px;
           box-sizing: border-box;
         }
 
@@ -471,6 +474,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
           flex-wrap: nowrap;
           justify-content: space-between;
           align-items: center;
+          padding: 0 16px;
+        }
+
+        .content + .forecast {
+          padding-top: 8px;
         }
 
         .icon-image {
@@ -549,7 +557,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         .forecast {
           display: flex;
           justify-content: space-around;
-          padding-top: 16px;
+          padding: 0 16px;
         }
 
         .forecast > div {
@@ -558,7 +566,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
         .forecast .icon,
         .forecast .temp {
-          margin: 4px 0;
+          margin: 0;
         }
 
         .forecast .temp {

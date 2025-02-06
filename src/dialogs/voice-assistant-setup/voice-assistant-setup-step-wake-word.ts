@@ -44,6 +44,15 @@ export class HaVoiceAssistantSetupStepWakeWord extends LitElement {
   protected override willUpdate(changedProperties: PropertyValues) {
     super.willUpdate(changedProperties);
 
+    if (changedProperties.has("assistConfiguration")) {
+      if (
+        this.assistConfiguration &&
+        !this.assistConfiguration.available_wake_words.length
+      ) {
+        this._nextStep();
+      }
+    }
+
     if (changedProperties.has("assistEntityId")) {
       this._detected = false;
       this._muteSwitchEntity = this.deviceEntities?.find(
@@ -135,13 +144,16 @@ export class HaVoiceAssistantSetupStepWakeWord extends LitElement {
               >`
             : nothing}
       </div>
-      <div class="footer centered">
-        <ha-button @click=${this._changeWakeWord}
-          >${this.hass.localize(
-            "ui.panel.config.voice_assistants.satellite_wizard.wake_word.change_wake_word"
-          )}</ha-button
-        >
-      </div>`;
+      ${this.assistConfiguration &&
+      this.assistConfiguration.available_wake_words.length > 1
+        ? html`<div class="footer centered">
+            <ha-button @click=${this._changeWakeWord}
+              >${this.hass.localize(
+                "ui.panel.config.voice_assistants.satellite_wizard.wake_word.change_wake_word"
+              )}</ha-button
+            >
+          </div>`
+        : nothing}`;
   }
 
   private async _listenWakeWord() {

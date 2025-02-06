@@ -16,7 +16,7 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-alert";
 import "../../../components/ha-password-field";
 import "../../../components/ha-svg-icon";
-import type { BackupConfig } from "../../../data/backup";
+import type { BackupAgent, BackupConfig } from "../../../data/backup";
 import { updateBackupConfig } from "../../../data/backup";
 import type { CloudStatus } from "../../../data/cloud";
 import "../../../layouts/hass-subpage";
@@ -39,6 +39,8 @@ class HaConfigBackupSettings extends LitElement {
 
   @property({ attribute: false }) public config?: BackupConfig;
 
+  @property({ attribute: false }) public agents: BackupAgent[] = [];
+
   @state() private _config?: BackupConfig;
 
   protected willUpdate(changedProperties: PropertyValues): void {
@@ -48,9 +50,11 @@ class HaConfigBackupSettings extends LitElement {
     }
   }
 
-  protected firstUpdated(_changedProperties: PropertyValues): void {
-    super.firstUpdated(_changedProperties);
+  public connectedCallback(): void {
+    super.connectedCallback();
     this._scrollToSection();
+    // Update config the page is displayed (e.g. when coming back from a location detail page)
+    this._config = this.config;
   }
 
   private async _scrollToSection() {
@@ -177,8 +181,11 @@ class HaConfigBackupSettings extends LitElement {
               <ha-backup-config-agents
                 .hass=${this.hass}
                 .value=${this._config.create_backup.agent_ids}
+                .agentsConfig=${this._config.agents}
                 .cloudStatus=${this.cloudStatus}
+                .agents=${this.agents}
                 @value-changed=${this._agentsConfigChanged}
+                show-settings
               ></ha-backup-config-agents>
               ${!this._config.create_backup.agent_ids.length
                 ? html`

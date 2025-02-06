@@ -837,8 +837,6 @@
         "duration": "Duration",
         "source_history": "Source: History",
         "source_stats": "Source: Long term statistics",
-        "zoom_hint": "Use ctrl + scroll to zoom in/out",
-        "zoom_hint_mac": "Use ⌘ + scroll to zoom in/out",
         "zoom_reset": "Reset zoom"
       },
       "map": {
@@ -917,7 +915,7 @@
         "play-media": "Play media",
         "pick-media": "Pick media",
         "no_items": "No items",
-        "not_shown": "{count} incompatible {count, plural,\n  one {item}\n  other {items}\n} hidden",
+        "not_shown": "{count} {count, plural,\n  one {item}\n  other {items}\n} incompatible with the currently selected player {count, plural,\n  one {is}\n  other {are}\n} hidden",
         "choose_player": "Choose player",
         "media-player-browser": "Media",
         "web-browser": "Web browser",
@@ -1281,7 +1279,17 @@
           "install": "Install",
           "update": "Update",
           "auto_update_enabled_title": "Can not skip version",
-          "auto_update_enabled_text": "Automatic updates for this item have been enabled; skipping it is, therefore, unavailable. You can either install this update now or wait for Home Assistant to do it automatically."
+          "auto_update_enabled_text": "Automatic updates for this item have been enabled; skipping it is, therefore, unavailable. You can either install this update now or wait for Home Assistant to do it automatically.",
+          "create_backup": {
+            "automatic": "Automatic backup before update",
+            "automatic_description_last": "Last automatic backup {relative_time}.",
+            "automatic_description_none": "No automatic backup yet.",
+            "manual": "Create manual backup before update",
+            "manual_description": "Includes Home Assistant settings and history.",
+            "addon": "Keep backup of the last version",
+            "addon_description": "For easily restoring to version {version}",
+            "generic": "Create backup"
+          }
         },
         "updater": {
           "title": "Update instructions"
@@ -1924,9 +1932,9 @@
       "action_failed": "Failed to perform the action {service}.",
       "connection_lost": "Connection lost. Reconnecting…",
       "started": "Home Assistant has started!",
-      "starting": "Home Assistant is starting, not everything will be available until it is finished.",
-      "wrapping_up_startup": "Wrapping up startup, not everything will be available until it is finished.",
-      "integration_starting": "Starting {integration}, not everything will be available until it is finished.",
+      "starting": "Home Assistant is starting. Not everything will be available until it is finished.",
+      "wrapping_up_startup": "Wrapping up startup. Not everything will be available until it is finished.",
+      "integration_starting": "Starting {integration}. Not everything will be available until it is finished.",
       "triggered": "Triggered {name}",
       "dismiss": "Dismiss",
       "no_matching_link_found": "No matching My link found for {path}"
@@ -2218,7 +2226,8 @@
           "backup_type": "Type",
           "type": {
             "manual": "Manual",
-            "automatic": "Automatic"
+            "automatic": "Automatic",
+            "addon_update": "Add-on update"
           },
           "locations": "Locations",
           "create": {
@@ -2387,18 +2396,25 @@
             "download": {
               "decryption_unsupported_title": "Decryption unsupported",
               "decryption_unsupported": "Decryption is not supported for this backup. The downloaded backup will remain encrypted and can't be opened. To restore it, you will need the encryption key.",
-              "incorrect_entered_encryption_key": "The entered encryption key was incorrect, try again or download the encrypted backup. The encrypted backup can't be opened. To restore it, you will need the encryption key.",
-              "download_encrypted": "Download encrypted",
-              "incorrect_current_encryption_key": "This backup is encrypted with a different encryption key than the current one, please enter the encryption key of this backup.",
               "error_check_title": "Error checking backup",
-              "error_check_description": "An error occurred while checking the backup, please try again. Error message: {error}"
+              "error_check_description": "An error occurred while checking the backup, please try again. Error message: {error}",
+              "title": "Download backup",
+              "description": "This backup is encrypted with a different encryption key than the current one, please enter the encryption key of this backup.",
+              "download_backup_encrypted": "You can still {download_it_encrypted}. To restore it, you will need the encryption key.",
+              "download_it_encrypted": "download the backup encrypted",
+              "encryption_key": "Encryption key",
+              "incorrect_encryption_key": "Incorrect encryption key",
+              "decryption_not_supported": "Decryption not supported",
+              "download": "Download"
             }
           },
           "agents": {
             "cloud_agent_description": "Note: It stores only the most recent backup, regardless of your retention settings, with a maximum size of 5 GB.",
             "cloud_agent_no_subcription": "You currently do not have an active Home Assistant Cloud subscription.",
             "network_mount_agent_description": "Network storage",
+            "unavailable_agents": "Unavailable locations",
             "no_agents": "No locations configured",
+            "encryption_turned_off": "Encryption turned off",
             "local_agent": "This system"
           },
           "data": {
@@ -2437,8 +2453,7 @@
             "custom_time_label": "Backup at",
             "custom_time_description": "The optimal time is after Home Assistant finished cleaning up the database. This is done at {time}.",
             "schedule_description": "How often you want to create a backup.",
-            "schedule_time_description": "When the backup creation starts.",
-            "schedule_time_optimal_description": "By default Home Assistant picks the optimal time between {time_range_start} and {time_range_end}.",
+            "schedule_time_description": "When the backup creation starts. By default Home Assistant picks the optimal time between {time_range_start} and {time_range_end}.",
             "tip": "You can create your own custom backup automation with the {backup_create} action",
             "schedule_options": {
               "never": "Never",
@@ -2555,6 +2570,7 @@
               "title": "My backups",
               "automatic": "{count} automatic {count, plural,\n one {backup}\n other {backups}\n}",
               "manual": "{count} manual {count, plural,\n one {backup}\n other {backups}\n}",
+              "addon_update": "{count} add-on update {count, plural,\n one {backup}\n other {backups}\n}",
               "total_size": "{size} in total",
               "show_all": "Show all backups"
             },
@@ -2646,10 +2662,7 @@
             "summary": {
               "title": "Backup",
               "size": "Size",
-              "created": "Created",
-              "protection": "Protection",
-              "protected_encrypted_aes_128": "Encrypted AES-128",
-              "protected_not_encrypted": "Not encrypted"
+              "created": "Created"
             },
             "restore": {
               "title": "Select what to restore",
@@ -2657,9 +2670,38 @@
             },
             "locations": {
               "title": "Locations",
-              "backup_stored": "Backup stored",
               "backup_failed": "Backup failed",
-              "download": "Download from this location"
+              "encryption_turned_off": "Encryption turned off",
+              "download": "Download from this location",
+              "unencrypted": "Unencrypted",
+              "encrypted": "Encrypted"
+            }
+          },
+          "location": {
+            "header": "Location",
+            "not_found": "Not found",
+            "not_found_description": "Location matching ''{backupId}'' not found",
+            "error": "Could not fetch location details",
+            "configuration": {
+              "title": "Configuration",
+              "cloud_description": "Home Assistant Cloud backup stores only one backup. The oldest backups are deleted."
+            },
+            "encryption": {
+              "title": "Encryption",
+              "description": "All your backups are encrypted by default to keep your data private and secure.",
+              "location_encrypted": "Backups made to this location will be encrypted",
+              "location_unencrypted": "Backups made to this location will be unencrypted",
+              "location_encrypted_description": "Your data is private and secure by encrypting backups with your encryption key.",
+              "location_encrypted_cloud_description": "Home Assistant Cloud is the privacy-focused cloud. This is why it will only accept encrypted backups and why we don’t store your encryption key.",
+              "location_encrypted_cloud_learn_more": "Learn more",
+              "location_unencrypted_description": "Please keep your backups private and secure.",
+              "encryption_turn_on": "Turn on",
+              "encryption_turn_off": "Turn off",
+              "encryption_turn_off_confirm_title": "Turn encryption off?",
+              "encryption_turn_off_confirm_text": "After confirming, backups created will be unencrypted for this location. Please ensure your backups remain private and secure.",
+              "encryption_turn_off_confirm_action": "Turn encryption off",
+              "warning_encryption_turn_off": "Encryption turned off",
+              "warning_encryption_turn_off_description": "Backups will be unencrypted."
             }
           }
         },
@@ -3707,7 +3749,7 @@
                 },
                 "time": {
                   "type_value": "Fixed time",
-                  "type_input": "Value of a date/time helper, time entity or timestamp-class sensor",
+                  "type_input": "Value of a date/time helper or timestamp-class sensor",
                   "label": "Time",
                   "at": "At time",
                   "offset": "[%key:ui::panel::config::automation::editor::triggers::type::sun::offset%]",
@@ -4403,7 +4445,13 @@
             "save_script": "Save script",
             "sequence": "Sequence",
             "sequence_sentence": "The sequence of actions of this script.",
-            "link_available_actions": "Learn more about available actions."
+            "link_available_actions": "Learn more about available actions.",
+            "leave": {
+              "unsaved_new_title": "Save new script?",
+              "unsaved_new_text": "You can save your changes, or delete this script. You can't undo this action.",
+              "unsaved_confirm_title": "Save changes?",
+              "unsaved_confirm_text": "You have made some changes in this script. You can save these changes, or discard them and leave. You can't undo this action."
+            }
           },
           "trace": {
             "edit_script": "Edit script"
@@ -4547,6 +4595,7 @@
             "account_created": "Account created! Check your email for instructions on how to activate your account."
           },
           "account": {
+            "download_support_package": "Download support package",
             "reset_cloud_data": "Reset cloud data",
             "reset_data_confirm_title": "Reset cloud data?",
             "reset_data_confirm_text": "This will reset all your cloud settings. This includes your remote connection, Google Assistant and Amazon Alexa integrations. This action cannot be undone.",
@@ -5280,10 +5329,21 @@
         },
         "bluetooth": {
           "title": "Bluetooth",
+          "settings_title": "Bluetooth settings",
+          "option_flow": "Configure Bluetooth options",
+          "advertisement_monitor": "Advertisement monitor",
+          "advertisement_monitor_details": "The advertisement monitor listens for Bluetooth advertisements and displays the data in a structured format.",
+          "connection_slot_allocations_monitor": "Connection slot allocations monitor",
+          "connection_slot_allocations_monitor_details": "The connection slot allocations monitor displays the (GATT) connection slot allocations for the adapter. This adapter supports up to {slots} simultaneous connections. Each remote Bluetooth device that requires an active connection will use one connection slot while the Bluetooth device is connecting or connected.",
+          "used_connection_slot_allocations": "Used connection slot allocations",
+          "no_connection_slot_allocations": "No connection slot allocations information available",
+          "no_active_connection_support": "This adapter does not support making active (GATT) connections.",
           "address": "Address",
           "name": "Name",
           "source": "Source",
           "rssi": "RSSI",
+          "source_address": "Source address",
+          "device": "Device",
           "device_information": "Device information",
           "advertisement_data": "Advertisement data",
           "manufacturer_data": "Manufacturer data",
@@ -5995,8 +6055,10 @@
         },
         "tips": {
           "tip": "Tip!",
-          "join": "Join the community on our {forums}, {twitter}, {discord}, {blog} or {newsletter}",
+          "join": "Join the community on our {forums}, {mastodon}, {bluesky}, {twitter}, {discord}, {blog} or {newsletter}",
           "join_x": "X (formerly Twitter)",
+          "join_mastodon": "Mastodon",
+          "join_bluesky": "Bluesky",
           "join_forums": "Forums",
           "join_chat": "Chat",
           "join_blog": "Blog",
@@ -6065,7 +6127,12 @@
           },
           "network_adapter": "Network adapter",
           "network_adapter_info": "Configure which network adapters integrations will use. Currently this setting only affects multicast traffic. A restart is required for these settings to apply.",
-          "ip_information": "IP Information"
+          "ip_information": "IP Information",
+          "adapter": {
+            "auto_configure": "Auto configure",
+            "detected": "Detected",
+            "adapter": "Adapter"
+          }
         },
         "storage": {
           "caption": "Storage",
@@ -6873,7 +6940,7 @@
             },
             "humidifier": {
               "name": "Humidifier",
-              "description": "The Humidifier card gives control of a humidifier entity for humidifying or dehumdifying, allowing you to set its mode and desired humidity.",
+              "description": "The Humidifier card gives control of a humidifier entity for humidifying or dehumidifying, allowing you to set its mode and desired humidity.",
               "show_current_as_primary": "Show current humidity as primary information"
             },
             "iframe": {
@@ -7067,6 +7134,7 @@
               "show_only_current": "Show only current Weather",
               "show_only_forecast": "Show only forecast",
               "forecast_type": "Select forecast type",
+              "forecast_slots": "Maximum number of forecast elements to show",
               "no_type": "No type",
               "daily": "Daily",
               "hourly": "Hourly",
@@ -7357,7 +7425,7 @@
           "entity_not_found": "Entity not available: {entity}",
           "entity_non_numeric": "Entity is non-numeric: {entity}",
           "entity_unavailable": "Entity is currently unavailable: {entity}",
-          "starting": "Home Assistant is starting, not everything may be available yet"
+          "starting": "Home Assistant is starting. Not everything may be available yet."
         },
         "changed_toast": {
           "message": "Your dashboard was updated. Refresh to see changes?"
@@ -8473,7 +8541,12 @@
       "open_release_notes": "Open release notes",
       "description": "You have {version} installed. Press update to update to version {newest_version}",
       "updating": "Updating {name} to version {version}",
-      "no_update": "No update available for {name}"
+      "no_update": "No update available for {name}",
+      "create_backup": {
+        "addon": "[%key:ui::dialogs::more_info_control::update::create_backup::addon%]",
+        "addon_description": "[%key:ui::dialogs::more_info_control::update::create_backup::addon_description%]",
+        "generic": "[%key:ui::dialogs::more_info_control::update::create_backup::generic%]"
+      }
     },
     "confirm": {
       "restart": {

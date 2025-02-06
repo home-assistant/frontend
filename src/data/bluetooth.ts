@@ -19,6 +19,15 @@ export interface BluetoothDeviceData extends DataTableRowData {
   tx_power: number;
 }
 
+export interface BluetoothScannerDetails {
+  source: string;
+  connectable: boolean;
+  name: string;
+  adapter: string;
+}
+
+export type BluetoothScannersDetails = Record<string, BluetoothScannerDetails>;
+
 interface BluetoothRemoveDeviceData {
   address: string;
 }
@@ -29,7 +38,56 @@ interface BluetoothAdvertisementSubscriptionMessage {
   remove?: BluetoothRemoveDeviceData[];
 }
 
-const subscribeUpdates = (
+interface BluetoothScannersDetailsSubscriptionMessage {
+  add?: BluetoothScannerDetails[];
+  remove?: BluetoothScannerDetails[];
+}
+
+export interface BluetoothAllocationsData {
+  source: string;
+  slots: number;
+  free: number;
+  allocated: string[];
+}
+
+export const subscribeBluetoothScannersDetailsUpdates = (
+  conn: Connection,
+  store: Store<BluetoothScannersDetails>
+): Promise<UnsubscribeFunc> =>
+  conn.subscribeMessage<BluetoothScannersDetailsSubscriptionMessage>(
+    (event) => {
+      const data = { ...(store.state || {}) };
+      if (event.add) {
+        for (const device_data of event.add) {
+          data[device_data.source] = device_data;
+        }
+      }
+      if (event.remove) {
+        for (const device_data of event.remove) {
+          delete data[device_data.source];
+        }
+      }
+      store.setState(data, true);
+    },
+    {
+      type: `bluetooth/subscribe_scanner_details`,
+    }
+  );
+
+export const subscribeBluetoothScannersDetails = (
+  conn: Connection,
+  callbackFunction: (bluetoothScannersDetails: BluetoothScannersDetails) => void
+) =>
+  createCollection<BluetoothScannersDetails>(
+    "_bluetoothScannerDetails",
+    () => Promise.resolve<BluetoothScannersDetails>({}), // empty hash as initial state
+
+    subscribeBluetoothScannersDetailsUpdates,
+    conn,
+    callbackFunction
+  );
+
+const subscribeBluetoothAdvertisementsUpdates = (
   conn: Connection,
   store: Store<BluetoothDeviceData[]>
 ): Promise<UnsubscribeFunc> =>
@@ -78,13 +136,32 @@ const subscribeUpdates = (
 
 export const subscribeBluetoothAdvertisements = (
   conn: Connection,
-  onChange: (bluetoothDeviceData: BluetoothDeviceData[]) => void
+  callbackFunction: (bluetoothDeviceData: BluetoothDeviceData[]) => void
 ) =>
   createCollection<BluetoothDeviceData[]>(
     "_bluetoothDeviceRows",
     () => Promise.resolve<BluetoothDeviceData[]>([]), // empty array as initial state
 
-    subscribeUpdates,
+    subscribeBluetoothAdvertisementsUpdates,
     conn,
-    onChange
+    callbackFunction
   );
+
+export const subscribeBluetoothConnectionAllocations = (
+  conn: Connection,
+  callbackFunction: (
+    bluetoothAllocationsData: BluetoothAllocationsData[]
+  ) => void,
+  configEntryId?: string
+): Promise<() => Promise<void>> => {
+  const params: { type: string; config_entry_id?: string } = {
+    type: "bluetooth/subscribe_connection_allocations",
+  };
+  if (configEntryId) {
+    params.config_entry_id = configEntryId;
+  }
+  return conn.subscribeMessage<BluetoothAllocationsData[]>(
+    (bluetoothAllocationsData) => callbackFunction(bluetoothAllocationsData),
+    params
+  );
+};

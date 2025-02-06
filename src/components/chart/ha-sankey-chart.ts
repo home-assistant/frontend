@@ -3,6 +3,7 @@ import { LitElement, html, css, svg, nothing } from "lit";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import memoizeOne from "memoize-one";
 import type { HomeAssistant } from "../../types";
+import { measureTextWidth } from "../../util/text";
 
 export interface Node {
   id: string;
@@ -68,15 +69,12 @@ export class HaSankeyChart extends LitElement {
 
   private _statePerPixel = 0;
 
-  private _textMeasureCanvas?: HTMLCanvasElement;
-
   private _sizeController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect,
   });
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    this._textMeasureCanvas = undefined;
   }
 
   willUpdate() {
@@ -477,7 +475,7 @@ export class HaSankeyChart extends LitElement {
                 (node) =>
                   NODE_WIDTH +
                   TEXT_PADDING +
-                  (node.label ? this._getTextWidth(node.label) : 0)
+                  (node.label ? measureTextWidth(node.label, FONT_SIZE) : 0)
               )
             )
           : 0;
@@ -492,18 +490,6 @@ export class HaSankeyChart extends LitElement {
       : fullSize / nodesPerSection.length;
   }
 
-  private _getTextWidth(text: string): number {
-    if (!this._textMeasureCanvas) {
-      this._textMeasureCanvas = document.createElement("canvas");
-    }
-    const context = this._textMeasureCanvas.getContext("2d");
-    if (!context) return 0;
-
-    // Match the font style from CSS
-    context.font = `${FONT_SIZE}px sans-serif`;
-    return context.measureText(text).width;
-  }
-
   private _getVerticalLabelFontSize(label: string, labelWidth: number): number {
     // reduce the label font size so the longest word fits on one line
     const longestWord = label
@@ -513,7 +499,7 @@ export class HaSankeyChart extends LitElement {
           longest.length > current.length ? longest : current,
         ""
       );
-    const wordWidth = this._getTextWidth(longestWord);
+    const wordWidth = measureTextWidth(longestWord, FONT_SIZE);
     return Math.min(FONT_SIZE, (labelWidth / wordWidth) * FONT_SIZE);
   }
 
