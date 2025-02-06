@@ -225,7 +225,7 @@ export function fillDataGapsAndRoundCaps(datasets: BarSeriesOption[]) {
       if (x === undefined) {
         continue;
       }
-      if (x !== bucket) {
+      if (Number(x) !== bucket) {
         datasets[i].data?.splice(index, 0, {
           value: [bucket, 0],
           itemStyle: {
