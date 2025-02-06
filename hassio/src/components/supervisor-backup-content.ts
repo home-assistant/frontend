@@ -153,7 +153,7 @@ export class SupervisorBackupContent extends LitElement {
       ${!this.backup || this.backup.type === "full"
         ? html`<div class="sub-header">
               ${!this.backup
-                ? this._localize("type")
+                ? this._localize("backup_type_label")
                 : this._localize("select_type")}
             </div>
             <div class="backup-types">
