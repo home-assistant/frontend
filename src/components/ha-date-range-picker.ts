@@ -5,6 +5,7 @@ import "@material/mwc-list/mwc-list-item";
 import { mdiCalendar } from "@mdi/js";
 import {
   addDays,
+  subDays,
   subHours,
   endOfDay,
   endOfMonth,
@@ -14,6 +15,7 @@ import {
   startOfMonth,
   startOfWeek,
   startOfYear,
+  isThisYear,
 } from "date-fns";
 import { fromZonedTime, toZonedTime } from "date-fns-tz";
 import type { PropertyValues, TemplateResult } from "lit";
