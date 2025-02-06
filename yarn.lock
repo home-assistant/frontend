@@ -1321,12 +1321,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/state@npm:6.5.1, @codemirror/state@npm:^6.0.0, @codemirror/state@npm:^6.4.0, @codemirror/state@npm:^6.5.0":
-  version: 6.5.1
-  resolution: "@codemirror/state@npm:6.5.1"
+"@codemirror/state@npm:6.5.2, @codemirror/state@npm:^6.0.0, @codemirror/state@npm:^6.4.0, @codemirror/state@npm:^6.5.0":
+  version: 6.5.2
+  resolution: "@codemirror/state@npm:6.5.2"
   dependencies:
     "@marijn/find-cluster-break": "npm:^1.0.0"
-  checksum: 10/117f21ba2ff5bc9f9b946ca9943279a29bb9461ec77fc2313cfd8908ed6eb7df2950d7c5b0ba0a0a23c3e0633c6bba56f8c105f97875665e0376a9e110d10a48
+  checksum: 10/5ccd3acb0c0a5b88e83fb91be39099fceb9f44a5047cc41a75d53f160e736851f65c8de40950b90c6519e6d2828e12f468db0af658dde30e938896f1c39eec91
   languageName: node
   linkType: hard
 
@@ -9275,7 +9275,7 @@ __metadata:
     "@codemirror/language": "npm:6.10.8"
     "@codemirror/legacy-modes": "npm:6.4.2"
     "@codemirror/search": "npm:6.5.8"
-    "@codemirror/state": "npm:6.5.1"
+    "@codemirror/state": "npm:6.5.2"
     "@codemirror/view": "npm:6.36.2"
     "@egjs/hammerjs": "npm:2.0.17"
     "@formatjs/intl-datetimeformat": "npm:6.17.2"
