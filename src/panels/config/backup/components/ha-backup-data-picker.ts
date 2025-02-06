@@ -277,11 +277,7 @@ export class HaBackupDataPicker extends LitElement {
                           item.id
                         )}
                         @change=${this._homeassistantChanged}
-                        )
-                        ||
-                        this.requiredItems.includes(item.id)}
-                        ?disabled=${this.requiredItems.includes(item.id)}
-                        .section=${"homeassistant"}
+                        .disabled=${this.requiredItems.includes(item.id)}
                       ></ha-checkbox>
                     </ha-formfield>
                   `
