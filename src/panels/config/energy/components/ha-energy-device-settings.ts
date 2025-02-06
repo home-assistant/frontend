@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import { mdiDelete, mdiDevices, mdiPencil } from "@mdi/js";
+import { mdiDelete, mdiDevices, mdiDrag, mdiPencil } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { repeat } from "lit/directives/repeat";
@@ -7,7 +7,6 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-state-icon";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import type {
@@ -82,41 +81,37 @@ export class EnergyDeviceSettings extends LitElement {
               "ui.panel.config.energy.device_consumption.devices"
             )}
           </h3>
-          <ha-sortable handle-selector=".row" @item-moved=${this._itemMoved}>
+          <ha-sortable handle-selector=".handle" @item-moved=${this._itemMoved}>
             <div class="devices">
               ${repeat(
                 this.preferences.device_consumption,
                 (device) => device.stat_consumption,
-                (device) => {
-                  const entityState = this.hass.states[device.stat_consumption];
-                  return html`
-                    <div class="row" .device=${device}>
-                      <ha-state-icon
-                        .hass=${this.hass}
-                        .stateObj=${entityState}
-                      ></ha-state-icon>
-                      <span class="content"
-                        >${device.name ||
-                        getStatisticLabel(
-                          this.hass,
-                          device.stat_consumption,
-                          this.statsMetadata?.[device.stat_consumption]
-                        )}</span
-                      >
-                      <ha-icon-button
-                        .label=${this.hass.localize("ui.common.edit")}
-                        @click=${this._editDevice}
-                        .path=${mdiPencil}
-                      ></ha-icon-button>
-                      <ha-icon-button
-                        .label=${this.hass.localize("ui.common.delete")}
-                        @click=${this._deleteDevice}
-                        .device=${device}
-                        .path=${mdiDelete}
-                      ></ha-icon-button>
+                (device) => html`
+                  <div class="row" .device=${device}>
+                    <div class="handle">
+                      <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
                     </div>
-                  `;
-                }
+                    <span class="content"
+                      >${device.name ||
+                      getStatisticLabel(
+                        this.hass,
+                        device.stat_consumption,
+                        this.statsMetadata?.[device.stat_consumption]
+                      )}</span
+                    >
+                    <ha-icon-button
+                      .label=${this.hass.localize("ui.common.edit")}
+                      @click=${this._editDevice}
+                      .path=${mdiPencil}
+                    ></ha-icon-button>
+                    <ha-icon-button
+                      .label=${this.hass.localize("ui.common.delete")}
+                      @click=${this._deleteDevice}
+                      .device=${device}
+                      .path=${mdiDelete}
+                    ></ha-icon-button>
+                  </div>
+                `
               )}
             </div>
           </ha-sortable>
@@ -214,7 +209,7 @@ export class EnergyDeviceSettings extends LitElement {
       haStyle,
       energyCardStyles,
       css`
-        .row {
+        .handle {
           cursor: move; /* fallback if grab cursor is unsupported */
           cursor: grab;
         }

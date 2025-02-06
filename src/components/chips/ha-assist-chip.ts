@@ -33,9 +33,10 @@ export class HaAssistChip extends MdAssistChip {
       }
       /** Set the size of mdc icons **/
       ::slotted([slot="icon"]),
-      ::slotted([slot="trailingIcon"]) {
+      ::slotted([slot="trailing-icon"]) {
         display: flex;
         --mdc-icon-size: var(--md-input-chip-icon-size, 18px);
+        font-size: var(--_label-text-size) !important;
       }
 
       .trailing.icon ::slotted(*),

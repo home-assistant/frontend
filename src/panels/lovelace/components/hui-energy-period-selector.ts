@@ -246,8 +246,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
             .startDate=${this._startDate}
             .endDate=${this._endDate || new Date()}
             .ranges=${this._ranges}
-            @change=${this._dateRangeChanged}
-            time-picker
+            @value-changed=${this._dateRangeChanged}
             minimal
           ></ha-date-range-picker>
         </div>
@@ -347,7 +346,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   private _dateRangeChanged(ev) {
     const weekStartsOn = firstWeekdayIndex(this.hass.locale);
     this._startDate = calcDate(
-      ev.detail.startDate,
+      ev.detail.value.startDate,
       startOfDay,
       this.hass.locale,
       this.hass.config,
@@ -356,7 +355,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       }
     );
     this._endDate = calcDate(
-      ev.detail.endDate,
+      ev.detail.value.endDate,
       endOfDay,
       this.hass.locale,
       this.hass.config,

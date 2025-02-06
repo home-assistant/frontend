@@ -251,25 +251,20 @@ class HaBackupConfigSchedule extends LitElement {
                 >
                 <span slot="supporting-text">
                   ${this.hass.localize(
-                    "ui.panel.config.backup.schedule.schedule_time_description"
+                    "ui.panel.config.backup.schedule.schedule_time_description",
+                    {
+                      time_range_start: formatTime(
+                        DEFAULT_OPTIMIZED_BACKUP_START_TIME,
+                        this.hass.locale,
+                        this.hass.config
+                      ),
+                      time_range_end: formatTime(
+                        DEFAULT_OPTIMIZED_BACKUP_END_TIME,
+                        this.hass.locale,
+                        this.hass.config
+                      ),
+                    }
                   )}
-                  ${data.time_option === BackupScheduleTime.DEFAULT
-                    ? this.hass.localize(
-                        "ui.panel.config.backup.schedule.schedule_time_optimal_description",
-                        {
-                          time_range_start: formatTime(
-                            DEFAULT_OPTIMIZED_BACKUP_START_TIME,
-                            this.hass.locale,
-                            this.hass.config
-                          ),
-                          time_range_end: formatTime(
-                            DEFAULT_OPTIMIZED_BACKUP_END_TIME,
-                            this.hass.locale,
-                            this.hass.config
-                          ),
-                        }
-                      )
-                    : nothing}
                 </span>
 
                 <ha-md-select
@@ -408,11 +403,11 @@ class HaBackupConfigSchedule extends LitElement {
             backup_create: html`<a
               href=${documentationUrl(
                 this.hass,
-                "/integrations/backup#example-backing-up-every-night-at-300-am"
+                "/integrations/backup/#action-backupcreate_automatic"
               )}
               target="_blank"
               rel="noopener noreferrer"
-              >backup.create</a
+              >backup.create_automatic</a
             >`,
           })}</ha-tip
         >
@@ -542,14 +537,22 @@ class HaBackupConfigSchedule extends LitElement {
     ha-md-list-item {
       --md-item-overflow: visible;
     }
-    ha-md-select,
-    ha-time-input {
+    ha-md-select {
       min-width: 210px;
     }
+    ha-time-input {
+      min-width: 194px;
+      --time-input-flex: 1;
+    }
     @media all and (max-width: 450px) {
-      ha-md-select,
-      ha-time-input {
+      ha-md-select {
         min-width: 160px;
+        width: 160px;
+        --md-filled-field-content-space: 0;
+      }
+      ha-time-input {
+        min-width: 145px;
+        width: 145px;
       }
     }
     ha-md-textfield#value {
@@ -557,6 +560,16 @@ class HaBackupConfigSchedule extends LitElement {
     }
     ha-md-select#type {
       min-width: 100px;
+    }
+    @media all and (max-width: 450px) {
+      ha-md-textfield#value {
+        min-width: 60px;
+        margin: 0 -8px;
+      }
+      ha-md-select#type {
+        min-width: 120px;
+        width: 120px;
+      }
     }
     ha-expansion-panel {
       --expansion-panel-summary-padding: 0 16px;

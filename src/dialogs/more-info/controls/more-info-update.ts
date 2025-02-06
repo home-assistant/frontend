@@ -2,6 +2,7 @@ import "@material/mwc-linear-progress/mwc-linear-progress";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { BINARY_STATE_OFF } from "../../../common/const";
+import { relativeTime } from "../../../common/datetime/relative_time";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
@@ -10,10 +11,18 @@ import "../../../components/ha-circular-progress";
 import "../../../components/ha-faded";
 import "../../../components/ha-formfield";
 import "../../../components/ha-markdown";
-import "../../../components/ha-settings-row";
+import "../../../components/ha-md-list";
+import "../../../components/ha-md-list-item";
+import "../../../components/ha-switch";
+import type { HaSwitch } from "../../../components/ha-switch";
+import type { BackupConfig } from "../../../data/backup";
+import { fetchBackupConfig } from "../../../data/backup";
 import { isUnavailableState } from "../../../data/entity";
+import type { EntitySources } from "../../../data/entity_sources";
+import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
 import type { UpdateEntity } from "../../../data/update";
 import {
+  getUpdateType,
   UpdateEntityFeature,
   updateIsInstalling,
   updateReleaseNotes,
@@ -33,6 +42,103 @@ class MoreInfoUpdate extends LitElement {
 
   @state() private _markdownLoading = true;
 
+  @state() private _backupConfig?: BackupConfig;
+
+  @state() private _entitySources?: EntitySources;
+
+  private async _fetchBackupConfig() {
+    const { config } = await fetchBackupConfig(this.hass);
+    this._backupConfig = config;
+  }
+
+  private async _fetchEntitySources() {
+    this._entitySources = await fetchEntitySourcesWithCache(this.hass);
+  }
+
+  private _computeCreateBackupTexts():
+    | { title: string; description?: string }
+    | undefined {
+    if (
+      !this.stateObj ||
+      !supportsFeature(this.stateObj, UpdateEntityFeature.BACKUP)
+    ) {
+      return undefined;
+    }
+
+    const updateType = this._entitySources
+      ? getUpdateType(this.stateObj, this._entitySources)
+      : "generic";
+
+    // Automatic or manual for Home Assistant update
+    if (updateType === "home_assistant") {
+      const isBackupConfigValid =
+        !!this._backupConfig &&
+        !!this._backupConfig.create_backup.password &&
+        this._backupConfig.create_backup.agent_ids.length > 0;
+
+      if (!isBackupConfigValid) {
+        return {
+          title: this.hass.localize(
+            "ui.dialogs.more_info_control.update.create_backup.manual"
+          ),
+          description: this.hass.localize(
+            "ui.dialogs.more_info_control.update.create_backup.manual_description"
+          ),
+        };
+      }
+
+      const lastAutomaticBackupDate = this._backupConfig
+        ?.last_completed_automatic_backup
+        ? new Date(this._backupConfig?.last_completed_automatic_backup)
+        : null;
+      const now = new Date();
+
+      return {
+        title: this.hass.localize(
+          "ui.dialogs.more_info_control.update.create_backup.automatic"
+        ),
+        description: lastAutomaticBackupDate
+          ? this.hass.localize(
+              "ui.dialogs.more_info_control.update.create_backup.automatic_description_last",
+              {
+                relative_time: relativeTime(
+                  lastAutomaticBackupDate,
+                  this.hass.locale,
+                  now,
+                  true
+                ),
+              }
+            )
+          : this.hass.localize(
+              "ui.dialogs.more_info_control.update.create_backup.automatic_description_none"
+            ),
+      };
+    }
+
+    // Addon backup
+    if (updateType === "addon") {
+      const version = this.stateObj.attributes.installed_version;
+      return {
+        title: this.hass.localize(
+          "ui.dialogs.more_info_control.update.create_backup.addon"
+        ),
+        description: version
+          ? this.hass.localize(
+              "ui.dialogs.more_info_control.update.create_backup.addon_description",
+              { version: version }
+            )
+          : undefined,
+      };
+    }
+
+    // Fallback to generic UI
+    return {
+      title: this.hass.localize(
+        "ui.dialogs.more_info_control.update.create_backup.generic"
+      ),
+    };
+  }
+
   protected render() {
     if (
       !this.hass ||
@@ -46,6 +152,8 @@ class MoreInfoUpdate extends LitElement {
       this.stateObj.attributes.latest_version &&
       this.stateObj.attributes.skipped_version ===
         this.stateObj.attributes.latest_version;
+
+    const createBackupTexts = this._computeCreateBackupTexts();
 
     return html`
       <div class="content">
@@ -133,6 +241,27 @@ class MoreInfoUpdate extends LitElement {
             : nothing}
       </div>
       <div class="footer">
+        ${createBackupTexts
+          ? html`
+              <ha-md-list>
+                <ha-md-list-item>
+                  <span slot="headline">${createBackupTexts.title}</span>
+                  ${createBackupTexts.description
+                    ? html`
+                        <span slot="supporting-text">
+                          ${createBackupTexts.description}
+                        </span>
+                      `
+                    : nothing}
+                  <ha-switch
+                    slot="end"
+                    id="create-backup"
+                    .disabled=${updateIsInstalling(this.stateObj)}
+                  ></ha-switch>
+                </ha-md-list-item>
+              </ha-md-list>
+            `
+          : nothing}
         <div class="actions">
           ${this.stateObj.state === BINARY_STATE_OFF &&
           this.stateObj.attributes.skipped_version
@@ -186,6 +315,14 @@ class MoreInfoUpdate extends LitElement {
     if (supportsFeature(this.stateObj!, UpdateEntityFeature.RELEASE_NOTES)) {
       this._fetchReleaseNotes();
     }
+    if (supportsFeature(this.stateObj!, UpdateEntityFeature.BACKUP)) {
+      this._fetchEntitySources().then(() => {
+        const type = getUpdateType(this.stateObj!, this._entitySources!);
+        if (type === "home_assistant") {
+          this._fetchBackupConfig();
+        }
+      });
+    }
   }
 
   private async _markdownLoaded() {
@@ -205,10 +342,27 @@ class MoreInfoUpdate extends LitElement {
     }
   }
 
+  get _shouldCreateBackup(): boolean {
+    if (!supportsFeature(this.stateObj!, UpdateEntityFeature.BACKUP)) {
+      return false;
+    }
+    const createBackupSwitch = this.shadowRoot?.getElementById(
+      "create-backup"
+    ) as HaSwitch;
+    if (createBackupSwitch) {
+      return createBackupSwitch.checked;
+    }
+    return false;
+  }
+
   private _handleInstall(): void {
     const installData: Record<string, any> = {
       entity_id: this.stateObj!.entity_id,
     };
+
+    if (this._shouldCreateBackup) {
+      installData.backup = true;
+    }
 
     if (
       supportsFeature(this.stateObj!, UpdateEntityFeature.SPECIFIC_VERSION) &&
@@ -289,12 +443,20 @@ class MoreInfoUpdate extends LitElement {
       z-index: 10;
     }
 
-    ha-settings-row {
+    ha-md-list {
       width: 100%;
-      padding: 0 24px;
       box-sizing: border-box;
       margin-bottom: -16px;
       margin-top: -4px;
+      --md-sys-color-surface: var(
+        --ha-dialog-surface-background,
+        var(--mdc-theme-surface, #fff)
+      );
+    }
+
+    ha-md-list-item {
+      --md-list-item-leading-space: 24px;
+      --md-list-item-trailing-space: 24px;
     }
 
     .actions {

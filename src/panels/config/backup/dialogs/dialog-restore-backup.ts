@@ -1,33 +1,35 @@
 import { mdiClose } from "@mdi/js";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-password-field";
 
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-md-dialog";
 import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 import "../../../../components/ha-svg-icon";
+import type { RestoreBackupParams } from "../../../../data/backup";
 import {
   fetchBackupConfig,
   getPreferredAgentForDownload,
   restoreBackup,
 } from "../../../../data/backup";
-import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
-import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
-import type { RestoreBackupDialogParams } from "./show-dialog-restore-backup";
 import type {
   RestoreBackupStage,
   RestoreBackupState,
 } from "../../../../data/backup_manager";
 import { subscribeBackupEvents } from "../../../../data/backup_manager";
+import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { haStyle, haStyleDialog } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
+import type { RestoreBackupDialogParams } from "./show-dialog-restore-backup";
 
 interface FormData {
   encryption_key_type: "config" | "custom";
@@ -76,7 +78,12 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
     this._error = undefined;
     this._state = undefined;
     this._stage = undefined;
-    if (this._params.backup.protected) {
+
+    const agentIds = Object.keys(this._params.backup.agents);
+    const preferedAgent = getPreferredAgentForDownload(agentIds);
+    const isProtected = this._params.backup.agents[preferedAgent]?.protected;
+
+    if (isProtected) {
       this._backupEncryptionKey = await this._fetchEncryptionKey();
       if (!this._backupEncryptionKey) {
         this._step = STEPS[1];
@@ -320,22 +327,26 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
       return;
     }
 
-    const preferedAgent = getPreferredAgentForDownload(
-      this._params.backup.agent_ids!
-    );
+    const agentIds = Object.keys(this._params.backup.agents);
+    const preferedAgent = getPreferredAgentForDownload(agentIds);
 
     const { addons, database_included, homeassistant_included, folders } =
       this._params.selectedData;
 
-    await restoreBackup(this.hass, {
+    const restoreParams: RestoreBackupParams = {
       backup_id: this._params.backup.backup_id,
       agent_id: preferedAgent,
       password,
-      restore_addons: addons.map((addon) => addon.slug),
       restore_database: database_included,
-      restore_folders: folders,
       restore_homeassistant: homeassistant_included,
-    });
+    };
+
+    if (isComponentLoaded(this.hass, "hassio")) {
+      restoreParams.restore_addons = addons.map((addon) => addon.slug);
+      restoreParams.restore_folders = folders;
+    }
+
+    await restoreBackup(this.hass, restoreParams);
   }
 
   static get styles(): CSSResultGroup {

@@ -13,11 +13,14 @@ import "../../../components/ha-icon-next";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
+import type {
+  BackupAgent,
+  BackupConfig,
+  BackupContent,
+} from "../../../data/backup";
 import {
   generateBackup,
   generateBackupWithAutomaticSettings,
-  type BackupConfig,
-  type BackupContent,
 } from "../../../data/backup";
 import type { ManagerStateEvent } from "../../../data/backup_manager";
 import type { CloudStatus } from "../../../data/cloud";
@@ -52,6 +55,8 @@ class HaConfigBackupOverview extends LitElement {
   @property({ attribute: false }) public fetching = false;
 
   @property({ attribute: false }) public config?: BackupConfig;
+
+  @property({ attribute: false }) public agents: BackupAgent[] = [];
 
   private async _uploadBackup(ev) {
     if (!shouldHandleRequestSelectedEvent(ev)) {
@@ -184,6 +189,7 @@ class HaConfigBackupOverview extends LitElement {
                 <ha-backup-overview-settings
                   .hass=${this.hass}
                   .config=${this.config!}
+                  .agents=${this.agents}
                 ></ha-backup-overview-settings>
               `
             : nothing}
@@ -215,8 +221,7 @@ class HaConfigBackupOverview extends LitElement {
           gap: 24px;
           display: flex;
           flex-direction: column;
-          margin-bottom: 24px;
-          margin-bottom: 72px;
+          margin-bottom: calc(env(safe-area-inset-bottom) + 72px);
         }
         .card-actions {
           display: flex;

@@ -92,7 +92,6 @@ export class HuiButtonsBase extends LitElement {
           color: var(--secondary-text-color);
           align-items: center;
           justify-content: center;
-          margin-top: -2px;
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           .ha-scrollbar {
