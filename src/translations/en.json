@@ -6052,8 +6052,10 @@
         },
         "tips": {
           "tip": "Tip!",
-          "join": "Join the community on our {forums}, {twitter}, {discord}, {blog} or {newsletter}",
+          "join": "Join the community on our {forums}, {mastodon}, {bluesky}, {twitter}, {discord}, {blog} or {newsletter}",
           "join_x": "X (formerly Twitter)",
+          "join_mastodon": "Mastodon",
+          "join_bluesky": "Bluesky",
           "join_forums": "Forums",
           "join_chat": "Chat",
           "join_blog": "Blog",
