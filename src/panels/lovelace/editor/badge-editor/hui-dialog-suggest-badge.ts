@@ -168,9 +168,13 @@ export class HuiDialogSuggestBadge extends LitElement {
     config: LovelaceConfig,
     path: LovelaceContainerPath
   ): LovelaceConfig {
-    const { viewIndex } = parseLovelaceContainerPath(path);
+    const { viewIndex, sectionIndex } = parseLovelaceContainerPath(path);
 
     const newBadges = this._badgeConfig!;
+
+    if (sectionIndex != null) {
+      return addBadges(config, [viewIndex, sectionIndex], newBadges);
+    }
     return addBadges(config, [viewIndex], newBadges);
   }
 

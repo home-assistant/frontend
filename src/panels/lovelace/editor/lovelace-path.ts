@@ -205,8 +205,5 @@ export const findLovelaceItems = <T extends keyof LovelaceItemKeys>(
   if (isStrategySection(section)) {
     throw new Error("Can not find cards in a strategy section");
   }
-  if (key === "cards") {
-    return section[key as "cards"] as LovelaceItemKeys[T] | undefined;
-  }
-  throw new Error(`${key} is not supported in section`);
+  return section[key] as LovelaceItemKeys[T] | undefined;
 };

@@ -12,9 +12,9 @@ import "../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../types";
 import "../components/hui-badge-edit-mode";
 import { moveBadge } from "../editor/config-util";
-import type { LovelaceCardPath } from "../editor/lovelace-path";
 import type { Lovelace } from "../types";
 import type { HuiBadge } from "./hui-badge";
+import type { LovelaceCardPath } from "../editor/lovelace-path";
 
 const BADGE_SORTABLE_OPTIONS: HaSortableOptions = {
   delay: 100,
@@ -23,8 +23,8 @@ const BADGE_SORTABLE_OPTIONS: HaSortableOptions = {
   invertedSwapThreshold: 0.7,
 } as HaSortableOptions;
 
-@customElement("hui-view-badges")
-export class HuiViewBadges extends LitElement {
+@customElement("hui-section-badges")
+export class HuiSectionBadges extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public lovelace!: Lovelace;
@@ -32,6 +32,8 @@ export class HuiViewBadges extends LitElement {
   @property({ attribute: false }) public badges: HuiBadge[] = [];
 
   @property({ attribute: false }) public viewIndex!: number;
+
+  @property({ attribute: false }) public sectionIndex!: number;
 
   @property({ type: Boolean, attribute: "show-add-label" })
   public showAddLabel!: boolean;
@@ -84,8 +86,8 @@ export class HuiViewBadges extends LitElement {
     const { oldIndex, newIndex } = ev.detail;
     const newConfig = moveBadge(
       this.lovelace!.config,
-      [this.viewIndex!, oldIndex],
-      [this.viewIndex!, newIndex]
+      [this.viewIndex!, this.sectionIndex!, oldIndex],
+      [this.viewIndex!, this.sectionIndex!, newIndex]
     );
     this.lovelace!.saveConfig(newConfig);
   }
@@ -94,7 +96,11 @@ export class HuiViewBadges extends LitElement {
     ev.stopPropagation();
     const { index, data } = ev.detail;
     const oldPath = data as LovelaceCardPath;
-    const newPath = [this.viewIndex!, index] as LovelaceCardPath;
+    const newPath = [
+      this.viewIndex!,
+      this.sectionIndex!,
+      index,
+    ] as LovelaceCardPath;
     const newConfig = moveBadge(this.lovelace!.config, oldPath, newPath);
     this.lovelace!.saveConfig(newConfig);
   }
@@ -144,7 +150,11 @@ export class HuiViewBadges extends LitElement {
                   badges,
                   (badge) => this._getBadgeKey(badge),
                   (badge, idx) => {
-                    const badgePath = [this.viewIndex, idx] as LovelaceCardPath;
+                    const badgePath = [
+                      this.viewIndex,
+                      this.sectionIndex,
+                      idx,
+                    ] as LovelaceCardPath;
                     return html`
                       ${editMode
                         ? html`
@@ -152,7 +162,7 @@ export class HuiViewBadges extends LitElement {
                               data-sortable
                               .hass=${this.hass}
                               .lovelace=${this.lovelace}
-                              .path=${[this.viewIndex, idx]}
+                              .path=${[this.viewIndex, this.sectionIndex, idx]}
                               .hiddenOverlay=${this._dragging}
                               .sortableData=${badgePath}
                             >
@@ -201,7 +211,7 @@ export class HuiViewBadges extends LitElement {
       display: flex;
       align-items: flex-start;
       flex-wrap: wrap;
-      justify-content: center;
+      justify-content: var(--badges-aligmnent, center);
       gap: 8px;
       margin: 0;
     }
@@ -231,6 +241,7 @@ export class HuiViewBadges extends LitElement {
       --mdc-icon-size: 18px;
       cursor: pointer;
       font-size: 14px;
+      order: 1;
       color: var(--primary-text-color);
       --ha-ripple-color: var(--primary-color);
       --ha-ripple-hover-opacity: 0.04;
@@ -244,6 +255,6 @@ export class HuiViewBadges extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-view-badges": HuiViewBadges;
+    "hui-section-badges": HuiSectionBadges;
   }
 }

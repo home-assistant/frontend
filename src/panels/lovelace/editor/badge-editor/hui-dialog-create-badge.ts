@@ -260,7 +260,7 @@ export class HuiCreateDialogBadge
     showSuggestBadgeDialog(this, {
       lovelaceConfig: this._params!.lovelaceConfig,
       saveConfig: this._params!.saveConfig,
-      path: this._params!.path as [number],
+      path: this._params!.path,
       entities: this._selectedEntities,
       badgeConfig,
     });
