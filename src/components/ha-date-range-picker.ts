@@ -181,19 +181,44 @@ export class HaDateRangePicker extends LitElement {
               ],
               [this.hass.localize(
                 "ui.components.date-range-picker.ranges.now-1h"
-              )]: [subHours(today, 1), today],
+              )]: [
+                calcDate(today, subHours, this.hass.locale, this.hass.config, {
+                  hours: 1,
+                }),
+                today,
+              ],
               [this.hass.localize(
                 "ui.components.date-range-picker.ranges.now-12h"
-              )]: [subHours(today, 12), today],
+              )]: [
+                calcDate(today, subHours, this.hass.locale, this.hass.config, {
+                  hours: 12,
+                }),
+                today,
+              ],
               [this.hass.localize(
                 "ui.components.date-range-picker.ranges.now-24h"
-              )]: [subHours(today, 24), today],
+              )]: [
+                calcDate(today, subHours, this.hass.locale, this.hass.config, {
+                  hours: 24,
+                }),
+                today,
+              ],
               [this.hass.localize(
                 "ui.components.date-range-picker.ranges.now-7d"
-              )]: [subHours(today, 24 * 7), today],
+              )]: [
+                calcDate(today, subHours, this.hass.locale, this.hass.config, {
+                  hours: 24 * 7,
+                }),
+                today,
+              ],
               [this.hass.localize(
                 "ui.components.date-range-picker.ranges.now-30d"
-              )]: [subHours(today, 24 * 30), today],
+              )]: [
+                calcDate(today, subHours, this.hass.locale, this.hass.config, {
+                  hours: 24 * 30,
+                }),
+                today,
+              ],
             }
           : {}),
       };

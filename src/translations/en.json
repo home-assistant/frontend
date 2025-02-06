@@ -818,7 +818,7 @@
           "now-7d": "Last 7 days",
           "now-30d": "Last 30 days",
           "this_year": "This year",
-          "now-365d": "Last 365 days"
+          "now-12m": "Last 12 month"
         }
       },
       "grid-size-picker": {
