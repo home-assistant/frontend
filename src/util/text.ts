@@ -10,7 +10,7 @@ let textMeasureCanvas: HTMLCanvasElement | undefined;
 export function measureTextWidth(
   text: string,
   fontSize: number,
-  fontFamily = "sans-serif"
+  fontFamily = "Roboto, Noto, sans-serif"
 ): number {
   if (!textMeasureCanvas) {
     textMeasureCanvas = document.createElement("canvas");
