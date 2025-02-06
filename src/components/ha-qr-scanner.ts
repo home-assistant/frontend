@@ -8,7 +8,7 @@ import { customElement, property, query, state } from "lit/decorators";
 // and "qr-scanner" defaults to a suboptimal implementation if it is not available.
 // The following import makes a better implementation available that is based on a
 // WebAssembly port of ZXing:
-import { setZXingModuleOverrides } from "barcode-detector";
+import { prepareZXingModule } from "barcode-detector";
 import type QrScanner from "qr-scanner";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
@@ -21,12 +21,14 @@ import "./ha-list-item";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
 
-setZXingModuleOverrides({
-  locateFile: (path: string, prefix: string) => {
-    if (path.endsWith(".wasm")) {
-      return "/static/js/zxing_reader.wasm";
-    }
-    return prefix + path;
+prepareZXingModule({
+  overrides: {
+    locateFile: (path: string, prefix: string) => {
+      if (path.endsWith(".wasm")) {
+        return "/static/js/zxing_reader.wasm";
+      }
+      return prefix + path;
+    },
   },
 });
 
