@@ -237,10 +237,11 @@ export const uploadBackup = async (
   const fd = new FormData();
   fd.append("file", file);
 
-  const params = agentIds.reduce((acc, agentId) => {
-    acc.append("agent_id", agentId);
-    return acc;
-  }, new URLSearchParams());
+  const params = new URLSearchParams();
+
+  agentIds.forEach((agentId) => {
+    params.append("agent_id", agentId);
+  });
 
   return handleFetchPromise(
     hass.fetchWithAuth(`/api/backup/upload?${params.toString()}`, {
