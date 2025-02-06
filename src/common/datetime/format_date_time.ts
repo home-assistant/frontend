@@ -11,7 +11,7 @@ export const formatDateTime = (
   dateObj: Date,
   locale: FrontendLocaleData,
   config: HassConfig
-) => formatDateTimeMem(locale, config?.time_zone).format(dateObj);
+) => formatDateTimeMem(locale, config.time_zone).format(dateObj);
 
 const formatDateTimeMem = memoizeOne(
   (locale: FrontendLocaleData, serverTimeZone: string) =>
@@ -19,9 +19,9 @@ const formatDateTimeMem = memoizeOne(
       year: "numeric",
       month: "long",
       day: "numeric",
-      hour: locale && useAmPm(locale) ? "numeric" : "2-digit",
+      hour: useAmPm(locale) ? "numeric" : "2-digit",
       minute: "2-digit",
-      hourCycle: locale && useAmPm(locale) ? "h12" : "h23",
+      hourCycle: useAmPm(locale) ? "h12" : "h23",
       timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
     })
 );
@@ -37,7 +37,6 @@ const formatDateTimeWithBrowserDefaultsMem = memoizeOne(
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-      hourCycle: "h23",
     })
 );
 
