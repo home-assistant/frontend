@@ -72,7 +72,10 @@ export function getCommonOptions(
     yAxis: {
       type: "value",
       name: unit,
-      nameGap: 5,
+      nameGap: 2,
+      nameTextStyle: {
+        align: "left",
+      },
       axisLabel: {
         formatter: (value: number) => formatNumber(Math.abs(value), locale),
       },
@@ -81,10 +84,10 @@ export function getCommonOptions(
       },
     },
     grid: {
-      top: 35,
-      bottom: 10,
-      left: 10,
-      right: 10,
+      top: 15,
+      bottom: 0,
+      left: 1,
+      right: 1,
       containLabel: true,
     },
     tooltip: {
