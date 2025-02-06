@@ -1,11 +1,17 @@
-import { css, html, LitElement, type CSSResultGroup } from "lit";
+import { mdiFolderUpload } from "@mdi/js";
+import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-card";
-import { SUPPORTED_FORMAT } from "../../panels/config/backup/components/ha-backup-upload";
+import "../../components/ha-file-upload";
+import "../../components/ha-alert";
 import { haStyle } from "../../resources/styles";
 import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
-import { CORE_LOCAL_AGENT, HASSIO_LOCAL_AGENT } from "../../data/backup";
+import {
+  CORE_LOCAL_AGENT,
+  HASSIO_LOCAL_AGENT,
+  SUPPORTED_UPLOAD_FORMAT,
+} from "../../data/backup";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import { uploadOnboardingBackup } from "../../data/backup_onboarding";
 
@@ -32,10 +38,13 @@ class OnboardingRestoreBackupUpload extends LitElement {
         )}
       >
         <div class="card-content">
-          <ha-backup-upload
-            .error=${this._error}
+          ${this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing}
+          <ha-file-upload
             .uploading=${this._uploading}
-            @file-picked=${this._filePicked}
+            .icon=${mdiFolderUpload}
+            accept=${SUPPORTED_UPLOAD_FORMAT}
             .localize=${this.localize}
             .label=${this.localize(
               "ui.panel.page-onboarding.restore.upload_input_label"
@@ -46,7 +55,14 @@ class OnboardingRestoreBackupUpload extends LitElement {
             .supports=${this.localize(
               "ui.panel.page-onboarding.restore.upload_supports_tar"
             )}
-          ></ha-backup-upload>
+            .deleteLabel=${this.localize(
+              "ui.panel.page-onboarding.restore.delete"
+            )}
+            .uploadingLabel=${this.localize(
+              "ui.panel.page-onboarding.restore.uploading"
+            )}
+            @file-picked=${this._filePicked}
+          ></ha-file-upload>
         </div>
       </ha-card>
     `;
@@ -56,7 +72,7 @@ class OnboardingRestoreBackupUpload extends LitElement {
     this._error = undefined;
     const file = ev.detail.files[0];
 
-    if (!file || file.type !== SUPPORTED_FORMAT) {
+    if (!file || file.type !== SUPPORTED_UPLOAD_FORMAT) {
       showAlertDialog(this, {
         title: this.localize(
           "ui.panel.page-onboarding.restore.unsupported.title"
@@ -82,6 +98,7 @@ class OnboardingRestoreBackupUpload extends LitElement {
         typeof err.body === "string"
           ? err.body
           : err.body?.message || err.message || "Unknown error occurred";
+    } finally {
       this._uploading = false;
     }
   }
@@ -92,9 +109,6 @@ class OnboardingRestoreBackupUpload extends LitElement {
       css`
         :host {
           width: 100%;
-        }
-        .card-header {
-          padding-bottom: 8px;
         }
         .card-actions {
           display: flex;

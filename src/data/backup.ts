@@ -445,3 +445,13 @@ export const getFormattedBackupTime = memoizeOne(
     return `${formatTime(DEFAULT_OPTIMIZED_BACKUP_START_TIME, locale, config)} - ${formatTime(DEFAULT_OPTIMIZED_BACKUP_END_TIME, locale, config)}`;
   }
 );
+
+export const SUPPORTED_UPLOAD_FORMAT = "application/x-tar";
+
+export interface BackupUploadFileFormData {
+  file?: File;
+}
+
+export const INITIAL_UPLOAD_FORM_DATA: BackupUploadFileFormData = {
+  file: undefined,
+};

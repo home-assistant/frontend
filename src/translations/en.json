@@ -8203,7 +8203,6 @@
           "upload_supports_tar": "[%key:ui::panel::config::backup::dialogs::upload::supports_tar%]",
           "upload_secondary": "[%key:ui::components::file-upload::secondary%]",
           "delete": "[%key:ui::common::delete%]",
-          "uploading_name": "[%key:ui::components::file-upload::uploading_name%]",
           "uploading": "[%key:ui::components::file-upload::uploading%]",
           "backup_type": "[%key:ui::panel::config::backup::backup_type%]",
           "type": {
