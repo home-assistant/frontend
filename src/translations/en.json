@@ -1929,9 +1929,9 @@
       "action_failed": "Failed to perform the action {service}.",
       "connection_lost": "Connection lost. Reconnecting…",
       "started": "Home Assistant has started!",
-      "starting": "Home Assistant is starting, not everything will be available until it is finished.",
-      "wrapping_up_startup": "Wrapping up startup, not everything will be available until it is finished.",
-      "integration_starting": "Starting {integration}, not everything will be available until it is finished.",
+      "starting": "Home Assistant is starting. Not everything will be available until it is finished.",
+      "wrapping_up_startup": "Wrapping up startup. Not everything will be available until it is finished.",
+      "integration_starting": "Starting {integration}. Not everything will be available until it is finished.",
       "triggered": "Triggered {name}",
       "dismiss": "Dismiss",
       "no_matching_link_found": "No matching My link found for {path}"
@@ -7415,7 +7415,7 @@
           "entity_not_found": "Entity not available: {entity}",
           "entity_non_numeric": "Entity is non-numeric: {entity}",
           "entity_unavailable": "Entity is currently unavailable: {entity}",
-          "starting": "Home Assistant is starting, not everything may be available yet"
+          "starting": "Home Assistant is starting. Not everything may be available yet."
         },
         "changed_toast": {
           "message": "Your dashboard was updated. Refresh to see changes?"

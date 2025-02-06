@@ -35,7 +35,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           showToast(this, {
             message:
               this.hass!.localize("ui.notification_toast.starting") ||
-              "Home Assistant is starting, not everything will be available until it is finished.",
+              "Home Assistant is starting. Not everything will be available until it is finished.",
             duration: -1,
             dismissable: false,
             action: {
@@ -121,7 +121,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         showToast(this, {
           message:
             this.hass!.localize("ui.notification_toast.wrapping_up_startup") ||
-            `Wrapping up startup, not everything will be available until it is finished.`,
+            `Wrapping up startup. Not everything will be available until it is finished.`,
           duration: -1,
           dismissable: false,
           action: {
@@ -146,7 +146,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           this.hass!.localize("ui.notification_toast.integration_starting", {
             integration: domainToName(this.hass!.localize, integration),
           }) ||
-          `Starting ${integration}, not everything will be available until it is finished.`,
+          `Starting ${integration}. Not everything will be available until it is finished.`,
         duration: -1,
         dismissable: false,
         action: {
