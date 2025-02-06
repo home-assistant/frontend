@@ -19,7 +19,7 @@ import {
   roundToNearestHours,
   subMilliseconds,
   addMilliseconds,
-  isToday
+  isToday,
 } from "date-fns";
 import { fromZonedTime, toZonedTime } from "date-fns-tz";
 import type { PropertyValues, TemplateResult } from "lit";
