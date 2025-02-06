@@ -14,7 +14,7 @@ import type { BackupContentExtended } from "../../data/backup";
 class OnboardingRestoreBackupDetails extends LitElement {
   @property({ attribute: false }) public localize!: LocalizeFunc;
 
-  @property({ type: Object }) public backup!: BackupContentExtended;
+  @property({ attribute: false }) public backup!: BackupContentExtended;
 
   render() {
     return html`
@@ -41,9 +41,6 @@ class OnboardingRestoreBackupDetails extends LitElement {
       css`
         :host {
           padding: 28px 20px 0;
-        }
-        .card-header {
-          padding-bottom: 8px;
         }
         ha-backup-details-restore {
           display: block;

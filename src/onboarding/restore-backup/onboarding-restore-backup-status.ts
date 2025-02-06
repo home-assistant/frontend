@@ -11,16 +11,11 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import { removeSearchParam } from "../../common/url/search-params";
 
-declare global {
-  interface HASSDomEvents {
-    "restore-started";
-  }
-}
 @customElement("onboarding-restore-backup-status")
 class OnboardingRestoreBackupStatus extends LitElement {
   @property({ attribute: false }) public localize!: LocalizeFunc;
 
-  @property({ type: Object, attribute: "backup-info" })
+  @property({ attribute: false })
   public backupInfo!: BackupOnboardingInfo;
 
   render() {
@@ -60,12 +55,12 @@ class OnboardingRestoreBackupStatus extends LitElement {
         </div>
         ${this.backupInfo.state !== "restore_backup"
           ? html`<div class="card-actions">
-              <ha-button @click=${this._uploadAnother} class="danger">
+              <ha-button @click=${this._uploadAnother} destructive>
                 ${this.localize(
                   `ui.panel.page-onboarding.restore.details.summary.upload_another`
                 )}
               </ha-button>
-              <ha-button @click=${this._home} class="danger">
+              <ha-button @click=${this._home} destructive>
                 ${this.localize(
                   `ui.panel.page-onboarding.restore.details.summary.home`
                 )}
@@ -90,9 +85,6 @@ class OnboardingRestoreBackupStatus extends LitElement {
       css`
         :host {
           padding: 28px 20px 0;
-        }
-        .card-header {
-          padding-bottom: 8px;
         }
         .card-actions {
           display: flex;
@@ -120,5 +112,8 @@ class OnboardingRestoreBackupStatus extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "onboarding-restore-backup-status": OnboardingRestoreBackupStatus;
+  }
+  interface HASSDomEvents {
+    "restore-started";
   }
 }

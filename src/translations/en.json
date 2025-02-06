@@ -8212,7 +8212,7 @@
           },
           "details": {
             "home_assistant_missing": "This backup does not include your Home Assistant configuration, you cannot use it to restore your instance.",
-            "backup_unsupported": "This backup includes add-ons and folders, which are not supported in this installation method of Home Assistant. You can still restore Home Assistant, but the unsupported files will not be restored.",
+            "addons_unsupported": "This backup includes add-ons and folders, which are not supported in this installation method of Home Assistant. You can still restore Home Assistant, but the unsupported files will not be restored.",
             "summary": {
               "title": "[%key:ui::panel::config::backup::details::summary::title%]",
               "size": "[%key:ui::panel::config::backup::details::summary::size%]",

@@ -16,18 +16,13 @@ import { restoreOnboardingBackup } from "../../data/backup_onboarding";
 import type { HaProgressButton } from "../../components/buttons/ha-progress-button";
 import { fireEvent } from "../../common/dom/fire_event";
 
-declare global {
-  interface HASSDomEvents {
-    "restore-started";
-  }
-}
 @customElement("onboarding-restore-backup-restore")
 class OnboardingRestoreBackupRestore extends LitElement {
   @property({ attribute: false }) public localize!: LocalizeFunc;
 
-  @property({ type: Object }) public backup!: BackupContentExtended;
+  @property({ attribute: false }) public backup!: BackupContentExtended;
 
-  @property({ type: Object, attribute: false })
+  @property({ attribute: false })
   public selectedData!: BackupData;
 
   @property({ type: Boolean }) public supervisor = false;
@@ -51,7 +46,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
         ? html`<div class="supervisor-warning">
             <ha-alert alert-type="warning">
               ${this.localize(
-                "ui.panel.page-onboarding.restore.details.backup_unsupported"
+                "ui.panel.page-onboarding.restore.details.addons_unsupported"
               )}
             </ha-alert>
           </div> `
@@ -84,7 +79,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
                     `
                   : nothing}
                 <ha-password-field
-                  ?disabled=${this._loading}
+                  .disabled=${this._loading}
                   @input=${this._encryptionKeyChanged}
                   .label=${this.localize(
                     "ui.panel.page-onboarding.restore.details.restore.encryption.input_label"
@@ -95,7 +90,8 @@ class OnboardingRestoreBackupRestore extends LitElement {
         </div>
         <div class="card-actions">
           <ha-progress-button
-            ?disabled=${this._loading ||
+            .progress=${this._loading}
+            .disabled=${this._loading ||
             (backupProtected && this._encryptionKey === "")}
             @click=${this._startRestore}
           >
@@ -114,8 +110,9 @@ class OnboardingRestoreBackupRestore extends LitElement {
 
   private async _startRestore(ev: CustomEvent): Promise<void> {
     const button = ev.currentTarget as HaProgressButton;
-    button.progress = true;
     this._loading = true;
+    this._error = undefined;
+    this._encryptionKeyWrong = false;
 
     const backupAgent = this.supervisor ? HASSIO_LOCAL_AGENT : CORE_LOCAL_AGENT;
 
@@ -145,7 +142,6 @@ class OnboardingRestoreBackupRestore extends LitElement {
         this._error =
           err.body?.message || err.message || "Unknown error occurred";
       }
-      button.progress = false;
       this._loading = false;
     }
   }
@@ -156,9 +152,6 @@ class OnboardingRestoreBackupRestore extends LitElement {
       css`
         :host {
           padding: 28px 20px 0;
-        }
-        .card-header {
-          padding-bottom: 8px;
         }
         .card-actions {
           display: flex;
@@ -175,5 +168,8 @@ class OnboardingRestoreBackupRestore extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "onboarding-restore-backup-restore": OnboardingRestoreBackupRestore;
+  }
+  interface HASSDomEvents {
+    "restore-started";
   }
 }
