@@ -367,6 +367,7 @@ export class HuiEnergySolarGraphCard
             data.push({
               id: "forecast-" + source.stat_energy_from,
               type: "line",
+              stack: "forecast",
               name: this.hass.localize(
                 "ui.panel.lovelace.cards.energy.energy_solar_graph.forecast",
                 {
