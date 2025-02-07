@@ -19,6 +19,7 @@ import { showAlertDialog } from "../generic/show-dialog-box";
 import { showVoiceAssistantSetupDialog } from "../voice-assistant-setup/show-voice-assistant-setup-dialog";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
+import { navigate } from "../../common/navigate";
 
 @customElement("step-flow-create-entry")
 class StepFlowCreateEntry extends LitElement {
@@ -152,6 +153,11 @@ class StepFlowCreateEntry extends LitElement {
 
   private _flowDone(): void {
     fireEvent(this, "flow-update", { step: undefined });
+    if (this.step.result) {
+      navigate(
+        `/config/integrations/integration/${this.step.result.domain}#config_entry=${this.step.result.entry_id}`
+      );
+    }
   }
 
   private async _areaPicked(ev: CustomEvent) {
