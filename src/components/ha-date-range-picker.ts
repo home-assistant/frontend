@@ -182,42 +182,92 @@ export class HaDateRangePicker extends LitElement {
               [this.hass.localize(
                 "ui.components.date-range-picker.ranges.now-1h"
               )]: [
-                calcDate(today, subHours, this.hass.locale, this.hass.config, {
-                  hours: 1,
-                }),
-                today,
+                calcDate(
+                  today,
+                  subHours,
+                  this.hass.locale,
+                  this.hass.config,
+                  1
+                ),
+                calcDate(
+                  today,
+                  subHours,
+                  this.hass.locale,
+                  this.hass.config,
+                  0
+                ),
               ],
               [this.hass.localize(
                 "ui.components.date-range-picker.ranges.now-12h"
               )]: [
-                calcDate(today, subHours, this.hass.locale, this.hass.config, {
-                  hours: 12,
-                }),
-                today,
+                calcDate(
+                  today,
+                  subHours,
+                  this.hass.locale,
+                  this.hass.config,
+                  12
+                ),
+                calcDate(
+                  today,
+                  subHours,
+                  this.hass.locale,
+                  this.hass.config,
+                  0
+                ),
               ],
               [this.hass.localize(
                 "ui.components.date-range-picker.ranges.now-24h"
               )]: [
-                calcDate(today, subHours, this.hass.locale, this.hass.config, {
-                  hours: 24,
-                }),
-                today,
+                calcDate(
+                  today,
+                  subHours,
+                  this.hass.locale,
+                  this.hass.config,
+                  24
+                ),
+                calcDate(
+                  today,
+                  subHours,
+                  this.hass.locale,
+                  this.hass.config,
+                  0
+                ),
               ],
               [this.hass.localize(
                 "ui.components.date-range-picker.ranges.now-7d"
               )]: [
-                calcDate(today, subHours, this.hass.locale, this.hass.config, {
-                  hours: 24 * 7,
-                }),
-                today,
+                calcDate(
+                  today,
+                  subHours,
+                  this.hass.locale,
+                  this.hass.config,
+                  24 * 7
+                ),
+                calcDate(
+                  today,
+                  subHours,
+                  this.hass.locale,
+                  this.hass.config,
+                  0
+                ),
               ],
               [this.hass.localize(
                 "ui.components.date-range-picker.ranges.now-30d"
               )]: [
-                calcDate(today, subHours, this.hass.locale, this.hass.config, {
-                  hours: 24 * 30,
-                }),
-                today,
+                calcDate(
+                  today,
+                  subHours,
+                  this.hass.locale,
+                  this.hass.config,
+                  24 * 30
+                ),
+                calcDate(
+                  today,
+                  subHours,
+                  this.hass.locale,
+                  this.hass.config,
+                  0
+                ),
               ],
             }
           : {}),
