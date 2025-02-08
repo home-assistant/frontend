@@ -9445,7 +9445,7 @@ __metadata:
     tsparticles-engine: "npm:2.12.0"
     tsparticles-preset-links: "npm:2.12.0"
     typescript: "npm:5.7.3"
-    ua-parser-js: "npm:2.0.0"
+    ua-parser-js: "npm:2.0.1"
     vis-data: "npm:7.1.9"
     vis-network: "npm:9.1.9"
     vitest: "npm:3.0.5"
@@ -14681,16 +14681,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ua-parser-js@npm:2.0.0":
-  version: 2.0.0
-  resolution: "ua-parser-js@npm:2.0.0"
+"ua-parser-js@npm:2.0.1":
+  version: 2.0.1
+  resolution: "ua-parser-js@npm:2.0.1"
   dependencies:
     detect-europe-js: "npm:^0.1.2"
     is-standalone-pwa: "npm:^0.1.1"
     ua-is-frozen: "npm:^0.1.2"
   bin:
     ua-parser-js: script/cli.js
-  checksum: 10/9f8f82509c5aad02d87c2a76a69c19d5a3079b8eb0156fa5a603f20db14727357922dba32647dde41b6bc3511b3e80ba563aa3093694e16dd2b8e10bd40ff8a9
+  checksum: 10/acc9985b33d4269bc71cc10c5010517afec29f57a57be365e5d0076533254a076623bc1168577b8b6d36dd8451e44165781415420b3de73a7c1c2562b45dd8e8
   languageName: node
   linkType: hard
 
