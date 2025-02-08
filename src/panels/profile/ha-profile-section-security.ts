@@ -98,7 +98,7 @@ class HaProfileSectionSecurity extends LitElement {
           display: block;
           max-width: 600px;
           margin: 0 auto;
-          padding-bottom: var(--safe-area-bottom);
+          padding-bottom: var(--safe-area-inset-bottom);
         }
 
         .content > * {

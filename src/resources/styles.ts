@@ -21,6 +21,22 @@ export const haStyle = css`
     font-size: var(--paper-font-body1_-_font-size);
     font-weight: var(--paper-font-body1_-_font-weight);
     line-height: var(--paper-font-body1_-_line-height);
+    --safe-area-inset-bottom: var(
+      --android-safe-area-inset-bottom,
+      env(safe-area-inset-bottom, 0)
+    );
+    --safe-area-inset-top: var(
+      --android-safe-area-inset-top,
+      env(safe-area-inset-top, 0)
+    );
+    --safe-area-inset-left: var(
+      --android-safe-area-inset-left,
+      env(safe-area-inset-left, 0)
+    );
+    --safe-area-inset-right: var(
+      --android-safe-area-inset-right,
+      env(safe-area-inset-right, 0)
+    );
   }
 
   app-header div[sticky] {
@@ -163,10 +179,10 @@ export const haStyleDialog = css`
   @media all and (max-width: 450px), all and (max-height: 500px) {
     ha-dialog {
       --mdc-dialog-min-width: calc(
-        100vw - var(--safe-area-right) - var(--safe-area-left)
+        100vw - var(--safe-area-inset-right) - var(--safe-area-inset-left)
       );
       --mdc-dialog-max-width: calc(
-        100vw - var(--safe-area-right) - var(--safe-area-left)
+        100vw - var(--safe-area-inset-right) - var(--safe-area-inset-left)
       );
       --mdc-dialog-min-height: 100%;
       --mdc-dialog-max-height: 100%;

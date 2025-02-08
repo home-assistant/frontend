@@ -875,12 +875,12 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           );
           font-size: 20px;
           align-items: center;
-          padding-left: calc(4px + var(--safe-area-left));
-          padding-inline-start: calc(4px + var(--safe-area-left));
+          padding-left: calc(4px + var(--safe-area-inset-left));
+          padding-inline-start: calc(4px + var(--safe-area-inset-left));
           padding-inline-end: initial;
         }
         :host([expanded]) .menu {
-          width: calc(256px + var(--safe-area-left));
+          width: calc(256px + var(--safe-area-inset-left));
         }
         .menu ha-icon-button {
           color: var(--sidebar-icon-color);
@@ -917,12 +917,12 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           box-sizing: border-box;
           height: calc(100% - var(--header-height) - 132px);
           height: calc(
-            100% - var(--header-height) - 132px - var(--safe-area-bottom)
+            100% - var(--header-height) - 132px - var(--safe-area-inset-bottom)
           );
           overflow-x: hidden;
           background: none;
-          margin-left: var(--safe-area-left);
-          margin-inline-start: var(--safe-area-left);
+          margin-left: var(--safe-area-inset-left);
+          margin-inline-start: var(--safe-area-inset-left);
           margin-inline-end: initial;
         }
 
@@ -1022,8 +1022,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         .notifications-container,
         .configuration-container {
           display: flex;
-          margin-left: var(--safe-area-left);
-          margin-inline-start: var(--safe-area-left);
+          margin-left: var(--safe-area-inset-left);
+          margin-inline-start: var(--safe-area-inset-left);
           margin-inline-end: initial;
         }
         .notifications {
@@ -1034,8 +1034,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           flex: 1;
         }
         .profile {
-          margin-left: var(--safe-area-left);
-          margin-inline-start: var(--safe-area-left);
+          margin-left: var(--safe-area-inset-left);
+          margin-inline-start: var(--safe-area-inset-left);
           margin-inline-end: initial;
         }
         .profile paper-icon-item {

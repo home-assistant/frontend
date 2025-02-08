@@ -1098,7 +1098,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
         }
         ha-fab {
           position: relative;
-          bottom: calc(-80px - var(--safe-area-bottom));
+          bottom: calc(-80px - var(--safe-area-inset-bottom));
           transition: bottom 0.3s;
         }
         ha-fab.dirty {

@@ -127,7 +127,7 @@ class PanelDeveloperTools extends LitElement {
           z-index: 4;
           background-color: var(--app-header-background-color);
           width: var(--mdc-top-app-bar-width, 100%);
-          padding-top: var(--safe-area-top);
+          padding-top: var(--safe-area-inset-top);
           color: var(--app-header-text-color, white);
           border-bottom: var(--app-header-border-bottom, none);
           -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
@@ -154,16 +154,18 @@ class PanelDeveloperTools extends LitElement {
         }
         developer-tools-router {
           display: block;
-          padding-top: calc(var(--header-height) + 48px + var(--safe-area-top));
-          padding-bottom: calc(var(--safe-area-bottom));
+          padding-top: calc(
+            var(--header-height) + 48px + var(--safe-area-inset-top)
+          );
+          padding-bottom: calc(var(--safe-area-inset-bottom));
           flex: 1 1 100%;
           max-width: 100%;
         }
         paper-tabs {
-          margin-left: max(var(--safe-area-left), 24px);
-          margin-right: max(var(--safe-area-right), 24px);
-          margin-inline-start: max(var(--safe-area-left), 24px);
-          margin-inline-end: max(var(--safe-area-right), 24px);
+          margin-left: max(var(--safe-area-inset-left), 24px);
+          margin-right: max(var(--safe-area-inset-right), 24px);
+          margin-inline-start: max(var(--safe-area-inset-left), 24px);
+          margin-inline-end: max(var(--safe-area-inset-right), 24px);
           --paper-tabs-selection-bar-color: var(
             --app-header-selection-bar-color,
             var(--app-header-text-color, #fff)

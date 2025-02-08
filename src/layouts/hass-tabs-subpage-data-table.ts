@@ -904,10 +904,10 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
     ha-dialog {
       --mdc-dialog-min-width: calc(
-        100vw - var(--safe-area-right) - var(--safe-area-left)
+        100vw - var(--safe-area-inset-right) - var(--safe-area-inset-left)
       );
       --mdc-dialog-max-width: calc(
-        100vw - var(--safe-area-right) - var(--safe-area-left)
+        100vw - var(--safe-area-inset-right) - var(--safe-area-inset-left)
       );
       --mdc-dialog-min-height: 100%;
       --mdc-dialog-max-height: 100%;

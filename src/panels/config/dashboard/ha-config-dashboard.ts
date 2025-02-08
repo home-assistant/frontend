@@ -363,10 +363,10 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
       haStyle,
       css`
         ha-card:last-child {
-          margin-bottom: var(--safe-area-bottom);
+          margin-bottom: var(--safe-area-inset-bottom);
         }
         :host(:not([narrow])) ha-card:last-child {
-          margin-bottom: max(24px, var(--safe-area-bottom));
+          margin-bottom: max(24px, var(--safe-area-inset-bottom));
         }
         ha-config-section {
           margin: auto;
@@ -401,7 +401,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
         }
 
         ha-tip {
-          margin-bottom: max(var(--safe-area-bottom), 8px);
+          margin-bottom: max(var(--safe-area-inset-bottom), 8px);
         }
 
         .new {

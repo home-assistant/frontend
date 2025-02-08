@@ -195,7 +195,7 @@ class HaConfigSectionUpdates extends LitElement {
       justify-content: space-between;
       flex-direction: column;
       display: flex;
-      margin-bottom: max(24px, var(--safe-area-bottom));
+      margin-bottom: max(24px, var(--safe-area-inset-bottom));
     }
 
     .card-content {

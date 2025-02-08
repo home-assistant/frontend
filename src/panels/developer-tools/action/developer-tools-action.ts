@@ -597,17 +597,19 @@ class HaPanelDevAction extends LitElement {
       css`
         .content {
           padding: 16px;
-          padding: max(16px, var(--safe-area-top))
-            max(16px, var(--safe-area-right)) max(16px, var(--safe-area-bottom))
-            max(16px, var(--safe-area-left));
+          padding: max(16px, var(--safe-area-inset-top))
+            max(16px, var(--safe-area-inset-right))
+            max(16px, var(--safe-area-inset-bottom))
+            max(16px, var(--safe-area-inset-left));
           max-width: 1200px;
           margin: auto;
         }
         .button-row {
           padding: 8px 16px;
-          padding: max(8px, var(--safe-area-top))
-            max(16px, var(--safe-area-right)) max(8px, var(--safe-area-bottom))
-            max(16px, var(--safe-area-left));
+          padding: max(8px, var(--safe-area-inset-top))
+            max(16px, var(--safe-area-inset-right))
+            max(8px, var(--safe-area-inset-bottom))
+            max(16px, var(--safe-area-inset-left));
           border-top: 1px solid var(--divider-color);
           border-bottom: 1px solid var(--divider-color);
           background: var(--card-background-color);
