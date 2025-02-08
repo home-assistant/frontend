@@ -106,4 +106,7 @@ export const DOMAIN_ATTRIBUTES_FORMATERS: Record<
       return formatDurationDigital(locale, { hours, minutes, seconds })!;
     },
   },
+  input_datetime: {
+    year: (value) => value.toString(),
+  },
 };
