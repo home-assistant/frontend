@@ -2210,8 +2210,8 @@
             "temperature_entity_description": "Sensor that represents the area temperature.",
             "humidity_entity": "Humidity sensor",
             "humidity_entity_description": "Sensor that represents the area humidity.",
-            "related_entities_section": "Related entities",
-            "related_entities_description": "Entities that are related to this area and provide information for this area."
+            "related_entities_section": "Related sensors",
+            "related_entities_description": "Entities that provide information for this area."
           },
           "delete": {
             "confirmation_title": "Delete {name}?",
