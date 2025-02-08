@@ -111,3 +111,9 @@ export const DOMAIN_ATTRIBUTES_FORMATERS: Record<
     timestamp: (value) => value.toString(),
   },
 };
+
+export const DERIVED_ATTRIBUTES: Record<string, Record<string, string[]>> = {
+  input_datetime: {
+    timestamp: ["timestamp_relative"],
+  },
+};
