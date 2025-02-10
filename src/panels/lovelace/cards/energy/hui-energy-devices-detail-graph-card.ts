@@ -193,9 +193,10 @@ export class HuiEnergyDevicesDetailGraphCard
           icon: "circle",
         },
         grid: {
+          top: 45,
           bottom: 0,
-          left: 5,
-          right: 5,
+          left: 1,
+          right: 1,
           containLabel: true,
         },
       };
@@ -446,9 +447,9 @@ export class HuiEnergyDevicesDetailGraphCard
         stack: compare ? "devicesCompare" : "devices",
       });
     });
-    return sorted_devices.map(
-      (device) => data.find((d) => (d.id as string).includes(device))!
-    );
+    return sorted_devices
+      .map((device) => data.find((d) => (d.id as string).includes(device))!)
+      .filter(Boolean);
   }
 
   static styles = css`
