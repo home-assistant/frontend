@@ -44,7 +44,7 @@ export const getEntityDefaultTileIconAction = (entityId: string) => {
     DOMAINS_TOGGLE.has(domain) ||
     ["button", "input_button", "scene"].includes(domain);
 
-  return supportsIconAction ? "toggle" : "more-info";
+  return supportsIconAction ? "toggle" : "none";
 };
 
 const DOMAIN_IMAGE_STYLE: Record<string, TileImageStyle> = {
