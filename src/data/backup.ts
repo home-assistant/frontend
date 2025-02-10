@@ -230,9 +230,9 @@ export const restoreBackup = (
   });
 
 export const uploadBackup = async (
+  hass: HomeAssistant,
   file: File,
-  agentIds: string[],
-  hass: HomeAssistant
+  agentIds: string[]
 ): Promise<{ backup_id: string }> => {
   const fd = new FormData();
   fd.append("file", file);

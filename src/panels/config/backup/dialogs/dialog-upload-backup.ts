@@ -165,7 +165,7 @@ export class DialogUploadBackup
 
     this._uploading = true;
     try {
-      await uploadBackup(file, agentIds, this.hass);
+      await uploadBackup(this.hass, file, agentIds);
       this._params!.submit?.();
       this.closeDialog();
     } catch (err: any) {
