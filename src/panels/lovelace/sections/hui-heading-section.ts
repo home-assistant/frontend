@@ -72,6 +72,7 @@ export class HeadingSection
                         .path=${cardPath}
                         .hiddenOverlay=${this._dragging}
                         no-duplicate
+                        no-move
                       >
                         ${card}
                       </hui-card-edit-mode>
@@ -148,7 +149,7 @@ export class HeadingSection
           position: relative;
           flex: 1;
           display: flex;
-          padding-top: 48px;
+          margin-top: 48px;
         }
 
         .content > * {
