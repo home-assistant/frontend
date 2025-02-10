@@ -246,7 +246,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         value: configEntry ? [configEntry] : [],
         items: undefined,
       },
-      sub_config_entry: {
+      sub_entry: {
         value: subEntry ? [subEntry] : [],
         items: undefined,
       },
@@ -342,7 +342,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
             filteredConfigEntry = configEntries[0];
           }
         } else if (
-          key === "sub_config_entry" &&
+          key === "sub_entry" &&
           Array.isArray(filter.value) &&
           filter.value.length
         ) {
@@ -790,13 +790,12 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                   entry.entry_id === this._filters.config_entry!.value![0]
               )?.title || this._filters.config_entry.value[0]}${this._filters
                 .config_entry.value.length === 1 &&
-              Array.isArray(this._filters.sub_config_entry?.value) &&
-              this._filters.sub_config_entry.value.length
+              Array.isArray(this._filters.sub_entry?.value) &&
+              this._filters.sub_entry.value.length
                 ? html` (${this._subEntries?.find(
                     (entry) =>
-                      entry.subentry_id ===
-                      this._filters.sub_config_entry!.value![0]
-                  )?.title || this._filters.sub_config_entry!.value![0]})`
+                      entry.subentry_id === this._filters.sub_entry!.value![0]
+                  )?.title || this._filters.sub_entry!.value![0]})`
                 : nothing}
             </ha-alert>`
           : nothing}

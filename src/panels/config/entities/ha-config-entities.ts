@@ -525,7 +525,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             filteredConfigEntry = configEntries[0];
           }
         } else if (
-          key === "sub_config_entry" &&
+          key === "sub_entry" &&
           Array.isArray(filter) &&
           filter.length
         ) {
@@ -936,12 +936,12 @@ ${
                   (entry) => entry.entry_id === this._filters.config_entry![0]
                 )?.title || this._filters.config_entry[0]}${this._filters
                   .config_entry.length === 1 &&
-                Array.isArray(this._filters.sub_config_entry) &&
-                this._filters.sub_config_entry.length
+                Array.isArray(this._filters.sub_entry) &&
+                this._filters.sub_entry.length
                   ? html` (${this._subEntries?.find(
                       (entry) =>
-                        entry.subentry_id === this._filters.sub_config_entry![0]
-                    )?.title || this._filters.sub_config_entry[0]})`
+                        entry.subentry_id === this._filters.sub_entry![0]
+                    )?.title || this._filters.sub_entry[0]})`
                   : nothing}
               </ha-alert>`
             : nothing
@@ -1068,7 +1068,7 @@ ${
       "ha-filter-states": [],
       "ha-filter-integrations": domain ? [domain] : [],
       config_entry: configEntry ? [configEntry] : [],
-      sub_config_entry: subEntry ? [subEntry] : [],
+      sub_entry: subEntry ? [subEntry] : [],
     };
     this._filterLabel();
   }
