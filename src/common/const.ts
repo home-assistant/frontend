@@ -99,6 +99,7 @@ export const DOMAINS_TOGGLE = new Set([
   "switch",
   "group",
   "automation",
+  "climate",
   "humidifier",
   "valve",
 ]);
