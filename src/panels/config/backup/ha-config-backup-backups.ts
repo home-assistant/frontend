@@ -1,3 +1,4 @@
+import "@material/mwc-linear-progress/mwc-linear-progress";
 import {
   mdiDelete,
   mdiDotsVertical,
@@ -75,6 +76,7 @@ interface BackupRow extends DataTableRowData, BackupContent {
   formatted_type: string;
   size: number;
   agent_ids: string[];
+  in_progress: boolean;
 }
 
 @customElement("ha-config-backup-backups")
@@ -150,12 +152,16 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         sortable: true,
         filterable: true,
         flex: 3,
+        template: (backup) =>
+          backup.in_progress
+            ? html`<mwc-linear-progress indeterminate></mwc-linear-progress>`
+            : backup.name,
       },
       size: {
         title: localize("ui.panel.config.backup.size"),
         filterable: true,
         sortable: true,
-        template: (backup) => bytesToString(backup.size),
+        template: (backup) => (backup.size ? bytesToString(backup.size) : ""),
       },
       date: {
         title: localize("ui.panel.config.backup.created"),
@@ -163,7 +169,9 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         filterable: true,
         sortable: true,
         template: (backup) =>
-          relativeTime(new Date(backup.date), this.hass.locale),
+          !backup.in_progress
+            ? relativeTime(new Date(backup.date), this.hass.locale)
+            : "",
       },
       formatted_type: {
         title: localize("ui.panel.config.backup.backup_type"),
@@ -259,11 +267,13 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
               {
                 label: this.hass.localize("ui.common.download"),
                 path: mdiDownload,
+                disabled: backup.in_progress,
                 action: () => this._downloadBackup(backup),
               },
               {
                 label: this.hass.localize("ui.common.delete"),
                 path: mdiDelete,
+                disabled: backup.in_progress,
                 action: () => this._deleteBackup(backup),
                 warning: true,
               },
@@ -279,13 +289,20 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     (
       activeGrouping: string | undefined,
       localize: LocalizeFunc,
-      isHassio: boolean
-    ) =>
-      activeGrouping === "formatted_type"
-        ? getBackupTypes(isHassio).map((type) =>
-            localize(`ui.panel.config.backup.type.${type}`)
-          )
-        : undefined
+      isHassio: boolean,
+      backupInProgress: boolean
+    ) => {
+      if (activeGrouping === "formatted_type") {
+        const groups = getBackupTypes(isHassio).map((type) =>
+          localize(`ui.panel.config.backup.type.${type}`)
+        );
+        if (backupInProgress) {
+          groups.unshift(localize("ui.panel.config.backup.type.in_progress"));
+        }
+        return groups;
+      }
+      return undefined;
+    }
   );
 
   private _handleGroupingChanged(ev: CustomEvent) {
@@ -307,7 +324,8 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
       backups: BackupContent[],
       filters: DataTableFiltersValues,
       localize: LocalizeFunc,
-      isHassio: boolean
+      isHassio: boolean,
+      backupInProgress: boolean
     ): BackupRow[] => {
       const typeFilter = filters["ha-filter-states"] as string[] | undefined;
       let filteredBackups = backups;
@@ -317,7 +335,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
           return typeFilter.includes(type);
         });
       }
-      return filteredBackups.map((backup) => {
+      const result = filteredBackups.map((backup) => {
         const type = computeBackupType(backup, isHassio);
         const agentIds = Object.keys(backup.agents);
         return {
@@ -325,8 +343,25 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
           size: computeBackupSize(backup),
           agent_ids: agentIds.sort(compareAgents),
           formatted_type: localize(`ui.panel.config.backup.type.${type}`),
+          in_progress: false,
         };
       });
+      if (backupInProgress) {
+        result.unshift({
+          backup_id: "",
+          date: new Date().toISOString(),
+          extra_metadata: {},
+          name: "",
+          agents: {},
+          failed_agent_ids: [],
+          with_automatic_settings: true,
+          size: 0,
+          agent_ids: [],
+          formatted_type: localize("ui.panel.config.backup.type.in_progress"),
+          in_progress: true,
+        });
+      }
+      return result;
     }
   );
 
@@ -337,12 +372,14 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   protected render(): TemplateResult {
     const backupInProgress =
       "state" in this.manager && this.manager.state === "in_progress";
+
     const isHassio = isComponentLoaded(this.hass, "hassio");
     const data = this._data(
       this.backups,
       this._filters,
       this.hass.localize,
-      isHassio
+      isHassio,
+      backupInProgress
     );
     const maxDisplayedAgents = Math.min(
       this._maxAgents(data),
@@ -379,7 +416,8 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         .groupOrder=${this._groupOrder(
           this._activeGrouping,
           this.hass.localize,
-          isHassio
+          isHassio,
+          backupInProgress
         )}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
@@ -535,6 +573,9 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
 
   private _showBackupDetails(ev: CustomEvent): void {
     const id = (ev.detail as RowClickedEvent).id;
+    if (!id) {
+      return;
+    }
     navigate(`/config/backup/details/${id}`);
   }
 

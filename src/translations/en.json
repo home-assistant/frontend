@@ -2224,7 +2224,8 @@
           "type": {
             "manual": "Manual",
             "automatic": "Automatic",
-            "addon_update": "Add-on update"
+            "addon_update": "Add-on update",
+            "in_progress": "In progress"
           },
           "locations": "Locations",
           "create": {
@@ -2506,6 +2507,7 @@
             "menu": {
               "upload_backup": "Upload backup"
             },
+            "agent_error": "Error in location {name}",
             "new_backup": "Backup now",
             "onboarding": {
               "title": "Set up backups",
@@ -2644,7 +2646,9 @@
               "title": "Locations",
               "description": "Your backup will be stored on these locations when this default backup is created. You can use all locations for custom backups.",
               "no_location": "No location selected",
-              "no_location_description": "You have to select at least one location to create a backup."
+              "no_location_description": "You have to select at least one location to create a backup.",
+              "more_locations": "Explore more locations",
+              "manage_network_storage": "Manage network storage"
             },
             "encryption_key": {
               "title": "Encryption key",

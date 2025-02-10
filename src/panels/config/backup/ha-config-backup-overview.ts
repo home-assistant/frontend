@@ -17,8 +17,10 @@ import type {
   BackupAgent,
   BackupConfig,
   BackupContent,
+  BackupInfo,
 } from "../../../data/backup";
 import {
+  computeBackupAgentName,
   generateBackup,
   generateBackupWithAutomaticSettings,
 } from "../../../data/backup";
@@ -49,6 +51,8 @@ class HaConfigBackupOverview extends LitElement {
   @property({ attribute: false }) public route!: Route;
 
   @property({ attribute: false }) public manager!: ManagerStateEvent;
+
+  @property({ attribute: false }) public info?: BackupInfo;
 
   @property({ attribute: false }) public backups: BackupContent[] = [];
 
@@ -151,6 +155,26 @@ class HaConfigBackupOverview extends LitElement {
           </ha-list-item>
         </ha-button-menu>
         <div class="content">
+          ${this.info && Object.keys(this.info.agent_errors).length
+            ? html`${Object.entries(this.info.agent_errors).map(
+                ([agentId, error]) =>
+                  html`<ha-alert
+                    alert-type="error"
+                    .title=${this.hass.localize(
+                      "ui.panel.config.backup.overview.agent_error",
+                      {
+                        name: computeBackupAgentName(
+                          this.hass.localize,
+                          agentId,
+                          this.agents
+                        ),
+                      }
+                    )}
+                  >
+                    ${error}
+                  </ha-alert>`
+              )}`
+            : nothing}
           ${backupInProgress
             ? html`
                 <ha-backup-overview-progress
