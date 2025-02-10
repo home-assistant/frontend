@@ -282,6 +282,8 @@ class DataEntryFlowDialog extends LitElement {
                                   .flowConfig=${this._params.flowConfig}
                                   .step=${this._step}
                                   .hass=${this.hass}
+                                  .navigateToResult=${this._params
+                                    .navigateToResult}
                                 ></step-flow-create-entry>
                               `}
                 `}

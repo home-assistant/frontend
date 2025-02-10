@@ -1009,6 +1009,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   private _continueFlow(ev) {
     showConfigFlowDialog(this, {
       continueFlowId: ev.target.flow.flow_id,
+      navigateToResult: true,
       dialogClosedCallback: () => {
         // this._handleFlowUpdated();
       },
@@ -1384,6 +1385,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       showAdvanced: this.hass.userData?.showAdvanced,
       manifest: await fetchIntegrationManifest(this.hass, configEntry.domain),
       entryId: configEntry.entry_id,
+      navigateToResult: true,
     });
   }
 
