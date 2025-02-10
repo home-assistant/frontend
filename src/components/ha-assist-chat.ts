@@ -337,7 +337,6 @@ export class HaAssistChat extends LitElement {
             if (delta.role) {
               // If currentDeltaRole exists, it means we're receiving our
               // second or later message. Let's add it to the chat.
-              // Reuse the previous message if it had no content
               if (currentDeltaRole && delta.role && hassMessage.text !== "…") {
                 // Remove progress indicator of previous message
                 hassMessage.text = hassMessage.text.substring(
@@ -494,7 +493,6 @@ export class HaAssistChat extends LitElement {
             if (delta.role) {
               // If currentDeltaRole exists, it means we're receiving our
               // second or later message. Let's add it to the chat.
-              // Reuse the previous message if it had no content
               if (
                 currentDeltaRole &&
                 delta.role === "assistant" &&
