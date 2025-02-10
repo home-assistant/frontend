@@ -654,6 +654,7 @@ class AddIntegrationDialog extends LitElement {
       startFlowHandler: domain,
       showAdvanced: this.hass.userData?.showAdvanced,
       manifest,
+      navigateToResult: true,
     });
   }
 
