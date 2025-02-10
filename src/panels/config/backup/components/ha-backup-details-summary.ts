@@ -90,7 +90,7 @@ class HaBackupDetailsSummary extends LitElement {
         </div>
         ${this.showUploadAnother
           ? html`<div class="card-actions">
-              <ha-button @click=${this._uploadAnother} class="danger">
+              <ha-button @click=${this._uploadAnother} destructive>
                 ${this.localize(
                   `ui.panel.page-onboarding.restore.details.summary.upload_another`
                 )}
