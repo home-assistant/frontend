@@ -53,17 +53,17 @@ import { getSignedPath } from "../../../data/auth";
 import type {
   ConfigEntry,
   DisableConfigEntryResult,
-  SubConfigEntry,
+  SubEntry,
 } from "../../../data/config_entries";
 import {
   ERROR_STATES,
   RECOVERABLE_STATES,
   deleteConfigEntry,
-  deleteSubConfigEntry,
+  deleteSubEntry,
   disableConfigEntry,
   enableConfigEntry,
   getConfigEntries,
-  getSubConfigEntries,
+  getSubEntries,
   reloadConfigEntry,
   updateConfigEntry,
 } from "../../../data/config_entries";
@@ -177,7 +177,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
   @state() private _domainEntities: Record<string, string[]> = {};
 
-  @state() private _subEntries: Record<string, SubConfigEntry[]> = {};
+  @state() private _subEntries: Record<string, SubEntry[]> = {};
 
   private _configPanel = memoizeOne(
     (domain: string, panels: HomeAssistant["panels"]): string | undefined =>
@@ -692,7 +692,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     devices: DeviceRegistryEntry[],
     services: DeviceRegistryEntry[],
     entities: EntityRegistryEntry[],
-    subItem?: SubConfigEntry
+    subItem?: SubEntry
   ) {
     let devicesLine: (TemplateResult | string)[] = [];
     for (const [items, localizeKey] of [
@@ -1036,7 +1036,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       ${subEntries.map((subEntry) => this._renderSubEntry(item, subEntry))}`;
   }
 
-  private _renderSubEntry(configEntry: ConfigEntry, subEntry: SubConfigEntry) {
+  private _renderSubEntry(configEntry: ConfigEntry, subEntry: SubEntry) {
     const devices = this._getConfigEntryDevices(configEntry).filter((device) =>
       device.config_entries_subentries[configEntry.entry_id]?.includes(
         subEntry.subentry_id
@@ -1056,7 +1056,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       class="sub-entry"
       data-entry-id=${configEntry.entry_id}
       .configEntry=${configEntry}
-      .subConfigEntry=${subEntry}
+      .subEntry=${subEntry}
     >
       <span slot="headline">${subEntry.title}</span>
       <span slot="supporting-text"
@@ -1141,7 +1141,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this._extraConfigEntries || this.configEntries
     )?.map((entry) =>
       entry.num_subentries
-        ? getSubConfigEntries(this.hass, entry.entry_id).then((subEntries) => ({
+        ? getSubEntries(this.hass, entry.entry_id).then((subEntries) => ({
             entry_id: entry.entry_id,
             subEntries,
           }))
@@ -1309,7 +1309,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       (ev.target as HTMLElement).closest(".sub-entry") as any
     ).configEntry;
     const subEntry = ((ev.target as HTMLElement).closest(".sub-entry") as any)
-      .subConfigEntry;
+      .subEntry;
 
     showSubConfigFlowDialog(
       this,
@@ -1327,7 +1327,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       (ev.target as HTMLElement).closest(".sub-entry") as any
     ).configEntry;
     const subEntry = ((ev.target as HTMLElement).closest(".sub-entry") as any)
-      .subConfigEntry;
+      .subEntry;
     const confirmed = await showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.integrations.config_entry.delete_confirm_title",
@@ -1344,11 +1344,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     if (!confirmed) {
       return;
     }
-    await deleteSubConfigEntry(
-      this.hass,
-      configEntry.entry_id,
-      subEntry.subentry_id
-    );
+    await deleteSubEntry(this.hass, configEntry.entry_id, subEntry.subentry_id);
   }
 
   private _handleDisable(ev: Event): void {

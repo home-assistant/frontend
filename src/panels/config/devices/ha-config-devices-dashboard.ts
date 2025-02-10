@@ -51,11 +51,8 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import { createAreaRegistryEntry } from "../../../data/area_registry";
-import type { ConfigEntry, SubConfigEntry } from "../../../data/config_entries";
-import {
-  getSubConfigEntries,
-  sortConfigEntries,
-} from "../../../data/config_entries";
+import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
+import { getSubEntries, sortConfigEntries } from "../../../data/config_entries";
 import { fullEntitiesContext } from "../../../data/context";
 import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
@@ -111,7 +108,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public entries!: ConfigEntry[];
 
-  @state() private _subConfigEntries?: SubConfigEntry[];
+  @state() private _subEntries?: SubEntry[];
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -224,7 +221,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
   private _setFiltersFromUrl() {
     const domain = this._searchParms.get("domain");
     const configEntry = this._searchParms.get("config_entry");
-    const subConfigEntry = this._searchParms.get("sub_entry");
+    const subEntry = this._searchParms.get("sub_entry");
     const label = this._searchParms.has("label");
 
     if (!domain && !configEntry && !label) {
@@ -250,7 +247,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         items: undefined,
       },
       sub_config_entry: {
-        value: subConfigEntry ? [subConfigEntry] : [],
+        value: subEntry ? [subEntry] : [],
         items: undefined,
       },
     };
@@ -367,8 +364,8 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                 )
               )
           );
-          if (!this._subConfigEntries) {
-            this._loadSubConfigEntries(configEntryId);
+          if (!this._subEntries) {
+            this._loadSubEntries(configEntryId);
           }
         } else if (
           key === "ha-filter-integrations" &&
@@ -795,7 +792,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                 .config_entry.value.length === 1 &&
               Array.isArray(this._filters.sub_config_entry?.value) &&
               this._filters.sub_config_entry.value.length
-                ? html` (${this._subConfigEntries?.find(
+                ? html` (${this._subEntries?.find(
                     (entry) =>
                       entry.subentry_id ===
                       this._filters.sub_config_entry!.value![0]
@@ -933,8 +930,8 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
     `;
   }
 
-  private async _loadSubConfigEntries(entryId: string) {
-    this._subConfigEntries = await getSubConfigEntries(this.hass, entryId);
+  private async _loadSubEntries(entryId: string) {
+    this._subEntries = await getSubEntries(this.hass, entryId);
   }
 
   private _filterExpanded(ev) {

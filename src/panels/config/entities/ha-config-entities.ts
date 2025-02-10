@@ -66,11 +66,8 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
-import type { ConfigEntry, SubConfigEntry } from "../../../data/config_entries";
-import {
-  getConfigEntries,
-  getSubConfigEntries,
-} from "../../../data/config_entries";
+import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
+import { getConfigEntries, getSubEntries } from "../../../data/config_entries";
 import { fullEntitiesContext } from "../../../data/context";
 import type {
   DataTableFiltersItems,
@@ -149,7 +146,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   @state() private _entries?: ConfigEntry[];
 
-  @state() private _subConfigEntries?: SubConfigEntry[];
+  @state() private _subEntries?: SubEntry[];
 
   @state() private _manifests?: IntegrationManifest[];
 
@@ -545,8 +542,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               entity.config_subentry_id &&
               (filter as string[]).includes(entity.config_subentry_id)
           );
-          if (!this._subConfigEntries) {
-            this._loadSubConfigEntries(this._filters.config_entry[0]);
+          if (!this._subEntries) {
+            this._loadSubEntries(this._filters.config_entry[0]);
           }
         } else if (
           key === "ha-filter-integrations" &&
@@ -941,7 +938,7 @@ ${
                   .config_entry.length === 1 &&
                 Array.isArray(this._filters.sub_config_entry) &&
                 this._filters.sub_config_entry.length
-                  ? html` (${this._subConfigEntries?.find(
+                  ? html` (${this._subEntries?.find(
                       (entry) =>
                         entry.subentry_id === this._filters.sub_config_entry![0]
                     )?.title || this._filters.sub_config_entry[0]})`
@@ -1058,7 +1055,7 @@ ${
   private _setFiltersFromUrl() {
     const domain = this._searchParms.get("domain");
     const configEntry = this._searchParms.get("config_entry");
-    const subConfigEntry = this._searchParms.get("sub_entry");
+    const subEntry = this._searchParms.get("sub_entry");
     const label = this._searchParms.has("label");
 
     if (!domain && !configEntry && !label) {
@@ -1071,7 +1068,7 @@ ${
       "ha-filter-states": [],
       "ha-filter-integrations": domain ? [domain] : [],
       config_entry: configEntry ? [configEntry] : [],
-      sub_config_entry: subConfigEntry ? [subConfigEntry] : [],
+      sub_config_entry: subEntry ? [subEntry] : [],
     };
     this._filterLabel();
   }
@@ -1421,8 +1418,8 @@ ${rejected
     this._entries = await getConfigEntries(this.hass);
   }
 
-  private async _loadSubConfigEntries(entryId: string) {
-    this._subConfigEntries = await getSubConfigEntries(this.hass, entryId);
+  private async _loadSubEntries(entryId: string) {
+    this._subEntries = await getSubEntries(this.hass, entryId);
   }
 
   private _addDevice() {

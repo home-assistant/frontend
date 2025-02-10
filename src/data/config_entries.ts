@@ -29,20 +29,20 @@ export interface ConfigEntry {
   error_reason_translation_placeholders: Record<string, string> | null;
 }
 
-export interface SubConfigEntry {
+export interface SubEntry {
   subentry_id: string;
   subentry_type: string;
   title: string;
   unique_id: string;
 }
 
-export const getSubConfigEntries = (hass: HomeAssistant, entry_id: string) =>
-  hass.callWS<SubConfigEntry[]>({
+export const getSubEntries = (hass: HomeAssistant, entry_id: string) =>
+  hass.callWS<SubEntry[]>({
     type: "config_entries/subentries/list",
     entry_id,
   });
 
-export const deleteSubConfigEntry = (
+export const deleteSubEntry = (
   hass: HomeAssistant,
   entry_id: string,
   subentry_id: string
