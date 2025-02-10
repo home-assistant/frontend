@@ -240,6 +240,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         .container.edit-mode {
           padding: 8px;
           border-radius: var(--ha-card-border-radius, 12px);
+          border-start-end-radius: 0;
           border: 2px dashed var(--divider-color);
           min-height: var(--row-height);
         }
