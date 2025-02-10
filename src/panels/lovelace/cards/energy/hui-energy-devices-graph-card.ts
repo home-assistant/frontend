@@ -27,6 +27,7 @@ import { hasConfigChanged } from "../../common/has-changed";
 import type { ECOption } from "../../../../resources/echarts";
 import "../../../../components/ha-card";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { measureTextWidth } from "../../../../util/text";
 
 @customElement("hui-energy-devices-graph-card")
 export class HuiEnergyDevicesGraphCard
@@ -109,8 +110,11 @@ export class HuiEnergyDevicesGraphCard
     return `${title}${params.marker} ${params.seriesName}: ${value}`;
   }
 
-  private _createOptions = memoizeOne(
-    (data: BarSeriesOption[]): ECOption => ({
+  private _createOptions = memoizeOne((data: BarSeriesOption[]): ECOption => {
+    const isMobile = window.matchMedia(
+      "all and (max-width: 450px), all and (max-height: 500px)"
+    ).matches;
+    return {
       xAxis: {
         type: "value",
         name: "kWh",
@@ -124,6 +128,17 @@ export class HuiEnergyDevicesGraphCard
         axisLabel: {
           formatter: this._getDeviceName.bind(this),
           overflow: "truncate",
+          fontSize: 12,
+          margin: 5,
+          width: Math.min(
+            isMobile ? 100 : 200,
+            Math.max(
+              ...(data[0]?.data?.map(
+                (d: any) =>
+                  measureTextWidth(this._getDeviceName(d.value[1]), 12) + 5
+              ) || [])
+            )
+          ),
         },
       },
       grid: {
@@ -137,8 +152,8 @@ export class HuiEnergyDevicesGraphCard
         show: true,
         formatter: this._renderTooltip.bind(this),
       },
-    })
-  );
+    };
+  });
 
   private _getDeviceName(statisticId: string): string {
     return (

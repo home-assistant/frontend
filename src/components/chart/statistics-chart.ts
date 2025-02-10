@@ -237,14 +237,14 @@ export class StatisticsChart extends LitElement {
         minYAxis = ({ min }) => Math.min(min, this.minYAxis!);
       }
     } else if (this.logarithmicScale) {
-      minYAxis = ({ min }) => (min > 0 ? min * 0.95 : min * 1.05);
+      minYAxis = ({ min }) => Math.floor(min > 0 ? min * 0.95 : min * 1.05);
     }
     if (typeof maxYAxis === "number") {
       if (this.fitYData) {
         maxYAxis = ({ max }) => Math.max(max, this.maxYAxis!);
       }
     } else if (this.logarithmicScale) {
-      maxYAxis = ({ max }) => (max > 0 ? max * 1.05 : max * 0.95);
+      maxYAxis = ({ max }) => Math.ceil(max > 0 ? max * 1.05 : max * 0.95);
     }
     const endTime = this.endTime ?? new Date();
     let startTime = this.startTime;
@@ -290,7 +290,6 @@ export class StatisticsChart extends LitElement {
           align: "left",
         },
         position: computeRTL(this.hass) ? "right" : "left",
-        // @ts-ignore
         scale: true,
         min: this._clampYAxis(minYAxis),
         max: this._clampYAxis(maxYAxis),
