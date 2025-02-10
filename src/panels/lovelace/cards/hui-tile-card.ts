@@ -18,8 +18,7 @@ import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
 import "../../../components/tile/ha-tile-badge";
 import "../../../components/tile/ha-tile-icon";
-import "../../../components/tile/ha-tile-image";
-import type { TileImageStyle } from "../../../components/tile/ha-tile-image";
+import type { TileIconImageStyle } from "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
 import { cameraUrlWithWidthHeight } from "../../../data/camera";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
@@ -47,7 +46,7 @@ export const getEntityDefaultTileIconAction = (entityId: string) => {
   return supportsIconAction ? "toggle" : "none";
 };
 
-const DOMAIN_IMAGE_STYLE: Record<string, TileImageStyle> = {
+const DOMAIN_IMAGE_SHAPE: Record<string, TileIconImageStyle> = {
   update: "square",
   media_player: "rounded-square",
 };
@@ -196,7 +195,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     }
   );
 
-  get hasCardAction() {
+  private get _hasCardAction() {
     return (
       !this._config?.tap_action ||
       hasAction(this._config?.tap_action) ||
@@ -205,7 +204,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     );
   }
 
-  get hasIconAction() {
+  private get _hasIconAction() {
     return (
       !this._config?.icon_tap_action || hasAction(this._config?.icon_tap_action)
     );
@@ -224,14 +223,12 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       return html`
         <ha-card>
           <div class="content ${classMap(contentClasses)}">
-            <div class="icon-container">
-              <ha-tile-icon>
-                <ha-svg-icon .path=${mdiHelp}></ha-svg-icon>
-              </ha-tile-icon>
+            <ha-tile-icon>
+              <ha-svg-icon slot="icon" .path=${mdiHelp}></ha-svg-icon>
               <ha-tile-badge class="not-found">
                 <ha-svg-icon .path=${mdiExclamationThick}></ha-svg-icon>
               </ha-tile-badge>
-            </div>
+            </ha-tile-icon>
             <ha-tile-info
               .primary=${entityId}
               secondary=${this.hass.localize("ui.card.tile.not_found")}
@@ -275,46 +272,36 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             hasHold: hasAction(this._config!.hold_action),
             hasDoubleClick: hasAction(this._config!.double_tap_action),
           })}
-          role=${ifDefined(this.hasCardAction ? "button" : undefined)}
-          tabindex=${ifDefined(this.hasCardAction ? "0" : undefined)}
+          role=${ifDefined(this._hasCardAction ? "button" : undefined)}
+          tabindex=${ifDefined(this._hasCardAction ? "0" : undefined)}
           aria-labelledby="info"
         >
-          <ha-ripple .disabled=${!this.hasCardAction}></ha-ripple>
+          <ha-ripple .disabled=${!this._hasCardAction}></ha-ripple>
         </div>
         <div class="container">
           <div class="content ${classMap(contentClasses)}">
-            <div
-              class="icon-container"
-              role=${ifDefined(this.hasIconAction ? "button" : undefined)}
-              tabindex=${ifDefined(this.hasIconAction ? "0" : undefined)}
+            <ha-tile-icon
+              role=${ifDefined(this._hasIconAction ? "button" : undefined)}
+              tabindex=${ifDefined(this._hasIconAction ? "0" : undefined)}
               @action=${this._handleIconAction}
               .actionHandler=${actionHandler({
                 hasHold: hasAction(this._config!.icon_hold_action),
                 hasDoubleClick: hasAction(this._config!.icon_double_tap_action),
               })}
+              .interactive=${this._hasIconAction}
+              .imageStyle=${DOMAIN_IMAGE_SHAPE[domain]}
+              .imageUrl=${imageUrl}
+              data-domain=${ifDefined(domain)}
+              data-state=${ifDefined(stateObj?.state)}
             >
-              ${imageUrl
-                ? html`
-                    <ha-tile-image
-                      .imageStyle=${DOMAIN_IMAGE_STYLE[domain] || "circle"}
-                      .imageUrl=${imageUrl}
-                    ></ha-tile-image>
-                  `
-                : html`
-                    <ha-tile-icon
-                      data-domain=${ifDefined(domain)}
-                      data-state=${ifDefined(stateObj?.state)}
-                      .hasBackground=${this.hasIconAction}
-                    >
-                      <ha-state-icon
-                        .icon=${this._config.icon}
-                        .stateObj=${stateObj}
-                        .hass=${this.hass}
-                      ></ha-state-icon>
-                    </ha-tile-icon>
-                  `}
+              <ha-state-icon
+                slot="icon"
+                .icon=${this._config.icon}
+                .stateObj=${stateObj}
+                .hass=${this.hass}
+              ></ha-state-icon>
               ${renderTileBadge(stateObj, this.hass)}
-            </div>
+            </ha-tile-icon>
             <ha-tile-info
               id="info"
               .primary=${name}
@@ -364,6 +351,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     }
     [role="button"] {
       cursor: pointer;
+      pointer-events: auto;
     }
     [role="button"]:focus {
       outline: none;
@@ -404,38 +392,18 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       width: 100%;
       flex: none;
     }
-    .icon-container {
-      position: relative;
-      flex: none;
-      transition: transform 180ms ease-in-out;
+    ha-tile-icon {
+      --tile-icon-color: var(--tile-color);
       margin: -10px;
       padding: 10px;
+      position: relative;
     }
-    .icon-container ha-tile-icon,
-    .icon-container ha-tile-image {
-      --tile-icon-color: var(--tile-color);
-      user-select: none;
-      -ms-user-select: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      transition: box-shadow 180ms ease-in-out;
-    }
-    .icon-container ha-tile-badge {
+    ha-tile-badge {
       position: absolute;
       top: 7px;
       right: 7px;
       inset-inline-end: 7px;
       inset-inline-start: initial;
-    }
-    .icon-container[role="button"] {
-      pointer-events: auto;
-    }
-    .icon-container[role="button"]:focus-visible > ha-tile-icon,
-    .icon-container[role="button"]:focus-visible > ha-tile-image {
-      box-shadow: 0 0 0 2px var(--tile-color);
-    }
-    .icon-container[role="button"]:active {
-      transform: scale(1.2);
     }
     ha-tile-info {
       position: relative;
