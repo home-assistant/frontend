@@ -2,7 +2,6 @@ import { memoize } from "@fullcalendar/core/internal";
 import { setHours, setMinutes } from "date-fns";
 import type { HassConfig } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
-import checkValidDate from "../common/datetime/check_valid_date";
 import {
   formatDateTime,
   formatDateTimeNumeric,
@@ -13,6 +12,8 @@ import type { HomeAssistant } from "../types";
 import { fileDownload } from "../util/file_download";
 import { domainToName } from "./integration";
 import type { FrontendLocaleData } from "./translation";
+import checkValidDate from "../common/datetime/check_valid_date";
+import { handleFetchPromise } from "../util/hass-call-api";
 
 export const enum BackupScheduleRecurrence {
   NEVER = "never",
@@ -231,27 +232,23 @@ export const restoreBackup = (
 export const uploadBackup = async (
   hass: HomeAssistant,
   file: File,
-  agent_ids: string[]
-): Promise<void> => {
+  agentIds: string[]
+): Promise<{ backup_id: string }> => {
   const fd = new FormData();
   fd.append("file", file);
 
-  const params = agent_ids.reduce((acc, agent_id) => {
-    acc.append("agent_id", agent_id);
-    return acc;
-  }, new URLSearchParams());
+  const params = new URLSearchParams();
 
-  const resp = await hass.fetchWithAuth(
-    `/api/backup/upload?${params.toString()}`,
-    {
+  agentIds.forEach((agentId) => {
+    params.append("agent_id", agentId);
+  });
+
+  return handleFetchPromise(
+    hass.fetchWithAuth(`/api/backup/upload?${params.toString()}`, {
       method: "POST",
       body: fd,
-    }
+    })
   );
-
-  if (!resp.ok) {
-    throw new Error(`${resp.status} ${resp.statusText}`);
-  }
 };
 
 export const getPreferredAgentForDownload = (agents: string[]) => {
@@ -449,3 +446,13 @@ export const getFormattedBackupTime = memoizeOne(
     return `${formatTime(DEFAULT_OPTIMIZED_BACKUP_START_TIME, locale, config)} - ${formatTime(DEFAULT_OPTIMIZED_BACKUP_END_TIME, locale, config)}`;
   }
 );
+
+export const SUPPORTED_UPLOAD_FORMAT = "application/x-tar";
+
+export interface BackupUploadFileFormData {
+  file?: File;
+}
+
+export const INITIAL_UPLOAD_FORM_DATA: BackupUploadFileFormData = {
+  file: undefined,
+};

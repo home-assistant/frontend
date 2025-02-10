@@ -4,6 +4,7 @@ import {
   formatDateTime,
   formatDateTimeWithSeconds,
   formatDateTimeNumeric,
+  formatDateTimeWithBrowserDefaults,
 } from "../../../src/common/datetime/format_date_time";
 import {
   NumberFormat,
@@ -47,6 +48,19 @@ describe("formatDateTime", () => {
         demoConfig
       ),
       "November 18, 2017 at 23:12"
+    );
+  });
+
+  it("Formats date times without optional params", () => {
+    assert.strictEqual(
+      formatDateTimeWithBrowserDefaults(dateObj),
+      new Intl.DateTimeFormat(undefined, {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(dateObj)
     );
   });
 });

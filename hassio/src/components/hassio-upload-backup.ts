@@ -14,7 +14,7 @@ import type { LocalizeFunc } from "../../../src/common/translations/localize";
 
 declare global {
   interface HASSDomEvents {
-    "backup-uploaded": { backup: HassioBackup };
+    "hassio-backup-uploaded": { backup: HassioBackup };
     "backup-cleared": undefined;
   }
 }
@@ -70,7 +70,7 @@ export class HassioUploadBackup extends LitElement {
     this._uploading = true;
     try {
       const backup = await uploadBackup(this.hass, file);
-      fireEvent(this, "backup-uploaded", { backup: backup.data });
+      fireEvent(this, "hassio-backup-uploaded", { backup: backup.data });
     } catch (err: any) {
       showAlertDialog(this, {
         title: "Upload failed",
