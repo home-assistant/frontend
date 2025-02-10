@@ -21,6 +21,7 @@ import {
   optional,
   string,
 } from "superstruct";
+import { keyed } from "lit/directives/keyed";
 import type {
   HaFormSchema,
   SchemaUnion,
@@ -201,15 +202,16 @@ export class HuiStackCardEditor
                     @click=${this._handleDeleteCard}
                   ></ha-icon-button>
                 </div>
-
-                <hui-card-element-editor
-                  .hass=${this.hass}
-                  .key=${this._getKey(this._config.cards[selected])}
-                  .value=${this._config.cards[selected]}
-                  .lovelace=${this.lovelace}
-                  @config-changed=${this._handleConfigChanged}
-                  @GUImode-changed=${this._handleGUIModeChanged}
-                ></hui-card-element-editor>
+                ${keyed(
+                  this._getKey(this._config.cards[selected]),
+                  html`<hui-card-element-editor
+                    .hass=${this.hass}
+                    .value=${this._config.cards[selected]}
+                    .lovelace=${this.lovelace}
+                    @config-changed=${this._handleConfigChanged}
+                    @GUImode-changed=${this._handleGUIModeChanged}
+                  ></hui-card-element-editor>`
+                )}
               `
             : html`
                 <hui-card-picker

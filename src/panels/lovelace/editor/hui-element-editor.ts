@@ -57,8 +57,6 @@ export abstract class HuiElementEditor<
 
   @property({ attribute: false }) public context?: C;
 
-  @property({ attribute: false }) public key?: string;
-
   @state() private _config?: T;
 
   @state() private _configElement?: LovelaceGenericElementEditor;
@@ -94,6 +92,7 @@ export abstract class HuiElementEditor<
     }
     this._config = config;
     this._errors = undefined;
+    this._setConfig();
   }
 
   private _setConfig(): void {
@@ -116,16 +115,6 @@ export abstract class HuiElementEditor<
         ),
       });
     });
-  }
-
-  protected willUpdate(changedProps: PropertyValues): void {
-    if (changedProps.has("_config")) {
-      if (changedProps.has("key")) {
-        this._guiMode = true;
-        this.unloadConfigElement();
-      }
-      this._setConfig();
-    }
   }
 
   public get hasWarning(): boolean {
