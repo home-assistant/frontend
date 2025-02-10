@@ -56,12 +56,10 @@ class HaBackupDetailsSummary extends LitElement {
         </div>
         <div class="card-content">
           <ha-md-list class="summary">
-            ${this.hass
+            ${this.translationKeyPanel === "config.backup"
               ? html`<ha-md-list-item>
                   <span slot="headline">
-                    ${this.localize(
-                      `ui.panel.${this.translationKeyPanel}.backup_type`
-                    )}
+                    ${this.localize(`ui.panel.config.backup.backup_type`)}
                   </span>
                   <span slot="supporting-text">
                     ${this.localize(
