@@ -62,7 +62,6 @@ class OnboardingRestoreBackup extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      ${this._view}
       ${
         this._view !== "status" || this._failed
           ? html`<ha-icon-button-arrow-prev
@@ -265,11 +264,11 @@ class OnboardingRestoreBackup extends LitElement {
     await this._loadBackupInfo();
   }
 
-  private _back() {
+  private async _back() {
     if (this._view === "upload" || (this._view === "status" && this._failed)) {
       navigate(`${location.pathname}?${removeSearchParam("page")}`);
     } else {
-      showConfirmationDialog(this, {
+      const confirmed = await showConfirmationDialog(this, {
         title: this.localize(
           "ui.panel.page-onboarding.restore.cancel_restore.title"
         ),
@@ -282,12 +281,12 @@ class OnboardingRestoreBackup extends LitElement {
         dismissText: this.localize(
           "ui.panel.page-onboarding.restore.cancel_restore.no"
         ),
-        confirm: () => {
-          setTimeout(() => {
-            navigate(`${location.pathname}?${removeSearchParam("page")}`);
-          });
-        },
       });
+
+      if (!confirmed) {
+        return;
+      }
+      navigate(`${location.pathname}?${removeSearchParam("page")}`);
     }
   }
 
