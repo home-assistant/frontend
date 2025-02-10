@@ -56,18 +56,20 @@ class HaBackupDetailsSummary extends LitElement {
         </div>
         <div class="card-content">
           <ha-md-list class="summary">
-            <ha-md-list-item>
-              <span slot="headline">
-                ${this.localize(
-                  `ui.panel.${this.translationKeyPanel}.backup_type`
-                )}
-              </span>
-              <span slot="supporting-text">
-                ${this.localize(
-                  `ui.panel.${this.translationKeyPanel}.type.${computeBackupType(this.backup, this.isHassio)}`
-                )}
-              </span>
-            </ha-md-list-item>
+            ${this.hass
+              ? html`<ha-md-list-item>
+                  <span slot="headline">
+                    ${this.localize(
+                      `ui.panel.${this.translationKeyPanel}.backup_type`
+                    )}
+                  </span>
+                  <span slot="supporting-text">
+                    ${this.localize(
+                      `ui.panel.config.backup.type.${computeBackupType(this.backup, this.isHassio)}`
+                    )}
+                  </span>
+                </ha-md-list-item>`
+              : nothing}
             <ha-md-list-item>
               <span slot="headline">
                 ${this.localize(

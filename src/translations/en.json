@@ -8205,11 +8205,6 @@
           "delete": "[%key:ui::common::delete%]",
           "uploading": "[%key:ui::components::file-upload::uploading%]",
           "backup_type": "[%key:ui::panel::config::backup::backup_type%]",
-          "type": {
-            "manual": "Manual",
-            "automatic": "Automatic",
-            "addon_update": "Add-on update"
-          },
           "details": {
             "home_assistant_missing": "This backup does not include your Home Assistant configuration, you cannot use it to restore your instance.",
             "addons_unsupported": "This backup includes add-ons and folders, which are not supported in this installation method of Home Assistant. You can still restore Home Assistant, but the unsupported files will not be restored.",
