@@ -279,6 +279,7 @@ class HaDomainIntegrations extends LitElement {
       {
         startFlowHandler: domain,
         showAdvanced: this.hass.userData?.showAdvanced,
+        navigateToResult: true,
         manifest: await fetchIntegrationManifest(this.hass, domain),
       }
     );
@@ -295,6 +296,7 @@ class HaDomainIntegrations extends LitElement {
       root instanceof ShadowRoot ? (root.host as HTMLElement) : this,
       {
         continueFlowId: flow.flow_id,
+        navigateToResult: true,
         showAdvanced: this.hass.userData?.showAdvanced,
         manifest: await fetchIntegrationManifest(this.hass, flow.handler),
       }

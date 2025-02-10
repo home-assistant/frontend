@@ -60,6 +60,7 @@ class StepFlowAbort extends LitElement {
           dialogClosedCallback: this.params.dialogClosedCallback,
           startFlowHandler: this.domain,
           showAdvanced: this.hass.userData?.showAdvanced,
+          navigateToResult: this.params.navigateToResult,
         });
       },
     });
