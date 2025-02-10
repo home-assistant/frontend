@@ -1,5 +1,4 @@
 import { fireEvent } from "../../../../src/common/dom/fire_event";
-import type { LocalizeFunc } from "../../../../src/common/translations/localize";
 import type { Supervisor } from "../../../../src/data/supervisor/supervisor";
 
 export interface HassioBackupDialogParams {
@@ -8,7 +7,6 @@ export interface HassioBackupDialogParams {
   onRestoring?: () => void;
   onboarding?: boolean;
   supervisor?: Supervisor;
-  localize?: LocalizeFunc;
 }
 
 export const showHassioBackupDialog = (
