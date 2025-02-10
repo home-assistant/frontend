@@ -304,6 +304,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
                     <ha-tile-icon
                       data-domain=${ifDefined(domain)}
                       data-state=${ifDefined(stateObj?.state)}
+                      .hasBackground=${this.hasIconAction}
                     >
                       <ha-state-icon
                         .icon=${this._config.icon}
@@ -392,17 +393,12 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       flex: 1;
       box-sizing: border-box;
       pointer-events: none;
+      gap: 10px;
     }
     .vertical {
       flex-direction: column;
       text-align: center;
       justify-content: center;
-    }
-    .vertical .icon-container {
-      margin-bottom: 10px;
-      margin-right: 0;
-      margin-inline-start: initial;
-      margin-inline-end: initial;
     }
     .vertical ha-tile-info {
       width: 100%;
@@ -411,11 +407,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     .icon-container {
       position: relative;
       flex: none;
-      margin-right: 10px;
-      margin-inline-start: initial;
-      margin-inline-end: 10px;
-      direction: var(--direction);
       transition: transform 180ms ease-in-out;
+      margin: -10px;
+      padding: 10px;
     }
     .icon-container ha-tile-icon,
     .icon-container ha-tile-image {
@@ -424,18 +418,22 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       -ms-user-select: none;
       -webkit-user-select: none;
       -moz-user-select: none;
+      transition: box-shadow 180ms ease-in-out;
     }
     .icon-container ha-tile-badge {
       position: absolute;
-      top: -3px;
-      right: -3px;
-      inset-inline-end: -3px;
+      top: 7px;
+      right: 7px;
+      inset-inline-end: 7px;
       inset-inline-start: initial;
     }
     .icon-container[role="button"] {
       pointer-events: auto;
     }
-    .icon-container[role="button"]:focus-visible,
+    .icon-container[role="button"]:focus-visible > ha-tile-icon,
+    .icon-container[role="button"]:focus-visible > ha-tile-image {
+      box-shadow: 0 0 0 2px var(--tile-color);
+    }
     .icon-container[role="button"]:active {
       transform: scale(1.2);
     }
