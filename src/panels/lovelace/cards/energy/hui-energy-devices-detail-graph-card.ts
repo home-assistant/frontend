@@ -447,9 +447,9 @@ export class HuiEnergyDevicesDetailGraphCard
         stack: compare ? "devicesCompare" : "devices",
       });
     });
-    return sorted_devices.map(
-      (device) => data.find((d) => (d.id as string).includes(device))!
-    );
+    return sorted_devices
+      .map((device) => data.find((d) => (d.id as string).includes(device))!)
+      .filter(Boolean);
   }
 
   static styles = css`
