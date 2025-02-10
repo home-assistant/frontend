@@ -16,6 +16,7 @@ import { navigate } from "../common/navigate";
 import { onBoardingStyles } from "./styles";
 import {
   fetchBackupOnboardingInfo,
+  type BackupOnboardingConfig,
   type BackupOnboardingInfo,
 } from "../data/backup_onboarding";
 import type { BackupContentExtended, BackupData } from "../data/backup";
@@ -35,8 +36,8 @@ class OnboardingRestoreBackup extends LitElement {
   @state() private _view:
     | "loading"
     | "upload"
-    | "details"
-    | "restore"
+    | "select_data"
+    | "confirm_restore"
     | "status" = "loading";
 
   @state() private _backup?: BackupContentExtended;
@@ -61,6 +62,7 @@ class OnboardingRestoreBackup extends LitElement {
 
   protected render(): TemplateResult {
     return html`
+      ${this._view}
       ${
         this._view !== "status" || this._failed
           ? html`<ha-icon-button-arrow-prev
@@ -72,19 +74,19 @@ class OnboardingRestoreBackup extends LitElement {
       </ha-icon-button>
       <h1>${this.localize("ui.panel.page-onboarding.restore.header")}</h1>
       ${
-        this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : nothing
-      }
-      ${
-        this._failed && this._view !== "status"
+        this._error || (this._failed && this._view !== "status")
           ? html`<ha-alert
               alert-type="error"
-              .title=${this.localize("ui.panel.page-onboarding.restore.failed")}
-              >${this.localize(
-                `ui.panel.page-onboarding.restore.${this._backupInfo?.last_non_idle_event?.reason === "password_incorrect" ? "failed_wrong_password_description" : "failed_description"}`
-              )}</ha-alert
-            >`
+              .title=${this._failed && this._view !== "status"
+                ? this.localize("ui.panel.page-onboarding.restore.failed")
+                : ""}
+            >
+              ${this._failed && this._view !== "status"
+                ? this.localize(
+                    `ui.panel.page-onboarding.restore.${this._backupInfo?.last_non_idle_event?.reason === "password_incorrect" ? "failed_wrong_password_description" : "failed_description"}`
+                  )
+                : this._error}
+            </ha-alert>`
           : nothing
       }
       ${
@@ -100,13 +102,13 @@ class OnboardingRestoreBackup extends LitElement {
                   @backup-uploaded=${this._backupUploaded}
                 ></onboarding-restore-backup-upload>
               `
-            : this._view === "details"
+            : this._view === "select_data"
               ? html`<onboarding-restore-backup-details
                   .localize=${this.localize}
                   .backup=${this._backup!}
                   @backup-restore=${this._restore}
                 ></onboarding-restore-backup-details>`
-              : this._view === "restore"
+              : this._view === "confirm_restore"
                 ? html`<onboarding-restore-backup-restore
                     .localize=${this.localize}
                     .backup=${this._backup!}
@@ -126,7 +128,7 @@ class OnboardingRestoreBackup extends LitElement {
           : nothing
       }
       ${
-        ["details", "restore"].includes(this._view) && this._backup
+        ["select_data", "confirm_restore"].includes(this._view) && this._backup
           ? html`<div class="backup-summary-wrapper">
               <ha-backup-details-summary
                 translation-key-panel="page-onboarding.restore"
@@ -149,69 +151,9 @@ class OnboardingRestoreBackup extends LitElement {
   }
 
   private async _loadBackupInfo() {
+    let onboardingInfo: BackupOnboardingConfig;
     try {
-      const {
-        last_non_idle_event: lastNonIdleEvent,
-        state: currentState,
-        backups,
-      } = await fetchBackupOnboardingInfo();
-
-      this._backupInfo = {
-        state: currentState,
-        last_non_idle_event: lastNonIdleEvent,
-      };
-
-      if (this._backupId) {
-        this._backup = backups.find(
-          ({ backup_id }) => backup_id === this._backupId
-        );
-      }
-
-      const failedRestore =
-        lastNonIdleEvent?.manager_state === "restore_backup" &&
-        lastNonIdleEvent?.state === "failed";
-
-      if (failedRestore) {
-        this._failed = true;
-      }
-
-      if (this._restoreRunning) {
-        this._view = "status";
-        if (failedRestore || currentState !== "restore_backup") {
-          this._failed = true;
-          this._restoreRunning = undefined;
-        } else {
-          this._scheduleLoadBackupInfo();
-        }
-        return;
-      }
-
-      if (!lastNonIdleEvent || !this._backupId) {
-        this._view = "upload";
-        return;
-      }
-
-      if (
-        this._backup &&
-        (lastNonIdleEvent.manager_state === "receive_backup" || failedRestore)
-      ) {
-        if (!this.supervisor && this._backup.homeassistant_included) {
-          this._selectedData = {
-            homeassistant_included: true,
-            folders: [],
-            addons: [],
-            homeassistant_version: this._backup.homeassistant_version,
-            database_included: this._backup.database_included,
-          };
-          this._view = "restore";
-        } else {
-          this._view = "details";
-        }
-        return;
-      }
-
-      // fallback to upload
-      this._view = "upload";
+      onboardingInfo = await fetchBackupOnboardingInfo();
     } catch (err: any) {
       if (this._restoreRunning) {
         if (
@@ -219,6 +161,7 @@ class OnboardingRestoreBackup extends LitElement {
           // core can restart but haven't loaded the backup integration yet
           (err.status_code === 500 && err.body?.error === "backup_disabled")
         ) {
+          // core is down because of restore, keep trying
           this._scheduleLoadBackupInfo();
           return;
         }
@@ -233,8 +176,75 @@ class OnboardingRestoreBackup extends LitElement {
       }
 
       this._error = err?.message || "Cannot get backup info";
-      this._view = "upload";
+
+      // if we are in an unknown state, show upload
+      if (this._view === "loading") {
+        this._view = "upload";
+      }
+      return;
     }
+
+    const {
+      last_non_idle_event: lastNonIdleEvent,
+      state: currentState,
+      backups,
+    } = onboardingInfo;
+
+    this._backupInfo = {
+      state: currentState,
+      last_non_idle_event: lastNonIdleEvent,
+    };
+
+    if (this._backupId) {
+      this._backup = backups.find(
+        ({ backup_id }) => backup_id === this._backupId
+      );
+    }
+
+    const failedRestore =
+      lastNonIdleEvent?.manager_state === "restore_backup" &&
+      lastNonIdleEvent?.state === "failed";
+
+    if (failedRestore) {
+      this._failed = true;
+    }
+
+    if (this._restoreRunning) {
+      this._view = "status";
+      if (failedRestore || currentState !== "restore_backup") {
+        this._failed = true;
+        this._restoreRunning = undefined;
+      } else {
+        this._scheduleLoadBackupInfo();
+      }
+      return;
+    }
+
+    if (
+      this._backup &&
+      // after backup was uploaded
+      (lastNonIdleEvent?.manager_state === "receive_backup" ||
+        // when restore was confirmed but failed to start (for example, encryption key was wrong)
+        failedRestore)
+    ) {
+      if (!this.supervisor && this._backup.homeassistant_included) {
+        this._selectedData = {
+          homeassistant_included: true,
+          folders: [],
+          addons: [],
+          homeassistant_version: this._backup.homeassistant_version,
+          database_included: this._backup.database_included,
+        };
+        // skip select data when supervisor is not available and backup includes HA
+        this._view = "confirm_restore";
+      } else {
+        this._view = "select_data";
+      }
+      return;
+    }
+
+    // show upload as default
+    this._view = "upload";
   }
 
   private _scheduleLoadBackupInfo() {
@@ -287,7 +297,7 @@ class OnboardingRestoreBackup extends LitElement {
     }
     this._selectedData = ev.detail.selectedData;
 
-    this._view = "restore";
+    this._view = "confirm_restore";
   }
 
   private _reupload() {
