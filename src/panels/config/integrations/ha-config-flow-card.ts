@@ -137,6 +137,7 @@ export class HaConfigFlowCard extends LitElement {
     }
     showConfigFlowDialog(this, {
       continueFlowId: this.flow.flow_id,
+      navigateToResult: true,
       dialogClosedCallback: () => {
         this._handleFlowUpdated();
       },
