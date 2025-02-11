@@ -2,7 +2,7 @@
 import * as echarts from "echarts/core";
 
 // Import charts, all suffixed with Chart
-import { BarChart, LineChart, CustomChart } from "echarts/charts";
+import { BarChart, LineChart, CustomChart, SankeyChart } from "echarts/charts";
 
 // Import the title, tooltip, rectangular coordinate system, dataset and transform components
 import {
@@ -27,6 +27,7 @@ import type {
   BarSeriesOption,
   LineSeriesOption,
   CustomSeriesOption,
+  SankeySeriesOption,
 } from "echarts/charts";
 import type {
   // The component option types are defined with the ComponentOption suffix
@@ -50,6 +51,7 @@ export type ECOption = ComposeOption<
   | GridComponentOption
   | DataZoomComponentOption
   | VisualMapComponentOption
+  | SankeySeriesOption
 >;
 
 // Register the required components
@@ -67,6 +69,7 @@ echarts.use([
   LabelLayout,
   UniversalTransition,
   CanvasRenderer,
+  SankeyChart,
 ]);
 
 export default echarts;

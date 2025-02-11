@@ -227,11 +227,13 @@ export class HaChartBase extends LitElement {
   }
 
   private _getDataZoomConfig(): DataZoomComponentOption | undefined {
-    const xAxis = (this.options?.xAxis?.[0] ??
-      this.options?.xAxis) as XAXisOption;
-    const yAxis = (this.options?.yAxis?.[0] ??
-      this.options?.yAxis) as YAXisOption;
-    if (xAxis.type === "value" && yAxis.type === "category") {
+    const xAxis = (this.options?.xAxis?.[0] ?? this.options?.xAxis) as
+      | XAXisOption
+      | undefined;
+    const yAxis = (this.options?.yAxis?.[0] ?? this.options?.yAxis) as
+      | YAXisOption
+      | undefined;
+    if (xAxis?.type === "value" && yAxis?.type === "category") {
       // vertical data zoom doesn't work well in this case and horizontal is pointless
       return undefined;
     }
