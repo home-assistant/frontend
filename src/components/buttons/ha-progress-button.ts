@@ -41,7 +41,7 @@ export class HaProgressButton extends LitElement {
                           indeterminate
                         ></ha-circular-progress>
                       `
-                    : ""}
+                    : nothing}
             </div>
           `}
     `;
@@ -116,6 +116,9 @@ export class HaProgressButton extends LitElement {
     mwc-button.success slot,
     mwc-button.error slot {
       visibility: hidden;
+    }
+    :host([destructive]) {
+      --mdc-theme-primary: var(--error-color);
     }
   `;
 }
