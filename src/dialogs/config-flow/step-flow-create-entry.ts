@@ -29,6 +29,8 @@ class StepFlowCreateEntry extends LitElement {
 
   @property({ attribute: false }) public step!: DataEntryFlowStepCreateEntry;
 
+  navigateToResult = false;
+
   private _devices = memoizeOne(
     (
       showDevices: boolean,
@@ -153,7 +155,7 @@ class StepFlowCreateEntry extends LitElement {
 
   private _flowDone(): void {
     fireEvent(this, "flow-update", { step: undefined });
-    if (this.step.result) {
+    if (this.step.result && this.navigateToResult) {
       navigate(
         `/config/integrations/integration/${this.step.result.domain}#config_entry=${this.step.result.entry_id}`
       );

@@ -21,7 +21,7 @@ export interface BackupAddonItem {
 
 @customElement("ha-backup-addons-picker")
 export class HaBackupAddonsPicker extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public addons!: BackupAddonItem[];
 
@@ -32,7 +32,7 @@ export class HaBackupAddonsPicker extends LitElement {
 
   private _addons = memoizeOne((addons: BackupAddonItem[]) =>
     addons.sort((a, b) =>
-      stringCompare(a.name, b.name, this.hass.locale.language)
+      stringCompare(a.name, b.name, this.hass?.locale?.language)
     )
   );
 
