@@ -43,7 +43,7 @@ export class HaTileIcon extends LitElement {
     :host {
       --tile-icon-color: var(--disabled-color);
       --tile-icon-opacity: 0.2;
-      --tile-icon-hover-opacity: 0.3;
+      --tile-icon-hover-opacity: 0.35;
       --mdc-icon-size: 24px;
       position: relative;
       user-select: none;

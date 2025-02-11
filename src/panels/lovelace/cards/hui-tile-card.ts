@@ -394,15 +394,13 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     }
     ha-tile-icon {
       --tile-icon-color: var(--tile-color);
-      margin: -10px;
-      padding: 10px;
       position: relative;
     }
     ha-tile-badge {
       position: absolute;
-      top: 7px;
-      right: 7px;
-      inset-inline-end: 7px;
+      top: -3px;
+      right: -3px;
+      inset-inline-end: -3px;
       inset-inline-start: initial;
     }
     ha-tile-info {
