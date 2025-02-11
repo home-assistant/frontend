@@ -48,11 +48,23 @@ const cardConfigStruct = assign(
     show_entity_picture: optional(boolean()),
     vertical: optional(boolean()),
     tap_action: optional(actionConfigStruct),
-    icon_tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
+    double_tap_action: optional(actionConfigStruct),
+    icon_tap_action: optional(actionConfigStruct),
+    icon_hold_action: optional(actionConfigStruct),
+    icon_double_tap_action: optional(actionConfigStruct),
     features: optional(array(any())),
   })
 );
+
+const ADVANCED_ACTIONS = [
+  "hold_action",
+  "icon_hold_action",
+  "double_tap_action",
+  "icon_double_tap_action",
+] as const;
+
+type AdvancedActions = (typeof ADVANCED_ACTIONS)[number];
 
 @customElement("hui-tile-card-editor")
 export class HuiTileCardEditor
@@ -63,13 +75,44 @@ export class HuiTileCardEditor
 
   @state() private _config?: TileCardConfig;
 
+  @state() private _displayActions?: AdvancedActions[];
+
   public setConfig(config: TileCardConfig): void {
     assert(config, cardConfigStruct);
     this._config = config;
+
+    if (this._displayActions) return;
+    this._setDisplayActions(config);
+  }
+
+  private _setDisplayActions(config: TileCardConfig) {
+    this._displayActions = ADVANCED_ACTIONS.filter(
+      (action) => action in config
+    );
+  }
+
+  private _resetConfiguredActions() {
+    this._displayActions = undefined;
+  }
+
+  connectedCallback(): void {
+    super.connectedCallback();
+    if (this._config) {
+      this._setDisplayActions(this._config);
+    }
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._resetConfiguredActions();
   }
 
   private _schema = memoizeOne(
-    (entityId: string | undefined, hideState: boolean) =>
+    (
+      entityId: string | undefined,
+      hideState: boolean,
+      displayActions: AdvancedActions[] = []
+    ) =>
       [
         { name: "entity", selector: { entity: {} } },
         {
@@ -158,14 +201,14 @@ export class HuiTileCardEditor
                 },
               },
             },
-            {
-              name: "hold_action",
+            ...displayActions.map((action) => ({
+              name: action,
               selector: {
                 ui_action: {
-                  default_action: "none",
+                  default_action: "none" as const,
                 },
               },
-            },
+            })),
           ],
         },
       ] as const satisfies readonly HaFormSchema[]
@@ -179,7 +222,11 @@ export class HuiTileCardEditor
     const entityId = this._config!.entity;
     const stateObj = entityId ? this.hass!.states[entityId] : undefined;
 
-    const schema = this._schema(entityId, this._config!.hide_state ?? false);
+    const schema = this._schema(
+      entityId,
+      this._config!.hide_state ?? false,
+      this._displayActions
+    );
 
     const data = this._config;
 
@@ -287,6 +334,8 @@ export class HuiTileCardEditor
     switch (schema.name) {
       case "color":
       case "icon_tap_action":
+      case "icon_hold_action":
+      case "icon_double_tap_action":
       case "show_entity_picture":
       case "vertical":
       case "hide_state":
