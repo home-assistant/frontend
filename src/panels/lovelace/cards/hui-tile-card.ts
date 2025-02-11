@@ -35,7 +35,7 @@ import type {
   LovelaceGridOptions,
 } from "../types";
 import { renderTileBadge } from "./tile/badges/tile-badge";
-import type { ThermostatCardConfig, TileCardConfig } from "./types";
+import type { TileCardConfig } from "./types";
 
 export const getEntityDefaultTileIconAction = (entityId: string) => {
   const domain = computeDomain(entityId);
@@ -83,7 +83,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
   @state() private _config?: TileCardConfig;
 
-  public setConfig(config: ThermostatCardConfig): void {
+  public setConfig(config: TileCardConfig): void {
     if (!config.entity) {
       throw new Error("Specify an entity");
     }
