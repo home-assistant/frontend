@@ -92,6 +92,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
             .disabled=${this._loading ||
             (backupProtected && this._encryptionKey === "")}
             @click=${this._startRestore}
+            destructive
           >
             ${this.localize(
               "ui.panel.page-onboarding.restore.details.restore.action"
