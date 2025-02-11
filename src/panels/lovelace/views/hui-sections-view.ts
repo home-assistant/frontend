@@ -24,8 +24,6 @@ import type { LovelaceSectionConfig } from "../../../data/lovelace/config/sectio
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
-import type { HuiBadge } from "../badges/hui-badge";
-import "../badges/hui-view-badges";
 import type { HuiCard } from "../cards/hui-card";
 import "../components/hui-badge-edit-mode";
 import {
@@ -60,8 +58,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   @property({ attribute: false }) public isStrategy = false;
 
   @property({ attribute: false }) public sections: HuiSection[] = [];
-
-  @property({ attribute: false }) public badges: HuiBadge[] = [];
 
   @property({ attribute: false }) public cards: HuiCard[] = [];
 
@@ -154,15 +150,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     const maxColumnCount = this._columnsController.value ?? 1;
 
     return html`
-      <hui-view-badges
-        .hass=${this.hass}
-        .badges=${this.badges}
-        .lovelace=${this.lovelace}
-        .viewIndex=${this.index}
-        style=${styleMap({
-          "--max-column-count": maxColumnCount,
-        })}
-      ></hui-view-badges>
       <ha-sortable
         .disabled=${!editMode}
         @item-moved=${this._sectionMoved}
@@ -549,18 +536,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
     .sortable-ghost {
       border-radius: var(--ha-card-border-radius, 12px);
-    }
-
-    hui-view-badges {
-      display: block;
-      text-align: center;
-      padding: 0 var(--column-gap);
-      padding-top: var(--row-gap);
-      margin: auto;
-      max-width: calc(
-        var(--max-column-count) * var(--column-max-width) +
-          (var(--max-column-count) - 1) * var(--column-gap)
-      );
     }
 
     .section-header {
