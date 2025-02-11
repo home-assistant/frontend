@@ -135,7 +135,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
       }
 
       button.actionError();
-      if (err.body?.message === "incorrect_password") {
+      if (err.body?.code === "incorrect_password") {
         this._encryptionKeyWrong = true;
       } else {
         this._error =
