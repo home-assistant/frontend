@@ -42,6 +42,8 @@ export class HaTileIcon extends LitElement {
   static styles = css`
     :host {
       --tile-icon-color: var(--disabled-color);
+      --tile-icon-opacity: 0.2;
+      --tile-icon-hover-opacity: 0.3;
       --mdc-icon-size: 24px;
       position: relative;
       user-select: none;
@@ -49,6 +51,9 @@ export class HaTileIcon extends LitElement {
     }
     :host([interactive]:active) {
       transform: scale(1.2);
+    }
+    :host([interactive]:hover) {
+      --tile-icon-opacity: var(--tile-icon-hover-opacity);
     }
     .container {
       position: relative;
@@ -78,8 +83,10 @@ export class HaTileIcon extends LitElement {
       height: 100%;
       width: 100%;
       background-color: var(--tile-icon-color);
-      transition: background-color 180ms ease-in-out;
-      opacity: 0.2;
+      transition:
+        background-color 180ms ease-in-out,
+        opacity 180ms ease-in-out;
+      opacity: var(--tile-icon-opacity);
     }
     .container ::slotted([slot="icon"]) {
       display: flex;
