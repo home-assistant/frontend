@@ -300,6 +300,8 @@ export class HuiEnergyUsageGraphCard
         type: "bar",
         stack: "usage",
         data: [],
+        // @ts-expect-error
+        order: 0,
       });
     }
 
@@ -315,6 +317,8 @@ export class HuiEnergyUsageGraphCard
       )
     );
 
+    // @ts-expect-error
+    datasets.sort((a, b) => a.order - b.order);
     fillDataGapsAndRoundCaps(datasets);
     this._chartData = datasets;
   }
@@ -482,7 +486,7 @@ export class HuiEnergyUsageGraphCard
       this._compareStart!
     );
 
-    Object.entries(combinedData).forEach(([type, sources]) => {
+    Object.entries(combinedData).forEach(([type, sources], idx) => {
       Object.entries(sources).forEach(([statId, source]) => {
         const points: BarSeriesOption["data"] = [];
         // Process chart data.
@@ -513,6 +517,13 @@ export class HuiEnergyUsageGraphCard
                   statId,
                   statisticsMetaData[statId]
                 ),
+          // @ts-expect-error
+          order:
+            type === "used_solar"
+              ? 1
+              : type === "to_battery"
+                ? Object.keys(combinedData).length
+                : idx + 2,
           barMaxWidth: 50,
           itemStyle: {
             borderColor: getEnergyColor(

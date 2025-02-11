@@ -72,7 +72,7 @@ export class DialogHassioBackupUpload
           </ha-header-bar>
         </div>
         <hassio-upload-backup
-          @backup-uploaded=${this._backupUploaded}
+          @hassio-backup-uploaded=${this._backupUploaded}
           .hass=${this.hass}
         ></hassio-upload-backup>
       </ha-dialog>
