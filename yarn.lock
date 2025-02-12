@@ -4807,6 +4807,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node-fetch@npm:^2.6.12":
+  version: 2.6.12
+  resolution: "@types/node-fetch@npm:2.6.12"
+  dependencies:
+    "@types/node": "npm:*"
+    form-data: "npm:^4.0.0"
+  checksum: 10/8107c479da83a3114fcbfa882eba95ee5175cccb5e4dd53f737a96f2559ae6262f662176b8457c1656de09ec393cc7b20a266c077e4bfb21e929976e1cf4d0f9
+  languageName: node
+  linkType: hard
+
 "@types/node-forge@npm:^1.3.0":
   version: 1.3.11
   resolution: "@types/node-forge@npm:1.3.11"
@@ -9474,7 +9484,7 @@ __metadata:
     tsparticles-engine: "npm:2.12.0"
     tsparticles-preset-links: "npm:2.12.0"
     typescript: "npm:5.7.3"
-    ua-parser-js: "npm:2.0.1"
+    ua-parser-js: "npm:2.0.2"
     vis-data: "npm:7.1.9"
     vis-network: "npm:9.1.9"
     vitest: "npm:3.0.5"
@@ -11541,7 +11551,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^2.6.1":
+"node-fetch@npm:^2.6.1, node-fetch@npm:^2.7.0":
   version: 2.7.0
   resolution: "node-fetch@npm:2.7.0"
   dependencies:
@@ -14710,16 +14720,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ua-parser-js@npm:2.0.1":
-  version: 2.0.1
-  resolution: "ua-parser-js@npm:2.0.1"
+"ua-parser-js@npm:2.0.2":
+  version: 2.0.2
+  resolution: "ua-parser-js@npm:2.0.2"
   dependencies:
+    "@types/node-fetch": "npm:^2.6.12"
     detect-europe-js: "npm:^0.1.2"
     is-standalone-pwa: "npm:^0.1.1"
+    node-fetch: "npm:^2.7.0"
     ua-is-frozen: "npm:^0.1.2"
   bin:
     ua-parser-js: script/cli.js
-  checksum: 10/acc9985b33d4269bc71cc10c5010517afec29f57a57be365e5d0076533254a076623bc1168577b8b6d36dd8451e44165781415420b3de73a7c1c2562b45dd8e8
+  checksum: 10/92c172d9fb8036d32ff9df20283d3c323831d92a9b99ccca73c50d3d778903129581f0f918391f139ba444b11bce10f254cf922a4fb35fa1a28c4a9671225f1e
   languageName: node
   linkType: hard
 
