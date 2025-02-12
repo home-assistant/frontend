@@ -5,7 +5,7 @@ import {
   mdiImagePlus,
 } from "@mdi/js";
 import type { ActionDetail } from "@material/mwc-list";
-import { differenceInHours } from "date-fns";
+import { differenceInDays, differenceInHours } from "date-fns";
 import type {
   HassServiceTarget,
   UnsubscribeFunc,
@@ -315,7 +315,7 @@ class HaPanelHistory extends LitElement {
       this._startDate,
       this._endDate,
       statisticIds,
-      "hour",
+      differenceInDays(this._endDate, this._startDate) > 7 ? "day" : "hour",
       undefined,
       ["mean", "state"]
     );
