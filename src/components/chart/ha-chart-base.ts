@@ -121,10 +121,8 @@ export class HaChartBase extends LitElement {
     this._setupChart();
   }
 
-  public willUpdate(changedProps: PropertyValues): void {
-    super.willUpdate(changedProps);
-
-    if (!this.hasUpdated || !this.chart) {
+  public updated(changedProps: PropertyValues): void {
+    if (!this.chart) {
       return;
     }
     if (changedProps.has("_themes")) {
