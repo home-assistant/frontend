@@ -8,6 +8,7 @@ import {
   assert,
   assign,
   boolean,
+  enums,
   object,
   optional,
   string,
@@ -54,6 +55,7 @@ const cardConfigStruct = assign(
     icon_hold_action: optional(actionConfigStruct),
     icon_double_tap_action: optional(actionConfigStruct),
     features: optional(array(any())),
+    features_position: optional(enums(["bottom", "side"])),
   })
 );
 
@@ -106,6 +108,32 @@ export class HuiTileCardEditor
     super.disconnectedCallback();
     this._resetConfiguredActions();
   }
+
+  private _featuresSchema = memoizeOne(
+    () =>
+      [
+        {
+          name: "features_position",
+          required: true,
+          selector: {
+            select: {
+              mode: "dropdown",
+
+              options: [
+                {
+                  label: "At the bottom",
+                  value: "bottom",
+                },
+                {
+                  label: "On the side",
+                  value: "side",
+                },
+              ],
+            },
+          },
+        },
+      ] as const satisfies readonly HaFormSchema[]
+  );
 
   private _schema = memoizeOne(
     (
@@ -224,11 +252,17 @@ export class HuiTileCardEditor
 
     const schema = this._schema(
       entityId,
-      this._config!.hide_state ?? false,
+      this._config.hide_state ?? false,
       this._displayActions
     );
 
-    const data = this._config;
+    const featureSchema = this._featuresSchema();
+
+    const data = { ...this._config };
+
+    if (!data.features_position) {
+      data.features_position = "bottom";
+    }
 
     return html`
       <ha-form
@@ -247,6 +281,30 @@ export class HuiTileCardEditor
           )}
         </h3>
         <div class="content">
+          <ha-form
+            class="features-form"
+            .hass=${this.hass}
+            .data=${data}
+            .schema=${featureSchema}
+            .computeLabel=${this._computeLabelCallback}
+            .computeHelper=${this._computeHelperCallback}
+            @value-changed=${this._valueChanged}
+          >
+          </ha-form>
+          ${this._config.vertical
+            ? html`
+                <p class="info">
+                  This options is ignored when vertical layout is selected.
+                </p>
+              `
+            : this._config.features_position === "side"
+              ? html`
+                  <p class="info">
+                    Only the first feature will be displayed when side position
+                    is selected.
+                  </p>
+                `
+              : nothing}
           <hui-card-features-editor
             .hass=${this.hass}
             .stateObj=${stateObj}
@@ -329,7 +387,9 @@ export class HuiTileCardEditor
   }
 
   private _computeLabelCallback = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
+    schema:
+      | SchemaUnion<ReturnType<typeof this._schema>>
+      | SchemaUnion<ReturnType<typeof this._featuresSchema>>
   ) => {
     switch (schema.name) {
       case "color":
@@ -345,6 +405,8 @@ export class HuiTileCardEditor
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.tile.${schema.name}`
         );
+      case "features_position":
+        return "Features position";
       default:
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
@@ -376,6 +438,14 @@ export class HuiTileCardEditor
         ha-form {
           display: block;
           margin-bottom: 24px;
+        }
+        .info {
+          color: var(--secondary-text-color);
+          margin-top: 0;
+          margin-bottom: 8px;
+        }
+        .features-form {
+          margin-bottom: 8px;
         }
       `,
     ];

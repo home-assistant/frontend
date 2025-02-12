@@ -100,10 +100,13 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
+    const featuresPosition =
+      this._config && this._featurePosition(this._config);
+    const featuresCount = this._config?.features?.length || 0;
     return (
       1 +
       (this._config?.vertical ? 1 : 0) +
-      (this._config?.features?.length || 0)
+      (featuresPosition === "bottom" ? featuresCount : 0)
     );
   }
 
@@ -111,8 +114,13 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     const columns = 6;
     let min_columns = 6;
     let rows = 1;
-    if (this._config?.features?.length) {
-      rows += this._config.features.length;
+    const featurePosition = this._config && this._featurePosition(this._config);
+    const featuresCount = this._config?.features?.length || 0;
+    if (featuresCount && featurePosition === "bottom") {
+      rows += featuresCount;
+    }
+    if (featuresCount && featurePosition === "side") {
+      min_columns = 12;
     }
     if (this._config?.vertical) {
       rows++;
@@ -210,6 +218,23 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     );
   }
 
+  private _featurePosition = memoizeOne((config: TileCardConfig) => {
+    if (config.vertical) {
+      return "bottom";
+    }
+    return config.features_position || "bottom";
+  });
+
+  private _displayedFeatures = memoizeOne((config: TileCardConfig) => {
+    const features = config.features || [];
+    const featurePosition = this._featurePosition(config);
+
+    if (featurePosition === "side") {
+      return features.slice(0, 1);
+    }
+    return features;
+  });
+
   protected render() {
     if (!this._config || !this.hass) {
       return nothing;
@@ -263,6 +288,12 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       ? this._getImageUrl(stateObj)
       : undefined;
 
+    const featurePosition = this._featurePosition(this._config);
+    const features = this._displayedFeatures(this._config);
+
+    const containerOrientationClass =
+      featurePosition === "side" ? "horizontal" : "";
+
     return html`
       <ha-card style=${styleMap(style)} class=${classMap({ active })}>
         <div
@@ -278,7 +309,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         >
           <ha-ripple .disabled=${!this._hasCardAction}></ha-ripple>
         </div>
-        <div class="container">
+        <div class="container ${containerOrientationClass}">
           <div class="content ${classMap(contentClasses)}">
             <ha-tile-icon
               role=${ifDefined(this._hasIconAction ? "button" : undefined)}
@@ -308,13 +339,13 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
               .secondary=${stateDisplay}
             ></ha-tile-info>
           </div>
-          ${this._config.features
+          ${features.length > 0
             ? html`
                 <hui-card-features
                   .hass=${this.hass}
                   .stateObj=${stateObj}
                   .color=${this._config.color}
-                  .features=${this._config.features}
+                  .features=${features}
                 ></hui-card-features>
               `
             : nothing}
@@ -372,6 +403,13 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       flex-direction: column;
       flex: 1;
     }
+    .container.horizontal {
+      flex-direction: row;
+    }
+    .container.horizontal .content {
+      flex: 1;
+    }
+
     .content {
       position: relative;
       display: flex;
@@ -413,6 +451,13 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     }
     hui-card-features {
       --feature-color: var(--tile-color);
+      padding: 0 12px 12px 12px;
+    }
+    .container.horizontal hui-card-features {
+      flex: 1;
+      --feature-height: 36px;
+      padding: 10px;
+      padding-inline-start: 0;
     }
 
     ha-tile-icon[data-domain="alarm_control_panel"][data-state="pending"],
