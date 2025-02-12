@@ -7124,7 +7124,14 @@
               "show_entity_picture": "Show entity picture",
               "vertical": "Vertical",
               "hide_state": "Hide state",
-              "state_content": "State content"
+              "state_content": "State content",
+              "features_position": "Features position",
+              "features_position_options": {
+                "bottom": "At the bottom",
+                "side": "On the side"
+              },
+              "features_position_vertical_info": "This option is ignored when vertical layout is selected.",
+              "features_position_side_limitation_info": "Only the first feature is displayed when side position is selected."
             },
             "vertical-stack": {
               "name": "Vertical stack",

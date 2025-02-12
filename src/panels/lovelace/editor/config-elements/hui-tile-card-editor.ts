@@ -16,6 +16,7 @@ import {
 } from "superstruct";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-form/ha-form";
 import type {
@@ -110,7 +111,7 @@ export class HuiTileCardEditor
   }
 
   private _featuresSchema = memoizeOne(
-    () =>
+    (localize: LocalizeFunc) =>
       [
         {
           name: "features_position",
@@ -118,17 +119,12 @@ export class HuiTileCardEditor
           selector: {
             select: {
               mode: "dropdown",
-
-              options: [
-                {
-                  label: "At the bottom",
-                  value: "bottom",
-                },
-                {
-                  label: "On the side",
-                  value: "side",
-                },
-              ],
+              options: ["bottom", "side"].map((value) => ({
+                label: localize(
+                  `ui.panel.lovelace.editor.card.tile.features_position_options.${value}`
+                ),
+                value,
+              })),
             },
           },
         },
@@ -256,7 +252,7 @@ export class HuiTileCardEditor
       this._displayActions
     );
 
-    const featureSchema = this._featuresSchema();
+    const featureSchema = this._featuresSchema(this.hass.localize);
 
     const data = { ...this._config };
 
@@ -294,14 +290,17 @@ export class HuiTileCardEditor
           ${this._config.vertical
             ? html`
                 <p class="info">
-                  This options is ignored when vertical layout is selected.
+                  ${this.hass!.localize(
+                    "ui.panel.lovelace.editor.card.tile.features_position_vertical_info"
+                  )}
                 </p>
               `
             : this._config.features_position === "side"
               ? html`
                   <p class="info">
-                    Only the first feature will be displayed when side position
-                    is selected.
+                    ${this.hass!.localize(
+                      "ui.panel.lovelace.editor.card.tile.features_position_side_limitation_info"
+                    )}
                   </p>
                 `
               : nothing}
@@ -402,11 +401,10 @@ export class HuiTileCardEditor
       case "state_content":
       case "appearance":
       case "interactions":
+      case "features_position":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.tile.${schema.name}`
         );
-      case "features_position":
-        return "Features position";
       default:
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
