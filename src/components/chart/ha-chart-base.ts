@@ -83,8 +83,10 @@ export class HaChartBase extends LitElement {
 
     this._listeners.push(
       listenMediaQuery("(prefers-reduced-motion)", (matches) => {
-        this._reducedMotion = matches;
-        this.chart?.setOption({ animation: !this._reducedMotion });
+        if (this._reducedMotion !== matches) {
+          this._reducedMotion = matches;
+          this.chart?.setOption({ animation: !this._reducedMotion });
+        }
       })
     );
 
@@ -93,9 +95,7 @@ export class HaChartBase extends LitElement {
       if ((isMac && ev.metaKey) || (!isMac && ev.ctrlKey)) {
         this._modifierPressed = true;
         if (!this.options?.dataZoom) {
-          this.chart?.setOption({
-            dataZoom: this._getDataZoomConfig(),
-          });
+          this.chart?.setOption({ dataZoom: this._getDataZoomConfig() });
         }
       }
     };
@@ -104,9 +104,7 @@ export class HaChartBase extends LitElement {
       if ((isMac && ev.key === "Meta") || (!isMac && ev.key === "Control")) {
         this._modifierPressed = false;
         if (!this.options?.dataZoom) {
-          this.chart?.setOption({
-            dataZoom: this._getDataZoomConfig(),
-          });
+          this.chart?.setOption({ dataZoom: this._getDataZoomConfig() });
         }
       }
     };
@@ -139,12 +137,10 @@ export class HaChartBase extends LitElement {
         { lazyUpdate: true, replaceMerge: ["series"] }
       );
     }
-    if (changedProps.has("options") || changedProps.has("_isZoomed")) {
-      this.chart.setOption(this._createOptions(), {
-        lazyUpdate: true,
-        // if we replace the whole object, it will reset the dataZoom
-        replaceMerge: ["grid"],
-      });
+    if (changedProps.has("options")) {
+      this.chart.setOption(this._createOptions());
+    } else if (this._isTouchDevice && changedProps.has("_isZoomed")) {
+      this.chart?.setOption({ dataZoom: this._getDataZoomConfig() });
     }
   }
 
@@ -158,7 +154,6 @@ export class HaChartBase extends LitElement {
         style=${styleMap({
           height: this.height ?? `${this._getDefaultHeight()}px`,
         })}
-        @wheel=${this._handleWheel}
       >
         <div class="chart"></div>
         ${this._isZoomed
@@ -240,8 +235,8 @@ export class HaChartBase extends LitElement {
       type: "inside",
       orient: "horizontal",
       filterMode: "none",
-      moveOnMouseMove: this._isZoomed,
-      preventDefaultMouseMove: this._isZoomed,
+      moveOnMouseMove: !this._isTouchDevice || this._isZoomed,
+      preventDefaultMouseMove: !this._isTouchDevice || this._isZoomed,
       zoomLock: !this._isTouchDevice && !this._modifierPressed,
     };
   }
@@ -514,23 +509,6 @@ export class HaChartBase extends LitElement {
 
   private _handleZoomReset() {
     this.chart?.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
-    this._modifierPressed = false;
-  }
-
-  private _handleWheel(e: WheelEvent) {
-    // if the window is not focused, we don't receive the keydown events but scroll still works
-    if (!this.options?.dataZoom) {
-      const modifierPressed = (isMac && e.metaKey) || (!isMac && e.ctrlKey);
-      if (modifierPressed) {
-        e.preventDefault();
-      }
-      if (modifierPressed !== this._modifierPressed) {
-        this._modifierPressed = modifierPressed;
-        this.chart?.setOption({
-          dataZoom: this._getDataZoomConfig(),
-        });
-      }
-    }
   }
 
   static styles = css`
