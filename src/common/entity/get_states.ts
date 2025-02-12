@@ -272,19 +272,21 @@ export const getStates = (
       break;
     case "device_tracker":
     case "person":
-      result.push(
-        ...Object.entries(hass.states)
-          .filter(
-            ([entityId, stateObj]) =>
-              computeDomain(entityId) === "zone" &&
-              entityId !== "zone.home" &&
-              stateObj.attributes.friendly_name
-          )
-          .map(([_entityId, stateObj]) => stateObj.attributes.friendly_name!)
-          .sort((zone1, zone2) =>
-            stringCompare(zone1, zone2, hass.locale.language)
-          )
-      );
+      if (!attribute) {
+        result.push(
+          ...Object.entries(hass.states)
+            .filter(
+              ([entityId, stateObj]) =>
+                computeDomain(entityId) === "zone" &&
+                entityId !== "zone.home" &&
+                stateObj.attributes.friendly_name
+            )
+            .map(([_entityId, stateObj]) => stateObj.attributes.friendly_name!)
+            .sort((zone1, zone2) =>
+              stringCompare(zone1, zone2, hass.locale.language)
+            )
+        );
+      }
       break;
     case "event":
       if (attribute === "event_type") {
