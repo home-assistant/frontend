@@ -16,6 +16,7 @@ import {
 } from "../../resources/styles-data";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
+import type { StorageLocation } from "../../state/themes-mixin";
 
 const USE_DEFAULT_THEME = "__USE_DEFAULT_THEME__";
 const HOME_ASSISTANT_THEME = "default";
@@ -25,6 +26,9 @@ export class HaPickThemeRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
+
+  @property({ attribute: false })
+  public storageLocation: StorageLocation = "browser";
 
   @state() _themeNames: string[] = [];
 
@@ -171,13 +175,19 @@ export class HaPickThemeRow extends LitElement {
 
   private _handleColorChange(ev: CustomEvent) {
     const target = ev.target as any;
-    fireEvent(this, "settheme", { [target.name]: target.value });
+    fireEvent(this, "settheme", {
+      settings: { [target.name]: target.value },
+      storageLocation: this.storageLocation,
+    });
   }
 
   private _resetColors() {
     fireEvent(this, "settheme", {
-      primaryColor: undefined,
-      accentColor: undefined,
+      settings: {
+        primaryColor: undefined,
+        accentColor: undefined,
+      },
+      storageLocation: this.storageLocation,
     });
   }
 
@@ -198,7 +208,10 @@ export class HaPickThemeRow extends LitElement {
         dark = true;
         break;
     }
-    fireEvent(this, "settheme", { dark });
+    fireEvent(this, "settheme", {
+      settings: { dark },
+      storageLocation: this.storageLocation,
+    });
   }
 
   private _handleThemeSelection(ev) {
@@ -210,17 +223,23 @@ export class HaPickThemeRow extends LitElement {
     if (theme === USE_DEFAULT_THEME) {
       if (this.hass.selectedTheme?.theme) {
         fireEvent(this, "settheme", {
-          theme: "",
-          primaryColor: undefined,
-          accentColor: undefined,
+          settings: {
+            theme: "",
+            primaryColor: undefined,
+            accentColor: undefined,
+          },
+          storageLocation: this.storageLocation,
         });
       }
       return;
     }
     fireEvent(this, "settheme", {
-      theme,
-      primaryColor: undefined,
-      accentColor: undefined,
+      settings: {
+        theme,
+        primaryColor: undefined,
+        accentColor: undefined,
+      },
+      storageLocation: this.storageLocation,
     });
   }
 

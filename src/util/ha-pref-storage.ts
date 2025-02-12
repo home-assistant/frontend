@@ -11,6 +11,8 @@ const STORED_STATE = [
   "defaultPanel",
 ];
 
+const CLEARABLE_STATE = ["selectedTheme"];
+
 export function storeState(hass: HomeAssistant) {
   try {
     STORED_STATE.forEach((key) => {
@@ -54,4 +56,10 @@ export function getState() {
 
 export function clearState() {
   window.localStorage.clear();
+}
+
+export function clearStateKey(key: string) {
+  if (CLEARABLE_STATE.includes(key)) {
+    window.localStorage.removeItem(key);
+  }
 }

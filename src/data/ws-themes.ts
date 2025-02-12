@@ -1,5 +1,11 @@
 import type { Connection } from "home-assistant-js-websocket";
 import { createCollection } from "home-assistant-js-websocket";
+import type { HomeAssistant, ThemeSettings } from "../types";
+import {
+  fetchFrontendUserData,
+  saveFrontendUserData,
+  subscribeFrontendUserData,
+} from "./frontend";
 
 export interface ThemeVars {
   // Incomplete
@@ -50,3 +56,16 @@ export const subscribeThemes = (
     conn,
     onChange
   );
+
+export const SELECTED_THEME_KEY = "selectedTheme";
+
+export const saveSelectedTheme = (hass: HomeAssistant, data?: ThemeSettings) =>
+  saveFrontendUserData(hass.connection, SELECTED_THEME_KEY, data);
+
+export const subscribeSelectedTheme = (
+  hass: HomeAssistant,
+  callback: (selectedTheme?: ThemeSettings | null) => void
+) => subscribeFrontendUserData(hass.connection, SELECTED_THEME_KEY, callback);
+
+export const fetchSelectedTheme = (hass: HomeAssistant) =>
+  fetchFrontendUserData(hass.connection, SELECTED_THEME_KEY);

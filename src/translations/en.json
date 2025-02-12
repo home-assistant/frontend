@@ -7575,7 +7575,16 @@
           "primary_color": "Primary color",
           "accent_color": "Accent color",
           "reset": "Reset",
-          "use_default": "Use default theme"
+          "use_default": "Use default theme",
+          "device": {
+            "browser_header": "Browser theme",
+            "mobile_app_header": "Mobile app theme",
+            "custom_theme": "Custom theme",
+            "description": "Overwrite user theme with custom device settings",
+            "delete_header": "Delete device theme",
+            "delete_description": "Are you sure you want to delete the device specific theme?",
+            "user_theme_info": "Device theme is active. Delete it to edit the user theme."
+          }
         },
         "dashboard": {
           "header": "Dashboard",

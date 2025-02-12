@@ -3,18 +3,36 @@ import {
   invalidateThemeCache,
 } from "../common/dom/apply_themes_on_element";
 import type { HASSDomEvent } from "../common/dom/fire_event";
-import { subscribeThemes } from "../data/ws-themes";
-import type { Constructor, HomeAssistant } from "../types";
-import { storeState } from "../util/ha-pref-storage";
+import {
+  fetchSelectedTheme,
+  saveSelectedTheme,
+  SELECTED_THEME_KEY,
+  subscribeSelectedTheme,
+  subscribeThemes,
+} from "../data/ws-themes";
+import type { Constructor, HomeAssistant, ThemeSettings } from "../types";
+import { clearStateKey, storeState } from "../util/ha-pref-storage";
 import type { HassBaseEl } from "./hass-base-mixin";
+
+export type StorageLocation = "user" | "browser";
+
+interface SetThemeSettings {
+  settings: Partial<HomeAssistant["selectedTheme"]>;
+  storageLocation: StorageLocation;
+}
 
 declare global {
   // for add event listener
   interface HTMLElementEventMap {
-    settheme: HASSDomEvent<Partial<HomeAssistant["selectedTheme"]>>;
+    settheme: HASSDomEvent<SetThemeSettings>;
   }
   interface HASSDomEvents {
-    settheme: Partial<HomeAssistant["selectedTheme"]>;
+    settheme: SetThemeSettings;
+    resetBrowserTheme: undefined;
+  }
+
+  interface FrontendUserData {
+    selectedTheme?: ThemeSettings;
   }
 }
 
@@ -27,16 +45,34 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
       this.addEventListener("settheme", (ev) => {
+        const selectedTheme = {
+          ...this.hass!.selectedTheme!,
+          ...ev.detail.settings,
+        };
         this._updateHass({
-          selectedTheme: {
-            ...this.hass!.selectedTheme!,
-            ...ev.detail,
-          },
+          selectedTheme,
         });
         this._applyTheme(mql.matches);
-        storeState(this.hass!);
+
+        if (ev.detail.storageLocation === "browser") {
+          storeState(this.hass!);
+        } else {
+          clearStateKey(SELECTED_THEME_KEY);
+          saveSelectedTheme(this.hass!, selectedTheme);
+        }
       });
-      mql.addListener((ev) => this._applyTheme(ev.matches));
+
+      this.addEventListener("resetBrowserTheme", async () => {
+        clearStateKey(SELECTED_THEME_KEY);
+        const selectedTheme = await fetchSelectedTheme(this.hass!);
+        this._updateHass({
+          selectedTheme,
+        });
+        this._applyTheme(mql.matches);
+      });
+
+      mql.addEventListener("change", (ev) => this._applyTheme(ev.matches));
+
       if (!this._themeApplied && mql.matches) {
         applyThemesOnElement(
           document.documentElement,
@@ -63,6 +99,20 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         invalidateThemeCache();
         this._applyTheme(mql.matches);
       });
+
+      subscribeSelectedTheme(
+        this.hass!,
+        (selectedTheme?: ThemeSettings | null) => {
+          if (
+            !window.localStorage.getItem(SELECTED_THEME_KEY) &&
+            selectedTheme
+          ) {
+            this._themeApplied = true;
+            this._updateHass({ selectedTheme });
+            this._applyTheme(mql.matches);
+          }
+        }
+      );
     }
 
     private _applyTheme(darkPreferred: boolean) {
