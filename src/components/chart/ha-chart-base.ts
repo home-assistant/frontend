@@ -6,6 +6,7 @@ import type { DataZoomComponentOption } from "echarts/components";
 import type { EChartsType } from "echarts/core";
 import type {
   ECElementEvent,
+  SetOptionOpts,
   XAXisOption,
   YAXisOption,
 } from "echarts/types/dist/shared";
@@ -129,17 +130,19 @@ export class HaChartBase extends LitElement {
       this._setupChart();
       return;
     }
-    let options: ECOption = {};
+    let chartOptions: ECOption = {};
+    const chartUpdateParams: SetOptionOpts = { lazyUpdate: true };
     if (changedProps.has("data")) {
-      options.series = this.data;
+      chartOptions.series = this.data;
+      chartUpdateParams.replaceMerge = ["series"];
     }
     if (changedProps.has("options")) {
-      options = { ...options, ...this._createOptions() };
+      chartOptions = { ...chartOptions, ...this._createOptions() };
     } else if (this._isTouchDevice && changedProps.has("_isZoomed")) {
-      options.dataZoom = this._getDataZoomConfig();
+      chartOptions.dataZoom = this._getDataZoomConfig();
     }
-    if (Object.keys(options).length > 0) {
-      this.chart.setOption(options, { lazyUpdate: true });
+    if (Object.keys(chartOptions).length > 0) {
+      this.chart.setOption(chartOptions, chartUpdateParams);
     }
   }
 
