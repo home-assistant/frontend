@@ -3,16 +3,20 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { fireEvent } from "../../../common/dom/fire_event";
+import hash from "object-hash";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-markdown";
-import "../../../components/ha-alert";
 import type { RenderTemplateResult } from "../../../data/ws-templates";
 import { subscribeRenderTemplate } from "../../../data/ws-templates";
 import type { HomeAssistant } from "../../../types";
+import { CacheManager } from "../../../util/cache-manager";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { MarkdownCardConfig } from "./types";
+
+const templateCache = new CacheManager<RenderTemplateResult>(1000);
 
 @customElement("hui-markdown-card")
 export class HuiMarkdownCard extends LitElement implements LovelaceCard {
@@ -68,9 +72,29 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     this._tryConnect();
   }
 
+  private _computeCacheKey() {
+    return hash(this._config);
+  }
+
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._tryDisconnect();
+
+    if (this._config && this._templateResult) {
+      const key = this._computeCacheKey();
+      templateCache.set(key, this._templateResult);
+    }
+  }
+
+  protected willUpdate(_changedProperties: PropertyValues): void {
+    super.willUpdate(_changedProperties);
+    if (!this._config) {
+      return;
+    }
+    const key = this._computeCacheKey();
+    if (templateCache.has(key) && !this._templateResult) {
+      this._templateResult = templateCache.get(key);
+    }
   }
 
   protected render() {
