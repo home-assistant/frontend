@@ -92,7 +92,7 @@ export class HaChartBase extends LitElement {
 
     // Add keyboard event listeners
     const handleKeyDown = (ev: KeyboardEvent) => {
-      if ((isMac && ev.metaKey) || (!isMac && ev.ctrlKey)) {
+      if ((isMac && ev.key === "Meta") || (!isMac && ev.key === "Control")) {
         this._modifierPressed = true;
         if (!this.options?.dataZoom) {
           this.chart?.setOption({ dataZoom: this._getDataZoomConfig() });
