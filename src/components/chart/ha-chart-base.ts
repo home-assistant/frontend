@@ -6,6 +6,7 @@ import type { DataZoomComponentOption } from "echarts/components";
 import type { EChartsType } from "echarts/core";
 import type {
   ECElementEvent,
+  LegendComponentOption,
   XAXisOption,
   YAXisOption,
 } from "echarts/types/dist/shared";
@@ -24,6 +25,7 @@ import type { HomeAssistant } from "../../types";
 import { isMac } from "../../util/is_mac";
 import "../ha-icon-button";
 import { formatTimeLabel } from "./axis-label";
+import { ensureArray } from "../../common/array/ensure-array";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 
@@ -39,9 +41,6 @@ export class HaChartBase extends LitElement {
 
   @property({ type: String }) public height?: string;
 
-  @property({ attribute: "external-hidden", type: Boolean })
-  public externalHidden = false;
-
   @state()
   @consume({ context: themesContext, subscribe: true })
   _themes!: Themes;
@@ -51,6 +50,8 @@ export class HaChartBase extends LitElement {
   @state() private _zoomRatio = 1;
 
   @state() private _minutesDifference = 24 * 60;
+
+  @state() private _hiddenDatasets = new Set<string>();
 
   private _modifierPressed = false;
 
@@ -133,9 +134,9 @@ export class HaChartBase extends LitElement {
       this._setupChart();
       return;
     }
-    if (changedProps.has("data")) {
+    if (changedProps.has("data") || changedProps.has("_hiddenDatasets")) {
       this.chart.setOption(
-        { series: this.data },
+        { series: this._getSeries() },
         { lazyUpdate: true, replaceMerge: ["series"] }
       );
     }
@@ -151,15 +152,13 @@ export class HaChartBase extends LitElement {
   protected render() {
     return html`
       <div
-        class=${classMap({
-          "chart-container": true,
-          "has-legend": !!this.options?.legend,
-        })}
+        class="chart-container"
         style=${styleMap({
           height: this.height ?? `${this._getDefaultHeight()}px`,
         })}
         @wheel=${this._handleWheel}
       >
+        ${this._renderLegend()}
         <div class="chart"></div>
         ${this._isZoomed
           ? html`<ha-icon-button
@@ -173,6 +172,48 @@ export class HaChartBase extends LitElement {
           : nothing}
       </div>
     `;
+  }
+
+  private _renderLegend() {
+    if (!this.options?.legend || !this.data) {
+      return nothing;
+    }
+    const legend = ensureArray(this.options.legend)[0] as LegendComponentOption;
+    if (!legend.show) {
+      return nothing;
+    }
+    const datasets = ensureArray(this.data);
+    const items = (legend.data ||
+      datasets
+        .filter((d) => (d.data as any[])?.length && (d.id || d.name))
+        .map((d) => d.name ?? d.id) ||
+      []) as string[];
+    return html`<div class="chart-legend">
+      <ul>
+        ${items.map((item: string) => {
+          const dataset = datasets.find(
+            (d) => d.id === item || d.name === item
+          );
+          return html`<li
+            .name=${item}
+            @click=${this._legendClick}
+            class=${classMap({
+              hidden: this._hiddenDatasets.has(item),
+            })}
+            .title=${item}
+          >
+            <div
+              class="bullet"
+              style=${styleMap({
+                backgroundColor: dataset?.color as string,
+                borderColor: dataset?.itemStyle?.borderColor as string,
+              })}
+            ></div>
+            <div class="label">${item}</div>
+          </li>`;
+        })}
+      </ul>
+    </div>`;
   }
 
   private _formatTimeLabel = (value: number | Date) =>
@@ -196,16 +237,6 @@ export class HaChartBase extends LitElement {
       echarts.registerTheme("custom", this._createTheme());
 
       this.chart = echarts.init(container, "custom");
-      this.chart.on("legendselectchanged", (params: any) => {
-        if (this.externalHidden) {
-          const isSelected = params.selected[params.name];
-          if (isSelected) {
-            fireEvent(this, "dataset-unhidden", { name: params.name });
-          } else {
-            fireEvent(this, "dataset-hidden", { name: params.name });
-          }
-        }
-      });
       this.chart.on("datazoom", (e: any) => {
         const { start, end } = e.batch?.[0] ?? e;
         this._isZoomed = start !== 0 || end !== 100;
@@ -220,7 +251,10 @@ export class HaChartBase extends LitElement {
           this.chart?.getZr()?.setCursorStyle("default");
         }
       });
-      this.chart.setOption({ ...this._createOptions(), series: this.data });
+      this.chart.setOption({
+        ...this._createOptions(),
+        series: this._getSeries(),
+      });
     } finally {
       this._loading = false;
     }
@@ -300,6 +334,9 @@ export class HaChartBase extends LitElement {
       },
       dataZoom: this._getDataZoomConfig(),
       ...this.options,
+      legend: {
+        show: false,
+      },
       xAxis,
     };
 
@@ -508,6 +545,15 @@ export class HaChartBase extends LitElement {
     };
   }
 
+  private _getSeries() {
+    if (!Array.isArray(this.data)) {
+      return this.data;
+    }
+    return this.data.filter(
+      (d) => !this._hiddenDatasets.has(String(d.name ?? d.id))
+    );
+  }
+
   private _getDefaultHeight() {
     return Math.max(this.clientWidth / 2, 200);
   }
@@ -533,6 +579,20 @@ export class HaChartBase extends LitElement {
     }
   }
 
+  private _legendClick(ev: any) {
+    if (!this.chart) {
+      return;
+    }
+    const name = ev.currentTarget?.name;
+    if (this._hiddenDatasets.has(name)) {
+      this._hiddenDatasets.delete(name);
+      fireEvent(this, "dataset-unhidden", { name });
+    } else {
+      this._hiddenDatasets.add(name);
+      fireEvent(this, "dataset-hidden", { name });
+    }
+  }
+
   static styles = css`
     :host {
       display: block;
@@ -540,12 +600,14 @@ export class HaChartBase extends LitElement {
       letter-spacing: normal;
     }
     .chart-container {
+      display: flex;
+      flex-direction: column;
       position: relative;
       max-height: var(--chart-max-height, 350px);
     }
     .chart {
+      flex: 1;
       width: 100%;
-      height: 100%;
     }
     .zoom-reset {
       position: absolute;
@@ -557,8 +619,39 @@ export class HaChartBase extends LitElement {
       color: var(--primary-color);
       border: 1px solid var(--divider-color);
     }
-    .has-legend .zoom-reset {
-      top: 64px;
+    .chart-legend {
+      text-align: center;
+    }
+    .chart-legend li {
+      cursor: pointer;
+      display: inline-grid;
+      grid-auto-flow: column;
+      padding: 0 8px;
+      box-sizing: border-box;
+      align-items: center;
+      color: var(--secondary-text-color);
+    }
+    .chart-legend .hidden {
+      text-decoration: line-through;
+    }
+    .chart-legend .label {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .chart-legend .bullet {
+      border-width: 1px;
+      border-style: solid;
+      border-radius: 50%;
+      display: inline-block;
+      height: 16px;
+      margin-right: 6px;
+      width: 16px;
+      flex-shrink: 0;
+      box-sizing: border-box;
+      margin-inline-end: 6px;
+      margin-inline-start: initial;
+      direction: var(--direction);
     }
   `;
 }

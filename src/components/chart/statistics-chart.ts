@@ -169,7 +169,6 @@ export class StatisticsChart extends LitElement {
         .options=${this._chartOptions}
         .height=${this.height}
         style=${styleMap({ height: this.height })}
-        external-hidden
         @dataset-hidden=${this._datasetHidden}
         @dataset-unhidden=${this._datasetUnhidden}
       ></ha-chart-base>
@@ -299,14 +298,10 @@ export class StatisticsChart extends LitElement {
       },
       legend: {
         show: !this.hideLegend,
-        type: "scroll",
-        animationDurationUpdate: 400,
-        icon: "circle",
-        padding: [20, 0],
         data: this._legendData,
       },
       grid: {
-        ...(this.hideLegend ? { top: this.unit ? 30 : 5 } : {}), // undefined is the same as 0
+        top: 15,
         left: 1,
         right: 1,
         bottom: 0,

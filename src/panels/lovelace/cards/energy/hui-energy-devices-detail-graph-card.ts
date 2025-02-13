@@ -123,7 +123,6 @@ export class HuiEnergyDevicesDetailGraphCard
           })}"
         >
           <ha-chart-base
-            external-hidden
             .hass=${this.hass}
             .data=${this._chartData}
             .options=${this._createOptions(
@@ -193,7 +192,7 @@ export class HuiEnergyDevicesDetailGraphCard
           icon: "circle",
         },
         grid: {
-          top: 45,
+          top: 15,
           bottom: 0,
           left: 1,
           right: 1,

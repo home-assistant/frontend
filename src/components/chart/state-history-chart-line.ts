@@ -85,7 +85,6 @@ export class StateHistoryChartLine extends LitElement {
         .options=${this._chartOptions}
         .height=${this.height}
         style=${styleMap({ height: this.height })}
-        external-hidden
         @dataset-hidden=${this._datasetHidden}
         @dataset-unhidden=${this._datasetUnhidden}
       ></ha-chart-base>
@@ -269,13 +268,9 @@ export class StateHistoryChartLine extends LitElement {
         } as YAXisOption,
         legend: {
           show: this.showNames,
-          type: "scroll",
-          animationDurationUpdate: 400,
-          icon: "circle",
-          padding: [20, 0],
         },
         grid: {
-          ...(this.showNames ? {} : { top: 30 }), // undefined is the same as 0
+          top: 15,
           left: rtl ? 1 : Math.max(this.paddingYAxis, this._yWidth),
           right: rtl ? Math.max(this.paddingYAxis, this._yWidth) : 1,
           bottom: 30,
