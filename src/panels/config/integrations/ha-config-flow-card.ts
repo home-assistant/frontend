@@ -70,7 +70,7 @@ export class HaConfigFlowCard extends LitElement {
                 ? html`<a
                     href=${this.flow.context.configuration_url.replace(
                       /^homeassistant:\/\//,
-                      ""
+                      "/"
                     )}
                     rel="noreferrer"
                     target=${this.flow.context.configuration_url.startsWith(
