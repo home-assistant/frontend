@@ -51,6 +51,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         };
         this._updateHass({
           selectedTheme,
+          browserThemeEnabled: ev.detail.storageLocation === "browser",
         });
         this._applyTheme(mql.matches);
 
@@ -67,6 +68,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         const selectedTheme = await fetchSelectedTheme(this.hass!);
         this._updateHass({
           selectedTheme,
+          browserThemeEnabled: false,
         });
         this._applyTheme(mql.matches);
       });
@@ -108,7 +110,10 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
             selectedTheme
           ) {
             this._themeApplied = true;
-            this._updateHass({ selectedTheme });
+            this._updateHass({
+              selectedTheme,
+              browserThemeEnabled: false,
+            });
             this._applyTheme(mql.matches);
           }
         }

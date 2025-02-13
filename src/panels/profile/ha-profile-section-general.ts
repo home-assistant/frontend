@@ -12,12 +12,11 @@ import "../../components/ha-svg-icon";
 import "../../layouts/hass-tabs-subpage";
 import { profileSections } from "./ha-panel-profile";
 import { isExternal } from "../../data/external";
-import { SELECTED_THEME_KEY } from "../../data/ws-themes";
 import type { CoreFrontendUserData } from "../../data/frontend";
 import { getOptimisticFrontendUserDataCollection } from "../../data/frontend";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../resources/styles";
-import type { HomeAssistant, Route, ThemeSettings } from "../../types";
+import type { HomeAssistant, Route } from "../../types";
 import "./ha-advanced-mode-row";
 import "./ha-enable-shortcuts-row";
 import "./ha-force-narrow-row";
@@ -32,7 +31,6 @@ import "./ha-pick-time-zone-row";
 import "./ha-push-notifications-row";
 import "./ha-set-suspend-row";
 import "./ha-set-vibrate-row";
-import { storage } from "../../common/decorators/storage";
 import type { HaSwitch } from "../../components/ha-switch";
 
 @customElement("ha-profile-section-general")
@@ -44,13 +42,6 @@ class HaProfileSectionGeneral extends LitElement {
   @state() private _coreUserData?: CoreFrontendUserData | null;
 
   @property({ attribute: false }) public route!: Route;
-
-  @storage({
-    key: SELECTED_THEME_KEY,
-    state: true,
-    subscribe: true,
-  })
-  private _browserThemeSettings?: ThemeSettings;
 
   @state() private _browserThemeActivated = false;
 
@@ -144,7 +135,7 @@ class HaProfileSectionGeneral extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-first-weekday-row>
-            ${this._browserThemeSettings || this._browserThemeActivated
+            ${this.hass.browserThemeEnabled || this._browserThemeActivated
               ? html`
                   <ha-settings-row .narrow=${this.narrow}>
                     <span slot="heading">
@@ -198,12 +189,12 @@ class HaProfileSectionGeneral extends LitElement {
                 )}
               </span>
               <ha-switch
-                .checked=${!!this._browserThemeSettings ||
+                .checked=${this.hass.browserThemeEnabled ||
                 this._browserThemeActivated}
                 @change=${this._toggleBrowserTheme}
               ></ha-switch>
             </ha-settings-row>
-            ${this._browserThemeSettings || this._browserThemeActivated
+            ${this.hass.browserThemeEnabled || this._browserThemeActivated
               ? html`
                   <ha-expansion-panel
                     outlined
@@ -298,7 +289,7 @@ class HaProfileSectionGeneral extends LitElement {
     const enabled = switchElement.checked;
 
     if (!enabled) {
-      if (!this._browserThemeSettings && this._browserThemeActivated) {
+      if (!this.hass.browserThemeEnabled && this._browserThemeActivated) {
         // no changed have made, disable without confirmation
         this._browserThemeActivated = false;
       } else {
@@ -315,7 +306,6 @@ class HaProfileSectionGeneral extends LitElement {
 
         if (confirm) {
           this._browserThemeActivated = false;
-          this._browserThemeSettings = undefined;
           fireEvent(this, "resetBrowserTheme");
         } else {
           // revert switch

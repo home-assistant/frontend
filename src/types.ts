@@ -223,6 +223,7 @@ export interface HomeAssistant {
   config: HassConfig;
   themes: Themes;
   selectedTheme: ThemeSettings | null;
+  browserThemeEnabled?: boolean;
   panels: Panels;
   panelUrl: string;
   // i18n
