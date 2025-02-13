@@ -1,4 +1,3 @@
-import { mdiAlertCircleOutline } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -8,7 +7,6 @@ import "../../components/ha-card";
 import "../../components/ha-button";
 import "../../components/ha-expansion-panel";
 import "../../components/ha-switch";
-import "../../components/ha-svg-icon";
 import "../../layouts/hass-tabs-subpage";
 import { profileSections } from "./ha-panel-profile";
 import { isExternal } from "../../data/external";
@@ -135,26 +133,12 @@ class HaProfileSectionGeneral extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-first-weekday-row>
-            ${this.hass.browserThemeEnabled || this._browserThemeActivated
-              ? html`
-                  <ha-settings-row .narrow=${this.narrow}>
-                    <span slot="heading">
-                      ${this.hass.localize("ui.panel.profile.themes.header")}
-                    </span>
-                    <span class="theme-warning" slot="description">
-                      <ha-svg-icon .path=${mdiAlertCircleOutline}></ha-svg-icon>
-                      ${this.hass.localize(
-                        "ui.panel.profile.themes.device.user_theme_info"
-                      )}
-                    </span>
-                  </ha-settings-row>
-                `
-              : html`<ha-pick-theme-row
-                  .narrow=${this.narrow}
-                  .hass=${this.hass}
-                  this._browserThemeActivated}
-                  .storageLocation=${"user"}
-                ></ha-pick-theme-row>`}
+            <ha-pick-theme-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+              this._browserThemeActivated}
+              .storageLocation=${"user"}
+            ></ha-pick-theme-row>
             ${this.hass.user!.is_admin
               ? html`
                   <ha-advanced-mode-row
@@ -346,12 +330,6 @@ class HaProfileSectionGeneral extends LitElement {
 
         ha-expansion-panel {
           margin: 0 8px 8px;
-        }
-        .theme-warning {
-          color: var(--warning-color);
-          display: flex;
-          align-items: center;
-          gap: 8px;
         }
         .device-theme {
           display: block;

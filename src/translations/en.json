@@ -7583,7 +7583,7 @@
             "description": "Overwrite user theme with custom device settings",
             "delete_header": "Delete device theme",
             "delete_description": "Are you sure you want to delete the device specific theme?",
-            "user_theme_info": "Device theme is active. Delete it to edit the user theme."
+            "user_theme_info": "Device theme is active. You won't see changes on user theme settings."
           }
         },
         "dashboard": {

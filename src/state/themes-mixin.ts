@@ -17,8 +17,9 @@ import type { HassBaseEl } from "./hass-base-mixin";
 export type StorageLocation = "user" | "browser";
 
 interface SetThemeSettings {
-  settings: Partial<HomeAssistant["selectedTheme"]>;
+  settings: ThemeSettings;
   storageLocation: StorageLocation;
+  saveHass: boolean;
 }
 
 declare global {
@@ -45,21 +46,21 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
       this.addEventListener("settheme", (ev) => {
-        const selectedTheme = {
-          ...this.hass!.selectedTheme!,
-          ...ev.detail.settings,
-        };
-        this._updateHass({
-          selectedTheme,
-          browserThemeEnabled: ev.detail.storageLocation === "browser",
-        });
-        this._applyTheme(mql.matches);
+        if (ev.detail.saveHass) {
+          this._updateHass({
+            selectedTheme: ev.detail.settings,
+            browserThemeEnabled: ev.detail.storageLocation === "browser",
+          });
+          this._applyTheme(mql.matches);
+        }
 
         if (ev.detail.storageLocation === "browser") {
           storeState(this.hass!);
         } else {
-          clearStateKey(SELECTED_THEME_KEY);
-          saveSelectedTheme(this.hass!, selectedTheme);
+          if (ev.detail.saveHass) {
+            clearStateKey(SELECTED_THEME_KEY);
+          }
+          saveSelectedTheme(this.hass!, ev.detail.settings);
         }
       });
 
