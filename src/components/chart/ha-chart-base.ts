@@ -121,7 +121,7 @@ export class HaChartBase extends LitElement {
     this._setupChart();
   }
 
-  public updated(changedProps: PropertyValues): void {
+  public willUpdate(changedProps: PropertyValues): void {
     if (!this.chart) {
       return;
     }
@@ -129,16 +129,17 @@ export class HaChartBase extends LitElement {
       this._setupChart();
       return;
     }
+    let options: ECOption = {};
     if (changedProps.has("data")) {
-      this.chart.setOption(
-        { series: this.data },
-        { lazyUpdate: true, replaceMerge: ["series"] }
-      );
+      options.series = this.data;
     }
     if (changedProps.has("options")) {
-      this.chart.setOption(this._createOptions());
+      options = { ...options, ...this._createOptions() };
     } else if (this._isTouchDevice && changedProps.has("_isZoomed")) {
-      this.chart?.setOption({ dataZoom: this._getDataZoomConfig() });
+      options.dataZoom = this._getDataZoomConfig();
+    }
+    if (Object.keys(options).length > 0) {
+      this.chart.setOption(options, { lazyUpdate: true });
     }
   }
 

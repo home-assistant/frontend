@@ -94,7 +94,7 @@ export class StateHistoryChartLine extends LitElement {
     `;
   }
 
-  private _renderTooltip(params: any) {
+  private _renderTooltip = (params: any) => {
     const time = params[0].axisValue;
     const title =
       formatDateTimeWithSeconds(
@@ -117,7 +117,7 @@ export class StateHistoryChartLine extends LitElement {
         return;
       }
       // If the datapoint is not found, we need to find the last datapoint before the current time
-      let lastData;
+      let lastData: any;
       const data = dataset.data || [];
       for (let i = data.length - 1; i >= 0; i--) {
         const point = data[i];
@@ -177,7 +177,7 @@ export class StateHistoryChartLine extends LitElement {
         })
         .join("<br>")
     );
-  }
+  };
 
   private _datasetHidden(ev: CustomEvent) {
     this._hiddenStats.add(ev.detail.name);
@@ -286,7 +286,7 @@ export class StateHistoryChartLine extends LitElement {
         tooltip: {
           trigger: "axis",
           appendTo: document.body,
-          formatter: this._renderTooltip.bind(this),
+          formatter: this._renderTooltip,
         },
       };
     }
