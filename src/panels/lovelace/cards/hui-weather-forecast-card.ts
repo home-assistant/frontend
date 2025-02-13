@@ -37,6 +37,7 @@ import type {
   LovelaceGridOptions,
 } from "../types";
 import type { WeatherForecastCardConfig } from "./types";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
 @customElement("hui-weather-forecast-card")
 class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
@@ -106,7 +107,9 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       !this.isConnected ||
       !this.hass ||
       !this._config ||
-      !this._needForecastSubscription()
+      !this._needForecastSubscription() ||
+      !isComponentLoaded(this.hass, "weather") ||
+      !this.hass.states[this._config!.entity]
     ) {
       return;
     }
@@ -118,7 +121,14 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       (event) => {
         this._forecastEvent = event;
       }
-    );
+    ).catch((e) => {
+      if (e.code === "invalid_entity_id") {
+        setTimeout(() => {
+          this._subscribed = undefined;
+        }, 2000);
+      }
+      throw e;
+    });
   }
 
   public connectedCallback(): void {

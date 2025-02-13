@@ -92,6 +92,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
             .disabled=${this._loading ||
             (backupProtected && this._encryptionKey === "")}
             @click=${this._startRestore}
+            destructive
           >
             ${this.localize(
               "ui.panel.page-onboarding.restore.details.restore.action"
@@ -134,7 +135,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
       }
 
       button.actionError();
-      if (err.body?.message === "incorrect_password") {
+      if (err.body?.code === "incorrect_password") {
         this._encryptionKeyWrong = true;
       } else {
         this._error =
