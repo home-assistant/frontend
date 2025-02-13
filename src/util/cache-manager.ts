@@ -1,9 +1,9 @@
 export class CacheManager<T> {
-  constructor(timeout?: number) {
-    this._timeout = timeout;
+  constructor(expiration?: number) {
+    this._expiration = expiration;
   }
 
-  private _timeout?: number;
+  private _expiration?: number;
 
   private _cache = new Map<string, T>();
 
@@ -13,16 +13,12 @@ export class CacheManager<T> {
 
   public set(key: string, value: T): void {
     this._cache.set(key, value);
-    if (this._timeout) {
-      window.setTimeout(() => this._cache.delete(key), this._timeout);
+    if (this._expiration) {
+      window.setTimeout(() => this._cache.delete(key), this._expiration);
     }
   }
 
   public has(key: string): boolean {
     return this._cache.has(key);
-  }
-
-  public entries() {
-    return this._cache.entries();
   }
 }
