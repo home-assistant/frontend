@@ -91,9 +91,12 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     if (!this._config) {
       return;
     }
-    const key = this._computeCacheKey();
-    if (templateCache.has(key) && !this._templateResult) {
-      this._templateResult = templateCache.get(key);
+
+    if (!this._templateResult) {
+      const key = this._computeCacheKey();
+      if (templateCache.has(key)) {
+        this._templateResult = templateCache.get(key);
+      }
     }
   }
 
@@ -111,6 +114,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
         : nothing}
       <ha-card .header=${this._config.title}>
         <ha-markdown
+          cache
           breaks
           class=${classMap({
             "no-header": !this._config.title,

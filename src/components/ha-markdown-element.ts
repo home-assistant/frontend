@@ -31,10 +31,14 @@ class HaMarkdownElement extends ReactiveElement {
   @property({ type: Boolean, attribute: "lazy-images" }) public lazyImages =
     false;
 
+  @property({ type: Boolean }) public cache = false;
+
   public disconnectedCallback() {
     super.disconnectedCallback();
-    const key = this._computeCacheKey();
-    markdownCache.set(key, this.innerHTML);
+    if (this.cache) {
+      const key = this._computeCacheKey();
+      markdownCache.set(key, this.innerHTML);
+    }
   }
 
   protected createRenderRoot() {
@@ -49,10 +53,12 @@ class HaMarkdownElement extends ReactiveElement {
   }
 
   protected willUpdate(_changedProperties: PropertyValues): void {
-    const key = this._computeCacheKey();
-    if (markdownCache.has(key) && !this.innerHTML) {
-      this.innerHTML = markdownCache.get(key)!;
-      this._resize();
+    if (!this.innerHTML && this.cache) {
+      const key = this._computeCacheKey();
+      if (markdownCache.has(key)) {
+        this.innerHTML = markdownCache.get(key)!;
+        this._resize();
+      }
     }
   }
 
