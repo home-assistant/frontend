@@ -4,6 +4,7 @@ import {
   mdiDrag,
   mdiEyeOff,
   mdiPencil,
+  mdiPlus,
   mdiViewGridPlus,
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
@@ -20,15 +21,20 @@ import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
+import {
+  isStrategySection,
+  type LovelaceSectionConfig,
+} from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
 import type { HuiCard } from "../cards/hui-card";
+import type { MarkdownCardConfig } from "../cards/types";
 import "../components/hui-badge-edit-mode";
 import {
   addSection,
   deleteSection,
+  insertSection,
   moveCard,
   moveSection,
 } from "../editor/config-util";
@@ -106,9 +112,26 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     return this._sectionConfigKeys.get(section)!;
   }
 
+  private _isFullSizeSection(section: LovelaceSectionConfig): boolean {
+    return this._isHeadingSection(section);
+  }
+
+  private _isMoveableSection(section: LovelaceSectionConfig): boolean {
+    return !this._isHeadingSection(section);
+  }
+
+  private _isHeadingSection(section: LovelaceSectionConfig): boolean {
+    if (isStrategySection(section)) {
+      return false;
+    }
+    return section.type === "heading";
+  }
+
   private _computeSectionsCount() {
     this._sectionColumnCount = this.sections
-      .filter((section) => !section.hidden)
+      .filter(
+        (section) => !section.hidden && !this._isFullSizeSection(section.config)
+      )
       .map((section) => section.config.column_span ?? 1)
       .reduce((acc, val) => acc + val, 0);
   }
@@ -139,6 +162,21 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     }
   }
 
+  private _addHeadingSection() {
+    const headingSection = this._defaultHeadingSection();
+    const newConfig = insertSection(
+      this.lovelace!.config,
+      this.index!,
+      0,
+      headingSection
+    );
+    this.lovelace!.saveConfig(newConfig);
+  }
+
+  private _hasHeadingSection(): boolean {
+    return this._config?.sections?.some(this._isHeadingSection) ?? false;
+  }
+
   protected render() {
     if (!this.lovelace) return nothing;
 
@@ -155,7 +193,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         @item-moved=${this._sectionMoved}
         group="section"
         handle-selector=".handle"
-        draggable-selector=".section"
+        draggable-selector=".moveable"
         .rollback=${false}
       >
         <div
@@ -167,21 +205,44 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
             "--max-column-count": maxColumnCount,
           })}
         >
+          ${editMode && !this._hasHeadingSection()
+            ? html`
+                <button
+                  class="create-section heading"
+                  @click=${this._addHeadingSection}
+                  .title=${this.hass.localize(
+                    "ui.panel.lovelace.editor.section.add_header"
+                  )}
+                >
+                  <ha-ripple></ha-ripple>
+                  <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.editor.section.add_header"
+                  )}
+                </button>
+              `
+            : nothing}
           ${repeat(
             sections,
             (section) => this._getSectionKey(section),
             (section, idx) => {
-              const sectionConfig = this._config?.sections?.[idx];
+              const isMoveable = this._isMoveableSection(section.config);
+              const isFullSize = this._isFullSizeSection(section.config);
+
               const columnSpan = Math.min(
-                sectionConfig?.column_span || 1,
+                isFullSize
+                  ? totalSectionCount
+                  : section.config.column_span || 1,
                 maxColumnCount
               );
 
-              const rowSpan = sectionConfig?.row_span || 1;
+              const rowSpan = section.config.row_span || 1;
 
               return html`
                 <div
-                  class="section"
+                  class="section ${classMap({
+                    moveable: isMoveable,
+                  })}"
                   style=${styleMap({
                     "--column-span": columnSpan,
                     "--row-span": rowSpan,
@@ -194,11 +255,15 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                               ${editMode
                                 ? html`
                                     <div class="section-actions">
-                                      <ha-svg-icon
-                                        aria-hidden="true"
-                                        class="handle"
-                                        .path=${mdiDrag}
-                                      ></ha-svg-icon>
+                                      ${isMoveable
+                                        ? html`
+                                            <ha-svg-icon
+                                              aria-hidden="true"
+                                              class="handle"
+                                              .path=${mdiDrag}
+                                            ></ha-svg-icon>
+                                          `
+                                        : nothing}
                                       <ha-icon-button
                                         .label=${this.hass.localize(
                                           "ui.common.edit"
@@ -308,6 +373,22 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
             },
           ]
         : [],
+    };
+  }
+
+  private _defaultHeadingSection(): LovelaceSectionConfig {
+    return {
+      type: "heading",
+      column_span: 100,
+      cards: [
+        {
+          type: "markdown",
+          content:
+            "# Hello {{ user }} !\nToday is going to be warm and humid outside. Home Assistant will adjust the temperature throughout the day while you and your family is at home. ✨",
+          no_border: true,
+        } as MarkdownCardConfig,
+      ],
+      badges: [],
     };
   }
 
@@ -513,7 +594,11 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     }
 
     .create-section {
-      display: block;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
       position: relative;
       outline: none;
       background: none;
@@ -525,6 +610,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       padding: 8px;
       box-sizing: border-box;
       width: 100%;
+      font-size: 14px;
+      line-height: 20px;
       --ha-ripple-color: var(--primary-color);
       --ha-ripple-hover-opacity: 0.04;
       --ha-ripple-pressed-opacity: 0.12;
@@ -532,6 +619,12 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
     .create-section:focus {
       border: 2px solid var(--primary-color);
+    }
+
+    .create-section.heading {
+      order: -1;
+      grid-column: 1 / -1;
+      height: var(--row-height);
     }
 
     .sortable-ghost {
