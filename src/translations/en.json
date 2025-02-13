@@ -2556,7 +2556,7 @@
               "last_backup_failed_heading": "Last automatic backup failed",
               "last_backup_failed_description": "The last automatic backup triggered {relative_time} wasn't successful.",
               "last_backup_failed_locations_description": "The last automatic backup created {relative_time} wasn't stored in all locations.",
-              "last_successful_backup_description": "Last successful backup {relative_time} and stored in {count} {count, plural,\n one {location}\n other {locations}\n}.",
+              "last_successful_backup_description": "Last successful automatic backup {relative_time} and stored in {count} {count, plural,\n one {location}\n other {locations}\n}.",
               "no_backup_heading": "No automatic backup available",
               "no_backup_description": "You have no automatic backups yet.",
               "backup_too_old_heading": "No backup for {count} {count, plural,\n one {day}\n other {days}\n}",
