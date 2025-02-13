@@ -7,13 +7,17 @@ import type {
   SchemaUnion,
 } from "../../../../components/ha-form/types";
 import "../../../../components/ha-form/ha-form";
-import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
+import {
+  isStrategySection,
+  type LovelaceSectionRawConfig,
+} from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 
-interface SettingsData {
-  column_span?: number;
-}
+type SettingsData = Pick<
+  LovelaceSectionRawConfig,
+  "layout" | "top_margin" | "column_span"
+>;
 
 @customElement("hui-section-settings-editor")
 export class HuiDialogEditSection extends LitElement {
@@ -22,6 +26,34 @@ export class HuiDialogEditSection extends LitElement {
   @property({ attribute: false }) public config!: LovelaceSectionRawConfig;
 
   @property({ attribute: false }) public viewConfig!: LovelaceViewConfig;
+
+  private _headingSchema = memoizeOne(
+    () =>
+      [
+        {
+          name: "layout",
+          selector: {
+            select: {
+              options: [
+                {
+                  value: "responsive",
+                  label: "Responsive (Stacked on mobile)",
+                },
+                {
+                  value: "start",
+                  label: "Left aligned (Always stacked)",
+                },
+                {
+                  value: "center",
+                  label: "Centered aligned (Always stacked)",
+                },
+              ],
+            },
+          },
+        },
+        { name: "top_margin", selector: { boolean: {} } },
+      ] as const satisfies HaFormSchema[]
+  );
 
   private _schema = memoizeOne(
     (maxColumns: number) =>
@@ -39,12 +71,28 @@ export class HuiDialogEditSection extends LitElement {
       ] as const satisfies HaFormSchema[]
   );
 
-  render() {
-    const data: SettingsData = {
+  private _getData(): SettingsData {
+    if (!isStrategySection(this.config) && this.config.type === "heading") {
+      return {
+        layout: this.config.layout || "responsive",
+        top_margin: this.config.top_margin || false,
+      };
+    }
+    return {
       column_span: this.config.column_span || 1,
     };
+  }
 
-    const schema = this._schema(this.viewConfig.max_columns || 4);
+  private _getSchema(): HaFormSchema[] {
+    if (!isStrategySection(this.config) && this.config.type === "heading") {
+      return this._headingSchema();
+    }
+    return this._schema(this.viewConfig.max_columns || 4);
+  }
+
+  render() {
+    const data = this._getData();
+    const schema = this._getSchema();
 
     return html`
       <ha-form
@@ -78,7 +126,7 @@ export class HuiDialogEditSection extends LitElement {
 
     const newConfig: LovelaceSectionRawConfig = {
       ...this.config,
-      column_span: newData.column_span,
+      ...newData,
     };
 
     fireEvent(this, "value-changed", { value: newConfig });
