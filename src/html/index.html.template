@@ -20,6 +20,12 @@
     <meta name="color-scheme" content="dark light" />
     <%= renderTemplate("_style_base.html.template") %>
     <style>
+      ::view-transition-old(root),
+      ::view-transition-new(root) {
+        animation: none;
+        mix-blend-mode: normal;
+      }
+
       html {
         background-color: var(--primary-background-color, #fafafa);
         color: var(--primary-text-color, #212121);

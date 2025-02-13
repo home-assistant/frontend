@@ -51,7 +51,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
             selectedTheme: ev.detail.settings,
             browserThemeEnabled: ev.detail.storageLocation === "browser",
           });
-          this._applyTheme(mql.matches);
+          this._animateApplyTheme(mql.matches);
         }
 
         if (ev.detail.storageLocation === "browser") {
@@ -71,10 +71,12 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           selectedTheme,
           browserThemeEnabled: false,
         });
-        this._applyTheme(mql.matches);
+        this._animateApplyTheme(mql.matches);
       });
 
-      mql.addEventListener("change", (ev) => this._applyTheme(ev.matches));
+      mql.addEventListener("change", (ev) =>
+        this._animateApplyTheme(ev.matches)
+      );
 
       if (!this._themeApplied && mql.matches) {
         applyThemesOnElement(
@@ -119,6 +121,45 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           }
         }
       );
+    }
+
+    private async _animateApplyTheme(darkPreferred: boolean) {
+      if (!this.hass) {
+        return;
+      }
+
+      if (!document.startViewTransition || !document.documentElement.animate) {
+        this._applyTheme(darkPreferred);
+      } else {
+        await document.startViewTransition(() => {
+          this._applyTheme(darkPreferred);
+        }).ready;
+
+        const { top, left, width, height } =
+          document.documentElement.getBoundingClientRect();
+        const x = left + width / 2;
+        const y = top + height / 2;
+        const right = window.innerWidth - left;
+        const bottom = window.innerHeight - top;
+        const maxRadius = Math.hypot(
+          Math.max(left, right),
+          Math.max(top, bottom)
+        );
+
+        document.documentElement.animate(
+          {
+            clipPath: [
+              `circle(0px at ${x}px ${y}px)`,
+              `circle(${maxRadius}px at ${x}px ${y}px)`,
+            ],
+          },
+          {
+            duration: 500,
+            easing: "ease-in-out",
+            pseudoElement: "::view-transition-new(root)",
+          }
+        );
+      }
     }
 
     private _applyTheme(darkPreferred: boolean) {
