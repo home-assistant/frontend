@@ -56,7 +56,7 @@ const cardConfigStruct = assign(
     icon_hold_action: optional(actionConfigStruct),
     icon_double_tap_action: optional(actionConfigStruct),
     features: optional(array(any())),
-    features_position: optional(enums(["bottom", "side"])),
+    features_position: optional(enums(["bottom", "inline"])),
   })
 );
 
@@ -119,7 +119,7 @@ export class HuiTileCardEditor
           selector: {
             select: {
               mode: "dropdown",
-              options: ["bottom", "side"].map((value) => ({
+              options: ["bottom", "inline"].map((value) => ({
                 label: localize(
                   `ui.panel.lovelace.editor.card.tile.features_position_options.${value}`
                 ),
@@ -295,11 +295,11 @@ export class HuiTileCardEditor
                   )}
                 </p>
               `
-            : this._config.features_position === "side"
+            : this._config.features_position === "inline"
               ? html`
                   <p class="info">
                     ${this.hass!.localize(
-                      "ui.panel.lovelace.editor.card.tile.features_position_side_limitation_info"
+                      "ui.panel.lovelace.editor.card.tile.features_position_inline_limitation_info"
                     )}
                   </p>
                 `

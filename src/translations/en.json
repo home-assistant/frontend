@@ -7128,10 +7128,10 @@
               "features_position": "Features position",
               "features_position_options": {
                 "bottom": "At the bottom",
-                "side": "On the side"
+                "inline": "Inline"
               },
               "features_position_vertical_info": "This option is ignored when vertical layout is selected.",
-              "features_position_side_limitation_info": "Only the first feature is displayed when side position is selected."
+              "features_position_inline_limitation_info": "Only the first feature is displayed when side position is selected."
             },
             "vertical-stack": {
               "name": "Vertical stack",

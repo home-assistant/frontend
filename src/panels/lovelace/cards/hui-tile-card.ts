@@ -106,7 +106,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     return (
       1 +
       (this._config?.vertical ? 1 : 0) +
-      (featuresPosition === "bottom" ? featuresCount : 0)
+      (featuresPosition === "inline" ? 0 : featuresCount)
     );
   }
 
@@ -116,12 +116,14 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     let rows = 1;
     const featurePosition = this._config && this._featurePosition(this._config);
     const featuresCount = this._config?.features?.length || 0;
-    if (featuresCount && featurePosition === "bottom") {
-      rows += featuresCount;
+    if (featuresCount) {
+      if (featurePosition === "inline") {
+        min_columns = 12;
+      } else {
+        rows += featuresCount;
+      }
     }
-    if (featuresCount && featurePosition === "side") {
-      min_columns = 12;
-    }
+
     if (this._config?.vertical) {
       rows++;
       min_columns = 3;
@@ -229,7 +231,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     const features = config.features || [];
     const featurePosition = this._featurePosition(config);
 
-    if (featurePosition === "side") {
+    if (featurePosition === "inline") {
       return features.slice(0, 1);
     }
     return features;
@@ -292,7 +294,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     const features = this._displayedFeatures(this._config);
 
     const containerOrientationClass =
-      featurePosition === "side" ? "horizontal" : "";
+      featurePosition === "inline" ? "horizontal" : "";
 
     return html`
       <ha-card style=${styleMap(style)} class=${classMap({ active })}>
