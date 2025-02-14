@@ -327,7 +327,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       );
     const endDate = this._energyEnd;
     try {
-      let unitClass;
+      let unitClass: string | undefined | null;
       if (this._config!.unit && this._metadata) {
         const metadata = Object.values(this._metadata).find(
           (metaData) =>
