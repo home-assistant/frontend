@@ -181,7 +181,8 @@ export class StateBadge extends LitElement {
       } else if (domain === "media_player" || domain === "camera") {
         this.style.borderRadius = "8%";
       } else if (backgroundImage !== "") {
-        this.style.borderRadius = "var(--state-badge-with-image-border-radius, 50%)";
+        this.style.borderRadius =
+          "var(--state-badge-with-image-border-radius, 50%)";
       }
     }
 
