@@ -161,7 +161,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       start,
       now,
       this._entityIds,
-      this._hoursToShow > 7 * 24 ? "day" : "hour",
+      "hour",
       undefined,
       ["mean", "state"]
     );
