@@ -4745,7 +4745,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/leaflet.markercluster@npm:^1":
+"@types/leaflet.markercluster@npm:1.5.5":
   version: 1.5.5
   resolution: "@types/leaflet.markercluster@npm:1.5.5"
   dependencies:
@@ -9397,7 +9397,7 @@ __metadata:
     "@types/js-yaml": "npm:4.0.9"
     "@types/leaflet": "npm:1.9.16"
     "@types/leaflet-draw": "npm:1.0.11"
-    "@types/leaflet.markercluster": "npm:^1"
+    "@types/leaflet.markercluster": "npm:1.5.5"
     "@types/lodash.merge": "npm:4.6.9"
     "@types/luxon": "npm:3.4.2"
     "@types/mocha": "npm:10.0.10"
