@@ -1,6 +1,6 @@
 import { customElement, property, state } from "lit/decorators";
-import type {
-  PropertyValues,
+import {
+  type PropertyValues,
   css,
   type CSSResultGroup,
   html,
