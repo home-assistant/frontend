@@ -1264,15 +1264,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/autocomplete@npm:6.18.4":
-  version: 6.18.4
-  resolution: "@codemirror/autocomplete@npm:6.18.4"
+"@codemirror/autocomplete@npm:6.18.5":
+  version: 6.18.5
+  resolution: "@codemirror/autocomplete@npm:6.18.5"
   dependencies:
     "@codemirror/language": "npm:^6.0.0"
     "@codemirror/state": "npm:^6.0.0"
     "@codemirror/view": "npm:^6.17.0"
     "@lezer/common": "npm:^1.0.0"
-  checksum: 10/7cd62db2ee87d6cb3936ced4f211bdcd9ce75515f64922119370c303a8bdbf5640e640a8d802c30d01cb55fb6c9b5299426ff799f04cff0bef8d0c3450fe2528
+  checksum: 10/90c861fd580a23cc82d1a48361a149b694082cb9c86727479c000efb8a5da1e67f3b2a889398e1062c671426d3e40098b0914e710e5870481926c0b957e5d5a0
   languageName: node
   linkType: hard
 
@@ -9309,7 +9309,7 @@ __metadata:
     "@babel/runtime": "npm:7.26.7"
     "@braintree/sanitize-url": "npm:7.1.1"
     "@bundle-stats/plugin-webpack-filter": "npm:4.18.2"
-    "@codemirror/autocomplete": "npm:6.18.4"
+    "@codemirror/autocomplete": "npm:6.18.5"
     "@codemirror/commands": "npm:6.8.0"
     "@codemirror/language": "npm:6.10.8"
     "@codemirror/legacy-modes": "npm:6.4.2"
