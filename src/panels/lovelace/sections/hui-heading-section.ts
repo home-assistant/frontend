@@ -55,10 +55,18 @@ export class HeadingSection
       number,
       number,
     ];
+
+    const layout = this._config.layout ?? "responsive";
+    const badgesPosition = this._config.badges_position ?? "bottom";
+
     return html`
       <div
         class="container ${classMap({
           "edit-mode": editMode,
+          "top-margin": this._config!.top_margin ?? false,
+          [layout]: true,
+          [`badges-${badgesPosition}`]: true,
+          "has-heading": !!card,
         })}"
       >
         ${card
@@ -99,7 +107,7 @@ export class HeadingSection
             : nothing}
         ${this.lovelace
           ? html`
-              <div class="badges">
+              <div class="badges ${badgesPosition}">
                 <hui-section-badges
                   .badges=${this.badges}
                   .hass=${this.hass}
@@ -133,23 +141,31 @@ export class HeadingSection
     return [
       haStyle,
       css`
-        :host {
-          display: flex;
-          flex-direction: column;
-          gap: var(--row-gap);
-        }
         .container {
           position: relative;
           display: flex;
-          flex-direction: row;
+          flex-direction: column;
           gap: 24px;
+        }
+
+        .container {
+          --content-margin: 24px;
+        }
+
+        .container.top-margin {
+          --content-margin: 80px;
+        }
+
+        .container .content {
+          margin-top: var(--content-margin);
         }
 
         .content {
           position: relative;
           flex: 1;
+          width: 100%;
+          max-width: 700px;
           display: flex;
-          margin-top: 48px;
         }
 
         .content > * {
@@ -165,21 +181,56 @@ export class HeadingSection
 
         hui-section-badges {
           width: 100%;
-          --badges-aligmnent: flex-end;
-          --badges-wrap: wrap;
           display: flex;
           flex-direction: column;
           justify-content: flex-end;
+          --badges-aligmnent: flex-start;
         }
 
-        @media (max-width: 800px) {
-          .container {
-            flex-direction: column;
+        /* Center layout */
+        .container.center {
+          align-items: center;
+        }
+
+        .container.center .content {
+          text-align: center;
+        }
+
+        .container.center hui-section-badges {
+          --badges-aligmnent: center;
+        }
+
+        /* Badges top */
+        .container.badges-top {
+          flex-direction: column-reverse;
+        }
+
+        .container.badges-top:not(.top-margin) .content {
+          margin: 0;
+        }
+
+        @media (min-width: 768px) {
+          .container.responsive {
+            flex-direction: row;
           }
-          hui-section-badges {
-            --badges-aligmnent: center;
-            --badges-wrap: wrap;
+          .container.responsive hui-section-badges {
+            --badges-aligmnent: flex-end;
           }
+          .container.responsive.badges-top hui-section-badges {
+            justify-content: flex-start;
+          }
+          /* Align badges to heading if it is set */
+          .container.responsive.badges-top .content,
+          .container.responsive.badges-top.has-heading hui-section-badges {
+            margin-top: var(--content-margin);
+          }
+        }
+
+        .container.responsive .container .card {
+          border-radius: var(--ha-card-border-radius, 12px);
+          position: relative;
+          grid-row: span var(--row-size, 1);
+          grid-column: span min(var(--column-size, 1), var(--grid-column-count));
         }
 
         .container.edit-mode {
@@ -187,13 +238,6 @@ export class HeadingSection
           border-radius: var(--ha-card-border-radius, 12px);
           border: 2px dashed var(--divider-color);
           min-height: var(--row-height);
-        }
-
-        .card {
-          border-radius: var(--ha-card-border-radius, 12px);
-          position: relative;
-          grid-row: span var(--row-size, 1);
-          grid-column: span min(var(--column-size, 1), var(--grid-column-count));
         }
 
         .container.edit-mode .card {
