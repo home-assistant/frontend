@@ -75,6 +75,8 @@ export class StateHistoryChartLine extends LitElement {
 
   @state() private _yWidth = 25;
 
+  @state() private _visualMap?: VisualMapComponentOption[];
+
   private _chartTime: Date = new Date();
 
   protected render() {
@@ -92,7 +94,7 @@ export class StateHistoryChartLine extends LitElement {
     `;
   }
 
-  private _renderTooltip(params: any) {
+  private _renderTooltip = (params: any) => {
     const time = params[0].axisValue;
     const title =
       formatDateTimeWithSeconds(
@@ -115,7 +117,7 @@ export class StateHistoryChartLine extends LitElement {
         return;
       }
       // If the datapoint is not found, we need to find the last datapoint before the current time
-      let lastData;
+      let lastData: any;
       const data = dataset.data || [];
       for (let i = data.length - 1; i >= 0; i--) {
         const point = data[i];
@@ -175,7 +177,7 @@ export class StateHistoryChartLine extends LitElement {
         })
         .join("<br>")
     );
-  }
+  };
 
   private _datasetHidden(ev: CustomEvent) {
     this._hiddenStats.add(ev.detail.name);
@@ -208,8 +210,8 @@ export class StateHistoryChartLine extends LitElement {
       changedProps.has("minYAxis") ||
       changedProps.has("maxYAxis") ||
       changedProps.has("fitYData") ||
-      changedProps.has("_chartData") ||
       changedProps.has("paddingYAxis") ||
+      changedProps.has("_visualMap") ||
       changedProps.has("_yWidth")
     ) {
       const rtl = computeRTL(this.hass);
@@ -280,37 +282,11 @@ export class StateHistoryChartLine extends LitElement {
           right: rtl ? Math.max(this.paddingYAxis, this._yWidth) : 1,
           bottom: 30,
         },
-        visualMap: this._chartData
-          .map((_, seriesIndex) => {
-            const dataIndex = this._datasetToDataIndex[seriesIndex];
-            const data = this.data[dataIndex];
-            if (!data.statistics || data.statistics.length === 0) {
-              return false;
-            }
-            // render stat data with a slightly transparent line
-            const firstStateTS =
-              data.states[0]?.last_changed ?? this.endTime.getTime();
-            return {
-              show: false,
-              seriesIndex,
-              dimension: 0,
-              pieces: [
-                {
-                  max: firstStateTS - 0.01,
-                  colorAlpha: 0.5,
-                },
-                {
-                  min: firstStateTS,
-                  colorAlpha: 1,
-                },
-              ],
-            };
-          })
-          .filter(Boolean) as VisualMapComponentOption[],
+        visualMap: this._visualMap,
         tooltip: {
           trigger: "axis",
           appendTo: document.body,
-          formatter: this._renderTooltip.bind(this),
+          formatter: this._renderTooltip,
         },
       };
     }
@@ -725,6 +701,33 @@ export class StateHistoryChartLine extends LitElement {
     this._chartData = datasets;
     this._entityIds = entityIds;
     this._datasetToDataIndex = datasetToDataIndex;
+    const visualMap: VisualMapComponentOption[] = [];
+    this._chartData.forEach((_, seriesIndex) => {
+      const dataIndex = this._datasetToDataIndex[seriesIndex];
+      const data = this.data[dataIndex];
+      if (!data.statistics || data.statistics.length === 0) {
+        return;
+      }
+      // render stat data with a slightly transparent line
+      const firstStateTS =
+        data.states[0]?.last_changed ?? this.endTime.getTime();
+      visualMap.push({
+        show: false,
+        seriesIndex,
+        dimension: 0,
+        pieces: [
+          {
+            max: firstStateTS - 0.01,
+            colorAlpha: 0.5,
+          },
+          {
+            min: firstStateTS,
+            colorAlpha: 1,
+          },
+        ],
+      });
+    });
+    this._visualMap = visualMap.length > 0 ? visualMap : undefined;
   }
 
   private _clampYAxis(value?: number | ((values: any) => number)) {
