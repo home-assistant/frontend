@@ -65,7 +65,7 @@ export class HaCopyTextfield extends LitElement {
               ></ha-icon-button>`
             : nothing}
         </div>
-        <ha-button .value=${this.value} @click=${this._copy} unelevated>
+        <ha-button @click=${this._copy} unelevated>
           <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
           ${this.label || this.hass.localize("ui.common.copy")}
         </ha-button>
@@ -82,9 +82,8 @@ export class HaCopyTextfield extends LitElement {
     this._showMasked = !this._showMasked;
   }
 
-  private async _copy(ev): Promise<void> {
-    const value = ev.currentTarget.value;
-    await copyToClipboard(value);
+  private async _copy(): Promise<void> {
+    await copyToClipboard(this.value);
     showToast(this, {
       message: this.hass!.localize("ui.common.copied_clipboard"),
     });
