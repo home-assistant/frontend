@@ -630,6 +630,10 @@ export class HaChartBase extends LitElement {
       box-sizing: border-box;
       align-items: center;
       color: var(--secondary-text-color);
+      max-width: 250px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
     }
     .chart-legend .hidden {
       text-decoration: line-through;
