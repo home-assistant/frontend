@@ -13,6 +13,7 @@ export interface LovelaceBaseSectionConfig {
   title?: string;
   // Only used for section view, it should move to a section view config type when the views will have dedicated editor.
   layout?: "start" | "center" | "responsive";
+  badges_position?: "bottom" | "top";
   top_margin?: boolean;
 }
 

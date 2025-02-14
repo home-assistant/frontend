@@ -6698,6 +6698,7 @@
               "column_span": "Width",
               "column_span_helper": "Larger sections will be made smaller to fit the display. (e.g. on mobile devices)",
               "layout": "Layout",
+              "badges_position": "Badges position",
               "top_margin": "Add extra space at the top for background",
               "top_margin_helper": "Make the content more touch friendly"
             },
