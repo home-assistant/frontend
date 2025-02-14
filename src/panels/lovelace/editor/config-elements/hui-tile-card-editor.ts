@@ -110,31 +110,12 @@ export class HuiTileCardEditor
     this._resetConfiguredActions();
   }
 
-  private _featuresSchema = memoizeOne(
-    (localize: LocalizeFunc) =>
-      [
-        {
-          name: "features_position",
-          required: true,
-          selector: {
-            select: {
-              mode: "dropdown",
-              options: ["bottom", "inline"].map((value) => ({
-                label: localize(
-                  `ui.panel.lovelace.editor.card.tile.features_position_options.${value}`
-                ),
-                value,
-              })),
-            },
-          },
-        },
-      ] as const satisfies readonly HaFormSchema[]
-  );
-
   private _schema = memoizeOne(
     (
+      localize: LocalizeFunc,
       entityId: string | undefined,
       hideState: boolean,
+      vertical: boolean,
       displayActions: AdvancedActions[] = []
     ) =>
       [
@@ -173,12 +154,6 @@ export class HuiTileCardEditor
                   },
                 },
                 {
-                  name: "vertical",
-                  selector: {
-                    boolean: {},
-                  },
-                },
-                {
                   name: "hide_state",
                   selector: {
                     boolean: {},
@@ -199,6 +174,43 @@ export class HuiTileCardEditor
                   },
                 ] as const satisfies readonly HaFormSchema[])
               : []),
+            {
+              name: "",
+              type: "grid",
+              schema: [
+                {
+                  name: "content_layout",
+                  required: true,
+                  selector: {
+                    select: {
+                      mode: "dropdown",
+                      options: ["horizontal", "vertical"].map((value) => ({
+                        label: localize(
+                          `ui.panel.lovelace.editor.card.tile.content_layout_options.${value}`
+                        ),
+                        value,
+                      })),
+                    },
+                  },
+                },
+                {
+                  name: "features_position",
+                  required: true,
+                  selector: {
+                    select: {
+                      mode: "dropdown",
+                      options: ["bottom", "inline"].map((value) => ({
+                        label: localize(
+                          `ui.panel.lovelace.editor.card.tile.features_position_options.${value}`
+                        ),
+                        value,
+                        disabled: vertical && value === "inline",
+                      })),
+                    },
+                  },
+                },
+              ],
+            },
           ],
         },
         {
@@ -247,16 +259,20 @@ export class HuiTileCardEditor
     const stateObj = entityId ? this.hass!.states[entityId] : undefined;
 
     const schema = this._schema(
+      this.hass.localize,
       entityId,
       this._config.hide_state ?? false,
+      this._config.vertical ?? false,
       this._displayActions
     );
 
-    const featureSchema = this._featuresSchema(this.hass.localize);
+    const data = {
+      ...this._config,
+      content_layout: this._config.vertical ? "vertical" : "horizontal",
+    };
 
-    const data = { ...this._config };
-
-    if (!data.features_position) {
+    // Default features position to bottom and force it to bottom in vertical mode
+    if (!data.features_position || data.vertical) {
       data.features_position = "bottom";
     }
 
@@ -277,33 +293,6 @@ export class HuiTileCardEditor
           )}
         </h3>
         <div class="content">
-          <ha-form
-            class="features-form"
-            .hass=${this.hass}
-            .data=${data}
-            .schema=${featureSchema}
-            .computeLabel=${this._computeLabelCallback}
-            .computeHelper=${this._computeHelperCallback}
-            @value-changed=${this._valueChanged}
-          >
-          </ha-form>
-          ${this._config.vertical
-            ? html`
-                <p class="info">
-                  ${this.hass!.localize(
-                    "ui.panel.lovelace.editor.card.tile.features_position_vertical_info"
-                  )}
-                </p>
-              `
-            : this._config.features_position === "inline"
-              ? html`
-                  <p class="info">
-                    ${this.hass!.localize(
-                      "ui.panel.lovelace.editor.card.tile.features_position_inline_limitation_info"
-                    )}
-                  </p>
-                `
-              : nothing}
           <hui-card-features-editor
             .hass=${this.hass}
             .stateObj=${stateObj}
@@ -335,6 +324,12 @@ export class HuiTileCardEditor
 
     if (!config.state_content) {
       delete config.state_content;
+    }
+
+    // Convert content_layout to vertical
+    if (config.content_layout) {
+      config.vertical = config.content_layout === "vertical";
+      delete config.content_layout;
     }
 
     fireEvent(this, "config-changed", { config });
@@ -386,9 +381,7 @@ export class HuiTileCardEditor
   }
 
   private _computeLabelCallback = (
-    schema:
-      | SchemaUnion<ReturnType<typeof this._schema>>
-      | SchemaUnion<ReturnType<typeof this._featuresSchema>>
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) => {
     switch (schema.name) {
       case "color":
@@ -396,11 +389,10 @@ export class HuiTileCardEditor
       case "icon_hold_action":
       case "icon_double_tap_action":
       case "show_entity_picture":
-      case "vertical":
       case "hide_state":
       case "state_content":
+      case "content_layout":
       case "appearance":
-      case "interactions":
       case "features_position":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.tile.${schema.name}`

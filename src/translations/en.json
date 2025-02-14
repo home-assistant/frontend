@@ -7119,10 +7119,8 @@
               "icon_tap_action": "Icon tap behavior",
               "icon_hold_action": "Icon hold behavior",
               "icon_double_tap_action": "Icon double tap behavior",
-              "interactions": "Interactions",
               "appearance": "Appearance",
               "show_entity_picture": "Show entity picture",
-              "vertical": "Vertical",
               "hide_state": "Hide state",
               "state_content": "State content",
               "features_position": "Features position",
@@ -7130,8 +7128,11 @@
                 "bottom": "At the bottom",
                 "inline": "Inline"
               },
-              "features_position_vertical_info": "This option is ignored when vertical layout is selected.",
-              "features_position_inline_limitation_info": "Only the first feature is displayed when side position is selected."
+              "content_layout": "Content layout",
+              "content_layout_options": {
+                "horizontal": "Horizontal",
+                "vertical": "Vertical"
+              }
             },
             "vertical-stack": {
               "name": "Vertical stack",
