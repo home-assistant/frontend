@@ -3445,7 +3445,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/endpoint@npm:^10.0.0":
+"@octokit/endpoint@npm:^10.1.3":
   version: 10.1.3
   resolution: "@octokit/endpoint@npm:10.1.3"
   dependencies:
@@ -3536,7 +3536,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/request-error@npm:^6.0.1, @octokit/request-error@npm:^6.1.6":
+"@octokit/request-error@npm:^6.1.6":
   version: 6.1.7
   resolution: "@octokit/request-error@npm:6.1.7"
   dependencies:
@@ -3546,15 +3546,15 @@ __metadata:
   linkType: hard
 
 "@octokit/request@npm:^9.1.4":
-  version: 9.1.4
-  resolution: "@octokit/request@npm:9.1.4"
+  version: 9.2.1
+  resolution: "@octokit/request@npm:9.2.1"
   dependencies:
-    "@octokit/endpoint": "npm:^10.0.0"
-    "@octokit/request-error": "npm:^6.0.1"
+    "@octokit/endpoint": "npm:^10.1.3"
+    "@octokit/request-error": "npm:^6.1.6"
     "@octokit/types": "npm:^13.6.2"
     fast-content-type-parse: "npm:^2.0.0"
     universal-user-agent: "npm:^7.0.2"
-  checksum: 10/563de466394a509cb57df6b722f134ee7320ffb69b4ce514f6806f98036e2b547ecd5dc5d464b93032622cf9f0b80f33f168a21f26e8c1dc0dcfcf4abb28ef64
+  checksum: 10/a01d23cf28402a3169e937e1d179b9ebd93638ef30be9c5bb016ed9e541d66dec20c46c129b1fc4dace018f731c9eed187936299998a00dae7eb74fc4e530fa9
   languageName: node
   linkType: hard
 
