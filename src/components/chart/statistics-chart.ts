@@ -273,11 +273,13 @@ export class StatisticsChart extends LitElement {
     this._chartOptions = {
       xAxis: [
         {
+          id: "xAxis",
           type: "time",
           min: startTime,
-          max: endTime,
+          max: this.endTime,
         },
         {
+          id: "hiddenAxis",
           type: "time",
           show: false,
         },
@@ -368,7 +370,6 @@ export class StatisticsChart extends LitElement {
     if (endTime > new Date()) {
       endTime = new Date();
     }
-    this.endTime = endTime;
 
     let unit: string | undefined | null;
 
