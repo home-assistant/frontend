@@ -155,7 +155,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           },
           {
             duration: 500,
-            easing: "ease-in-out",
+            easing: "linear(0, 0.1, 1)",
             pseudoElement: "::view-transition-new(root)",
           }
         );
