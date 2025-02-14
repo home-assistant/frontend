@@ -8,9 +8,10 @@ import type {
   Map,
   Marker,
   Polyline,
+  MarkerClusterGroup,
 } from "leaflet";
 import type { PropertyValues } from "lit";
-import { ReactiveElement, css } from "lit";
+import { css, ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { formatDateTime } from "../../common/datetime/format_date_time";
@@ -26,6 +27,7 @@ import type { HomeAssistant, ThemeMode } from "../../types";
 import { isTouch } from "../../util/is_touch";
 import "../ha-icon-button";
 import "./ha-entity-marker";
+import { DecoratedMarker } from "../../common/map/decorated_marker";
 
 declare global {
   // for fire event
@@ -86,6 +88,8 @@ export class HaMap extends ReactiveElement {
 
   @state() private _loaded = false;
 
+  @state() private _clusterMarkers = true;
+
   public leafletMap?: Map;
 
   private Leaflet?: LeafletModuleType;
@@ -96,9 +100,11 @@ export class HaMap extends ReactiveElement {
 
   private _mapFocusItems: (Marker | Circle)[] = [];
 
-  private _mapZones: (Marker | Circle)[] = [];
+  private _mapZones: DecoratedMarker[] = [];
 
   private _mapFocusZones: (Marker | Circle)[] = [];
+
+  private _mapCluster: MarkerClusterGroup | undefined;
 
   private _mapPaths: (Polyline | CircleMarker)[] = [];
 
@@ -175,6 +181,7 @@ export class HaMap extends ReactiveElement {
     ) {
       return;
     }
+
     this._updateMapStyle();
   }
 
@@ -426,6 +433,11 @@ export class HaMap extends ReactiveElement {
       this._mapFocusZones = [];
     }
 
+    if (this._mapCluster) {
+      this._mapCluster.remove();
+      this._mapCluster = undefined;
+    }
+
     if (!this.entities) {
       return;
     }
@@ -481,26 +493,24 @@ export class HaMap extends ReactiveElement {
           iconHTML = el.outerHTML;
         }
 
-        // create marker with the icon
-        this._mapZones.push(
-          Leaflet.marker([latitude, longitude], {
-            icon: Leaflet.divIcon({
-              html: iconHTML,
-              iconSize: [24, 24],
-              className,
-            }),
-            interactive: this.interactiveZones,
-            title,
-          })
-        );
-
         // create circle around it
         const circle = Leaflet.circle([latitude, longitude], {
           interactive: false,
           color: passive ? passiveZoneColor : zoneColor,
           radius,
         });
-        this._mapZones.push(circle);
+
+        const marker = new DecoratedMarker([latitude, longitude], circle, {
+          icon: Leaflet.divIcon({
+            html: iconHTML,
+            iconSize: [24, 24],
+            className,
+          }),
+          interactive: this.interactiveZones,
+          title,
+        });
+
+        this._mapZones.push(marker);
         if (
           this.fitZones &&
           (typeof entity === "string" || entity.focus !== false)
@@ -538,7 +548,7 @@ export class HaMap extends ReactiveElement {
       }
 
       // create marker with the icon
-      const marker = Leaflet.marker([latitude, longitude], {
+      const marker = new DecoratedMarker([latitude, longitude], undefined, {
         icon: Leaflet.divIcon({
           html: entityMarker,
           iconSize: [48, 48],
@@ -546,25 +556,42 @@ export class HaMap extends ReactiveElement {
         }),
         title: title,
       });
-      this._mapItems.push(marker);
       if (typeof entity === "string" || entity.focus !== false) {
         this._mapFocusItems.push(marker);
       }
 
       // create circle around if entity has accuracy
       if (gpsAccuracy) {
-        this._mapItems.push(
-          Leaflet.circle([latitude, longitude], {
-            interactive: false,
-            color: darkPrimaryColor,
-            radius: gpsAccuracy,
-          })
-        );
+        marker.decorationLayer = Leaflet.circle([latitude, longitude], {
+          interactive: false,
+          color: darkPrimaryColor,
+          radius: gpsAccuracy,
+        });
       }
+
+      this._mapItems.push(marker);
     }
 
-    this._mapItems.forEach((marker) => map.addLayer(marker));
+    if (this._clusterMarkers) {
+      this._mapCluster = Leaflet.markerClusterGroup({
+        showCoverageOnHover: false,
+        removeOutsideVisibleBounds: false,
+      });
+      this._mapCluster.addLayers(this._mapItems);
+      map.addLayer(this._mapCluster);
+    } else {
+      this._mapItems.forEach((marker) => map.addLayer(marker));
+    }
+
     this._mapZones.forEach((marker) => map.addLayer(marker));
+  }
+
+  public toggleClusterMarkers() {
+    this._clusterMarkers = !this._clusterMarkers;
+
+    if (this._loaded) {
+      this._drawEntities();
+    }
   }
 
   private async _attachObserver(): Promise<void> {

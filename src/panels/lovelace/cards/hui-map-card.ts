@@ -33,6 +33,7 @@ import { processConfigEntities } from "../common/process-config-entities";
 import type { EntityConfig } from "../entity-rows/types";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import type { MapCardConfig } from "./types";
+import { mdiClusterGrouping } from "../../../resources/custom-icons";
 
 export const DEFAULT_HOURS_TO_SHOW = 0;
 export const DEFAULT_ZOOM = 14;
@@ -173,15 +174,26 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             interactive-zones
             render-passive
           ></ha-map>
-          <ha-icon-button
-            .label=${this.hass!.localize(
-              "ui.panel.lovelace.cards.map.reset_focus"
-            )}
-            .path=${mdiImageFilterCenterFocus}
-            style=${isDarkMode ? "color:#ffffff" : "color:#000000"}
-            @click=${this._fitMap}
-            tabindex="0"
-          ></ha-icon-button>
+          <div id="buttons">
+            <ha-icon-button
+              .label=${this.hass!.localize(
+                "ui.panel.lovelace.cards.map.toggle_grouping"
+              )}
+              .path=${mdiClusterGrouping}
+              style=${isDarkMode ? "color:#ffffff" : "color:#000000"}
+              @click=${this._clusterMarkers}
+              tabindex="0"
+            ></ha-icon-button>
+            <ha-icon-button
+              .label=${this.hass!.localize(
+                "ui.panel.lovelace.cards.map.reset_focus"
+              )}
+              .path=${mdiImageFilterCenterFocus}
+              style=${isDarkMode ? "color:#ffffff" : "color:#000000"}
+              @click=${this._fitMap}
+              tabindex="0"
+            ></ha-icon-button>
+          </div>
         </div>
       </ha-card>
     `;
@@ -318,6 +330,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _fitMap() {
     this._map?.fitMap();
+  }
+
+  private _clusterMarkers() {
+    this._map?.toggleClusterMarkers();
   }
 
   private _getColor(entityId: string): string {
@@ -464,11 +480,12 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       overflow: hidden;
     }
 
-    ha-icon-button {
+    #buttons {
       position: absolute;
       top: 75px;
       left: 3px;
-      outline: none;
+      display: flex;
+      flex-direction: column;
     }
 
     #root {
