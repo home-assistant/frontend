@@ -14,7 +14,7 @@ export class CacheManager<T> {
   public set(key: string, value: T): void {
     this._cache.set(key, value);
     if (this._expiration) {
-      setTimeout(() => this._cache.delete(key), this._expiration);
+      window.setTimeout(() => this._cache.delete(key), this._expiration);
     }
   }
 

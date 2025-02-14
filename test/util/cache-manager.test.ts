@@ -1,12 +1,16 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { CacheManager } from "../../src/util/cache-manager";
 
+const savedSetTimeout = setTimeout;
+
 describe("cache-manager", () => {
   beforeEach(() => {
     vi.useFakeTimers();
+    window.setTimeout = setTimeout;
   });
   afterEach(() => {
     vi.useRealTimers();
+    window.setTimeout = savedSetTimeout;
   });
   it("should return value before expiration", async () => {
     const cacheManager = new CacheManager<string>(1000);
@@ -20,7 +24,7 @@ describe("cache-manager", () => {
     expect(cacheManager.get("key")).toBe("value");
   });
 
-  it("should return value before expiration", async () => {
+  it("should not return value after expiration", async () => {
     const cacheManager = new CacheManager<string>(1000);
     cacheManager.set("key", "value");
 
