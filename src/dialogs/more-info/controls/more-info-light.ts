@@ -74,6 +74,15 @@ class MoreInfoLight extends LitElement {
   }
 
   private get _stateOverride() {
+    if (
+      this._mainControl === "color_temp" &&
+      this.stateObj?.attributes.color_temp_kelvin
+    ) {
+      return this.hass.formatEntityAttributeValue(
+        this.stateObj!,
+        "color_temp_kelvin"
+      );
+    }
     if (this.stateObj?.attributes.brightness) {
       return this.hass.formatEntityAttributeValue(this.stateObj!, "brightness");
     }
