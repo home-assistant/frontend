@@ -5,15 +5,16 @@ import "@material/mwc-list/mwc-list-item";
 import { mdiCalendar } from "@mdi/js";
 import {
   addDays,
+  subHours,
   endOfDay,
   endOfMonth,
   endOfWeek,
   endOfYear,
-  isThisYear,
   startOfDay,
   startOfMonth,
   startOfWeek,
   startOfYear,
+  isThisYear,
 } from "date-fns";
 import { fromZonedTime, toZonedTime } from "date-fns-tz";
 import type { PropertyValues, TemplateResult } from "lit";
@@ -177,6 +178,96 @@ export class HaDateRangePicker extends LitElement {
                 calcDate(today, endOfYear, this.hass.locale, this.hass.config, {
                   weekStartsOn,
                 }),
+              ],
+              [this.hass.localize(
+                "ui.components.date-range-picker.ranges.now-1h"
+              )]: [
+                calcDate(
+                  today,
+                  subHours,
+                  this.hass.locale,
+                  this.hass.config,
+                  1
+                ),
+                calcDate(
+                  today,
+                  subHours,
+                  this.hass.locale,
+                  this.hass.config,
+                  0
+                ),
+              ],
+              [this.hass.localize(
+                "ui.components.date-range-picker.ranges.now-12h"
+              )]: [
+                calcDate(
+                  today,
+                  subHours,
+                  this.hass.locale,
+                  this.hass.config,
+                  12
+                ),
+                calcDate(
+                  today,
+                  subHours,
+                  this.hass.locale,
+                  this.hass.config,
+                  0
+                ),
+              ],
+              [this.hass.localize(
+                "ui.components.date-range-picker.ranges.now-24h"
+              )]: [
+                calcDate(
+                  today,
+                  subHours,
+                  this.hass.locale,
+                  this.hass.config,
+                  24
+                ),
+                calcDate(
+                  today,
+                  subHours,
+                  this.hass.locale,
+                  this.hass.config,
+                  0
+                ),
+              ],
+              [this.hass.localize(
+                "ui.components.date-range-picker.ranges.now-7d"
+              )]: [
+                calcDate(
+                  today,
+                  subHours,
+                  this.hass.locale,
+                  this.hass.config,
+                  24 * 7
+                ),
+                calcDate(
+                  today,
+                  subHours,
+                  this.hass.locale,
+                  this.hass.config,
+                  0
+                ),
+              ],
+              [this.hass.localize(
+                "ui.components.date-range-picker.ranges.now-30d"
+              )]: [
+                calcDate(
+                  today,
+                  subHours,
+                  this.hass.locale,
+                  this.hass.config,
+                  24 * 30
+                ),
+                calcDate(
+                  today,
+                  subHours,
+                  this.hass.locale,
+                  this.hass.config,
+                  0
+                ),
               ],
             }
           : {}),
@@ -395,44 +486,55 @@ export class HaDateRangePicker extends LitElement {
   }
 
   static styles = css`
+    ha-icon-button {
+      direction: var(--direction);
+    }
 
-      ha-icon-button {
-        direction: var(--direction);
+    .date-range-inputs {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .date-range-ranges {
+      border-right: 1px solid var(--divider-color);
+    }
+
+    .date-range-footer {
+      display: flex;
+      justify-content: flex-end;
+      padding: 8px;
+      border-top: 1px solid var(--divider-color);
+    }
+
+    ha-textarea {
+      display: inline-block;
+      width: 340px;
+    }
+    @media only screen and (max-width: 460px) {
+      ha-textarea {
+        width: 100%;
       }
-
-      .date-range-inputs {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
+    }
+    @media only screen and (max-width: 800px) {
       .date-range-ranges {
-        border-right: 1px solid var(--divider-color);
+        border-right: none;
+        border-bottom: 1px solid var(--divider-color);
+      }
+    }
+
+    @media only screen and (max-height: 940px) and (max-width: 800px) {
+      .date-range-ranges {
+        overflow: auto;
+        max-height: calc(70vh - 330px);
+        min-height: 160px;
       }
 
-      .date-range-footer {
-        display: flex;
-        justify-content: flex-end;
-        padding: 8px;
-        border-top: 1px solid var(--divider-color);
+      :host([header-position]) .date-range-ranges {
+        max-height: calc(90vh - 430px);
       }
-
-      ha-textarea {
-        display: inline-block;
-        width: 340px;
-      }
-      @media only screen and (max-width: 460px) {
-      ha-textarea {
-        width: 100%
-      }
-
-      @media only screen and (max-width: 800px) {
-        .date-range-ranges {
-          border-right: none;
-          border-bottom: 1px solid var(--divider-color);
-        }
-      }
-    `;
+    }
+  `;
 }
 
 declare global {
