@@ -448,7 +448,13 @@ export class HuiEnergyDevicesDetailGraphCard
       });
     });
     return sorted_devices
-      .map((device) => data.find((d) => (d.id as string).includes(device))!)
+      .map(
+        (device) =>
+          data.find((d) => {
+            const id = d.id as string;
+            return id.slice(0, id.lastIndexOf("-")) === device;
+          })!
+      )
       .filter(Boolean);
   }
 
