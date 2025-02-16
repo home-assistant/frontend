@@ -448,7 +448,7 @@ export class HuiEnergyDevicesDetailGraphCard
       });
     });
     return sorted_devices
-     .map(
+      .map(
         (device) =>
           data.find((d) => {
             const id = (d.id as string)
