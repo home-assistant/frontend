@@ -448,14 +448,13 @@ export class HuiEnergyDevicesDetailGraphCard
       });
     });
     return sorted_devices
-      .map(
+     .map(
         (device) =>
           data.find((d) => {
-            let id = d.id as string;
-            if (id.startsWith("compare-")) {
-              id = id.replace("compare-", "");
-            }
-            return id.slice(0, id.lastIndexOf("-")) === device;
+            const id = (d.id as string)
+              .replace(/^compare-/, "") // Remove compare- prefix
+              .replace(/-\d+$/, ""); // Remove numeric suffix
+            return id === device;
           })!
       )
       .filter(Boolean);
