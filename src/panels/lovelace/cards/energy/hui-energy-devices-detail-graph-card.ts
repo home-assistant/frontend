@@ -451,7 +451,10 @@ export class HuiEnergyDevicesDetailGraphCard
       .map(
         (device) =>
           data.find((d) => {
-            const id = d.id as string;
+            let id = d.id as string;
+            if (id.startsWith("compare-")) {
+              id = id.replace("compare-", "");
+            }
             return id.slice(0, id.lastIndexOf("-")) === device;
           })!
       )
