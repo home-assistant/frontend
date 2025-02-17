@@ -1,4 +1,5 @@
 import "@material/mwc-button/mwc-button";
+import "@shoelace-style/shoelace/dist/components/skeleton/skeleton";
 import {
   mdiBell,
   mdiCalendar,
@@ -212,18 +213,10 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   private _unsubPersistentNotifications: UnsubscribeFunc | undefined;
 
-  @storage({
-    key: "sidebarPanelOrder",
-    state: true,
-    subscribe: true,
-  })
+  @storage({ key: "sidebarPanelOrder", state: true, subscribe: true })
   private _devicePanelOrder?: string[];
 
-  @storage({
-    key: "sidebarHiddenPanels",
-    state: true,
-    subscribe: true,
-  })
+  @storage({ key: "sidebarHiddenPanels", state: true, subscribe: true })
   private _deviceHiddenPanels?: string[];
 
   @state()
@@ -232,11 +225,15 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   @state()
   private _userHiddenPanels: string[] = [];
 
+  @state()
+  private _loadingUserPreferences = true;
+
   public hassSubscribe(): UnsubscribeFunc[] {
     const subscribeFunctions = [
       subscribeSidebarPreferences(this.hass, (sidebar) => {
         this._userPanelOrder = sidebar?.panelOrder || [];
         this._userHiddenPanels = sidebar?.hiddenPanels || [];
+        this._loadingUserPreferences = false;
       }),
     ];
     if (this.hass.user?.is_admin) {
@@ -402,35 +399,43 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     </div>`;
   }
 
-  private _getPanelPreferencesMemoized = memoizeOne((userPreferences: SidebarPreferences, devicePreferences: SidebarPreferences): { panelOrder: string[], hiddenPanels: string[] } => {
-    let panelOrder = userPreferences.panelOrder ?? [];
-    let hiddenPanels = userPreferences.hiddenPanels ?? [];
+  private _getPanelPreferencesMemoized = memoizeOne(
+    (userPreferences: SidebarPreferences, devicePreferences: SidebarPreferences, userPreferencesLoading: boolean): { panelOrder: string[]; hiddenPanels: string[]; loading: boolean } => {
+      let panelOrder = userPreferences.panelOrder ?? [];
+      let hiddenPanels = userPreferences.hiddenPanels ?? [];
 
-    if (devicePreferences.panelOrder || devicePreferences.hiddenPanels) {
-      panelOrder = devicePreferences.panelOrder ?? [];
-      hiddenPanels = devicePreferences.hiddenPanels ?? [];
+      let loading = userPreferencesLoading;
+
+      if (devicePreferences.panelOrder || devicePreferences.hiddenPanels) {
+        panelOrder = devicePreferences.panelOrder ?? [];
+        hiddenPanels = devicePreferences.hiddenPanels ?? [];
+        loading = false;
+      }
+
+      return {
+        panelOrder,
+        hiddenPanels,
+        loading
+      };
     }
-
-    return { panelOrder, hiddenPanels }
-  })
+  );
 
   private _getPanelPreferences() {
     return this._getPanelPreferencesMemoized(
       {
         panelOrder: this._userPanelOrder,
-        hiddenPanels: this._userHiddenPanels
+        hiddenPanels: this._userHiddenPanels,
       },
       {
         panelOrder: this._devicePanelOrder,
-        hiddenPanels: this._deviceHiddenPanels
-      }
-    )
+        hiddenPanels: this._deviceHiddenPanels,
+      },
+      this._loadingUserPreferences
+    );
   }
 
   private _renderAllPanels() {
-    // TODO render skeleton loading if panels are not loaded yet
-
-    const { panelOrder, hiddenPanels } = this._getPanelPreferences(); 
+    const { panelOrder, hiddenPanels, loading } = this._getPanelPreferences();
 
     const [beforeSpacer, afterSpacer] = computePanels(
       this.hass.panels,
@@ -457,12 +462,21 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         @keydown=${this._listboxKeydown}
         @iron-activate=${preventDefault}
       >
-        ${this.editMode
-          ? this._renderPanelsEdit(beforeSpacer)
-          : this._renderPanels(beforeSpacer)}
-        ${this._renderSpacer()}
-        ${this._renderPanels(afterSpacer)}
-        ${this._renderExternalConfiguration()}
+      ${loading ? html`
+        <div class="loading">
+          <sl-skeleton effect="sheen"></sl-skeleton>
+          <sl-skeleton effect="sheen"></sl-skeleton>
+          <sl-skeleton effect="sheen"></sl-skeleton>
+          <sl-skeleton effect="sheen"></sl-skeleton>
+        </div>
+      ` : html`
+          ${this.editMode
+            ? this._renderPanelsEdit(beforeSpacer)
+            : this._renderPanels(beforeSpacer)}
+          ${this._renderSpacer()}
+          ${this._renderPanels(afterSpacer)}
+          ${this._renderExternalConfiguration()}
+      `}
       </paper-listbox>
     `;
   }
@@ -768,9 +782,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   private _handleExternalAppConfiguration(ev: Event) {
     ev.preventDefault();
-    this.hass.auth.external!.fireMessage({
-      type: "config_screen/show",
-    });
+    this.hass.auth.external!.fireMessage({ type: "config_screen/show" });
   }
 
   private get _tooltip() {
@@ -813,13 +825,11 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     }
 
     const { panelOrder, hiddenPanels } = this._getPanelPreferences();
-    
+
     // Make a copy for Memoize
     this._setHiddenPanels([...hiddenPanels, panel]);
     // Remove it from the panel order
-    this._setPanelOrder(panelOrder.filter(
-      (order) => order !== panel
-    ));
+    this._setPanelOrder(panelOrder.filter((order) => order !== panel));
   }
 
   private async _unhidePanel(ev: Event) {
@@ -868,9 +878,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     this._hideTooltip();
   }
 
-  @eventOptions({
-    passive: true,
-  })
+  @eventOptions({ passive: true })
   private _listboxScroll() {
     // On keypresses on the listbox, we're going to ignore scroll events
     // for 100ms so that if pressing down arrow scrolls the sidebar, the tooltip
@@ -1200,6 +1208,32 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         .menu ha-icon-button {
           -webkit-transform: scaleX(var(--scale-direction));
           transform: scaleX(var(--scale-direction));
+        }
+
+        .loading {
+          padding: 16px;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        sl-skeleton {
+          --border-radius: 8px;
+          height: 24px;
+          --color: var(--outline-color);
+          --sheen-color: var(--outline-hover-color);
+        }
+
+        sl-skeleton:nth-child(2) {
+          width: 70%;
+        }
+
+        sl-skeleton:nth-child(3) {
+          width: 30%;
+        }
+
+        sl-skeleton:nth-child(4) {
+          width: 90%;
         }
       `,
     ];

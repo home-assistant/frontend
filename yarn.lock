@@ -1388,6 +1388,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ctrl/tinycolor@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "@ctrl/tinycolor@npm:4.1.0"
+  checksum: 10/e64569399139ef0abd2eb0ec9fb7267dfd7820f7ad7d4567a63e5fc35e5cfdcb8ecdb3bad65cb9244b47ba6c77bc51085826c00e981acf263a3221dc89343adc
+  languageName: node
+  linkType: hard
+
 "@discoveryjs/json-ext@npm:0.5.7, @discoveryjs/json-ext@npm:^0.5.7":
   version: 0.5.7
   resolution: "@discoveryjs/json-ext@npm:0.5.7"
@@ -1664,6 +1671,32 @@ __metadata:
     "@eslint/core": "npm:^0.10.0"
     levn: "npm:^0.4.1"
   checksum: 10/82d0142bc7054587bde4f75c2c517f477df7c320e4bdb47a4d5f766899a313ce65e9ce5d59428178d0be473a95292065053f69637042546b811ad89079781cbc
+  languageName: node
+  linkType: hard
+
+"@floating-ui/core@npm:^1.6.0":
+  version: 1.6.9
+  resolution: "@floating-ui/core@npm:1.6.9"
+  dependencies:
+    "@floating-ui/utils": "npm:^0.2.9"
+  checksum: 10/656fcd383da17fffca2efa0635cbe3c0b835c3312949e30bd19d05bf42479f2ac22aaf336a6a31cb160621fc6f35cfc9e115e76c5cf48ba96e33474d123ced22
+  languageName: node
+  linkType: hard
+
+"@floating-ui/dom@npm:^1.6.12":
+  version: 1.6.13
+  resolution: "@floating-ui/dom@npm:1.6.13"
+  dependencies:
+    "@floating-ui/core": "npm:^1.6.0"
+    "@floating-ui/utils": "npm:^0.2.9"
+  checksum: 10/4bb732baf3270007741bcdc91be1de767b2bb5d8b891eb838e5f1e7c4cccad998643dbdd4e8b8cec4c5d12c9898f80febc68e9793dd6e26a445283c4fb1b6a78
+  languageName: node
+  linkType: hard
+
+"@floating-ui/utils@npm:^0.2.9":
+  version: 0.2.9
+  resolution: "@floating-ui/utils@npm:0.2.9"
+  checksum: 10/0ca786347db3dd8d9034b86d1449fabb96642788e5900cc5f2aee433cd7b243efbcd7a165bead50b004ee3f20a90ddebb6a35296fc41d43cfd361b6f01b69ffb
   languageName: node
   linkType: hard
 
@@ -2259,6 +2292,15 @@ __metadata:
     lit: "npm:^3.2.0"
     tslib: "npm:^2.0.3"
   checksum: 10/52becfbe1ae3ee771cc873e2f47e58fbc4bc0cabdadc9caed8aa4565242ce72f59a2633f687387317ce69eb455216583e54c53d0f64ff5c9e2c843f713c35fca
+  languageName: node
+  linkType: hard
+
+"@lit/react@npm:^1.0.6":
+  version: 1.0.7
+  resolution: "@lit/react@npm:1.0.7"
+  peerDependencies:
+    "@types/react": 17 || 18 || 19
+  checksum: 10/9bdf90e233c91822065d0f09aa0d085544b5d70902b05bb6204075404f7e0e5a62a9a447eac55178761690ea1f707b1c13fecd8f8b109a25f978afe7a2c74fea
   languageName: node
   linkType: hard
 
@@ -4370,6 +4412,36 @@ __metadata:
   version: 1.1.0
   resolution: "@rtsao/scc@npm:1.1.0"
   checksum: 10/17d04adf404e04c1e61391ed97bca5117d4c2767a76ae3e879390d6dec7b317fcae68afbf9e98badee075d0b64fa60f287729c4942021b4d19cd01db77385c01
+  languageName: node
+  linkType: hard
+
+"@shoelace-style/animations@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "@shoelace-style/animations@npm:1.2.0"
+  checksum: 10/73773147cebc5833f362f01f96245cc156e9619cc04a8ee342bd9d320661d0fce30ba2fee3a515603eb1141da005c163a608b6356fd5b478f50a483bc9806e16
+  languageName: node
+  linkType: hard
+
+"@shoelace-style/localize@npm:^3.2.1":
+  version: 3.2.1
+  resolution: "@shoelace-style/localize@npm:3.2.1"
+  checksum: 10/e22e108a27ce7da6b86a7b2f16f8db69e9b3c7d2aaf4e34fc39023c2f060aa7a5004d02ffd1cce2fbef3de7e5cd2a60e79c77fbba5cbd5e9456881fa3a452db1
+  languageName: node
+  linkType: hard
+
+"@shoelace-style/shoelace@npm:2.20.0":
+  version: 2.20.0
+  resolution: "@shoelace-style/shoelace@npm:2.20.0"
+  dependencies:
+    "@ctrl/tinycolor": "npm:^4.1.0"
+    "@floating-ui/dom": "npm:^1.6.12"
+    "@lit/react": "npm:^1.0.6"
+    "@shoelace-style/animations": "npm:^1.2.0"
+    "@shoelace-style/localize": "npm:^3.2.1"
+    composed-offset-position: "npm:^0.0.6"
+    lit: "npm:^3.2.1"
+    qr-creator: "npm:^1.0.0"
+  checksum: 10/202b226c9fa92950c6900c80899b6f95b13c0d79210c956a1c9be75ae6c87b4d7a210bfe355a6580ef423a78c32e141869dba302713dba055ec2339c9dbdc383
   languageName: node
   linkType: hard
 
@@ -6837,6 +6909,15 @@ __metadata:
   version: 1.8.2
   resolution: "common-tags@npm:1.8.2"
   checksum: 10/c665d0f463ee79dda801471ad8da6cb33ff7332ba45609916a508ad3d77ba07ca9deeb452e83f81f24c2b081e2c1315347f23d239210e63d1c5e1a0c7c019fe2
+  languageName: node
+  linkType: hard
+
+"composed-offset-position@npm:^0.0.6":
+  version: 0.0.6
+  resolution: "composed-offset-position@npm:0.0.6"
+  peerDependencies:
+    "@floating-ui/utils": ^0.2.5
+  checksum: 10/f0e403f11a6a677631d39b5e7a742c242067c44c2278c6616362d46ee2b9a376dd9cb2d676640bf1f395cc69da52e5ebac9cd5b4f4dc51d9f4d6f2cb60d4a49b
   languageName: node
   linkType: hard
 
@@ -9378,6 +9459,7 @@ __metadata:
     "@rsdoctor/rspack-plugin": "npm:0.4.13"
     "@rspack/cli": "npm:1.2.3"
     "@rspack/core": "npm:1.2.3"
+    "@shoelace-style/shoelace": "npm:2.20.0"
     "@thomasloven/round-slider": "npm:0.6.0"
     "@types/babel__plugin-transform-runtime": "npm:7.9.5"
     "@types/chromecast-caf-receiver": "npm:6.0.21"
@@ -12472,6 +12554,13 @@ __metadata:
   version: 2.3.1
   resolution: "punycode@npm:2.3.1"
   checksum: 10/febdc4362bead22f9e2608ff0171713230b57aff9dddc1c273aa2a651fbd366f94b7d6a71d78342a7c0819906750351ca7f2edd26ea41b626d87d6a13d1bd059
+  languageName: node
+  linkType: hard
+
+"qr-creator@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "qr-creator@npm:1.0.0"
+  checksum: 10/77325a895fabfc899a54f0fc4598696dc234dc5056714181bbadb62bb15944366be7cd56ec19e36eb6e92a99f086143435f654855e512726bd8923149d94f709
   languageName: node
   linkType: hard
 
