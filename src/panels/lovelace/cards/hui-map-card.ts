@@ -1,4 +1,7 @@
-import { mdiImageFilterCenterFocus } from "@mdi/js";
+import {
+  mdiGoogleCirclesCommunities,
+  mdiImageFilterCenterFocus,
+} from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { LatLngTuple } from "leaflet";
 import type { PropertyValues } from "lit";
@@ -33,7 +36,6 @@ import { processConfigEntities } from "../common/process-config-entities";
 import type { EntityConfig } from "../entity-rows/types";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import type { MapCardConfig } from "./types";
-import { mdiClusterGrouping } from "../../../resources/custom-icons";
 
 export const DEFAULT_HOURS_TO_SHOW = 0;
 export const DEFAULT_ZOOM = 14;
@@ -179,7 +181,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
               .label=${this.hass!.localize(
                 "ui.panel.lovelace.cards.map.toggle_grouping"
               )}
-              .path=${mdiClusterGrouping}
+              .path=${mdiGoogleCirclesCommunities}
               style=${isDarkMode ? "color:#ffffff" : "color:#000000"}
               @click=${this._clusterMarkers}
               tabindex="0"
