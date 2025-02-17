@@ -63,62 +63,66 @@ export class HeadingSection
       <div
         class="container ${classMap({
           "edit-mode": editMode,
-          "top-margin": this._config!.top_margin ?? false,
-          [layout]: true,
-          [`badges-${badgesPosition}`]: true,
-          "has-heading": !!card,
         })}"
       >
-        ${card
-          ? html`
-              <div class="content">
-                ${editMode
-                  ? html`
-                      <hui-card-edit-mode
-                        .hass=${this.hass}
-                        .lovelace=${this.lovelace!}
-                        .path=${cardPath}
-                        .hiddenOverlay=${this._dragging}
-                        no-duplicate
-                        no-move
-                      >
-                        ${card}
-                      </hui-card-edit-mode>
-                    `
-                  : card}
-              </div>
-            `
-          : editMode
+        <div
+          class="layout ${classMap({
+            "top-margin": this._config!.top_margin ?? false,
+            [layout]: true,
+            [`badges-${badgesPosition}`]: true,
+          })}"
+        >
+          ${card
             ? html`
-                <button
-                  class="add"
-                  @click=${this._addCard}
-                  aria-label=${this.hass.localize(
-                    "ui.panel.lovelace.editor.section.add_card"
-                  )}
-                  .title=${this.hass.localize(
-                    "ui.panel.lovelace.editor.section.add_card"
-                  )}
-                >
-                  <ha-ripple></ha-ripple>
-                  <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
-                  Add title
-                </button>
+                <div class="content">
+                  ${editMode
+                    ? html`
+                        <hui-card-edit-mode
+                          .hass=${this.hass}
+                          .lovelace=${this.lovelace!}
+                          .path=${cardPath}
+                          .hiddenOverlay=${this._dragging}
+                          no-duplicate
+                          no-move
+                        >
+                          ${card}
+                        </hui-card-edit-mode>
+                      `
+                    : card}
+                </div>
+              `
+            : editMode
+              ? html`
+                  <button
+                    class="add"
+                    @click=${this._addCard}
+                    aria-label=${this.hass.localize(
+                      "ui.panel.lovelace.editor.section.add_card"
+                    )}
+                    .title=${this.hass.localize(
+                      "ui.panel.lovelace.editor.section.add_card"
+                    )}
+                  >
+                    <ha-ripple></ha-ripple>
+                    <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
+                    Add title
+                  </button>
+                `
+              : nothing}
+          ${this.lovelace
+            ? html`
+                <div class="badges ${badgesPosition}">
+                  <hui-section-badges
+                    .badges=${this.badges}
+                    .hass=${this.hass}
+                    .lovelace=${this.lovelace!}
+                    .sectionIndex=${this.index!}
+                    .viewIndex=${this.viewIndex!}
+                  ></hui-section-badges>
+                </div>
               `
             : nothing}
-        ${this.lovelace
-          ? html`
-              <div class="badges ${badgesPosition}">
-                <hui-section-badges
-                  .badges=${this.badges}
-                  .hass=${this.hass}
-                  .lovelace=${this.lovelace!}
-                  .sectionIndex=${this.index!}
-                  .viewIndex=${this.viewIndex!}
-                ></hui-section-badges>
-              </div>
-            `
-          : nothing}
+        </div>
       </div>
     `;
   }
@@ -144,21 +148,17 @@ export class HeadingSection
       css`
         .container {
           position: relative;
+        }
+        .layout {
+          position: relative;
           display: flex;
           flex-direction: column;
           gap: 24px;
+          margin-top: 24px;
         }
 
-        .container {
-          --content-margin: 24px;
-        }
-
-        .container.top-margin {
-          --content-margin: 80px;
-        }
-
-        .container .content {
-          margin-top: var(--content-margin);
+        .layout.top-margin {
+          margin-top: 80px;
         }
 
         .content {
@@ -189,41 +189,29 @@ export class HeadingSection
         }
 
         /* Center layout */
-        .container.center {
+        .layout {
+          align-items: flex-start;
+        }
+
+        .layout.center {
           align-items: center;
         }
 
-        .container.center .content {
+        .layout.center .content {
           text-align: center;
         }
 
-        .container.center hui-section-badges {
+        .layout.center hui-section-badges {
           --badges-aligmnent: center;
         }
 
-        /* Badges top */
-        .container.badges-top {
-          flex-direction: column-reverse;
-        }
-
-        .container.badges-top:not(.top-margin) .content {
-          margin: 0;
-        }
-
         @media (min-width: 768px) {
-          .container.responsive {
+          .layout.responsive {
             flex-direction: row;
+            align-items: flex-end;
           }
-          .container.responsive hui-section-badges {
+          .layout.responsive hui-section-badges {
             --badges-aligmnent: flex-end;
-          }
-          .container.responsive.badges-top hui-section-badges {
-            justify-content: flex-start;
-          }
-          /* Align badges to heading if it is set */
-          .container.responsive.badges-top .content,
-          .container.responsive.badges-top.has-heading hui-section-badges {
-            margin-top: var(--content-margin);
           }
         }
 
@@ -231,11 +219,10 @@ export class HeadingSection
           padding: 8px;
           border-radius: var(--ha-card-border-radius, 12px);
           border: 2px dashed var(--divider-color);
-          min-height: var(--row-height);
         }
 
-        .container.edit-mode .card {
-          min-height: calc((var(--row-height) - var(--row-gap)) / 2);
+        .container.edit-mode .content {
+          min-height: 36px;
         }
 
         .card:has(> *) {
