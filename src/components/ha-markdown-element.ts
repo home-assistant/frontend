@@ -1,7 +1,12 @@
+import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import hash from "object-hash";
 import { fireEvent } from "../common/dom/fire_event";
 import { renderMarkdown } from "../resources/render-markdown";
+import { CacheManager } from "../util/cache-manager";
+
+const markdownCache = new CacheManager<string>(1000);
 
 const _gitHubMarkdownAlerts = {
   reType:
@@ -26,6 +31,16 @@ class HaMarkdownElement extends ReactiveElement {
   @property({ type: Boolean, attribute: "lazy-images" }) public lazyImages =
     false;
 
+  @property({ type: Boolean }) public cache = false;
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this.cache) {
+      const key = this._computeCacheKey();
+      markdownCache.set(key, this.innerHTML);
+    }
+  }
+
   protected createRenderRoot() {
     return this;
   }
@@ -35,6 +50,24 @@ class HaMarkdownElement extends ReactiveElement {
     if (this.content !== undefined) {
       this._render();
     }
+  }
+
+  protected willUpdate(_changedProperties: PropertyValues): void {
+    if (!this.innerHTML && this.cache) {
+      const key = this._computeCacheKey();
+      if (markdownCache.has(key)) {
+        this.innerHTML = markdownCache.get(key)!;
+        this._resize();
+      }
+    }
+  }
+
+  private _computeCacheKey() {
+    return hash({
+      content: this.content,
+      allowSvg: this.allowSvg,
+      breaks: this.breaks,
+    });
   }
 
   private async _render() {

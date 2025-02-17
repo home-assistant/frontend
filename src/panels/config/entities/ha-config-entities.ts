@@ -355,6 +355,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         showNarrow: true,
         sortable: true,
         filterable: true,
+        minWidth: "80px",
+        maxWidth: "80px",
         template: (entry) =>
           entry.unavailable ||
           entry.disabled_by ||
