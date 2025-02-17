@@ -48,11 +48,16 @@ class HaFaded extends LitElement {
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    this._setShowContent();
+    setTimeout(() => {
+      this._setShowContent();
+    });
   }
 
   private _showContent(): void {
-    this._contentShown = true;
+    if (!this._contentShown) {
+      this._contentShown = true;
+      this.dispatchEvent(new Event("content-shown"));
+    }
   }
 
   static styles = css`
@@ -80,5 +85,6 @@ declare global {
   }
   interface HASSDomEvents {
     "content-resize": undefined;
+    "content-shown": undefined;
   }
 }

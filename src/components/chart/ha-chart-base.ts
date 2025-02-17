@@ -26,6 +26,7 @@ import { isMac } from "../../util/is_mac";
 import "../ha-icon-button";
 import { formatTimeLabel } from "./axis-label";
 import { ensureArray } from "../../common/array/ensure-array";
+import "../ha-faded";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 
@@ -188,7 +189,11 @@ export class HaChartBase extends LitElement {
         .filter((d) => (d.data as any[])?.length && (d.id || d.name))
         .map((d) => d.name ?? d.id) ||
       []) as string[];
-    return html`<div class="chart-legend">
+    return html`<ha-faded
+      class="chart-legend"
+      faded-height="40"
+      @content-shown=${this._handleContentShown}
+    >
       <ul>
         ${items.map((item: string) => {
           const dataset = datasets.find(
@@ -213,7 +218,13 @@ export class HaChartBase extends LitElement {
           </li>`;
         })}
       </ul>
-    </div>`;
+    </ha-faded>`;
+  }
+
+  private _handleContentShown() {
+    setTimeout(() => {
+      this.chart?.resize();
+    });
   }
 
   private _formatTimeLabel = (value: number | Date) =>
@@ -621,6 +632,9 @@ export class HaChartBase extends LitElement {
     }
     .chart-legend {
       text-align: center;
+    }
+    .chart-legend ul {
+      margin: 0;
     }
     .chart-legend li {
       cursor: pointer;
