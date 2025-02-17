@@ -71,43 +71,34 @@ export class HeadingSection
             "has-heading": hasHeading,
           })}"
         >
-          ${card
+          ${card || editMode
             ? html`
                 <div class="heading">
                   ${editMode
-                    ? html`
-                        <hui-card-edit-mode
-                          .hass=${this.hass}
-                          .lovelace=${this.lovelace!}
-                          .path=${cardPath}
-                          .hiddenOverlay=${this._dragging}
-                          no-duplicate
-                          no-move
-                        >
-                          ${card}
-                        </hui-card-edit-mode>
-                      `
+                    ? card
+                      ? html`
+                          <hui-card-edit-mode
+                            .hass=${this.hass}
+                            .lovelace=${this.lovelace!}
+                            .path=${cardPath}
+                            .hiddenOverlay=${this._dragging}
+                            no-duplicate
+                            no-move
+                          >
+                            ${card}
+                          </hui-card-edit-mode>
+                        `
+                      : html`
+                          <button class="add" @click=${this._addCard}>
+                            <ha-ripple></ha-ripple>
+                            <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
+                            Add title
+                          </button>
+                        `
                     : card}
                 </div>
               `
-            : editMode
-              ? html`
-                  <button
-                    class="add"
-                    @click=${this._addCard}
-                    aria-label=${this.hass.localize(
-                      "ui.panel.lovelace.editor.section.add_card"
-                    )}
-                    .title=${this.hass.localize(
-                      "ui.panel.lovelace.editor.section.add_card"
-                    )}
-                  >
-                    <ha-ripple></ha-ripple>
-                    <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
-                    Add title
-                  </button>
-                `
-              : nothing}
+            : nothing}
           ${this.lovelace && (editMode || this.badges.length > 0)
             ? html`
                 <div class="badges ${badgesPosition}">
@@ -202,6 +193,9 @@ export class HeadingSection
 
         .layout.center .heading {
           text-align: center;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
         }
 
         .layout.center hui-section-badges {
@@ -240,9 +234,6 @@ export class HeadingSection
           border-radius: var(--ha-card-border-radius, 12px);
           border: 2px dashed var(--primary-color);
           min-height: 36px;
-          flex: 1;
-          width: 100%;
-          max-width: 700px;
           gap: 8px;
           padding: 0 10px;
           --ha-ripple-color: var(--primary-color);
@@ -253,6 +244,7 @@ export class HeadingSection
           justify-content: center;
           font-weight: 400;
           line-height: 20px;
+          width: auto;
         }
 
         .add:focus {
