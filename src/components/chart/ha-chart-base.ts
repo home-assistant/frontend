@@ -632,6 +632,7 @@ export class HaChartBase extends LitElement {
     }
     .chart-legend {
       text-align: center;
+      margin: 12px 0 0;
     }
     .chart-legend ul {
       margin: 0;
