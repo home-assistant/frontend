@@ -55,7 +55,7 @@
     "@lit-labs/context": "0.4.1",
     "@lit-labs/motion": "1.0.7",
     "@lit-labs/observers": "2.0.4",
-    "@lit-labs/virtualizer": "2.0.15",
+    "@lit-labs/virtualizer": "2.1.0",
     "@lrnwebcomponents/simple-tooltip": "8.0.2",
     "@material/chips": "=14.0.0-canary.53b3cad2f.0",
     "@material/data-table": "=14.0.0-canary.53b3cad2f.0",
