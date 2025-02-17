@@ -217,6 +217,26 @@ export class HeadingSection
           }
         }
 
+        .layout.badges-top {
+          flex-direction: column-reverse;
+        }
+
+        .layout.badges-top.has-badges {
+          margin-top: 0;
+        }
+
+        .layout.badges-top.extra-space {
+          margin-top: var(--spacing);
+        }
+
+        @media (min-width: 768px) {
+          .layout.responsive.badges-top.has-heading {
+            flex-direction: row;
+            align-items: flex-start;
+            margin-top: var(--spacing);
+          }
+        }
+
         .container.edit-mode {
           padding: 8px;
           border-radius: var(--ha-card-border-radius, 12px);
