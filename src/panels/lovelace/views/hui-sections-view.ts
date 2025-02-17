@@ -459,8 +459,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     const section = findLovelaceContainer(this.lovelace!.config, path);
 
     const cardCount = "cards" in section && section.cards?.length;
+    const badgeCount = "badges" in section && section.badges?.length;
 
-    if (cardCount) {
+    if (cardCount || badgeCount) {
       const confirm = await showConfirmationDialog(this, {
         title: this.hass.localize(
           "ui.panel.lovelace.editor.delete_section.title"
