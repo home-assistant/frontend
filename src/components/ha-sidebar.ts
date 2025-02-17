@@ -52,6 +52,7 @@ import { preventDefault } from "../common/dom/prevent_default";
 import {
   saveSidebarPreferences,
   subscribeSidebarPreferences,
+  type SidebarPreferences,
 } from "../data/sidebar";
 
 const SHOW_AFTER_SPACER = ["config", "developer-tools"];
@@ -231,19 +232,11 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   @state()
   private _userHiddenPanels: string[] = [];
 
-  @state()
-  private _tempPanelOrder?: string[];
-
-  @state()
-  private _tempHiddenPanels?: string[];
-
   public hassSubscribe(): UnsubscribeFunc[] {
     const subscribeFunctions = [
       subscribeSidebarPreferences(this.hass, (sidebar) => {
-        if (!this._devicePanelOrder && !this._deviceHiddenPanels && sidebar) {
-          this._userPanelOrder = sidebar.panelOrder || [];
-          this._userHiddenPanels = sidebar.hiddenPanels || [];
-        }
+        this._userPanelOrder = sidebar?.panelOrder || [];
+        this._userHiddenPanels = sidebar?.hiddenPanels || [];
       }),
     ];
     if (this.hass.user?.is_admin) {
@@ -289,9 +282,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       changedProps.has("_devicePanelOrder") ||
       changedProps.has("_deviceHiddenPanels") ||
       changedProps.has("_userPanelOrder") ||
-      changedProps.has("_userHiddenPanels") ||
-      changedProps.has("_tempPanelOrder") ||
-      changedProps.has("_tempHiddenPanels")
+      changedProps.has("_userHiddenPanels")
     ) {
       return true;
     }
@@ -411,13 +402,35 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     </div>`;
   }
 
+  private _getPanelPreferencesMemoized = memoizeOne((userPreferences: SidebarPreferences, devicePreferences: SidebarPreferences): { panelOrder: string[], hiddenPanels: string[] } => {
+    let panelOrder = userPreferences.panelOrder ?? [];
+    let hiddenPanels = userPreferences.hiddenPanels ?? [];
+
+    if (devicePreferences.panelOrder || devicePreferences.hiddenPanels) {
+      panelOrder = devicePreferences.panelOrder ?? [];
+      hiddenPanels = devicePreferences.hiddenPanels ?? [];
+    }
+
+    return { panelOrder, hiddenPanels }
+  })
+
+  private _getPanelPreferences() {
+    return this._getPanelPreferencesMemoized(
+      {
+        panelOrder: this._userPanelOrder,
+        hiddenPanels: this._userHiddenPanels
+      },
+      {
+        panelOrder: this._devicePanelOrder,
+        hiddenPanels: this._deviceHiddenPanels
+      }
+    )
+  }
+
   private _renderAllPanels() {
-    const panelOrder =
-      this._tempPanelOrder || this._devicePanelOrder || this._userPanelOrder;
-    const hiddenPanels =
-      this._tempHiddenPanels ||
-      this._deviceHiddenPanels ||
-      this._userHiddenPanels;
+    // TODO render skeleton loading if panels are not loaded yet
+
+    const { panelOrder, hiddenPanels } = this._getPanelPreferences(); 
 
     const [beforeSpacer, afterSpacer] = computePanels(
       this.hass.panels,
@@ -511,23 +524,49 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         `;
   }
 
+  private async _setPanelOrder(panelOrder: string[]) {
+    if (this._devicePanelOrder || this._deviceHiddenPanels) {
+      this._devicePanelOrder = [...panelOrder];
+    } else {
+      this._userPanelOrder = [...panelOrder];
+      await saveSidebarPreferences(this.hass, {
+        panelOrder: panelOrder,
+        hiddenPanels: this._userHiddenPanels,
+      });
+    }
+  }
+
+  private async _setHiddenPanels(hiddenPanels: string[]) {
+    if (this._devicePanelOrder || this._deviceHiddenPanels) {
+      this._deviceHiddenPanels = hiddenPanels;
+    } else {
+      this._userHiddenPanels = hiddenPanels;
+      await saveSidebarPreferences(this.hass, {
+        panelOrder: this._userPanelOrder,
+        hiddenPanels: hiddenPanels,
+      });
+    }
+  }
+
   private _panelMoved(ev: CustomEvent) {
     ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
 
+    const { panelOrder, hiddenPanels } = this._getPanelPreferences();
+
     const [beforeSpacer] = computePanels(
       this.hass.panels,
       this.hass.defaultPanel,
-      this._tempPanelOrder!,
-      this._tempHiddenPanels!,
+      panelOrder,
+      hiddenPanels!,
       this.hass.locale
     );
 
-    const panelOrder = beforeSpacer.map((panel) => panel.url_path);
-    const panel = panelOrder.splice(oldIndex, 1)[0];
-    panelOrder.splice(newIndex, 0, panel);
+    const panelOrderNew = beforeSpacer.map((panel) => panel.url_path);
+    const panel = panelOrderNew.splice(oldIndex, 1)[0];
+    panelOrderNew.splice(newIndex, 0, panel);
 
-    this._tempPanelOrder = panelOrder;
+    this._setPanelOrder(panelOrderNew);
   }
 
   private _renderPanelsEdit(beforeSpacer: PanelInfo[]) {
@@ -544,10 +583,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   }
 
   private _renderHiddenPanels() {
-    const hiddenPanels =
-      this._tempHiddenPanels ||
-      this._deviceHiddenPanels ||
-      this._userHiddenPanels;
+    const { hiddenPanels } = this._getPanelPreferences();
 
     return html`${hiddenPanels.length
       ? html`${hiddenPanels.map((url) => {
@@ -751,13 +787,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   private async _editModeActivated() {
     await this._loadEditStyle();
-
-    this._tempPanelOrder = [
-      ...(this._devicePanelOrder || this._userPanelOrder),
-    ];
-    this._tempHiddenPanels = [
-      ...(this._deviceHiddenPanels || this._userHiddenPanels),
-    ];
   }
 
   private async _loadEditStyle() {
@@ -773,21 +802,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   }
 
   private _closeEditMode() {
-    // TODO confirm dialog if changes and radio if device or user
-    if (this._devicePanelOrder || this._deviceHiddenPanels) {
-      this._devicePanelOrder = this._tempPanelOrder;
-      this._deviceHiddenPanels = this._tempHiddenPanels;
-    } else {
-      this._userPanelOrder = this._tempPanelOrder!;
-      this._userHiddenPanels = this._tempHiddenPanels!;
-      saveSidebarPreferences(this.hass, {
-        panelOrder: this._userPanelOrder,
-        hiddenPanels: this._userHiddenPanels,
-      });
-    }
-    this._tempPanelOrder = undefined;
-    this._tempHiddenPanels = undefined;
-
     fireEvent(this, "hass-edit-sidebar", { editMode: false });
   }
 
@@ -797,20 +811,24 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     if ((this._deviceHiddenPanels || this._userHiddenPanels).includes(panel)) {
       return;
     }
+
+    const { panelOrder, hiddenPanels } = this._getPanelPreferences();
+    
     // Make a copy for Memoize
-    this._tempHiddenPanels = [...this._tempHiddenPanels!, panel];
+    this._setHiddenPanels([...hiddenPanels, panel]);
     // Remove it from the panel order
-    this._tempPanelOrder = this._tempPanelOrder!.filter(
+    this._setPanelOrder(panelOrder.filter(
       (order) => order !== panel
-    );
+    ));
   }
 
   private async _unhidePanel(ev: Event) {
     ev.preventDefault();
     const panel = (ev.currentTarget as any).panel;
-    this._tempHiddenPanels = this._tempHiddenPanels!.filter(
-      (hidden) => hidden !== panel
-    );
+
+    const { hiddenPanels } = this._getPanelPreferences();
+
+    this._setHiddenPanels(hiddenPanels.filter((hidden) => hidden !== panel));
   }
 
   private _itemMouseEnter(ev: MouseEvent) {

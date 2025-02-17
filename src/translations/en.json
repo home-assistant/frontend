@@ -7477,9 +7477,14 @@
           "description": "This will hide the sidebar by default, similar to the mobile experience."
         },
         "customize_sidebar": {
-          "header": "Change the order and hide items from the sidebar",
+          "header": "Edit sidebar",
           "description": "You can also press and hold the header of the sidebar to activate edit mode.",
-          "button": "Edit"
+          "overwritten_by_device": "Your user sidebar preferences are overwritten by specific device preferences.",
+          "device_description": "Enable specific sidebar preferences for this device.",
+          "button": "Edit",
+          "delete_device_preferences_header": "Delete device preferences",
+          "delete_device_preferences_description": "This will delete sidebar order and hidden items this device and will show again the user defined preferences.",
+          "device_specific_header": "Device specific sidebar"
         },
         "vibrate": {
           "header": "Vibrate",
