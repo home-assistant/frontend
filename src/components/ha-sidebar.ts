@@ -400,7 +400,11 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   }
 
   private _getPanelPreferencesMemoized = memoizeOne(
-    (userPreferences: SidebarPreferences, devicePreferences: SidebarPreferences, userPreferencesLoading: boolean): { panelOrder: string[]; hiddenPanels: string[]; loading: boolean } => {
+    (
+      userPreferences: SidebarPreferences,
+      devicePreferences: SidebarPreferences,
+      userPreferencesLoading: boolean
+    ): { panelOrder: string[]; hiddenPanels: string[]; loading: boolean } => {
       let panelOrder = userPreferences.panelOrder ?? [];
       let hiddenPanels = userPreferences.hiddenPanels ?? [];
 
@@ -415,7 +419,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       return {
         panelOrder,
         hiddenPanels,
-        loading
+        loading,
       };
     }
   );
