@@ -408,9 +408,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     .container.horizontal {
       flex-direction: row;
     }
-    .container.horizontal .content {
-      flex: 1;
-    }
 
     .content {
       position: relative;
@@ -423,6 +420,11 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       pointer-events: none;
       gap: 10px;
     }
+
+    .container.horizontal .content {
+      width: 50%;
+    }
+
     .vertical {
       flex-direction: column;
       text-align: center;
@@ -456,7 +458,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       padding: 0 12px 12px 12px;
     }
     .container.horizontal hui-card-features {
-      flex: 1;
+      width: 50%;
       --feature-height: 36px;
       padding: 10px;
       padding-inline-start: 0;
