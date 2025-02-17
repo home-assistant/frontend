@@ -5544,6 +5544,15 @@
             "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
             "provisioned_devices": "Provisioned devices",
             "not_ready": "{count} not ready",
+            "nvm_backup": {
+              "title": "NVM Backup and Restore",
+              "description": "Back up or restore your Z-Wave controller's Non-Volatile Memory (NVM). The NVM contains your network information including paired devices and their configurations. It's recommended to create a backup before making any major changes to your Z-Wave network.",
+              "download_backup": "Download NVM backup",
+              "restore_backup": "Restore NVM backup",
+              "backup_failed": "Failed to download NVM backup",
+              "restore_complete": "NVM backup restored",
+              "restore_failed": "Failed to restore NVM backup"
+            },
             "statistics": {
               "title": "Controller statistics",
               "messages_tx": {

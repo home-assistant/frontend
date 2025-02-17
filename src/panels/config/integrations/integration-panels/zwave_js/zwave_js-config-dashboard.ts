@@ -38,8 +38,11 @@ import {
   setZwaveDataCollectionPreference,
   subscribeS2Inclusion,
   subscribeZwaveControllerStatistics,
+  downloadZwaveNVMBackup,
+  restoreZwaveNVMBackup,
 } from "../../../../../data/zwave_js";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
+import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import "../../../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
@@ -457,6 +460,45 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                   </p>
                 </div>
               </ha-card>
+              <ha-card>
+                <div class="card-header">
+                  <h1>
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.dashboard.nvm_backup.title"
+                    )}
+                  </h1>
+                </div>
+                <div class="card-content">
+                  <p>
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.dashboard.nvm_backup.description"
+                    )}
+                  </p>
+                </div>
+                <div class="card-actions">
+                  <mwc-button @click=${this._downloadNVMBackup}>
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.dashboard.nvm_backup.download_backup"
+                    )}
+                  </mwc-button>
+                  <div class="upload-button">
+                    <mwc-button @click=${this._uploadButtonClick}>
+                      <span class="button-content">
+                        ${this.hass.localize(
+                          "ui.panel.config.zwave_js.dashboard.nvm_backup.restore_backup"
+                        )}
+                      </span>
+                    </mwc-button>
+                    <input
+                      type="file"
+                      id="nvm-restore-file"
+                      accept=".bin"
+                      @change=${this._handleFileSelected}
+                      style="display: none"
+                    />
+                  </div>
+                </div>
+              </ha-card>
             `
           : nothing}
         <ha-fab
@@ -627,6 +669,70 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     showOptionsFlowDialog(this, configEntry!);
   }
 
+  private async _downloadNVMBackup() {
+    try {
+      const backup = await downloadZwaveNVMBackup(
+        this.hass,
+        this.configEntryId!
+      );
+      const blob = new Blob([backup], { type: "application/octet-stream" });
+      const backupTime = new Date().toISOString().replace(/:/g, "-");
+      const filename = `zwave_nvm_backup_${backupTime}.bin`;
+
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.zwave_js.dashboard.nvm_backup.backup_failed"
+        ),
+        text: err.message,
+        warning: true,
+      });
+    }
+  }
+
+  private _uploadButtonClick() {
+    const fileInput = this.shadowRoot?.querySelector(
+      "#nvm-restore-file"
+    ) as HTMLInputElement;
+    fileInput?.click();
+  }
+
+  private async _handleFileSelected(ev: Event) {
+    const file = (ev.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const backup = new Uint8Array(e.target?.result as ArrayBuffer);
+
+      try {
+        await restoreZwaveNVMBackup(this.hass, this.configEntryId!, backup);
+
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.zwave_js.dashboard.nvm_backup.restore_complete"
+          ),
+        });
+      } catch (err: any) {
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.zwave_js.dashboard.nvm_backup.restore_failed"
+          ),
+          text: err.message,
+          warning: true,
+        });
+      }
+    };
+    reader.readAsArrayBuffer(file);
+    // Reset the file input so the same file can be selected again
+    (ev.target as HTMLInputElement).value = "";
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -732,6 +838,20 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
 
         [hidden] {
           display: none;
+        }
+
+        .upload-button {
+          display: inline-block;
+          position: relative;
+        }
+
+        .upload-button mwc-button {
+          position: relative;
+          overflow: hidden;
+        }
+
+        .button-content {
+          pointer-events: none;
         }
       `,
     ];
