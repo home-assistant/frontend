@@ -11,7 +11,7 @@ export interface LovelaceBaseSectionConfig {
    * @deprecated Use heading card instead.
    */
   title?: string;
-  // Only used for section view, it should move to a section view config type when the views will have dedicated editor.
+  // Only used for heading section, it should move to a section view config type when the sections will have dedicated editor.
   layout?: "start" | "center" | "responsive";
   badges_position?: "bottom" | "top";
   extra_space?: boolean;
