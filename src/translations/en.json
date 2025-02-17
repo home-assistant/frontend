@@ -7125,7 +7125,7 @@
               "state_content": "State content",
               "features_position": "Features position",
               "features_position_options": {
-                "bottom": "At the bottom",
+                "bottom": "Bottom",
                 "inline": "Inline"
               },
               "content_layout": "Content layout",
