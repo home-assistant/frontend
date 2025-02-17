@@ -73,7 +73,7 @@ export class HeadingSection
         >
           ${card
             ? html`
-                <div class="content">
+                <div class="heading">
                   ${editMode
                     ? html`
                         <hui-card-edit-mode
@@ -148,11 +148,12 @@ export class HeadingSection
         .container {
           position: relative;
         }
+
         .layout {
           position: relative;
           display: flex;
           flex-direction: column;
-          gap: 24px;
+          gap: 24px 8px;
         }
 
         .layout.has-heading {
@@ -163,7 +164,7 @@ export class HeadingSection
           margin-top: 80px;
         }
 
-        .content {
+        .heading {
           position: relative;
           flex: 1;
           width: 100%;
@@ -171,7 +172,7 @@ export class HeadingSection
           display: flex;
         }
 
-        .content > * {
+        .heading > * {
           width: 100%;
           height: 100%;
         }
@@ -190,7 +191,7 @@ export class HeadingSection
           --badges-aligmnent: flex-start;
         }
 
-        /* Center layout */
+        /* Layout */
         .layout {
           align-items: flex-start;
         }
@@ -199,7 +200,7 @@ export class HeadingSection
           align-items: center;
         }
 
-        .layout.center .content {
+        .layout.center .heading {
           text-align: center;
         }
 
@@ -225,14 +226,6 @@ export class HeadingSection
 
         .container.edit-mode .content {
           min-height: 36px;
-        }
-
-        .card:has(> *) {
-          display: block;
-        }
-
-        .card:has(> *[hidden]) {
-          display: none;
         }
 
         .add {
