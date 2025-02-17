@@ -16,7 +16,7 @@ import type { HomeAssistant } from "../../../../types";
 
 type SettingsData = Pick<
   LovelaceSectionRawConfig,
-  "layout" | "top_margin" | "badges_position" | "column_span"
+  "layout" | "extra_space" | "badges_position" | "column_span"
 >;
 
 @customElement("hui-section-settings-editor")
@@ -68,7 +68,7 @@ export class HuiDialogEditSection extends LitElement {
             },
           },
         },
-        { name: "top_margin", selector: { boolean: {} } },
+        { name: "extra_space", selector: { boolean: {} } },
       ] as const satisfies HaFormSchema[]
   );
 
@@ -92,7 +92,7 @@ export class HuiDialogEditSection extends LitElement {
     if (!isStrategySection(this.config) && this.config.type === "heading") {
       return {
         layout: this.config.layout || "responsive",
-        top_margin: this.config.top_margin || false,
+        extra_space: this.config.extra_space || false,
         badges_position: this.config.badges_position || "bottom",
       };
     }

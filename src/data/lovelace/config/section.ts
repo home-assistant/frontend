@@ -14,7 +14,7 @@ export interface LovelaceBaseSectionConfig {
   // Only used for section view, it should move to a section view config type when the views will have dedicated editor.
   layout?: "start" | "center" | "responsive";
   badges_position?: "bottom" | "top";
-  top_margin?: boolean;
+  extra_space?: boolean;
 }
 
 export interface LovelaceSectionConfig extends LovelaceBaseSectionConfig {

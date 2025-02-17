@@ -60,15 +60,17 @@ export class HeadingSection
     const badgesPosition = this._config.badges_position ?? "bottom";
 
     const hasHeading = card !== undefined;
+    const hasBadges = this.badges.length > 0;
 
     return html`
       <div class="container ${editMode ? "edit-mode" : ""}">
         <div
           class="layout ${classMap({
-            "top-margin": this._config!.top_margin ?? false,
+            "extra-space": this._config!.extra_space ?? false,
             [layout]: true,
             [`badges-${badgesPosition}`]: true,
             "has-heading": hasHeading,
+            "has-badges": hasBadges,
           })}"
         >
           ${card || editMode
@@ -146,14 +148,16 @@ export class HeadingSection
           display: flex;
           flex-direction: column;
           gap: 24px 8px;
+          --spacing: 24px;
         }
 
-        .layout.has-heading {
-          margin-top: 24px;
+        .layout.has-heading,
+        .layout.extra-space {
+          margin-top: var(--spacing);
         }
 
-        .layout.top-margin {
-          margin-top: 80px;
+        .layout.extra-space {
+          --spacing: 80px;
         }
 
         .heading {
