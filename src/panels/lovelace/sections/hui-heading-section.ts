@@ -59,17 +59,16 @@ export class HeadingSection
     const layout = this._config.layout ?? "responsive";
     const badgesPosition = this._config.badges_position ?? "bottom";
 
+    const hasHeading = card !== undefined;
+
     return html`
-      <div
-        class="container ${classMap({
-          "edit-mode": editMode,
-        })}"
-      >
+      <div class="container ${editMode ? "edit-mode" : ""}">
         <div
           class="layout ${classMap({
             "top-margin": this._config!.top_margin ?? false,
             [layout]: true,
             [`badges-${badgesPosition}`]: true,
+            "has-heading": hasHeading,
           })}"
         >
           ${card
@@ -109,7 +108,7 @@ export class HeadingSection
                   </button>
                 `
               : nothing}
-          ${this.lovelace
+          ${this.lovelace && (editMode || this.badges.length > 0)
             ? html`
                 <div class="badges ${badgesPosition}">
                   <hui-section-badges
@@ -154,6 +153,9 @@ export class HeadingSection
           display: flex;
           flex-direction: column;
           gap: 24px;
+        }
+
+        .layout.has-heading {
           margin-top: 24px;
         }
 
@@ -206,11 +208,11 @@ export class HeadingSection
         }
 
         @media (min-width: 768px) {
-          .layout.responsive {
+          .layout.responsive.has-heading {
             flex-direction: row;
             align-items: flex-end;
           }
-          .layout.responsive hui-section-badges {
+          .layout.responsive.has-heading hui-section-badges {
             --badges-aligmnent: flex-end;
           }
         }
@@ -244,7 +246,10 @@ export class HeadingSection
           cursor: pointer;
           border-radius: var(--ha-card-border-radius, 12px);
           border: 2px dashed var(--primary-color);
-          height: 36px;
+          min-height: 36px;
+          flex: 1;
+          width: 100%;
+          max-width: 700px;
           gap: 8px;
           padding: 0 10px;
           --ha-ripple-color: var(--primary-color);
