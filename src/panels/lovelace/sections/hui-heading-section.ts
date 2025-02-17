@@ -108,6 +108,7 @@ export class HeadingSection
                     .lovelace=${this.lovelace!}
                     .sectionIndex=${this.index!}
                     .viewIndex=${this.viewIndex!}
+                    .showAddLabel=${this.badges.length === 0}
                   ></hui-section-badges>
                 </div>
               `
