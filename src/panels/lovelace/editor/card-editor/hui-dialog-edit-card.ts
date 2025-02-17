@@ -21,7 +21,7 @@ import {
 } from "../../../../data/lovelace_custom_cards";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
-import { haStyleDialog } from "../../../../resources/styles";
+import { haStyleDialog, haStyleScrollbar } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import "../../cards/hui-card";
@@ -228,7 +228,7 @@ export class HuiDialogEditCard
             : nothing}
         </ha-dialog-header>
         <div class="content">
-          <div class="element-editor">
+          <div class="element-editor ha-scrollbar">
             <hui-card-element-editor
               .showVisibilityTab=${this._cardConfig?.type !== "conditional"}
               .sectionConfig=${this._isInSection
@@ -241,6 +241,7 @@ export class HuiDialogEditCard
               @GUImode-changed=${this._handleGUIModeChanged}
               @editor-save=${this._save}
               dialogInitialFocus
+              stickyTabs
             ></hui-card-element-editor>
           </div>
           <div class="element-preview">
@@ -430,6 +431,7 @@ export class HuiDialogEditCard
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
+      haStyleScrollbar,
       css`
         :host {
           --code-mirror-max-height: calc(100vh - 176px);
@@ -477,6 +479,13 @@ export class HuiDialogEditCard
         .content {
           display: flex;
           flex-direction: column;
+          max-height: calc(100vh - 216px);
+        }
+
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          .content {
+            max-height: calc(100vh - 168px);
+          }
         }
 
         .content hui-card {
@@ -492,7 +501,9 @@ export class HuiDialogEditCard
           max-width: var(--ha-view-sections-column-max-width, 500px);
         }
         .content .element-editor {
-          margin: 0 10px;
+          margin-left: 10px;
+          padding-right: 10px;
+          overflow: scroll;
         }
 
         @media (min-width: 1000px) {
@@ -526,11 +537,10 @@ export class HuiDialogEditCard
           filter: blur(2px) grayscale(100%);
         }
         .element-preview {
-          position: relative;
-          height: max-content;
           background: var(--primary-background-color);
           padding: 4px;
           border-radius: 4px;
+          height: auto;
         }
         .element-preview ha-circular-progress {
           top: 50%;
