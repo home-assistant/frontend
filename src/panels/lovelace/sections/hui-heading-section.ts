@@ -94,7 +94,9 @@ export class HeadingSection
                           <button class="add" @click=${this._addCard}>
                             <ha-ripple></ha-ripple>
                             <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
-                            Add title
+                            ${this.hass.localize(
+                              "ui.panel.lovelace.editor.section.add_title"
+                            )}
                           </button>
                         `
                     : card}
