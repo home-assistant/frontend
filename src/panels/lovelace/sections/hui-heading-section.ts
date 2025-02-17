@@ -102,6 +102,7 @@ export class HeadingSection
                 >
                   <ha-ripple></ha-ripple>
                   <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
+                  Add title
                 </button>
               `
             : nothing}
@@ -226,13 +227,6 @@ export class HeadingSection
           }
         }
 
-        .container.responsive .container .card {
-          border-radius: var(--ha-card-border-radius, 12px);
-          position: relative;
-          grid-row: span var(--row-size, 1);
-          grid-column: span min(var(--column-size, 1), var(--grid-column-count));
-        }
-
         .container.edit-mode {
           padding: 8px;
           border-radius: var(--ha-card-border-radius, 12px);
@@ -254,18 +248,26 @@ export class HeadingSection
 
         .add {
           position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: row;
           outline: none;
           background: none;
           cursor: pointer;
           border-radius: var(--ha-card-border-radius, 12px);
           border: 2px dashed var(--primary-color);
-          height: var(--row-height);
+          height: 36px;
+          gap: 8px;
+          padding: 0 10px;
           --ha-ripple-color: var(--primary-color);
           --ha-ripple-hover-opacity: 0.04;
           --ha-ripple-pressed-opacity: 0.12;
           display: flex;
           align-items: center;
           justify-content: center;
+          font-weight: 400;
+          line-height: 20px;
         }
 
         .add:focus {
