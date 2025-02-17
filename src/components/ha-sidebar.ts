@@ -49,6 +49,10 @@ import "./ha-sortable";
 import "./ha-svg-icon";
 import "./user/ha-user-badge";
 import { preventDefault } from "../common/dom/prevent_default";
+import {
+  saveSidebarPreferences,
+  subscribeSidebarPreferences,
+} from "../data/sidebar";
 
 const SHOW_AFTER_SPACER = ["config", "developer-tools"];
 
@@ -212,25 +216,47 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     state: true,
     subscribe: true,
   })
-  private _panelOrder: string[] = [];
+  private _devicePanelOrder?: string[];
 
   @storage({
     key: "sidebarHiddenPanels",
     state: true,
     subscribe: true,
   })
-  private _hiddenPanels: string[] = [];
+  private _deviceHiddenPanels?: string[];
+
+  @state()
+  private _userPanelOrder: string[] = [];
+
+  @state()
+  private _userHiddenPanels: string[] = [];
+
+  @state()
+  private _tempPanelOrder?: string[];
+
+  @state()
+  private _tempHiddenPanels?: string[];
 
   public hassSubscribe(): UnsubscribeFunc[] {
-    return this.hass.user?.is_admin
-      ? [
-          subscribeRepairsIssueRegistry(this.hass.connection!, (repairs) => {
-            this._issuesCount = repairs.issues.filter(
-              (issue) => !issue.ignored
-            ).length;
-          }),
-        ]
-      : [];
+    const subscribeFunctions = [
+      subscribeSidebarPreferences(this.hass, (sidebar) => {
+        if (!this._devicePanelOrder && !this._deviceHiddenPanels && sidebar) {
+          this._userPanelOrder = sidebar.panelOrder || [];
+          this._userHiddenPanels = sidebar.hiddenPanels || [];
+        }
+      }),
+    ];
+    if (this.hass.user?.is_admin) {
+      subscribeFunctions.push(
+        subscribeRepairsIssueRegistry(this.hass.connection!, (repairs) => {
+          this._issuesCount = repairs.issues.filter(
+            (issue) => !issue.ignored
+          ).length;
+        })
+      );
+    }
+
+    return subscribeFunctions;
   }
 
   protected render() {
@@ -260,8 +286,12 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       changedProps.has("_updatesCount") ||
       changedProps.has("_issuesCount") ||
       changedProps.has("_notifications") ||
-      changedProps.has("_hiddenPanels") ||
-      changedProps.has("_panelOrder")
+      changedProps.has("_devicePanelOrder") ||
+      changedProps.has("_deviceHiddenPanels") ||
+      changedProps.has("_userPanelOrder") ||
+      changedProps.has("_userHiddenPanels") ||
+      changedProps.has("_tempPanelOrder") ||
+      changedProps.has("_tempHiddenPanels")
     ) {
       return true;
     }
@@ -382,11 +412,18 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   }
 
   private _renderAllPanels() {
+    const panelOrder =
+      this._tempPanelOrder || this._devicePanelOrder || this._userPanelOrder;
+    const hiddenPanels =
+      this._tempHiddenPanels ||
+      this._deviceHiddenPanels ||
+      this._userHiddenPanels;
+
     const [beforeSpacer, afterSpacer] = computePanels(
       this.hass.panels,
       this.hass.defaultPanel,
-      this._panelOrder,
-      this._hiddenPanels,
+      panelOrder,
+      hiddenPanels,
       this.hass.locale
     );
 
@@ -481,8 +518,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     const [beforeSpacer] = computePanels(
       this.hass.panels,
       this.hass.defaultPanel,
-      this._panelOrder,
-      this._hiddenPanels,
+      this._tempPanelOrder!,
+      this._tempHiddenPanels!,
       this.hass.locale
     );
 
@@ -490,7 +527,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     const panel = panelOrder.splice(oldIndex, 1)[0];
     panelOrder.splice(newIndex, 0, panel);
 
-    this._panelOrder = panelOrder;
+    this._tempPanelOrder = panelOrder;
   }
 
   private _renderPanelsEdit(beforeSpacer: PanelInfo[]) {
@@ -507,8 +544,13 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   }
 
   private _renderHiddenPanels() {
-    return html`${this._hiddenPanels.length
-      ? html`${this._hiddenPanels.map((url) => {
+    const hiddenPanels =
+      this._tempHiddenPanels ||
+      this._deviceHiddenPanels ||
+      this._userHiddenPanels;
+
+    return html`${hiddenPanels.length
+      ? html`${hiddenPanels.map((url) => {
           const panel = this.hass.panels[url];
           if (!panel) {
             return "";
@@ -709,6 +751,13 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   private async _editModeActivated() {
     await this._loadEditStyle();
+
+    this._tempPanelOrder = [
+      ...(this._devicePanelOrder || this._userPanelOrder),
+    ];
+    this._tempHiddenPanels = [
+      ...(this._deviceHiddenPanels || this._userHiddenPanels),
+    ];
   }
 
   private async _loadEditStyle() {
@@ -724,25 +773,42 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   }
 
   private _closeEditMode() {
+    // TODO confirm dialog if changes and radio if device or user
+    if (this._devicePanelOrder || this._deviceHiddenPanels) {
+      this._devicePanelOrder = this._tempPanelOrder;
+      this._deviceHiddenPanels = this._tempHiddenPanels;
+    } else {
+      this._userPanelOrder = this._tempPanelOrder!;
+      this._userHiddenPanels = this._tempHiddenPanels!;
+      saveSidebarPreferences(this.hass, {
+        panelOrder: this._userPanelOrder,
+        hiddenPanels: this._userHiddenPanels,
+      });
+    }
+    this._tempPanelOrder = undefined;
+    this._tempHiddenPanels = undefined;
+
     fireEvent(this, "hass-edit-sidebar", { editMode: false });
   }
 
   private async _hidePanel(ev: Event) {
     ev.preventDefault();
     const panel = (ev.currentTarget as any).panel;
-    if (this._hiddenPanels.includes(panel)) {
+    if ((this._deviceHiddenPanels || this._userHiddenPanels).includes(panel)) {
       return;
     }
     // Make a copy for Memoize
-    this._hiddenPanels = [...this._hiddenPanels, panel];
+    this._tempHiddenPanels = [...this._tempHiddenPanels!, panel];
     // Remove it from the panel order
-    this._panelOrder = this._panelOrder.filter((order) => order !== panel);
+    this._tempPanelOrder = this._tempPanelOrder!.filter(
+      (order) => order !== panel
+    );
   }
 
   private async _unhidePanel(ev: Event) {
     ev.preventDefault();
     const panel = (ev.currentTarget as any).panel;
-    this._hiddenPanels = this._hiddenPanels.filter(
+    this._tempHiddenPanels = this._tempHiddenPanels!.filter(
       (hidden) => hidden !== panel
     );
   }
