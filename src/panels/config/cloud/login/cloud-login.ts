@@ -28,6 +28,7 @@ import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "../../ha-config-section";
 import { showSupportPackageDialog } from "../account/show-dialog-cloud-support-package";
+import { showloudAlreadyConnectedDialog } from "../dialog-cloud-already-connected/show-dialog-cloud-already-connected";
 
 @customElement("cloud-login")
 export class CloudLogin extends LitElement {
@@ -46,6 +47,8 @@ export class CloudLogin extends LitElement {
   @state() private _requestInProgress = false;
 
   @state() private _error?: string;
+
+  @state() private _check_conection = true;
 
   @query("#email", true) private _emailField!: HaTextField;
 
@@ -244,6 +247,7 @@ export class CloudLogin extends LitElement {
           hass: this.hass,
           email: username,
           ...(code ? { code } : { password }),
+          check_connection: this._check_conection,
         });
         this.email = "";
         this._password = "";
@@ -282,6 +286,19 @@ export class CloudLogin extends LitElement {
             await doLogin(username, totpCode);
             return;
           }
+        }
+        if (errCode === "alreadyconnectederror") {
+          showloudAlreadyConnectedDialog(this, {
+            details: JSON.parse(err.body.message),
+            logInHereAction: () => {
+              this._check_conection = false;
+              doLogin(username);
+            },
+            closeDialog: () => {
+              this._requestInProgress = false;
+            },
+          });
+          return;
         }
         if (errCode === "PasswordChangeRequired") {
           showAlertDialog(this, {

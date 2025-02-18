@@ -4727,6 +4727,19 @@
             "fingerprint": "Certificate fingerprint:",
             "close": "Close"
           },
+          "dialog_already_connected": {
+            "heading": "Account linked to other Home Assistant",
+            "description": "We noticed that another instance is currently conneceted to you Home Assistant Cloud account. Your Home Assistant Clouud account can only be signed into one Home Assistant instance at a time. If you log in here you will disconnect your other instance and its Cloud servcies.",
+            "other_home_assistant": "Other Home Assistant",
+            "ip_address": "IP Address",
+            "connected_at": "Connected at",
+            "info_backups": {
+              "title": "Home Assistant Cloud backups",
+              "description": "Your Cloud backup may be overwritten if you proceed. We stringly recommend downloading your current backup from your Nabu Casa account page before continuing."
+            },
+            "close": "Close",
+            "login_here": "Log in here"
+          },
           "dialog_cloudhook": {
             "webhook_for": "Webhook for {name}",
             "managed_by_integration": "This webhook is managed by an integration and cannot be disabled.",
