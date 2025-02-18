@@ -53,7 +53,6 @@ import { preventDefault } from "../common/dom/prevent_default";
 import {
   saveSidebarPreferences,
   subscribeSidebarPreferences,
-  type SidebarPreferences,
 } from "../data/sidebar";
 
 const SHOW_AFTER_SPACER = ["config", "developer-tools"];
@@ -401,18 +400,20 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   private _getPanelPreferencesMemoized = memoizeOne(
     (
-      userPreferences: SidebarPreferences,
-      devicePreferences: SidebarPreferences,
-      userPreferencesLoading: boolean
+      userPanelOrder: string[],
+      userHiddenPanels: string[],
+      userPreferencesLoading: boolean,
+      devicePanelOrder?: string[],
+      deviceHiddenPanels?: string[]
     ): { panelOrder: string[]; hiddenPanels: string[]; loading: boolean } => {
-      let panelOrder = userPreferences.panelOrder ?? [];
-      let hiddenPanels = userPreferences.hiddenPanels ?? [];
+      let panelOrder = userPanelOrder ?? [];
+      let hiddenPanels = userHiddenPanels ?? [];
 
       let loading = userPreferencesLoading;
 
-      if (devicePreferences.panelOrder || devicePreferences.hiddenPanels) {
-        panelOrder = devicePreferences.panelOrder ?? [];
-        hiddenPanels = devicePreferences.hiddenPanels ?? [];
+      if (devicePanelOrder || deviceHiddenPanels) {
+        panelOrder = devicePanelOrder ?? [];
+        hiddenPanels = deviceHiddenPanels ?? [];
         loading = false;
       }
 
@@ -426,15 +427,11 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   private _getPanelPreferences() {
     return this._getPanelPreferencesMemoized(
-      {
-        panelOrder: this._userPanelOrder,
-        hiddenPanels: this._userHiddenPanels,
-      },
-      {
-        panelOrder: this._devicePanelOrder,
-        hiddenPanels: this._deviceHiddenPanels,
-      },
-      this._loadingUserPreferences
+      this._userPanelOrder,
+      this._userHiddenPanels,
+      this._loadingUserPreferences,
+      this._devicePanelOrder,
+      this._deviceHiddenPanels
     );
   }
 
