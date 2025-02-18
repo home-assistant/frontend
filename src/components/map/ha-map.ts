@@ -86,9 +86,10 @@ export class HaMap extends ReactiveElement {
 
   @property({ type: Number }) public zoom = 14;
 
-  @state() private _loaded = false;
+  @property({ attribute: "cluster-markers", type: Boolean })
+  public clusterMarkers = true;
 
-  @state() private _clusterMarkers = true;
+  @state() private _loaded = false;
 
   public leafletMap?: Map;
 
@@ -155,6 +156,10 @@ export class HaMap extends ReactiveElement {
           break;
         }
       }
+    }
+
+    if (changedProps.has("clusterMarkers")) {
+      this._drawEntities();
     }
 
     if (changedProps.has("_loaded") || changedProps.has("paths")) {
@@ -572,7 +577,7 @@ export class HaMap extends ReactiveElement {
       this._mapItems.push(marker);
     }
 
-    if (this._clusterMarkers) {
+    if (this.clusterMarkers) {
       this._mapCluster = Leaflet.markerClusterGroup({
         showCoverageOnHover: false,
         removeOutsideVisibleBounds: false,
@@ -584,14 +589,6 @@ export class HaMap extends ReactiveElement {
     }
 
     this._mapZones.forEach((marker) => map.addLayer(marker));
-  }
-
-  public toggleClusterMarkers() {
-    this._clusterMarkers = !this._clusterMarkers;
-
-    if (this._loaded) {
-      this._drawEntities();
-    }
   }
 
   private async _attachObserver(): Promise<void> {

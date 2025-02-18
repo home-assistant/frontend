@@ -1,4 +1,5 @@
 import {
+  mdiDotsHexagon,
   mdiGoogleCirclesCommunities,
   mdiImageFilterCenterFocus,
 } from "@mdi/js";
@@ -74,6 +75,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   private _colorIndex = 0;
 
   @state() private _error?: { code: string; message: string };
+
+  @state() private _clusterMarkers = true;
 
   private _subscribed?: Promise<(() => Promise<void>) | undefined>;
 
@@ -173,6 +176,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             .autoFit=${this._config.auto_fit || false}
             .fitZones=${this._config.fit_zones}
             .themeMode=${themeMode}
+            .clusterMarkers=${this._clusterMarkers}
             interactive-zones
             render-passive
           ></ha-map>
@@ -181,9 +185,11 @@ class HuiMapCard extends LitElement implements LovelaceCard {
               .label=${this.hass!.localize(
                 "ui.panel.lovelace.cards.map.toggle_grouping"
               )}
-              .path=${mdiGoogleCirclesCommunities}
+              .path=${this._clusterMarkers
+                ? mdiGoogleCirclesCommunities
+                : mdiDotsHexagon}
               style=${isDarkMode ? "color:#ffffff" : "color:#000000"}
-              @click=${this._clusterMarkers}
+              @click=${this._toggleClusterMarkers}
               tabindex="0"
             ></ha-icon-button>
             <ha-icon-button
@@ -334,8 +340,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     this._map?.fitMap();
   }
 
-  private _clusterMarkers() {
-    this._map?.toggleClusterMarkers();
+  private _toggleClusterMarkers() {
+    this._clusterMarkers = !this._clusterMarkers;
   }
 
   private _getColor(entityId: string): string {
