@@ -4,7 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import type {
   BackupAgent,
   BackupConfig,
-  BackupContent,
+  BackupInfo,
 } from "../../../data/backup";
 import {
   compareAgents,
@@ -44,7 +44,7 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
 
   @state() private _manager: ManagerStateEvent = DEFAULT_MANAGER_STATE;
 
-  @state() private _backups: BackupContent[] = [];
+  @state() private _info?: BackupInfo;
 
   @state() private _agents: BackupAgent[] = [];
 
@@ -87,8 +87,7 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
   }
 
   private async _fetchBackupInfo() {
-    const info = await fetchBackupInfo(this.hass);
-    this._backups = info.backups;
+    this._info = await fetchBackupInfo(this.hass);
   }
 
   private async _fetchBackupConfig() {
@@ -134,7 +133,8 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
     pageEl.narrow = this.narrow;
     pageEl.cloudStatus = this.cloudStatus;
     pageEl.manager = this._manager;
-    pageEl.backups = this._backups;
+    pageEl.info = this._info;
+    pageEl.backups = this._info?.backups || [];
     pageEl.config = this._config;
     pageEl.agents = this._agents;
     pageEl.fetching = this._fetching;
