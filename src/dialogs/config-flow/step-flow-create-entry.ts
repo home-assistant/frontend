@@ -85,6 +85,7 @@ class StepFlowCreateEntry extends LitElement {
         assistSatelliteSupportsSetupFlow(this.hass.states[satellite.entity_id])
       )
     ) {
+      this.navigateToResult = false;
       this._flowDone();
       showVoiceAssistantSetupDialog(this, {
         deviceId: devices[0].id,
