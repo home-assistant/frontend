@@ -9398,8 +9398,6 @@ __metadata:
     "@types/tar": "npm:6.1.13"
     "@types/ua-parser-js": "npm:0.7.39"
     "@types/webspeechapi": "npm:0.0.29"
-    "@typescript-eslint/eslint-plugin": "npm:8.24.0"
-    "@typescript-eslint/parser": "npm:8.24.0"
     "@vaadin/combo-box": "npm:24.6.5"
     "@vaadin/vaadin-themable-mixin": "npm:24.6.5"
     "@vibrant/color": "npm:4.0.0"
