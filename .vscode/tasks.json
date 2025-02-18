@@ -2,6 +2,42 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "Develop and serve Frontend",
+      "type": "shell",
+      "command": "script/develop_and_serve -c ${input:coreUrl}",
+      // Sync changes here to other tasks until issue resolved
+      // https://github.com/Microsoft/vscode/issues/61497
+      "problemMatcher": {
+        "owner": "ha-build",
+        "source": "ha-build",
+        "fileLocation": "absolute",
+        "severity": "error",
+        "pattern": [
+          {
+            "regexp": "(SyntaxError): (.+): (.+) \\((\\d+):(\\d+)\\)",
+            "severity": 1,
+            "file": 2,
+            "message": 3,
+            "line": 4,
+            "column": 5
+          }
+        ],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Changes detected. Starting compilation",
+          "endsPattern": "Build done @"
+        }
+      },
+      "isBackground": true,
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "runOptions": {
+        "instanceLimit": 1
+      }
+    },
+    {
       "label": "Develop Frontend",
       "type": "gulp",
       "task": "develop-app",
@@ -241,6 +277,12 @@
       "id": "supervisorToken",
       "type": "promptString",
       "description": "The token for the Remote API proxy add-on"
+    },
+    {
+      "id": "coreUrl",
+      "type": "promptString",
+      "description": "The URL of the Home Assistant Core instance",
+      "default": "http://127.0.0.1:8123"
     }
   ]
 }
