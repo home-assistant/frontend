@@ -73,7 +73,7 @@ export interface CloudWebhook {
 interface CloudLoginBase {
   hass: HomeAssistant;
   email: string;
-  check_connection: boolean;
+  check_connection?: boolean;
 }
 
 export interface CloudLoginPassword extends CloudLoginBase {
