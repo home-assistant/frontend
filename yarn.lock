@@ -2235,13 +2235,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit-labs/observers@npm:2.0.4":
-  version: 2.0.4
-  resolution: "@lit-labs/observers@npm:2.0.4"
+"@lit-labs/observers@npm:2.0.5":
+  version: 2.0.5
+  resolution: "@lit-labs/observers@npm:2.0.5"
   dependencies:
     "@lit/reactive-element": "npm:^1.0.0 || ^2.0.0"
     lit-html: "npm:^3.2.0"
-  checksum: 10/b1deb80e88d7de01e90e084a5b7e0a22938d6ef0ddb4e2da86a8356e37ca7be1bd7c94f5abe51883f787f650b2a9c7a024b1eef854da3ac59870a5abf7fdf74b
+  checksum: 10/4de55e32072f5825ca288c0b32b40e6805c09cd6101c345c44dfceb6bfd03cadf652dbfcd023252ebc2f7519f036d7e0f2f8fa1e58915abbc18733ed11218086
   languageName: node
   linkType: hard
 
@@ -9335,7 +9335,7 @@ __metadata:
     "@lezer/highlight": "npm:1.2.1"
     "@lit-labs/context": "npm:0.4.1"
     "@lit-labs/motion": "npm:1.0.8"
-    "@lit-labs/observers": "npm:2.0.4"
+    "@lit-labs/observers": "npm:2.0.5"
     "@lit-labs/virtualizer": "npm:2.1.0"
     "@lokalise/node-api": "npm:13.1.0"
     "@lrnwebcomponents/simple-tooltip": "npm:8.0.2"
