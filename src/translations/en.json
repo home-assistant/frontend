@@ -7119,12 +7119,20 @@
               "icon_tap_action": "Icon tap behavior",
               "icon_hold_action": "Icon hold behavior",
               "icon_double_tap_action": "Icon double tap behavior",
-              "interactions": "Interactions",
               "appearance": "Appearance",
               "show_entity_picture": "Show entity picture",
-              "vertical": "Vertical",
               "hide_state": "Hide state",
-              "state_content": "State content"
+              "state_content": "State content",
+              "features_position": "Features position",
+              "features_position_options": {
+                "bottom": "Bottom",
+                "inline": "Inline"
+              },
+              "content_layout": "Content layout",
+              "content_layout_options": {
+                "horizontal": "Horizontal",
+                "vertical": "Vertical"
+              }
             },
             "vertical-stack": {
               "name": "Vertical stack",
