@@ -78,7 +78,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
 
   private _dialogOpen = false;
 
-  private _s2InclusionUnsubscribe?: UnsubscribeFunc;
+  private _s2InclusionUnsubscribe?: Promise<UnsubscribeFunc>;
 
   protected async firstUpdated() {
     if (this.hass) {
@@ -611,7 +611,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     if (!this._dialogOpen) {
       // Unsubscribe from S2 inclusion before opening dialog
       if (this._s2InclusionUnsubscribe) {
-        this._s2InclusionUnsubscribe();
+        this._s2InclusionUnsubscribe.then((unsubscribe) => unsubscribe());
         this._s2InclusionUnsubscribe = undefined;
       }
 
@@ -631,8 +631,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     this._subscribeS2Inclusion();
   };
 
-  private async _subscribeS2Inclusion() {
-    this._s2InclusionUnsubscribe = await subscribeS2Inclusion(
+  private _subscribeS2Inclusion() {
+    this._s2InclusionUnsubscribe = subscribeS2Inclusion(
       this.hass,
       this.configEntryId,
       (message) => {
