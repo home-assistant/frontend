@@ -61,7 +61,7 @@ const cardConfigStruct = assign(
     aspect_ratio: optional(string()),
     default_zoom: optional(number()),
     dark_mode: optional(boolean()),
-    entities: array(mapEntitiesConfigStruct),
+    entities: optional(array(mapEntitiesConfigStruct)),
     hours_to_show: optional(number()),
     geo_location_sources: optional(array(geoSourcesConfigStruct)),
     auto_fit: optional(boolean()),
