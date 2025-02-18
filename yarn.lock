@@ -4737,6 +4737,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/leaflet.markercluster@npm:1.5.5":
+  version: 1.5.5
+  resolution: "@types/leaflet.markercluster@npm:1.5.5"
+  dependencies:
+    "@types/leaflet": "npm:*"
+  checksum: 10/17647d187ed8c9c38124005c3c45c0c7998c6359d8783e2ea162f9649b151862750c813eba2373054e90156a11a37af2b220429f937b302889b9d6e2105bf2ca
+  languageName: node
+  linkType: hard
+
 "@types/leaflet@npm:*, @types/leaflet@npm:1.9.16":
   version: 1.9.16
   resolution: "@types/leaflet@npm:1.9.16"
@@ -9380,6 +9389,7 @@ __metadata:
     "@types/js-yaml": "npm:4.0.9"
     "@types/leaflet": "npm:1.9.16"
     "@types/leaflet-draw": "npm:1.0.11"
+    "@types/leaflet.markercluster": "npm:1.5.5"
     "@types/lodash.merge": "npm:4.6.9"
     "@types/luxon": "npm:3.4.2"
     "@types/mocha": "npm:10.0.10"
@@ -9444,6 +9454,7 @@ __metadata:
     jszip: "npm:3.10.1"
     leaflet: "npm:1.9.4"
     leaflet-draw: "patch:leaflet-draw@npm%3A1.0.4#./.yarn/patches/leaflet-draw-npm-1.0.4-0ca0ebcf65.patch"
+    leaflet.markercluster: "npm:1.5.3"
     lint-staged: "npm:15.4.3"
     lit: "npm:2.8.0"
     lit-analyzer: "npm:2.0.3"
@@ -10745,6 +10756,15 @@ __metadata:
   version: 1.0.4
   resolution: "leaflet-draw@patch:leaflet-draw@npm%3A1.0.4#./.yarn/patches/leaflet-draw-npm-1.0.4-0ca0ebcf65.patch::version=1.0.4&hash=790842&locator=home-assistant-frontend%40workspace%3A."
   checksum: 10/70e43ef0307dd3995dc392609a627b349070f25a57b908a4ab07e17b579878fdd0ff090847ca42826b933c547e324a4e560f35a8a1417f8209e702c3512e4d8a
+  languageName: node
+  linkType: hard
+
+"leaflet.markercluster@npm:1.5.3":
+  version: 1.5.3
+  resolution: "leaflet.markercluster@npm:1.5.3"
+  peerDependencies:
+    leaflet: ^1.3.1
+  checksum: 10/28dc441de7012b19628144407bde89576f758dbea31ecb86e3412d1fb3a46723fb47d2ba45d9b858c2e65592479a127474fb1cbf7ff33b3023c4d14f851e5fe4
   languageName: node
   linkType: hard
 

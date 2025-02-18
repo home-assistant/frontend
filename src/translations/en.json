@@ -6310,7 +6310,8 @@
             "description": "Home Assistant is starting, please wait…"
           },
           "map": {
-            "reset_focus": "Reset focus"
+            "reset_focus": "Reset focus",
+            "toggle_grouping": "Toggle grouping"
           },
           "energy": {
             "loading": "Loading…",
