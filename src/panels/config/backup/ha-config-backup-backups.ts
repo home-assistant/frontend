@@ -1,4 +1,3 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
 import {
   mdiDelete,
   mdiDotsVertical,
@@ -9,7 +8,7 @@ import {
   mdiUpload,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -28,6 +27,7 @@ import type {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-circular-progress";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-states";
 import "../../../components/ha-icon";
@@ -152,16 +152,12 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         sortable: true,
         filterable: true,
         flex: 3,
-        template: (backup) =>
-          backup.in_progress
-            ? html`<mwc-linear-progress indeterminate></mwc-linear-progress>`
-            : backup.name,
       },
       size: {
         title: localize("ui.panel.config.backup.size"),
         filterable: true,
         sortable: true,
-        template: (backup) => (backup.size ? bytesToString(backup.size) : ""),
+        template: (backup) => bytesToString(backup.size),
       },
       date: {
         title: localize("ui.panel.config.backup.created"),
@@ -169,9 +165,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         filterable: true,
         sortable: true,
         template: (backup) =>
-          !backup.in_progress
-            ? relativeTime(new Date(backup.date), this.hass.locale)
-            : "",
+          relativeTime(new Date(backup.date), this.hass.locale),
       },
       formatted_type: {
         title: localize("ui.panel.config.backup.backup_type"),
@@ -267,13 +261,11 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
               {
                 label: this.hass.localize("ui.common.download"),
                 path: mdiDownload,
-                disabled: backup.in_progress,
                 action: () => this._downloadBackup(backup),
               },
               {
                 label: this.hass.localize("ui.common.delete"),
                 path: mdiDelete,
-                disabled: backup.in_progress,
                 action: () => this._deleteBackup(backup),
                 warning: true,
               },
@@ -289,20 +281,13 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     (
       activeGrouping: string | undefined,
       localize: LocalizeFunc,
-      isHassio: boolean,
-      backupInProgress: boolean
-    ) => {
-      if (activeGrouping === "formatted_type") {
-        const groups = getBackupTypes(isHassio).map((type) =>
-          localize(`ui.panel.config.backup.type.${type}`)
-        );
-        if (backupInProgress) {
-          groups.unshift(localize("ui.panel.config.backup.type.in_progress"));
-        }
-        return groups;
-      }
-      return undefined;
-    }
+      isHassio: boolean
+    ) =>
+      activeGrouping === "formatted_type"
+        ? getBackupTypes(isHassio).map((type) =>
+            localize(`ui.panel.config.backup.type.${type}`)
+          )
+        : undefined
   );
 
   private _handleGroupingChanged(ev: CustomEvent) {
@@ -324,8 +309,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
       backups: BackupContent[],
       filters: DataTableFiltersValues,
       localize: LocalizeFunc,
-      isHassio: boolean,
-      backupInProgress: boolean
+      isHassio: boolean
     ): BackupRow[] => {
       const typeFilter = filters["ha-filter-states"] as string[] | undefined;
       let filteredBackups = backups;
@@ -335,7 +319,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
           return typeFilter.includes(type);
         });
       }
-      const result = filteredBackups.map((backup) => {
+      return filteredBackups.map((backup) => {
         const type = computeBackupType(backup, isHassio);
         const agentIds = Object.keys(backup.agents);
         return {
@@ -346,22 +330,6 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
           in_progress: false,
         };
       });
-      if (backupInProgress) {
-        result.unshift({
-          backup_id: "",
-          date: new Date().toISOString(),
-          extra_metadata: {},
-          name: "",
-          agents: {},
-          failed_agent_ids: [],
-          with_automatic_settings: true,
-          size: 0,
-          agent_ids: [],
-          formatted_type: localize("ui.panel.config.backup.type.in_progress"),
-          in_progress: true,
-        });
-      }
-      return result;
     }
   );
 
@@ -378,8 +346,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
       this.backups,
       this._filters,
       this.hass.localize,
-      isHassio,
-      backupInProgress
+      isHassio
     );
     const maxDisplayedAgents = Math.min(
       this._maxAgents(data),
@@ -416,8 +383,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         .groupOrder=${this._groupOrder(
           this._activeGrouping,
           this.hass.localize,
-          isHassio,
-          backupInProgress
+          isHassio
         )}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
@@ -498,7 +464,17 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
                 extended
                 @click=${this._newBackup}
               >
-                <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+                ${backupInProgress
+                  ? html`<div slot="icon">
+                      <ha-circular-progress
+                        .size=${"small"}
+                        indeterminate
+                      ></ha-circular-progress>
+                    </div>`
+                  : html`<ha-svg-icon
+                      slot="icon"
+                      .path=${mdiPlus}
+                    ></ha-svg-icon>`}
               </ha-fab>
             `
           : nothing}
@@ -573,9 +549,6 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
 
   private _showBackupDetails(ev: CustomEvent): void {
     const id = (ev.detail as RowClickedEvent).id;
-    if (!id) {
-      return;
-    }
     navigate(`/config/backup/details/${id}`);
   }
 
@@ -646,7 +619,14 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   }
 
   static get styles(): CSSResultGroup {
-    return haStyle;
+    return [
+      haStyle,
+      css`
+        ha-circular-progress {
+          --md-sys-color-primary: var(--mdc-theme-on-secondary);
+        }
+      `,
+    ];
   }
 }
 

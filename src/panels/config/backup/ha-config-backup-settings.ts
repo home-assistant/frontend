@@ -368,6 +368,9 @@ class HaConfigBackupSettings extends LitElement {
     .card-content {
       padding-bottom: 0;
     }
+    a {
+      text-decoration: none;
+    }
   `;
 }
 

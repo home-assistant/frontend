@@ -8,6 +8,7 @@ import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
+import "../../../components/ha-circular-progress";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-icon-overflow-menu";
@@ -228,7 +229,14 @@ class HaConfigBackupOverview extends LitElement {
           extended
           @click=${this._newBackup}
         >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+          ${backupInProgress
+            ? html`<div slot="icon">
+                <ha-circular-progress
+                  .size=${"small"}
+                  indeterminate
+                ></ha-circular-progress>
+              </div>`
+            : html`<ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>`}
         </ha-fab>
       </hass-subpage>
     `;
@@ -254,6 +262,9 @@ class HaConfigBackupOverview extends LitElement {
         .card-content {
           padding-left: 0;
           padding-right: 0;
+        }
+        ha-circular-progress {
+          --md-sys-color-primary: var(--mdc-theme-on-secondary);
         }
       `,
     ];
