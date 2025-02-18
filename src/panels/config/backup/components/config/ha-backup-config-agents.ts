@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
+import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
@@ -22,7 +23,6 @@ import {
 import type { CloudStatus } from "../../../../../data/cloud";
 import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
-import { navigate } from "../../../../../common/navigate";
 
 const DEFAULT_AGENTS = [];
 
