@@ -2226,12 +2226,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit-labs/motion@npm:1.0.7":
-  version: 1.0.7
-  resolution: "@lit-labs/motion@npm:1.0.7"
+"@lit-labs/motion@npm:1.0.8":
+  version: 1.0.8
+  resolution: "@lit-labs/motion@npm:1.0.8"
   dependencies:
     lit: "npm:^3.1.2"
-  checksum: 10/6ac9e35b6272648299ae59d3f728e4a016b21df7d75c18d673b8a0cda2d64baad9ced61892df43c43224d5e5f69d94b148d4ecdc2eadb3d2fe26b2c93c799b63
+  checksum: 10/7b7f1c195ff592eb10e549e5bde07b3d8558a14b07205dc9768bb52c7ae9881a52b9790beb95c45384827227100b4e8a9f03386627c70c6683117e513419899e
   languageName: node
   linkType: hard
 
@@ -9334,7 +9334,7 @@ __metadata:
     "@fullcalendar/timegrid": "npm:6.1.15"
     "@lezer/highlight": "npm:1.2.1"
     "@lit-labs/context": "npm:0.4.1"
-    "@lit-labs/motion": "npm:1.0.7"
+    "@lit-labs/motion": "npm:1.0.8"
     "@lit-labs/observers": "npm:2.0.4"
     "@lit-labs/virtualizer": "npm:2.0.15"
     "@lokalise/node-api": "npm:13.1.0"
