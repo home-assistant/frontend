@@ -2224,8 +2224,7 @@
           "type": {
             "manual": "Manual",
             "automatic": "Automatic",
-            "addon_update": "Add-on update",
-            "in_progress": "In progress"
+            "addon_update": "Add-on update"
           },
           "locations": "Locations",
           "create": {

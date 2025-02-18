@@ -76,7 +76,6 @@ interface BackupRow extends DataTableRowData, BackupContent {
   formatted_type: string;
   size: number;
   agent_ids: string[];
-  in_progress: boolean;
 }
 
 @customElement("ha-config-backup-backups")
@@ -327,7 +326,6 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
           size: computeBackupSize(backup),
           agent_ids: agentIds.sort(compareAgents),
           formatted_type: localize(`ui.panel.config.backup.type.${type}`),
-          in_progress: false,
         };
       });
     }
@@ -340,7 +338,6 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   protected render(): TemplateResult {
     const backupInProgress =
       "state" in this.manager && this.manager.state === "in_progress";
-
     const isHassio = isComponentLoaded(this.hass, "hassio");
     const data = this._data(
       this.backups,
