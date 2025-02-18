@@ -1211,7 +1211,35 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           transform: scaleX(var(--scale-direction));
         }
 
+        @keyframes skeletonAnimate {
+          0% {
+            opacity: 0;
+          }
+          50% {
+            opacity: 0;
+          }
+          100% {
+            opacity: 1;
+          }
+        }
+
+        @keyframes contentAnimate {
+          0% {
+            opacity: 0;
+          }
+          100% {
+            opacity: 1;
+          }
+        }
+
         .loading {
+          opacity: 0;
+          animation-name: skeletonAnimate;
+          animation-duration: 2000ms;
+          animation-delay: 0;
+          animation-iteration-count: 1;
+          animation-fill-mode: forwards;
+          animation-timing-function: ease-out;
           padding: 16px;
           display: flex;
           flex-direction: column;
