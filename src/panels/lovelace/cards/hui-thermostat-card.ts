@@ -248,6 +248,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     hui-card-features {
       width: 100%;
       flex: none;
+      padding: 0 12px 12px 12px;
     }
   `;
 }

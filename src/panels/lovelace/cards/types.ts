@@ -533,6 +533,7 @@ export interface TileCardConfig extends LovelaceCardConfig {
   icon_hold_action?: ActionConfig;
   icon_double_tap_action?: ActionConfig;
   features?: LovelaceCardFeatureConfig[];
+  features_position?: "bottom" | "inline";
 }
 
 export interface HeadingCardConfig extends LovelaceCardConfig {
