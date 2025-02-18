@@ -10,7 +10,7 @@ import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
 import { cloudLogin } from "../../../data/cloud";
-import { showloudAlreadyConnectedDialog } from "../../../panels/config/cloud/dialog-cloud-already-connected/show-dialog-cloud-already-connected";
+import { showCloudAlreadyConnectedDialog } from "../../../panels/config/cloud/dialog-cloud-already-connected/show-dialog-cloud-already-connected";
 import type { HomeAssistant } from "../../../types";
 import {
   showAlertDialog,
@@ -144,7 +144,7 @@ export class CloudStepSignin extends LitElement {
         }
 
         if (errCode === "alreadyconnectederror") {
-          showloudAlreadyConnectedDialog(this, {
+          showCloudAlreadyConnectedDialog(this, {
             details: JSON.parse(err.body.message),
             logInHereAction: () => {
               this._check_conection = false;

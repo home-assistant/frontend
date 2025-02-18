@@ -9,7 +9,7 @@ export interface CloudAlreadyConnectedParams {
   closeDialog: () => void;
 }
 
-export const showloudAlreadyConnectedDialog = (
+export const showCloudAlreadyConnectedDialog = (
   element: HTMLElement,
   webhookDialogParams: CloudAlreadyConnectedParams
 ): void => {

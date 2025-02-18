@@ -28,7 +28,7 @@ import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "../../ha-config-section";
 import { showSupportPackageDialog } from "../account/show-dialog-cloud-support-package";
-import { showloudAlreadyConnectedDialog } from "../dialog-cloud-already-connected/show-dialog-cloud-already-connected";
+import { showCloudAlreadyConnectedDialog } from "../dialog-cloud-already-connected/show-dialog-cloud-already-connected";
 
 @customElement("cloud-login")
 export class CloudLogin extends LitElement {
@@ -288,7 +288,7 @@ export class CloudLogin extends LitElement {
           }
         }
         if (errCode === "alreadyconnectederror") {
-          showloudAlreadyConnectedDialog(this, {
+          showCloudAlreadyConnectedDialog(this, {
             details: JSON.parse(err.body.message),
             logInHereAction: () => {
               this._check_conection = false;

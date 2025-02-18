@@ -4729,13 +4729,13 @@
           },
           "dialog_already_connected": {
             "heading": "Account linked to other Home Assistant",
-            "description": "We noticed that another instance is currently conneceted to you Home Assistant Cloud account. Your Home Assistant Clouud account can only be signed into one Home Assistant instance at a time. If you log in here you will disconnect your other instance and its Cloud servcies.",
+            "description": "We noticed that another instance is currently connected to your Home Assistant Cloud account. Your Home Assistant Cloud account can only be signed into one Home Assistant instance at a time. If you log in here, the other instance will be disconnected along with its Cloud services.",
             "other_home_assistant": "Other Home Assistant",
             "ip_address": "IP Address",
             "connected_at": "Connected at",
             "info_backups": {
               "title": "Home Assistant Cloud backups",
-              "description": "Your Cloud backup may be overwritten if you proceed. We stringly recommend downloading your current backup from your Nabu Casa account page before continuing."
+              "description": "Your Cloud backup may be overwritten if you proceed. We strongly recommend downloading your current backup from your Nabu Casa account page before continuing."
             },
             "close": "Close",
             "login_here": "Log in here"
