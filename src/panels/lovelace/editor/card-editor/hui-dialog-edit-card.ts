@@ -390,7 +390,6 @@ export class HuiDialogEditCard
     } catch (err: any) {
       showToast(this, {
         message: err.message,
-        duration: 5,
       });
       this._saving = false;
     }
