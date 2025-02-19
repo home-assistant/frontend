@@ -1,14 +1,14 @@
-import "@material/mwc-button";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-alert";
+import "../../../../components/ha-button";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { CloudAlreadyConnectedParams as CloudAlreadyConnectedDialogParams } from "./show-dialog-cloud-already-connected";
-import "../../../../components/ha-alert";
 
 @customElement("dialog-cloud-already-connected")
 class DialogCloudAlreadyConnected extends LitElement {
@@ -90,16 +90,16 @@ class DialogCloudAlreadyConnected extends LitElement {
           </ha-alert>
         </div>
 
-        <mwc-button @click=${this.closeDialog} slot="secondaryAction">
+        <ha-button @click=${this.closeDialog} slot="secondaryAction">
           ${this.hass!.localize(
             "ui.panel.config.cloud.dialog_already_connected.close"
           )}
-        </mwc-button>
-        <mwc-button @click=${this.logInHere} slot="primaryAction">
+        </ha-button>
+        <ha-button @click=${this.logInHere} slot="primaryAction">
           ${this.hass!.localize(
             "ui.panel.config.cloud.dialog_already_connected.login_here"
           )}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }
