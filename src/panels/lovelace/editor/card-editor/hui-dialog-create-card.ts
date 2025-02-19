@@ -3,10 +3,10 @@ import "@material/mwc-tab/mwc-tab";
 import { mdiClose } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { ifDefined } from "lit/directives/if-defined";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import memoize from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
@@ -24,6 +24,7 @@ import {
   computeCards,
   computeSection,
 } from "../../common/generate-lovelace-config";
+import { addCard } from "../config-util";
 import {
   findLovelaceContainer,
   parseLovelaceContainerPath,
@@ -241,11 +242,24 @@ export class HuiCreateDialogCard
       }
     }
 
+    const lovelaceConfig = this._params!.lovelaceConfig;
+    const containerPath = this._params!.path;
+    const saveConfig = this._params!.saveConfig;
+
+    const sectionConfig =
+      containerPath.length === 2
+        ? findLovelaceContainer(lovelaceConfig, containerPath)
+        : undefined;
+
     showEditCardDialog(this, {
-      lovelaceConfig: this._params!.lovelaceConfig,
-      saveConfig: this._params!.saveConfig,
-      path: this._params!.path,
+      lovelaceConfig,
+      saveCardConfig: (newCardConfig) => {
+        const newConfig = addCard(lovelaceConfig, containerPath, newCardConfig);
+        saveConfig(newConfig);
+      },
       cardConfig: config,
+      sectionConfig,
+      isNew: true,
     });
 
     this.closeDialog();

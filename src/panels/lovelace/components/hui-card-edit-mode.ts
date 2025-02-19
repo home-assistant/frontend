@@ -23,8 +23,10 @@ import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
+import { addCard } from "../editor/config-util";
 import type { LovelaceCardPath } from "../editor/lovelace-path";
 import {
+  findLovelaceContainer,
   findLovelaceItems,
   getLovelaceContainerPath,
   parseLovelaceCardPath,
@@ -253,14 +255,23 @@ export class HuiCardEditMode extends LitElement {
   }
 
   private _duplicateCard(): void {
-    const { cardIndex } = parseLovelaceCardPath(this.path!);
+    const { cardIndex, sectionIndex } = parseLovelaceCardPath(this.path!);
     const containerPath = getLovelaceContainerPath(this.path!);
+    const sectionConfig = sectionIndex
+      ? findLovelaceContainer(this.lovelace!.config, containerPath)
+      : undefined;
+
     const cardConfig = this._cards![cardIndex];
+
     showEditCardDialog(this, {
       lovelaceConfig: this.lovelace!.config,
-      saveConfig: this.lovelace!.saveConfig,
-      path: containerPath,
+      saveCardConfig: (config) => {
+        const newConfig = addCard(this.lovelace!.config, containerPath, config);
+        this.lovelace!.saveConfig(newConfig);
+      },
       cardConfig,
+      sectionConfig,
+      isNew: true,
     });
   }
 
