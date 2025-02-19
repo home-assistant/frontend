@@ -141,25 +141,22 @@ class DialogCloudAlreadyConnected extends LitElement {
       css`
         ha-dialog {
           --mdc-dialog-max-width: 535px;
-
-          .instance-details {
-            display: flex;
-            flex-direction: column;
-            margin-right: 92px;
-            padding-bottom: 2.5em;
-
-            .instance-detail {
-              display: flex;
-              flex-direction: row;
-              justify-content: space-between;
-
-              .obfuscated {
-                display: flex;
-                flex-direction: row;
-                margin-right: -48px;
-              }
-            }
-          }
+        }
+        .instance-details {
+          display: flex;
+          flex-direction: column;
+          margin-right: 92px;
+          padding-bottom: 2.5em;
+        }
+        .instance-detail {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+        }
+        .obfuscated {
+          display: flex;
+          flex-direction: row;
+          margin-right: -48px;
         }
       `,
     ];
