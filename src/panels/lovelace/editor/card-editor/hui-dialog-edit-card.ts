@@ -434,7 +434,7 @@ export class HuiDialogEditCard
       haStyleScrollbar,
       css`
         :host {
-          --code-mirror-max-height: calc(100vh - 176px);
+          --code-mirror-max-height: unset;
         }
 
         ha-dialog {
@@ -482,12 +482,6 @@ export class HuiDialogEditCard
           max-height: calc(100vh - 216px);
         }
 
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          .content {
-            max-height: calc(100vh - 168px);
-          }
-        }
-
         .content hui-card {
           display: block;
           padding: 4px;
@@ -503,7 +497,6 @@ export class HuiDialogEditCard
         .content .element-editor {
           margin-left: 10px;
           padding-right: 10px;
-          overflow: scroll;
         }
 
         @media (min-width: 1000px) {
@@ -529,9 +522,6 @@ export class HuiDialogEditCard
         }
         .hidden {
           display: none;
-        }
-        .element-editor {
-          margin-bottom: 8px;
         }
         .blur {
           filter: blur(2px) grayscale(100%);
