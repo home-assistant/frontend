@@ -261,13 +261,13 @@ export class HuiSection extends ReactiveElement {
       const cardConfig = sectionConfig.cards![cardIndex];
       showEditCardDialog(this, {
         lovelaceConfig: this.lovelace.config,
-        saveCardConfig: (newCardConfig) => {
+        saveCardConfig: async (newCardConfig) => {
           const newConfig = replaceCard(
             this.lovelace!.config,
             [this.viewIndex, this.index, cardIndex],
             newCardConfig
           );
-          this.lovelace!.saveConfig(newConfig);
+          await this.lovelace!.saveConfig(newConfig);
         },
         sectionConfig,
         cardConfig,

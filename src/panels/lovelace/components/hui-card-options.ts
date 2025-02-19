@@ -278,9 +278,9 @@ export class HuiCardOptions extends LitElement {
     const cardConfig = this._cards![cardIndex];
     showEditCardDialog(this, {
       lovelaceConfig: this.lovelace!.config,
-      saveCardConfig: (config) => {
+      saveCardConfig: async (config) => {
         const newConfig = addCard(this.lovelace!.config, containerPath, config);
-        this.lovelace!.saveConfig(newConfig);
+        await this.lovelace!.saveConfig(newConfig);
       },
       cardConfig,
       isNew: true,

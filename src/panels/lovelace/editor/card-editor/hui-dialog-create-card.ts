@@ -253,9 +253,9 @@ export class HuiCreateDialogCard
 
     showEditCardDialog(this, {
       lovelaceConfig,
-      saveCardConfig: (newCardConfig) => {
+      saveCardConfig: async (newCardConfig) => {
         const newConfig = addCard(lovelaceConfig, containerPath, newCardConfig);
-        saveConfig(newConfig);
+        await saveConfig(newConfig);
       },
       cardConfig: config,
       sectionConfig,

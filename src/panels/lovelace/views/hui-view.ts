@@ -278,13 +278,13 @@ export class HUIView extends ReactiveElement {
       const cardConfig = viewConfig.cards![cardIndex];
       showEditCardDialog(this, {
         lovelaceConfig: this.lovelace.config,
-        saveCardConfig: (newCardConfig) => {
+        saveCardConfig: async (newCardConfig) => {
           const newConfig = replaceCard(
             this.lovelace!.config,
             [this.index, cardIndex],
             newCardConfig
           );
-          this.lovelace.saveConfig(newConfig);
+          await this.lovelace.saveConfig(newConfig);
         },
         cardConfig,
       });
