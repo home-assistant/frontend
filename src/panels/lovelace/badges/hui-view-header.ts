@@ -33,14 +33,16 @@ export class HuiViewHeader extends LitElement {
 
   @property({ attribute: false }) public viewIndex!: number;
 
-  private _checkAllHidden() {
+  private _checkHidden() {
     const allHidden =
-      !this.lovelace.editMode && this.badges.every((badges) => badges.hidden);
+      !this.card &&
+      !this.lovelace.editMode &&
+      this.badges.every((badges) => badges.hidden);
     this.toggleAttribute("hidden", allHidden);
   }
 
   private _badgeVisibilityChanged = () => {
-    this._checkAllHidden();
+    this._checkHidden();
   };
 
   connectedCallback(): void {
@@ -60,8 +62,12 @@ export class HuiViewHeader extends LitElement {
   }
 
   willUpdate(changedProperties: PropertyValues<typeof this>): void {
-    if (changedProperties.has("badges") || changedProperties.has("lovelace")) {
-      this._checkAllHidden();
+    if (
+      changedProperties.has("badges") ||
+      changedProperties.has("lovelace") ||
+      changedProperties.has("card")
+    ) {
+      this._checkHidden();
     }
 
     if (changedProperties.has("config")) {
