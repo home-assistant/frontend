@@ -492,8 +492,8 @@ export class StatisticsChart extends LitElement {
               : this.hass.localize(
                   `ui.components.statistics_charts.statistic_types.${type}`
                 ),
-            symbol: "circle",
-            symbolSize: 0,
+            symbol: "none",
+            sampling: "minmax",
             animationDurationUpdate: 0,
             lineStyle: {
               width: 1.5,

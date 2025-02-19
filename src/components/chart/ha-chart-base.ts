@@ -521,14 +521,14 @@ export class HaChartBase extends LitElement {
         0
       );
       if (dataSize > 10000) {
-        // for large datasets zr.flush takes 30-40% of the render time
-        // so we delay it a bit to avoid blocking the main thread
+        // delay the last bit of the render to avoid blocking the main thread
+        // this is not that impactful with sampling enabled but it doesn't hurt to have it
         const zr = this.chart.getZr();
-        this._originalZrFlush = zr.flush.bind(zr);
+        this._originalZrFlush = zr.flush;
         zr.flush = () => {
           setTimeout(() => {
-            this._originalZrFlush?.();
-          }, 10);
+            this._originalZrFlush?.call(zr);
+          }, 5);
         };
       }
     }
