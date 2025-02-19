@@ -511,7 +511,6 @@ export class StatisticsChart extends LitElement {
           if (band && this.chartType === "line") {
             series.stack = `band-${statistic_id}`;
             series.stackStrategy = "all";
-            (series as LineSeriesOption).symbol = "none";
             if (drawBands && type === "max") {
               (series as LineSeriesOption).areaStyle = {
                 color: color + "3F",
