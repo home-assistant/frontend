@@ -7343,6 +7343,9 @@
                 "options": "Options",
                 "customize_options": "Customize options"
               },
+              "switch-toggle": {
+                "label": "Switch toggle"
+              },
               "numeric-input": {
                 "label": "Numeric input",
                 "style": "Style",
