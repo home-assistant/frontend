@@ -233,11 +233,11 @@ export const restoreBackup = async (
   type: HassioBackupDetail["type"],
   backupSlug: string,
   backupDetails: HassioPartialBackupCreateParams | HassioFullBackupCreateParams,
-  useSnapshotUrl: boolean
+  useBackupUrl: boolean
 ): Promise<void> => {
   await hass.callApi<HassioResponse<{ job_id: string }>>(
     "POST",
-    `hassio/${useSnapshotUrl ? "snapshots" : "backups"}/${backupSlug}/restore/${type}`,
+    `hassio/${useBackupUrl ? "backups" : "snapshots"}/${backupSlug}/restore/${type}`,
     backupDetails
   );
 };
