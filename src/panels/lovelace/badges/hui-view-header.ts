@@ -7,10 +7,14 @@ import "../../../components/ha-ripple";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import type { LovelaceViewHeaderConfig } from "../../../data/lovelace/config/view";
+import type {
+  LovelaceViewConfig,
+  LovelaceViewHeaderConfig,
+} from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { HuiCard } from "../cards/hui-card";
 import "../components/hui-badge-edit-mode";
+import { replaceView } from "../editor/config-util";
 import type { Lovelace } from "../types";
 import type { HuiBadge } from "./hui-badge";
 import "./hui-view-badges";
@@ -95,8 +99,40 @@ export class HuiViewHeader extends LitElement {
       content:
         "# Hello {{ user }}\nToday is going to be warm and humid outside. Home Assistant will adjust the temperature throughout the day while you and your family is at home. ✨",
     };
-    // eslint-disable-next-line
-    console.log("Add card", cardConfig);
+
+    // Todo: open edit card dialog
+    const newConfig = { ...this.config };
+    newConfig.card = cardConfig;
+    this._saveHeaderConfig(newConfig);
+  }
+
+  private _deleteCard(ev) {
+    ev.stopPropagation();
+    const newConfig = { ...this.config };
+    delete newConfig.card;
+    this._saveHeaderConfig(newConfig);
+  }
+
+  private _editCard(ev) {
+    ev.stopPropagation();
+    // Todo: open edit card dialog
+  }
+
+  private _saveHeaderConfig(headerConfig: LovelaceViewHeaderConfig) {
+    const viewConfig = this.lovelace.config.views[
+      this.viewIndex
+    ] as LovelaceViewConfig;
+
+    const config = { ...viewConfig };
+    config.header = headerConfig;
+
+    const updatedConfig = replaceView(
+      this.hass,
+      this.lovelace.config,
+      this.viewIndex,
+      config
+    );
+    this.lovelace.saveConfig(updatedConfig);
   }
 
   render() {
@@ -106,7 +142,7 @@ export class HuiViewHeader extends LitElement {
 
     const card = this.card;
 
-    const layout = this.config?.layout ?? "responsive";
+    const layout = this.config?.layout ?? "center";
     const badgesPosition = this.config?.badges_position ?? "bottom";
 
     const hasHeading = card !== undefined;
@@ -128,7 +164,19 @@ export class HuiViewHeader extends LitElement {
                 <div class="heading">
                   ${editMode
                     ? card
-                      ? html`${card}`
+                      ? html`
+                          <hui-card-edit-mode
+                            @ll-edit-card=${this._editCard}
+                            @ll-delete-card=${this._deleteCard}
+                            .hass=${this.hass}
+                            .lovelace=${this.lovelace!}
+                            .path=${[0]}
+                            no-duplicate
+                            no-move
+                          >
+                            ${card}
+                          </hui-card-edit-mode>
+                        `
                       : html`
                           <button class="add" @click=${this._addCard}>
                             <ha-ripple></ha-ripple>
@@ -219,6 +267,10 @@ export class HuiViewHeader extends LitElement {
 
     .layout.center {
       align-items: center;
+    }
+
+    .layout .heading {
+      text-align: left;
     }
 
     .layout.center .heading {
