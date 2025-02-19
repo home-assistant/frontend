@@ -1,20 +1,25 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
+import { mdiEye, mdiEyeOff } from "@mdi/js";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
+import "../../../../components/ha-icon-button";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { CloudAlreadyConnectedParams as CloudAlreadyConnectedDialogParams } from "./show-dialog-cloud-already-connected";
+import { obfuscateUrl } from "../../../../util/url";
 
 @customElement("dialog-cloud-already-connected")
 class DialogCloudAlreadyConnected extends LitElement {
   public hass!: HomeAssistant;
 
   @state() private _params?: CloudAlreadyConnectedDialogParams;
+
+  @state() private _obfuscateIp = true;
 
   public showDialog(params: CloudAlreadyConnectedDialogParams) {
     this._params = params;
@@ -23,6 +28,7 @@ class DialogCloudAlreadyConnected extends LitElement {
   public closeDialog() {
     this._params?.closeDialog();
     this._params = undefined;
+    this._obfuscateIp = true;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -61,7 +67,23 @@ class DialogCloudAlreadyConnected extends LitElement {
                   "ui.panel.config.cloud.dialog_already_connected.ip_address"
                 )}:
               </p>
-              <p>${details.remote_ip_address}</p>
+              <div class="obfuscated">
+                <p>
+                  ${this._obfuscateIp
+                    ? obfuscateUrl(details.remote_ip_address)
+                    : details.remote_ip_address}
+                </p>
+
+                <ha-icon-button
+                  class="toggle-unmasked-url"
+                  toggles
+                  .label=${this.hass.localize(
+                    `ui.panel.config.cloud.dialog_already_connected.obfuscated_ip.${this._obfuscateIp ? "hide" : "show"}`
+                  )}
+                  @click=${this._toggleObfuscateIp}
+                  .path=${this._obfuscateIp ? mdiEye : mdiEyeOff}
+                ></ha-icon-button>
+              </div>
             </div>
             <div class="instance-detail">
               <p>
@@ -95,7 +117,7 @@ class DialogCloudAlreadyConnected extends LitElement {
             "ui.panel.config.cloud.dialog_already_connected.close"
           )}
         </ha-button>
-        <ha-button @click=${this.logInHere} slot="primaryAction">
+        <ha-button @click=${this._logInHere} slot="primaryAction">
           ${this.hass!.localize(
             "ui.panel.config.cloud.dialog_already_connected.login_here"
           )}
@@ -104,7 +126,11 @@ class DialogCloudAlreadyConnected extends LitElement {
     `;
   }
 
-  logInHere() {
+  private _toggleObfuscateIp() {
+    this._obfuscateIp = !this._obfuscateIp;
+  }
+
+  private _logInHere() {
     this._params?.logInHereAction();
     this.closeDialog();
   }
@@ -115,20 +141,25 @@ class DialogCloudAlreadyConnected extends LitElement {
       css`
         ha-dialog {
           --mdc-dialog-max-width: 535px;
-        }
-        .instance-details {
-          display: flex;
-          flex-direction: column;
-          margin-right: 20%;
-        }
-        .instance-detail {
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-        }
-        p {
-          margin-top: 0;
-          margin-bottom: 12px;
+
+          .instance-details {
+            display: flex;
+            flex-direction: column;
+            margin-right: 92px;
+            padding-bottom: 2.5em;
+
+            .instance-detail {
+              display: flex;
+              flex-direction: row;
+              justify-content: space-between;
+
+              .obfuscated {
+                display: flex;
+                flex-direction: row;
+                margin-right: -48px;
+              }
+            }
+          }
         }
       `,
     ];
