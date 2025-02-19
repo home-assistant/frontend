@@ -145,7 +145,6 @@ class DialogCloudAlreadyConnected extends LitElement {
         .instance-details {
           display: flex;
           flex-direction: column;
-          margin-right: 92px;
           padding-bottom: 42px;
         }
         .instance-detail {
@@ -156,7 +155,6 @@ class DialogCloudAlreadyConnected extends LitElement {
         .obfuscated {
           display: flex;
           flex-direction: row;
-          margin-right: -48px;
         }
       `,
     ];
