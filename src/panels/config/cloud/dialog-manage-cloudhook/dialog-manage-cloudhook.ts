@@ -2,11 +2,9 @@ import "@material/mwc-button";
 import { mdiOpenInNew } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { query, state } from "lit/decorators";
+import { state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../../components/ha-dialog";
-import "../../../../components/ha-textfield";
-import type { HaTextField } from "../../../../components/ha-textfield";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -19,8 +17,6 @@ export class DialogManageCloudhook extends LitElement {
   protected hass?: HomeAssistant;
 
   @state() private _params?: WebhookDialogParams;
-
-  @query("ha-textfield") _input!: HaTextField;
 
   public showDialog(params: WebhookDialogParams) {
     this._params = params;
@@ -135,13 +131,6 @@ export class DialogManageCloudhook extends LitElement {
       css`
         ha-dialog {
           width: 650px;
-        }
-        ha-textfield {
-          display: block;
-        }
-        ha-textfield > ha-icon-button {
-          --mdc-icon-button-size: 24px;
-          --mdc-icon-size: 18px;
         }
         button.link {
           color: var(--primary-color);

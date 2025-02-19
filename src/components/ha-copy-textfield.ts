@@ -1,7 +1,6 @@
 import { customElement, property, state } from "lit/decorators";
-import { css, type CSSResultGroup, html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { mdiContentCopy, mdiEye, mdiEyeOff } from "@mdi/js";
-import { haStyle } from "../resources/styles";
 
 import "./ha-button";
 import "./ha-icon-button";
@@ -70,44 +69,39 @@ export class HaCopyTextfield extends LitElement {
   private async _copy(): Promise<void> {
     await copyToClipboard(this.value);
     showToast(this, {
-      message: this.hass!.localize("ui.common.copied_clipboard"),
+      message: this.hass.localize("ui.common.copied_clipboard"),
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return [
-      haStyle,
-      css`
-        .container {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          margin-top: 8px;
-        }
+  static styles = css`
+    .container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
 
-        .textfield-container {
-          position: relative;
-          flex: 1;
-        }
+    .textfield-container {
+      position: relative;
+      flex: 1;
+    }
 
-        .textfield-container ha-textfield {
-          display: block;
-        }
+    .textfield-container ha-textfield {
+      display: block;
+    }
 
-        .toggle-unmasked {
-          position: absolute;
-          top: 8px;
-          right: 8px;
-          inset-inline-start: initial;
-          inset-inline-end: 8px;
-          --mdc-icon-button-size: 40px;
-          --mdc-icon-size: 20px;
-          color: var(--secondary-text-color);
-          direction: var(--direction);
-        }
-      `,
-    ];
-  }
+    .toggle-unmasked {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      inset-inline-start: initial;
+      inset-inline-end: 8px;
+      --mdc-icon-button-size: 40px;
+      --mdc-icon-size: 20px;
+      color: var(--secondary-text-color);
+      direction: var(--direction);
+    }
+  `;
 }
 
 declare global {
