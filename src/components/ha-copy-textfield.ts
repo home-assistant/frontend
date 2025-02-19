@@ -1,12 +1,5 @@
 import { customElement, property, state } from "lit/decorators";
-import {
-  type PropertyValues,
-  css,
-  type CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-} from "lit";
+import { css, type CSSResultGroup, html, LitElement, nothing } from "lit";
 import { mdiContentCopy, mdiEye, mdiEyeOff } from "@mdi/js";
 import { haStyle } from "../resources/styles";
 
@@ -25,19 +18,11 @@ export class HaCopyTextfield extends LitElement {
 
   @property({ attribute: "value" }) public value!: string;
 
-  @property({ attribute: "masked_value" }) public maskedValue?: string;
+  @property({ attribute: "masked-value" }) public maskedValue?: string;
 
   @property({ attribute: "label" }) public label?: string;
 
-  @state() private _showMasked = false;
-
-  protected firstUpdated(_changedProperties: PropertyValues) {
-    super.firstUpdated(_changedProperties);
-
-    if (this.maskedValue) {
-      this._showMasked = true;
-    }
-  }
+  @state() private _showMasked = true;
 
   public render() {
     return html`
