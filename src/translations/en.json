@@ -2469,7 +2469,7 @@
             },
             "retention": "Retention",
             "custom_retention": "Custom retention",
-            "custom_retention_label": "Clean up every",
+            "custom_retention_label": "Keep only",
             "retention_description": "Based on the maximum number of backups or how many days they should be kept.",
             "retention_presets": {
               "copies_3": "3 backups",
