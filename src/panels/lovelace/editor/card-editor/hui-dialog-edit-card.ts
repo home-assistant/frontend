@@ -22,6 +22,7 @@ import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import { showToast } from "../../../../util/toast";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import "../../cards/hui-card";
 import "../../sections/hui-section";
@@ -384,11 +385,19 @@ export class HuiDialogEditCard
       return;
     }
     this._saving = true;
-    await this._params!.saveCardConfig(this._cardConfig!);
-    this._saving = false;
-    this._dirty = false;
-    showSaveSuccessToast(this, this.hass);
-    this.closeDialog();
+    try {
+      await this._params!.saveCardConfig(this._cardConfig!);
+      this._saving = false;
+      this._dirty = false;
+      showSaveSuccessToast(this, this.hass);
+      this.closeDialog();
+    } catch (err: any) {
+      showToast(this, {
+        message: err.message,
+        duration: 5,
+      });
+      this._saving = false;
+    }
   }
 
   static get styles(): CSSResultGroup {

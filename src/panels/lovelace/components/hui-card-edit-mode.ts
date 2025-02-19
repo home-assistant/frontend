@@ -257,9 +257,10 @@ export class HuiCardEditMode extends LitElement {
   private _duplicateCard(): void {
     const { cardIndex, sectionIndex } = parseLovelaceCardPath(this.path!);
     const containerPath = getLovelaceContainerPath(this.path!);
-    const sectionConfig = sectionIndex
-      ? findLovelaceContainer(this.lovelace!.config, containerPath)
-      : undefined;
+    const sectionConfig =
+      sectionIndex !== undefined
+        ? findLovelaceContainer(this.lovelace!.config, containerPath)
+        : undefined;
 
     const cardConfig = this._cards![cardIndex];
 
