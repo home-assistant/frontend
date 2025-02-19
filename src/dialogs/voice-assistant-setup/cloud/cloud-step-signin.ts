@@ -26,7 +26,7 @@ export class CloudStepSignin extends LitElement {
 
   @state() private _error?: string;
 
-  @state() private _check_conection = true;
+  @state() private _checkConnection = true;
 
   @query("#email", true) private _emailField!: HaTextField;
 
@@ -118,7 +118,7 @@ export class CloudStepSignin extends LitElement {
           hass: this.hass,
           email: username,
           ...(code ? { code } : { password }),
-          check_connection: this._check_conection,
+          check_connection: this._checkConnection,
         });
       } catch (err: any) {
         const errCode = err && err.body && err.body.code;
@@ -147,7 +147,7 @@ export class CloudStepSignin extends LitElement {
           showCloudAlreadyConnectedDialog(this, {
             details: JSON.parse(err.body.message),
             logInHereAction: () => {
-              this._check_conection = false;
+              this._checkConnection = false;
               doLogin(username);
             },
             closeDialog: () => {
