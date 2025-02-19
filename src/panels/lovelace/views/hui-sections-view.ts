@@ -147,12 +147,13 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     if (!this.lovelace) return nothing;
 
     const sections = this.sections;
-    const totalSectionCount =
-      this._sectionColumnCount + (this.lovelace?.editMode ? 1 : 0);
     const editMode = this.lovelace.editMode;
 
     const maxColumnCount = this._columnsController.value ?? 1;
+    const totalSectionCount = this._sectionColumnCount;
 
+    const showExtraColumn =
+      totalSectionCount < maxColumnCount && totalSectionCount > 0 && editMode;
     return html`
       <hui-view-badges
         .hass=${this.hass}
@@ -174,6 +175,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         <div
           class="container ${classMap({
             dense: Boolean(this._config?.dense_section_placement),
+            "extra-column": showExtraColumn,
           })}"
           style=${styleMap({
             "--total-section-count": totalSectionCount,
@@ -250,13 +252,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                   .rollback=${false}
                 >
                   <div class="create-section-container">
-                    <div class="drop-helper" aria-hidden="true">
-                      <p>
-                        ${this.hass.localize(
-                          "ui.panel.lovelace.editor.section.drop_card_create_section"
-                        )}
-                      </p>
-                    </div>
                     <button
                       class="create-section"
                       @click=${this._createSection}
@@ -456,6 +451,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
     .container {
       --column-count: min(var(--max-column-count), var(--total-section-count));
+      --container-max-width: calc(
+        var(--column-count) * var(--column-max-width) +
+          (var(--column-count) - 1) * var(--column-gap)
+      );
       display: grid;
       align-items: start;
       justify-content: center;
@@ -465,11 +464,14 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       padding: var(--row-gap) var(--column-gap);
       box-sizing: content-box;
       margin: 0 auto;
-      max-width: calc(
-        var(--column-count) * var(--column-max-width) +
-          (var(--column-count) - 1) * var(--column-gap)
-      );
+      max-width: var(--container-max-width);
     }
+
+    .container.extra-column {
+      grid-template-columns: repeat(var(--column-count), 1fr) 76px;
+      max-width: calc(var(--column-gap) + 76px + var(--container-max-width));
+    }
+
     .container.dense {
       grid-auto-flow: row dense;
     }
@@ -483,38 +485,20 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       position: relative;
       display: flex;
       flex-direction: column;
-      margin-top: 36px;
+      margin-top: 34px;
     }
 
     .create-section-container .card {
       display: none;
     }
 
-    .create-section-container:has(.card) .drop-helper {
-      display: flex;
-    }
-    .create-section-container:has(.card) .create-section {
-      display: none;
-    }
-
-    .drop-helper {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      outline: none;
-      background: none;
-      cursor: pointer;
-      border-radius: var(--ha-card-border-radius, 12px);
-      border: 2px dashed var(--primary-color);
-      height: calc(var(--row-height) + 2 * (var(--row-gap) + 2px));
-      padding: 8px;
-      box-sizing: border-box;
-      width: 100%;
-      --ha-ripple-color: var(--primary-color);
-      --ha-ripple-hover-opacity: 0.04;
-      --ha-ripple-pressed-opacity: 0.12;
+    .create-section-container:has(.card) .create-section:after {
+      content: "";
+      position: absolute;
+      display: block;
+      inset: 0;
+      background: var(--primary-color);
+      opacity: 0.12;
     }
 
     .drop-helper p {
@@ -537,7 +521,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       height: calc(var(--row-height) + 2 * (var(--row-gap) + 2px));
       padding: 8px;
       box-sizing: border-box;
-      width: 100%;
+      width: 76px;
       --ha-ripple-color: var(--primary-color);
       --ha-ripple-hover-opacity: 0.04;
       --ha-ripple-pressed-opacity: 0.12;
