@@ -1,14 +1,9 @@
-import type {
-  LovelaceSectionConfig,
-  LovelaceSectionRawConfig,
-} from "../../../data/lovelace/config/section";
+import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
 import { isStrategySection } from "../../../data/lovelace/config/section";
 import type { LovelaceRawConfig } from "../../../data/lovelace/config/types";
 import { isStrategyDashboard } from "../../../data/lovelace/config/types";
 import type { LovelaceViewRawConfig } from "../../../data/lovelace/config/view";
 import { isStrategyView } from "../../../data/lovelace/config/view";
-import { SECTIONS_VIEW_LAYOUT } from "../views/const";
-import { getViewType } from "../views/get-view-type";
 
 export const checkLovelaceConfig = (
   config: LovelaceRawConfig
@@ -43,19 +38,6 @@ export const checkViewConfig = (
   // Migrate sections
   if (updatedView.sections) {
     updatedView.sections = updatedView.sections!.map(checkSectionConfig);
-  }
-
-  const type = getViewType(updatedView);
-
-  if (type === SECTIONS_VIEW_LAYOUT && updatedView.badges) {
-    const headingSection: LovelaceSectionConfig = {
-      type: "heading",
-      badges: updatedView.badges || [],
-      layout: "center",
-    };
-    const existingSections = updatedView.sections || [];
-    updatedView.sections = [headingSection, ...existingSections];
-    delete updatedView.badges;
   }
 
   return updatedView;
