@@ -5,7 +5,6 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import type { MediaQueriesListener } from "../../../common/dom/media_query";
 import "../../../components/ha-svg-icon";
 import type { LovelaceSectionElement } from "../../../data/lovelace";
-
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type {
   LovelaceSectionConfig,
@@ -196,6 +195,7 @@ export class HuiSection extends ReactiveElement {
       addLayoutElement = true;
       this._createLayoutElement(sectionConfig);
     }
+
     this._createCards(sectionConfig);
     this._layoutElement!.isStrategy = isStrategy;
     this._layoutElement!.hass = this.hass;

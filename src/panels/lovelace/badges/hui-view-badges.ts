@@ -101,7 +101,7 @@ export class HuiViewBadges extends LitElement {
 
   private _badgeRemoved(ev) {
     ev.stopPropagation();
-    // Do nothing, it's handle by the "card-added" event from the new parent.
+    // Do nothing, it's handle by the "item-added" event from the new parent.
   }
 
   private _dragStart() {

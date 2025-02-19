@@ -2,10 +2,9 @@ import type { LovelaceSectionElement } from "../../../data/lovelace";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import type { HuiErrorCard } from "../cards/hui-error-card";
 import "../sections/hui-grid-section";
-import "../sections/hui-heading-section";
 import { createLovelaceElement } from "./create-element-base";
 
-const ALWAYS_LOADED_LAYOUTS = new Set(["grid", "heading"]);
+const ALWAYS_LOADED_LAYOUTS = new Set(["grid"]);
 
 const LAZY_LOAD_LAYOUTS = {};
 

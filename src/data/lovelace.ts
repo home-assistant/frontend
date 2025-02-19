@@ -33,7 +33,6 @@ export interface LovelaceSectionElement extends HTMLElement {
   viewIndex?: number;
   index?: number;
   cards?: HuiCard[];
-  badges?: HuiBadge[];
   isStrategy: boolean;
   importOnly?: boolean;
   setConfig(config: LovelaceSectionConfig): void;
