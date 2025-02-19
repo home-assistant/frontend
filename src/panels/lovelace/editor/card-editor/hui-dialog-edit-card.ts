@@ -139,12 +139,12 @@ export class HuiDialogEditCard
   };
 
   protected render() {
-    if (!this._params) {
+    if (!this._params || !this._cardConfig) {
       return nothing;
     }
 
     let heading: string;
-    if (this._cardConfig && this._cardConfig.type) {
+    if (this._cardConfig.type) {
       let cardName: string | undefined;
       if (isCustomType(this._cardConfig.type)) {
         // prettier-ignore
@@ -163,10 +163,6 @@ export class HuiDialogEditCard
       heading = this.hass!.localize(
         "ui.panel.lovelace.editor.edit_card.typed_header",
         { type: cardName }
-      );
-    } else if (!this._cardConfig) {
-      heading = this.hass!.localize(
-        "ui.panel.lovelace.editor.edit_card.pick_card"
       );
     } else {
       heading = this.hass!.localize(
@@ -210,7 +206,7 @@ export class HuiDialogEditCard
         <div class="content">
           <div class="element-editor">
             <hui-card-element-editor
-              .showVisibilityTab=${this._cardConfig?.type !== "conditional"}
+              .showVisibilityTab=${this._cardConfig.type !== "conditional"}
               .sectionConfig=${this._sectionConfig}
               .hass=${this.hass}
               .lovelace=${this._params.lovelaceConfig}
@@ -324,7 +320,7 @@ export class HuiDialogEditCard
   }
 
   private _cardConfigInSection = memoizeOne(
-    (cardConfig?: LovelaceCardConfig) => {
+    (cardConfig: LovelaceCardConfig) => {
       const { cards, title, ...containerConfig } = this
         ._sectionConfig as LovelaceSectionConfig;
 
