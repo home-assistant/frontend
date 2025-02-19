@@ -7479,12 +7479,12 @@
         "customize_sidebar": {
           "header": "Edit sidebar",
           "description": "You can also press and hold the header of the sidebar to activate edit mode.",
-          "overwritten_by_device": "Your user sidebar preferences are overwritten by specific device preferences.",
+          "overwritten_by_device": "Your user sidebar preferences are overwritten by device-specific preferences.",
           "device_description": "Enable specific sidebar preferences for this device.",
           "button": "Edit",
           "delete_device_preferences_header": "Delete device preferences",
-          "delete_device_preferences_description": "This will delete sidebar order and hidden items this device and will show again the user defined preferences.",
-          "device_specific_header": "Device specific sidebar"
+          "delete_device_preferences_description": "This will delete sidebar order and hidden items on this device and will show user-defined preferences again.",
+          "device_specific_header": "Device-specific sidebar"
         },
         "vibrate": {
           "header": "Vibrate",
