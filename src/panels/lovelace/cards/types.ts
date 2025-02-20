@@ -342,7 +342,6 @@ export interface MarkdownCardConfig extends LovelaceCardConfig {
   entity_ids?: string | string[];
   theme?: string;
   show_empty?: boolean;
-  no_border?: boolean;
 }
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {

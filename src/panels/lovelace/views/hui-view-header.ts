@@ -102,7 +102,7 @@ export class HuiViewHeader extends LitElement {
   private _addCard() {
     const cardConfig: LovelaceCardConfig = {
       type: "markdown",
-      no_border: true,
+      text_only: true,
       content:
         "# Hello {{ user }}\nToday is going to be warm and humid outside. Home Assistant will adjust the temperature throughout the day while you and your family is at home. ✨",
     };
