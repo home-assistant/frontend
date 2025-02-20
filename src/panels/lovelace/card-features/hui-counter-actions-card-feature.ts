@@ -1,4 +1,4 @@
-import { mdiNumericPositive1, mdiNumericNegative1, mdiTrashCan } from "@mdi/js";
+import { mdiNumericPositive1, mdiNumericNegative1, mdiRestore } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { LitElement, html } from "lit";
@@ -35,7 +35,7 @@ export const COUNTER_ACTIONS_BUTTON: Record<
   }),
   reset: () => ({
     translationKey: "reset",
-    icon: mdiTrashCan,
+    icon: mdiRestore,
     serviceName: "reset",
   }),
   decrement: () => ({
