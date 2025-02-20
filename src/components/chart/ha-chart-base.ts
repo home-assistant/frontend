@@ -26,6 +26,7 @@ import { isMac } from "../../util/is_mac";
 import "../ha-icon-button";
 import { formatTimeLabel } from "./axis-label";
 import { ensureArray } from "../../common/array/ensure-array";
+import "../ha-ripple";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 
@@ -228,19 +229,20 @@ export class HaChartBase extends LitElement {
           </li>`;
         })}
         ${items.length > overflowLimit
-          ? html`<li
-              class="more-button"
-              @click=${this._toggleExpandedLegend}
-              title=${this.hass.localize(
-                "ui.components.history_charts.expand_legend"
-              )}
-            >
-              <div>(${items.length})</div>
+          ? html`<li class="more-button" @click=${this._toggleExpandedLegend}>
+              <div>
+                ${this.hass.localize(
+                  this._expandedLegend
+                    ? "ui.components.history_charts.collapse_legend"
+                    : "ui.components.history_charts.expand_legend"
+                )} (${items.length})
+              </div>
               <div>
                 <ha-svg-icon
                   .path=${this._expandedLegend ? mdiChevronUp : mdiChevronDown}
                 ></ha-svg-icon>
               </div>
+              <ha-ripple></ha-ripple>
             </li>`
           : nothing}
       </ul>
