@@ -379,11 +379,13 @@ export interface StatisticsGraphCardConfig extends EnergyCardBaseConfig {
 export interface StatisticCardConfig extends LovelaceCardConfig {
   name?: string;
   entities: (EntityConfig | string)[];
-  period: {
-    fixed_period?: { start: string; end: string };
-    calendar?: { period: string; offset: number };
-    rolling_window?: { duration: HaDurationData; offset: HaDurationData };
-  };
+  period:
+    | {
+        fixed_period?: { start: string; end: string };
+        calendar?: { period: string; offset: number };
+        rolling_window?: { duration: HaDurationData; offset: HaDurationData };
+      }
+    | "energy_date_selection";
   stat_type: keyof Statistic;
   theme?: string;
 }
@@ -507,6 +509,7 @@ export interface WeatherForecastCardConfig extends LovelaceCardConfig {
   show_current?: boolean;
   show_forecast?: boolean;
   forecast_type?: ForecastType;
+  forecast_slots?: number;
   secondary_info_attribute?: keyof TranslationDict["ui"]["card"]["weather"]["attributes"];
   theme?: string;
   tap_action?: ActionConfig;
@@ -530,6 +533,7 @@ export interface TileCardConfig extends LovelaceCardConfig {
   icon_hold_action?: ActionConfig;
   icon_double_tap_action?: ActionConfig;
   features?: LovelaceCardFeatureConfig[];
+  features_position?: "bottom" | "inline";
 }
 
 export interface HeadingCardConfig extends LovelaceCardConfig {

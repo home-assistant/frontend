@@ -1,5 +1,16 @@
 import type { HassConfig } from "home-assistant-js-websocket";
-import { addHours, subHours, differenceInDays } from "date-fns";
+import {
+  differenceInMonths,
+  subHours,
+  differenceInDays,
+  differenceInYears,
+  startOfYear,
+  addMilliseconds,
+  startOfMonth,
+  addYears,
+  addMonths,
+  addHours,
+} from "date-fns";
 import type {
   BarSeriesOption,
   CallbackDataParams,
@@ -7,7 +18,10 @@ import type {
 } from "echarts/types/dist/shared";
 import type { FrontendLocaleData } from "../../../../../data/translation";
 import { formatNumber } from "../../../../../common/number/format_number";
-import { formatDateVeryShort } from "../../../../../common/datetime/format_date";
+import {
+  formatDateMonthYear,
+  formatDateVeryShort,
+} from "../../../../../common/datetime/format_date";
 import { formatTime } from "../../../../../common/datetime/format_time";
 import type { ECOption } from "../../../../../resources/echarts";
 
@@ -53,12 +67,15 @@ export function getCommonOptions(
     xAxis: {
       type: "time",
       min: start,
-      max: end,
+      max: getSuggestedMax(dayDifference, end),
     },
     yAxis: {
       type: "value",
       name: unit,
-      nameGap: 5,
+      nameGap: 2,
+      nameTextStyle: {
+        align: "left",
+      },
       axisLabel: {
         formatter: (value: number) => formatNumber(Math.abs(value), locale),
       },
@@ -67,10 +84,10 @@ export function getCommonOptions(
       },
     },
     grid: {
-      top: 35,
-      bottom: 10,
-      left: 10,
-      right: 10,
+      top: 15,
+      bottom: 0,
+      left: 1,
+      right: 1,
       containLabel: true,
     },
     tooltip: {
@@ -88,7 +105,6 @@ export function getCommonOptions(
             }
           });
           return [mainItems, compareItems]
-            .filter((items) => items.length > 0)
             .map((items) =>
               formatTooltip(
                 items,
@@ -100,6 +116,7 @@ export function getCommonOptions(
                 formatTotal
               )
             )
+            .filter(Boolean)
             .join("<br><br>");
         }
         return formatTooltip(
@@ -126,14 +143,16 @@ function formatTooltip(
   unit?: string,
   formatTotal?: (total: number) => string
 ) {
-  if (!params[0].value) {
+  if (!params[0]?.value) {
     return "";
   }
   // when comparing the first value is offset to match the main period
   // and the real date is in the third value
   const date = new Date(params[0].value?.[2] ?? params[0].value?.[0]);
   let period: string;
-  if (dayDifference > 0) {
+  if (dayDifference > 89) {
+    period = `${formatDateMonthYear(date, locale, config)}`;
+  } else if (dayDifference > 0) {
     period = `${formatDateVeryShort(date, locale, config)}`;
   } else {
     period = `${
@@ -183,7 +202,9 @@ export function fillDataGapsAndRoundCaps(datasets: BarSeriesOption[]) {
   const buckets = Array.from(
     new Set(
       datasets
-        .map((dataset) => dataset.data!.map((datapoint) => datapoint![0]))
+        .map((dataset) =>
+          dataset.data!.map((datapoint) => Number(datapoint![0]))
+        )
         .flat()
     )
   ).sort((a, b) => a - b);
@@ -204,7 +225,7 @@ export function fillDataGapsAndRoundCaps(datasets: BarSeriesOption[]) {
       if (x === undefined) {
         continue;
       }
-      if (x !== bucket) {
+      if (Number(x) !== bucket) {
         datasets[i].data?.splice(index, 0, {
           value: [bucket, 0],
           itemStyle: {
@@ -241,4 +262,26 @@ export function fillDataGapsAndRoundCaps(datasets: BarSeriesOption[]) {
       }
     }
   });
+}
+
+export function getCompareTransform(start: Date, compareStart?: Date) {
+  if (!compareStart) {
+    return (ts: Date) => ts;
+  }
+  const compareYearDiff = differenceInYears(start, compareStart);
+  if (
+    compareYearDiff !== 0 &&
+    start.getTime() === startOfYear(start).getTime()
+  ) {
+    return (ts: Date) => addYears(ts, compareYearDiff);
+  }
+  const compareMonthDiff = differenceInMonths(start, compareStart);
+  if (
+    compareMonthDiff !== 0 &&
+    start.getTime() === startOfMonth(start).getTime()
+  ) {
+    return (ts: Date) => addMonths(ts, compareMonthDiff);
+  }
+  const compareOffset = start.getTime() - compareStart.getTime();
+  return (ts: Date) => addMilliseconds(ts, compareOffset);
 }

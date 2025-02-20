@@ -261,7 +261,10 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     const hasFixedHeight = typeof this._config.grid_options?.rows === "number";
 
     return html`
-      <ha-card .header=${this._config.title}>
+      <ha-card>
+        ${this._config.title
+          ? html`<h1 class="card-header">${this._config.title}</h1>`
+          : nothing}
         <div
           class="content ${classMap({
             "has-header": !!this._config.title,
@@ -324,7 +327,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       );
     const endDate = this._energyEnd;
     try {
-      let unitClass;
+      let unitClass: string | undefined | null;
       if (this._config!.unit && this._metadata) {
         const metadata = Object.values(this._metadata).find(
           (metaData) =>
@@ -372,8 +375,12 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       flex-direction: column;
       height: 100%;
     }
+    .card-header {
+      padding-bottom: 0;
+    }
     .content {
       padding: 16px;
+      padding-top: 0;
       flex: 1;
     }
     .has-header {

@@ -47,6 +47,8 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
 
   @state() private _assistConfiguration?: AssistSatelliteConfiguration;
 
+  @state() private _error?: string;
+
   private _previousSteps: STEP[] = [];
 
   private _nextStep?: STEP;
@@ -165,79 +167,86 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
                   "update"
                 )}
               ></ha-voice-assistant-setup-step-update>`
-            : assistEntityState?.state === UNAVAILABLE
-              ? this.hass.localize(
-                  "ui.panel.config.voice_assistants.satellite_wizard.not_available"
-                )
-              : this._step === STEP.CHECK
-                ? html`<ha-voice-assistant-setup-step-check
-                    .hass=${this.hass}
-                    .assistEntityId=${assistSatelliteEntityId}
-                  ></ha-voice-assistant-setup-step-check>`
-                : this._step === STEP.WAKEWORD
-                  ? html`<ha-voice-assistant-setup-step-wake-word
+            : this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : assistEntityState?.state === UNAVAILABLE
+                ? html`<ha-alert alert-type="error"
+                    >${this.hass.localize(
+                      "ui.panel.config.voice_assistants.satellite_wizard.not_available"
+                    )}</ha-alert
+                  >`
+                : this._step === STEP.CHECK
+                  ? html`<ha-voice-assistant-setup-step-check
                       .hass=${this.hass}
-                      .assistConfiguration=${this._assistConfiguration}
                       .assistEntityId=${assistSatelliteEntityId}
-                      .deviceEntities=${this._deviceEntities(
-                        this._params.deviceId,
-                        this.hass.entities
-                      )}
-                    ></ha-voice-assistant-setup-step-wake-word>`
-                  : this._step === STEP.CHANGE_WAKEWORD
-                    ? html`
-                        <ha-voice-assistant-setup-step-change-wake-word
-                          .hass=${this.hass}
-                          .assistConfiguration=${this._assistConfiguration}
-                          .assistEntityId=${assistSatelliteEntityId}
-                        ></ha-voice-assistant-setup-step-change-wake-word>
-                      `
-                    : this._step === STEP.AREA
+                    ></ha-voice-assistant-setup-step-check>`
+                  : this._step === STEP.WAKEWORD
+                    ? html`<ha-voice-assistant-setup-step-wake-word
+                        .hass=${this.hass}
+                        .assistConfiguration=${this._assistConfiguration}
+                        .assistEntityId=${assistSatelliteEntityId}
+                        .deviceEntities=${this._deviceEntities(
+                          this._params.deviceId,
+                          this.hass.entities
+                        )}
+                      ></ha-voice-assistant-setup-step-wake-word>`
+                    : this._step === STEP.CHANGE_WAKEWORD
                       ? html`
-                          <ha-voice-assistant-setup-step-area
-                            .hass=${this.hass}
-                            .deviceId=${this._params.deviceId}
-                          ></ha-voice-assistant-setup-step-area>
-                        `
-                      : this._step === STEP.PIPELINE
-                        ? html`<ha-voice-assistant-setup-step-pipeline
+                          <ha-voice-assistant-setup-step-change-wake-word
                             .hass=${this.hass}
                             .assistConfiguration=${this._assistConfiguration}
                             .assistEntityId=${assistSatelliteEntityId}
-                          ></ha-voice-assistant-setup-step-pipeline>`
-                        : this._step === STEP.CLOUD
-                          ? html`<ha-voice-assistant-setup-step-cloud
+                          ></ha-voice-assistant-setup-step-change-wake-word>
+                        `
+                      : this._step === STEP.AREA
+                        ? html`
+                            <ha-voice-assistant-setup-step-area
                               .hass=${this.hass}
-                            ></ha-voice-assistant-setup-step-cloud>`
-                          : this._step === STEP.LOCAL
-                            ? html`<ha-voice-assistant-setup-step-local
+                              .deviceId=${this._params.deviceId}
+                            ></ha-voice-assistant-setup-step-area>
+                          `
+                        : this._step === STEP.PIPELINE
+                          ? html`<ha-voice-assistant-setup-step-pipeline
+                              .hass=${this.hass}
+                              .assistConfiguration=${this._assistConfiguration}
+                              .assistEntityId=${assistSatelliteEntityId}
+                            ></ha-voice-assistant-setup-step-pipeline>`
+                          : this._step === STEP.CLOUD
+                            ? html`<ha-voice-assistant-setup-step-cloud
                                 .hass=${this.hass}
-                                .assistConfiguration=${this
-                                  ._assistConfiguration}
-                              ></ha-voice-assistant-setup-step-local>`
-                            : this._step === STEP.SUCCESS
-                              ? html`<ha-voice-assistant-setup-step-success
+                              ></ha-voice-assistant-setup-step-cloud>`
+                            : this._step === STEP.LOCAL
+                              ? html`<ha-voice-assistant-setup-step-local
                                   .hass=${this.hass}
                                   .assistConfiguration=${this
                                     ._assistConfiguration}
-                                  .assistEntityId=${assistSatelliteEntityId}
-                                ></ha-voice-assistant-setup-step-success>`
-                              : nothing}
+                                ></ha-voice-assistant-setup-step-local>`
+                              : this._step === STEP.SUCCESS
+                                ? html`<ha-voice-assistant-setup-step-success
+                                    .hass=${this.hass}
+                                    .assistConfiguration=${this
+                                      ._assistConfiguration}
+                                    .assistEntityId=${assistSatelliteEntityId}
+                                  ></ha-voice-assistant-setup-step-success>`
+                                : nothing}
         </div>
       </ha-dialog>
     `;
   }
 
   private async _fetchAssistConfiguration() {
-    this._assistConfiguration = await fetchAssistSatelliteConfiguration(
-      this.hass,
-      this._findDomainEntityId(
-        this._params!.deviceId,
-        this.hass.entities,
-        "assist_satellite"
-      )!
-    );
-    return this._assistConfiguration;
+    try {
+      this._assistConfiguration = await fetchAssistSatelliteConfiguration(
+        this.hass,
+        this._findDomainEntityId(
+          this._params!.deviceId,
+          this.hass.entities,
+          "assist_satellite"
+        )!
+      );
+    } catch (err: any) {
+      this._error = err.message;
+    }
   }
 
   private _goToPreviousStep() {
@@ -292,6 +301,10 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
         }
         .skip-btn {
           margin-top: 6px;
+        }
+        ha-alert {
+          margin: 24px;
+          display: block;
         }
       `,
     ];

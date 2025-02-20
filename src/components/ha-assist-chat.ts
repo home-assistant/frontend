@@ -295,10 +295,12 @@ export class HaAssistChat extends LitElement {
     this._addMessage(userMessage);
     this.requestUpdate("_audioRecorder");
 
-    const hassMessage: AssistMessage = {
+    let hassMessage = {
       who: "hass",
       text: "…",
+      error: false,
     };
+    let currentDeltaRole = "";
     // To make sure the answer is placed at the right user text, we add it before we process it
     try {
       const unsub = await runAssistPipeline(
@@ -326,6 +328,43 @@ export class HaAssistChat extends LitElement {
             this.requestUpdate("_conversation");
             // To make sure the answer is placed at the right user text, we add it before we process it
             this._addMessage(hassMessage);
+          }
+
+          if (event.type === "intent-progress") {
+            const delta = event.data.chat_log_delta;
+
+            // new message
+            if (delta.role) {
+              // If currentDeltaRole exists, it means we're receiving our
+              // second or later message. Let's add it to the chat.
+              if (currentDeltaRole && delta.role && hassMessage.text !== "…") {
+                // Remove progress indicator of previous message
+                hassMessage.text = hassMessage.text.substring(
+                  0,
+                  hassMessage.text.length - 1
+                );
+
+                hassMessage = {
+                  who: "hass",
+                  text: "…",
+                  error: false,
+                };
+                this._addMessage(hassMessage);
+              }
+              currentDeltaRole = delta.role;
+            }
+
+            if (
+              currentDeltaRole === "assistant" &&
+              "content" in delta &&
+              delta.content
+            ) {
+              hassMessage.text =
+                hassMessage.text.substring(0, hassMessage.text.length - 1) +
+                delta.content +
+                "…";
+              this.requestUpdate("_conversation");
+            }
           }
 
           if (event.type === "intent-end") {
@@ -435,28 +474,71 @@ export class HaAssistChat extends LitElement {
     this._processing = true;
     this._audio?.pause();
     this._addMessage({ who: "user", text });
-    const message: AssistMessage = {
+    let hassMessage = {
       who: "hass",
       text: "…",
+      error: false,
     };
+    let currentDeltaRole = "";
     // To make sure the answer is placed at the right user text, we add it before we process it
-    this._addMessage(message);
+    this._addMessage(hassMessage);
     try {
       const unsub = await runAssistPipeline(
         this.hass,
         (event) => {
+          if (event.type === "intent-progress") {
+            const delta = event.data.chat_log_delta;
+
+            // new message and previous message has content
+            if (delta.role) {
+              // If currentDeltaRole exists, it means we're receiving our
+              // second or later message. Let's add it to the chat.
+              if (
+                currentDeltaRole &&
+                delta.role === "assistant" &&
+                hassMessage.text !== "…"
+              ) {
+                // Remove progress indicator of previous message
+                hassMessage.text = hassMessage.text.substring(
+                  0,
+                  hassMessage.text.length - 1
+                );
+
+                hassMessage = {
+                  who: "hass",
+                  text: "…",
+                  error: false,
+                };
+                this._addMessage(hassMessage);
+              }
+              currentDeltaRole = delta.role;
+            }
+
+            if (
+              currentDeltaRole === "assistant" &&
+              "content" in delta &&
+              delta.content
+            ) {
+              hassMessage.text =
+                hassMessage.text.substring(0, hassMessage.text.length - 1) +
+                delta.content +
+                "…";
+              this.requestUpdate("_conversation");
+            }
+          }
+
           if (event.type === "intent-end") {
             this._conversationId = event.data.intent_output.conversation_id;
             const plain = event.data.intent_output.response.speech?.plain;
             if (plain) {
-              message.text = plain.speech;
+              hassMessage.text = plain.speech;
             }
             this.requestUpdate("_conversation");
             unsub();
           }
           if (event.type === "error") {
-            message.text = event.data.message;
-            message.error = true;
+            hassMessage.text = event.data.message;
+            hassMessage.error = true;
             this.requestUpdate("_conversation");
             unsub();
           }
@@ -470,8 +552,8 @@ export class HaAssistChat extends LitElement {
         }
       );
     } catch {
-      message.text = this.hass.localize("ui.dialogs.voice_command.error");
-      message.error = true;
+      hassMessage.text = this.hass.localize("ui.dialogs.voice_command.error");
+      hassMessage.error = true;
       this.requestUpdate("_conversation");
     } finally {
       this._processing = false;

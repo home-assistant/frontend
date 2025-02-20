@@ -301,10 +301,6 @@ ${type === "object"
           direction: var(--direction);
         }
 
-        .edit-pane .card-content {
-          user-select: initial;
-        }
-
         .edit-pane a {
           color: var(--primary-color);
         }

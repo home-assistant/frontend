@@ -27,6 +27,7 @@ import { hasConfigChanged } from "../../common/has-changed";
 import {
   fillDataGapsAndRoundCaps,
   getCommonOptions,
+  getCompareTransform,
 } from "./common/energy-chart-options";
 import type { ECOption } from "../../../../resources/echarts";
 
@@ -299,6 +300,8 @@ export class HuiEnergyUsageGraphCard
         type: "bar",
         stack: "usage",
         data: [],
+        // @ts-expect-error
+        order: 0,
       });
     }
 
@@ -314,6 +317,8 @@ export class HuiEnergyUsageGraphCard
       )
     );
 
+    // @ts-expect-error
+    datasets.sort((a, b) => a.order - b.order);
     fillDataGapsAndRoundCaps(datasets);
     this._chartData = datasets;
   }
@@ -476,11 +481,12 @@ export class HuiEnergyUsageGraphCard
       (a, b) => Number(a) - Number(b)
     );
 
-    const compareOffset = compare
-      ? this._start.getTime() - this._compareStart!.getTime()
-      : 0;
+    const compareTransform = getCompareTransform(
+      this._start,
+      this._compareStart!
+    );
 
-    Object.entries(combinedData).forEach(([type, sources]) => {
+    Object.entries(combinedData).forEach(([type, sources], idx) => {
       Object.entries(sources).forEach(([statId, source]) => {
         const points: BarSeriesOption["data"] = [];
         // Process chart data.
@@ -494,7 +500,7 @@ export class HuiEnergyUsageGraphCard
           ];
           if (compare) {
             dataPoint[2] = dataPoint[0];
-            dataPoint[0] += compareOffset;
+            dataPoint[0] = compareTransform(dataPoint[0]);
           }
           points.push(dataPoint);
         }
@@ -511,6 +517,13 @@ export class HuiEnergyUsageGraphCard
                   statId,
                   statisticsMetaData[statId]
                 ),
+          // @ts-expect-error
+          order:
+            type === "used_solar"
+              ? 1
+              : type === "to_battery"
+                ? Object.keys(combinedData).length
+                : idx + 2,
           barMaxWidth: 50,
           itemStyle: {
             borderColor: getEnergyColor(

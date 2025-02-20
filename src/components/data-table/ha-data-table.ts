@@ -448,6 +448,7 @@ export class HaDataTable extends LitElement {
                     )}
                     @click=${this._handleHeaderClick}
                     .columnId=${key}
+                    title=${ifDefined(column.title)}
                   >
                     ${column.sortable
                       ? html`
