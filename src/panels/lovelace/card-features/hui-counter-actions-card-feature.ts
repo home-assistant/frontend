@@ -1,4 +1,4 @@
-import { mdiNumericPositive1, mdiNumericNegative1, mdiRestore } from "@mdi/js";
+import { mdiRestore, mdiPlus, mdiMinus } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { LitElement, html } from "lit";
@@ -31,7 +31,7 @@ export const COUNTER_ACTIONS_BUTTON: Record<
 > = {
   increment: (stateObj) => ({
     translationKey: "increment",
-    icon: mdiNumericPositive1,
+    icon: mdiPlus,
     serviceName: "increment",
     disabled: parseInt(stateObj.state) === stateObj.attributes.maximum,
   }),
@@ -43,7 +43,7 @@ export const COUNTER_ACTIONS_BUTTON: Record<
   }),
   decrement: (stateObj) => ({
     translationKey: "decrement",
-    icon: mdiNumericNegative1,
+    icon: mdiMinus,
     serviceName: "decrement",
     disabled: parseInt(stateObj.state) === stateObj.attributes.minimum,
   }),
