@@ -88,6 +88,10 @@ export interface SelectOptionsCardFeatureConfig {
   options?: string[];
 }
 
+export interface SwitchToggleCardFeatureConfig {
+  type: "switch-toggle";
+}
+
 export interface NumericInputCardFeatureConfig {
   type: "numeric-input";
   style?: "buttons" | "slider";
@@ -168,6 +172,7 @@ export type LovelaceCardFeatureConfig =
   | MediaPlayerVolumeSliderCardFeatureConfig
   | NumericInputCardFeatureConfig
   | SelectOptionsCardFeatureConfig
+  | SwitchToggleCardFeatureConfig
   | TargetHumidityCardFeatureConfig
   | TargetTemperatureCardFeatureConfig
   | UpdateActionsCardFeatureConfig
