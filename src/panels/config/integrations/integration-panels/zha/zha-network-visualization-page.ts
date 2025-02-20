@@ -266,7 +266,10 @@ export class ZHANetworkVisualizationPage extends LitElement {
               dashes: neighbor.relationship !== "Child",
             });
           } else {
-            const effective_lqi = Math.min(parseInt(edges[idx].label!), parseInt(neighbor.lqi));
+            const effective_lqi = Math.min(
+              parseInt(edges[idx].label!),
+              parseInt(neighbor.lqi)
+            );
             edges[idx].label += " & " + neighbor.lqi;
             edges[idx].color = this._getEdgeOptions(effective_lqi).color;
             edges[idx].width = this._getEdgeOptions(effective_lqi).width;
