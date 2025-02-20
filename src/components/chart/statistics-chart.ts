@@ -344,8 +344,11 @@ export class StatisticsChart extends LitElement {
     let colorIndex = 0;
     const statisticsData = Object.entries(this.statisticsData);
     const totalDataSets: typeof this._chartData = [];
-    const legendData: { name: string; color?: ZRColor; borderColor?: ZRColor }[] =
-      [];
+    const legendData: {
+      name: string;
+      color?: ZRColor;
+      borderColor?: ZRColor;
+    }[] = [];
     const statisticIds: string[] = [];
     let endTime: Date;
 

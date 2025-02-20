@@ -235,7 +235,8 @@ export class HaChartBase extends LitElement {
                   this._expandedLegend
                     ? "ui.components.history_charts.collapse_legend"
                     : "ui.components.history_charts.expand_legend"
-                )} (${items.length})
+                )}
+                (${items.length})
               </div>
               <div>
                 <ha-svg-icon
