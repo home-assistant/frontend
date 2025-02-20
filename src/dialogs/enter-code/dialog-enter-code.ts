@@ -101,7 +101,7 @@ export class DialogEnterCode
         >
           <ha-textfield
             class="input"
-            dialogInitialFocus
+            ?dialogInitialFocus=${!this._narrow}
             id="code"
             .label=${this.hass.localize("ui.dialogs.enter_code.input_label")}
             type="password"
