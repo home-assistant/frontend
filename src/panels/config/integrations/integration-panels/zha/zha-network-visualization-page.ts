@@ -250,14 +250,15 @@ export class ZHANetworkVisualizationPage extends LitElement {
             (e) => device.ieee === e.to && neighbor.ieee === e.from
           );
           if (idx === -1) {
+            const edge_options = this._getEdgeOptions(parseInt(neighbor.lqi));
             edges.push({
               from: device.ieee,
               to: neighbor.ieee,
               label: neighbor.lqi + "",
-              color: this._getEdgeOptions(parseInt(neighbor.lqi)).color,
-              width: this._getEdgeOptions(parseInt(neighbor.lqi)).width,
-              length: this._getEdgeOptions(parseInt(neighbor.lqi)).length,
-              physics: this._getEdgeOptions(parseInt(neighbor.lqi)).physics,
+              color: edge_options.color,
+              width: edge_options.width,
+              length: edge_options.length,
+              physics: edge_options.physics,
               arrows: {
                 from: {
                   enabled: neighbor.relationship !== "Child",
@@ -270,11 +271,12 @@ export class ZHANetworkVisualizationPage extends LitElement {
               parseInt(edges[idx].label!),
               parseInt(neighbor.lqi)
             );
+            const edge_options = this._getEdgeOptions(effective_lqi);
             edges[idx].label += " & " + neighbor.lqi;
-            edges[idx].color = this._getEdgeOptions(effective_lqi).color;
-            edges[idx].width = this._getEdgeOptions(effective_lqi).width;
-            edges[idx].length = this._getEdgeOptions(effective_lqi).length;
-            edges[idx].physics = this._getEdgeOptions(effective_lqi).physics;
+            edges[idx].color = edge_options.color;
+            edges[idx].width = edge_options.width;
+            edges[idx].length = edge_options.length;
+            edges[idx].physics = edge_options.physics;
             delete edges[idx].arrows;
             delete edges[idx].dashes;
           }
