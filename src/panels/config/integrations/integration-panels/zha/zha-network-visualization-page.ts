@@ -83,9 +83,12 @@ export class ZHANetworkVisualizationPage extends LitElement {
         },
         physics: {
           barnesHut: {
-            springConstant: 0,
-            avoidOverlap: 10,
+            theta: 0.3,
+            gravitationalConstant: -1900,
+            centralGravity: 0.03,
+            springConstant: 0.005,
             damping: 0.09,
+            avoidOverlap: 1,
           },
         },
         nodes: {
@@ -235,10 +238,12 @@ export class ZHANetworkVisualizationPage extends LitElement {
         label: this._buildLabel(device),
         shape: this._getShape(device),
         mass: this._getMass(device),
+        fixed: device.device_type === "Coordinator",
         color: {
           background: device.available ? "#66FF99" : "#FF9999",
         },
       });
+
       if (device.neighbors && device.neighbors.length > 0) {
         device.neighbors.forEach((neighbor) => {
           const idx = edges.findIndex(
@@ -249,9 +254,10 @@ export class ZHANetworkVisualizationPage extends LitElement {
               from: device.ieee,
               to: neighbor.ieee,
               label: neighbor.lqi + "",
-              color: this._getLQI(parseInt(neighbor.lqi)).color,
-              width: this._getLQI(parseInt(neighbor.lqi)).width,
-              length: 2000 - 4 * parseInt(neighbor.lqi),
+              color: this._getEdgeOptions(parseInt(neighbor.lqi)).color,
+              width: this._getEdgeOptions(parseInt(neighbor.lqi)).width,
+              length: this._getEdgeOptions(parseInt(neighbor.lqi)).length,
+              physics: this._getEdgeOptions(parseInt(neighbor.lqi)).physics,
               arrows: {
                 from: {
                   enabled: neighbor.relationship !== "Child",
@@ -260,16 +266,12 @@ export class ZHANetworkVisualizationPage extends LitElement {
               dashes: neighbor.relationship !== "Child",
             });
           } else {
-            edges[idx].color = this._getLQI(
-              (parseInt(edges[idx].label!) + parseInt(neighbor.lqi)) / 2
-            ).color;
-            edges[idx].width = this._getLQI(
-              (parseInt(edges[idx].label!) + parseInt(neighbor.lqi)) / 2
-            ).width;
-            edges[idx].length =
-              2000 -
-              6 * ((parseInt(edges[idx].label!) + parseInt(neighbor.lqi)) / 2);
-            edges[idx].label += "/" + neighbor.lqi;
+            const effective_lqi = Math.min(parseInt(edges[idx].label!), parseInt(neighbor.lqi));
+            edges[idx].label += " & " + neighbor.lqi;
+            edges[idx].color = this._getEdgeOptions(effective_lqi).color;
+            edges[idx].width = this._getEdgeOptions(effective_lqi).width;
+            edges[idx].length = this._getEdgeOptions(effective_lqi).length;
+            edges[idx].physics = this._getEdgeOptions(effective_lqi).physics;
             delete edges[idx].arrows;
             delete edges[idx].dashes;
           }
@@ -280,30 +282,38 @@ export class ZHANetworkVisualizationPage extends LitElement {
     this._network?.setData({ nodes: this._nodes, edges: edges });
   }
 
-  private _getLQI(lqi: number): EdgeOptions {
-    if (lqi > 192) {
-      return { color: { color: "#17ab00", highlight: "#17ab00" }, width: 4 };
+  private _getEdgeOptions(lqi: number): EdgeOptions {
+    const length = 400 + 5 * (255 - lqi);
+
+    if (lqi > 200) {
+      return {
+        color: { color: "#17ab00", highlight: "#17ab00" },
+        width: lqi / 10,
+        length: length,
+        physics: true,
+      };
     }
     if (lqi > 128) {
-      return { color: { color: "#e6b402", highlight: "#e6b402" }, width: 3 };
+      return {
+        color: { color: "#e6b402", highlight: "#e6b402" },
+        width: 10,
+        length: length,
+        physics: true,
+      };
     }
-    if (lqi > 80) {
-      return { color: { color: "#fc4c4c", highlight: "#fc4c4c" }, width: 2 };
-    }
-    return { color: { color: "#bfbfbf", highlight: "#bfbfbf" }, width: 1 };
+    return {
+      color: { color: "#bfbfbf", highlight: "#bfbfbf" },
+      width: 1,
+      length: length,
+      physics: false,
+    };
   }
 
   private _getMass(device: ZHADevice): number {
-    if (!device.available) {
-      return 6;
-    }
-    if (device.device_type === "Coordinator") {
+    if (device.device_type === "Router") {
       return 2;
     }
-    if (device.device_type === "Router") {
-      return 4;
-    }
-    return 5;
+    return 3;
   }
 
   private _getShape(device: ZHADevice): string {
