@@ -248,7 +248,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
       border: none;
     }
     .text-only ha-markdown {
-      padding: 4px 2px;
+      padding: 2px 4px;
     }
   `;
 }
