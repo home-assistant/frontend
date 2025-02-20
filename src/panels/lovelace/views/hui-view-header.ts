@@ -409,26 +409,26 @@ export class HuiViewHeader extends LitElement {
     .add {
       position: relative;
       display: flex;
-      align-items: center;
-      justify-content: center;
       flex-direction: row;
+      align-items: center;
       outline: none;
-      background: none;
-      cursor: pointer;
-      border-radius: var(--ha-card-border-radius, 12px);
-      border: 2px dashed var(--primary-color);
-      min-height: 36px;
       gap: 8px;
-      padding: 0 10px;
+      height: 36px;
+      padding: 6px 20px 6px 20px;
+      box-sizing: border-box;
+      width: auto;
+      border-radius: var(--ha-card-border-radius, 12px);
+      background-color: transparent;
+      border-width: 2px;
+      border-style: dashed;
+      border-color: var(--primary-color);
+      --mdc-icon-size: 18px;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--primary-text-color);
       --ha-ripple-color: var(--primary-color);
       --ha-ripple-hover-opacity: 0.04;
       --ha-ripple-pressed-opacity: 0.12;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 400;
-      line-height: 20px;
-      width: auto;
     }
 
     .add:focus {

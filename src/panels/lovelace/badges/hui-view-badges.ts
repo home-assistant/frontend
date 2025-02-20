@@ -218,6 +218,7 @@ export class HuiViewBadges extends LitElement {
       display: flex;
       flex-direction: row;
       align-items: center;
+      outline: none;
       gap: 8px;
       height: 36px;
       padding: 6px 20px 6px 20px;
