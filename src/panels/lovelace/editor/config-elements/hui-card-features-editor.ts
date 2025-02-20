@@ -131,7 +131,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "select-options": supportsSelectOptionsCardFeature,
   "target-humidity": supportsTargetHumidityCardFeature,
   "target-temperature": supportsTargetTemperatureCardFeature,
-  "toggle": supportsToggleCardFeature,
+  toggle: supportsToggleCardFeature,
   "update-actions": supportsUpdateActionsCardFeature,
   "vacuum-commands": supportsVacuumCommandsCardFeature,
   "water-heater-operation-modes": supportsWaterHeaterOperationModesCardFeature,
