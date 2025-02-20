@@ -171,7 +171,6 @@ export class HuiDialogSuggestBadge extends LitElement {
     const { viewIndex } = parseLovelaceContainerPath(path);
 
     const newBadges = this._badgeConfig!;
-
     return addBadges(config, [viewIndex], newBadges);
   }
 

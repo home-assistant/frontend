@@ -320,7 +320,7 @@ export class HuiCreateDialogCard
     showSuggestCardDialog(this, {
       lovelaceConfig: this._params!.lovelaceConfig,
       saveConfig: this._params!.saveConfig,
-      path: this._params!.path,
+      path: this._params!.path as [number],
       entities: this._selectedEntities,
       cardConfig,
       sectionConfig,

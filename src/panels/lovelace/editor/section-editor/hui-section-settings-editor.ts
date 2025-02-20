@@ -2,11 +2,11 @@ import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
+import "../../../../components/ha-form/ha-form";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
@@ -43,6 +43,7 @@ export class HuiDialogEditSection extends LitElement {
     const data: SettingsData = {
       column_span: this.config.column_span || 1,
     };
+
     const schema = this._schema(this.viewConfig.max_columns || 4);
 
     return html`

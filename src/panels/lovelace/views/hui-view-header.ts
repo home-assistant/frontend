@@ -211,7 +211,7 @@ export class HuiViewHeader extends LitElement {
                             <ha-ripple></ha-ripple>
                             <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
                             ${this.hass.localize(
-                              "ui.panel.lovelace.editor.section.add_title"
+                              "ui.panel.lovelace.editor.edit_view_header.add_title"
                             )}
                           </button>
                         `
