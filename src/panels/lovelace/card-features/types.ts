@@ -83,6 +83,15 @@ export interface ClimatePresetModesCardFeatureConfig {
   preset_modes?: string[];
 }
 
+export const COUNTER_ACTIONS = ["increment", "reset", "decrement"] as const;
+
+export type CounterActions = (typeof COUNTER_ACTIONS)[number];
+
+export interface CounterActionsCardFeatureConfig {
+  type: "counter-actions";
+  actions?: CounterActions[];
+}
+
 export interface SelectOptionsCardFeatureConfig {
   type: "select-options";
   options?: string[];
@@ -156,6 +165,7 @@ export type LovelaceCardFeatureConfig =
   | ClimateSwingHorizontalModesCardFeatureConfig
   | ClimateHvacModesCardFeatureConfig
   | ClimatePresetModesCardFeatureConfig
+  | CounterActionsCardFeatureConfig
   | CoverOpenCloseCardFeatureConfig
   | CoverPositionCardFeatureConfig
   | CoverTiltPositionCardFeatureConfig

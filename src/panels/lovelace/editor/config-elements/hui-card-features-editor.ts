@@ -24,6 +24,7 @@ import { supportsClimateHvacModesCardFeature } from "../../card-features/hui-cli
 import { supportsClimatePresetModesCardFeature } from "../../card-features/hui-climate-preset-modes-card-feature";
 import { supportsClimateSwingModesCardFeature } from "../../card-features/hui-climate-swing-modes-card-feature";
 import { supportsClimateSwingHorizontalModesCardFeature } from "../../card-features/hui-climate-swing-horizontal-modes-card-feature";
+import { supportsCounterActionsCardFeature } from "../../card-features/hui-counter-actions-card-feature";
 import { supportsCoverOpenCloseCardFeature } from "../../card-features/hui-cover-open-close-card-feature";
 import { supportsCoverPositionCardFeature } from "../../card-features/hui-cover-position-card-feature";
 import { supportsCoverTiltCardFeature } from "../../card-features/hui-cover-tilt-card-feature";
@@ -59,6 +60,7 @@ const UI_FEATURE_TYPES = [
   "climate-preset-modes",
   "climate-swing-modes",
   "climate-swing-horizontal-modes",
+  "counter-actions",
   "cover-open-close",
   "cover-position",
   "cover-tilt-position",
@@ -92,6 +94,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "climate-preset-modes",
   "climate-swing-modes",
   "climate-swing-horizontal-modes",
+  "counter-actions",
   "fan-preset-modes",
   "humidifier-modes",
   "lawn-mower-commands",
@@ -113,6 +116,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
     supportsClimateSwingHorizontalModesCardFeature,
   "climate-hvac-modes": supportsClimateHvacModesCardFeature,
   "climate-preset-modes": supportsClimatePresetModesCardFeature,
+  "counter-actions": supportsCounterActionsCardFeature,
   "cover-open-close": supportsCoverOpenCloseCardFeature,
   "cover-position": supportsCoverPositionCardFeature,
   "cover-tilt-position": supportsCoverTiltPositionCardFeature,
