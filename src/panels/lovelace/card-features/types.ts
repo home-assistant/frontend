@@ -101,6 +101,10 @@ export interface TargetTemperatureCardFeatureConfig {
   type: "target-temperature";
 }
 
+export interface ToggleCardFeatureConfig {
+  type: "toggle";
+}
+
 export interface WaterHeaterOperationModesCardFeatureConfig {
   type: "water-heater-operation-modes";
   operation_modes?: OperationMode[];
@@ -170,6 +174,7 @@ export type LovelaceCardFeatureConfig =
   | SelectOptionsCardFeatureConfig
   | TargetHumidityCardFeatureConfig
   | TargetTemperatureCardFeatureConfig
+  | ToggleCardFeatureConfig
   | UpdateActionsCardFeatureConfig
   | VacuumCommandsCardFeatureConfig
   | WaterHeaterOperationModesCardFeatureConfig;

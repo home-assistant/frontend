@@ -42,6 +42,7 @@ import { supportsNumericInputCardFeature } from "../../card-features/hui-numeric
 import { supportsSelectOptionsCardFeature } from "../../card-features/hui-select-options-card-feature";
 import { supportsTargetHumidityCardFeature } from "../../card-features/hui-target-humidity-card-feature";
 import { supportsTargetTemperatureCardFeature } from "../../card-features/hui-target-temperature-card-feature";
+import { supportsToggleCardFeature } from "../../card-features/hui-toggle-card-feature";
 import { supportsUpdateActionsCardFeature } from "../../card-features/hui-update-actions-card-feature";
 import { supportsVacuumCommandsCardFeature } from "../../card-features/hui-vacuum-commands-card-feature";
 import { supportsWaterHeaterOperationModesCardFeature } from "../../card-features/hui-water-heater-operation-modes-card-feature";
@@ -76,6 +77,7 @@ const UI_FEATURE_TYPES = [
   "select-options",
   "target-humidity",
   "target-temperature",
+  "toggle",
   "update-actions",
   "vacuum-commands",
   "water-heater-operation-modes",
@@ -129,6 +131,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "select-options": supportsSelectOptionsCardFeature,
   "target-humidity": supportsTargetHumidityCardFeature,
   "target-temperature": supportsTargetTemperatureCardFeature,
+  toggle: supportsToggleCardFeature,
   "update-actions": supportsUpdateActionsCardFeature,
   "vacuum-commands": supportsVacuumCommandsCardFeature,
   "water-heater-operation-modes": supportsWaterHeaterOperationModesCardFeature,

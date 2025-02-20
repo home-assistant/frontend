@@ -132,7 +132,6 @@ export class HaPasswordField extends LitElement {
         @change=${this._handleChangeEvent}
       ></ha-textfield>
       <ha-icon-button
-        toggles
         .label=${this.hass?.localize(
           this._unmaskedPassword
             ? "ui.components.selectors.text.hide_password"
