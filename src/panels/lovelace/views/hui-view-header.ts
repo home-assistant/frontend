@@ -330,7 +330,7 @@ export class HuiViewHeader extends LitElement {
     }
 
     .layout .heading {
-      text-align: left;
+      text-align: start;
     }
 
     .layout.center .heading {

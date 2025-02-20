@@ -6581,7 +6581,17 @@
             "saving_failed": "[%key:ui::panel::lovelace::editor::edit_view::saving_failed%]",
             "settings": {
               "layout": "Layout",
+              "layout_options": {
+                "responsive": "Responsive (stacked on mobile)",
+                "start": "Left aligned (always stacked)",
+                "start_rtl": "Right aligned (always stacked)",
+                "center": "Centered (always stacked)"
+              },
               "badges_position": "Badges position",
+              "badges_position_options": {
+                "top": "Top",
+                "bottom": "Bottom"
+              },
               "extra_space": "Add extra space at the top for background",
               "extra_space_helper": "Make the content more touch-friendly"
             }

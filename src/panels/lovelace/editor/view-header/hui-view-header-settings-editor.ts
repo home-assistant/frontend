@@ -2,6 +2,8 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import { computeRTL } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
@@ -20,7 +22,7 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
   @property({ attribute: false }) public config?: LovelaceViewHeaderConfig;
 
   private _schema = memoizeOne(
-    () =>
+    (localize: LocalizeFunc, isRTL: boolean) =>
       [
         {
           name: "layout",
@@ -29,15 +31,21 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
               options: [
                 {
                   value: "responsive",
-                  label: "Responsive (Stacked on mobile)",
+                  label: localize(
+                    "ui.panel.lovelace.editor.edit_view_header.settings.layout_options.responsive"
+                  ),
                 },
                 {
                   value: "start",
-                  label: "Left aligned (Always stacked)",
+                  label: localize(
+                    `ui.panel.lovelace.editor.edit_view_header.settings.layout_options.${isRTL ? "start_rtl" : "start"}`
+                  ),
                 },
                 {
                   value: "center",
-                  label: "Centered aligned (Always stacked)",
+                  label: localize(
+                    "ui.panel.lovelace.editor.edit_view_header.settings.layout_options.center"
+                  ),
                 },
               ],
             },
@@ -50,11 +58,15 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
               options: [
                 {
                   value: "bottom",
-                  label: "Bottom",
+                  label: localize(
+                    `ui.panel.lovelace.editor.edit_view_header.settings.badges_position_options.bottom`
+                  ),
                 },
                 {
                   value: "top",
-                  label: "Top",
+                  label: localize(
+                    `ui.panel.lovelace.editor.edit_view_header.settings.badges_position_options.top`
+                  ),
                 },
               ],
             },
@@ -75,7 +87,8 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
       badges_position: this.config?.badges_position || "bottom",
     };
 
-    const schema = this._schema();
+    const isRTL = computeRTL(this.hass);
+    const schema = this._schema(this.hass.localize, isRTL);
 
     return html`
       <ha-form
