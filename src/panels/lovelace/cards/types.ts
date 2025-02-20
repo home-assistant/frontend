@@ -336,6 +336,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
 export interface MarkdownCardConfig extends LovelaceCardConfig {
   type: "markdown";
   content: string;
+  text_only?: boolean;
   title?: string;
   card_size?: number;
   entity_ids?: string | string[];

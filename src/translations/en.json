@@ -7048,6 +7048,11 @@
             "markdown": {
               "name": "Markdown",
               "content": "Content",
+              "style": "Style",
+              "style_options": {
+                "card": "Card",
+                "text-only": "Text only"
+              },
               "description": "The Markdown card is used to render Markdown."
             },
             "media-control": {
