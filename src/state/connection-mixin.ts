@@ -286,7 +286,10 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       clearInterval(this.__backendPingInterval);
       this.__backendPingInterval = setInterval(() => {
         if (this.hass?.connected) {
-          promiseTimeout(5000, this.hass?.connection.ping()).catch(() => {
+          // If the backend if busy, or the connection is latent,
+          // it can take more than 10 seconds for the ping to return.
+          // We give it a 15 second timeout to be safe.
+          promiseTimeout(15000, this.hass?.connection.ping()).catch(() => {
             if (!this.hass?.connected) {
               return;
             }
@@ -296,7 +299,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
             this.hass?.connection.reconnect(true);
           });
         }
-      }, 10000);
+      }, 30000);
     }
 
     protected hassReconnected() {
