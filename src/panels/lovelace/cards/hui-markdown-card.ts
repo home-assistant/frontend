@@ -107,18 +107,26 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
     return html`
       ${this._error
-        ? html`<ha-alert
-            alert-type=${this._errorLevel?.toLowerCase() || "error"}
-            >${this._error}</ha-alert
-          >`
+        ? html`
+            <ha-alert
+              .alertType=${(this._errorLevel?.toLowerCase() as
+                | "error"
+                | "warning") || "error"}
+            >
+              ${this._error}
+            </ha-alert>
+          `
         : nothing}
-      <ha-card .header=${this._config.title}>
+      <ha-card
+        .header=${!this._config.text_only ? this._config.title : undefined}
+        class=${classMap({
+          "with-header": !!this._config.title,
+          "text-only": this._config.text_only ?? false,
+        })}
+      >
         <ha-markdown
           cache
           breaks
-          class=${classMap({
-            "no-header": !this._config.title,
-          })}
           .content=${this._templateResult?.result}
         ></ha-markdown>
       </ha-card>
@@ -228,11 +236,19 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
       margin-bottom: 8px;
     }
     ha-markdown {
-      padding: 0 16px 16px;
+      padding: 16px;
       word-wrap: break-word;
     }
-    ha-markdown.no-header {
-      padding-top: 16px;
+    .with-header ha-markdown {
+      padding: 0 16px 16px;
+    }
+    .text-only {
+      background: none;
+      box-shadow: none;
+      border: none;
+    }
+    .text-only ha-markdown {
+      padding: 4px 2px;
     }
   `;
 }
