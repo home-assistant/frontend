@@ -138,7 +138,7 @@ export class HaChartBase extends LitElement {
       return;
     }
     let chartOptions: ECOption = {};
-    if (changedProps.has("data")) {
+    if (changedProps.has("data") || changedProps.has("_hiddenDatasets")) {
       chartOptions.series = this._getSeries();
     }
     if (changedProps.has("options")) {
@@ -633,6 +633,7 @@ export class HaChartBase extends LitElement {
       this._hiddenDatasets.add(name);
       fireEvent(this, "dataset-hidden", { name });
     }
+    this.requestUpdate("_hiddenDatasets");
   }
 
   private _toggleExpandedLegend() {
@@ -706,7 +707,7 @@ export class HaChartBase extends LitElement {
       white-space: nowrap;
     }
     .chart-legend .hidden {
-      color: var(--disabled-text-color);
+      color: var(--secondary-text-color);
     }
     .chart-legend .label {
       text-overflow: ellipsis;
@@ -728,7 +729,7 @@ export class HaChartBase extends LitElement {
       direction: var(--direction);
     }
     .chart-legend .hidden .bullet {
-      border-color: var(--disabled-text-color) !important;
+      border-color: var(--secondary-text-color) !important;
       background-color: transparent !important;
     }
     .chart-legend .more-button {
