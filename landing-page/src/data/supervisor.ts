@@ -33,6 +33,10 @@ export async function getSupervisorLogsFollow(lines = 500) {
   });
 }
 
+export async function pingSupervisor() {
+  return fetch("/supervisor/supervisor/ping");
+}
+
 export async function getSupervisorNetworkInfo() {
   return fetch("/supervisor/network/info");
 }
