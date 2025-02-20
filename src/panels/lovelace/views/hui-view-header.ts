@@ -19,6 +19,7 @@ import "../components/hui-badge-edit-mode";
 import { replaceView } from "../editor/config-util";
 import { showEditViewHeaderDialog } from "../editor/view-header/show-edit-view-header-dialog";
 import type { Lovelace } from "../types";
+import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 
 @customElement("hui-view-header")
 export class HuiViewHeader extends LitElement {
@@ -107,10 +108,16 @@ export class HuiViewHeader extends LitElement {
         "# Hello {{ user }}\nToday is going to be warm and humid outside. Home Assistant will adjust the temperature throughout the day while you and your family is at home. ✨",
     };
 
-    // Todo: open edit card dialog
-    const newConfig = { ...this.config };
-    newConfig.card = cardConfig;
-    this._saveHeaderConfig(newConfig);
+    showEditCardDialog(this, {
+      cardConfig,
+      lovelaceConfig: this.lovelace.config,
+      saveCardConfig: (newCardConfig: LovelaceCardConfig) => {
+        const newConfig = { ...this.config };
+        newConfig.card = newCardConfig;
+        this._saveHeaderConfig(newConfig);
+      },
+      isNew: true,
+    });
   }
 
   private _deleteCard(ev) {
@@ -122,7 +129,21 @@ export class HuiViewHeader extends LitElement {
 
   private _editCard(ev) {
     ev.stopPropagation();
-    // Todo: open edit card dialog
+    const cardConfig = this.config!.card;
+
+    if (!cardConfig) {
+      return;
+    }
+
+    showEditCardDialog(this, {
+      cardConfig,
+      lovelaceConfig: this.lovelace.config,
+      saveCardConfig: (newCardConfig: LovelaceCardConfig) => {
+        const newConfig = { ...this.config };
+        newConfig.card = newCardConfig;
+        this._saveHeaderConfig(newConfig);
+      },
+    });
   }
 
   private _saveHeaderConfig(headerConfig: LovelaceViewHeaderConfig) {
