@@ -12,6 +12,7 @@ import type { HomeAssistant } from "../types";
 import { fileDownload } from "../util/file_download";
 import { domainToName } from "./integration";
 import type { FrontendLocaleData } from "./translation";
+import type { BackupManagerState, ManagerStateEvent } from "./backup_manager";
 import checkValidDate from "../common/datetime/check_valid_date";
 import { handleFetchPromise } from "../util/hass-call-api";
 
@@ -130,7 +131,13 @@ export interface BackupContentExtended extends BackupContent, BackupData {}
 
 export interface BackupInfo {
   backups: BackupContent[];
-  backing_up: boolean;
+  agent_errors: Record<string, string>;
+  last_attempted_automatic_backup: string | null;
+  last_completed_automatic_backup: string | null;
+  last_non_idle_event: ManagerStateEvent | null;
+  next_automatic_backup: string | null;
+  next_automatic_backup_additional: boolean;
+  state: BackupManagerState;
 }
 
 export interface BackupDetails {

@@ -349,9 +349,10 @@ export class StateHistoryChartLine extends LitElement {
           name: nameY,
           color,
           symbol: "circle",
-          step: "end",
-          animationDurationUpdate: 0,
           symbolSize: 1,
+          step: "end",
+          sampling: "minmax",
+          animationDurationUpdate: 0,
           lineStyle: {
             width: fill ? 0 : 1.5,
           },

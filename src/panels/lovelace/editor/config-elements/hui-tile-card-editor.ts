@@ -8,6 +8,7 @@ import {
   assert,
   assign,
   boolean,
+  enums,
   object,
   optional,
   string,
@@ -15,6 +16,7 @@ import {
 } from "superstruct";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-form/ha-form";
 import type {
@@ -54,6 +56,7 @@ const cardConfigStruct = assign(
     icon_hold_action: optional(actionConfigStruct),
     icon_double_tap_action: optional(actionConfigStruct),
     features: optional(array(any())),
+    features_position: optional(enums(["bottom", "inline"])),
   })
 );
 
@@ -109,8 +112,10 @@ export class HuiTileCardEditor
 
   private _schema = memoizeOne(
     (
+      localize: LocalizeFunc,
       entityId: string | undefined,
       hideState: boolean,
+      vertical: boolean,
       displayActions: AdvancedActions[] = []
     ) =>
       [
@@ -149,12 +154,6 @@ export class HuiTileCardEditor
                   },
                 },
                 {
-                  name: "vertical",
-                  selector: {
-                    boolean: {},
-                  },
-                },
-                {
                   name: "hide_state",
                   selector: {
                     boolean: {},
@@ -175,6 +174,43 @@ export class HuiTileCardEditor
                   },
                 ] as const satisfies readonly HaFormSchema[])
               : []),
+            {
+              name: "",
+              type: "grid",
+              schema: [
+                {
+                  name: "content_layout",
+                  required: true,
+                  selector: {
+                    select: {
+                      mode: "dropdown",
+                      options: ["horizontal", "vertical"].map((value) => ({
+                        label: localize(
+                          `ui.panel.lovelace.editor.card.tile.content_layout_options.${value}`
+                        ),
+                        value,
+                      })),
+                    },
+                  },
+                },
+                {
+                  name: "features_position",
+                  required: true,
+                  selector: {
+                    select: {
+                      mode: "dropdown",
+                      options: ["bottom", "inline"].map((value) => ({
+                        label: localize(
+                          `ui.panel.lovelace.editor.card.tile.features_position_options.${value}`
+                        ),
+                        value,
+                        disabled: vertical && value === "inline",
+                      })),
+                    },
+                  },
+                },
+              ],
+            },
           ],
         },
         {
@@ -223,12 +259,22 @@ export class HuiTileCardEditor
     const stateObj = entityId ? this.hass!.states[entityId] : undefined;
 
     const schema = this._schema(
+      this.hass.localize,
       entityId,
-      this._config!.hide_state ?? false,
+      this._config.hide_state ?? false,
+      this._config.vertical ?? false,
       this._displayActions
     );
 
-    const data = this._config;
+    const data = {
+      ...this._config,
+      content_layout: this._config.vertical ? "vertical" : "horizontal",
+    };
+
+    // Default features position to bottom and force it to bottom in vertical mode
+    if (!data.features_position || data.vertical) {
+      data.features_position = "bottom";
+    }
 
     return html`
       <ha-form
@@ -278,6 +324,12 @@ export class HuiTileCardEditor
 
     if (!config.state_content) {
       delete config.state_content;
+    }
+
+    // Convert content_layout to vertical
+    if (config.content_layout) {
+      config.vertical = config.content_layout === "vertical";
+      delete config.content_layout;
     }
 
     fireEvent(this, "config-changed", { config });
@@ -337,11 +389,11 @@ export class HuiTileCardEditor
       case "icon_hold_action":
       case "icon_double_tap_action":
       case "show_entity_picture":
-      case "vertical":
       case "hide_state":
       case "state_content":
+      case "content_layout":
       case "appearance":
-      case "interactions":
+      case "features_position":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.tile.${schema.name}`
         );
@@ -376,6 +428,14 @@ export class HuiTileCardEditor
         ha-form {
           display: block;
           margin-bottom: 24px;
+        }
+        .info {
+          color: var(--secondary-text-color);
+          margin-top: 0;
+          margin-bottom: 8px;
+        }
+        .features-form {
+          margin-bottom: 8px;
         }
       `,
     ];

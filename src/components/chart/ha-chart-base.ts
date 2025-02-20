@@ -7,7 +7,6 @@ import type { EChartsType } from "echarts/core";
 import type {
   ECElementEvent,
   LegendComponentOption,
-  SetOptionOpts,
   XAXisOption,
   YAXisOption,
 } from "echarts/types/dist/shared";
@@ -71,12 +70,16 @@ export class HaChartBase extends LitElement {
 
   private _listeners: (() => void)[] = [];
 
+  private _originalZrFlush?: () => void;
+
   public disconnectedCallback() {
     super.disconnectedCallback();
     while (this._listeners.length) {
       this._listeners.pop()!();
     }
     this.chart?.dispose();
+    this.chart = undefined;
+    this._originalZrFlush = undefined;
   }
 
   public connectedCallback() {
@@ -89,7 +92,7 @@ export class HaChartBase extends LitElement {
       listenMediaQuery("(prefers-reduced-motion)", (matches) => {
         if (this._reducedMotion !== matches) {
           this._reducedMotion = matches;
-          this.chart?.setOption({ animation: !this._reducedMotion });
+          this._setChartOptions({ animation: !this._reducedMotion });
         }
       })
     );
@@ -99,7 +102,7 @@ export class HaChartBase extends LitElement {
       if ((isMac && ev.key === "Meta") || (!isMac && ev.key === "Control")) {
         this._modifierPressed = true;
         if (!this.options?.dataZoom) {
-          this.chart?.setOption({ dataZoom: this._getDataZoomConfig() });
+          this._setChartOptions({ dataZoom: this._getDataZoomConfig() });
         }
       }
     };
@@ -108,7 +111,7 @@ export class HaChartBase extends LitElement {
       if ((isMac && ev.key === "Meta") || (!isMac && ev.key === "Control")) {
         this._modifierPressed = false;
         if (!this.options?.dataZoom) {
-          this.chart?.setOption({ dataZoom: this._getDataZoomConfig() });
+          this._setChartOptions({ dataZoom: this._getDataZoomConfig() });
         }
       }
     };
@@ -134,10 +137,8 @@ export class HaChartBase extends LitElement {
       return;
     }
     let chartOptions: ECOption = {};
-    const chartUpdateParams: SetOptionOpts = { lazyUpdate: true };
     if (changedProps.has("data")) {
       chartOptions.series = this._getSeries();
-      chartUpdateParams.replaceMerge = ["series"];
     }
     if (changedProps.has("options")) {
       chartOptions = { ...chartOptions, ...this._createOptions() };
@@ -145,7 +146,7 @@ export class HaChartBase extends LitElement {
       chartOptions.dataZoom = this._getDataZoomConfig();
     }
     if (Object.keys(chartOptions).length > 0) {
-      this.chart.setOption(chartOptions, chartUpdateParams);
+      this._setChartOptions(chartOptions);
     }
   }
 
@@ -579,6 +580,31 @@ export class HaChartBase extends LitElement {
 
   private _getDefaultHeight() {
     return Math.max(this.clientWidth / 2, 200);
+  }
+
+  private _setChartOptions(options: ECOption) {
+    if (!this.chart) {
+      return;
+    }
+    if (!this._originalZrFlush) {
+      const dataSize = ensureArray(this.data).reduce(
+        (acc, series) => acc + (series.data as any[]).length,
+        0
+      );
+      if (dataSize > 10000) {
+        // delay the last bit of the render to avoid blocking the main thread
+        // this is not that impactful with sampling enabled but it doesn't hurt to have it
+        const zr = this.chart.getZr();
+        this._originalZrFlush = zr.flush;
+        zr.flush = () => {
+          setTimeout(() => {
+            this._originalZrFlush?.call(zr);
+          }, 5);
+        };
+      }
+    }
+    const replaceMerge = options.series ? ["series"] : [];
+    this.chart.setOption(options, { replaceMerge });
   }
 
   private _handleZoomReset() {

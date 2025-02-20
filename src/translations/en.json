@@ -370,7 +370,10 @@
       "name": "Name",
       "optional": "optional",
       "default": "Default",
-      "dont_save": "Don't save"
+      "dont_save": "Don't save",
+      "copy": "Copy",
+      "show": "Show",
+      "hide": "Hide"
     },
     "components": {
       "selectors": {
@@ -2470,7 +2473,7 @@
             },
             "retention": "Retention",
             "custom_retention": "Custom retention",
-            "custom_retention_label": "Clean up every",
+            "custom_retention_label": "Keep only",
             "retention_description": "Based on the maximum number of backups or how many days they should be kept.",
             "retention_presets": {
               "copies_3": "3 backups",
@@ -2513,6 +2516,7 @@
             "menu": {
               "upload_backup": "Upload backup"
             },
+            "agent_error": "Error in location {name}",
             "new_backup": "Backup now",
             "onboarding": {
               "title": "Set up backups",
@@ -2651,7 +2655,9 @@
               "title": "Locations",
               "description": "Your backup will be stored on these locations when this default backup is created. You can use all locations for custom backups.",
               "no_location": "No location selected",
-              "no_location_description": "You have to select at least one location to create a backup."
+              "no_location_description": "You have to select at least one location to create a backup.",
+              "more_locations": "Explore more locations",
+              "manage_network_storage": "Manage network storage"
             },
             "encryption_key": {
               "title": "Encryption key",
@@ -6308,7 +6314,8 @@
             "description": "Home Assistant is starting, please wait…"
           },
           "map": {
-            "reset_focus": "Reset focus"
+            "reset_focus": "Reset focus",
+            "toggle_grouping": "Toggle grouping"
           },
           "energy": {
             "loading": "Loading…",
@@ -7042,6 +7049,11 @@
             "markdown": {
               "name": "Markdown",
               "content": "Content",
+              "style": "Style",
+              "style_options": {
+                "card": "Card",
+                "text-only": "Text only"
+              },
               "description": "The Markdown card is used to render Markdown."
             },
             "media-control": {
@@ -7120,12 +7132,20 @@
               "icon_tap_action": "Icon tap behavior",
               "icon_hold_action": "Icon hold behavior",
               "icon_double_tap_action": "Icon double tap behavior",
-              "interactions": "Interactions",
               "appearance": "Appearance",
               "show_entity_picture": "Show entity picture",
-              "vertical": "Vertical",
               "hide_state": "Hide state",
-              "state_content": "State content"
+              "state_content": "State content",
+              "features_position": "Features position",
+              "features_position_options": {
+                "bottom": "Bottom",
+                "inline": "Inline"
+              },
+              "content_layout": "Content layout",
+              "content_layout_options": {
+                "horizontal": "Horizontal",
+                "vertical": "Vertical"
+              }
             },
             "vertical-stack": {
               "name": "Vertical stack",
@@ -7328,6 +7348,9 @@
                 "label": "Select options",
                 "options": "Options",
                 "customize_options": "Customize options"
+              },
+              "switch-toggle": {
+                "label": "Switch toggle"
               },
               "numeric-input": {
                 "label": "Numeric input",

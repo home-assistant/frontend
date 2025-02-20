@@ -326,17 +326,19 @@ export class HuiEnergyDevicesDetailGraphCard
     );
 
     const untrackedConsumption: BarSeriesOption["data"] = [];
-    Object.keys(consumptionData.total).forEach((time) => {
-      const ts = Number(time);
-      const value =
-        consumptionData.total[time] - (totalDeviceConsumption[time] || 0);
-      const dataPoint: number[] = [ts, value];
-      if (compare) {
-        dataPoint[2] = dataPoint[0];
-        dataPoint[0] = compareTransform(new Date(ts)).getTime();
-      }
-      untrackedConsumption.push(dataPoint);
-    });
+    Object.keys(consumptionData.total)
+      .sort((a, b) => Number(a) - Number(b))
+      .forEach((time) => {
+        const ts = Number(time);
+        const value =
+          consumptionData.total[time] - (totalDeviceConsumption[time] || 0);
+        const dataPoint: number[] = [ts, value];
+        if (compare) {
+          dataPoint[2] = dataPoint[0];
+          dataPoint[0] = compareTransform(new Date(ts)).getTime();
+        }
+        untrackedConsumption.push(dataPoint);
+      });
     // random id to always add untracked at the end
     const order = Date.now();
     const dataset: BarSeriesOption = {

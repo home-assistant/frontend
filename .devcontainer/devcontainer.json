@@ -5,7 +5,7 @@
     "context": ".."
   },
   "appPort": "8124:8123",
-  "postCreateCommand": "sudo apt update && sudo apt upgrade -y && sudo apt install -y libpcap-dev",
+  "postCreateCommand": "./.devcontainer/post_create.sh",
   "postStartCommand": "script/bootstrap",
   "containerEnv": {
     "DEV_CONTAINER": "1",
