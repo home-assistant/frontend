@@ -275,7 +275,7 @@ export class StateHistoryChartLine extends LitElement {
           top: 15,
           left: rtl ? 1 : Math.max(this.paddingYAxis, this._yWidth),
           right: rtl ? Math.max(this.paddingYAxis, this._yWidth) : 1,
-          bottom: 30,
+          bottom: 20,
         },
         visualMap: this._visualMap,
         tooltip: {

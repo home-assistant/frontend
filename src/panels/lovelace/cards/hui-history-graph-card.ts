@@ -313,6 +313,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     .content {
       padding: 0 16px 8px;
       flex: 1;
+      overflow: hidden;
     }
     .has-header {
       padding-top: 0;

@@ -153,12 +153,19 @@ export class HaChartBase extends LitElement {
   protected render() {
     return html`
       <div
-        class="chart-container"
+        class="container ${classMap({ "has-height": !!this.height })}"
         style=${styleMap({
-          height: this.height ?? `${this._getDefaultHeight()}px`,
+          height: this.height,
         })}
       >
-        <div class="chart"></div>
+        <div
+          class="chart-container"
+          style=${styleMap({
+            height: this.height ? undefined : `${this._getDefaultHeight()}px`,
+          })}
+        >
+          <div class="chart"></div>
+        </div>
         ${this._renderLegend()}
         ${this._isZoomed
           ? html`<ha-icon-button
@@ -638,14 +645,23 @@ export class HaChartBase extends LitElement {
       position: relative;
       letter-spacing: normal;
     }
-    .chart-container {
+    .container {
       display: flex;
       flex-direction: column;
       position: relative;
+    }
+    .container.has-height {
       max-height: var(--chart-max-height, 350px);
     }
-    .chart {
+    .chart-container {
+      width: 100%;
+      max-height: var(--chart-max-height, 350px);
+    }
+    .has-height .chart-container {
       flex: 1;
+    }
+    .chart {
+      height: 100%;
       width: 100%;
     }
     .zoom-reset {
@@ -659,7 +675,7 @@ export class HaChartBase extends LitElement {
       border: 1px solid var(--divider-color);
     }
     .chart-legend {
-      max-height: 70%;
+      max-height: 60%;
       overflow-y: auto;
       margin: 12px 0 0;
       font-size: 12px;
