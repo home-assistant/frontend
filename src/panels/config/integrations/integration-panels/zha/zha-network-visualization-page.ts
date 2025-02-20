@@ -285,7 +285,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
   private _getEdgeOptions(lqi: number): EdgeOptions {
     const length = 400 + 5 * (255 - lqi);
 
-    if (lqi > 200) {
+    if (lqi > 192) {
       return {
         color: { color: "#17ab00", highlight: "#17ab00" },
         width: lqi / 10,
