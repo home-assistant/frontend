@@ -22,26 +22,30 @@ interface CounterButton {
   translationKey: string;
   icon: string;
   serviceName: string;
+  disabled: boolean;
 }
 
 export const COUNTER_ACTIONS_BUTTON: Record<
   string,
   (stateObj: HassEntity) => CounterButton
 > = {
-  increment: () => ({
+  increment: (stateObj) => ({
     translationKey: "increment",
     icon: mdiNumericPositive1,
     serviceName: "increment",
+    disabled: parseInt(stateObj.state) === stateObj.attributes.maximum,
   }),
   reset: () => ({
     translationKey: "reset",
     icon: mdiRestore,
     serviceName: "reset",
+    disabled: false,
   }),
-  decrement: () => ({
+  decrement: (stateObj) => ({
     translationKey: "decrement",
     icon: mdiNumericNegative1,
     serviceName: "decrement",
+    disabled: parseInt(stateObj.state) === stateObj.attributes.minimum,
   }),
 };
 
@@ -101,7 +105,8 @@ class HuiCounterActionsCardFeature
                   `ui.card.counter.actions.${button.translationKey}`
                 )}
                 @click=${this._onActionTap}
-                .disabled=${this.stateObj?.state === UNAVAILABLE}
+                .disabled=${button.disabled ||
+                this.stateObj?.state === UNAVAILABLE}
               >
                 <ha-svg-icon .path=${button.icon}></ha-svg-icon>
               </ha-control-button>
