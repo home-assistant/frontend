@@ -713,11 +713,21 @@ export class HaChartBase extends LitElement {
       background-color: transparent !important;
     }
     .chart-legend .more-button {
+      position: relative;
       border-radius: 8px;
       padding: 0 4px 0 8px;
-      background-color: var(--light-grey-color);
       font-weight: bold;
       --mdc-icon-size: 20px;
+    }
+    .chart-legend .more-button::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background-color: var(--light-grey-color);
+      opacity: 0.2;
     }
   `;
 }
