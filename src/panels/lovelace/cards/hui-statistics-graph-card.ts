@@ -380,7 +380,6 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     }
     .content {
       padding: 16px;
-      padding-top: 0;
       flex: 1;
     }
     .has-header {

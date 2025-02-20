@@ -303,6 +303,7 @@ export class StateHistoryCharts extends LitElement {
 
     .entry-container.line {
       flex: 1;
+      padding-top: 8px;
     }
 
     .entry-container:hover {
