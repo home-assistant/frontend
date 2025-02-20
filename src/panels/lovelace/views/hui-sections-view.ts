@@ -25,7 +25,7 @@ import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
 import type { HuiBadge } from "../badges/hui-badge";
-import "../badges/hui-view-header";
+import "./hui-view-header";
 import type { HuiCard } from "../cards/hui-card";
 import "../components/hui-badge-edit-mode";
 import {

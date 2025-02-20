@@ -1,4 +1,4 @@
-import { mdiPlus } from "@mdi/js";
+import { mdiPencil, mdiPlus } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -12,12 +12,13 @@ import type {
   LovelaceViewHeaderConfig,
 } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
+import type { HuiBadge } from "../badges/hui-badge";
+import "../badges/hui-view-badges";
 import type { HuiCard } from "../cards/hui-card";
 import "../components/hui-badge-edit-mode";
 import { replaceView } from "../editor/config-util";
+import { showEditViewHeaderDialog } from "../editor/view-header/show-edit-view-header-dialog";
 import type { Lovelace } from "../types";
-import type { HuiBadge } from "./hui-badge";
-import "./hui-view-badges";
 
 @customElement("hui-view-header")
 export class HuiViewHeader extends LitElement {
@@ -141,6 +142,15 @@ export class HuiViewHeader extends LitElement {
     this.lovelace.saveConfig(updatedConfig);
   }
 
+  private _configure = () => {
+    showEditViewHeaderDialog(this, {
+      config: this.config!,
+      saveConfig: (config: LovelaceViewHeaderConfig) => {
+        this._saveHeaderConfig(config);
+      },
+    });
+  };
+
   render() {
     if (!this.lovelace) return nothing;
 
@@ -155,6 +165,19 @@ export class HuiViewHeader extends LitElement {
     const hasBadges = this.badges.length > 0;
 
     return html`
+      ${editMode
+        ? html`
+            <div class="actions-container">
+              <div class="actions">
+                <ha-icon-button
+                  .label=${this.hass.localize("ui.common.edit")}
+                  @click=${this._configure}
+                  .path=${mdiPencil}
+                ></ha-icon-button>
+              </div>
+            </div>
+          `
+        : nothing}
       <div class="container ${editMode ? "edit-mode" : ""}">
         <div
           class="layout ${classMap({
@@ -218,8 +241,39 @@ export class HuiViewHeader extends LitElement {
     :host([hidden]) {
       display: none !important;
     }
+
     .container {
       position: relative;
+    }
+
+    .actions-container {
+      position: relative;
+      height: 34px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .actions {
+      z-index: 1;
+      position: absolute;
+      height: 36px;
+      bottom: -2px;
+      right: 0;
+      inset-inline-end: 0;
+      inset-inline-start: initial;
+      opacity: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s ease-in-out;
+      border-radius: var(--ha-card-border-radius, 12px);
+      border-bottom-left-radius: 0px;
+      border-bottom-right-radius: 0px;
+      background: var(--secondary-background-color);
+      --mdc-icon-button-size: 36px;
+      --mdc-icon-size: 20px;
+      color: var(--primary-text-color);
     }
 
     .layout {
@@ -324,6 +378,7 @@ export class HuiViewHeader extends LitElement {
       padding: 8px;
       border-radius: var(--ha-card-border-radius, 12px);
       border: 2px dashed var(--divider-color);
+      border-start-end-radius: 0;
     }
 
     .container.edit-mode .content {

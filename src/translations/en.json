@@ -6573,6 +6573,18 @@
             "error_same_url": "You cannot save a view with the same URL as a different existing view.",
             "move_to_dashboard": "Move to dashboard"
           },
+          "edit_view_header": {
+            "header": "Header settings",
+            "edit_ui": "[%key:ui::panel::lovelace::editor::edit_view::edit_ui%]",
+            "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
+            "saving_failed": "[%key:ui::panel::lovelace::editor::edit_view::saving_failed%]",
+            "settings": {
+              "layout": "Layout",
+              "badges_position": "Badges position",
+              "extra_space": "Add extra space at the top for background",
+              "extra_space_helper": "Make the content more touch-friendly"
+            }
+          },
           "edit_badges": {
             "view_no_badges": "Badges are not be supported by the current view type."
           },
@@ -6694,14 +6706,8 @@
             "edit_ui": "[%key:ui::panel::lovelace::editor::edit_view::edit_ui%]",
             "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
             "settings": {
-              "title": "Title",
-              "title_helper": "The title will appear at the top of section. Leave empty to hide the title.",
               "column_span": "Width",
-              "column_span_helper": "Larger sections will be made smaller to fit the display. (e.g. on mobile devices)",
-              "layout": "Layout",
-              "badges_position": "Badges position",
-              "extra_space": "Add extra space at the top for background",
-              "extra_space_helper": "Make the content more touch-friendly"
+              "column_span_helper": "Larger sections will be made smaller to fit the display. (e.g. on mobile devices)"
             },
             "visibility": {
               "explanation": "The section will be shown when ALL conditions below are fulfilled. If no conditions are set, the section will always be shown."

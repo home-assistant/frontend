@@ -2,22 +2,18 @@ import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
-import "../../../../components/ha-form/ha-form";
-import {
-  isStrategySection,
-  type LovelaceSectionRawConfig,
-} from "../../../../data/lovelace/config/section";
+import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 
-type SettingsData = Pick<
-  LovelaceSectionRawConfig,
-  "layout" | "extra_space" | "badges_position" | "column_span"
->;
+interface SettingsData {
+  column_span?: number;
+}
 
 @customElement("hui-section-settings-editor")
 export class HuiDialogEditSection extends LitElement {
@@ -26,51 +22,6 @@ export class HuiDialogEditSection extends LitElement {
   @property({ attribute: false }) public config!: LovelaceSectionRawConfig;
 
   @property({ attribute: false }) public viewConfig!: LovelaceViewConfig;
-
-  private _headingSchema = memoizeOne(
-    () =>
-      [
-        {
-          name: "layout",
-          selector: {
-            select: {
-              options: [
-                {
-                  value: "responsive",
-                  label: "Responsive (Stacked on mobile)",
-                },
-                {
-                  value: "start",
-                  label: "Left aligned (Always stacked)",
-                },
-                {
-                  value: "center",
-                  label: "Centered aligned (Always stacked)",
-                },
-              ],
-            },
-          },
-        },
-        {
-          name: "badges_position",
-          selector: {
-            select: {
-              options: [
-                {
-                  value: "bottom",
-                  label: "Bottom",
-                },
-                {
-                  value: "top",
-                  label: "Top",
-                },
-              ],
-            },
-          },
-        },
-        { name: "extra_space", selector: { boolean: {} } },
-      ] as const satisfies HaFormSchema[]
-  );
 
   private _schema = memoizeOne(
     (maxColumns: number) =>
@@ -88,29 +39,11 @@ export class HuiDialogEditSection extends LitElement {
       ] as const satisfies HaFormSchema[]
   );
 
-  private _getData(): SettingsData {
-    if (!isStrategySection(this.config) && this.config.type === "heading") {
-      return {
-        layout: this.config.layout || "responsive",
-        extra_space: this.config.extra_space || false,
-        badges_position: this.config.badges_position || "bottom",
-      };
-    }
-    return {
+  render() {
+    const data: SettingsData = {
       column_span: this.config.column_span || 1,
     };
-  }
-
-  private _getSchema(): HaFormSchema[] {
-    if (!isStrategySection(this.config) && this.config.type === "heading") {
-      return this._headingSchema();
-    }
-    return this._schema(this.viewConfig.max_columns || 4);
-  }
-
-  render() {
-    const data = this._getData();
-    const schema = this._getSchema();
+    const schema = this._schema(this.viewConfig.max_columns || 4);
 
     return html`
       <ha-form
@@ -144,7 +77,7 @@ export class HuiDialogEditSection extends LitElement {
 
     const newConfig: LovelaceSectionRawConfig = {
       ...this.config,
-      ...newData,
+      column_span: newData.column_span,
     };
 
     fireEvent(this, "value-changed", { value: newConfig });
