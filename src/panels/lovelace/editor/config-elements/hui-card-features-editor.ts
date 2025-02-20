@@ -40,6 +40,7 @@ import { supportsLockOpenDoorCardFeature } from "../../card-features/hui-lock-op
 import { supportsMediaPlayerVolumeSliderCardFeature } from "../../card-features/hui-media-player-volume-slider-card-feature";
 import { supportsNumericInputCardFeature } from "../../card-features/hui-numeric-input-card-feature";
 import { supportsSelectOptionsCardFeature } from "../../card-features/hui-select-options-card-feature";
+import { supportsSwitchToggleCardFeature } from "../../card-features/hui-switch-toggle-card-feature";
 import { supportsTargetHumidityCardFeature } from "../../card-features/hui-target-humidity-card-feature";
 import { supportsTargetTemperatureCardFeature } from "../../card-features/hui-target-temperature-card-feature";
 import { supportsUpdateActionsCardFeature } from "../../card-features/hui-update-actions-card-feature";
@@ -74,6 +75,7 @@ const UI_FEATURE_TYPES = [
   "media-player-volume-slider",
   "numeric-input",
   "select-options",
+  "switch-toggle",
   "target-humidity",
   "target-temperature",
   "update-actions",
@@ -132,6 +134,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "update-actions": supportsUpdateActionsCardFeature,
   "vacuum-commands": supportsVacuumCommandsCardFeature,
   "water-heater-operation-modes": supportsWaterHeaterOperationModesCardFeature,
+  "switch-toggle": supportsSwitchToggleCardFeature,
 };
 
 const customCardFeatures = getCustomCardFeatures();
