@@ -21,6 +21,7 @@ import {
   optional,
   string,
 } from "superstruct";
+import { keyed } from "lit/directives/keyed";
 import type {
   HaFormSchema,
   SchemaUnion,
@@ -83,6 +84,8 @@ export class HuiStackCardEditor
   @state() protected _GUImode = true;
 
   @state() protected _guiModeAvailable? = true;
+
+  protected _keys = new WeakMap<LovelaceCardConfig, string>();
 
   protected _schema: readonly HaFormSchema[] = SCHEMA;
 
@@ -199,14 +202,16 @@ export class HuiStackCardEditor
                     @click=${this._handleDeleteCard}
                   ></ha-icon-button>
                 </div>
-
-                <hui-card-element-editor
-                  .hass=${this.hass}
-                  .value=${this._config.cards[selected]}
-                  .lovelace=${this.lovelace}
-                  @config-changed=${this._handleConfigChanged}
-                  @GUImode-changed=${this._handleGUIModeChanged}
-                ></hui-card-element-editor>
+                ${keyed(
+                  this._getKey(this._config.cards[selected]),
+                  html`<hui-card-element-editor
+                    .hass=${this.hass}
+                    .value=${this._config.cards[selected]}
+                    .lovelace=${this.lovelace}
+                    @config-changed=${this._handleConfigChanged}
+                    @GUImode-changed=${this._handleGUIModeChanged}
+                  ></hui-card-element-editor>`
+                )}
               `
             : html`
                 <hui-card-picker
@@ -218,6 +223,14 @@ export class HuiStackCardEditor
         </div>
       </div>
     `;
+  }
+
+  private _getKey(card: LovelaceCardConfig) {
+    if (!this._keys.has(card)) {
+      this._keys.set(card, Math.random().toString());
+    }
+
+    return this._keys.get(card)!;
   }
 
   protected _handleSelectedCard(ev) {
@@ -236,7 +249,10 @@ export class HuiStackCardEditor
       return;
     }
     const cards = [...this._config.cards];
-    cards[this._selectedCard] = ev.detail.config as LovelaceCardConfig;
+    const key = this._getKey(cards[this._selectedCard]);
+    const newCard = ev.detail.config as LovelaceCardConfig;
+    cards[this._selectedCard] = newCard;
+    this._keys.set(newCard, key);
     this._config = { ...this._config, cards };
     this._guiModeAvailable = ev.detail.guiModeAvailable;
     fireEvent(this, "config-changed", { config: this._config });
