@@ -1,6 +1,7 @@
 import type {
   BarSeriesOption,
   LineSeriesOption,
+  ZRColor,
 } from "echarts/types/dist/shared";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
@@ -343,7 +344,8 @@ export class StatisticsChart extends LitElement {
     let colorIndex = 0;
     const statisticsData = Object.entries(this.statisticsData);
     const totalDataSets: typeof this._chartData = [];
-    const legendData: { name: string; color: string }[] = [];
+    const legendData: { name: string; color?: ZRColor; borderColor?: ZRColor }[] =
+      [];
     const statisticIds: string[] = [];
     let endTime: Date;
 
@@ -394,7 +396,7 @@ export class StatisticsChart extends LitElement {
 
       // The datasets for the current statistic
       const statDataSets: (LineSeriesOption | BarSeriesOption)[] = [];
-      const statLegendData: { name: string; color: string }[] = [];
+      const statLegendData: typeof legendData = [];
 
       const pushData = (
         start: Date,
@@ -460,15 +462,6 @@ export class StatisticsChart extends LitElement {
       sortedTypes.forEach((type) => {
         if (statisticsHaveType(stats, type)) {
           const band = drawBands && (type === "min" || type === "max");
-          if (!this.hideLegend) {
-            const showLegend = hasMean
-              ? type === "mean"
-              : displayedLegend === false;
-            if (showLegend) {
-              statLegendData.push({ name, color });
-            }
-            displayedLegend = displayedLegend || showLegend;
-          }
           statTypes.push(type);
           const borderColor =
             band && hasMean ? color + (this.hideLegend ? "00" : "7F") : color;
@@ -512,6 +505,19 @@ export class StatisticsChart extends LitElement {
                 color: color + "3F",
               };
             }
+          }
+          if (!this.hideLegend) {
+            const showLegend = hasMean
+              ? type === "mean"
+              : displayedLegend === false;
+            if (showLegend) {
+              statLegendData.push({
+                name,
+                color: series.color as ZRColor,
+                borderColor: series.itemStyle?.borderColor,
+              });
+            }
+            displayedLegend = displayedLegend || showLegend;
           }
           statDataSets.push(series);
           statisticIds.push(statistic_id);
@@ -560,12 +566,15 @@ export class StatisticsChart extends LitElement {
       this.unit = unit;
     }
 
-    legendData.forEach(({ name, color }) => {
+    legendData.forEach(({ name, color, borderColor }) => {
       // Add an empty series for the legend
       totalDataSets.push({
         id: name + "-legend",
         name: name,
         color,
+        itemStyle: {
+          borderColor,
+        },
         type: this.chartType,
         data: [],
         xAxisIndex: 1,
