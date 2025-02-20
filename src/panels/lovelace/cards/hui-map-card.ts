@@ -124,14 +124,18 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     ) {
       throw new Error("Parameter geo_location_sources needs to be an array");
     }
-
-    this._config = config;
-    this._configEntities =
-      this.hass && config.show_all
-        ? processConfigEntities<MapEntityConfig>(this._getAllEntities())
-        : config.entities
-          ? processConfigEntities<MapEntityConfig>(config.entities)
-          : [];
+    if (config.show_all && (config.entities || config.geo_location_sources)) {
+      throw new Error(
+        "Cannot specify show_all and entities or geo_location_sources"
+      );
+    }
+    this._config = { ...config };
+    if (this.hass && config.show_all) {
+      this._config.entities = this._getAllEntities();
+    }
+    this._configEntities = this._config.entities
+      ? processConfigEntities<MapEntityConfig>(this._config.entities)
+      : [];
     this._mapEntities = this._getMapEntities();
   }
 
@@ -268,6 +272,18 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
     if (
+      this._config?.show_all &&
+      !this._config?.entities &&
+      this.hass &&
+      changedProps.has("hass")
+    ) {
+      this._config.entities = this._getAllEntities();
+      this._configEntities = processConfigEntities<MapEntityConfig>(
+        this._config.entities
+      );
+      this._mapEntities = this._getMapEntities();
+    }
+    if (
       changedProps.has("hass") &&
       this._config?.geo_location_sources &&
       !deepEqual(
@@ -338,18 +354,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
     if (changedProps.has("_config")) {
       this._computePadding();
-    }
-
-    if (
-      this._config?.show_all &&
-      this._configEntities?.length === 0 &&
-      changedProps.has("hass") &&
-      changedProps.get("hass") === undefined
-    ) {
-      this._configEntities = processConfigEntities<MapEntityConfig>(
-        this._getAllEntities()
-      );
-      this._mapEntities = this._getMapEntities();
     }
   }
 
