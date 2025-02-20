@@ -88,10 +88,6 @@ export interface SelectOptionsCardFeatureConfig {
   options?: string[];
 }
 
-export interface SwitchToggleCardFeatureConfig {
-  type: "switch-toggle";
-}
-
 export interface NumericInputCardFeatureConfig {
   type: "numeric-input";
   style?: "buttons" | "slider";
@@ -103,6 +99,10 @@ export interface TargetHumidityCardFeatureConfig {
 
 export interface TargetTemperatureCardFeatureConfig {
   type: "target-temperature";
+}
+
+export interface ToggleCardFeatureConfig {
+  type: "toggle";
 }
 
 export interface WaterHeaterOperationModesCardFeatureConfig {
@@ -172,9 +172,9 @@ export type LovelaceCardFeatureConfig =
   | MediaPlayerVolumeSliderCardFeatureConfig
   | NumericInputCardFeatureConfig
   | SelectOptionsCardFeatureConfig
-  | SwitchToggleCardFeatureConfig
   | TargetHumidityCardFeatureConfig
   | TargetTemperatureCardFeatureConfig
+  | ToggleCardFeatureConfig
   | UpdateActionsCardFeatureConfig
   | VacuumCommandsCardFeatureConfig
   | WaterHeaterOperationModesCardFeatureConfig;
