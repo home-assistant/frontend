@@ -13,6 +13,7 @@ import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type { SwitchToggleCardFeatureConfig } from "./types";
+import { showToast } from "../../../util/toast";
 
 export const supportsSwitchToggleCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -29,8 +30,6 @@ class HuiSwitchToggleCardFeature
   @property({ attribute: false }) public stateObj?: HassEntity;
 
   @state() private _config?: SwitchToggleCardFeatureConfig;
-
-  @state() _currentState?: string;
 
   static getStubConfig(): SwitchToggleCardFeatureConfig {
     return {
@@ -83,25 +82,21 @@ class HuiSwitchToggleCardFeature
     const newState = (ev.detail as any).value;
 
     if (newState === this.stateObj!.state) return;
-
-    const oldState = this.stateObj!.state;
-    this._currentState = newState;
+    const service = newState === "on" ? "turn_on" : "turn_off";
 
     try {
-      await this._setState(newState);
-    } catch (_err) {
-      this._currentState = oldState;
-    }
-  }
-
-  private async _setState(newState: string) {
-    await this.hass!.callService(
-      "switch",
-      newState === "on" ? "turn_on" : "turn_off",
-      {
+      await this.hass!.callService("switch", service, {
         entity_id: this.stateObj!.entity_id,
-      }
-    );
+      });
+    } catch (_err) {
+      showToast(this, {
+        message: this.hass!.localize("ui.notification_toast.action_failed", {
+          service: "switch." + service,
+        }),
+        duration: 5000,
+        dismissable: true,
+      });
+    }
   }
 
   static styles = cardFeatureStyles;
