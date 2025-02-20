@@ -4,6 +4,7 @@ import "../card-features/hui-climate-swing-modes-card-feature";
 import "../card-features/hui-climate-swing-horizontal-modes-card-feature";
 import "../card-features/hui-climate-hvac-modes-card-feature";
 import "../card-features/hui-climate-preset-modes-card-feature";
+import "../card-features/hui-counter-actions-card-feature";
 import "../card-features/hui-cover-open-close-card-feature";
 import "../card-features/hui-cover-position-card-feature";
 import "../card-features/hui-cover-tilt-card-feature";
@@ -40,6 +41,7 @@ const TYPES = new Set<LovelaceCardFeatureConfig["type"]>([
   "climate-swing-horizontal-modes",
   "climate-hvac-modes",
   "climate-preset-modes",
+  "counter-actions",
   "cover-open-close",
   "cover-position",
   "cover-tilt-position",
