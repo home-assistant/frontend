@@ -433,16 +433,8 @@ export class ZHANetworkVisualizationPage extends LitElement {
 
     this._network!.setOptions(
       this._enablePhysics
-        ? {
-            physics: {
-              barnesHut: {
-                springConstant: 0,
-                avoidOverlap: 10,
-                damping: 0.09,
-              },
-            },
-          }
-        : { physics: false }
+        ? { physics: { enabled: true } }
+        : { physics: { enabled: false } }
     );
   }
 
