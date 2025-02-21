@@ -492,8 +492,8 @@ export class StatisticsChart extends LitElement {
               : this.hass.localize(
                   `ui.components.statistics_charts.statistic_types.${type}`
                 ),
-            symbol: "circle",
-            symbolSize: 0,
+            symbol: "none",
+            sampling: "minmax",
             animationDurationUpdate: 0,
             lineStyle: {
               width: 1.5,
@@ -511,7 +511,6 @@ export class StatisticsChart extends LitElement {
           if (band && this.chartType === "line") {
             series.stack = `band-${statistic_id}`;
             series.stackStrategy = "all";
-            (series as LineSeriesOption).symbol = "none";
             if (drawBands && type === "max") {
               (series as LineSeriesOption).areaStyle = {
                 color: color + "3F",
