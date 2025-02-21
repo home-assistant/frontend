@@ -46,7 +46,7 @@ enum BackupScheduleTime {
 }
 
 interface RetentionData {
-  type: "copies" | "days";
+  type: "copies" | "days" | "forever";
   value: number;
 }
 
@@ -55,7 +55,7 @@ const RETENTION_PRESETS: Record<
   RetentionData
 > = {
   copies_3: { type: "copies", value: 3 },
-  forever: { type: "days", value: 0 },
+  forever: { type: "forever", value: 0 },
 };
 
 const SCHEDULE_OPTIONS = [
@@ -79,7 +79,10 @@ const computeRetentionPreset = (
   data: RetentionData
 ): RetentionPreset | undefined => {
   for (const [key, value] of Object.entries(RETENTION_PRESETS)) {
-    if (value.type === data.type && value.value === data.value) {
+    if (
+      value.type === data.type &&
+      (value.type === RetentionPreset.FOREVER || value.value === data.value)
+    ) {
       return key as RetentionPreset;
     }
   }
@@ -92,7 +95,7 @@ interface FormData {
   time?: string | null;
   days: BackupDay[];
   retention: {
-    type: "copies" | "days";
+    type: "copies" | "days" | "forever";
     value: number;
   };
 }
@@ -142,7 +145,12 @@ class HaBackupConfigSchedule extends LitElement {
           ? config.schedule.days
           : [],
       retention: {
-        type: config.retention.days != null ? "days" : "copies",
+        type:
+          config.retention.days === null && config.retention.copies === null
+            ? "forever"
+            : config.retention.days != null
+              ? "days"
+              : "copies",
         value: config.retention.days ?? config.retention.copies ?? 3,
       },
     };
@@ -160,9 +168,11 @@ class HaBackupConfigSchedule extends LitElement {
             : [],
       },
       retention:
-        data.retention.type === "days"
-          ? { days: data.retention.value, copies: null }
-          : { copies: data.retention.value, days: null },
+        data.retention.type === "forever"
+          ? { days: null, copies: null }
+          : data.retention.type === "days"
+            ? { days: data.retention.value, copies: null }
+            : { copies: data.retention.value, days: null },
     };
 
     fireEvent(this, "value-changed", { value: this.value });
@@ -481,9 +491,19 @@ class HaBackupConfigSchedule extends LitElement {
   private _retentionPresetChanged(ev) {
     ev.stopPropagation();
     const target = ev.currentTarget as HaMdSelect;
-    const value = target.value as RetentionPreset;
+    let value = target.value as RetentionPreset;
 
-    this._retentionPreset = value;
+    // custom needs to have a type of days or copies, set it to default copies 3
+    if (
+      value === RetentionPreset.CUSTOM &&
+      this._retentionPreset === RetentionPreset.FOREVER
+    ) {
+      this._retentionPreset = value;
+      value = RetentionPreset.COPIES_3;
+    } else {
+      this._retentionPreset = value;
+    }
+
     if (value !== RetentionPreset.CUSTOM) {
       const data = this._getData(this.value);
       const retention = RETENTION_PRESETS[value];
@@ -493,7 +513,7 @@ class HaBackupConfigSchedule extends LitElement {
       }
       this._setData({
         ...data,
-        retention: RETENTION_PRESETS[value],
+        retention,
       });
     }
   }
@@ -504,6 +524,7 @@ class HaBackupConfigSchedule extends LitElement {
     const value = parseInt(target.value);
     const clamped = clamp(value, MIN_VALUE, MAX_VALUE);
     const data = this._getData(this.value);
+    target.value = clamped.toString();
     this._setData({
       ...data,
       retention: {
