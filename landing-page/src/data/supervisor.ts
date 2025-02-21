@@ -18,7 +18,7 @@ export const ALTERNATIVE_DNS_SERVERS: {
 ];
 
 export async function getSupervisorLogs(lines = 100) {
-  return fetch(`/supervisor/supervisor/logs?lines=${lines}`, {
+  return fetch(`/supervisor-api/supervisor/logs?lines=${lines}`, {
     headers: {
       Accept: "text/plain",
     },
@@ -26,22 +26,26 @@ export async function getSupervisorLogs(lines = 100) {
 }
 
 export async function getSupervisorLogsFollow(lines = 500) {
-  return fetch(`/supervisor/supervisor/logs/follow?lines=${lines}`, {
+  return fetch(`/supervisor-api/supervisor/logs/follow?lines=${lines}`, {
     headers: {
       Accept: "text/plain",
     },
   });
 }
 
+export async function pingSupervisor() {
+  return fetch("/supervisor-api/supervisor/ping");
+}
+
 export async function getSupervisorNetworkInfo() {
-  return fetch("/supervisor/network/info");
+  return fetch("/supervisor-api/network/info");
 }
 
 export const setSupervisorNetworkDns = async (
   dnsServerIndex: number,
   primaryInterface: string
 ) =>
-  fetch(`/supervisor/network/interface/${primaryInterface}/update`, {
+  fetch(`/supervisor-api/network/interface/${primaryInterface}/update`, {
     method: "POST",
     body: JSON.stringify({
       ipv4: {
