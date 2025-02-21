@@ -256,7 +256,21 @@ export class StateHistoryChartLine extends LitElement {
           axisLabel: {
             margin: 5,
             formatter: (value: number) => {
-              const label = formatNumber(value, this.hass.locale);
+              const formatOptions =
+                value >= 1
+                  ? undefined
+                  : {
+                      // show the first significant digit for tiny values
+                      maximumFractionDigits: Math.max(
+                        1,
+                        -Math.floor(Math.log10(Math.abs(value % 1 || 1)))
+                      ),
+                    };
+              const label = formatNumber(
+                value,
+                this.hass.locale,
+                formatOptions
+              );
               const width = measureTextWidth(label, 12) + 5;
               if (width > this._yWidth) {
                 this._yWidth = width;
