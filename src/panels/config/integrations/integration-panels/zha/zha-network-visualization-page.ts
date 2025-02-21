@@ -231,6 +231,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
   private _updateDevices(devices: ZHADevice[]) {
     this._nodes = [];
     const edges: Edge[] = [];
+    const sqrt_num_devices = Math.sqrt(devices.length);
 
     devices.forEach((device) => {
       this._nodes.push({
@@ -250,7 +251,10 @@ export class ZHANetworkVisualizationPage extends LitElement {
             (e) => device.ieee === e.to && neighbor.ieee === e.from
           );
           if (idx === -1) {
-            const edge_options = this._getEdgeOptions(parseInt(neighbor.lqi));
+            const edge_options = this._getEdgeOptions(
+              parseInt(neighbor.lqi),
+              sqrt_num_devices
+            );
             edges.push({
               from: device.ieee,
               to: neighbor.ieee,
@@ -271,7 +275,10 @@ export class ZHANetworkVisualizationPage extends LitElement {
               parseInt(edges[idx].label!),
               parseInt(neighbor.lqi)
             );
-            const edge_options = this._getEdgeOptions(effective_lqi);
+            const edge_options = this._getEdgeOptions(
+              effective_lqi,
+              sqrt_num_devices
+            );
             edges[idx].label += " & " + neighbor.lqi;
             edges[idx].color = edge_options.color;
             edges[idx].width = edge_options.width;
@@ -287,13 +294,14 @@ export class ZHANetworkVisualizationPage extends LitElement {
     this._network?.setData({ nodes: this._nodes, edges: edges });
   }
 
-  private _getEdgeOptions(lqi: number): EdgeOptions {
-    const length = 400 + 5 * (255 - lqi);
+  private _getEdgeOptions(lqi: number, sqrt_num_devices: number): EdgeOptions {
+    // Larger networks have generally longer links, and lower quality links are relatively longer than higher quality links
+    const length = sqrt_num_devices * 150 + 5 * (255 - lqi);
 
     if (lqi > 192) {
       return {
         color: { color: "#17ab00", highlight: "#17ab00" },
-        width: lqi / 10,
+        width: lqi / 20,
         length: length,
         physics: true,
       };
@@ -301,7 +309,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
     if (lqi > 128) {
       return {
         color: { color: "#e6b402", highlight: "#e6b402" },
-        width: 10,
+        width: 9,
         length: length,
         physics: true,
       };
