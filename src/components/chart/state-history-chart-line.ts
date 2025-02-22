@@ -257,7 +257,7 @@ export class StateHistoryChartLine extends LitElement {
             margin: 5,
             formatter: (value: number) => {
               const formatOptions =
-                value >= 1
+                value >= 1 || value <= -1
                   ? undefined
                   : {
                       // show the first significant digit for tiny values
