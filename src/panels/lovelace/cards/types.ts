@@ -336,6 +336,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
 export interface MarkdownCardConfig extends LovelaceCardConfig {
   type: "markdown";
   content: string;
+  text_only?: boolean;
   title?: string;
   card_size?: number;
   entity_ids?: string | string[];
@@ -533,6 +534,7 @@ export interface TileCardConfig extends LovelaceCardConfig {
   icon_hold_action?: ActionConfig;
   icon_double_tap_action?: ActionConfig;
   features?: LovelaceCardFeatureConfig[];
+  features_position?: "bottom" | "inline";
 }
 
 export interface HeadingCardConfig extends LovelaceCardConfig {

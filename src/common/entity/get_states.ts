@@ -1,6 +1,9 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { computeStateDomain } from "./compute_state_domain";
 import { UNAVAILABLE_STATES } from "../../data/entity";
+import type { HomeAssistant } from "../../types";
+import { computeDomain } from "./compute_domain";
+import { stringCompare } from "../string/compare";
 
 export const FIXED_DOMAIN_STATES = {
   alarm_control_panel: [
@@ -237,6 +240,7 @@ const FIXED_DOMAIN_ATTRIBUTE_STATES = {
 };
 
 export const getStates = (
+  hass: HomeAssistant,
   state: HassEntity,
   attribute: string | undefined = undefined
 ): string[] => {
@@ -269,7 +273,19 @@ export const getStates = (
     case "device_tracker":
     case "person":
       if (!attribute) {
-        result.push("home", "not_home");
+        result.push(
+          ...Object.entries(hass.states)
+            .filter(
+              ([entityId, stateObj]) =>
+                computeDomain(entityId) === "zone" &&
+                entityId !== "zone.home" &&
+                stateObj.attributes.friendly_name
+            )
+            .map(([_entityId, stateObj]) => stateObj.attributes.friendly_name!)
+            .sort((zone1, zone2) =>
+              stringCompare(zone1, zone2, hass.locale.language)
+            )
+        );
       }
       break;
     case "event":

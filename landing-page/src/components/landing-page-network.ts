@@ -17,6 +17,7 @@ import "../../../src/components/ha-alert";
 import {
   ALTERNATIVE_DNS_SERVERS,
   getSupervisorNetworkInfo,
+  pingSupervisor,
   setSupervisorNetworkDns,
 } from "../data/supervisor";
 import { fireEvent } from "../../../src/common/dom/fire_event";
@@ -85,7 +86,28 @@ class LandingPageNetwork extends LitElement {
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
     super.firstUpdated(_changedProperties);
-    this._fetchSupervisorInfo();
+    this._pingSupervisor();
+  }
+
+  private _schedulePingSupervisor() {
+    setTimeout(
+      () => this._pingSupervisor(),
+      SCHEDULE_FETCH_NETWORK_INFO_SECONDS * 1000
+    );
+  }
+
+  private async _pingSupervisor() {
+    try {
+      const response = await pingSupervisor();
+      if (!response.ok) {
+        throw new Error("Failed to ping supervisor, assume update in progress");
+      }
+      this._fetchSupervisorInfo();
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      this._schedulePingSupervisor();
+    }
   }
 
   private _scheduleFetchSupervisorInfo() {
