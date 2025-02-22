@@ -32,6 +32,12 @@ const cardConfigStruct = assign(
     detail: optional(number()),
     theme: optional(string()),
     hours_to_show: optional(number()),
+    limits: optional(
+      object({
+        min: optional(number()),
+        max: optional(number()),
+      })
+    ),
   })
 );
 
@@ -80,6 +86,20 @@ const SCHEMA = [
         name: "hours_to_show",
         default: DEFAULT_HOURS_TO_SHOW,
         selector: { number: { min: 1, mode: "box" } },
+      },
+    ],
+  },
+  {
+    type: "grid",
+    name: "limits",
+    schema: [
+      {
+        name: "min",
+        selector: { number: { mode: "box" } },
+      },
+      {
+        name: "max",
+        selector: { number: { mode: "box" } },
       },
     ],
   },
@@ -142,6 +162,14 @@ export class HuiSensorCardEditor
       case "graph":
         return this.hass!.localize(
           "ui.panel.lovelace.editor.card.sensor.graph_type"
+        );
+      case "min":
+        return this.hass!.localize(
+          "ui.dialogs.helper_settings.input_number.min"
+        );
+      case "max":
+        return this.hass!.localize(
+          "ui.dialogs.helper_settings.input_number.max"
         );
       default:
         return this.hass!.localize(
