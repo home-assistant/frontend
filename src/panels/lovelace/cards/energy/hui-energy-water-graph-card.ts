@@ -28,6 +28,7 @@ import { hasConfigChanged } from "../../common/has-changed";
 import {
   fillDataGapsAndRoundCaps,
   getCommonOptions,
+  getCompareTransform,
 } from "./common/energy-chart-options";
 import type { ECOption } from "../../../../resources/echarts";
 import { formatNumber } from "../../../../common/number/format_number";
@@ -211,9 +212,10 @@ export class HuiEnergyWaterGraphCard
     compare = false
   ) {
     const data: BarSeriesOption[] = [];
-    const compareOffset = compare
-      ? this._start.getTime() - this._compareStart!.getTime()
-      : 0;
+    const compareTransform = getCompareTransform(
+      this._start,
+      this._compareStart!
+    );
 
     waterSources.forEach((source, idx) => {
       let prevStart: number | null = null;
@@ -234,10 +236,13 @@ export class HuiEnergyWaterGraphCard
           if (prevStart === point.start) {
             continue;
           }
-          const dataPoint = [point.start, point.change];
+          const dataPoint: (Date | string | number)[] = [
+            point.start,
+            point.change,
+          ];
           if (compare) {
             dataPoint[2] = dataPoint[0];
-            dataPoint[0] += compareOffset;
+            dataPoint[0] = compareTransform(new Date(point.start));
           }
           waterConsumptionData.push(dataPoint);
           prevStart = point.start;

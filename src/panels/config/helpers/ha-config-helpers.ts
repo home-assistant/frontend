@@ -346,9 +346,11 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         groupable: true,
       },
       editable: {
-        title: "",
-        label: localize("ui.panel.config.helpers.picker.headers.editable"),
+        title: localize("ui.panel.config.helpers.picker.headers.editable"),
         type: "icon",
+        sortable: true,
+        minWidth: "88px",
+        maxWidth: "88px",
         showNarrow: true,
         template: (helper) => html`
           ${!helper.editable
@@ -561,7 +563,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         (category) =>
           html`<ha-md-menu-item
             .value=${category.category_id}
-            @click=${this._handleBulkCategory}
+            .clickAction=${this._handleBulkCategory}
           >
             ${category.icon
               ? html`<ha-icon slot="start" .icon=${category.icon}></ha-icon>`
@@ -569,7 +571,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             <div slot="headline">${category.name}</div>
           </ha-md-menu-item>`
       )}
-      <ha-md-menu-item .value=${null} @click=${this._handleBulkCategory}>
+      <ha-md-menu-item .value=${null} .clickAction=${this._handleBulkCategory}>
         <div slot="headline">
           ${this.hass.localize(
             "ui.panel.config.automation.picker.bulk_actions.no_category"
@@ -577,7 +579,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         </div>
       </ha-md-menu-item>
       <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-      <ha-md-menu-item @click=${this._bulkCreateCategory}>
+      <ha-md-menu-item .clickAction=${this._bulkCreateCategory}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.category.editor.add")}
         </div>
@@ -612,7 +614,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           </ha-label>
         </ha-md-menu-item> `;
       })}<ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-      <ha-md-menu-item @click=${this._bulkCreateLabel}>
+      <ha-md-menu-item .clickAction=${this._bulkCreateLabel}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.labels.add_label")}
         </div>
@@ -958,10 +960,10 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     });
   }
 
-  private async _handleBulkCategory(ev) {
-    const category = ev.currentTarget.value;
+  private _handleBulkCategory = (item) => {
+    const category = item.value;
     this._bulkAddCategory(category);
-  }
+  };
 
   private async _bulkAddCategory(category: string) {
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
@@ -1234,7 +1236,7 @@ ${rejected
     showHelperDetailDialog(this, {});
   }
 
-  private async _bulkCreateCategory() {
+  private _bulkCreateCategory = () => {
     showCategoryRegistryDetailDialog(this, {
       scope: "helpers",
       createEntry: async (values) => {
@@ -1247,9 +1249,9 @@ ${rejected
         return category;
       },
     });
-  }
+  };
 
-  private _bulkCreateLabel() {
+  private _bulkCreateLabel = () => {
     showLabelDetailDialog(this, {
       createEntry: async (values) => {
         const label = await createLabelRegistryEntry(this.hass, values);
@@ -1257,7 +1259,7 @@ ${rejected
         return label;
       },
     });
-  }
+  };
 
   private _handleSortingChanged(ev: CustomEvent) {
     this._activeSorting = ev.detail;

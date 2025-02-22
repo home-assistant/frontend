@@ -8,7 +8,6 @@ import type {
   TooltipFormatterCallback,
   TooltipPositionCallbackParams,
 } from "echarts/types/dist/shared";
-import { differenceInDays } from "date-fns";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import millisecondsToDuration from "../../common/datetime/milliseconds_to_duration";
 import { computeRTL } from "../../common/util/compute_rtl";
@@ -22,7 +21,6 @@ import { luminosity } from "../../common/color/rgb";
 import { hex2rgb } from "../../common/color/convert-color";
 import { measureTextWidth } from "../../util/text";
 import { fireEvent } from "../../common/dom/fire_event";
-import { getTimeAxisLabelConfig } from "./axis-label";
 
 @customElement("state-history-chart-timeline")
 export class StateHistoryChartTimeline extends LitElement {
@@ -67,7 +65,7 @@ export class StateHistoryChartTimeline extends LitElement {
         .hass=${this.hass}
         .options=${this._chartOptions}
         .height=${`${this.data.length * 30 + 30}px`}
-        .data=${this._chartData}
+        .data=${this._chartData as ECOption["series"]}
         @chart-click=${this._handleChartClick}
       ></ha-chart-base>
     `;
@@ -129,11 +127,11 @@ export class StateHistoryChartTimeline extends LitElement {
 
   private _renderTooltip: TooltipFormatterCallback<TooltipPositionCallbackParams> =
     (params: TooltipPositionCallbackParams) => {
-      const { value, name, marker } = Array.isArray(params)
+      const { value, name, marker, seriesName } = Array.isArray(params)
         ? params[0]
         : params;
-      const title = value![0]
-        ? `<h4 style="text-align: center; margin: 0;">${value![0]}</h4>`
+      const title = seriesName
+        ? `<h4 style="text-align: center; margin: 0;">${seriesName}</h4>`
         : "";
       const durationInMs = value![2] - value![1];
       const formattedDuration = `${this.hass.localize(
@@ -191,7 +189,6 @@ export class StateHistoryChartTimeline extends LitElement {
       : 0;
     const labelMargin = 5;
     const rtl = computeRTL(this.hass);
-    const dayDifference = differenceInDays(this.endTime, this.startTime);
     this._chartOptions = {
       xAxis: {
         type: "time",
@@ -203,20 +200,6 @@ export class StateHistoryChartTimeline extends LitElement {
         splitLine: {
           show: false,
         },
-        axisLine: {
-          show: false,
-        },
-        axisLabel: getTimeAxisLabelConfig(
-          this.hass.locale,
-          this.hass.config,
-          dayDifference
-        ),
-        minInterval:
-          dayDifference >= 89 // quarter
-            ? 28 * 3600 * 24 * 1000
-            : dayDifference > 2
-              ? 3600 * 24 * 1000
-              : undefined,
       },
       yAxis: {
         type: "category",
@@ -231,14 +214,18 @@ export class StateHistoryChartTimeline extends LitElement {
         },
         axisLabel: {
           show: showNames,
-          width: labelWidth - labelMargin,
+          width: labelWidth,
           overflow: "truncate",
           margin: labelMargin,
-          formatter: (label: string) => {
-            const width = Math.min(
-              measureTextWidth(label, 12) + labelMargin,
-              maxInternalLabelWidth
-            );
+          formatter: (id: string) => {
+            const label = this._chartData.find((d) => d.id === id)
+              ?.name as string;
+            const width = label
+              ? Math.min(
+                  measureTextWidth(label, 12) + labelMargin,
+                  maxInternalLabelWidth
+                )
+              : 0;
             if (width > this._yWidth) {
               this._yWidth = width;
               fireEvent(this, "y-width-changed", {
@@ -284,7 +271,7 @@ export class StateHistoryChartTimeline extends LitElement {
       let locState: string | null = null;
       let prevLastChanged = startTime;
       const entityDisplay: string = this.showNames
-        ? names[stateInfo.entity_id] || stateInfo.name
+        ? names[stateInfo.entity_id] || stateInfo.name || stateInfo.entity_id
         : "";
 
       const dataRow: unknown[] = [];
@@ -313,7 +300,7 @@ export class StateHistoryChartTimeline extends LitElement {
           );
           dataRow.push({
             value: [
-              entityDisplay,
+              stateInfo.entity_id,
               prevLastChanged,
               newLastChanged,
               locState,
@@ -339,7 +326,7 @@ export class StateHistoryChartTimeline extends LitElement {
         );
         dataRow.push({
           value: [
-            entityDisplay,
+            stateInfo.entity_id,
             prevLastChanged,
             endTime,
             locState,
@@ -352,9 +339,10 @@ export class StateHistoryChartTimeline extends LitElement {
         });
       }
       datasets.push({
+        id: stateInfo.entity_id,
         data: dataRow,
         name: entityDisplay,
-        dimensions: ["index", "start", "end", "name", "color", "textColor"],
+        dimensions: ["id", "start", "end", "name", "color", "textColor"],
         type: "custom",
         encode: {
           x: [1, 2],
@@ -370,10 +358,10 @@ export class StateHistoryChartTimeline extends LitElement {
 
   private _handleChartClick(e: CustomEvent<ECElementEvent>): void {
     if (e.detail.targetType === "axisLabel") {
-      const dataset = this.data[e.detail.dataIndex];
+      const dataset = this._chartData[e.detail.dataIndex];
       if (dataset) {
         fireEvent(this, "hass-more-info", {
-          entityId: dataset.entity_id,
+          entityId: dataset.id as string,
         });
       }
     }

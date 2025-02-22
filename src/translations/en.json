@@ -228,7 +228,7 @@
         "run": "[%key:ui::card::service::run%]",
         "running_single": "Running…",
         "running_queued": "{queued} queued",
-        "running_parallel": "{active} Running…",
+        "running_parallel": "{active} running…",
         "cancel": "Cancel",
         "cancel_multiple": "Cancel {number}",
         "cancel_all": "Cancel all",
@@ -370,7 +370,10 @@
       "name": "Name",
       "optional": "optional",
       "default": "Default",
-      "dont_save": "Don't save"
+      "dont_save": "Don't save",
+      "copy": "Copy",
+      "show": "Show",
+      "hide": "Hide"
     },
     "components": {
       "selectors": {
@@ -809,10 +812,16 @@
         "ranges": {
           "today": "Today",
           "yesterday": "Yesterday",
+          "now-1h": "Last hour",
+          "now-12h": "Last 12 hours",
+          "now-24h": "Last 24 hours",
           "this_week": "This week",
           "this_quarter": "This quarter",
           "this_month": "This month",
-          "this_year": "This year"
+          "now-7d": "Last 7 days",
+          "now-30d": "Last 30 days",
+          "this_year": "This year",
+          "now-12m": "Last 12 month"
         }
       },
       "grid-size-picker": {
@@ -1929,9 +1938,9 @@
       "action_failed": "Failed to perform the action {service}.",
       "connection_lost": "Connection lost. Reconnecting…",
       "started": "Home Assistant has started!",
-      "starting": "Home Assistant is starting, not everything will be available until it is finished.",
-      "wrapping_up_startup": "Wrapping up startup, not everything will be available until it is finished.",
-      "integration_starting": "Starting {integration}, not everything will be available until it is finished.",
+      "starting": "Home Assistant is starting. Not everything will be available until it is finished.",
+      "wrapping_up_startup": "Wrapping up startup. Not everything will be available until it is finished.",
+      "integration_starting": "Starting {integration}. Not everything will be available until it is finished.",
       "triggered": "Triggered {name}",
       "dismiss": "Dismiss",
       "no_matching_link_found": "No matching My link found for {path}"
@@ -2223,7 +2232,8 @@
           "backup_type": "Type",
           "type": {
             "manual": "Manual",
-            "automatic": "Automatic"
+            "automatic": "Automatic",
+            "addon_update": "Add-on update"
           },
           "locations": "Locations",
           "create": {
@@ -2408,6 +2418,7 @@
             "cloud_agent_description": "Note: It stores only the most recent backup, regardless of your retention settings, with a maximum size of 5 GB.",
             "cloud_agent_no_subcription": "You currently do not have an active Home Assistant Cloud subscription.",
             "network_mount_agent_description": "Network storage",
+            "unavailable_agents": "Unavailable locations",
             "no_agents": "No locations configured",
             "encryption_turned_off": "Encryption turned off",
             "local_agent": "This system"
@@ -2461,7 +2472,7 @@
             },
             "retention": "Retention",
             "custom_retention": "Custom retention",
-            "custom_retention_label": "Clean up every",
+            "custom_retention_label": "Keep only",
             "retention_description": "Based on the maximum number of backups or how many days they should be kept.",
             "retention_presets": {
               "copies_3": "3 backups",
@@ -2504,6 +2515,7 @@
             "menu": {
               "upload_backup": "Upload backup"
             },
+            "agent_error": "Error in location {name}",
             "new_backup": "Backup now",
             "onboarding": {
               "title": "Set up backups",
@@ -2554,7 +2566,7 @@
               "last_backup_failed_heading": "Last automatic backup failed",
               "last_backup_failed_description": "The last automatic backup triggered {relative_time} wasn't successful.",
               "last_backup_failed_locations_description": "The last automatic backup created {relative_time} wasn't stored in all locations.",
-              "last_successful_backup_description": "Last successful backup {relative_time} and stored in {count} {count, plural,\n one {location}\n other {locations}\n}.",
+              "last_successful_backup_description": "Last successful automatic backup {relative_time} and stored in {count} {count, plural,\n one {location}\n other {locations}\n}.",
               "no_backup_heading": "No automatic backup available",
               "no_backup_description": "You have no automatic backups yet.",
               "backup_too_old_heading": "No backup for {count} {count, plural,\n one {day}\n other {days}\n}",
@@ -2565,6 +2577,7 @@
               "title": "My backups",
               "automatic": "{count} automatic {count, plural,\n one {backup}\n other {backups}\n}",
               "manual": "{count} manual {count, plural,\n one {backup}\n other {backups}\n}",
+              "addon_update": "{count} add-on update {count, plural,\n one {backup}\n other {backups}\n}",
               "total_size": "{size} in total",
               "show_all": "Show all backups"
             },
@@ -2641,7 +2654,9 @@
               "title": "Locations",
               "description": "Your backup will be stored on these locations when this default backup is created. You can use all locations for custom backups.",
               "no_location": "No location selected",
-              "no_location_description": "You have to select at least one location to create a backup."
+              "no_location_description": "You have to select at least one location to create a backup.",
+              "more_locations": "Explore more locations",
+              "manage_network_storage": "Manage network storage"
             },
             "encryption_key": {
               "title": "Encryption key",
@@ -4589,6 +4604,7 @@
             "account_created": "Account created! Check your email for instructions on how to activate your account."
           },
           "account": {
+            "download_support_package": "Download support package",
             "reset_cloud_data": "Reset cloud data",
             "reset_data_confirm_title": "Reset cloud data?",
             "reset_data_confirm_text": "This will reset all your cloud settings. This includes your remote connection, Google Assistant and Amazon Alexa integrations. This action cannot be undone.",
@@ -6048,8 +6064,10 @@
         },
         "tips": {
           "tip": "Tip!",
-          "join": "Join the community on our {forums}, {twitter}, {discord}, {blog} or {newsletter}",
+          "join": "Join the community on our {forums}, {mastodon}, {bluesky}, {twitter}, {discord}, {blog} or {newsletter}",
           "join_x": "X (formerly Twitter)",
+          "join_mastodon": "Mastodon",
+          "join_bluesky": "Bluesky",
           "join_forums": "Forums",
           "join_chat": "Chat",
           "join_blog": "Blog",
@@ -6118,7 +6136,12 @@
           },
           "network_adapter": "Network adapter",
           "network_adapter_info": "Configure which network adapters integrations will use. Currently this setting only affects multicast traffic. A restart is required for these settings to apply.",
-          "ip_information": "IP Information"
+          "ip_information": "IP Information",
+          "adapter": {
+            "auto_configure": "Auto configure",
+            "detected": "Detected",
+            "adapter": "Adapter"
+          }
         },
         "storage": {
           "caption": "Storage",
@@ -6290,7 +6313,8 @@
             "description": "Home Assistant is starting, please wait…"
           },
           "map": {
-            "reset_focus": "Reset focus"
+            "reset_focus": "Reset focus",
+            "toggle_grouping": "Toggle grouping"
           },
           "energy": {
             "loading": "Loading…",
@@ -6977,7 +7001,8 @@
               "suggested_cards": "Suggested cards",
               "other_cards": "Other cards",
               "custom_cards": "Custom cards",
-              "features": "Features"
+              "features": "Features",
+              "actions": "Actions"
             },
             "heading": {
               "name": "Heading",
@@ -7024,6 +7049,11 @@
             "markdown": {
               "name": "Markdown",
               "content": "Content",
+              "style": "Style",
+              "style_options": {
+                "card": "Card",
+                "text-only": "Text only"
+              },
               "description": "The Markdown card is used to render Markdown."
             },
             "media-control": {
@@ -7100,12 +7130,22 @@
               "color": "Color",
               "color_helper": "Inactive state (e.g. off, closed) will not be colored.",
               "icon_tap_action": "Icon tap behavior",
-              "interactions": "Interactions",
+              "icon_hold_action": "Icon hold behavior",
+              "icon_double_tap_action": "Icon double tap behavior",
               "appearance": "Appearance",
               "show_entity_picture": "Show entity picture",
-              "vertical": "Vertical",
               "hide_state": "Hide state",
-              "state_content": "State content"
+              "state_content": "State content",
+              "features_position": "Features position",
+              "features_position_options": {
+                "bottom": "Bottom",
+                "inline": "Inline"
+              },
+              "content_layout": "Content layout",
+              "content_layout_options": {
+                "horizontal": "Horizontal",
+                "vertical": "Vertical"
+              }
             },
             "vertical-stack": {
               "name": "Vertical stack",
@@ -7120,6 +7160,7 @@
               "show_only_current": "Show only current Weather",
               "show_only_forecast": "Show only forecast",
               "forecast_type": "Select forecast type",
+              "forecast_slots": "Maximum number of forecast elements to show",
               "no_type": "No type",
               "daily": "Daily",
               "hourly": "Hourly",
@@ -7280,6 +7321,14 @@
                 "customize_modes": "Customize preset modes",
                 "preset_modes": "Preset modes"
               },
+              "counter-actions": {
+                "label": "Counter actions",
+                "actions": {
+                  "increment": "Increment",
+                  "decrement": "Decrement",
+                  "reset": "Reset"
+                }
+              },
               "fan-preset-modes": {
                 "label": "Fan preset modes",
                 "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
@@ -7307,6 +7356,9 @@
                 "label": "Select options",
                 "options": "Options",
                 "customize_options": "Customize options"
+              },
+              "toggle": {
+                "label": "Toggle"
               },
               "numeric-input": {
                 "label": "Numeric input",
@@ -7410,7 +7462,7 @@
           "entity_not_found": "Entity not available: {entity}",
           "entity_non_numeric": "Entity is non-numeric: {entity}",
           "entity_unavailable": "Entity is currently unavailable: {entity}",
-          "starting": "Home Assistant is starting, not everything may be available yet"
+          "starting": "Home Assistant is starting. Not everything may be available yet."
         },
         "changed_toast": {
           "message": "Your dashboard was updated. Refresh to see changes?"
@@ -8181,9 +8233,53 @@
         },
         "restore": {
           "header": "Restore a backup",
+          "upload_backup": "[%key:ui::panel::config::backup::dialogs::upload::title%]",
+          "unsupported": {
+            "title": "[%key:ui::panel::config::backup::dialogs::upload::unsupported::title%]",
+            "text": "[%key:ui::panel::config::backup::dialogs::upload::unsupported::text%]"
+          },
+          "ok": "[%key:ui::common::ok%]",
+          "upload_input_label": "[%key:ui::panel::config::backup::dialogs::upload::input_label%]",
+          "upload_supports_tar": "[%key:ui::panel::config::backup::dialogs::upload::supports_tar%]",
+          "upload_secondary": "[%key:ui::components::file-upload::secondary%]",
+          "delete": "[%key:ui::common::delete%]",
+          "uploading": "[%key:ui::components::file-upload::uploading%]",
+          "details": {
+            "home_assistant_missing": "This backup does not include your Home Assistant configuration, you cannot use it to restore your instance.",
+            "addons_unsupported": "This backup includes add-ons and folders, which are not supported in this installation method of Home Assistant. You can still restore Home Assistant, but the unsupported files will not be restored.",
+            "summary": {
+              "title": "[%key:ui::panel::config::backup::details::summary::title%]",
+              "size": "[%key:ui::panel::config::backup::details::summary::size%]",
+              "created": "[%key:ui::panel::config::backup::details::summary::created%]",
+              "upload_another": "Upload another",
+              "home": "Home"
+            },
+            "restore": {
+              "title": "[%key:ui::panel::config::backup::details::restore::title%]",
+              "action": "[%key:ui::panel::config::backup::details::restore::action%]",
+              "encryption": {
+                "title": "[%key:ui::panel::config::backup::dialogs::restore::encryption::different_key%]",
+                "incorrect_key": "[%key:ui::panel::config::backup::dialogs::restore::encryption::incorrect_key%]",
+                "input_label": "[%key:ui::panel::config::backup::dialogs::restore::encryption::input_label%]"
+              }
+            }
+          },
+          "data_picker": {
+            "settings": "[%key:ui::panel::config::backup::data_picker::settings%]",
+            "settings_and_history": "[%key:ui::panel::config::backup::data_picker::settings_and_history%]",
+            "media": "[%key:ui::panel::config::backup::data_picker::media%]",
+            "share_folder": "[%key:ui::panel::config::backup::data_picker::share_folder%]",
+            "local_addons": "[%key:ui::panel::config::backup::data_picker::local_addons%]",
+            "addons": "[%key:ui::panel::config::backup::data_picker::addons%]",
+            "ssl": "[%key:ui::panel::config::backup::data_picker::ssl%]"
+          },
+          "restore_no_home_assistant": "[%key:supervisor::backup::restore_no_home_assistant%]",
           "in_progress": "Restore in progress",
+          "in_progress_description": "The restore process is running in the background. Home Assistant will automatically start again once the restore is complete. Please be patient, this can take a while. Do not close or refresh this page.",
           "failed": "Restore failed",
-          "upload_backup": "[%key:supervisor::backup::upload_backup%]",
+          "failed_status_description": "The backup could not be restored. Please try again.",
+          "failed_description": "The last restore attempt failed. Please try it again.",
+          "failed_wrong_password_description": "The last restore attempt failed, because the encryption key was incorrect. Please try it again.",
           "upload_supports": "Supports .TAR files",
           "upload_drop": "[%key:ui::components::file-upload::secondary%]",
           "show_log": "Show full log",
@@ -8191,7 +8287,6 @@
           "full_backup": "[%key:supervisor::backup::full_backup%]",
           "partial_backup": "[%key:supervisor::backup::partial_backup%]",
           "name": "[%key:supervisor::backup::name%]",
-          "type": "[%key:supervisor::backup::type%]",
           "select_type": "[%key:supervisor::backup::select_type%]",
           "folders": "[%key:supervisor::backup::folders%]",
           "addons": "[%key:supervisor::backup::addons%]",
@@ -8206,10 +8301,16 @@
           "close": "[%key:ui::common::close%]",
           "cancel": "[%key:ui::common::cancel%]",
           "retry": "Retry",
+          "back": "[%key:ui::common::back%]",
           "restore_start_failed": "[%key:supervisor::backup::restore_start_failed%]",
           "no_backup_found": "[%key:supervisor::backup::no_backup_found%]",
-          "restore_no_home_assistant": "[%key:supervisor::backup::restore_no_home_assistant%]",
-          "unnamed_backup": "[%key:supervisor::backup::unnamed_backup%]"
+          "unnamed_backup": "[%key:supervisor::backup::unnamed_backup%]",
+          "cancel_restore": {
+            "title": "Cancel restore process?",
+            "text": "Are you sure you want to cancel the restore process and return to the onboarding?",
+            "yes": "[%key:ui::common::yes%]",
+            "no": "[%key:ui::common::no%]"
+          }
         }
       },
       "custom": {

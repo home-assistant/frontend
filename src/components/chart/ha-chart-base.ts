@@ -1,26 +1,30 @@
-import type { PropertyValues } from "lit";
-import { css, html, nothing, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { styleMap } from "lit/directives/style-map";
-import { mdiRestart } from "@mdi/js";
-import type { EChartsType } from "echarts/core";
-import type { DataZoomComponentOption } from "echarts/components";
+import { consume } from "@lit-labs/context";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
+import { mdiRestart } from "@mdi/js";
+import { differenceInMinutes } from "date-fns";
+import type { DataZoomComponentOption } from "echarts/components";
+import type { EChartsType } from "echarts/core";
 import type {
   ECElementEvent,
   XAXisOption,
   YAXisOption,
 } from "echarts/types/dist/shared";
-import { consume } from "@lit-labs/context";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
+import { getAllGraphColors } from "../../common/color/colors";
 import { fireEvent } from "../../common/dom/fire_event";
+import { listenMediaQuery } from "../../common/dom/media_query";
+import { themesContext } from "../../data/context";
+import type { Themes } from "../../data/ws-themes";
+import type { ECOption } from "../../resources/echarts";
 import type { HomeAssistant } from "../../types";
 import { isMac } from "../../util/is_mac";
 import "../ha-icon-button";
-import type { ECOption } from "../../resources/echarts";
-import { listenMediaQuery } from "../../common/dom/media_query";
-import type { Themes } from "../../data/ws-themes";
-import { themesContext } from "../../data/context";
-import { getAllGraphColors } from "../../common/color/colors";
+import { formatTimeLabel } from "./axis-label";
+import { ensureArray } from "../../common/array/ensure-array";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 
@@ -45,6 +49,10 @@ export class HaChartBase extends LitElement {
 
   @state() private _isZoomed = false;
 
+  @state() private _zoomRatio = 1;
+
+  @state() private _minutesDifference = 24 * 60;
+
   private _modifierPressed = false;
 
   private _isTouchDevice = "ontouchstart" in window;
@@ -60,12 +68,16 @@ export class HaChartBase extends LitElement {
 
   private _listeners: (() => void)[] = [];
 
+  private _originalZrFlush?: () => void;
+
   public disconnectedCallback() {
     super.disconnectedCallback();
     while (this._listeners.length) {
       this._listeners.pop()!();
     }
     this.chart?.dispose();
+    this.chart = undefined;
+    this._originalZrFlush = undefined;
   }
 
   public connectedCallback() {
@@ -76,19 +88,19 @@ export class HaChartBase extends LitElement {
 
     this._listeners.push(
       listenMediaQuery("(prefers-reduced-motion)", (matches) => {
-        this._reducedMotion = matches;
-        this.chart?.setOption({ animation: !this._reducedMotion });
+        if (this._reducedMotion !== matches) {
+          this._reducedMotion = matches;
+          this._setChartOptions({ animation: !this._reducedMotion });
+        }
       })
     );
 
     // Add keyboard event listeners
     const handleKeyDown = (ev: KeyboardEvent) => {
-      if ((isMac && ev.metaKey) || (!isMac && ev.ctrlKey)) {
+      if ((isMac && ev.key === "Meta") || (!isMac && ev.key === "Control")) {
         this._modifierPressed = true;
         if (!this.options?.dataZoom) {
-          this.chart?.setOption({
-            dataZoom: this._getDataZoomConfig(),
-          });
+          this._setChartOptions({ dataZoom: this._getDataZoomConfig() });
         }
       }
     };
@@ -97,9 +109,7 @@ export class HaChartBase extends LitElement {
       if ((isMac && ev.key === "Meta") || (!isMac && ev.key === "Control")) {
         this._modifierPressed = false;
         if (!this.options?.dataZoom) {
-          this.chart?.setOption({
-            dataZoom: this._getDataZoomConfig(),
-          });
+          this._setChartOptions({ dataZoom: this._getDataZoomConfig() });
         }
       }
     };
@@ -117,46 +127,37 @@ export class HaChartBase extends LitElement {
   }
 
   public willUpdate(changedProps: PropertyValues): void {
-    super.willUpdate(changedProps);
-
-    if (!this.hasUpdated || !this.chart) {
+    if (!this.chart) {
       return;
     }
     if (changedProps.has("_themes")) {
       this._setupChart();
       return;
     }
+    let chartOptions: ECOption = {};
     if (changedProps.has("data")) {
-      this.chart.setOption(
-        { series: this.data },
-        { lazyUpdate: true, replaceMerge: ["series"] }
-      );
+      chartOptions.series = this.data;
     }
-    if (changedProps.has("options") || changedProps.has("_isZoomed")) {
-      this.chart.setOption(this._createOptions(), {
-        lazyUpdate: true,
-        // if we replace the whole object, it will reset the dataZoom
-        replaceMerge: [
-          "xAxis",
-          "yAxis",
-          "dataZoom",
-          "dataset",
-          "tooltip",
-          "grid",
-          "visualMap",
-        ],
-      });
+    if (changedProps.has("options")) {
+      chartOptions = { ...chartOptions, ...this._createOptions() };
+    } else if (this._isTouchDevice && changedProps.has("_isZoomed")) {
+      chartOptions.dataZoom = this._getDataZoomConfig();
+    }
+    if (Object.keys(chartOptions).length > 0) {
+      this._setChartOptions(chartOptions);
     }
   }
 
   protected render() {
     return html`
       <div
-        class="chart-container"
+        class=${classMap({
+          "chart-container": true,
+          "has-legend": !!this.options?.legend,
+        })}
         style=${styleMap({
           height: this.height ?? `${this._getDefaultHeight()}px`,
         })}
-        @wheel=${this._handleWheel}
       >
         <div class="chart"></div>
         ${this._isZoomed
@@ -172,6 +173,14 @@ export class HaChartBase extends LitElement {
       </div>
     `;
   }
+
+  private _formatTimeLabel = (value: number | Date) =>
+    formatTimeLabel(
+      value,
+      this.hass.locale,
+      this.hass.config,
+      this._minutesDifference * this._zoomRatio
+    );
 
   private async _setupChart() {
     if (this._loading) return;
@@ -199,6 +208,7 @@ export class HaChartBase extends LitElement {
       this.chart.on("datazoom", (e: any) => {
         const { start, end } = e.batch?.[0] ?? e;
         this._isZoomed = start !== 0 || end !== 100;
+        this._zoomRatio = (end - start) / 100;
       });
       this.chart.on("click", (e: ECElementEvent) => {
         fireEvent(this, "chart-click", e);
@@ -229,13 +239,58 @@ export class HaChartBase extends LitElement {
       type: "inside",
       orient: "horizontal",
       filterMode: "none",
-      moveOnMouseMove: this._isZoomed,
-      preventDefaultMouseMove: this._isZoomed,
+      moveOnMouseMove: !this._isTouchDevice || this._isZoomed,
+      preventDefaultMouseMove: !this._isTouchDevice || this._isZoomed,
       zoomLock: !this._isTouchDevice && !this._modifierPressed,
     };
   }
 
   private _createOptions(): ECOption {
+    let xAxis = this.options?.xAxis;
+    if (xAxis) {
+      xAxis = Array.isArray(xAxis) ? xAxis : [xAxis];
+      xAxis = xAxis.map((axis: XAXisOption) => {
+        if (axis.type !== "time" || axis.show === false) {
+          return axis;
+        }
+        if (axis.max && axis.min) {
+          this._minutesDifference = differenceInMinutes(
+            axis.max as Date,
+            axis.min as Date
+          );
+        }
+        const dayDifference = this._minutesDifference / 60 / 24;
+        let minInterval: number | undefined;
+        if (dayDifference) {
+          minInterval =
+            dayDifference >= 89 // quarter
+              ? 28 * 3600 * 24 * 1000
+              : dayDifference > 2
+                ? 3600 * 24 * 1000
+                : undefined;
+        }
+        return {
+          axisLine: {
+            show: false,
+          },
+          splitLine: {
+            show: true,
+          },
+          ...axis,
+          axisLabel: {
+            formatter: this._formatTimeLabel,
+            rich: {
+              bold: {
+                fontWeight: "bold",
+              },
+            },
+            hideOverlap: true,
+            ...axis.axisLabel,
+          },
+          minInterval,
+        } as XAXisOption;
+      });
+    }
     const options = {
       animation: !this._reducedMotion,
       darkMode: this._themes.darkMode ?? false,
@@ -244,6 +299,7 @@ export class HaChartBase extends LitElement {
       },
       dataZoom: this._getDataZoomConfig(),
       ...this.options,
+      xAxis,
     };
 
     const isMobile = window.matchMedia(
@@ -257,6 +313,7 @@ export class HaChartBase extends LitElement {
       tooltips.forEach((tooltip) => {
         tooltip.confine = true;
         tooltip.appendTo = undefined;
+        tooltip.triggerOn = "click";
       });
       options.tooltip = tooltips;
     }
@@ -270,6 +327,7 @@ export class HaChartBase extends LitElement {
       backgroundColor: "transparent",
       textStyle: {
         color: style.getPropertyValue("--primary-text-color"),
+        fontFamily: "Roboto, Noto, sans-serif",
       },
       title: {
         textStyle: {
@@ -423,8 +481,19 @@ export class HaChartBase extends LitElement {
           color: style.getPropertyValue("--primary-text-color"),
         },
         inactiveColor: style.getPropertyValue("--disabled-text-color"),
+        pageIconColor: style.getPropertyValue("--primary-text-color"),
+        pageIconInactiveColor: style.getPropertyValue("--disabled-text-color"),
+        pageTextStyle: {
+          color: style.getPropertyValue("--secondary-text-color"),
+        },
       },
       tooltip: {
+        backgroundColor: style.getPropertyValue("--card-background-color"),
+        borderColor: style.getPropertyValue("--divider-color"),
+        textStyle: {
+          color: style.getPropertyValue("--primary-text-color"),
+          fontSize: 12,
+        },
         axisPointer: {
           lineStyle: {
             color: style.getPropertyValue("--divider-color"),
@@ -439,37 +508,47 @@ export class HaChartBase extends LitElement {
   }
 
   private _getDefaultHeight() {
-    return Math.max(this.clientWidth / 2, 300);
+    return Math.max(this.clientWidth / 2, 200);
+  }
+
+  private _setChartOptions(options: ECOption) {
+    if (!this.chart) {
+      return;
+    }
+    if (!this._originalZrFlush) {
+      const dataSize = ensureArray(this.data).reduce(
+        (acc, series) => acc + (series.data as any[]).length,
+        0
+      );
+      if (dataSize > 10000) {
+        // delay the last bit of the render to avoid blocking the main thread
+        // this is not that impactful with sampling enabled but it doesn't hurt to have it
+        const zr = this.chart.getZr();
+        this._originalZrFlush = zr.flush;
+        zr.flush = () => {
+          setTimeout(() => {
+            this._originalZrFlush?.call(zr);
+          }, 5);
+        };
+      }
+    }
+    const replaceMerge = options.series ? ["series"] : [];
+    this.chart.setOption(options, { replaceMerge });
   }
 
   private _handleZoomReset() {
     this.chart?.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
   }
 
-  private _handleWheel(e: WheelEvent) {
-    // if the window is not focused, we don't receive the keydown events but scroll still works
-    if (!this.options?.dataZoom) {
-      const modifierPressed = (isMac && e.metaKey) || (!isMac && e.ctrlKey);
-      if (modifierPressed) {
-        e.preventDefault();
-      }
-      if (modifierPressed !== this._modifierPressed) {
-        this._modifierPressed = modifierPressed;
-        this.chart?.setOption({
-          dataZoom: this._getDataZoomConfig(),
-        });
-      }
-    }
-  }
-
   static styles = css`
     :host {
       display: block;
       position: relative;
+      letter-spacing: normal;
     }
     .chart-container {
       position: relative;
-      max-height: var(--chart-max-height, 300px);
+      max-height: var(--chart-max-height, 350px);
     }
     .chart {
       width: 100%;
@@ -484,6 +563,9 @@ export class HaChartBase extends LitElement {
       --mdc-icon-button-size: 32px;
       color: var(--primary-color);
       border: 1px solid var(--divider-color);
+    }
+    .has-legend .zoom-reset {
+      top: 64px;
     }
   `;
 }

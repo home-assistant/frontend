@@ -136,11 +136,18 @@ export function theme2hex(themeColor: string): string {
   }
 
   const rgbFromColorName = colors[themeColor];
-  if (!rgbFromColorName) {
-    // We have a named color, and there's nothing in the table,
-    // so nothing further we can do with it.
-    // Compare/border/background color will all be the same.
-    return themeColor;
+  if (rgbFromColorName) {
+    return rgb2hex(rgbFromColorName);
   }
-  return rgb2hex(rgbFromColorName);
+
+  const rgbMatch = themeColor.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+  if (rgbMatch) {
+    const [, r, g, b] = rgbMatch.map(Number);
+    return rgb2hex([r, g, b]);
+  }
+
+  // We have a named color, and there's nothing in the table,
+  // so nothing further we can do with it.
+  // Compare/border/background color will all be the same.
+  return themeColor;
 }

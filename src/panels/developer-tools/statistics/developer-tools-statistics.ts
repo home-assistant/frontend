@@ -706,7 +706,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           --data-table-border-width: 0;
         }
         :host(:not([narrow])) ha-data-table {
-          height: calc(100vh - 1px - var(--header-height));
+          height: calc(100vh - 1px - var(--header-height) - 48px);
           display: block;
         }
 

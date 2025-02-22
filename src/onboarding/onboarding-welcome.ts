@@ -1,5 +1,5 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { LocalizeFunc } from "../common/translations/localize";
 import type { HomeAssistant } from "../types";
@@ -13,8 +13,6 @@ class OnboardingWelcome extends LitElement {
 
   @property({ attribute: false }) public localize!: LocalizeFunc;
 
-  @property({ type: Boolean }) public supervisor = false;
-
   protected render(): TemplateResult {
     return html`
       <h1>${this.localize("ui.panel.page-onboarding.welcome.header")}</h1>
@@ -24,11 +22,9 @@ class OnboardingWelcome extends LitElement {
         ${this.localize("ui.panel.page-onboarding.welcome.start")}
       </ha-button>
 
-      ${this.supervisor
-        ? html`<ha-button @click=${this._restoreBackup}>
-            ${this.localize("ui.panel.page-onboarding.welcome.restore_backup")}
-          </ha-button>`
-        : nothing}
+      <ha-button @click=${this._restoreBackup}>
+        ${this.localize("ui.panel.page-onboarding.welcome.restore_backup")}
+      </ha-button>
     `;
   }
 

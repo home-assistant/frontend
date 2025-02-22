@@ -16,7 +16,9 @@ export const loadConfigFlowDialog = loadDataEntryFlowDialog;
 
 export const showConfigFlowDialog = (
   element: HTMLElement,
-  dialogParams: Omit<DataEntryFlowDialogParams, "flowConfig">
+  dialogParams: Omit<DataEntryFlowDialogParams, "flowConfig"> & {
+    entryId?: string;
+  }
 ): void =>
   showFlowDialog(element, dialogParams, {
     flowType: "config_flow",

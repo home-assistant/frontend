@@ -10,7 +10,7 @@ let textMeasureCanvas: HTMLCanvasElement | undefined;
 export function measureTextWidth(
   text: string,
   fontSize: number,
-  fontFamily = "sans-serif"
+  fontFamily = "Roboto, Noto, sans-serif"
 ): number {
   if (!textMeasureCanvas) {
     textMeasureCanvas = document.createElement("canvas");
@@ -21,5 +21,11 @@ export function measureTextWidth(
   }
 
   context.font = `${fontSize}px ${fontFamily}`;
-  return Math.ceil(context.measureText(text).width);
+  const textMetrics = context.measureText(text);
+  return Math.ceil(
+    Math.max(
+      textMetrics.actualBoundingBoxRight + textMetrics.actualBoundingBoxLeft,
+      textMetrics.width
+    )
+  );
 }

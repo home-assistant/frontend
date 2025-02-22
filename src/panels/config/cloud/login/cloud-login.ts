@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list";
-import { mdiDeleteForever, mdiDotsVertical } from "@mdi/js";
+import { mdiDeleteForever, mdiDotsVertical, mdiDownload } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -27,6 +27,7 @@ import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "../../ha-config-section";
+import { showSupportPackageDialog } from "../account/show-dialog-cloud-support-package";
 
 @customElement("cloud-login")
 export class CloudLogin extends LitElement {
@@ -57,7 +58,7 @@ export class CloudLogin extends LitElement {
         .narrow=${this.narrow}
         header="Home Assistant Cloud"
       >
-        <ha-button-menu slot="toolbar-icon" @action=${this._deleteCloudData}>
+        <ha-button-menu slot="toolbar-icon" @action=${this._handleMenuAction}>
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
@@ -69,6 +70,12 @@ export class CloudLogin extends LitElement {
               "ui.panel.config.cloud.account.reset_cloud_data"
             )}
             <ha-svg-icon slot="graphic" .path=${mdiDeleteForever}></ha-svg-icon>
+          </ha-list-item>
+          <ha-list-item graphic="icon">
+            ${this.hass.localize(
+              "ui.panel.config.cloud.account.download_support_package"
+            )}
+            <ha-svg-icon slot="graphic" .path=${mdiDownload}></ha-svg-icon>
           </ha-list-item>
         </ha-button-menu>
         <div class="content">
@@ -348,6 +355,16 @@ export class CloudLogin extends LitElement {
     fireEvent(this, "flash-message-changed", { value: "" });
   }
 
+  private _handleMenuAction(ev) {
+    switch (ev.detail.index) {
+      case 0:
+        this._deleteCloudData();
+        break;
+      case 1:
+        this._downloadSupportPackage();
+    }
+  }
+
   private async _deleteCloudData() {
     const confirm = await showConfirmationDialog(this, {
       title: this.hass.localize(
@@ -375,6 +392,10 @@ export class CloudLogin extends LitElement {
     } finally {
       fireEvent(this, "ha-refresh-cloud-status");
     }
+  }
+
+  private async _downloadSupportPackage() {
+    showSupportPackageDialog(this);
   }
 
   static get styles() {

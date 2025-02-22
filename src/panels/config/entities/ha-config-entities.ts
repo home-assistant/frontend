@@ -66,8 +66,8 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
-import type { ConfigEntry } from "../../../data/config_entries";
-import { getConfigEntries } from "../../../data/config_entries";
+import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
+import { getConfigEntries, getSubEntries } from "../../../data/config_entries";
 import { fullEntitiesContext } from "../../../data/context";
 import type {
   DataTableFiltersItems,
@@ -145,6 +145,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   @state() private _stateEntities: StateEntity[] = [];
 
   @state() private _entries?: ConfigEntry[];
+
+  @state() private _subEntries?: SubEntry[];
 
   @state() private _manifests?: IntegrationManifest[];
 
@@ -353,6 +355,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         showNarrow: true,
         sortable: true,
         filterable: true,
+        minWidth: "80px",
+        maxWidth: "80px",
         template: (entry) =>
           entry.unavailable ||
           entry.disabled_by ||
@@ -521,6 +525,27 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           });
           if (configEntries.length === 1) {
             filteredConfigEntry = configEntries[0];
+          }
+        } else if (
+          key === "sub_entry" &&
+          Array.isArray(filter) &&
+          filter.length
+        ) {
+          if (
+            !(
+              Array.isArray(this._filters.config_entry) &&
+              this._filters.config_entry.length === 1
+            )
+          ) {
+            return;
+          }
+          filteredEntities = filteredEntities.filter(
+            (entity) =>
+              entity.config_subentry_id &&
+              (filter as string[]).includes(entity.config_subentry_id)
+          );
+          if (!this._subEntries) {
+            this._loadSubEntries(this._filters.config_entry[0]);
           }
         } else if (
           key === "ha-filter-integrations" &&
@@ -904,14 +929,22 @@ ${
 </ha-md-button-menu>
         ${
           Array.isArray(this._filters.config_entry) &&
-          this._filters.config_entry?.length
+          this._filters.config_entry.length
             ? html`<ha-alert slot="filter-pane">
                 ${this.hass.localize(
                   "ui.panel.config.entities.picker.filtering_by_config_entry"
                 )}
                 ${this._entries?.find(
                   (entry) => entry.entry_id === this._filters.config_entry![0]
-                )?.title || this._filters.config_entry[0]}
+                )?.title || this._filters.config_entry[0]}${this._filters
+                  .config_entry.length === 1 &&
+                Array.isArray(this._filters.sub_entry) &&
+                this._filters.sub_entry.length
+                  ? html` (${this._subEntries?.find(
+                      (entry) =>
+                        entry.subentry_id === this._filters.sub_entry![0]
+                    )?.title || this._filters.sub_entry[0]})`
+                  : nothing}
               </ha-alert>`
             : nothing
         }
@@ -1024,6 +1057,7 @@ ${
   private _setFiltersFromUrl() {
     const domain = this._searchParms.get("domain");
     const configEntry = this._searchParms.get("config_entry");
+    const subEntry = this._searchParms.get("sub_entry");
     const label = this._searchParms.has("label");
 
     if (!domain && !configEntry && !label) {
@@ -1036,6 +1070,7 @@ ${
       "ha-filter-states": [],
       "ha-filter-integrations": domain ? [domain] : [],
       config_entry: configEntry ? [configEntry] : [],
+      sub_entry: subEntry ? [subEntry] : [],
     };
     this._filterLabel();
   }
@@ -1093,6 +1128,7 @@ ${
           hidden_by: null,
           area_id: null,
           config_entry_id: null,
+          config_subentry_id: null,
           device_id: null,
           icon: null,
           readonly: true,
@@ -1382,6 +1418,10 @@ ${rejected
 
   private async _loadConfigEntries() {
     this._entries = await getConfigEntries(this.hass);
+  }
+
+  private async _loadSubEntries(entryId: string) {
+    this._subEntries = await getSubEntries(this.hass, entryId);
   }
 
   private _addDevice() {

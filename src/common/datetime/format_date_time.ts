@@ -26,6 +26,20 @@ const formatDateTimeMem = memoizeOne(
     })
 );
 
+export const formatDateTimeWithBrowserDefaults = (dateObj: Date) =>
+  formatDateTimeWithBrowserDefaultsMem().format(dateObj);
+
+const formatDateTimeWithBrowserDefaultsMem = memoizeOne(
+  () =>
+    new Intl.DateTimeFormat(undefined, {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    })
+);
+
 // Aug 9, 2021, 8:23 AM
 export const formatShortDateTimeWithYear = (
   dateObj: Date,

@@ -33,6 +33,7 @@ import { hasConfigChanged } from "../../common/has-changed";
 import {
   fillDataGapsAndRoundCaps,
   getCommonOptions,
+  getCompareTransform,
 } from "./common/energy-chart-options";
 import { storage } from "../../../../common/decorators/storage";
 import type { ECOption } from "../../../../resources/echarts";
@@ -192,9 +193,10 @@ export class HuiEnergyDevicesDetailGraphCard
           icon: "circle",
         },
         grid: {
+          top: 45,
           bottom: 0,
-          left: 5,
-          right: 5,
+          left: 1,
+          right: 1,
           containLabel: true,
         },
       };
@@ -319,21 +321,25 @@ export class HuiEnergyDevicesDetailGraphCard
           datapoint[1];
       });
     });
-    const compareOffset = compare
-      ? this._start.getTime() - this._compareStart!.getTime()
-      : 0;
+    const compareTransform = getCompareTransform(
+      this._start,
+      this._compareStart!
+    );
 
     const untrackedConsumption: BarSeriesOption["data"] = [];
-    Object.keys(consumptionData.total).forEach((time) => {
-      const value =
-        consumptionData.total[time] - (totalDeviceConsumption[time] || 0);
-      const dataPoint = [Number(time), value];
-      if (compare) {
-        dataPoint[2] = dataPoint[0];
-        dataPoint[0] += compareOffset;
-      }
-      untrackedConsumption.push(dataPoint);
-    });
+    Object.keys(consumptionData.total)
+      .sort((a, b) => Number(a) - Number(b))
+      .forEach((time) => {
+        const ts = Number(time);
+        const value =
+          consumptionData.total[time] - (totalDeviceConsumption[time] || 0);
+        const dataPoint: number[] = [ts, value];
+        if (compare) {
+          dataPoint[2] = dataPoint[0];
+          dataPoint[0] = compareTransform(new Date(ts)).getTime();
+        }
+        untrackedConsumption.push(dataPoint);
+      });
     // random id to always add untracked at the end
     const order = Date.now();
     const dataset: BarSeriesOption = {
@@ -375,9 +381,10 @@ export class HuiEnergyDevicesDetailGraphCard
     compare = false
   ) {
     const data: BarSeriesOption[] = [];
-    const compareOffset = compare
-      ? this._start.getTime() - this._compareStart!.getTime()
-      : 0;
+    const compareTransform = getCompareTransform(
+      this._start,
+      this._compareStart!
+    );
 
     devices.forEach((source, idx) => {
       const order = sorted_devices.indexOf(source.stat_consumption);
@@ -412,7 +419,7 @@ export class HuiEnergyDevicesDetailGraphCard
           const dataPoint = [point.start, point.change];
           if (compare) {
             dataPoint[2] = dataPoint[0];
-            dataPoint[0] += compareOffset;
+            dataPoint[0] = compareTransform(new Date(point.start)).getTime();
           }
           consumptionData.push(dataPoint);
           prevStart = point.start;
@@ -442,9 +449,17 @@ export class HuiEnergyDevicesDetailGraphCard
         stack: compare ? "devicesCompare" : "devices",
       });
     });
-    return sorted_devices.map(
-      (device) => data.find((d) => (d.id as string).includes(device))!
-    );
+    return sorted_devices
+      .map(
+        (device) =>
+          data.find((d) => {
+            const id = (d.id as string)
+              .replace(/^compare-/, "") // Remove compare- prefix
+              .replace(/-\d+$/, ""); // Remove numeric suffix
+            return id === device;
+          })!
+      )
+      .filter(Boolean);
   }
 
   static styles = css`

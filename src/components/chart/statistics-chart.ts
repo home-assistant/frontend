@@ -1,15 +1,22 @@
-import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import type {
   BarSeriesOption,
   LineSeriesOption,
 } from "echarts/types/dist/shared";
+import type { PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import memoizeOne from "memoize-one";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 
+import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
+import {
+  formatNumber,
+  getNumberFormatOptions,
+} from "../../common/number/format_number";
+import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
+import { computeRTL } from "../../common/util/compute_rtl";
 import type {
   Statistics,
   StatisticsMetaData,
@@ -21,16 +28,9 @@ import {
   getStatisticMetadata,
   statisticsHaveType,
 } from "../../data/recorder";
+import type { ECOption } from "../../resources/echarts";
 import type { HomeAssistant } from "../../types";
 import "./ha-chart-base";
-import { computeRTL } from "../../common/util/compute_rtl";
-import type { ECOption } from "../../resources/echarts";
-import {
-  formatNumber,
-  getNumberFormatOptions,
-} from "../../common/number/format_number";
-import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
-import { getTimeAxisLabelConfig } from "./axis-label";
 
 export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
   mean: "mean",
@@ -128,7 +128,8 @@ export class StatisticsChart extends LitElement {
       changedProps.has("hideLegend") ||
       changedProps.has("startTime") ||
       changedProps.has("endTime") ||
-      changedProps.has("_legendData")
+      changedProps.has("_legendData") ||
+      changedProps.has("_chartData")
     ) {
       this._createOptions();
     }
@@ -187,19 +188,29 @@ export class StatisticsChart extends LitElement {
 
   private _renderTooltip = (params: any) => {
     const rendered: Record<string, boolean> = {};
+    const unit = this.unit
+      ? `${blankBeforeUnit(this.unit, this.hass.locale)}${this.unit}`
+      : "";
     return params
       .map((param, index: number) => {
         if (rendered[param.seriesName]) return "";
         rendered[param.seriesName] = true;
+
+        const statisticId = this._statisticIds[param.seriesIndex];
+        const stateObj = this.hass.states[statisticId];
+        const entry = this.hass.entities[statisticId];
+        // max series can have 3 values, as the second value is the max-min to form a band
+        const rawValue = String(param.value[2] ?? param.value[1]);
+
+        const options = getNumberFormatOptions(stateObj, entry) ?? {
+          maximumFractionDigits: 2,
+        };
+
         const value = `${formatNumber(
-          // max series can have 3 values, as the second value is the max-min to form a band
-          (param.value[2] ?? param.value[1]) as number,
+          rawValue,
           this.hass.locale,
-          getNumberFormatOptions(
-            undefined,
-            this.hass.entities[this._statisticIds[param.seriesIndex]]
-          )
-        )} ${this.unit}`;
+          options
+        )}${unit}`;
 
         const time =
           index === 0
@@ -216,7 +227,6 @@ export class StatisticsChart extends LitElement {
   };
 
   private _createOptions() {
-    const splitLineStyle = this.hass.themes?.darkMode ? { opacity: 0.15 } : {};
     const dayDifference = this.daysToShow ?? 1;
     let minYAxis: number | ((values: { min: number }) => number) | undefined =
       this.minYAxis;
@@ -227,39 +237,53 @@ export class StatisticsChart extends LitElement {
         minYAxis = ({ min }) => Math.min(min, this.minYAxis!);
       }
     } else if (this.logarithmicScale) {
-      minYAxis = ({ min }) => (min > 0 ? min * 0.95 : min * 1.05);
+      minYAxis = ({ min }) => Math.floor(min > 0 ? min * 0.95 : min * 1.05);
     }
     if (typeof maxYAxis === "number") {
       if (this.fitYData) {
         maxYAxis = ({ max }) => Math.max(max, this.maxYAxis!);
       }
     } else if (this.logarithmicScale) {
-      maxYAxis = ({ max }) => (max > 0 ? max * 1.05 : max * 0.95);
+      maxYAxis = ({ max }) => Math.ceil(max > 0 ? max * 1.05 : max * 0.95);
     }
+    const endTime = this.endTime ?? new Date();
+    let startTime = this.startTime;
+
+    if (!startTime) {
+      // set start time to the earliest point in the chart data
+      this._chartData.forEach((series) => {
+        if (!Array.isArray(series.data) || !series.data[0]) return;
+        const firstPoint = series.data[0] as any;
+        const timestamp = Array.isArray(firstPoint)
+          ? firstPoint[0]
+          : firstPoint.value?.[0];
+        if (timestamp && (!startTime || new Date(timestamp) < startTime)) {
+          startTime = new Date(timestamp);
+        }
+      });
+
+      if (!startTime) {
+        // Calculate default start time based on dayDifference
+        startTime = new Date(
+          endTime.getTime() - dayDifference * 24 * 3600 * 1000
+        );
+      }
+    }
+
     this._chartOptions = {
-      xAxis: {
-        type: "time",
-        axisLabel: getTimeAxisLabelConfig(
-          this.hass.locale,
-          this.hass.config,
-          dayDifference
-        ),
-        min: this.startTime,
-        max: this.endTime,
-        axisLine: {
+      xAxis: [
+        {
+          id: "xAxis",
+          type: "time",
+          min: startTime,
+          max: this.endTime,
+        },
+        {
+          id: "hiddenAxis",
+          type: "time",
           show: false,
         },
-        splitLine: {
-          show: true,
-          lineStyle: splitLineStyle,
-        },
-        minInterval:
-          dayDifference >= 89 // quarter
-            ? 28 * 3600 * 24 * 1000
-            : dayDifference > 2
-              ? 3600 * 24 * 1000
-              : undefined,
-      },
+      ],
       yAxis: {
         type: this.logarithmicScale ? "log" : "value",
         name: this.unit,
@@ -268,24 +292,24 @@ export class StatisticsChart extends LitElement {
           align: "left",
         },
         position: computeRTL(this.hass) ? "right" : "left",
-        // @ts-ignore
         scale: true,
         min: this._clampYAxis(minYAxis),
         max: this._clampYAxis(maxYAxis),
         splitLine: {
           show: true,
-          lineStyle: splitLineStyle,
         },
       },
       legend: {
         show: !this.hideLegend,
+        type: "scroll",
+        animationDurationUpdate: 400,
         icon: "circle",
         padding: [20, 0],
         data: this._legendData,
       },
       grid: {
         ...(this.hideLegend ? { top: this.unit ? 30 : 5 } : {}), // undefined is the same as 0
-        left: 20,
+        left: 1,
         right: 1,
         bottom: 0,
         containLabel: true,
@@ -451,6 +475,9 @@ export class StatisticsChart extends LitElement {
             displayedLegend = displayedLegend || showLegend;
           }
           statTypes.push(type);
+          const borderColor =
+            band && hasMean ? color + (this.hideLegend ? "00" : "7F") : color;
+          const backgroundColor = band ? color + "3F" : color + "7F";
           const series: LineSeriesOption | BarSeriesOption = {
             id: `${statistic_id}-${type}`,
             type: this.chartType,
@@ -465,8 +492,9 @@ export class StatisticsChart extends LitElement {
               : this.hass.localize(
                   `ui.components.statistics_charts.statistic_types.${type}`
                 ),
-            symbol: "circle",
-            symbolSize: 0,
+            symbol: "none",
+            sampling: "minmax",
+            animationDurationUpdate: 0,
             lineStyle: {
               width: 1.5,
             },
@@ -474,21 +502,15 @@ export class StatisticsChart extends LitElement {
               this.chartType === "bar"
                 ? {
                     borderRadius: [4, 4, 0, 0],
-                    borderColor:
-                      band && hasMean
-                        ? color + (this.hideLegend ? "00" : "7F")
-                        : color,
+                    borderColor,
                     borderWidth: 1.5,
                   }
                 : undefined,
-            color:
-              band && hasMean ? color + (this.hideLegend ? "00" : "7F") : color,
+            color: this.chartType === "bar" ? backgroundColor : borderColor,
           };
           if (band && this.chartType === "line") {
             series.stack = `band-${statistic_id}`;
             series.stackStrategy = "all";
-            (series as LineSeriesOption).symbol = "none";
-            (series as LineSeriesOption).lineStyle = { width: 1.5 };
             if (drawBands && type === "max") {
               (series as LineSeriesOption).areaStyle = {
                 color: color + "3F",
@@ -550,6 +572,7 @@ export class StatisticsChart extends LitElement {
         color,
         type: this.chartType,
         data: [],
+        xAxisIndex: 1,
       });
     });
 

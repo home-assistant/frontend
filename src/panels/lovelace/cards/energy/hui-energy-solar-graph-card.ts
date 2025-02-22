@@ -30,6 +30,7 @@ import { hasConfigChanged } from "../../common/has-changed";
 import {
   fillDataGapsAndRoundCaps,
   getCommonOptions,
+  getCompareTransform,
 } from "./common/energy-chart-options";
 import type { ECOption } from "../../../../resources/echarts";
 
@@ -231,9 +232,10 @@ export class HuiEnergySolarGraphCard
     compare = false
   ) {
     const data: BarSeriesOption[] = [];
-    const compareOffset = compare
-      ? this._start.getTime() - this._compareStart!.getTime()
-      : 0;
+    const compareTransform = getCompareTransform(
+      this._start,
+      this._compareStart!
+    );
 
     solarSources.forEach((source, idx) => {
       let prevStart: number | null = null;
@@ -255,10 +257,13 @@ export class HuiEnergySolarGraphCard
           if (prevStart === point.start) {
             continue;
           }
-          const dataPoint = [point.start, point.change];
+          const dataPoint: (Date | string | number)[] = [
+            point.start,
+            point.change,
+          ];
           if (compare) {
             dataPoint[2] = dataPoint[0];
-            dataPoint[0] += compareOffset;
+            dataPoint[0] = compareTransform(new Date(point.start));
           }
           solarProductionData.push(dataPoint);
           prevStart = point.start;
@@ -362,6 +367,7 @@ export class HuiEnergySolarGraphCard
             data.push({
               id: "forecast-" + source.stat_energy_from,
               type: "line",
+              stack: "forecast",
               name: this.hass.localize(
                 "ui.panel.lovelace.cards.energy.energy_solar_graph.forecast",
                 {

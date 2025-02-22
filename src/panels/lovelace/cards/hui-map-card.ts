@@ -1,4 +1,8 @@
-import { mdiImageFilterCenterFocus } from "@mdi/js";
+import {
+  mdiDotsHexagon,
+  mdiGoogleCirclesCommunities,
+  mdiImageFilterCenterFocus,
+} from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { LatLngTuple } from "leaflet";
 import type { PropertyValues } from "lit";
@@ -71,6 +75,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   private _colorIndex = 0;
 
   @state() private _error?: { code: string; message: string };
+
+  @state() private _clusterMarkers = true;
 
   private _subscribed?: Promise<(() => Promise<void>) | undefined>;
 
@@ -170,18 +176,32 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             .autoFit=${this._config.auto_fit || false}
             .fitZones=${this._config.fit_zones}
             .themeMode=${themeMode}
+            .clusterMarkers=${this._clusterMarkers}
             interactive-zones
             render-passive
           ></ha-map>
-          <ha-icon-button
-            .label=${this.hass!.localize(
-              "ui.panel.lovelace.cards.map.reset_focus"
-            )}
-            .path=${mdiImageFilterCenterFocus}
-            style=${isDarkMode ? "color:#ffffff" : "color:#000000"}
-            @click=${this._fitMap}
-            tabindex="0"
-          ></ha-icon-button>
+          <div id="buttons">
+            <ha-icon-button
+              .label=${this.hass!.localize(
+                "ui.panel.lovelace.cards.map.toggle_grouping"
+              )}
+              .path=${this._clusterMarkers
+                ? mdiGoogleCirclesCommunities
+                : mdiDotsHexagon}
+              style=${isDarkMode ? "color:#ffffff" : "color:#000000"}
+              @click=${this._toggleClusterMarkers}
+              tabindex="0"
+            ></ha-icon-button>
+            <ha-icon-button
+              .label=${this.hass!.localize(
+                "ui.panel.lovelace.cards.map.reset_focus"
+              )}
+              .path=${mdiImageFilterCenterFocus}
+              style=${isDarkMode ? "color:#ffffff" : "color:#000000"}
+              @click=${this._fitMap}
+              tabindex="0"
+            ></ha-icon-button>
+          </div>
         </div>
       </ha-card>
     `;
@@ -318,6 +338,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _fitMap() {
     this._map?.fitMap();
+  }
+
+  private _toggleClusterMarkers() {
+    this._clusterMarkers = !this._clusterMarkers;
   }
 
   private _getColor(entityId: string): string {
@@ -464,11 +488,12 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       overflow: hidden;
     }
 
-    ha-icon-button {
+    #buttons {
       position: absolute;
       top: 75px;
       left: 3px;
-      outline: none;
+      display: flex;
+      flex-direction: column;
     }
 
     #root {
