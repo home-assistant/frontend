@@ -262,7 +262,7 @@ export class StateHistoryChartLine extends LitElement {
                   : {
                       // show the first significant digit for tiny values
                       maximumFractionDigits: Math.max(
-                        1,
+                        2,
                         -Math.floor(Math.log10(Math.abs(value % 1 || 1)))
                       ),
                     };
