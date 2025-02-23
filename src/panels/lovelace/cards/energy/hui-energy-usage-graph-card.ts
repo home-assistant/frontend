@@ -499,7 +499,7 @@ export class HuiEnergyUsageGraphCard
           ];
           if (compare) {
             dataPoint[2] = dataPoint[0];
-            dataPoint[0] = compareTransform(dataPoint[0]).getTime();
+            dataPoint[0] = compareTransform(dataPoint[0]);
           }
           points.push(dataPoint);
         }
