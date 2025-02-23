@@ -25,6 +25,7 @@ import "../../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { showBluetoothDeviceInfoDialog } from "./show-dialog-bluetooth-device-info";
+import { relativeTime } from "../../../../../common/datetime/relative_time";
 
 @customElement("bluetooth-advertisement-monitor")
 export class BluetoothAdvertisementMonitorPanel extends LitElement {
@@ -104,7 +105,10 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
   }
 
   private _columns = memoizeOne(
-    (localize: LocalizeFunc): DataTableColumnContainer => {
+    (
+      localize: LocalizeFunc,
+      locale: HomeAssistant["locale"]
+    ): DataTableColumnContainer => {
       const columns: DataTableColumnContainer<BluetoothDeviceData> = {
         address: {
           title: localize("ui.panel.config.bluetooth.address"),
@@ -139,6 +143,16 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
           filterable: true,
           sortable: true,
           defaultHidden: true,
+        },
+        time: {
+          title: localize("ui.panel.config.bluetooth.last_seen"),
+          filterable: false,
+          sortable: true,
+          defaultHidden: false,
+          template: (ad) => {
+            const date = new Date(ad.time * 1000);
+            return html`${relativeTime(date, locale)}`;
+          },
         },
         rssi: {
           title: localize("ui.panel.config.bluetooth.rssi"),
@@ -177,7 +191,7 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .columns=${this._columns(this.hass.localize)}
+        .columns=${this._columns(this.hass.localize, this.hass.locale)}
         .data=${this._dataWithNamedSourceAndIds(this._data)}
         @row-click=${this._handleRowClicked}
         .initialGroupColumn=${this._activeGrouping}

@@ -5352,6 +5352,7 @@
           "source": "Source",
           "rssi": "RSSI",
           "source_address": "Source address",
+          "last_seen": "Last seen",
           "device": "Device",
           "device_information": "Device information",
           "advertisement_data": "Advertisement data",
