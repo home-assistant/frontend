@@ -291,19 +291,18 @@ export class HuiEnergyUsageGraphCard
           true
         )
       );
-    } else {
-      // add empty dataset so compare bars are first
-      // `stack: usage` so it doesn't take up space yet
-      const firstId = statIds.from_grid?.[0] ?? "placeholder";
-      datasets.push({
-        id: "compare-" + firstId,
-        type: "bar",
-        stack: "usage",
-        data: [],
-        // @ts-expect-error
-        order: 0,
-      });
     }
+
+    // add empty dataset so compare bars are first
+    // `stack: usage` so it doesn't take up space yet
+    datasets.push({
+      id: "compare-placeholder",
+      type: "bar",
+      stack: energyData.statsCompare ? "compare" : "usage",
+      data: [],
+      // @ts-expect-error
+      order: 0,
+    });
 
     datasets.push(
       ...this._processDataSet(
@@ -500,7 +499,7 @@ export class HuiEnergyUsageGraphCard
           ];
           if (compare) {
             dataPoint[2] = dataPoint[0];
-            dataPoint[0] = compareTransform(dataPoint[0]);
+            dataPoint[0] = compareTransform(dataPoint[0]).getTime();
           }
           points.push(dataPoint);
         }
