@@ -63,6 +63,9 @@ export class StateHistoryChartLine extends LitElement {
 
   @property({ type: String }) public height?: string;
 
+  @property({ attribute: "expand-legend", type: Boolean })
+  public expandLegend?: boolean;
+
   @state() private _chartData: LineSeriesOption[] = [];
 
   @state() private _entityIds: string[] = [];
@@ -89,6 +92,7 @@ export class StateHistoryChartLine extends LitElement {
         style=${styleMap({ height: this.height })}
         @dataset-hidden=${this._datasetHidden}
         @dataset-unhidden=${this._datasetUnhidden}
+        ?expand-legend=${this.expandLegend}
       ></ha-chart-base>
     `;
   }

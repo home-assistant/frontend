@@ -91,6 +91,9 @@ export class StatisticsChart extends LitElement {
 
   @property({ type: String }) public height?: string;
 
+  @property({ attribute: "expand-legend", type: Boolean })
+  public expandLegend?: boolean;
+
   @state() private _chartData: (LineSeriesOption | BarSeriesOption)[] = [];
 
   @state() private _legendData: string[] = [];
@@ -172,6 +175,7 @@ export class StatisticsChart extends LitElement {
         style=${styleMap({ height: this.height })}
         @dataset-hidden=${this._datasetHidden}
         @dataset-unhidden=${this._datasetUnhidden}
+        ?expand-legend=${this.expandLegend}
       ></ha-chart-base>
     `;
   }

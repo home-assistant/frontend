@@ -42,6 +42,9 @@ export class HaChartBase extends LitElement {
 
   @property({ type: String }) public height?: string;
 
+  @property({ attribute: "expand-legend", type: Boolean }) public expandLegend =
+    false;
+
   @state()
   @consume({ context: themesContext, subscribe: true })
   _themes!: Themes;
@@ -53,8 +56,6 @@ export class HaChartBase extends LitElement {
   @state() private _minutesDifference = 24 * 60;
 
   @state() private _hiddenDatasets = new Set<string>();
-
-  @state() private _expandedLegend = false;
 
   private _modifierPressed = false;
 
@@ -204,7 +205,7 @@ export class HaChartBase extends LitElement {
     return html`<div class="chart-legend">
       <ul>
         ${items.map((item: string, index: number) => {
-          if (!this._expandedLegend && index >= overflowLimit) {
+          if (!this.expandLegend && index >= overflowLimit) {
             return nothing;
           }
           const dataset = datasets.find(
@@ -232,7 +233,7 @@ export class HaChartBase extends LitElement {
           ? html`<li class="more-button" @click=${this._toggleExpandedLegend}>
               <div>
                 ${this.hass.localize(
-                  this._expandedLegend
+                  this.expandLegend
                     ? "ui.components.history_charts.collapse_legend"
                     : "ui.components.history_charts.expand_legend"
                 )}
@@ -240,7 +241,7 @@ export class HaChartBase extends LitElement {
               </div>
               <div>
                 <ha-svg-icon
-                  .path=${this._expandedLegend ? mdiChevronUp : mdiChevronDown}
+                  .path=${this.expandLegend ? mdiChevronUp : mdiChevronDown}
                 ></ha-svg-icon>
               </div>
               <ha-ripple></ha-ripple>
@@ -637,7 +638,7 @@ export class HaChartBase extends LitElement {
   }
 
   private _toggleExpandedLegend() {
-    this._expandedLegend = !this._expandedLegend;
+    this.expandLegend = !this.expandLegend;
     setTimeout(() => {
       this.chart?.resize();
     });
