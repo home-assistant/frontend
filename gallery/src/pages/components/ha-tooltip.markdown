@@ -26,5 +26,5 @@ This element is based on sholace `sl-tooltip` it only sets some css tokens and h
 
 In your theme settings use this without the prefixed `--`.
 
-- `--ha-tooltip-border-radius` (Default: 4px)
-- `--ha-tooltip-arrow-size` (Default: `--ha-border-radius-s` = 4px)
+- `--ha-tooltip-border-radius` (Default: `--ha-border-radius-s` = 4px)
+- `--ha-tooltip-arrow-size` (Default: 8px)
