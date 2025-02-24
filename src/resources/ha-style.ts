@@ -436,11 +436,6 @@ const mainStyles = css`
     --margin-title-ltr: 0 0 0 24px;
     --margin-title-rtl: 0 24px 0 0;
 
-    // new style system
-    --ha-font-size-s: 14px;
-    --ha-font-family: Roboto, sans-serif;
-    --ha-border-radius-s: 4px;
-
     ${unsafeCSS(
       Object.entries(derivedStyles)
         .map(([key, value]) => `--${key}: ${value};`)
