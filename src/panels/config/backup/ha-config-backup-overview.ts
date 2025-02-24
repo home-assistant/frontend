@@ -78,6 +78,7 @@ class HaConfigBackupOverview extends LitElement {
 
   private async _setupAutomaticBackup(skipWelcome = false) {
     const success = await showBackupOnboardingDialog(this, {
+      config: this.config,
       cloudStatus: this.cloudStatus,
       skipWelcome,
     });
@@ -128,7 +129,7 @@ class HaConfigBackupOverview extends LitElement {
   }
 
   private get _needsOnboarding() {
-    return this.config && !this.config.create_backup.password;
+    return this.config && !this.config.automatic_backups_configured;
   }
 
   protected render(): TemplateResult {

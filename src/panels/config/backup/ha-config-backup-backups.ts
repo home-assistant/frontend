@@ -505,7 +505,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   }
 
   private get _needsOnboarding() {
-    return !this.config?.create_backup.password;
+    return !this.config?.automatic_backups_configured;
   }
 
   private async _uploadBackup(ev) {
