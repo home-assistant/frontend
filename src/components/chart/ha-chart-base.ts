@@ -29,6 +29,8 @@ import { ensureArray } from "../../common/array/ensure-array";
 import "../ha-ripple";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
+const LEGEND_OVERFLOW_LIMIT = 10;
+const LEGEND_OVERFLOW_LIMIT_MOBILE = 6;
 
 @customElement("ha-chart-base")
 export class HaChartBase extends LitElement {
@@ -201,7 +203,9 @@ export class HaChartBase extends LitElement {
     const isMobile = window.matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"
     ).matches;
-    const overflowLimit = isMobile ? 6 : 10;
+    const overflowLimit = isMobile
+      ? LEGEND_OVERFLOW_LIMIT_MOBILE
+      : LEGEND_OVERFLOW_LIMIT;
     return html`<div class="chart-legend">
       <ul>
         ${items.map((item: string, index: number) => {
@@ -232,7 +236,8 @@ export class HaChartBase extends LitElement {
         ${items.length > overflowLimit
           ? html`<li class="more-button" @click=${this._toggleExpandedLegend}>
               <div>
-                ${this.hass.localize(`ui.components.history_charts.${this.expandLegend ? "collapse_legend" : "expand_legend"}`
+                ${this.hass.localize(
+                  `ui.components.history_charts.${this.expandLegend ? "collapse_legend" : "expand_legend"}`
                 )}
                 (${items.length})
               </div>
@@ -734,7 +739,7 @@ export class HaChartBase extends LitElement {
       position: relative;
       border-radius: 8px;
       padding: 0 4px 0 8px;
-      font-weight: bold;
+      font-weight: 500;
       --mdc-icon-size: 20px;
     }
     .chart-legend .more-button::before {
