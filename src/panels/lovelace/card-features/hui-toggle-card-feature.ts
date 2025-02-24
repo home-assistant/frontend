@@ -12,32 +12,29 @@ import { UNAVAILABLE } from "../../../data/entity";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
-import type { SwitchToggleCardFeatureConfig } from "./types";
+import type { ToggleCardFeatureConfig } from "./types";
 import { showToast } from "../../../util/toast";
 
-export const supportsSwitchToggleCardFeature = (stateObj: HassEntity) => {
+export const supportsToggleCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
-  return domain === "switch";
+  return ["switch", "input_boolean"].includes(domain);
 };
 
-@customElement("hui-switch-toggle-card-feature")
-class HuiSwitchToggleCardFeature
-  extends LitElement
-  implements LovelaceCardFeature
-{
+@customElement("hui-toggle-card-feature")
+class HuiToggleCardFeature extends LitElement implements LovelaceCardFeature {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  @state() private _config?: SwitchToggleCardFeatureConfig;
+  @state() private _config?: ToggleCardFeatureConfig;
 
-  static getStubConfig(): SwitchToggleCardFeatureConfig {
+  static getStubConfig(): ToggleCardFeatureConfig {
     return {
-      type: "switch-toggle",
+      type: "toggle",
     };
   }
 
-  public setConfig(config: SwitchToggleCardFeatureConfig): void {
+  public setConfig(config: ToggleCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -49,7 +46,7 @@ class HuiSwitchToggleCardFeature
       !this._config ||
       !this.hass ||
       !this.stateObj ||
-      !supportsSwitchToggleCardFeature(this.stateObj)
+      !supportsToggleCardFeature(this.stateObj)
     ) {
       return null;
     }
@@ -81,17 +78,22 @@ class HuiSwitchToggleCardFeature
   private async _valueChanged(ev: CustomEvent) {
     const newState = (ev.detail as any).value;
 
-    if (newState === this.stateObj!.state) return;
+    if (
+      newState === this.stateObj!.state &&
+      !this.stateObj!.attributes.assumed_state
+    )
+      return;
     const service = newState === "on" ? "turn_on" : "turn_off";
+    const domain = computeDomain(this.stateObj!.entity_id);
 
     try {
-      await this.hass!.callService("switch", service, {
+      await this.hass!.callService(domain, service, {
         entity_id: this.stateObj!.entity_id,
       });
     } catch (_err) {
       showToast(this, {
         message: this.hass!.localize("ui.notification_toast.action_failed", {
-          service: "switch." + service,
+          service: domain + "." + service,
         }),
         duration: 5000,
         dismissable: true,
@@ -104,6 +106,6 @@ class HuiSwitchToggleCardFeature
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-switch-toggle-card-feature": HuiSwitchToggleCardFeature;
+    "hui-toggle-card-feature": HuiToggleCardFeature;
   }
 }

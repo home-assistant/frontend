@@ -1,5 +1,9 @@
-import { assert, describe, it, beforeEach } from "vitest";
-import { computeStateDisplay } from "../../../src/common/entity/compute_state_display";
+import type { HassConfig } from "home-assistant-js-websocket";
+import { assert, describe, it, beforeEach, expect } from "vitest";
+import {
+  computeStateDisplay,
+  computeStateDisplayFromEntityAttributes,
+} from "../../../src/common/entity/compute_state_display";
 import { UNKNOWN } from "../../../src/data/entity";
 import type { FrontendLocaleData } from "../../../src/data/translation";
 import {
@@ -10,6 +14,7 @@ import {
   TimeZone,
 } from "../../../src/data/translation";
 import { demoConfig } from "../../../src/fake_data/demo_config";
+import type { EntityRegistryDisplayEntry } from "../../../src/data/entity_registry";
 
 let localeData: FrontendLocaleData;
 
@@ -615,5 +620,87 @@ describe("computeStateDisplay", () => {
       ),
       "component.custom_integration.entity.sensor.custom_translation.state.custom_state"
     );
+  });
+});
+
+describe("computeStateDisplayFromEntityAttributes with numeric device classes", () => {
+  it("Should format duration sensor", () => {
+    const result = computeStateDisplayFromEntityAttributes(
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      (() => {}) as any,
+      {
+        language: "en",
+      } as FrontendLocaleData,
+      [],
+      {} as HassConfig,
+      {
+        display_precision: 2,
+      } as EntityRegistryDisplayEntry,
+      "number.test",
+      {
+        device_class: "duration",
+        unit_of_measurement: "min",
+      },
+      "12"
+    );
+    expect(result).toBe("12.00 min");
+  });
+  it("Should format duration sensor with seconds", () => {
+    const result = computeStateDisplayFromEntityAttributes(
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      (() => {}) as any,
+      {
+        language: "en",
+      } as FrontendLocaleData,
+      [],
+      {} as HassConfig,
+      undefined,
+      "number.test",
+      {
+        device_class: "duration",
+        unit_of_measurement: "s",
+      },
+      "12"
+    );
+    expect(result).toBe("12 s");
+  });
+
+  it("Should format monetary device_class", () => {
+    const result = computeStateDisplayFromEntityAttributes(
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      (() => {}) as any,
+      {
+        language: "en",
+      } as FrontendLocaleData,
+      [],
+      {} as HassConfig,
+      undefined,
+      "number.test",
+      {
+        device_class: "monetary",
+        unit_of_measurement: "$",
+      },
+      "12"
+    );
+    expect(result).toBe("12 $");
+  });
+});
+
+describe("computeStateDisplayFromEntityAttributes datetime device calss", () => {
+  it("Should format datetime sensor", () => {
+    const result = computeStateDisplayFromEntityAttributes(
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      (() => {}) as any,
+      {
+        language: "en",
+      } as FrontendLocaleData,
+      [],
+      {} as HassConfig,
+      undefined,
+      "button.test",
+      {},
+      "2020-01-01T12:00:00+00:00"
+    );
+    expect(result).toBe("January 1, 2020 at 12:00");
   });
 });
