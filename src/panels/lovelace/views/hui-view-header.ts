@@ -104,8 +104,10 @@ export class HuiViewHeader extends LitElement {
     const cardConfig: LovelaceCardConfig = {
       type: "markdown",
       text_only: true,
-      content:
-        "# Hello {{ user }}\nToday is going to be warm and humid outside. Home Assistant will adjust the temperature throughout the day while you and your family is at home. ✨",
+      content: this.hass.localize(
+        "ui.panel.lovelace.editor.edit_view_header.default_title",
+        { user: "{{ user }}" }
+      ),
     };
 
     showEditCardDialog(this, {

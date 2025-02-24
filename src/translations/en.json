@@ -6579,6 +6579,7 @@
             "edit_ui": "[%key:ui::panel::lovelace::editor::edit_view::edit_ui%]",
             "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
             "saving_failed": "[%key:ui::panel::lovelace::editor::edit_view::saving_failed%]",
+            "default_title": "# Hello {user}\nAdd your text here, template variables are supported ✨",
             "settings": {
               "layout": "Layout",
               "layout_options": {
