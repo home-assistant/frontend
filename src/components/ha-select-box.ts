@@ -7,8 +7,8 @@ import type { HaRadio } from "./ha-radio";
 import { fireEvent } from "../common/dom/fire_event";
 
 export interface SelectBoxOption {
-  primary?: string;
-  secondary?: string;
+  label?: string;
+  description?: string;
   image?: string;
   value: string;
   disabled?: boolean;
@@ -22,34 +22,28 @@ export class HaSelectBox extends LitElement {
 
   @property({ type: Boolean }) public disabled?: boolean;
 
-  @property({ type: String })
-  public orientation: "vertical" | "horizontal" = "vertical";
-
   @property({ type: Number, attribute: "max_columns" })
-  public maxColumns = 3;
+  public maxColumns?: number;
 
   render() {
-    const optionsCount = this.options.length;
+    const maxColumns = this.maxColumns ?? 3;
+    const columns = Math.min(maxColumns, this.options.length);
 
     return html`
-      <div
-        class="list"
-        style=${styleMap({
-          "--columns": Math.min(this.maxColumns, optionsCount),
-        })}
-      >
-        ${this.options.map((item) => this._renderItem(item))}
+      <div class="list" style=${styleMap({ "--columns": columns })}>
+        ${this.options.map((option) => this._renderOption(option))}
       </div>
     `;
   }
 
-  private _renderItem(item: SelectBoxOption) {
-    const disabled = item.disabled || this.disabled || false;
-    const selected = item.value === this.value;
+  private _renderOption(option: SelectBoxOption) {
+    const horizontal = this.maxColumns === 1;
+    const disabled = option.disabled || this.disabled || false;
+    const selected = option.value === this.value;
     return html`
       <label
-        class="item ${classMap({
-          horizontal: this.orientation === "horizontal",
+        class="option ${classMap({
+          horizontal: horizontal,
           selected: selected,
         })}"
         ?disabled=${disabled}
@@ -57,19 +51,19 @@ export class HaSelectBox extends LitElement {
       >
         <div class="content">
           <ha-radio
-            .checked=${item.value === this.value}
-            .value=${item.value}
+            .checked=${option.value === this.value}
+            .value=${option.value}
             .disabled=${disabled}
             @change=${this._radioChanged}
           ></ha-radio>
-          <div class="label">
-            <span class="primary">${item.primary}</span>
-            ${item.secondary
-              ? html`<span class="secondary">${item.secondary}</span>`
+          <div class="text">
+            <span class="label">${option.label}</span>
+            ${option.description
+              ? html`<span class="description">${option.description}</span>`
               : nothing}
           </div>
         </div>
-        ${item.image ? html`<img alt="" src=${item.image} />` : nothing}
+        ${option.image ? html`<img alt="" src=${option.image} />` : nothing}
       </label>
     `;
   }
@@ -96,7 +90,7 @@ export class HaSelectBox extends LitElement {
       grid-template-columns: repeat(var(--columns, 1), minmax(0, 1fr));
       gap: 12px;
     }
-    .item {
+    .option {
       position: relative;
       display: block;
       border: 1px solid var(--divider-color);
@@ -111,7 +105,7 @@ export class HaSelectBox extends LitElement {
       cursor: pointer;
     }
 
-    .item .content {
+    .option .content {
       position: relative;
       display: flex;
       flex-direction: row;
@@ -119,18 +113,18 @@ export class HaSelectBox extends LitElement {
       min-width: 0;
       width: 100%;
     }
-    .item .content ha-radio {
+    .option .content ha-radio {
       margin: -12px;
       flex: none;
     }
-    .item .content .label {
+    .option .content .text {
       display: flex;
       flex-direction: column;
       gap: 4px;
       min-width: 0;
       flex: 1;
     }
-    .item .content .label .primary {
+    .option .content .text .label {
       color: var(--primary-text-color);
       font-size: 14px;
       font-weight: 400;
@@ -139,7 +133,7 @@ export class HaSelectBox extends LitElement {
       white-space: nowrap;
       text-overflow: ellipsis;
     }
-    .item .content .label .secondary {
+    .option .content .text .description {
       color: var(--secondary-text-color);
       font-size: 13px;
       font-weight: 400;
@@ -152,16 +146,16 @@ export class HaSelectBox extends LitElement {
       margin: auto;
     }
 
-    .item.horizontal {
+    .option.horizontal {
       flex-direction: row;
       align-items: flex-start;
     }
 
-    .item.horizontal img {
+    .option.horizontal img {
       margin: 0;
     }
 
-    .item:before {
+    .option:before {
       content: "";
       display: block;
       inset: 0;
@@ -173,20 +167,20 @@ export class HaSelectBox extends LitElement {
         background-color 180ms ease-in-out,
         opacity 180ms ease-in-out;
     }
-    .item:hover:before {
+    .option:hover:before {
       background-color: var(--divider-color);
     }
-    .item.selected:before {
+    .option.selected:before {
       background-color: var(--primary-color);
     }
-    .item[disabled] {
+    .option[disabled] {
       cursor: not-allowed;
     }
-    .item[disabled] .content,
-    .item[disabled] img {
+    .option[disabled] .content,
+    .option[disabled] img {
       opacity: 0.5;
     }
-    .item[disabled]:before {
+    .option[disabled]:before {
       background-color: var(--disabled-color);
       opacity: 0.05;
     }
