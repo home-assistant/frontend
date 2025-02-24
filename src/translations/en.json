@@ -4732,6 +4732,23 @@
             "fingerprint": "Certificate fingerprint:",
             "close": "Close"
           },
+          "dialog_already_connected": {
+            "heading": "Account linked to other Home Assistant",
+            "description": "We noticed that another instance is currently connected to your Home Assistant Cloud account. Your Home Assistant Cloud account can only be signed into one Home Assistant instance at a time. If you log in here, the other instance will be disconnected along with its Cloud services.",
+            "other_home_assistant": "Other Home Assistant",
+            "ip_address": "IP Address",
+            "connected_at": "Connected at",
+            "obfuscated_ip": {
+              "show": "Show IP address",
+              "hide": "Hide IP address"
+            },
+            "info_backups": {
+              "title": "Home Assistant Cloud backups",
+              "description": "Your Cloud backup may be overwritten if you proceed. We strongly recommend downloading your current backup from your Nabu Casa account page before continuing."
+            },
+            "close": "Close",
+            "login_here": "Log in here"
+          },
           "dialog_cloudhook": {
             "webhook_for": "Webhook for {name}",
             "managed_by_integration": "This webhook is managed by an integration and cannot be disabled.",
@@ -7003,7 +7020,8 @@
               "suggested_cards": "Suggested cards",
               "other_cards": "Other cards",
               "custom_cards": "Custom cards",
-              "features": "Features"
+              "features": "Features",
+              "actions": "Actions"
             },
             "heading": {
               "name": "Heading",
@@ -7142,6 +7160,7 @@
                 "bottom": "Bottom",
                 "inline": "Inline"
               },
+              "features_position_helper_vertical": "Always displayed at the bottom if the content layout is vertical",
               "content_layout": "Content layout",
               "content_layout_options": {
                 "horizontal": "Horizontal",
@@ -7322,6 +7341,14 @@
                 "customize_modes": "Customize preset modes",
                 "preset_modes": "Preset modes"
               },
+              "counter-actions": {
+                "label": "Counter actions",
+                "actions": {
+                  "increment": "Increment",
+                  "decrement": "Decrement",
+                  "reset": "Reset"
+                }
+              },
               "fan-preset-modes": {
                 "label": "Fan preset modes",
                 "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
@@ -7350,8 +7377,8 @@
                 "options": "Options",
                 "customize_options": "Customize options"
               },
-              "switch-toggle": {
-                "label": "Switch toggle"
+              "toggle": {
+                "label": "Toggle"
               },
               "numeric-input": {
                 "label": "Numeric input",

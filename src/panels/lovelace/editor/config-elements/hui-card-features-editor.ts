@@ -24,6 +24,7 @@ import { supportsClimateHvacModesCardFeature } from "../../card-features/hui-cli
 import { supportsClimatePresetModesCardFeature } from "../../card-features/hui-climate-preset-modes-card-feature";
 import { supportsClimateSwingModesCardFeature } from "../../card-features/hui-climate-swing-modes-card-feature";
 import { supportsClimateSwingHorizontalModesCardFeature } from "../../card-features/hui-climate-swing-horizontal-modes-card-feature";
+import { supportsCounterActionsCardFeature } from "../../card-features/hui-counter-actions-card-feature";
 import { supportsCoverOpenCloseCardFeature } from "../../card-features/hui-cover-open-close-card-feature";
 import { supportsCoverPositionCardFeature } from "../../card-features/hui-cover-position-card-feature";
 import { supportsCoverTiltCardFeature } from "../../card-features/hui-cover-tilt-card-feature";
@@ -40,9 +41,9 @@ import { supportsLockOpenDoorCardFeature } from "../../card-features/hui-lock-op
 import { supportsMediaPlayerVolumeSliderCardFeature } from "../../card-features/hui-media-player-volume-slider-card-feature";
 import { supportsNumericInputCardFeature } from "../../card-features/hui-numeric-input-card-feature";
 import { supportsSelectOptionsCardFeature } from "../../card-features/hui-select-options-card-feature";
-import { supportsSwitchToggleCardFeature } from "../../card-features/hui-switch-toggle-card-feature";
 import { supportsTargetHumidityCardFeature } from "../../card-features/hui-target-humidity-card-feature";
 import { supportsTargetTemperatureCardFeature } from "../../card-features/hui-target-temperature-card-feature";
+import { supportsToggleCardFeature } from "../../card-features/hui-toggle-card-feature";
 import { supportsUpdateActionsCardFeature } from "../../card-features/hui-update-actions-card-feature";
 import { supportsVacuumCommandsCardFeature } from "../../card-features/hui-vacuum-commands-card-feature";
 import { supportsWaterHeaterOperationModesCardFeature } from "../../card-features/hui-water-heater-operation-modes-card-feature";
@@ -59,6 +60,7 @@ const UI_FEATURE_TYPES = [
   "climate-preset-modes",
   "climate-swing-modes",
   "climate-swing-horizontal-modes",
+  "counter-actions",
   "cover-open-close",
   "cover-position",
   "cover-tilt-position",
@@ -75,9 +77,9 @@ const UI_FEATURE_TYPES = [
   "media-player-volume-slider",
   "numeric-input",
   "select-options",
-  "switch-toggle",
   "target-humidity",
   "target-temperature",
+  "toggle",
   "update-actions",
   "vacuum-commands",
   "water-heater-operation-modes",
@@ -92,6 +94,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "climate-preset-modes",
   "climate-swing-modes",
   "climate-swing-horizontal-modes",
+  "counter-actions",
   "fan-preset-modes",
   "humidifier-modes",
   "lawn-mower-commands",
@@ -113,6 +116,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
     supportsClimateSwingHorizontalModesCardFeature,
   "climate-hvac-modes": supportsClimateHvacModesCardFeature,
   "climate-preset-modes": supportsClimatePresetModesCardFeature,
+  "counter-actions": supportsCounterActionsCardFeature,
   "cover-open-close": supportsCoverOpenCloseCardFeature,
   "cover-position": supportsCoverPositionCardFeature,
   "cover-tilt-position": supportsCoverTiltPositionCardFeature,
@@ -131,10 +135,10 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "select-options": supportsSelectOptionsCardFeature,
   "target-humidity": supportsTargetHumidityCardFeature,
   "target-temperature": supportsTargetTemperatureCardFeature,
+  toggle: supportsToggleCardFeature,
   "update-actions": supportsUpdateActionsCardFeature,
   "vacuum-commands": supportsVacuumCommandsCardFeature,
   "water-heater-operation-modes": supportsWaterHeaterOperationModesCardFeature,
-  "switch-toggle": supportsSwitchToggleCardFeature,
 };
 
 const customCardFeatures = getCustomCardFeatures();

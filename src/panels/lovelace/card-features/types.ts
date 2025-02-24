@@ -83,13 +83,18 @@ export interface ClimatePresetModesCardFeatureConfig {
   preset_modes?: string[];
 }
 
+export const COUNTER_ACTIONS = ["increment", "reset", "decrement"] as const;
+
+export type CounterActions = (typeof COUNTER_ACTIONS)[number];
+
+export interface CounterActionsCardFeatureConfig {
+  type: "counter-actions";
+  actions?: CounterActions[];
+}
+
 export interface SelectOptionsCardFeatureConfig {
   type: "select-options";
   options?: string[];
-}
-
-export interface SwitchToggleCardFeatureConfig {
-  type: "switch-toggle";
 }
 
 export interface NumericInputCardFeatureConfig {
@@ -103,6 +108,10 @@ export interface TargetHumidityCardFeatureConfig {
 
 export interface TargetTemperatureCardFeatureConfig {
   type: "target-temperature";
+}
+
+export interface ToggleCardFeatureConfig {
+  type: "toggle";
 }
 
 export interface WaterHeaterOperationModesCardFeatureConfig {
@@ -156,6 +165,7 @@ export type LovelaceCardFeatureConfig =
   | ClimateSwingHorizontalModesCardFeatureConfig
   | ClimateHvacModesCardFeatureConfig
   | ClimatePresetModesCardFeatureConfig
+  | CounterActionsCardFeatureConfig
   | CoverOpenCloseCardFeatureConfig
   | CoverPositionCardFeatureConfig
   | CoverTiltPositionCardFeatureConfig
@@ -172,9 +182,9 @@ export type LovelaceCardFeatureConfig =
   | MediaPlayerVolumeSliderCardFeatureConfig
   | NumericInputCardFeatureConfig
   | SelectOptionsCardFeatureConfig
-  | SwitchToggleCardFeatureConfig
   | TargetHumidityCardFeatureConfig
   | TargetTemperatureCardFeatureConfig
+  | ToggleCardFeatureConfig
   | UpdateActionsCardFeatureConfig
   | VacuumCommandsCardFeatureConfig
   | WaterHeaterOperationModesCardFeatureConfig;
