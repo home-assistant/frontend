@@ -99,7 +99,7 @@ export class HaSelectSelector extends LitElement {
       this._mode === "box"
     ) {
       return html`
-        ${this.label ? html`<p class="label">${this.label}</p>` : ""}
+        ${this.label ? html`<span class="label">${this.label}</span>` : nothing}
         <ha-select-box
           .options=${options}
           .value=${this.value as string | undefined}
@@ -430,7 +430,8 @@ export class HaSelectSelector extends LitElement {
       padding: 8px 0;
     }
 
-    p.label {
+    .label {
+      display: block;
       margin: 0 0 8px;
     }
 
