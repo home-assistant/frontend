@@ -193,7 +193,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
 
   private _cardRemoved(ev) {
     ev.stopPropagation();
-    // Do nothing, it's handle by the "item-added" event from the new parent.
+    // Do nothing, it's handled by the "item-added" event from the new parent.
   }
 
   private _dragStart() {
