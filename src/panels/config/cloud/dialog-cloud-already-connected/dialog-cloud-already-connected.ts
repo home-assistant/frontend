@@ -62,17 +62,17 @@ class DialogCloudAlreadyConnected extends LitElement {
           </b>
           <div class="instance-details">
             <div class="instance-detail">
-              <p>
+              <span>
                 ${this.hass.localize(
                   "ui.panel.config.cloud.dialog_already_connected.ip_address"
                 )}:
-              </p>
+              </span>
               <div class="obfuscated">
-                <p>
+                <span>
                   ${this._obfuscateIp
                     ? obfuscateUrl(details.remote_ip_address)
                     : details.remote_ip_address}
-                </p>
+                </span>
 
                 <ha-icon-button
                   class="toggle-unmasked-url"
@@ -85,18 +85,18 @@ class DialogCloudAlreadyConnected extends LitElement {
               </div>
             </div>
             <div class="instance-detail">
-              <p>
+              <span>
                 ${this.hass.localize(
                   "ui.panel.config.cloud.dialog_already_connected.connected_at"
                 )}:
-              </p>
-              <p>
+              </span>
+              <span>
                 ${formatDateTime(
                   new Date(details.connected_at),
                   this.hass.locale,
                   this.hass.config
                 )}
-              </p>
+              </span>
             </div>
           </div>
           <ha-alert
