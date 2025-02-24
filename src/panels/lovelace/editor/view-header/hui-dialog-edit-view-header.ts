@@ -136,7 +136,7 @@ export class HuiDialogEditViewHeader extends LitElement {
         ${content}
         <ha-button
           slot="primaryAction"
-          ?disabled=${!this._config || this._saving || !this._dirty}
+          .disabled=${!this._config || this._saving || !this._dirty}
           @click=${this._save}
         >
           ${this._saving
