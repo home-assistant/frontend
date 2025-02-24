@@ -27,6 +27,7 @@ import "../ha-icon-button";
 import { formatTimeLabel } from "./axis-label";
 import { ensureArray } from "../../common/array/ensure-array";
 import "../ha-ripple";
+import "../chips/ha-assist-chip";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 const LEGEND_OVERFLOW_LIMIT = 10;
@@ -234,19 +235,19 @@ export class HaChartBase extends LitElement {
           </li>`;
         })}
         ${items.length > overflowLimit
-          ? html`<li class="more-button" @click=${this._toggleExpandedLegend}>
-              <div>
-                ${this.hass.localize(
+          ? html`<li>
+              <ha-assist-chip
+                @click=${this._toggleExpandedLegend}
+                filled
+                label=${this.hass.localize(
                   `ui.components.history_charts.${this.expandLegend ? "collapse_legend" : "expand_legend"}`
-                )}
-                (${items.length})
-              </div>
-              <div>
+                ) + ` (${items.length})`}
+              >
                 <ha-svg-icon
+                  slot="trailing-icon"
                   .path=${this.expandLegend ? mdiChevronUp : mdiChevronDown}
                 ></ha-svg-icon>
-              </div>
-              <ha-ripple></ha-ripple>
+              </ha-assist-chip>
             </li>`
           : nothing}
       </ul>
@@ -735,22 +736,12 @@ export class HaChartBase extends LitElement {
       border-color: var(--secondary-text-color) !important;
       background-color: transparent !important;
     }
-    .chart-legend .more-button {
-      position: relative;
-      border-radius: 8px;
-      padding: 0 4px 0 8px;
-      font-weight: 500;
-      --mdc-icon-size: 20px;
-    }
-    .chart-legend .more-button::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
+    ha-assist-chip {
       height: 100%;
-      width: 100%;
-      background-color: var(--light-grey-color);
-      opacity: 0.2;
+      --_label-text-weight: 500;
+      --_leading-space: 8px;
+      --_trailing-space: 8px;
+      --_icon-label-space: 4px;
     }
   `;
 }
