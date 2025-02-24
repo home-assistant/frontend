@@ -12,6 +12,7 @@ import memoizeOne from "memoize-one";
 import { getColorByIndex } from "../../../common/color/colors";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { deepEqual } from "../../../common/util/deep-equal";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
@@ -80,14 +81,38 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _subscribed?: Promise<(() => Promise<void>) | undefined>;
 
+  private _getAllEntities(): string[] {
+    const hass = this.hass!;
+    const personSources = new Set<string>();
+    const locationEntities: string[] = [];
+    Object.values(hass.states).forEach((entity) => {
+      if (
+        !("latitude" in entity.attributes) ||
+        !("longitude" in entity.attributes)
+      ) {
+        return;
+      }
+      locationEntities.push(entity.entity_id);
+      if (computeStateDomain(entity) === "person" && entity.attributes.source) {
+        personSources.add(entity.attributes.source);
+      }
+    });
+
+    return locationEntities.filter((entity) => !personSources.has(entity));
+  }
+
   public setConfig(config: MapCardConfig): void {
     if (!config) {
       throw new Error("Error in card configuration.");
     }
 
-    if (!config.entities?.length && !config.geo_location_sources) {
+    if (
+      !config.show_all &&
+      !config.entities?.length &&
+      !config.geo_location_sources
+    ) {
       throw new Error(
-        "Either entities or geo_location_sources must be specified"
+        "Either show_all, entities, or geo_location_sources must be specified"
       );
     }
     if (config.entities && !Array.isArray(config.entities)) {
@@ -99,10 +124,17 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     ) {
       throw new Error("Parameter geo_location_sources needs to be an array");
     }
-
-    this._config = config;
-    this._configEntities = config.entities
-      ? processConfigEntities<MapEntityConfig>(config.entities)
+    if (config.show_all && (config.entities || config.geo_location_sources)) {
+      throw new Error(
+        "Cannot specify show_all and entities or geo_location_sources"
+      );
+    }
+    this._config = { ...config };
+    if (this.hass && config.show_all) {
+      this._config.entities = this._getAllEntities();
+    }
+    this._configEntities = this._config.entities
+      ? processConfigEntities<MapEntityConfig>(this._config.entities)
       : [];
     this._mapEntities = this._getMapEntities();
   }
@@ -239,6 +271,18 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
+    if (
+      this._config?.show_all &&
+      !this._config?.entities &&
+      this.hass &&
+      changedProps.has("hass")
+    ) {
+      this._config.entities = this._getAllEntities();
+      this._configEntities = processConfigEntities<MapEntityConfig>(
+        this._config.entities
+      );
+      this._mapEntities = this._getMapEntities();
+    }
     if (
       changedProps.has("hass") &&
       this._config?.geo_location_sources &&
