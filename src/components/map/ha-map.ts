@@ -673,6 +673,22 @@ export class HaMap extends ReactiveElement {
       box-shadow: none !important;
       text-align: center;
     }
+
+    .marker-cluster div {
+      background-clip: padding-box;
+      background-color: var(--primary-color);
+      border: 3px solid rgb(from var(--primary-color) r g b / 0.2);
+      width: 32px;
+      height: 32px;
+      border-radius: 20px;
+      text-align: center;
+      color: var(--text-primary-color);
+      font-size: 14px;
+    }
+
+    .marker-cluster span {
+      line-height: 30px;
+    }
   `;
 }
 
