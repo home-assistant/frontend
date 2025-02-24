@@ -12,6 +12,7 @@ import type {
 } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-relative-time";
 import type {
   BluetoothDeviceData,
   BluetoothScannersDetails,
@@ -25,7 +26,6 @@ import "../../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { showBluetoothDeviceInfoDialog } from "./show-dialog-bluetooth-device-info";
-import { relativeTime } from "../../../../../common/datetime/relative_time";
 
 @customElement("bluetooth-advertisement-monitor")
 export class BluetoothAdvertisementMonitorPanel extends LitElement {
@@ -105,10 +105,7 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
   }
 
   private _columns = memoizeOne(
-    (
-      localize: LocalizeFunc,
-      locale: HomeAssistant["locale"]
-    ): DataTableColumnContainer => {
+    (localize: LocalizeFunc): DataTableColumnContainer => {
       const columns: DataTableColumnContainer<BluetoothDeviceData> = {
         address: {
           title: localize("ui.panel.config.bluetooth.address"),
@@ -149,10 +146,12 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
           filterable: false,
           sortable: true,
           defaultHidden: false,
-          template: (ad) => {
-            const date = new Date(ad.time * 1000);
-            return html`${relativeTime(date, locale)}`;
-          },
+          template: (ad) =>
+            html`<ha-relative-time
+              .hass=${this.hass}
+              .datetime=${ad.datetime}
+              capitalize
+            ></ha-relative-time>`,
         },
         rssi: {
           title: localize("ui.panel.config.bluetooth.rssi"),
@@ -181,6 +180,7 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
           scanner?.name ||
           row.source,
         device: device?.name_by_user || device?.name || undefined,
+        datetime: new Date(row.time * 1000),
       };
     })
   );
@@ -191,7 +191,7 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .columns=${this._columns(this.hass.localize, this.hass.locale)}
+        .columns=${this._columns(this.hass.localize)}
         .data=${this._dataWithNamedSourceAndIds(this._data)}
         @row-click=${this._handleRowClicked}
         .initialGroupColumn=${this._activeGrouping}
