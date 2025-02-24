@@ -38,18 +38,19 @@ export class HuiMarkdownCardEditor
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, text_only: boolean) =>
+    (localize: LocalizeFunc, text_only: boolean, isDark: boolean) =>
       [
         {
           name: "style",
           required: true,
           selector: {
             select: {
-              mode: "dropdown",
+              mode: "box",
               options: ["card", "text-only"].map((style) => ({
                 label: localize(
                   `ui.panel.lovelace.editor.card.markdown.style_options.${style}`
                 ),
+                image: `/static/images/form/markdown_${style.replace("-", "_")}${isDark ? "_dark" : ""}.svg`,
                 value: style,
               })),
             },
@@ -74,7 +75,8 @@ export class HuiMarkdownCardEditor
 
     const schema = this._schema(
       this.hass.localize,
-      this._config.text_only || false
+      this._config.text_only || false,
+      this.hass.themes.darkMode
     );
 
     return html`
