@@ -54,7 +54,7 @@ export class HuiDialogEditViewHeader extends LitElement {
 
   public closeDialog(): void {
     this._params = undefined;
-    this._config = {};
+    this._config = undefined;
     this._yamlMode = false;
     this._dirty = false;
     this._saving = false;
