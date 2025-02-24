@@ -232,10 +232,7 @@ export class HaChartBase extends LitElement {
         ${items.length > overflowLimit
           ? html`<li class="more-button" @click=${this._toggleExpandedLegend}>
               <div>
-                ${this.hass.localize(
-                  this.expandLegend
-                    ? "ui.components.history_charts.collapse_legend"
-                    : "ui.components.history_charts.expand_legend"
+                ${this.hass.localize(`ui.components.history_charts.${this.expandLegend ? "collapse_legend" : "expand_legend"}`
                 )}
                 (${items.length})
               </div>
