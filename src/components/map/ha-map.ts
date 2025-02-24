@@ -581,6 +581,7 @@ export class HaMap extends ReactiveElement {
       this._mapCluster = Leaflet.markerClusterGroup({
         showCoverageOnHover: false,
         removeOutsideVisibleBounds: false,
+        maxClusterRadius: 40,
       });
       this._mapCluster.addLayers(this._mapItems);
       map.addLayer(this._mapCluster);

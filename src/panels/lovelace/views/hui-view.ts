@@ -21,6 +21,7 @@ import { showCreateBadgeDialog } from "../editor/badge-editor/show-create-badge-
 import { showEditBadgeDialog } from "../editor/badge-editor/show-edit-badge-dialog";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
+import { replaceCard } from "../editor/config-util";
 import {
   type DeleteBadgeParams,
   performDeleteBadge,
@@ -270,11 +271,22 @@ export class HUIView extends ReactiveElement {
     });
     this._layoutElement.addEventListener("ll-edit-card", (ev) => {
       const { cardIndex } = parseLovelaceCardPath(ev.detail.path);
+      const viewConfig = this.lovelace!.config.views[this.index];
+      if (isStrategyView(viewConfig)) {
+        return;
+      }
+      const cardConfig = viewConfig.cards![cardIndex];
       showEditCardDialog(this, {
         lovelaceConfig: this.lovelace.config,
-        saveConfig: this.lovelace.saveConfig,
-        path: [this.index],
-        cardIndex,
+        saveCardConfig: async (newCardConfig) => {
+          const newConfig = replaceCard(
+            this.lovelace!.config,
+            [this.index, cardIndex],
+            newCardConfig
+          );
+          await this.lovelace.saveConfig(newConfig);
+        },
+        cardConfig,
       });
     });
     this._layoutElement.addEventListener("ll-delete-card", (ev) => {
