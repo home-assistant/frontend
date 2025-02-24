@@ -76,7 +76,6 @@ class DialogCloudAlreadyConnected extends LitElement {
 
                 <ha-icon-button
                   class="toggle-unmasked-url"
-                  toggles
                   .label=${this.hass.localize(
                     `ui.panel.config.cloud.dialog_already_connected.obfuscated_ip.${this._obfuscateIp ? "hide" : "show"}`
                   )}
