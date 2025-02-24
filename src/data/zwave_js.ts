@@ -921,7 +921,7 @@ export const downloadZwaveNVMBackup = (
   entry_id: string
 ): Promise<Uint8Array> =>
   hass.callWS({
-    type: "zwave_js/controller_nvm_backup",
+    type: "zwave_js/backup_nvm_raw",
     entry_id,
   });
 
@@ -931,7 +931,7 @@ export const restoreZwaveNVMBackup = (
   nvmData: Uint8Array
 ): Promise<void> =>
   hass.callWS({
-    type: "zwave_js/controller_nvm_restore",
+    type: "zwave_js/restore_nvm",
     entry_id,
     nvmData,
   });
