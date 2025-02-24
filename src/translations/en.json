@@ -6583,10 +6583,13 @@
             "settings": {
               "layout": "Layout",
               "layout_options": {
-                "responsive": "Responsive (stacked on mobile)",
-                "start": "Left aligned (always stacked)",
-                "start_rtl": "Right aligned (always stacked)",
-                "center": "Centered (always stacked)"
+                "responsive": "Responsive",
+                "responsive_description": "Stacked on mobile",
+                "start": "Left aligned",
+                "start_description": "Always stacked",
+                "start_rtl": "Right aligned",
+                "center": "Centered",
+                "center_description": "Always stacked"
               },
               "badges_position": "Badges position",
               "badges_position_options": {
