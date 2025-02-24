@@ -1,8 +1,9 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, assign, boolean, object, optional, string } from "superstruct";
 import memoizeOne from "memoize-one";
+import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
@@ -12,7 +13,6 @@ import type { HomeAssistant } from "../../../../types";
 import type { MarkdownCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -38,7 +38,7 @@ export class HuiMarkdownCardEditor
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, text_only: boolean, isDark: boolean) =>
+    (localize: LocalizeFunc, text_only: boolean) =>
       [
         {
           name: "style",
@@ -50,7 +50,11 @@ export class HuiMarkdownCardEditor
                 label: localize(
                   `ui.panel.lovelace.editor.card.markdown.style_options.${style}`
                 ),
-                image: `/static/images/form/markdown_${style.replace("-", "_")}${isDark ? "_dark" : ""}.svg`,
+                image: {
+                  src: `/static/images/form/markdown_${style.replace("-", "_")}.svg`,
+                  src_dark: `/static/images/form/markdown_${style.replace("-", "_")}_dark".svg`,
+                  flip_rtl: true,
+                },
                 value: style,
               })),
             },
@@ -75,8 +79,7 @@ export class HuiMarkdownCardEditor
 
     const schema = this._schema(
       this.hass.localize,
-      this._config.text_only || false,
-      this.hass.themes.darkMode
+      this._config.text_only || false
     );
 
     return html`
