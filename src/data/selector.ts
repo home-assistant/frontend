@@ -346,6 +346,8 @@ export interface AssistPipelineSelector {
 export interface SelectOption {
   value: any;
   label: string;
+  description?: string;
+  image?: string;
   disabled?: boolean;
 }
 
@@ -353,11 +355,12 @@ export interface SelectSelector {
   select: {
     multiple?: boolean;
     custom_value?: boolean;
-    mode?: "list" | "dropdown";
+    mode?: "list" | "dropdown" | "box";
     options: readonly string[] | readonly SelectOption[];
     translation_key?: string;
     sort?: boolean;
     reorder?: boolean;
+    box_max_columns?: number;
   } | null;
 }
 

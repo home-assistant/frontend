@@ -19,6 +19,7 @@ import "../ha-input-helper-text";
 import "../ha-radio";
 import "../ha-select";
 import "../ha-sortable";
+import "../ha-select-box";
 
 @customElement("ha-selector-select")
 export class HaSelectSelector extends LitElement {
@@ -89,6 +90,24 @@ export class HaSelectSelector extends LitElement {
           this.hass.locale.language
         )
       );
+    }
+
+    if (
+      !this.selector.select?.multiple &&
+      !this.selector.select?.reorder &&
+      !this.selector.select?.custom_value &&
+      this._mode === "box"
+    ) {
+      return html`
+        ${this.label ? html`<span class="label">${this.label}</span>` : nothing}
+        <ha-select-box
+          .options=${options}
+          .value=${this.value as string | undefined}
+          @value-changed=${this._valueChanged}
+          .maxColumns=${this.selector.select?.box_max_columns}
+        ></ha-select-box>
+        ${this._renderHelper()}
+      `;
     }
 
     if (
@@ -269,7 +288,7 @@ export class HaSelectSelector extends LitElement {
       : "";
   }
 
-  private get _mode(): "list" | "dropdown" {
+  private get _mode(): "list" | "dropdown" | "box" {
     return (
       this.selector.select?.mode ||
       ((this.selector.select?.options?.length || 0) < 6 ? "list" : "dropdown")
@@ -409,6 +428,15 @@ export class HaSelectSelector extends LitElement {
     }
     ha-chip-set {
       padding: 8px 0;
+    }
+
+    .label {
+      display: block;
+      margin: 0 0 8px;
+    }
+
+    ha-select-box + ha-input-helper-text {
+      margin-top: 4px;
     }
 
     .sortable-fallback {
