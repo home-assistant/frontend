@@ -45,8 +45,8 @@ export class HaChartBase extends LitElement {
 
   @property({ type: String }) public height?: string;
 
-  @property({ attribute: "expand-legend", type: Boolean }) public expandLegend =
-    false;
+  @property({ attribute: "expand-legend", type: Boolean })
+  public expandLegend?: boolean;
 
   @state()
   @consume({ context: themesContext, subscribe: true })

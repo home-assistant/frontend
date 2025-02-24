@@ -175,7 +175,7 @@ export class StatisticsChart extends LitElement {
         style=${styleMap({ height: this.height })}
         @dataset-hidden=${this._datasetHidden}
         @dataset-unhidden=${this._datasetUnhidden}
-        ?expand-legend=${this.expandLegend}
+        .expandLegend=${this.expandLegend}
       ></ha-chart-base>
     `;
   }
