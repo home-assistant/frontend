@@ -187,6 +187,14 @@ class AddIntegrationDialog extends LitElement {
       Object.entries(i).forEach(([domain, integration]) => {
         if (
           "integration_type" in integration &&
+          integration.integration_type === "hardware"
+        ) {
+          // Ignore hardware integrations, they cannot be added via UI
+          return;
+        }
+
+        if (
+          "integration_type" in integration &&
           (integration.config_flow ||
             integration.iot_standards ||
             integration.supported_by)

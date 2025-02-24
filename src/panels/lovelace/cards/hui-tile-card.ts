@@ -100,10 +100,13 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
+    const featuresPosition =
+      this._config && this._featurePosition(this._config);
+    const featuresCount = this._config?.features?.length || 0;
     return (
       1 +
       (this._config?.vertical ? 1 : 0) +
-      (this._config?.features?.length || 0)
+      (featuresPosition === "inline" ? 0 : featuresCount)
     );
   }
 
@@ -111,9 +114,16 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     const columns = 6;
     let min_columns = 6;
     let rows = 1;
-    if (this._config?.features?.length) {
-      rows += this._config.features.length;
+    const featurePosition = this._config && this._featurePosition(this._config);
+    const featuresCount = this._config?.features?.length || 0;
+    if (featuresCount) {
+      if (featurePosition === "inline") {
+        min_columns = 12;
+      } else {
+        rows += featuresCount;
+      }
     }
+
     if (this._config?.vertical) {
       rows++;
       min_columns = 3;
@@ -210,6 +220,23 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     );
   }
 
+  private _featurePosition = memoizeOne((config: TileCardConfig) => {
+    if (config.vertical) {
+      return "bottom";
+    }
+    return config.features_position || "bottom";
+  });
+
+  private _displayedFeatures = memoizeOne((config: TileCardConfig) => {
+    const features = config.features || [];
+    const featurePosition = this._featurePosition(config);
+
+    if (featurePosition === "inline") {
+      return features.slice(0, 1);
+    }
+    return features;
+  });
+
   protected render() {
     if (!this._config || !this.hass) {
       return nothing;
@@ -263,6 +290,12 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       ? this._getImageUrl(stateObj)
       : undefined;
 
+    const featurePosition = this._featurePosition(this._config);
+    const features = this._displayedFeatures(this._config);
+
+    const containerOrientationClass =
+      featurePosition === "inline" ? "horizontal" : "";
+
     return html`
       <ha-card style=${styleMap(style)} class=${classMap({ active })}>
         <div
@@ -278,7 +311,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         >
           <ha-ripple .disabled=${!this._hasCardAction}></ha-ripple>
         </div>
-        <div class="container">
+        <div class="container ${containerOrientationClass}">
           <div class="content ${classMap(contentClasses)}">
             <ha-tile-icon
               role=${ifDefined(this._hasIconAction ? "button" : undefined)}
@@ -308,13 +341,13 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
               .secondary=${stateDisplay}
             ></ha-tile-info>
           </div>
-          ${this._config.features
+          ${features.length > 0
             ? html`
                 <hui-card-features
                   .hass=${this.hass}
                   .stateObj=${stateObj}
                   .color=${this._config.color}
-                  .features=${this._config.features}
+                  .features=${features}
                 ></hui-card-features>
               `
             : nothing}
@@ -372,6 +405,10 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       flex-direction: column;
       flex: 1;
     }
+    .container.horizontal {
+      flex-direction: row;
+    }
+
     .content {
       position: relative;
       display: flex;
@@ -379,10 +416,12 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       align-items: center;
       padding: 10px;
       flex: 1;
+      min-width: 0;
       box-sizing: border-box;
       pointer-events: none;
       gap: 10px;
     }
+
     .vertical {
       flex-direction: column;
       text-align: center;
@@ -413,6 +452,14 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     }
     hui-card-features {
       --feature-color: var(--tile-color);
+      padding: 0 12px 12px 12px;
+    }
+    .container.horizontal hui-card-features {
+      width: calc(50% - var(--column-gap, 0px) / 2 - 12px);
+      flex: none;
+      --feature-height: 36px;
+      padding: 0 12px;
+      padding-inline-start: 0;
     }
 
     ha-tile-icon[data-domain="alarm_control_panel"][data-state="pending"],
