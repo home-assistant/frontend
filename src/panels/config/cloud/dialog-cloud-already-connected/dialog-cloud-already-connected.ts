@@ -49,67 +49,67 @@ class DialogCloudAlreadyConnected extends LitElement {
           )
         )}
       >
-        <div>
-          <p>
+        <div class="intro">
+          <span>
             ${this.hass.localize(
               "ui.panel.config.cloud.dialog_already_connected.description"
             )}
-          </p>
+          </span>
           <b>
             ${this.hass.localize(
               "ui.panel.config.cloud.dialog_already_connected.other_home_assistant"
             )}
           </b>
-          <div class="instance-details">
-            <div class="instance-detail">
+        </div>
+        <div class="instance-details">
+          <div class="instance-detail">
+            <span>
+              ${this.hass.localize(
+                "ui.panel.config.cloud.dialog_already_connected.ip_address"
+              )}:
+            </span>
+            <div class="obfuscated">
               <span>
-                ${this.hass.localize(
-                  "ui.panel.config.cloud.dialog_already_connected.ip_address"
-                )}:
+                ${this._obfuscateIp
+                  ? obfuscateUrl(details.remote_ip_address)
+                  : details.remote_ip_address}
               </span>
-              <div class="obfuscated">
-                <span>
-                  ${this._obfuscateIp
-                    ? obfuscateUrl(details.remote_ip_address)
-                    : details.remote_ip_address}
-                </span>
 
-                <ha-icon-button
-                  class="toggle-unmasked-url"
-                  .label=${this.hass.localize(
-                    `ui.panel.config.cloud.dialog_already_connected.obfuscated_ip.${this._obfuscateIp ? "hide" : "show"}`
-                  )}
-                  @click=${this._toggleObfuscateIp}
-                  .path=${this._obfuscateIp ? mdiEye : mdiEyeOff}
-                ></ha-icon-button>
-              </div>
-            </div>
-            <div class="instance-detail">
-              <span>
-                ${this.hass.localize(
-                  "ui.panel.config.cloud.dialog_already_connected.connected_at"
-                )}:
-              </span>
-              <span>
-                ${formatDateTime(
-                  new Date(details.connected_at),
-                  this.hass.locale,
-                  this.hass.config
+              <ha-icon-button
+                class="toggle-unmasked-url"
+                .label=${this.hass.localize(
+                  `ui.panel.config.cloud.dialog_already_connected.obfuscated_ip.${this._obfuscateIp ? "hide" : "show"}`
                 )}
-              </span>
+                @click=${this._toggleObfuscateIp}
+                .path=${this._obfuscateIp ? mdiEye : mdiEyeOff}
+              ></ha-icon-button>
             </div>
           </div>
-          <ha-alert
-            alert-type="info"
-            .title=${this.hass.localize(
-              "ui.panel.config.cloud.dialog_already_connected.info_backups.title"
-            )}
-          >
-            ${this.hass.localize(
-              "ui.panel.config.cloud.dialog_already_connected.info_backups.description"
-            )}
-          </ha-alert>
+          <div class="instance-detail">
+            <span>
+              ${this.hass.localize(
+                "ui.panel.config.cloud.dialog_already_connected.connected_at"
+              )}:
+            </span>
+            <span>
+              ${formatDateTime(
+                new Date(details.connected_at),
+                this.hass.locale,
+                this.hass.config
+              )}
+            </span>
+          </div>
         </div>
+        <ha-alert
+          alert-type="info"
+          .title=${this.hass.localize(
+            "ui.panel.config.cloud.dialog_already_connected.info_backups.title"
+          )}
+        >
+          ${this.hass.localize(
+            "ui.panel.config.cloud.dialog_already_connected.info_backups.description"
+          )}
+        </ha-alert>
 
         <ha-button @click=${this.closeDialog} slot="secondaryAction">
           ${this.hass!.localize("ui.common.cancel")}
@@ -139,17 +139,23 @@ class DialogCloudAlreadyConnected extends LitElement {
         ha-dialog {
           --mdc-dialog-max-width: 535px;
         }
+        .intro b {
+          display: block;
+          margin-top: 16px;
+        }
         .instance-details {
           display: flex;
           flex-direction: column;
-          padding-bottom: 42px;
+          margin-bottom: 16px;
         }
         .instance-detail {
           display: flex;
           flex-direction: row;
           justify-content: space-between;
+          align-items: center;
         }
         .obfuscated {
+          align-items: center;
           display: flex;
           flex-direction: row;
         }
