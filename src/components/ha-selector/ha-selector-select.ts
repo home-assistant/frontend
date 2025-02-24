@@ -99,7 +99,10 @@ export class HaSelectSelector extends LitElement {
       this._mode === "box"
     ) {
       return html`
+        <<<<<<< HEAD
         ${this.label ? html`<span class="label">${this.label}</span>` : nothing}
+        ======= ${this.label ? html`<p class="label">${this.label}</p>` : ""}
+        >>>>>>> 2f42ede06 (Add selector support)
         <ha-select-box
           .options=${options}
           .value=${this.value as string | undefined}
