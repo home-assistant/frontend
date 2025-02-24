@@ -21,6 +21,9 @@ import { showEditViewHeaderDialog } from "../editor/view-header/show-edit-view-h
 import type { Lovelace } from "../types";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 
+export const DEFAULT_VIEW_HEADER_LAYOUT = "center";
+export const DEFAULT_VIEW_HEADER_BADGES_POSITION = "bottom";
+
 @customElement("hui-view-header")
 export class HuiViewHeader extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -181,8 +184,9 @@ export class HuiViewHeader extends LitElement {
 
     const card = this.card;
 
-    const layout = this.config?.layout ?? "center";
-    const badgesPosition = this.config?.badges_position ?? "bottom";
+    const layout = this.config?.layout ?? DEFAULT_VIEW_HEADER_LAYOUT;
+    const badgesPosition =
+      this.config?.badges_position ?? DEFAULT_VIEW_HEADER_BADGES_POSITION;
 
     const hasHeading = card !== undefined;
     const hasBadges = this.badges.length > 0;

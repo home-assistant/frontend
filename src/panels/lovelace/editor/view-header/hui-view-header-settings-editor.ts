@@ -14,6 +14,10 @@ import type {
   LovelaceViewHeaderConfig,
 } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
+import {
+  DEFAULT_VIEW_HEADER_BADGES_POSITION,
+  DEFAULT_VIEW_HEADER_LAYOUT,
+} from "../../views/hui-view-header";
 
 @customElement("hui-view-header-settings-editor")
 export class HuiViewHeaderSettingsEditor extends LitElement {
@@ -82,9 +86,10 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
     }
 
     const data = {
-      layout: this.config?.layout || "responsive",
+      layout: this.config?.layout || DEFAULT_VIEW_HEADER_LAYOUT,
       extra_space: this.config?.extra_space || false,
-      badges_position: this.config?.badges_position || "bottom",
+      badges_position:
+        this.config?.badges_position || DEFAULT_VIEW_HEADER_BADGES_POSITION,
     };
 
     const isRTL = computeRTL(this.hass);

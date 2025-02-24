@@ -152,7 +152,7 @@ export class HuiViewBadges extends LitElement {
                               data-sortable
                               .hass=${this.hass}
                               .lovelace=${this.lovelace}
-                              .path=${[this.viewIndex, idx]}
+                              .path=${badgePath}
                               .hiddenOverlay=${this._dragging}
                               .sortableData=${badgePath}
                             >
