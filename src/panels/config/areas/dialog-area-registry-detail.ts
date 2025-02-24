@@ -168,16 +168,13 @@ class DialogAreaDetail extends LitElement {
         )}
         expanded
       >
-        <span slot="secondary">
-          ${this.hass.localize(
-            "ui.panel.config.areas.editor.aliases_description"
-          )}
-        </span>
-        <ha-aliases-editor
-          .hass=${this.hass}
-          .aliases=${this._aliases}
-          @value-changed=${this._aliasesChanged}
-        ></ha-aliases-editor>
+        <div class="content">
+          <ha-aliases-editor
+            .hass=${this.hass}
+            .aliases=${this._aliases}
+            @value-changed=${this._aliasesChanged}
+          ></ha-aliases-editor>
+        </div>
       </ha-expansion-panel>
     `;
   }
@@ -191,40 +188,37 @@ class DialogAreaDetail extends LitElement {
         )}
         expanded
       >
-        <span slot="secondary">
-          ${this.hass.localize(
-            "ui.panel.config.areas.editor.related_entities_description"
-          )}
-        </span>
-        <ha-entity-picker
-          .hass=${this.hass}
-          .label=${this.hass.localize(
-            "ui.panel.config.areas.editor.temperature_entity"
-          )}
-          .helper=${this.hass.localize(
-            "ui.panel.config.areas.editor.temperature_entity_description"
-          )}
-          .value=${this._temperatureEntity}
-          .includeDomains=${SENSOR_DOMAINS}
-          .includeDeviceClasses=${TEMPERATURE_DEVICE_CLASSES}
-          .entityFilter=${this._areaEntityFilter}
-          @value-changed=${this._sensorChanged}
-        ></ha-entity-picker>
+        <div class="content">
+          <ha-entity-picker
+            .hass=${this.hass}
+            .label=${this.hass.localize(
+              "ui.panel.config.areas.editor.temperature_entity"
+            )}
+            .helper=${this.hass.localize(
+              "ui.panel.config.areas.editor.temperature_entity_description"
+            )}
+            .value=${this._temperatureEntity}
+            .includeDomains=${SENSOR_DOMAINS}
+            .includeDeviceClasses=${TEMPERATURE_DEVICE_CLASSES}
+            .entityFilter=${this._areaEntityFilter}
+            @value-changed=${this._sensorChanged}
+          ></ha-entity-picker>
 
-        <ha-entity-picker
-          .hass=${this.hass}
-          .label=${this.hass.localize(
-            "ui.panel.config.areas.editor.humidity_entity"
-          )}
-          .helper=${this.hass.localize(
-            "ui.panel.config.areas.editor.humidity_entity_description"
-          )}
-          .value=${this._humidityEntity}
-          .includeDomains=${SENSOR_DOMAINS}
-          .includeDeviceClasses=${HUMIDITY_DEVICE_CLASSES}
-          .entityFilter=${this._areaEntityFilter}
-          @value-changed=${this._sensorChanged}
-        ></ha-entity-picker>
+          <ha-entity-picker
+            .hass=${this.hass}
+            .label=${this.hass.localize(
+              "ui.panel.config.areas.editor.humidity_entity"
+            )}
+            .helper=${this.hass.localize(
+              "ui.panel.config.areas.editor.humidity_entity_description"
+            )}
+            .value=${this._humidityEntity}
+            .includeDomains=${SENSOR_DOMAINS}
+            .includeDeviceClasses=${HUMIDITY_DEVICE_CLASSES}
+            .entityFilter=${this._areaEntityFilter}
+            @value-changed=${this._sensorChanged}
+          ></ha-entity-picker>
+        </div>
       </ha-expansion-panel>
     `;
   }
@@ -397,6 +391,9 @@ class DialogAreaDetail extends LitElement {
         ha-textfield {
           display: block;
         }
+        ha-expansion-panel {
+          --expansion-panel-content-padding: 0;
+        }
         ha-aliases-editor,
         ha-entity-picker,
         ha-floor-picker,
@@ -407,12 +404,11 @@ class DialogAreaDetail extends LitElement {
           display: block;
           margin-bottom: 16px;
         }
-        ha-aliases-editor,
-        ha-entity-picker {
-          margin-top: 16px;
-        }
         ha-dialog {
           --mdc-dialog-min-width: min(600px, 100vw);
+        }
+        .content {
+          padding: 12px;
         }
       `,
     ];
