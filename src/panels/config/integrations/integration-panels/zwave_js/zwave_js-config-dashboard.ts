@@ -15,7 +15,6 @@ import { classMap } from "lit/directives/class-map";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-expansion-panel";
 import "../../../../../components/ha-fab";
-import "../../../../../components/ha-help-tooltip";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-svg-icon";

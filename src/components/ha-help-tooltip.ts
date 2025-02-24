@@ -1,25 +1,33 @@
 import { mdiHelpCircle } from "@mdi/js";
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "./ha-svg-icon";
+import "./ha-tooltip";
 
 @customElement("ha-help-tooltip")
 export class HaHelpTooltip extends LitElement {
   @property() public label!: string;
 
-  @property() public position = "top";
+  @property() public position:
+    | "top"
+    | "bottom"
+    | "left"
+    | "right"
+    | "top-start"
+    | "top-end"
+    | "right-start"
+    | "right-end"
+    | "bottom-start"
+    | "bottom-end"
+    | "left-start"
+    | "left-end" = "top";
 
   protected render(): TemplateResult {
     return html`
-      <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
-      <simple-tooltip
-        offset="4"
-        .position=${this.position}
-        .fitToVisibleBounds=${true}
-        >${this.label}</simple-tooltip
-      >
+      <ha-tooltip .placement=${this.position} .content=${this.label}>
+        <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
+      </ha-tooltip>
     `;
   }
 
