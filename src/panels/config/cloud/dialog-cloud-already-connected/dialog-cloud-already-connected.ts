@@ -113,9 +113,7 @@ class DialogCloudAlreadyConnected extends LitElement {
         </div>
 
         <ha-button @click=${this.closeDialog} slot="secondaryAction">
-          ${this.hass!.localize(
-            "ui.panel.config.cloud.dialog_already_connected.close"
-          )}
+          ${this.hass!.localize("ui.common.cancel")}
         </ha-button>
         <ha-button @click=${this._logInHere} slot="primaryAction">
           ${this.hass!.localize(

@@ -296,6 +296,8 @@ export class CloudLogin extends LitElement {
             },
             closeDialog: () => {
               this._requestInProgress = false;
+              this.email = "";
+              this._password = "";
             },
           });
           return;
