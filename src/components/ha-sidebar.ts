@@ -1,4 +1,5 @@
 import "@material/mwc-button/mwc-button";
+import "@shoelace-style/shoelace/dist/components/skeleton/skeleton";
 import {
   mdiBell,
   mdiCalendar,
@@ -49,6 +50,10 @@ import "./ha-sortable";
 import "./ha-svg-icon";
 import "./user/ha-user-badge";
 import { preventDefault } from "../common/dom/prevent_default";
+import {
+  saveSidebarPreferences,
+  subscribeSidebarPreferences,
+} from "../data/sidebar";
 
 const SHOW_AFTER_SPACER = ["config", "developer-tools"];
 
@@ -207,30 +212,40 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   private _unsubPersistentNotifications: UnsubscribeFunc | undefined;
 
-  @storage({
-    key: "sidebarPanelOrder",
-    state: true,
-    subscribe: true,
-  })
-  private _panelOrder: string[] = [];
+  @storage({ key: "sidebarPanelOrder", state: true, subscribe: true })
+  private _devicePanelOrder?: string[];
 
-  @storage({
-    key: "sidebarHiddenPanels",
-    state: true,
-    subscribe: true,
-  })
-  private _hiddenPanels: string[] = [];
+  @storage({ key: "sidebarHiddenPanels", state: true, subscribe: true })
+  private _deviceHiddenPanels?: string[];
+
+  @state()
+  private _userPanelOrder: string[] = [];
+
+  @state()
+  private _userHiddenPanels: string[] = [];
+
+  @state()
+  private _loadingUserPreferences = true;
 
   public hassSubscribe(): UnsubscribeFunc[] {
-    return this.hass.user?.is_admin
-      ? [
-          subscribeRepairsIssueRegistry(this.hass.connection!, (repairs) => {
-            this._issuesCount = repairs.issues.filter(
-              (issue) => !issue.ignored
-            ).length;
-          }),
-        ]
-      : [];
+    const subscribeFunctions = [
+      subscribeSidebarPreferences(this.hass, (sidebar) => {
+        this._userPanelOrder = sidebar?.panelOrder || [];
+        this._userHiddenPanels = sidebar?.hiddenPanels || [];
+        this._loadingUserPreferences = false;
+      }),
+    ];
+    if (this.hass.user?.is_admin) {
+      subscribeFunctions.push(
+        subscribeRepairsIssueRegistry(this.hass.connection!, (repairs) => {
+          this._issuesCount = repairs.issues.filter(
+            (issue) => !issue.ignored
+          ).length;
+        })
+      );
+    }
+
+    return subscribeFunctions;
   }
 
   protected render() {
@@ -260,8 +275,10 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       changedProps.has("_updatesCount") ||
       changedProps.has("_issuesCount") ||
       changedProps.has("_notifications") ||
-      changedProps.has("_hiddenPanels") ||
-      changedProps.has("_panelOrder")
+      changedProps.has("_devicePanelOrder") ||
+      changedProps.has("_deviceHiddenPanels") ||
+      changedProps.has("_userPanelOrder") ||
+      changedProps.has("_userHiddenPanels")
     ) {
       return true;
     }
@@ -381,12 +398,51 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     </div>`;
   }
 
+  private _getPanelPreferencesMemoized = memoizeOne(
+    (
+      userPanelOrder: string[],
+      userHiddenPanels: string[],
+      userPreferencesLoading: boolean,
+      devicePanelOrder?: string[],
+      deviceHiddenPanels?: string[]
+    ): { panelOrder: string[]; hiddenPanels: string[]; loading: boolean } => {
+      let panelOrder = userPanelOrder ?? [];
+      let hiddenPanels = userHiddenPanels ?? [];
+
+      let loading = userPreferencesLoading;
+
+      if (devicePanelOrder || deviceHiddenPanels) {
+        panelOrder = devicePanelOrder ?? [];
+        hiddenPanels = deviceHiddenPanels ?? [];
+        loading = false;
+      }
+
+      return {
+        panelOrder,
+        hiddenPanels,
+        loading,
+      };
+    }
+  );
+
+  private _getPanelPreferences() {
+    return this._getPanelPreferencesMemoized(
+      this._userPanelOrder,
+      this._userHiddenPanels,
+      this._loadingUserPreferences,
+      this._devicePanelOrder,
+      this._deviceHiddenPanels
+    );
+  }
+
   private _renderAllPanels() {
+    const { panelOrder, hiddenPanels, loading } = this._getPanelPreferences();
+
     const [beforeSpacer, afterSpacer] = computePanels(
       this.hass.panels,
       this.hass.defaultPanel,
-      this._panelOrder,
-      this._hiddenPanels,
+      panelOrder,
+      hiddenPanels,
       this.hass.locale
     );
 
@@ -407,12 +463,21 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         @keydown=${this._listboxKeydown}
         @iron-activate=${preventDefault}
       >
-        ${this.editMode
-          ? this._renderPanelsEdit(beforeSpacer)
-          : this._renderPanels(beforeSpacer)}
-        ${this._renderSpacer()}
-        ${this._renderPanels(afterSpacer)}
-        ${this._renderExternalConfiguration()}
+      ${loading ? html`
+        <div class="loading">
+          <sl-skeleton effect="sheen"></sl-skeleton>
+          <sl-skeleton effect="sheen"></sl-skeleton>
+          <sl-skeleton effect="sheen"></sl-skeleton>
+          <sl-skeleton effect="sheen"></sl-skeleton>
+        </div>
+      ` : html`
+          ${this.editMode
+            ? this._renderPanelsEdit(beforeSpacer)
+            : this._renderPanels(beforeSpacer)}
+          ${this._renderSpacer()}
+          ${this._renderPanels(afterSpacer)}
+          ${this._renderExternalConfiguration()}
+      `}
       </paper-listbox>
     `;
   }
@@ -474,23 +539,49 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         `;
   }
 
+  private async _setPanelOrder(panelOrder: string[]) {
+    if (this._devicePanelOrder || this._deviceHiddenPanels) {
+      this._devicePanelOrder = [...panelOrder];
+    } else {
+      this._userPanelOrder = [...panelOrder];
+      await saveSidebarPreferences(this.hass, {
+        panelOrder: panelOrder,
+        hiddenPanels: this._userHiddenPanels,
+      });
+    }
+  }
+
+  private async _setHiddenPanels(hiddenPanels: string[]) {
+    if (this._devicePanelOrder || this._deviceHiddenPanels) {
+      this._deviceHiddenPanels = hiddenPanels;
+    } else {
+      this._userHiddenPanels = hiddenPanels;
+      await saveSidebarPreferences(this.hass, {
+        panelOrder: this._userPanelOrder,
+        hiddenPanels: hiddenPanels,
+      });
+    }
+  }
+
   private _panelMoved(ev: CustomEvent) {
     ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
 
+    const { panelOrder, hiddenPanels } = this._getPanelPreferences();
+
     const [beforeSpacer] = computePanels(
       this.hass.panels,
       this.hass.defaultPanel,
-      this._panelOrder,
-      this._hiddenPanels,
+      panelOrder,
+      hiddenPanels!,
       this.hass.locale
     );
 
-    const panelOrder = beforeSpacer.map((panel) => panel.url_path);
-    const panel = panelOrder.splice(oldIndex, 1)[0];
-    panelOrder.splice(newIndex, 0, panel);
+    const panelOrderNew = beforeSpacer.map((panel) => panel.url_path);
+    const panel = panelOrderNew.splice(oldIndex, 1)[0];
+    panelOrderNew.splice(newIndex, 0, panel);
 
-    this._panelOrder = panelOrder;
+    this._setPanelOrder(panelOrderNew);
   }
 
   private _renderPanelsEdit(beforeSpacer: PanelInfo[]) {
@@ -507,8 +598,10 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   }
 
   private _renderHiddenPanels() {
-    return html`${this._hiddenPanels.length
-      ? html`${this._hiddenPanels.map((url) => {
+    const { hiddenPanels } = this._getPanelPreferences();
+
+    return html`${hiddenPanels.length
+      ? html`${hiddenPanels.map((url) => {
           const panel = this.hass.panels[url];
           if (!panel) {
             return "";
@@ -690,9 +783,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   private _handleExternalAppConfiguration(ev: Event) {
     ev.preventDefault();
-    this.hass.auth.external!.fireMessage({
-      type: "config_screen/show",
-    });
+    this.hass.auth.external!.fireMessage({ type: "config_screen/show" });
   }
 
   private get _tooltip() {
@@ -730,21 +821,25 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   private async _hidePanel(ev: Event) {
     ev.preventDefault();
     const panel = (ev.currentTarget as any).panel;
-    if (this._hiddenPanels.includes(panel)) {
+    if ((this._deviceHiddenPanels || this._userHiddenPanels).includes(panel)) {
       return;
     }
+
+    const { panelOrder, hiddenPanels } = this._getPanelPreferences();
+
     // Make a copy for Memoize
-    this._hiddenPanels = [...this._hiddenPanels, panel];
+    this._setHiddenPanels([...hiddenPanels, panel]);
     // Remove it from the panel order
-    this._panelOrder = this._panelOrder.filter((order) => order !== panel);
+    this._setPanelOrder(panelOrder.filter((order) => order !== panel));
   }
 
   private async _unhidePanel(ev: Event) {
     ev.preventDefault();
     const panel = (ev.currentTarget as any).panel;
-    this._hiddenPanels = this._hiddenPanels.filter(
-      (hidden) => hidden !== panel
-    );
+
+    const { hiddenPanels } = this._getPanelPreferences();
+
+    this._setHiddenPanels(hiddenPanels.filter((hidden) => hidden !== panel));
   }
 
   private _itemMouseEnter(ev: MouseEvent) {
@@ -784,9 +879,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     this._hideTooltip();
   }
 
-  @eventOptions({
-    passive: true,
-  })
+  @eventOptions({ passive: true })
   private _listboxScroll() {
     // On keypresses on the listbox, we're going to ignore scroll events
     // for 100ms so that if pressing down arrow scrolls the sidebar, the tooltip
@@ -1116,6 +1209,60 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         .menu ha-icon-button {
           -webkit-transform: scaleX(var(--scale-direction));
           transform: scaleX(var(--scale-direction));
+        }
+
+        @keyframes skeletonAnimate {
+          0% {
+            opacity: 0;
+          }
+          50% {
+            opacity: 0;
+          }
+          100% {
+            opacity: 1;
+          }
+        }
+
+        @keyframes contentAnimate {
+          0% {
+            opacity: 0;
+          }
+          100% {
+            opacity: 1;
+          }
+        }
+
+        .loading {
+          opacity: 0;
+          animation-name: skeletonAnimate;
+          animation-duration: 2000ms;
+          animation-delay: 0;
+          animation-iteration-count: 1;
+          animation-fill-mode: forwards;
+          animation-timing-function: ease-out;
+          padding: 16px;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        sl-skeleton {
+          --border-radius: 8px;
+          height: 24px;
+          --color: var(--outline-color);
+          --sheen-color: var(--outline-hover-color);
+        }
+
+        sl-skeleton:nth-child(2) {
+          width: 70%;
+        }
+
+        sl-skeleton:nth-child(3) {
+          width: 30%;
+        }
+
+        sl-skeleton:nth-child(4) {
+          width: 90%;
         }
       `,
     ];

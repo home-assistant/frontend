@@ -1,10 +1,11 @@
-import "@material/mwc-button";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
+import "../../components/ha-button";
+import "../../components/ha-expansion-panel";
 import "../../layouts/hass-tabs-subpage";
 import { profileSections } from "./ha-panel-profile";
 import { isExternal } from "../../data/external";
@@ -27,6 +28,9 @@ import "./ha-pick-time-zone-row";
 import "./ha-push-notifications-row";
 import "./ha-set-suspend-row";
 import "./ha-set-vibrate-row";
+import { storage } from "../../common/decorators/storage";
+import type { HaSwitch } from "../../components/ha-switch";
+import { fetchSidebarPreferences } from "../../data/sidebar";
 
 @customElement("ha-profile-section-general")
 class HaProfileSectionGeneral extends LitElement {
@@ -37,6 +41,20 @@ class HaProfileSectionGeneral extends LitElement {
   @state() private _coreUserData?: CoreFrontendUserData | null;
 
   @property({ attribute: false }) public route!: Route;
+
+  @storage({
+    key: "sidebarPanelOrder",
+    state: true,
+    subscribe: true,
+  })
+  private _devicePanelOrder?: string[];
+
+  @storage({
+    key: "sidebarHiddenPanels",
+    state: true,
+    subscribe: true,
+  })
+  private _deviceHiddenPanels?: string[];
 
   private _unsubCoreData?: UnsubscribeFunc;
 
@@ -71,6 +89,9 @@ class HaProfileSectionGeneral extends LitElement {
   }
 
   protected render(): TemplateResult {
+    const deviceSidebarSettingsEnabled =
+      !!this._devicePanelOrder || !!this._deviceHiddenPanels;
+
     return html`
       <hass-tabs-subpage
         main-page
@@ -91,9 +112,9 @@ class HaProfileSectionGeneral extends LitElement {
                 : ""}
             </div>
             <div class="card-actions">
-              <mwc-button class="warning" @click=${this._handleLogOut}>
+              <ha-button class="warning" @click=${this._handleLogOut}>
                 ${this.hass.localize("ui.panel.profile.logout")}
-              </mwc-button>
+              </ha-button>
             </div>
           </ha-card>
           <ha-card
@@ -128,6 +149,29 @@ class HaProfileSectionGeneral extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-first-weekday-row>
+            <ha-settings-row .narrow=${this.narrow}>
+              <span slot="heading">
+                ${this.hass.localize(
+                  "ui.panel.profile.customize_sidebar.header"
+                )}
+              </span>
+              <span
+                slot="description"
+                class=${deviceSidebarSettingsEnabled ? "device-info" : ""}
+              >
+                ${this.hass.localize(
+                  `ui.panel.profile.customize_sidebar.${!deviceSidebarSettingsEnabled ? "description" : "overwritten_by_device"}`
+                )}
+              </span>
+              <ha-button
+                .disabled=${deviceSidebarSettingsEnabled}
+                @click=${this._customizeSidebar}
+              >
+                ${this.hass.localize(
+                  "ui.panel.profile.customize_sidebar.button"
+                )}
+              </ha-button>
+            </ha-settings-row>
             ${this.hass.user!.is_admin
               ? html`
                   <ha-advanced-mode-row
@@ -159,20 +203,48 @@ class HaProfileSectionGeneral extends LitElement {
             <ha-settings-row .narrow=${this.narrow}>
               <span slot="heading">
                 ${this.hass.localize(
-                  "ui.panel.profile.customize_sidebar.header"
+                  "ui.panel.profile.customize_sidebar.device_specific_header"
                 )}
               </span>
               <span slot="description">
                 ${this.hass.localize(
-                  "ui.panel.profile.customize_sidebar.description"
+                  "ui.panel.profile.customize_sidebar.device_description"
                 )}
               </span>
-              <mwc-button @click=${this._customizeSidebar}>
-                ${this.hass.localize(
-                  "ui.panel.profile.customize_sidebar.button"
-                )}
-              </mwc-button>
+              <ha-switch
+                .checked=${deviceSidebarSettingsEnabled}
+                @change=${this._toggleDeviceSidebarPreferences}
+              ></ha-switch>
             </ha-settings-row>
+            ${deviceSidebarSettingsEnabled
+              ? html`
+                  <ha-expansion-panel
+                    outlined
+                    .header=${this.hass.localize(
+                      "ui.panel.profile.customize_sidebar.device_specific_header"
+                    )}
+                    expanded
+                  >
+                    <ha-settings-row .narrow=${this.narrow}>
+                      <span slot="heading">
+                        ${this.hass.localize(
+                          "ui.panel.profile.customize_sidebar.header"
+                        )}
+                      </span>
+                      <span slot="description">
+                        ${this.hass.localize(
+                          "ui.panel.profile.customize_sidebar.description"
+                        )}
+                      </span>
+                      <ha-button @click=${this._customizeSidebar}>
+                        ${this.hass.localize(
+                          "ui.panel.profile.customize_sidebar.button"
+                        )}
+                      </ha-button>
+                    </ha-settings-row>
+                  </ha-expansion-panel>
+                `
+              : nothing}
             ${this.hass.dockedSidebar !== "auto" || !this.narrow
               ? html`
                   <ha-force-narrow-row
@@ -215,6 +287,38 @@ class HaProfileSectionGeneral extends LitElement {
     fireEvent(this, "hass-edit-sidebar", { editMode: true });
   }
 
+  private async _toggleDeviceSidebarPreferences(ev: Event) {
+    const switchElement = ev.target as HaSwitch;
+    const enabled = switchElement.checked;
+
+    if (!enabled) {
+      if (this._devicePanelOrder || this._deviceHiddenPanels) {
+        const confirm = await showConfirmationDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.profile.customize_sidebar.delete_device_preferences_header"
+          ),
+          text: this.hass.localize(
+            "ui.panel.profile.customize_sidebar.delete_device_preferences_description"
+          ),
+          confirmText: this.hass.localize("ui.common.delete"),
+          destructive: true,
+        });
+
+        if (confirm) {
+          this._devicePanelOrder = undefined;
+          this._deviceHiddenPanels = undefined;
+        } else {
+          // revert switch
+          switchElement.click();
+        }
+      }
+    } else {
+      const sidebarPreferences = await fetchSidebarPreferences(this.hass);
+      this._devicePanelOrder = sidebarPreferences?.panelOrder ?? [];
+      this._deviceHiddenPanels = sidebarPreferences?.hiddenPanels ?? [];
+    }
+  }
+
   private _handleLogOut() {
     showConfirmationDialog(this, {
       title: this.hass.localize("ui.panel.profile.logout_title"),
@@ -250,6 +354,14 @@ class HaProfileSectionGeneral extends LitElement {
         .promo-advanced {
           text-align: center;
           color: var(--secondary-text-color);
+        }
+
+        ha-expansion-panel {
+          margin: 0 8px 8px;
+        }
+
+        .device-info {
+          color: var(--warning-color);
         }
       `,
     ];
