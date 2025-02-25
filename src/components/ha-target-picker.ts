@@ -340,7 +340,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           ? ""
           : html`<span role="gridcell">
               <ha-tooltip
-                content=${this.hass.localize(
+                .content=${this.hass.localize(
                   `ui.components.target-picker.expand_${type}`
                 )}
               >
