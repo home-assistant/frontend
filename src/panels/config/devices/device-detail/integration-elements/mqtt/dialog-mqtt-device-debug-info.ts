@@ -103,7 +103,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
             ? this._renderTriggers()
             : html`
                 ${this.hass!.localize(
-                  "ui.dialogs.mqtt_device_debug_info.no_trigger_info"
+                  "ui.dialogs.mqtt_device_debug_info.no_trigger_debug_info"
                 )}
               `}
         </ul>
