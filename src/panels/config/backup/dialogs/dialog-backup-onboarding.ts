@@ -105,12 +105,10 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
       this._step = "setup";
     } else {
       this._step = this._firstStep;
-      this._config = RECOMMENDED_CONFIG;
-
       this._config = {
-        ...this._config,
+        ...RECOMMENDED_CONFIG,
         create_backup: {
-          ...this._config.create_backup,
+          ...RECOMMENDED_CONFIG.create_backup,
           agent_ids: this._defaultAgents,
           password: generateEncryptionKey(),
         },
@@ -278,13 +276,15 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
   }
 
   private _useRecommended() {
+    if (!this._config?.create_backup.password) {
+      return;
+    }
     this._config = {
       ...RECOMMENDED_CONFIG,
       create_backup: {
         ...RECOMMENDED_CONFIG.create_backup,
         agent_ids: this._defaultAgents,
-        password:
-          this._config?.create_backup.password || generateEncryptionKey(),
+        password: this._config.create_backup.password,
       },
     };
     this._done();
