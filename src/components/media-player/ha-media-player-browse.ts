@@ -603,7 +603,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                 `
               : ""}
           </div>
-          <ha-tooltip distance="-4" content=${child.title}>
+          <ha-tooltip distance="-4" .content=${child.title}>
             <div class="title">${child.title}</div>
           </ha-tooltip>
         </ha-card>
