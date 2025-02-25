@@ -250,6 +250,11 @@ export class HaPictureUpload extends LitElement {
           max-height: 200px;
           margin-bottom: 4px;
           border-radius: var(--file-upload-image-border-radius);
+          transition: opacity 0.3s;
+          opacity: var(--picture-opacity, 1);
+        }
+        img:hover {
+          opacity: 1;
         }
       `,
     ];
