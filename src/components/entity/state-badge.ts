@@ -181,7 +181,7 @@ export class StateBadge extends LitElement {
 
     this._iconStyle = iconStyle;
     this.style.backgroundImage = backgroundImage;
-    this._borderRadius = _getBorderRadius();
+    this._borderRadius = this._getBorderRadius();
   }
 
   private _getBorderRadius() {
