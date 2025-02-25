@@ -37,8 +37,6 @@ export class StateBadge extends LitElement {
 
   @state() private _iconStyle: Record<string, string | undefined> = {};
 
-  private _borderRadius: string;
-
   connectedCallback(): void {
     super.connectedCallback();
     if (
@@ -181,7 +179,7 @@ export class StateBadge extends LitElement {
 
     this._iconStyle = iconStyle;
     this.style.backgroundImage = backgroundImage;
-    this._borderRadius = this._getBorderRadius();
+    this.style.borderRadius = this._getBorderRadius();
   }
 
   private _getBorderRadius() {
@@ -212,7 +210,6 @@ export class StateBadge extends LitElement {
           display: inline-block;
           width: 40px;
           color: var(--paper-item-icon-color, #44739e);
-          border-radius: ${this._borderRadius};
           height: 40px;
           text-align: center;
           background-size: cover;
