@@ -89,7 +89,7 @@ export class HaIntegrationListItem extends ListItemBase {
               : "custom"}
             ><ha-tooltip
               placement="left"
-              content=${this.hass.localize(
+              .content=${this.hass.localize(
                 this.integration.overwrites_built_in
                   ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
                   : "ui.panel.config.integrations.config_entry.custom_integration"
