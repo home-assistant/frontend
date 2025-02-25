@@ -104,7 +104,7 @@ export class HaIntegrationListItem extends ListItemBase {
       !this.integration.iot_standards
         ? html`<ha-tooltip
             placement="left"
-            content=${this.hass.localize(
+            .content=${this.hass.localize(
               "ui.panel.config.integrations.config_entry.yaml_only"
             )}
           >
