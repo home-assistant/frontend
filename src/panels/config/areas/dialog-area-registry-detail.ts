@@ -27,8 +27,6 @@ import {
   SENSOR_DEVICE_CLASS_HUMIDITY,
   SENSOR_DEVICE_CLASS_TEMPERATURE,
 } from "../../../data/sensor";
-import "@material/mwc-tab-bar";
-import "@material/mwc-tab";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { createCloseHeading } from "../../../components/ha-dialog";
 
