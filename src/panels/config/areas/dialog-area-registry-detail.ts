@@ -1,5 +1,3 @@
-import "@material/mwc-button";
-import "@material/mwc-list/mwc-list";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
@@ -366,7 +364,7 @@ class DialogAreaDetail extends LitElement {
       return;
     }
 
-    await showConfirmationDialog(this, {
+    const confirmed = await showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.areas.delete.confirmation_title",
         { name: this._params.entry.name }
@@ -377,11 +375,13 @@ class DialogAreaDetail extends LitElement {
       dismissText: this.hass.localize("ui.common.cancel"),
       confirmText: this.hass.localize("ui.common.delete"),
       destructive: true,
-      confirm: async () => {
-        await deleteAreaRegistryEntry(this.hass!, this._params!.entry!.area_id);
-        this.closeDialog();
-      },
     });
+    if (!confirmed) {
+      return;
+    }
+
+    await deleteAreaRegistryEntry(this.hass!, this._params!.entry!.area_id);
+    this.closeDialog();
   }
 
   static get styles(): CSSResultGroup {
