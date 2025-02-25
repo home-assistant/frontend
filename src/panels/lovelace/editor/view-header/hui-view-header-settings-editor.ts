@@ -44,12 +44,7 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
   }
 
   private _schema = memoizeOne(
-    (
-      localize: LocalizeFunc,
-      isRTL: boolean,
-      isDark: boolean,
-      narrow: boolean
-    ) =>
+    (localize: LocalizeFunc, isRTL: boolean, narrow: boolean) =>
       [
         {
           name: "layout",
@@ -57,38 +52,24 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
             select: {
               mode: "box",
               box_max_columns: narrow ? 1 : 3,
-              options: [
-                {
-                  value: "responsive",
+              options: ["responsive", "start", "center"].map((value) => {
+                const labelKey =
+                  value === "start" && isRTL ? `${value}_rtl` : value;
+                return {
+                  value,
                   label: localize(
-                    "ui.panel.lovelace.editor.edit_view_header.settings.layout_options.responsive"
+                    `ui.panel.lovelace.editor.edit_view_header.settings.layout_options.${labelKey}`
                   ),
                   description: localize(
-                    "ui.panel.lovelace.editor.edit_view_header.settings.layout_options.responsive_description"
+                    `ui.panel.lovelace.editor.edit_view_header.settings.layout_options.${value}_description`
                   ),
-                  image: `/static/images/form/view_header_layout_responsive${isDark ? "_dark" : ""}.svg`,
-                },
-                {
-                  value: "start",
-                  label: localize(
-                    `ui.panel.lovelace.editor.edit_view_header.settings.layout_options.${isRTL ? "start_rtl" : "start"}`
-                  ),
-                  description: localize(
-                    "ui.panel.lovelace.editor.edit_view_header.settings.layout_options.start_description"
-                  ),
-                  image: `/static/images/form/view_header_layout_start${isDark ? "_dark" : ""}.svg`,
-                },
-                {
-                  value: "center",
-                  label: localize(
-                    "ui.panel.lovelace.editor.edit_view_header.settings.layout_options.center"
-                  ),
-                  description: localize(
-                    "ui.panel.lovelace.editor.edit_view_header.settings.layout_options.center_description"
-                  ),
-                  image: `/static/images/form/view_header_layout_center${isDark ? "_dark" : ""}.svg`,
-                },
-              ],
+                  image: {
+                    src: `/static/images/form/view_header_layout_${value}.svg`,
+                    src_dark: `/static/images/form/view_header_layout_${value}_dark.svg`,
+                    flip_rtl: true,
+                  },
+                };
+              }),
             },
           },
         },
@@ -97,22 +78,17 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
           selector: {
             select: {
               mode: "box",
-              options: [
-                {
-                  value: "bottom",
-                  label: localize(
-                    `ui.panel.lovelace.editor.edit_view_header.settings.badges_position_options.bottom`
-                  ),
-                  image: `/static/images/form/view_header_badges_position_bottom${isDark ? "_dark" : ""}.svg`,
+              options: ["bottom", "top"].map((value) => ({
+                value,
+                label: localize(
+                  `ui.panel.lovelace.editor.edit_view_header.settings.badges_position_options.${value}`
+                ),
+                image: {
+                  src: `/static/images/form/view_header_badges_position_${value}.svg`,
+                  src_dark: `/static/images/form/view_header_badges_position_${value}_dark.svg`,
+                  flip_rtl: true,
                 },
-                {
-                  value: "top",
-                  label: localize(
-                    `ui.panel.lovelace.editor.edit_view_header.settings.badges_position_options.top`
-                  ),
-                  image: `/static/images/form/view_header_badges_position_top${isDark ? "_dark" : ""}.svg`,
-                },
-              ],
+              })),
             },
           },
         },
@@ -130,10 +106,9 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
         this.config?.badges_position || DEFAULT_VIEW_HEADER_BADGES_POSITION,
     };
 
-    const isDark = this.hass.themes.darkMode;
     const narrow = this.narrow;
     const isRTL = computeRTL(this.hass);
-    const schema = this._schema(this.hass.localize, isRTL, isDark, narrow);
+    const schema = this._schema(this.hass.localize, isRTL, narrow);
 
     return html`
       <ha-form
@@ -164,8 +139,11 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
     switch (schema.name) {
       case "layout":
       case "badges_position":
+        return this.hass.localize(
+          `ui.panel.lovelace.editor.edit_view_header.settings.${schema.name}`
+        );
       default:
-        return schema.name;
+        return "";
     }
   };
 }
