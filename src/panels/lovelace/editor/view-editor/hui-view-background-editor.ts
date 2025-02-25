@@ -108,7 +108,7 @@ export class HuiViewBackgroundEditor extends LitElement {
       return nothing;
     }
 
-    let background: any = this._config?.background;
+    let background = this._config?.background;
     if (typeof background === "string") {
       const backgroundUrl = background.match(/url\(['"]?([^'"]+)['"]?\)/)?.[1];
 
@@ -124,9 +124,6 @@ export class HuiViewBackgroundEditor extends LitElement {
         size: "cover",
         repeat: "repeat",
         attachment: "fixed",
-        image: {
-          opacity: 33,
-        },
       };
     } else {
       background = {
@@ -136,10 +133,6 @@ export class HuiViewBackgroundEditor extends LitElement {
         repeat: "no-repeat",
         attachment: "scroll",
         ...background,
-        image: {
-          opacity: background.opacity ?? 100,
-          url: background.image,
-        },
       };
     }
 
@@ -151,6 +144,7 @@ export class HuiViewBackgroundEditor extends LitElement {
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
         .localizeValue=${this._localizeValueCallback}
+        style=${`--picture-opacity: ${background.opacity! / 100};`}
       ></ha-form>
     `;
   }

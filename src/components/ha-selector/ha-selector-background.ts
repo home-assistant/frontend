@@ -1,5 +1,4 @@
 import { css, html, LitElement } from "lit";
-import { styleMap } from "lit/directives/style-map";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { BackgroundSelector } from "../../data/selector";
@@ -27,10 +26,7 @@ export class HaBackgroundSelector extends LitElement {
     super.updated(changedProps);
 
     if (changedProps.has("value")) {
-      this.yamlBackground =
-        !!this.value &&
-        !!this.value.url &&
-        !this.value.url.startsWith(URL_PREFIX);
+      this.yamlBackground = !!this.value && !this.value.startsWith(URL_PREFIX);
     }
   }
 
@@ -41,12 +37,7 @@ export class HaBackgroundSelector extends LitElement {
           ? html`
               <div class="value">
                 <img
-                  style=${styleMap({
-                    opacity: Number.isNaN(this.value?.opacity)
-                      ? undefined
-                      : `${Number(this.value?.opacity) * 0.01}`,
-                  })}
-                  src=${this.value.url}
+                  src=${this.value}
                   alt=${this.hass.localize(
                     "ui.components.picture-upload.current_image_alt"
                   )}
@@ -66,12 +57,11 @@ export class HaBackgroundSelector extends LitElement {
           : html`
               <ha-picture-upload
                 .hass=${this.hass}
-                .value=${this.value?.url?.startsWith(URL_PREFIX)
+                .value=${this.value?.startsWith(URL_PREFIX)
                   ? this.value.url
                   : null}
                 .original=${!!this.selector.background?.original}
                 .cropOptions=${this.selector.background?.crop}
-                .opacityPercentage=${this.value?.opacity}
                 select-media
                 @change=${this._pictureChanged}
               ></ha-picture-upload>
@@ -115,6 +105,7 @@ export class HaBackgroundSelector extends LitElement {
       margin-bottom: 4px;
       border-radius: var(--file-upload-image-border-radius);
       transition: opacity 0.3s;
+      opacity: var(--picture-opacity, 1);
     }
     img:hover {
       opacity: 1 !important;

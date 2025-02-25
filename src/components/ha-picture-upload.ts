@@ -1,5 +1,4 @@
 import { mdiImagePlus } from "@mdi/js";
-import { styleMap } from "lit/directives/style-map";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -47,9 +46,6 @@ export class HaPictureUpload extends LitElement {
 
   @property({ type: Number }) public size = 512;
 
-  @property({ type: Number, attribute: false })
-  public opacityPercentage?: number;
-
   @state() private _uploading = false;
 
   public render(): TemplateResult {
@@ -91,11 +87,6 @@ export class HaPictureUpload extends LitElement {
     return html`<div class="center-vertical">
       <div class="value">
         <img
-          style=${styleMap({
-            opacity: Number.isNaN(this.opacityPercentage)
-              ? undefined
-              : `${this.opacityPercentage! * 0.01}`,
-          })}
           .src=${this.value}
           alt=${this.currentImageAltText ||
           this.hass.localize("ui.components.picture-upload.current_image_alt")}
@@ -260,6 +251,7 @@ export class HaPictureUpload extends LitElement {
           margin-bottom: 4px;
           border-radius: var(--file-upload-image-border-radius);
           transition: opacity 0.3s;
+          opacity: var(--picture-opacity, 1);
         }
         img:hover {
           opacity: 1 !important;
