@@ -200,7 +200,7 @@ export class StateBadge extends LitElement {
     }
     return radius;
   }
-  
+
   static get styles(): CSSResultGroup {
     return [
       iconColorCSS,
