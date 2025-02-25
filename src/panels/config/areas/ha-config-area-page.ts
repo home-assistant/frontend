@@ -550,7 +550,7 @@ class HaConfigAreaPage extends LitElement {
   }
 
   private _renderScene(name: string, entityState: SceneEntity) {
-    return html` <ha-tooltip
+    return html`<ha-tooltip
       .distance=${-4}
       .disabled=${!!entityState.attributes.id}
       content=${this.hass.localize("ui.panel.config.devices.cant_edit")}
