@@ -1,5 +1,5 @@
 import { customElement, property, state } from "lit/decorators";
-import { LitElement, html, css } from "lit";
+import { LitElement, html, css, nothing } from "lit";
 import type { EChartsType } from "echarts/core";
 import type { CallbackDataParams } from "echarts/types/dist/shared";
 import type { SankeySeriesOption } from "echarts/types/dist/echarts";
@@ -10,6 +10,7 @@ import type { ECOption } from "../../resources/echarts";
 import { measureTextWidth } from "../../util/text";
 import "./ha-chart-base";
 import { NODE_SIZE } from "../trace/hat-graph-const";
+import "../ha-alert";
 
 export interface Node {
   id: string;
@@ -55,13 +56,35 @@ export class HaSankeyChart extends LitElement {
     value: number
   ) => string;
 
+  @state() private _loading = true;
+
   public chart?: EChartsType;
+
+  @state() private _error?: Error;
 
   @state() private _sizeController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect,
   });
 
+  protected async firstUpdated() {
+    try {
+      // Register the required components
+      await import("../../resources/echarts");
+      await import("echarts/lib/chart/sankey");
+    } catch (error) {
+      this._error = error as Error;
+    } finally {
+      this._loading = false;
+    }
+  }
+
   render() {
+    if (this._loading) {
+      return nothing;
+    }
+    if (this._error) {
+      return html`<ha-alert type="error">${this._error.message}</ha-alert>`;
+    }
     const options = {
       grid: {
         top: 0,

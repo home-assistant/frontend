@@ -2,7 +2,7 @@
 import * as echarts from "echarts/core";
 
 // Import charts, all suffixed with Chart
-import { BarChart, LineChart, CustomChart, SankeyChart } from "echarts/charts";
+import { BarChart, LineChart, CustomChart } from "echarts/charts";
 
 // Import the title, tooltip, rectangular coordinate system, dataset and transform components
 import {
@@ -69,7 +69,6 @@ echarts.use([
   LabelLayout,
   UniversalTransition,
   CanvasRenderer,
-  SankeyChart,
 ]);
 
 export default echarts;
