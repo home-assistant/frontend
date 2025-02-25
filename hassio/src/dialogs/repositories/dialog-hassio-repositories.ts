@@ -120,7 +120,7 @@ class HassioRepositoriesDialog extends LitElement {
                       </div>
                       <div class="delete" slot="end">
                         <ha-tooltip
-                          content=${this._dialogParams!.supervisor.localize(
+                          .content=${this._dialogParams!.supervisor.localize(
                             usedRepositories.includes(repo.slug)
                               ? "dialog.repositories.used"
                               : "dialog.repositories.remove"
