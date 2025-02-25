@@ -37,7 +37,7 @@ export class StateBadge extends LitElement {
 
   @state() private _iconStyle: Record<string, string | undefined> = {};
 
-  private _borderRadius: string = "50%";
+  private _borderRadius = "50%";
 
   connectedCallback(): void {
     super.connectedCallback();
@@ -181,24 +181,26 @@ export class StateBadge extends LitElement {
 
     this._iconStyle = iconStyle;
     this.style.backgroundImage = backgroundImage;
-    this._borderRadius = getBorderRadius();
+    this._borderRadius = _getBorderRadius();
   }
 
-  private getBorderRadius() {
+  private _getBorderRadius() {
+    let radius;
     if (this.stateObj) {
       const domain = computeDomain(this.stateObj.entity_id);
       if (domain === "update") {
-        return "0";
+        radius = "0";
       } else if (domain === "media_player" || domain === "camera") {
-        return "8%";
+        radius = "8%";
       } else if (this.style.backgroundImage !== "") {
-        return "var(--state-badge-with-image-border-radius, 50%)";
+        radius = "var(--state-badge-with-image-border-radius, 50%)";
       } else {
-        return "50%";
+        radius = "50%";
       }
     } else {
-      return "50%";
+      radius = "50%";
     }
+    return radius;
   }
   
   static get styles(): CSSResultGroup {
