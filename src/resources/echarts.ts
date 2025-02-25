@@ -27,6 +27,7 @@ import type {
   BarSeriesOption,
   LineSeriesOption,
   CustomSeriesOption,
+  SankeySeriesOption,
 } from "echarts/charts";
 import type {
   // The component option types are defined with the ComponentOption suffix
@@ -50,6 +51,7 @@ export type ECOption = ComposeOption<
   | GridComponentOption
   | DataZoomComponentOption
   | VisualMapComponentOption
+  | SankeySeriesOption
 >;
 
 // Register the required components
