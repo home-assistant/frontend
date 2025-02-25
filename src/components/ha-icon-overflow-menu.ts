@@ -73,21 +73,17 @@ export class HaIconOverflowMenu extends LitElement {
                 ? nothing
                 : item.divider
                   ? html`<div role="separator"></div>`
-                  : html`${item.tooltip
-                        ? html`<ha-tooltip
-                            placement="left"
-                            content=${item.tooltip}
-                          ></ha-tooltip>`
-                        : nothing}
-                      <div>
-                        <ha-icon-button
-                          @click=${item.action}
-                          .label=${item.label}
-                          .path=${item.path}
-                          ?disabled=${item.disabled}
-                        ></ha-icon-button>
-                      </div>
-                      ${item.tooltip ? html`</ha-tooltip>` : nothing}`
+                  : html`<ha-tooltip
+                      .disabled=${!item.tooltip}
+                      content=${item.tooltip ?? ""}
+                    >
+                      <ha-icon-button
+                        @click=${item.action}
+                        .label=${item.label}
+                        .path=${item.path}
+                        ?disabled=${item.disabled}
+                      ></ha-icon-button>
+                    </ha-tooltip>`
             )}
           `}
     `;

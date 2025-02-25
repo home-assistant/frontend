@@ -1,6 +1,5 @@
 import { consume } from "@lit-labs/context";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
   mdiChevronRight,
   mdiCog,
@@ -57,6 +56,7 @@ import "../../../components/ha-md-menu-item";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-tooltip";
 import { createAreaRegistryEntry } from "../../../data/area_registry";
 import type { CategoryRegistryEntry } from "../../../data/category_registry";
 import {
@@ -314,17 +314,19 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           template: (scene) =>
             !scene.attributes.id
               ? html`
-                  <simple-tooltip animation-delay="0" position="left">
-                    ${this.hass.localize(
+                  <ha-tooltip
+                    placement="left"
+                    content=${this.hass.localize(
                       "ui.panel.config.scene.picker.only_editable"
                     )}
-                  </simple-tooltip>
-                  <ha-svg-icon
-                    .path=${mdiPencilOff}
-                    style="color: var(--secondary-text-color)"
-                  ></ha-svg-icon>
+                  >
+                    <ha-svg-icon
+                      .path=${mdiPencilOff}
+                      style="color: var(--secondary-text-color)"
+                    ></ha-svg-icon>
+                  </ha-tooltip>
                 `
-              : "",
+              : nothing,
         },
         actions: {
           title: "",

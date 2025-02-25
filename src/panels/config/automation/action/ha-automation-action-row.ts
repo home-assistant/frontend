@@ -33,6 +33,7 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-service-icon";
+import "../../../../components/ha-tooltip";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { ACTION_ICONS, YAML_ONLY_ACTION_TYPES } from "../../../../data/action";
 import type { AutomationClipboard } from "../../../../data/automation";
@@ -231,14 +232,14 @@ export default class HaAutomationActionRow extends LitElement {
 
           ${type !== "condition" &&
           (this.action as NonConditionAction).continue_on_error === true
-            ? html`<div slot="icons">
+            ? html`<ha-tooltip
+                slot="icons"
+                content=${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.continue_on_error"
+                )}
+              >
                 <ha-svg-icon .path=${mdiAlertCircleCheck}></ha-svg-icon>
-                <simple-tooltip animation-delay="0">
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.continue_on_error"
-                  )}
-                </simple-tooltip>
-              </div> `
+              </ha-tooltip>`
             : nothing}
 
           <ha-md-button-menu
@@ -658,6 +659,9 @@ export default class HaAutomationActionRow extends LitElement {
         }
         ha-md-menu-item > ha-svg-icon {
           --mdc-icon-size: 24px;
+        }
+        ha-tooltip {
+          cursor: default;
         }
       `,
     ];
