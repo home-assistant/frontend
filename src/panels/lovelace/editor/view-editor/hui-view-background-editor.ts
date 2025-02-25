@@ -38,7 +38,7 @@ export class HuiViewBackgroundEditor extends LitElement {
               {
                 name: "opacity",
                 selector: {
-                  number: { min: 1, max: 100, mode: "slider" },
+                  number: { min: 0, max: 100, mode: "slider" },
                 },
               },
               {
@@ -108,7 +108,7 @@ export class HuiViewBackgroundEditor extends LitElement {
       return nothing;
     }
 
-    let background = this._config?.background;
+    let background: any = this._config?.background;
     if (typeof background === "string") {
       const backgroundUrl = background.match(/url\(['"]?([^'"]+)['"]?\)/)?.[1];
 
@@ -124,6 +124,9 @@ export class HuiViewBackgroundEditor extends LitElement {
         size: "cover",
         repeat: "repeat",
         attachment: "fixed",
+        image: {
+          opacity: 33,
+        },
       };
     } else {
       background = {
@@ -133,6 +136,10 @@ export class HuiViewBackgroundEditor extends LitElement {
         repeat: "no-repeat",
         attachment: "scroll",
         ...background,
+        image: {
+          opacity: background.opacity ?? 100,
+          url: background.image,
+        },
       };
     }
 
@@ -151,7 +158,10 @@ export class HuiViewBackgroundEditor extends LitElement {
   private _valueChanged(ev: CustomEvent): void {
     const config = {
       ...this._config,
-      background: ev.detail.value,
+      background: {
+        ...ev.detail.value,
+        image: ev.detail.value.image?.url,
+      },
     };
     fireEvent(this, "view-config-changed", { config });
   }

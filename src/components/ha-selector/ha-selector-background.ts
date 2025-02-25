@@ -26,7 +26,10 @@ export class HaBackgroundSelector extends LitElement {
     super.updated(changedProps);
 
     if (changedProps.has("value")) {
-      this.yamlBackground = !!this.value && !this.value.startsWith(URL_PREFIX);
+      this.yamlBackground =
+        !!this.value &&
+        !!this.value.url &&
+        !this.value.url.startsWith(URL_PREFIX);
     }
   }
 
@@ -49,9 +52,12 @@ export class HaBackgroundSelector extends LitElement {
           : html`
               <ha-picture-upload
                 .hass=${this.hass}
-                .value=${this.value?.startsWith(URL_PREFIX) ? this.value : null}
-                .original=${this.selector.background?.original}
+                .value=${this.value?.url?.startsWith(URL_PREFIX)
+                  ? this.value.url
+                  : null}
+                .original=${!!this.selector.background?.original}
                 .cropOptions=${this.selector.background?.crop}
+                .opacityPercentage=${this.value?.opacity}
                 select-media
                 @change=${this._pictureChanged}
               ></ha-picture-upload>
