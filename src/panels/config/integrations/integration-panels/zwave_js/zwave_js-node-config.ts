@@ -391,7 +391,9 @@ class ZWaveJSNodeConfig extends LitElement {
   }
 
   private _handleNewValue() {
-    this._fetchData();
+    setTimeout(() => {
+      this._fetchData();
+    }, 750);
   }
 
   private _switchToggled(ev) {

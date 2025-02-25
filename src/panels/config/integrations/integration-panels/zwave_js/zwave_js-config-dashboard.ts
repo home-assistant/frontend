@@ -77,6 +77,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
 
   private _dialogOpen = false;
 
+  private _s2InclusionUnsubscribe?: Promise<UnsubscribeFunc>;
+
   protected async firstUpdated() {
     if (this.hass) {
       await this._fetchData();
@@ -104,19 +106,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           this._statistics = message;
         }
       ),
-      subscribeS2Inclusion(this.hass, this.configEntryId, (message) => {
-        if (!this._dialogOpen) {
-          showZWaveJSAddNodeDialog(this, {
-            entry_id: this.configEntryId,
-            dsk: message.dsk,
-            onStop: () => {
-              setTimeout(() => this._fetchData(), 100);
-              this._dialogOpen = false;
-            },
-          });
-          this._dialogOpen = true;
-        }
-      }),
+      this._subscribeS2Inclusion(),
     ];
   }
 
@@ -577,17 +567,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
   }
 
   private async _addNodeClicked() {
-    if (!this._dialogOpen) {
-      showZWaveJSAddNodeDialog(this, {
-        entry_id: this.configEntryId!,
-        // refresh the data after the dialog is closed. add a small delay for the inclusion state to update
-        onStop: () => {
-          setTimeout(() => this._fetchData(), 100);
-          this._dialogOpen = false;
-        },
-      });
-      this._dialogOpen = true;
-    }
+    this._openInclusionDialog();
   }
 
   private async _removeNodeClicked() {
@@ -624,6 +604,41 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
       (entry) => entry.entry_id === this.configEntryId
     );
     showOptionsFlowDialog(this, configEntry!);
+  }
+
+  private _openInclusionDialog(dsk?: string) {
+    if (!this._dialogOpen) {
+      // Unsubscribe from S2 inclusion before opening dialog
+      if (this._s2InclusionUnsubscribe) {
+        this._s2InclusionUnsubscribe.then((unsubscribe) => unsubscribe());
+        this._s2InclusionUnsubscribe = undefined;
+      }
+
+      showZWaveJSAddNodeDialog(this, {
+        entry_id: this.configEntryId!,
+        dsk,
+        onStop: this._handleInclusionDialogClosed,
+      });
+      this._dialogOpen = true;
+    }
+  }
+
+  private _handleInclusionDialogClosed = () => {
+    // refresh the data after the dialog is closed. add a small delay for the inclusion state to update
+    setTimeout(() => this._fetchData(), 100);
+    this._dialogOpen = false;
+    this._subscribeS2Inclusion();
+  };
+
+  private _subscribeS2Inclusion() {
+    this._s2InclusionUnsubscribe = subscribeS2Inclusion(
+      this.hass,
+      this.configEntryId,
+      (message) => {
+        this._openInclusionDialog(message.dsk);
+      }
+    );
+    return this._s2InclusionUnsubscribe;
   }
 
   static get styles(): CSSResultGroup {

@@ -71,6 +71,9 @@ export class StateHistoryCharts extends LitElement {
 
   @property({ type: String }) public height?: string;
 
+  @property({ attribute: "expand-legend", type: Boolean })
+  public expandLegend?: boolean;
+
   private _computedStartTime!: Date;
 
   private _computedEndTime!: Date;
@@ -154,6 +157,7 @@ export class StateHistoryCharts extends LitElement {
           .fitYData=${this.fitYData}
           @y-width-changed=${this._yWidthChanged}
           .height=${this.virtualize ? undefined : this.height}
+          .expandLegend=${this.expandLegend}
         ></state-history-chart-line>
       </div> `;
     }
@@ -303,6 +307,8 @@ export class StateHistoryCharts extends LitElement {
 
     .entry-container.line {
       flex: 1;
+      padding-top: 8px;
+      overflow: hidden;
     }
 
     .entry-container:hover {
