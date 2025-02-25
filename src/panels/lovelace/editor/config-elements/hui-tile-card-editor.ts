@@ -1,4 +1,4 @@
-import { mdiGestureTap, mdiListBox, mdiPalette } from "@mdi/js";
+import { mdiGestureTap, mdiListBox, mdiTextShort } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -120,10 +120,10 @@ export class HuiTileCardEditor
       [
         { name: "entity", selector: { entity: {} } },
         {
-          name: "appearance",
+          name: "content",
           flatten: true,
           type: "expandable",
-          iconPath: mdiPalette,
+          iconPath: mdiTextShort,
           schema: [
             {
               name: "",
@@ -416,7 +416,6 @@ export class HuiTileCardEditor
       case "hide_state":
       case "state_content":
       case "content_layout":
-      case "appearance":
       case "features_position":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.tile.${schema.name}`
