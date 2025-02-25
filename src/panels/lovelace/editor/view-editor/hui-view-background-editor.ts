@@ -144,7 +144,7 @@ export class HuiViewBackgroundEditor extends LitElement {
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
         .localizeValue=${this._localizeValueCallback}
-        style=${`--picture-opacity: ${background.opacity! / 100};`}
+        style=${`--picture-opacity: ${(background.opacity ?? 100) / 100};`}
       ></ha-form>
     `;
   }
