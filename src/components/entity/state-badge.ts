@@ -37,7 +37,7 @@ export class StateBadge extends LitElement {
 
   @state() private _iconStyle: Record<string, string | undefined> = {};
 
-  private _borderRadius = "50%";
+  private _borderRadius: string;
 
   connectedCallback(): void {
     super.connectedCallback();
