@@ -20,6 +20,8 @@ export class HaTabs extends PaperTabs {
 
   private _lastLeftHiddenState = false;
 
+  private _lastRightHiddenState = false;
+
   static get template(): HTMLTemplateElement {
     if (!subTemplate) {
       subTemplate = (PaperTabs as any).template.cloneNode(true);
@@ -85,14 +87,23 @@ export class HaTabs extends PaperTabs {
     this.$.tabsContainer.scrollLeft += dx;
 
     const scrollLeft = this.$.tabsContainer.scrollLeft;
+    const dirRTL = this.dir === "rtl";
 
-    this._leftHidden = scrollLeft - this._firstTabWidth < 0;
-    this._rightHidden =
-      scrollLeft + this._lastTabWidth > this._tabContainerScrollSize;
+    const boolCondition1 = Math.abs(scrollLeft) < this._firstTabWidth;
+    const boolCondition2 =
+      Math.abs(scrollLeft) + this._lastTabWidth > this._tabContainerScrollSize;
 
-    if (this._lastLeftHiddenState !== this._leftHidden) {
-      this._lastLeftHiddenState = this._leftHidden;
-      this.$.tabsContainer.scrollLeft += this._leftHidden ? -23 : 23;
+    this._leftHidden = !dirRTL ? boolCondition1 : boolCondition2;
+    this._rightHidden = !dirRTL ? boolCondition2 : boolCondition1;
+
+    if (!dirRTL) {
+      if (this._lastLeftHiddenState !== this._leftHidden) {
+        this._lastLeftHiddenState = this._leftHidden;
+        this.$.tabsContainer.scrollLeft += this._leftHidden ? -23 : 23;
+      }
+    } else if (this._lastRightHiddenState !== this._rightHidden) {
+      this._lastRightHiddenState = this._rightHidden;
+      this.$.tabsContainer.scrollLeft -= this._rightHidden ? -23 : 23;
     }
   }
 }
