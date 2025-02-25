@@ -52,7 +52,7 @@ export class HuiMarkdownCardEditor
                 ),
                 image: {
                   src: `/static/images/form/markdown_${style.replace("-", "_")}.svg`,
-                  src_dark: `/static/images/form/markdown_${style.replace("-", "_")}_dark".svg`,
+                  src_dark: `/static/images/form/markdown_${style.replace("-", "_")}_dark.svg`,
                   flip_rtl: true,
                 },
                 value: style,
