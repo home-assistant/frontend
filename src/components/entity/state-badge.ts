@@ -183,6 +183,8 @@ export class StateBadge extends LitElement {
       } else if (backgroundImage !== "") {
         this.style.borderRadius =
           "var(--state-badge-with-image-border-radius, 50%)";
+      } else {
+        this.style.borderRadius = "50%";
       }
     }
 
@@ -199,7 +201,6 @@ export class StateBadge extends LitElement {
           display: inline-block;
           width: 40px;
           color: var(--paper-item-icon-color, #44739e);
-          border-radius: 50%;
           height: 40px;
           text-align: center;
           background-size: cover;
