@@ -574,7 +574,7 @@ class HaConfigAreaPage extends LitElement {
     return html`<ha-tooltip
       .disabled=${!!entityState.attributes.id}
       .distance=${-4}
-      content=${this.hass.localize("ui.panel.config.devices.cant_edit")}
+      .content=${this.hass.localize("ui.panel.config.devices.cant_edit")}
     >
       <a
         href=${ifDefined(
