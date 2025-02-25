@@ -302,11 +302,23 @@ export class HUIView extends ReactiveElement {
     });
     this._layoutElement.addEventListener("ll-edit-badge", (ev) => {
       const { cardIndex } = parseLovelaceCardPath(ev.detail.path);
+      const viewConfig = this.lovelace!.config.views[this.index];
+      if (isStrategyView(viewConfig)) {
+        return;
+      }
+      const badgeConfig = ensureBadgeConfig(viewConfig.badges![cardIndex]);
+
       showEditBadgeDialog(this, {
         lovelaceConfig: this.lovelace.config,
-        saveConfig: this.lovelace.saveConfig,
-        path: [this.index],
-        badgeIndex: cardIndex,
+        saveBadgeConfig: async (newBadgeConfig) => {
+          const newConfig = replaceCard(
+            this.lovelace!.config,
+            [this.index, cardIndex],
+            newBadgeConfig
+          );
+          await this.lovelace.saveConfig(newConfig);
+        },
+        badgeConfig,
       });
     });
     this._layoutElement.addEventListener("ll-delete-badge", async (ev) => {

@@ -23,6 +23,7 @@ import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showEditBadgeDialog } from "../editor/badge-editor/show-edit-badge-dialog";
+import { addBadge } from "../editor/config-util";
 import type { LovelaceCardPath } from "../editor/lovelace-path";
 import {
   findLovelaceItems,
@@ -221,11 +222,19 @@ export class HuiBadgeEditMode extends LitElement {
     const { cardIndex } = parseLovelaceCardPath(this.path!);
     const containerPath = getLovelaceContainerPath(this.path!);
     const badgeConfig = ensureBadgeConfig(this._badges![cardIndex]);
+
     showEditBadgeDialog(this, {
       lovelaceConfig: this.lovelace!.config,
-      saveConfig: this.lovelace!.saveConfig,
-      path: containerPath,
+      saveBadgeConfig: async (config) => {
+        const newConfig = addBadge(
+          this.lovelace!.config,
+          containerPath,
+          config
+        );
+        await this.lovelace!.saveConfig(newConfig);
+      },
       badgeConfig,
+      isNew: true,
     });
   }
 

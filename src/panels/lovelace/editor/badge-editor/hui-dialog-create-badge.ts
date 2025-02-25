@@ -24,6 +24,7 @@ import "./hui-badge-picker";
 import type { CreateBadgeDialogParams } from "./show-create-badge-dialog";
 import { showEditBadgeDialog } from "./show-edit-badge-dialog";
 import { showSuggestBadgeDialog } from "./show-suggest-badge-dialog";
+import { addBadge } from "../config-util";
 
 declare global {
   interface HASSDomEvents {
@@ -223,11 +224,22 @@ export class HuiCreateDialogBadge
       }
     }
 
+    const lovelaceConfig = this._params!.lovelaceConfig;
+    const containerPath = this._params!.path;
+    const saveConfig = this._params!.saveConfig;
+
     showEditBadgeDialog(this, {
-      lovelaceConfig: this._params!.lovelaceConfig,
-      saveConfig: this._params!.saveConfig,
-      path: this._params!.path,
+      lovelaceConfig,
+      saveBadgeConfig: async (newBadgeConfig) => {
+        const newConfig = addBadge(
+          lovelaceConfig,
+          containerPath,
+          newBadgeConfig
+        );
+        await saveConfig(newConfig);
+      },
       badgeConfig: config,
+      isNew: true,
     });
 
     this.closeDialog();
