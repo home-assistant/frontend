@@ -343,11 +343,17 @@ export interface AssistPipelineSelector {
   } | null;
 }
 
+interface SelectBoxOptionImage {
+  src: string;
+  src_dark?: string;
+  flip_rtl?: boolean;
+}
+
 export interface SelectOption {
   value: any;
   label: string;
   description?: string;
-  image?: string;
+  image?: string | SelectBoxOptionImage;
   disabled?: boolean;
 }
 

@@ -5,17 +5,27 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import type { HaRadio } from "./ha-radio";
 import { fireEvent } from "../common/dom/fire_event";
+import type { HomeAssistant } from "../types";
+import { computeRTL } from "../common/util/compute_rtl";
+
+interface SelectBoxOptionImage {
+  src: string;
+  src_dark?: string;
+  flip_rtl?: boolean;
+}
 
 export interface SelectBoxOption {
   label?: string;
   description?: string;
-  image?: string;
+  image?: string | SelectBoxOptionImage;
   value: string;
   disabled?: boolean;
 }
 
 @customElement("ha-select-box")
 export class HaSelectBox extends LitElement {
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
   @property({ attribute: false }) public options: SelectBoxOption[] = [];
 
   @property({ attribute: false }) public value?: string;
@@ -40,6 +50,17 @@ export class HaSelectBox extends LitElement {
     const horizontal = this.maxColumns === 1;
     const disabled = option.disabled || this.disabled || false;
     const selected = option.value === this.value;
+
+    const isDark = this.hass?.themes.darkMode || false;
+    const isRTL = this.hass ? computeRTL(this.hass) : false;
+
+    const imageSrc =
+      typeof option.image === "object"
+        ? (isDark && option.image.src_dark) || option.image.src
+        : option.image;
+    const imageFlip =
+      typeof option.image === "object" ? isRTL && option.image.flip_rtl : false;
+
     return html`
       <label
         class="option ${classMap({
@@ -63,7 +84,11 @@ export class HaSelectBox extends LitElement {
               : nothing}
           </div>
         </div>
-        ${option.image ? html`<img alt="" src=${option.image} />` : nothing}
+        ${imageSrc
+          ? html`
+              <img class=${imageFlip ? "flipped" : ""} alt="" src=${imageSrc} />
+            `
+          : nothing}
       </label>
     `;
   }
@@ -144,6 +169,10 @@ export class HaSelectBox extends LitElement {
       max-width: var(--ha-select-box-image-size, 96px);
       max-height: var(--ha-select-box-image-size, 96px);
       margin: auto;
+    }
+
+    .flipped {
+      transform: scaleX(-1);
     }
 
     .option.horizontal {
