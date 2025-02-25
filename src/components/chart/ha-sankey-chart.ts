@@ -3,6 +3,7 @@ import { LitElement, html, css, nothing } from "lit";
 import type { EChartsType } from "echarts/core";
 import type { CallbackDataParams } from "echarts/types/dist/shared";
 import type { SankeySeriesOption } from "echarts/types/dist/echarts";
+import { SankeyChart } from "echarts/charts";
 import memoizeOne from "memoize-one";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type { HomeAssistant } from "../../types";
@@ -69,8 +70,8 @@ export class HaSankeyChart extends LitElement {
   protected async firstUpdated() {
     try {
       // Register the required components
-      await import("../../resources/echarts");
-      await import("echarts/lib/chart/sankey");
+      const echarts = (await import("../../resources/echarts")).default;
+      echarts.use([SankeyChart]);
     } catch (error) {
       this._error = error as Error;
     } finally {
