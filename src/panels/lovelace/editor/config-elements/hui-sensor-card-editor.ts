@@ -165,11 +165,11 @@ export class HuiSensorCardEditor
         );
       case "min":
         return this.hass!.localize(
-          "ui.dialogs.helper_settings.input_number.min"
+          "ui.panel.lovelace.editor.card.sensor.limit_min"
         );
       case "max":
         return this.hass!.localize(
-          "ui.dialogs.helper_settings.input_number.max"
+          "ui.panel.lovelace.editor.card.sensor.limit_max"
         );
       default:
         return this.hass!.localize(
