@@ -165,6 +165,11 @@ class DialogAreaDetail extends LitElement {
         expanded
       >
         <div class="content">
+          <p class="description">
+            ${this.hass.localize(
+              "ui.panel.config.areas.editor.aliases_description"
+            )}
+          </p>
           <ha-aliases-editor
             .hass=${this.hass}
             .aliases=${this._aliases}
@@ -407,6 +412,9 @@ class DialogAreaDetail extends LitElement {
         }
         .content {
           padding: 12px;
+        }
+        .description {
+          margin: 0 0 16px 0;
         }
       `,
     ];
