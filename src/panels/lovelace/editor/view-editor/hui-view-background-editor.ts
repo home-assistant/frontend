@@ -152,10 +152,7 @@ export class HuiViewBackgroundEditor extends LitElement {
   private _valueChanged(ev: CustomEvent): void {
     const config = {
       ...this._config,
-      background: {
-        ...ev.detail.value,
-        image: ev.detail.value.image?.url || ev.detail.value.image,
-      },
+      background: ev.detail.value,
     };
     fireEvent(this, "view-config-changed", { config });
   }

@@ -57,9 +57,7 @@ export class HaBackgroundSelector extends LitElement {
           : html`
               <ha-picture-upload
                 .hass=${this.hass}
-                .value=${this.value?.startsWith(URL_PREFIX)
-                  ? this.value.url
-                  : null}
+                .value=${this.value?.startsWith(URL_PREFIX) ? this.value : null}
                 .original=${!!this.selector.background?.original}
                 .cropOptions=${this.selector.background?.crop}
                 select-media
