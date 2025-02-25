@@ -25,6 +25,12 @@ export interface LovelaceViewBackgroundConfig {
   attachment?: "scroll" | "fixed";
 }
 
+export interface LovelaceViewHeaderConfig {
+  card?: LovelaceCardConfig;
+  layout?: "start" | "center" | "responsive";
+  badges_position?: "bottom" | "top";
+}
+
 export interface LovelaceBaseViewConfig {
   index?: number;
   title?: string;
@@ -46,6 +52,7 @@ export interface LovelaceViewConfig extends LovelaceBaseViewConfig {
   badges?: (string | Partial<LovelaceBadgeConfig>)[]; // Badge can be just an entity_id or without type
   cards?: LovelaceCardConfig[];
   sections?: LovelaceSectionRawConfig[];
+  header?: LovelaceViewHeaderConfig;
 }
 
 export interface LovelaceStrategyViewConfig extends LovelaceBaseViewConfig {

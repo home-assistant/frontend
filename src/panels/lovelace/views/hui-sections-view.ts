@@ -25,7 +25,7 @@ import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
 import type { HuiBadge } from "../badges/hui-badge";
-import "../badges/hui-view-badges";
+import "./hui-view-header";
 import type { HuiCard } from "../cards/hui-card";
 import "../components/hui-badge-edit-mode";
 import {
@@ -61,9 +61,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   @property({ attribute: false }) public sections: HuiSection[] = [];
 
-  @property({ attribute: false }) public badges: HuiBadge[] = [];
-
   @property({ attribute: false }) public cards: HuiCard[] = [];
+
+  @property({ attribute: false }) public badges: HuiBadge[] = [];
 
   @state() private _config?: LovelaceViewConfig;
 
@@ -154,15 +154,16 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     const maxColumnCount = this._columnsController.value ?? 1;
 
     return html`
-      <hui-view-badges
+      <hui-view-header
         .hass=${this.hass}
         .badges=${this.badges}
         .lovelace=${this.lovelace}
         .viewIndex=${this.index}
+        .config=${this._config?.header}
         style=${styleMap({
           "--max-column-count": maxColumnCount,
         })}
-      ></hui-view-badges>
+      ></hui-view-header>
       <ha-sortable
         .disabled=${!editMode}
         @item-moved=${this._sectionMoved}
@@ -184,13 +185,11 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
             sections,
             (section) => this._getSectionKey(section),
             (section, idx) => {
-              const sectionConfig = this._config?.sections?.[idx];
               const columnSpan = Math.min(
-                sectionConfig?.column_span || 1,
+                section.config.column_span || 1,
                 maxColumnCount
               );
-
-              const rowSpan = sectionConfig?.row_span || 1;
+              const rowSpan = section.config.row_span || 1;
 
               return html`
                 <div
@@ -551,7 +550,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       border-radius: var(--ha-card-border-radius, 12px);
     }
 
-    hui-view-badges {
+    hui-view-header {
       display: block;
       text-align: center;
       padding: 0 var(--column-gap);

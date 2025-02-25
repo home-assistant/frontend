@@ -50,6 +50,9 @@ export class HuiCardEditMode extends LitElement {
   @property({ type: Boolean, attribute: "no-duplicate" })
   public noDuplicate = false;
 
+  @property({ type: Boolean, attribute: "no-move" })
+  public noMove = false;
+
   @state()
   public _menuOpened = false;
 
@@ -179,23 +182,39 @@ export class HuiCardEditMode extends LitElement {
                   )}
                 </ha-list-item>
               `}
-          <ha-list-item
-            graphic="icon"
-            @click=${this._handleAction}
-            .action=${"copy"}
-          >
-            <ha-svg-icon slot="graphic" .path=${mdiContentCopy}></ha-svg-icon>
-            ${this.hass.localize("ui.panel.lovelace.editor.edit_card.copy")}
-          </ha-list-item>
-          <ha-list-item
-            graphic="icon"
-            @click=${this._handleAction}
-            .action=${"cut"}
-          >
-            <ha-svg-icon slot="graphic" .path=${mdiContentCut}></ha-svg-icon>
-            ${this.hass.localize("ui.panel.lovelace.editor.edit_card.cut")}
-          </ha-list-item>
-          <li divider role="separator"></li>
+          ${this.noMove
+            ? nothing
+            : html`
+                <ha-list-item
+                  graphic="icon"
+                  @click=${this._handleAction}
+                  .action=${"copy"}
+                >
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiContentCopy}
+                  ></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.editor.edit_card.copy"
+                  )}
+                </ha-list-item>
+                <ha-list-item
+                  graphic="icon"
+                  @click=${this._handleAction}
+                  .action=${"cut"}
+                >
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiContentCut}
+                  ></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.editor.edit_card.cut"
+                  )}
+                </ha-list-item>
+              `}
+          ${this.noDuplicate && this.noEdit && this.noMove
+            ? nothing
+            : html`<li divider role="separator"></li>`}
           <ha-list-item
             graphic="icon"
             class="warning"
