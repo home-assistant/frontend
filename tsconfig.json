@@ -44,10 +44,7 @@
           // CSS
           "no-invalid-css": "off" // warning does not work
         },
-        "globalTags": ["google-cast-launcher"],
-        "customHtmlData": [
-          "./node_modules/@lrnwebcomponents/simple-tooltip/custom-elements.json"
-        ]
+        "globalTags": ["google-cast-launcher"]
       }
     ],
     "paths": {

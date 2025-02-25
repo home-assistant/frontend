@@ -1,4 +1,3 @@
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { mdiInformation } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -8,6 +7,7 @@ import { styleMap } from "lit/directives/style-map";
 import "../../../../components/ha-card";
 import "../../../../components/ha-gauge";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-tooltip";
 import type { EnergyData } from "../../../../data/energy";
 import {
   energySourcesByType,
@@ -176,14 +176,6 @@ class HuiEnergySelfSufficiencyGaugeCard
       <ha-card>
         ${value !== undefined
           ? html`
-              <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
-              <simple-tooltip animation-delay="0" for="info" position="left">
-                <span>
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.cards.energy.self_sufficiency_gauge.card_indicates_self_sufficiency_quota"
-                  )}
-                </span>
-              </simple-tooltip>
               <ha-gauge
                 min="0"
                 max="100"
@@ -195,6 +187,14 @@ class HuiEnergySelfSufficiencyGaugeCard
                   "--gauge-color": this._computeSeverity(value),
                 })}
               ></ha-gauge>
+              <ha-tooltip
+                placement="left"
+                .content=${this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.self_sufficiency_gauge.card_indicates_self_sufficiency_quota"
+                )}
+              >
+                <ha-svg-icon .path=${mdiInformation}></ha-svg-icon>
+              </ha-tooltip>
               <div class="name">
                 ${this.hass.localize(
                   "ui.panel.lovelace.cards.energy.self_sufficiency_gauge.self_sufficiency_quota"
@@ -253,14 +253,9 @@ class HuiEnergySelfSufficiencyGaugeCard
       top: 4px;
       color: var(--secondary-text-color);
     }
-    simple-tooltip > span {
-      font-size: 12px;
-      line-height: 12px;
-    }
-    simple-tooltip {
-      width: 80%;
-      max-width: 250px;
-      top: 8px !important;
+
+    ha-tooltip::part(base__popup) {
+      margin-top: 4px;
     }
   `;
 }

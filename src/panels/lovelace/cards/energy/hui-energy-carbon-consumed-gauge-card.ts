@@ -1,5 +1,4 @@
 import { mdiInformation } from "@mdi/js";
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -9,6 +8,7 @@ import { round } from "../../../../common/number/round";
 import "../../../../components/ha-card";
 import "../../../../components/ha-gauge";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-tooltip";
 import type { EnergyData } from "../../../../data/energy";
 import {
   energySourcesByType,
@@ -134,14 +134,6 @@ class HuiEnergyCarbonGaugeCard
       <ha-card>
         ${value !== undefined
           ? html`
-              <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
-              <simple-tooltip animation-delay="0" for="info" position="left">
-                <span>
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.card_indicates_energy_used"
-                  )}
-                </span>
-              </simple-tooltip>
               <ha-gauge
                 min="0"
                 max="100"
@@ -153,6 +145,14 @@ class HuiEnergyCarbonGaugeCard
                   "--gauge-color": this._computeSeverity(value),
                 })}
               ></ha-gauge>
+              <ha-tooltip
+                .content=${this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.card_indicates_energy_used"
+                )}
+                placement="left"
+              >
+                <ha-svg-icon .path=${mdiInformation}></ha-svg-icon>
+              </ha-tooltip>
               <div class="name">
                 ${this.hass.localize(
                   "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.low_carbon_energy_consumed"
@@ -213,14 +213,9 @@ class HuiEnergyCarbonGaugeCard
       top: 4px;
       color: var(--secondary-text-color);
     }
-    simple-tooltip > span {
-      font-size: 12px;
-      line-height: 12px;
-    }
-    simple-tooltip {
-      width: 80%;
-      max-width: 250px;
-      top: 8px !important;
+
+    ha-tooltip::part(base__popup) {
+      margin-top: 4px;
     }
   `;
 }

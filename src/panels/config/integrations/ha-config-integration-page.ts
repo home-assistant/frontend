@@ -1,4 +1,3 @@
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import "@material/mwc-list/mwc-list";
 import {
   mdiAlertCircle,

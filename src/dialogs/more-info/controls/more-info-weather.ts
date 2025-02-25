@@ -9,6 +9,7 @@ import { formatDateWeekdayShort } from "../../../common/datetime/format_date";
 import { formatTime } from "../../../common/datetime/format_time";
 import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-tooltip";
 import type {
   ForecastEvent,
   ModernForecastType,
@@ -157,14 +158,13 @@ class MoreInfoWeather extends LitElement {
               ${this.hass.formatEntityState(this.stateObj)}
             </div>
             <div class="time-ago">
-              <ha-relative-time
-                id="last_changed"
-                .hass=${this.hass}
-                .datetime=${this.stateObj.last_changed}
-                capitalize
-              ></ha-relative-time>
-              <simple-tooltip animation-delay="0" for="last_changed">
-                <div>
+              <ha-tooltip>
+                <ha-relative-time
+                  .hass=${this.hass}
+                  .datetime=${this.stateObj.last_changed}
+                  capitalize
+                ></ha-relative-time>
+                <div slot="content">
                   <div class="row">
                     <span class="column-name">
                       ${this.hass.localize(
@@ -190,7 +190,7 @@ class MoreInfoWeather extends LitElement {
                     ></ha-relative-time>
                   </div>
                 </div>
-              </simple-tooltip>
+              </ha-tooltip>
             </div>
           </div>
           <div class="temp-attribute">

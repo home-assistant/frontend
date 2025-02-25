@@ -1,5 +1,4 @@
 import { consume } from "@lit-labs/context";
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
   mdiCloseBoxMultiple,
   mdiCloseCircleOutline,
@@ -28,6 +27,7 @@ import type {
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-fab";
+import "../../../components/ha-tooltip";
 import type { AlexaEntity } from "../../../data/alexa";
 import { fetchCloudAlexaEntities } from "../../../data/alexa";
 import type { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
@@ -599,32 +599,34 @@ export class VoiceAssistantsExpose extends LitElement {
                       >
                     `
                   : html`
-                      <ha-icon-button
-                        id="enable-btn"
-                        @click=${this._exposeSelected}
-                        .path=${mdiPlusBoxMultiple}
-                        .label=${this.hass.localize(
+                      <ha-tooltip
+                        .content=${this.hass.localize(
                           "ui.panel.config.voice_assistants.expose.expose"
                         )}
-                      ></ha-icon-button>
-                      <simple-tooltip animation-delay="0" for="enable-btn">
-                        ${this.hass.localize(
-                          "ui.panel.config.voice_assistants.expose.expose"
-                        )}
-                      </simple-tooltip>
-                      <ha-icon-button
-                        id="disable-btn"
-                        @click=${this._unexposeSelected}
-                        .path=${mdiCloseBoxMultiple}
-                        .label=${this.hass.localize(
+                        placement="left"
+                      >
+                        <ha-icon-button
+                          @click=${this._exposeSelected}
+                          .path=${mdiPlusBoxMultiple}
+                          .label=${this.hass.localize(
+                            "ui.panel.config.voice_assistants.expose.expose"
+                          )}
+                        ></ha-icon-button>
+                      </ha-tooltip>
+                      <ha-tooltip
+                        content=${this.hass.localize(
                           "ui.panel.config.voice_assistants.expose.unexpose"
                         )}
-                      ></ha-icon-button>
-                      <simple-tooltip animation-delay="0" for="disable-btn">
-                        ${this.hass.localize(
-                          "ui.panel.config.voice_assistants.expose.unexpose"
-                        )}
-                      </simple-tooltip>
+                        placement="left"
+                      >
+                        <ha-icon-button
+                          @click=${this._unexposeSelected}
+                          .path=${mdiCloseBoxMultiple}
+                          .label=${this.hass.localize(
+                            "ui.panel.config.voice_assistants.expose.unexpose"
+                          )}
+                        ></ha-icon-button>
+                      </ha-tooltip>
                     `}
               </div>
             `

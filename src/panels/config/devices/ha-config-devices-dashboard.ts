@@ -1,5 +1,4 @@
 import { consume } from "@lit-labs/context";
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
   mdiChevronRight,
   mdiDotsVertical,
