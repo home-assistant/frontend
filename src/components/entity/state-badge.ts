@@ -37,6 +37,8 @@ export class StateBadge extends LitElement {
 
   @state() private _iconStyle: Record<string, string | undefined> = {};
 
+  private _borderRadius: string = "50%";
+
   connectedCallback(): void {
     super.connectedCallback();
     if (
@@ -175,23 +177,30 @@ export class StateBadge extends LitElement {
         backgroundImage = `url(${imageUrl})`;
         this.icon = false;
       }
-
-      if (domain === "update") {
-        this.style.borderRadius = "0";
-      } else if (domain === "media_player" || domain === "camera") {
-        this.style.borderRadius = "8%";
-      } else if (backgroundImage !== "") {
-        this.style.borderRadius =
-          "var(--state-badge-with-image-border-radius, 50%)";
-      } else {
-        this.style.borderRadius = "50%";
-      }
     }
 
     this._iconStyle = iconStyle;
     this.style.backgroundImage = backgroundImage;
+    this._borderRadius = getBorderRadius();
   }
 
+  private getBorderRadius() {
+    if (this.stateObj) {
+      const domain = computeDomain(this.stateObj.entity_id);
+      if (domain === "update") {
+        return "0";
+      } else if (domain === "media_player" || domain === "camera") {
+        return "8%";
+      } else if (this.style.backgroundImage !== "") {
+        return "var(--state-badge-with-image-border-radius, 50%)";
+      } else {
+        return "50%";
+      }
+    } else {
+      return "50%";
+    }
+  }
+  
   static get styles(): CSSResultGroup {
     return [
       iconColorCSS,
@@ -201,6 +210,7 @@ export class StateBadge extends LitElement {
           display: inline-block;
           width: 40px;
           color: var(--paper-item-icon-color, #44739e);
+          border-radius: ${this._borderRadius};
           height: 40px;
           text-align: center;
           background-size: cover;
