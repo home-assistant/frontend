@@ -916,6 +916,26 @@ export const abortZwaveNodeFirmwareUpdate = (
     device_id,
   });
 
+export const downloadZwaveNVMBackup = (
+  hass: HomeAssistant,
+  entry_id: string
+): Promise<Uint8Array> =>
+  hass.callWS({
+    type: "zwave_js/controller_nvm_backup",
+    entry_id,
+  });
+
+export const restoreZwaveNVMBackup = (
+  hass: HomeAssistant,
+  entry_id: string,
+  nvmData: Uint8Array
+): Promise<void> =>
+  hass.callWS({
+    type: "zwave_js/controller_nvm_restore",
+    entry_id,
+    nvmData,
+  });
+
 export type ZWaveJSLogUpdate = ZWaveJSLogMessageUpdate | ZWaveJSLogConfigUpdate;
 
 interface ZWaveJSLogMessageUpdate {
