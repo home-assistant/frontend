@@ -297,7 +297,7 @@ class DialogZHAReconfigureDevice extends LitElement {
                                                 <span class="stage">
                                                   <ha-tooltip
                                                     placement="top"
-                                                    content=${attribute.status}
+                                                    .content=${attribute.status}
                                                   >
                                                     <ha-svg-icon
                                                       .path=${mdiCloseCircle}

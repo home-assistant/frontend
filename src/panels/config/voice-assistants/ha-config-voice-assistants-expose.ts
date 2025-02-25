@@ -600,7 +600,7 @@ export class VoiceAssistantsExpose extends LitElement {
                     `
                   : html`
                       <ha-tooltip
-                        content=${this.hass.localize(
+                        .content=${this.hass.localize(
                           "ui.panel.config.voice_assistants.expose.expose"
                         )}
                         placement="left"

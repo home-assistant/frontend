@@ -361,7 +361,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                 >
                   <ha-tooltip
                     placement="left"
-                    content=${this.hass.localize(
+                    .content=${this.hass.localize(
                       "ui.panel.config.entities.picker.status.unmanageable"
                     )}
                   >

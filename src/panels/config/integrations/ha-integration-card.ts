@@ -164,7 +164,7 @@ export class HaIntegrationCard extends LitElement {
               >
                 <ha-tooltip
                   .placement=${computeRTL(this.hass) ? "right" : "left"}
-                  content=${this.hass.localize(
+                  .content=${this.hass.localize(
                     this.manifest.overwrites_built_in
                       ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
                       : "ui.panel.config.integrations.config_entry.custom_integration"

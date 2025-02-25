@@ -154,7 +154,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
                 ${dashboard.default
                   ? html`
                       <ha-tooltip
-                        content=${this.hass.localize(
+                        .content=${this.hass.localize(
                           `ui.panel.config.lovelace.dashboards.default_dashboard`
                         )}
                         placement="right"

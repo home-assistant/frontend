@@ -118,27 +118,27 @@ class HassioRepositoriesDialog extends LitElement {
                         <div>${repo.maintainer}</div>
                         <div>${repo.url}</div>
                       </div>
-                      <div class="delete" slot="end">
-                        <ha-tooltip
-                          .content=${this._dialogParams!.supervisor.localize(
-                            usedRepositories.includes(repo.slug)
-                              ? "dialog.repositories.used"
-                              : "dialog.repositories.remove"
-                          )}
-                        >
-                          <div>
-                            <ha-icon-button
-                              .disabled=${usedRepositories.includes(repo.slug)}
-                              .slug=${repo.slug}
-                              .path=${usedRepositories.includes(repo.slug)
-                                ? mdiDeleteOff
-                                : mdiDelete}
-                              @click=${this._removeRepository}
-                            >
-                            </ha-icon-button>
-                          </div>
-                        </ha-tooltip>
-                      </div>
+                      <ha-tooltip
+                        class="delete"
+                        slot="end"
+                        .content=${this._dialogParams!.supervisor.localize(
+                          usedRepositories.includes(repo.slug)
+                            ? "dialog.repositories.used"
+                            : "dialog.repositories.remove"
+                        )}
+                      >
+                        <div>
+                          <ha-icon-button
+                            .disabled=${usedRepositories.includes(repo.slug)}
+                            .slug=${repo.slug}
+                            .path=${usedRepositories.includes(repo.slug)
+                              ? mdiDeleteOff
+                              : mdiDelete}
+                            @click=${this._removeRepository}
+                          >
+                          </ha-icon-button>
+                        </div>
+                      </ha-tooltip>
                     </ha-md-list-item>
                   `
                 )

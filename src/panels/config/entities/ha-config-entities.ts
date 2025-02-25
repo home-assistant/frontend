@@ -369,7 +369,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                 >
                   <ha-tooltip
                     placement="left"
-                    content=${entry.restored
+                    .content=${entry.restored
                       ? this.hass.localize(
                           "ui.panel.config.entities.picker.status.not_provided"
                         )

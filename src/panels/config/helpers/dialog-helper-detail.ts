@@ -212,7 +212,7 @@ export class DialogHelperDetail extends LitElement {
             return html`
               <ha-tooltip
                 .disabled=${isLoaded}
-                content=${this.hass.localize(
+                .content=${this.hass.localize(
                   "ui.dialogs.helper_settings.platform_not_loaded",
                   { platform: domain }
                 )}

@@ -189,7 +189,7 @@ class HuiEnergySelfSufficiencyGaugeCard
               ></ha-gauge>
               <ha-tooltip
                 placement="left"
-                content=${this.hass.localize(
+                .content=${this.hass.localize(
                   "ui.panel.lovelace.cards.energy.self_sufficiency_gauge.card_indicates_self_sufficiency_quota"
                 )}
               >

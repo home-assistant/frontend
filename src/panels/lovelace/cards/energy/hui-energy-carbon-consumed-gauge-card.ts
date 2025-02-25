@@ -146,7 +146,7 @@ class HuiEnergyCarbonGaugeCard
                 })}
               ></ha-gauge>
               <ha-tooltip
-                content=${this.hass.localize(
+                .content=${this.hass.localize(
                   "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.card_indicates_energy_used"
                 )}
                 placement="left"

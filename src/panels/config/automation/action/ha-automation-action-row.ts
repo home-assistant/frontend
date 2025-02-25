@@ -234,7 +234,7 @@ export default class HaAutomationActionRow extends LitElement {
           (this.action as NonConditionAction).continue_on_error === true
             ? html`<ha-tooltip
                 slot="icons"
-                content=${this.hass.localize(
+                .content=${this.hass.localize(
                   "ui.panel.config.automation.editor.actions.continue_on_error"
                 )}
               >

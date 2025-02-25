@@ -316,7 +316,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
               ? html`
                   <ha-tooltip
                     placement="left"
-                    content=${this.hass.localize(
+                    .content=${this.hass.localize(
                       "ui.panel.config.scene.picker.only_editable"
                     )}
                   >

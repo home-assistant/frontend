@@ -76,7 +76,7 @@ export class HaIntegrationListItem extends ListItemBase {
       ${this.integration.cloud
         ? html`<ha-tooltip
             placement="left"
-            content=${this.hass.localize(
+            .content=${this.hass.localize(
               "ui.panel.config.integrations.config_entry.depends_on_cloud"
             )}
             ><ha-svg-icon .path=${mdiWeb}></ha-svg-icon
