@@ -62,44 +62,43 @@ export class HaSankeyChart extends LitElement {
   });
 
   render() {
+    const options = {
+      grid: {
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+      },
+      tooltip: {
+        trigger: "item",
+        formatter: this._renderTooltip,
+        appendTo: document.body,
+      },
+    } as ECOption;
+
     return html`<ha-chart-base
       .data=${this._createData(this.data, this._sizeController.value?.width)}
-      .options=${this._createOptions()}
+      .options=${options}
       height="100%"
     ></ha-chart-base>`;
   }
 
-  private _createOptions = memoizeOne(
-    () =>
-      ({
-        grid: {
-          top: 0,
-          bottom: 0,
-          left: 0,
-          right: 0,
-        },
-        tooltip: {
-          trigger: "item",
-          formatter: (params: CallbackDataParams) => {
-            const data = params.data as Record<string, any>;
-            const value = this.valueFormatter
-              ? this.valueFormatter(data.value)
-              : data.value;
-            if (data.id) {
-              const node = this.data.nodes.find((n) => n.id === data.id);
-              return `${params.marker} ${node?.label ?? data.id}<br>${value}`;
-            }
-            if (data.source && data.target) {
-              const source = this.data.nodes.find((n) => n.id === data.source);
-              const target = this.data.nodes.find((n) => n.id === data.target);
-              return `${source?.label ?? data.source} → ${target?.label ?? data.target}<br>${value}`;
-            }
-            return null;
-          },
-          appendTo: document.body,
-        },
-      }) as ECOption
-  );
+  private _renderTooltip = (params: CallbackDataParams) => {
+    const data = params.data as Record<string, any>;
+    const value = this.valueFormatter
+      ? this.valueFormatter(data.value)
+      : data.value;
+    if (data.id) {
+      const node = this.data.nodes.find((n) => n.id === data.id);
+      return `${params.marker} ${node?.label ?? data.id}<br>${value}`;
+    }
+    if (data.source && data.target) {
+      const source = this.data.nodes.find((n) => n.id === data.source);
+      const target = this.data.nodes.find((n) => n.id === data.target);
+      return `${source?.label ?? data.source} → ${target?.label ?? data.target}<br>${value}`;
+    }
+    return null;
+  };
 
   private _createData = memoizeOne((data: SankeyChartData, width = 0) => {
     const filteredNodes = data.nodes.filter((n) => n.value > 0);
