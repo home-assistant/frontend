@@ -47,6 +47,8 @@ export class HaChartBase extends LitElement {
   @property({ attribute: "expand-legend", type: Boolean })
   public expandLegend?: boolean;
 
+  @property({ attribute: false }) public extraComponents?: any[];
+
   @state()
   @consume({ context: themesContext, subscribe: true })
   _themes!: Themes;
@@ -271,6 +273,10 @@ export class HaChartBase extends LitElement {
       }
       const echarts = (await import("../../resources/echarts")).default;
 
+      if (this.extraComponents?.length) {
+        echarts.use(this.extraComponents);
+      }
+
       echarts.registerTheme("custom", this._createTheme());
 
       this.chart = echarts.init(container, "custom");
@@ -298,11 +304,13 @@ export class HaChartBase extends LitElement {
   }
 
   private _getDataZoomConfig(): DataZoomComponentOption | undefined {
-    const xAxis = (this.options?.xAxis?.[0] ??
-      this.options?.xAxis) as XAXisOption;
-    const yAxis = (this.options?.yAxis?.[0] ??
-      this.options?.yAxis) as YAXisOption;
-    if (xAxis.type === "value" && yAxis.type === "category") {
+    const xAxis = (this.options?.xAxis?.[0] ?? this.options?.xAxis) as
+      | XAXisOption
+      | undefined;
+    const yAxis = (this.options?.yAxis?.[0] ?? this.options?.yAxis) as
+      | YAXisOption
+      | undefined;
+    if (xAxis?.type === "value" && yAxis?.type === "category") {
       // vertical data zoom doesn't work well in this case and horizontal is pointless
       return undefined;
     }
