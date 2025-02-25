@@ -38,7 +38,7 @@ import {
   setZwaveDataCollectionPreference,
   subscribeS2Inclusion,
   subscribeZwaveControllerStatistics,
-  downloadZwaveNVMBackup,
+  getNVMBackupDownloadUrl,
   restoreZwaveNVMBackup,
 } from "../../../../../data/zwave_js";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
@@ -51,6 +51,8 @@ import { showZWaveJSAddNodeDialog } from "./show-dialog-zwave_js-add-node";
 import { showZWaveJSRebuildNetworkRoutesDialog } from "./show-dialog-zwave_js-rebuild-network-routes";
 import { showZWaveJSRemoveNodeDialog } from "./show-dialog-zwave_js-remove-node";
 import { configTabs } from "./zwave_js-config-router";
+import { fileDownload } from "../../../../../util/file_download";
+import { getSignedPath } from "../../../../../data/auth";
 
 @customElement("zwave_js-config-dashboard")
 class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
@@ -671,19 +673,11 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
 
   private async _downloadNVMBackup() {
     try {
-      const backup = await downloadZwaveNVMBackup(
-        this.hass,
-        this.configEntryId!
+      const signedUrl = await getSignedPath(
+        this.hass!,
+        getNVMBackupDownloadUrl(this.configEntryId!)
       );
-      const blob = new Blob([backup], { type: "application/octet-stream" });
-      const backupTime = new Date().toISOString().replace(/:/g, "-");
-      const filename = `zwave_nvm_backup_${backupTime}.bin`;
-
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = filename;
-      a.click();
-      URL.revokeObjectURL(a.href);
+      fileDownload(signedUrl.path);
     } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize(
@@ -705,32 +699,29 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
   private async _handleFileSelected(ev: Event) {
     const file = (ev.target as HTMLInputElement).files?.[0];
     if (!file) return;
+    const input = ev.target as HTMLInputElement;
 
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const backup = new Uint8Array(e.target?.result as ArrayBuffer);
+    try {
+      await restoreZwaveNVMBackup(this.hass!, file, this.configEntryId!);
 
-      try {
-        await restoreZwaveNVMBackup(this.hass, this.configEntryId!, backup);
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.zwave_js.dashboard.nvm_backup.restore_complete"
+        ),
+      });
+      this._fetchData();
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.zwave_js.dashboard.nvm_backup.restore_failed"
+        ),
+        text: err.message,
+        warning: true,
+      });
+    }
 
-        showAlertDialog(this, {
-          title: this.hass.localize(
-            "ui.panel.config.zwave_js.dashboard.nvm_backup.restore_complete"
-          ),
-        });
-      } catch (err: any) {
-        showAlertDialog(this, {
-          title: this.hass.localize(
-            "ui.panel.config.zwave_js.dashboard.nvm_backup.restore_failed"
-          ),
-          text: err.message,
-          warning: true,
-        });
-      }
-    };
-    reader.readAsArrayBuffer(file);
     // Reset the file input so the same file can be selected again
-    (ev.target as HTMLInputElement).value = "";
+    input.value = "";
   }
 
   static get styles(): CSSResultGroup {
