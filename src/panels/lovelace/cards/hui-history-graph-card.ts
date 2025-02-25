@@ -287,6 +287,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
                   .fitYData=${this._config.fit_y_data || false}
                   .height=${hasFixedHeight ? "100%" : undefined}
                   .narrow=${narrow}
+                  .expandLegend=${this._config.expand_legend}
                 ></state-history-charts>
               `}
         </div>
@@ -311,8 +312,9 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       color: var(--primary-text-color);
     }
     .content {
-      padding: 0 16px 8px 16px;
+      padding: 0 16px 8px;
       flex: 1;
+      overflow: hidden;
     }
     .has-header {
       padding-top: 0;
