@@ -536,7 +536,7 @@ export class HaConfigDevicePage extends LitElement {
                               <ha-tooltip
                                 placement="left"
                                 .disabled=${!!entityState.attributes.id}
-                                content=${this.hass.localize(
+                                .content=${this.hass.localize(
                                   "ui.panel.config.devices.cant_edit"
                                 )}
                               >
