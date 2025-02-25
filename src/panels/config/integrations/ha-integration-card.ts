@@ -178,7 +178,7 @@ export class HaIntegrationCard extends LitElement {
             ? html`<div class="icon cloud">
                 <ha-tooltip
                   .placement=${computeRTL(this.hass) ? "right" : "left"}
-                  content=${this.hass.localize(
+                  .content=${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.depends_on_cloud"
                   )}
                 >
