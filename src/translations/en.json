@@ -182,6 +182,7 @@
       "light": {
         "brightness": "Brightness",
         "color_temperature": "Color temperature",
+        "color_hue": "Color hue",
         "white_value": "White brightness",
         "color_brightness": "Color brightness",
         "cold_white_value": "Cold white brightness",
@@ -7249,6 +7250,9 @@
               },
               "light-color-temp": {
                 "label": "Light color temperature"
+              },
+              "light-color-hue": {
+                "label": "Light color hue"
               },
               "lock-commands": {
                 "label": "Lock commands"
