@@ -6595,9 +6595,7 @@
               "badges_position_options": {
                 "top": "Top",
                 "bottom": "Bottom"
-              },
-              "extra_space": "Add extra space at the top for background",
-              "extra_space_helper": "Make the content more touch-friendly"
+              }
             }
           },
           "edit_badges": {

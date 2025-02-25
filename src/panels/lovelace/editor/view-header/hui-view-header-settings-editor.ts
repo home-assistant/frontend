@@ -116,7 +116,6 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
             },
           },
         },
-        { name: "extra_space", selector: { boolean: {} } },
       ] as const satisfies HaFormSchema[]
   );
 
@@ -127,7 +126,6 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
 
     const data = {
       layout: this.config?.layout || DEFAULT_VIEW_HEADER_LAYOUT,
-      extra_space: this.config?.extra_space || false,
       badges_position:
         this.config?.badges_position || DEFAULT_VIEW_HEADER_BADGES_POSITION,
     };
@@ -143,7 +141,6 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
         .data=${data}
         .schema=${schema}
         .computeLabel=${this._computeLabel}
-        .computeHelper=${this._computeHelper}
         @value-changed=${this._valueChanged}
       ></ha-form>
     `;
@@ -167,25 +164,8 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
     switch (schema.name) {
       case "layout":
       case "badges_position":
-      case "extra_space":
-        return this.hass.localize(
-          `ui.panel.lovelace.editor.edit_view_header.settings.${schema.name}`
-        );
       default:
-        return "";
-    }
-  };
-
-  private _computeHelper = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ) => {
-    switch (schema.name) {
-      case "extra_space":
-        return this.hass.localize(
-          `ui.panel.lovelace.editor.edit_view_header.settings.${schema.name}_helper`
-        );
-      default:
-        return undefined;
+        return schema.name;
     }
   };
 }

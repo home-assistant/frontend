@@ -29,7 +29,6 @@ export interface LovelaceViewHeaderConfig {
   card?: LovelaceCardConfig;
   layout?: "start" | "center" | "responsive";
   badges_position?: "bottom" | "top";
-  extra_space?: boolean;
 }
 
 export interface LovelaceBaseViewConfig {

@@ -208,7 +208,6 @@ export class HuiViewHeader extends LitElement {
       <div class="container ${editMode ? "edit-mode" : ""}">
         <div
           class="layout ${classMap({
-            "extra-space": this.config?.extra_space ?? false,
             [layout]: true,
             [`badges-${badgesPosition}`]: true,
             "has-heading": hasHeading,
@@ -311,13 +310,8 @@ export class HuiViewHeader extends LitElement {
       --spacing: 24px;
     }
 
-    .layout.has-heading,
-    .layout.extra-space {
+    .layout.has-heading {
       margin-top: var(--spacing);
-    }
-
-    .layout.extra-space {
-      --spacing: 80px;
     }
 
     .heading {
@@ -387,10 +381,6 @@ export class HuiViewHeader extends LitElement {
 
     .layout.badges-top.has-badges {
       margin-top: 0;
-    }
-
-    .layout.badges-top.extra-space {
-      margin-top: var(--spacing);
     }
 
     @media (min-width: 768px) {
