@@ -7022,7 +7022,8 @@
               "other_cards": "Other cards",
               "custom_cards": "Custom cards",
               "features": "Features",
-              "actions": "Actions"
+              "actions": "Actions",
+              "content": "Content"
             },
             "heading": {
               "name": "Heading",
@@ -7041,7 +7042,6 @@
                 "name_helper": "Visible if selected in state content",
                 "visibility": "Visibility",
                 "visibility_explanation": "The entity will be shown when ALL conditions below are fulfilled. If no conditions are set, the entity will always be shown.",
-                "appearance": "Appearance",
                 "state_content": "State content",
                 "displayed_elements": "[%key:ui::panel::lovelace::editor::badge::entity::displayed_elements%]",
                 "displayed_elements_options": {
@@ -7154,7 +7154,6 @@
               "icon_tap_action": "Icon tap behavior",
               "icon_hold_action": "Icon hold behavior",
               "icon_double_tap_action": "Icon double tap behavior",
-              "appearance": "Appearance",
               "show_entity_picture": "Show entity picture",
               "hide_state": "Hide state",
               "state_content": "State content",
@@ -7204,8 +7203,6 @@
               "description": "The Entity badge gives you a quick overview of your entity.",
               "color": "[%key:ui::panel::lovelace::editor::card::tile::color%]",
               "color_helper": "[%key:ui::panel::lovelace::editor::card::tile::color_helper%]",
-              "interactions": "Interactions",
-              "appearance": "Appearance",
               "show_entity_picture": "Show entity picture",
               "state_content": "State content",
               "displayed_elements": "Displayed elements",
