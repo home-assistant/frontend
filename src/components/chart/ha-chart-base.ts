@@ -42,6 +42,8 @@ export class HaChartBase extends LitElement {
   @property({ attribute: "external-hidden", type: Boolean })
   public externalHidden = false;
 
+  @property({ attribute: false }) public extraComponents?: any[];
+
   @state()
   @consume({ context: themesContext, subscribe: true })
   _themes!: Themes;
@@ -192,6 +194,10 @@ export class HaChartBase extends LitElement {
         this.chart.dispose();
       }
       const echarts = (await import("../../resources/echarts")).default;
+
+      if (this.extraComponents?.length) {
+        echarts.use(this.extraComponents);
+      }
 
       echarts.registerTheme("custom", this._createTheme());
 

@@ -1,5 +1,5 @@
 import { customElement, property, state } from "lit/decorators";
-import { LitElement, html, css, nothing } from "lit";
+import { LitElement, html, css } from "lit";
 import type { EChartsType } from "echarts/core";
 import type { CallbackDataParams } from "echarts/types/dist/shared";
 import type { SankeySeriesOption } from "echarts/types/dist/echarts";
@@ -57,35 +57,13 @@ export class HaSankeyChart extends LitElement {
     value: number
   ) => string;
 
-  @state() private _loading = true;
-
   public chart?: EChartsType;
-
-  @state() private _error?: Error;
 
   @state() private _sizeController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect,
   });
 
-  protected async firstUpdated() {
-    try {
-      // Register the required components
-      const echarts = (await import("../../resources/echarts")).default;
-      echarts.use([SankeyChart]);
-    } catch (error) {
-      this._error = error as Error;
-    } finally {
-      this._loading = false;
-    }
-  }
-
   render() {
-    if (this._loading) {
-      return nothing;
-    }
-    if (this._error) {
-      return html`<ha-alert type="error">${this._error.message}</ha-alert>`;
-    }
     const options = {
       grid: {
         top: 0,
@@ -104,6 +82,7 @@ export class HaSankeyChart extends LitElement {
       .data=${this._createData(this.data, this._sizeController.value?.width)}
       .options=${options}
       height="100%"
+      .extraComponents=${[SankeyChart]}
     ></ha-chart-base>`;
   }
 
