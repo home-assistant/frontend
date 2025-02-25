@@ -75,7 +75,7 @@ export class HaIconOverflowMenu extends LitElement {
                   ? html`<div role="separator"></div>`
                   : html`<ha-tooltip
                       .disabled=${!item.tooltip}
-                      content=${item.tooltip ?? ""}
+                      .content=${item.tooltip ?? ""}
                     >
                       <ha-icon-button
                         @click=${item.action}
