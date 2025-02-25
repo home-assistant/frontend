@@ -26,7 +26,6 @@ import { isMac } from "../../util/is_mac";
 import "../ha-icon-button";
 import { formatTimeLabel } from "./axis-label";
 import { ensureArray } from "../../common/array/ensure-array";
-import "../ha-ripple";
 import "../chips/ha-assist-chip";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
@@ -239,9 +238,9 @@ export class HaChartBase extends LitElement {
               <ha-assist-chip
                 @click=${this._toggleExpandedLegend}
                 filled
-                label=${this.hass.localize(
+                label=${`${this.hass.localize(
                   `ui.components.history_charts.${this.expandLegend ? "collapse_legend" : "expand_legend"}`
-                ) + ` (${items.length})`}
+                )} (${items.length})`}
               >
                 <ha-svg-icon
                   slot="trailing-icon"
