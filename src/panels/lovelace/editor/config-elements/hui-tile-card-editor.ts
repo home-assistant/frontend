@@ -1,4 +1,4 @@
-import { mdiGestureTap, mdiListBox, mdiPalette } from "@mdi/js";
+import { mdiGestureTap, mdiListBox, mdiTextShort } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -115,16 +115,15 @@ export class HuiTileCardEditor
       localize: LocalizeFunc,
       entityId: string | undefined,
       hideState: boolean,
-      isDark: boolean,
       displayActions: AdvancedActions[] = []
     ) =>
       [
         { name: "entity", selector: { entity: {} } },
         {
-          name: "appearance",
+          name: "content",
           flatten: true,
           type: "expandable",
-          iconPath: mdiPalette,
+          iconPath: mdiTextShort,
           schema: [
             {
               name: "",
@@ -185,7 +184,11 @@ export class HuiTileCardEditor
                       `ui.panel.lovelace.editor.card.tile.content_layout_options.${value}`
                     ),
                     value,
-                    image: `/static/images/form/tile_content_layout_${value}${isDark ? "_dark" : ""}.svg`,
+                    image: {
+                      src: `/static/images/form/tile_content_layout_${value}.svg`,
+                      src_dark: `/static/images/form/tile_content_layout_${value}_dark.svg`,
+                      flip_rtl: true,
+                    },
                   })),
                 },
               },
@@ -230,7 +233,7 @@ export class HuiTileCardEditor
   );
 
   private _featuresSchema = memoizeOne(
-    (localize: LocalizeFunc, vertical: boolean, isDark: boolean) =>
+    (localize: LocalizeFunc, vertical: boolean) =>
       [
         {
           name: "features_position",
@@ -243,7 +246,11 @@ export class HuiTileCardEditor
                   `ui.panel.lovelace.editor.card.tile.features_position_options.${value}`
                 ),
                 value,
-                image: `/static/images/form/tile_features_position_${value}${isDark ? "_dark" : ""}.svg`,
+                image: {
+                  src: `/static/images/form/tile_features_position_${value}.svg`,
+                  src_dark: `/static/images/form/tile_features_position_${value}_dark.svg`,
+                  flip_rtl: true,
+                },
                 disabled: vertical && value === "inline",
               })),
             },
@@ -264,14 +271,12 @@ export class HuiTileCardEditor
       this.hass.localize,
       entityId,
       this._config.hide_state ?? false,
-      this.hass.themes.darkMode,
       this._displayActions
     );
 
     const featuresSchema = this._featuresSchema(
       this.hass.localize,
-      this._config.vertical ?? false,
-      this.hass.themes.darkMode
+      this._config.vertical ?? false
     );
 
     const data = {
@@ -411,7 +416,6 @@ export class HuiTileCardEditor
       case "hide_state":
       case "state_content":
       case "content_layout":
-      case "appearance":
       case "features_position":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.tile.${schema.name}`

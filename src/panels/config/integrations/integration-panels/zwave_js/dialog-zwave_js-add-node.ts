@@ -116,10 +116,8 @@ class DialogZWaveJSAddNode extends LitElement {
     if (params.dsk) {
       this._status = "validate_dsk_enter_pin";
       this._dsk = params.dsk;
-      this._startInclusion(undefined, params.dsk);
-    } else {
-      this._startInclusion();
     }
+    this._startInclusion();
   }
 
   @query("#pin-input") private _pinInput?: HaTextField;

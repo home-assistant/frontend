@@ -359,6 +359,7 @@ export interface HistoryGraphCardConfig extends LovelaceCardConfig {
   max_y_axis?: number;
   fit_y_data?: boolean;
   split_device_classes?: boolean;
+  expand_legend?: boolean;
 }
 
 export interface StatisticsGraphCardConfig extends EnergyCardBaseConfig {
@@ -375,6 +376,7 @@ export interface StatisticsGraphCardConfig extends EnergyCardBaseConfig {
   hide_legend?: boolean;
   logarithmic_scale?: boolean;
   energy_date_selection?: boolean;
+  expand_legend?: boolean;
 }
 
 export interface StatisticCardConfig extends LovelaceCardConfig {

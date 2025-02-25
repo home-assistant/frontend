@@ -843,7 +843,9 @@
         "duration": "Duration",
         "source_history": "Source: History",
         "source_stats": "Source: Long term statistics",
-        "zoom_reset": "Reset zoom"
+        "zoom_reset": "Reset zoom",
+        "expand_legend": "More",
+        "collapse_legend": "Less"
       },
       "map": {
         "error": "Unable to load map"
@@ -1758,8 +1760,8 @@
         "title": "{device} debug info",
         "deserialize": "Attempt to parse MQTT messages as JSON",
         "entities": "Entities",
-        "no_entities": "No entities",
-        "no_triggers": "No triggers",
+        "no_entity_debug_info": "No entity debug info",
+        "no_trigger_debug_info": "No trigger debug info",
         "payload_display": "Payload display",
         "recent_messages": "{n} most recently received {n, plural,\n  one {message}\n  other {messages}\n}",
         "recent_tx_messages": "{n} most recently transmitted {n, plural,\n  one {message}\n  other {messages}\n}",
@@ -2209,7 +2211,8 @@
             "temperature_entity": "Temperature sensor",
             "temperature_entity_description": "Sensor that represents the area temperature.",
             "humidity_entity": "Humidity sensor",
-            "humidity_entity_description": "Sensor that represents the area humidity."
+            "humidity_entity_description": "Sensor that represents the area humidity.",
+            "related_entities_section": "Related sensors"
           },
           "delete": {
             "confirmation_title": "Delete {name}?",
@@ -6566,12 +6569,39 @@
             "section_specifics": "Sections view specific settings",
             "dense_section_placement": "Dense section placement",
             "dense_section_placement_helper": "Will try to fill gaps with sections that fit the gap. This may make section placement less predictable.",
+            "top_margin": "Add additional space above",
+            "top_margin_helper": "Helps reveal more of the background",
             "subview_helper": "Subviews don't appear in tabs and have a back button.",
             "edit_ui": "Edit in visual editor",
             "edit_yaml": "Edit in YAML",
             "saving_failed": "Saving failed",
             "error_same_url": "You cannot save a view with the same URL as a different existing view.",
             "move_to_dashboard": "Move to dashboard"
+          },
+          "edit_view_header": {
+            "add_title": "Add title",
+            "header": "Header settings",
+            "edit_ui": "[%key:ui::panel::lovelace::editor::edit_view::edit_ui%]",
+            "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
+            "saving_failed": "[%key:ui::panel::lovelace::editor::edit_view::saving_failed%]",
+            "default_title": "# Hello {user}\nAdd your text here, template variables are supported ✨",
+            "settings": {
+              "layout": "Layout",
+              "layout_options": {
+                "responsive": "Responsive",
+                "responsive_description": "Stacked on mobile",
+                "start": "Left aligned",
+                "start_description": "Always stacked",
+                "start_rtl": "Right aligned",
+                "center": "Centered",
+                "center_description": "Always stacked"
+              },
+              "badges_position": "Badges position",
+              "badges_position_options": {
+                "top": "Top",
+                "bottom": "Bottom"
+              }
+            }
           },
           "edit_badges": {
             "view_no_badges": "Badges are not be supported by the current view type."
@@ -6692,8 +6722,6 @@
             "edit_ui": "[%key:ui::panel::lovelace::editor::edit_view::edit_ui%]",
             "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
             "settings": {
-              "title": "Title",
-              "title_helper": "The title will appear at the top of section. Leave empty to hide the title.",
               "column_span": "Width",
               "column_span_helper": "Larger sections will be made smaller to fit the display. (e.g. on mobile devices)"
             },
@@ -7020,7 +7048,8 @@
               "other_cards": "Other cards",
               "custom_cards": "Custom cards",
               "features": "Features",
-              "actions": "Actions"
+              "actions": "Actions",
+              "content": "Content"
             },
             "heading": {
               "name": "Heading",
@@ -7039,7 +7068,6 @@
                 "name_helper": "Visible if selected in state content",
                 "visibility": "Visibility",
                 "visibility_explanation": "The entity will be shown when ALL conditions below are fulfilled. If no conditions are set, the entity will always be shown.",
-                "appearance": "Appearance",
                 "state_content": "State content",
                 "displayed_elements": "[%key:ui::panel::lovelace::editor::badge::entity::displayed_elements%]",
                 "displayed_elements_options": {
@@ -7120,7 +7148,9 @@
               "name": "Sensor",
               "show_more_detail": "Show more detail",
               "graph_type": "Graph type",
-              "description": "The Sensor card gives you a quick overview of your sensors state with an optional graph to visualize change over time."
+              "description": "The Sensor card gives you a quick overview of your sensors state with an optional graph to visualize change over time.",
+              "limit_min": "Minimum value",
+              "limit_max": "Maximum value"
             },
             "todo-list": {
               "name": "To-do list",
@@ -7150,7 +7180,6 @@
               "icon_tap_action": "Icon tap behavior",
               "icon_hold_action": "Icon hold behavior",
               "icon_double_tap_action": "Icon double tap behavior",
-              "appearance": "Appearance",
               "show_entity_picture": "Show entity picture",
               "hide_state": "Hide state",
               "state_content": "State content",
@@ -7200,8 +7229,6 @@
               "description": "The Entity badge gives you a quick overview of your entity.",
               "color": "[%key:ui::panel::lovelace::editor::card::tile::color%]",
               "color_helper": "[%key:ui::panel::lovelace::editor::card::tile::color_helper%]",
-              "interactions": "Interactions",
-              "appearance": "Appearance",
               "show_entity_picture": "Show entity picture",
               "state_content": "State content",
               "displayed_elements": "Displayed elements",

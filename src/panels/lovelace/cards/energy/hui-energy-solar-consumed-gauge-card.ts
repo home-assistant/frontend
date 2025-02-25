@@ -1,5 +1,4 @@
 import { mdiInformation } from "@mdi/js";
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -107,18 +106,6 @@ class HuiEnergySolarGaugeCard
       <ha-card>
         ${value !== undefined
           ? html`
-              <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
-              <simple-tooltip animation-delay="0" for="info" position="left">
-                <span>
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.cards.energy.solar_consumed_gauge.card_indicates_solar_energy_used"
-                  )}
-                  <br /><br />
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.cards.energy.solar_consumed_gauge.card_indicates_solar_energy_used_charge_home_bat"
-                  )}
-                </span>
-              </simple-tooltip>
               <ha-gauge
                 min="0"
                 max="100"
@@ -130,6 +117,18 @@ class HuiEnergySolarGaugeCard
                   "--gauge-color": this._computeSeverity(value),
                 })}
               ></ha-gauge>
+              <ha-tooltip placement="left">
+                <span slot="content">
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.solar_consumed_gauge.card_indicates_solar_energy_used"
+                  )}
+                  <br /><br />
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.solar_consumed_gauge.card_indicates_solar_energy_used_charge_home_bat"
+                  )}
+                </span>
+                <ha-svg-icon .path=${mdiInformation}></ha-svg-icon>
+              </ha-tooltip>
               <div class="name">
                 ${this.hass.localize(
                   "ui.panel.lovelace.cards.energy.solar_consumed_gauge.self_consumed_solar_energy"
@@ -192,14 +191,9 @@ class HuiEnergySolarGaugeCard
       top: 4px;
       color: var(--secondary-text-color);
     }
-    simple-tooltip > span {
-      font-size: 12px;
-      line-height: 12px;
-    }
-    simple-tooltip {
-      width: 80%;
-      max-width: 250px;
-      top: 8px !important;
+
+    ha-tooltip::part(base__popup) {
+      margin-top: 4px;
     }
   `;
 }
