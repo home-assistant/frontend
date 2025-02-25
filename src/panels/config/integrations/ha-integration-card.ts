@@ -190,7 +190,7 @@ export class HaIntegrationCard extends LitElement {
             ? html`<div class="icon yaml">
                 <ha-tooltip
                   .placement=${computeRTL(this.hass) ? "right" : "left"}
-                  content=${this.hass.localize(
+                  .content=${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.no_config_flow"
                   )}
                 >
