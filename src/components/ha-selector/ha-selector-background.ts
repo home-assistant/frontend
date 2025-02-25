@@ -1,4 +1,5 @@
 import { css, html, LitElement } from "lit";
+import { styleMap } from "lit/directives/style-map";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { BackgroundSelector } from "../../data/selector";
@@ -38,6 +39,19 @@ export class HaBackgroundSelector extends LitElement {
       <div>
         ${this.yamlBackground
           ? html`
+              <div class="value">
+                <img
+                  style=${styleMap({
+                    opacity: Number.isNaN(this.value?.opacity)
+                      ? undefined
+                      : `${Number(this.value?.opacity) * 0.01}`,
+                  })}
+                  src=${this.value.url}
+                  alt=${this.hass.localize(
+                    "ui.components.picture-upload.current_image_alt"
+                  )}
+                />
+              </div>
               <ha-alert alert-type="info">
                 ${this.hass.localize(
                   `ui.components.selectors.background.yaml_info`
@@ -88,6 +102,22 @@ export class HaBackgroundSelector extends LitElement {
     ha-button {
       white-space: nowrap;
       --mdc-theme-primary: var(--primary-color);
+    }
+    .value {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    img {
+      max-width: 100%;
+      max-height: 200px;
+      margin-bottom: 4px;
+      border-radius: var(--file-upload-image-border-radius);
+      transition: opacity 0.3s;
+    }
+    img:hover {
+      opacity: 1 !important;
     }
   `;
 }

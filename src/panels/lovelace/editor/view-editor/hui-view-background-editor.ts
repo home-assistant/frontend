@@ -160,7 +160,7 @@ export class HuiViewBackgroundEditor extends LitElement {
       ...this._config,
       background: {
         ...ev.detail.value,
-        image: ev.detail.value.image?.url,
+        image: ev.detail.value.image?.url || ev.detail.value.image,
       },
     };
     fireEvent(this, "view-config-changed", { config });
@@ -204,6 +204,7 @@ export class HuiViewBackgroundEditor extends LitElement {
   static styles = css`
     :host {
       display: block;
+      --file-upload-image-border-radius: 4px;
     }
   `;
 }
