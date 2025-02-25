@@ -359,7 +359,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
             </span>`}
         <span role="gridcell">
           <ha-tooltip
-            content=${this.hass.localize(
+            .content=${this.hass.localize(
               `ui.components.target-picker.remove_${type}`
             )}
           >
