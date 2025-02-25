@@ -253,13 +253,9 @@ export class HassioBackups extends LitElement {
                           "backup.delete_selected"
                         )}
                         .path=${mdiDelete}
-                        id="delete-btn"
                         class="warning"
                         @click=${this._deleteSelected}
                       ></ha-icon-button>
-                      <simple-tooltip animation-delay="0" for="delete-btn">
-                        ${this.supervisor.localize("backup.delete_selected")}
-                      </simple-tooltip>
                     `}
               </div>
             </div> `
