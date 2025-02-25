@@ -254,7 +254,7 @@ export class HaPictureUpload extends LitElement {
           opacity: var(--picture-opacity, 1);
         }
         img:hover {
-          opacity: 1 !important;
+          opacity: 1;
         }
       `,
     ];
