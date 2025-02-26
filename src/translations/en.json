@@ -228,7 +228,7 @@
         "run": "[%key:ui::card::service::run%]",
         "running_single": "Running…",
         "running_queued": "{queued} queued",
-        "running_parallel": "{active} Running…",
+        "running_parallel": "{active} running…",
         "cancel": "Cancel",
         "cancel_multiple": "Cancel {number}",
         "cancel_all": "Cancel all",
@@ -369,7 +369,11 @@
       "copied_clipboard": "Copied to clipboard",
       "name": "Name",
       "optional": "optional",
-      "default": "Default"
+      "default": "Default",
+      "dont_save": "Don't save",
+      "copy": "Copy",
+      "show": "Show",
+      "hide": "Hide"
     },
     "components": {
       "selectors": {
@@ -391,6 +395,9 @@
           "select_image_with_label": "Select {label}",
           "upload": "Upload picture",
           "url": "Local path or web URL"
+        },
+        "background": {
+          "yaml_info": "Background image is set via yaml editor."
         },
         "location": {
           "latitude": "[%key:ui::panel::config::zone::detail::latitude%]",
@@ -805,10 +812,16 @@
         "ranges": {
           "today": "Today",
           "yesterday": "Yesterday",
+          "now-1h": "Last hour",
+          "now-12h": "Last 12 hours",
+          "now-24h": "Last 24 hours",
           "this_week": "This week",
           "this_quarter": "This quarter",
           "this_month": "This month",
-          "this_year": "This year"
+          "now-7d": "Last 7 days",
+          "now-30d": "Last 30 days",
+          "this_year": "This year",
+          "now-12m": "Last 12 month"
         }
       },
       "grid-size-picker": {
@@ -830,9 +843,9 @@
         "duration": "Duration",
         "source_history": "Source: History",
         "source_stats": "Source: Long term statistics",
-        "zoom_hint": "Use ctrl + scroll to zoom in/out",
-        "zoom_hint_mac": "Use ⌘ + scroll to zoom in/out",
-        "zoom_reset": "Reset zoom"
+        "zoom_reset": "Reset zoom",
+        "expand_legend": "More",
+        "collapse_legend": "Less"
       },
       "map": {
         "error": "Unable to load map"
@@ -910,7 +923,7 @@
         "play-media": "Play media",
         "pick-media": "Pick media",
         "no_items": "No items",
-        "not_shown": "{count} incompatible {count, plural,\n  one {item}\n  other {items}\n} hidden",
+        "not_shown": "{count} {count, plural,\n  one {item}\n  other {items}\n} incompatible with the currently selected player {count, plural,\n  one {is}\n  other {are}\n} hidden",
         "choose_player": "Choose player",
         "media-player-browser": "Media",
         "web-browser": "Web browser",
@@ -1055,7 +1068,7 @@
             },
             "end_after": {
               "label": "End after",
-              "ocurrences": "ocurrences"
+              "ocurrences": "occurrences"
             }
           },
           "rrule": {
@@ -1112,6 +1125,9 @@
         "last_updated": "Last updated",
         "remaining_time": "Remaining time",
         "install_status": "Install status"
+      },
+      "multi-textfield": {
+        "add_item": "Add {item}"
       }
     },
     "dialogs": {
@@ -1270,9 +1286,18 @@
           "clear_skipped": "Clear skipped",
           "install": "Install",
           "update": "Update",
-          "create_backup": "Create backup before updating",
           "auto_update_enabled_title": "Can not skip version",
-          "auto_update_enabled_text": "Automatic updates for this item have been enabled; skipping it is, therefore, unavailable. You can either install this update now or wait for Home Assistant to do it automatically."
+          "auto_update_enabled_text": "Automatic updates for this item have been enabled; skipping it is, therefore, unavailable. You can either install this update now or wait for Home Assistant to do it automatically.",
+          "create_backup": {
+            "automatic": "Automatic backup before update",
+            "automatic_description_last": "Last automatic backup {relative_time}.",
+            "automatic_description_none": "No automatic backup yet.",
+            "manual": "Create manual backup before update",
+            "manual_description": "Includes Home Assistant settings and history.",
+            "addon": "Keep backup of the last version",
+            "addon_description": "For easily restoring to version {version}",
+            "generic": "Create backup"
+          }
         },
         "updater": {
           "title": "Update instructions"
@@ -1458,7 +1483,7 @@
           "enabled_description": "Disabled entities will not be added to Home Assistant.",
           "enabled_delay_confirm": "The enabled entities will be added to Home Assistant in {delay} seconds",
           "enabled_restart_confirm": "Restart Home Assistant to finish enabling the entities",
-          "hidden_explanation": "Hidden entities will not be shown on your dashboard or included when indirectly referenced (ie via an area or device). Their history is still tracked and you can still interact with them with actions.",
+          "hidden_explanation": "Hidden entities will not be included in auto-populated dashboards or when their area, device or label is referenced. Their history is still tracked and you can still interact with them with actions.",
           "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this entity?",
           "update": "Update",
@@ -1504,7 +1529,7 @@
         "expose_header": "Expose",
         "aliases_header": "Aliases",
         "aliases_description": "Aliases are supported by Assist and Google Assistant.",
-        "aliases_no_unique_id": "Aliases are not supported for entities without an unique id. See the {faq_link} for more detail.",
+        "aliases_no_unique_id": "Aliases are not supported for entities without a unique ID. See the {faq_link} for more detail.",
         "ask_pin": "Ask for PIN",
         "manual_config": "Managed in configuration.yaml",
         "unsupported": "Unsupported",
@@ -1735,8 +1760,8 @@
         "title": "{device} debug info",
         "deserialize": "Attempt to parse MQTT messages as JSON",
         "entities": "Entities",
-        "no_entities": "No entities",
-        "no_triggers": "No triggers",
+        "no_entity_debug_info": "No entity debug info",
+        "no_trigger_debug_info": "No trigger debug info",
         "payload_display": "Payload display",
         "recent_messages": "{n} most recently received {n, plural,\n  one {message}\n  other {messages}\n}",
         "recent_tx_messages": "{n} most recently transmitted {n, plural,\n  one {message}\n  other {messages}\n}",
@@ -1915,9 +1940,9 @@
       "action_failed": "Failed to perform the action {service}.",
       "connection_lost": "Connection lost. Reconnecting…",
       "started": "Home Assistant has started!",
-      "starting": "Home Assistant is starting, not everything will be available until it is finished.",
-      "wrapping_up_startup": "Wrapping up startup, not everything will be available until it is finished.",
-      "integration_starting": "Starting {integration}, not everything will be available until it is finished.",
+      "starting": "Home Assistant is starting. Not everything will be available until it is finished.",
+      "wrapping_up_startup": "Wrapping up startup. Not everything will be available until it is finished.",
+      "integration_starting": "Starting {integration}. Not everything will be available until it is finished.",
       "triggered": "Triggered {name}",
       "dismiss": "Dismiss",
       "no_matching_link_found": "No matching My link found for {path}"
@@ -2115,6 +2140,7 @@
           "description": "Group devices and entities",
           "headers": {
             "name": "Name",
+            "description": "Description",
             "icon": "Icon",
             "color": "Color"
           },
@@ -2181,7 +2207,12 @@
             "aliases_section": "Aliases",
             "no_aliases": "No configured aliases",
             "configured_aliases": "{count} configured {count, plural,\n  one {alias}\n  other {aliases}\n}",
-            "aliases_description": "Aliases are alternative names used in voice assistants to refer to this area."
+            "aliases_description": "Aliases are alternative names used in voice assistants to refer to this area.",
+            "temperature_entity": "Temperature sensor",
+            "temperature_entity_description": "Sensor that represents the area temperature.",
+            "humidity_entity": "Humidity sensor",
+            "humidity_entity_description": "Sensor that represents the area humidity.",
+            "related_entities_section": "Related sensors"
           },
           "delete": {
             "confirmation_title": "Delete {name}?",
@@ -2201,6 +2232,13 @@
           "size": "[%key:supervisor::backup::size%]",
           "created": "[%key:supervisor::backup::created%]",
           "no_backups": "[%key:supervisor::backup::no_backups%]",
+          "backup_type": "Type",
+          "type": {
+            "manual": "Manual",
+            "automatic": "Automatic",
+            "addon_update": "Add-on update"
+          },
+          "locations": "Locations",
           "create": {
             "title": "Create backup",
             "description": "Create a backup of your current configuration directory, this will take some time.",
@@ -2224,6 +2262,458 @@
                   "name": "Default location"
                 }
               }
+            },
+            "delete_selected": {
+              "title": "Delete selected backups",
+              "text": "These backups will be permanently deleted.",
+              "failed": "Failed to delete selected backups"
+            },
+            "delete": {
+              "title": "Delete backup",
+              "text": "This backup will be permanently deleted.",
+              "failed": "Failed to delete backup"
+            },
+            "upload": {
+              "title": "Upload backup",
+              "action": "Upload backup",
+              "input_label": "Select backup file",
+              "supports_tar": "Supports .tar files",
+              "unsupported": {
+                "title": "Unsupported file format",
+                "text": "Please choose a Home Assistant backup file (.tar)"
+              }
+            },
+            "generate": {
+              "sync": {
+                "title": "Synchonization",
+                "name": "Backup name",
+                "locations": "Locations",
+                "locations_description": "What locations you want to automatically backup to.",
+                "locations_options": {
+                  "all": "All ({count})",
+                  "custom": "Custom"
+                },
+                "ha_cloud_alert": {
+                  "title": "Home Assistant Cloud cannot synchronize",
+                  "description": "Add Home Assistant settings data to synchronize this backup to Home Assistant Cloud."
+                }
+              },
+              "data": {
+                "title": "Backup data"
+              },
+              "actions": {
+                "create": "Create backup"
+              }
+            },
+            "new": {
+              "title": "Backup now",
+              "options": "Backup options",
+              "automatic": {
+                "title": "Automatic backup",
+                "description": "Create a backup with the data and locations you have configured."
+              },
+              "manual": {
+                "title": "Manual backup",
+                "description": "Select data and locations for a manual backup."
+              }
+            },
+            "restore": {
+              "title": "Restore backup",
+              "restore_failed": "Backup restore failed",
+              "confirm": {
+                "description": "Your backup will be restored and all current data will be overwritten. Depending on the size of the backup, this can take a while."
+              },
+              "encryption": {
+                "different_key": "The backup is encrypted. Provide the encryption key to decrypt the backup.",
+                "incorrect_key": "The provided encryption key was incorrect, please try again.",
+                "description": "The backup is encrypted with a different encryption key than the one stored on this system. Please enter the encryption key for this backup.",
+                "warning": "After restoring this backup, all new backups will be encrypted using the same key that was used to restore this backup.",
+                "input_label": "Encryption key"
+              },
+              "progress": {
+                "restarting": "Restarting Home Assistant",
+                "restoring": "Restoring backup"
+              },
+              "actions": {
+                "restore": "Restore"
+              }
+            },
+            "onboarding": {
+              "welcome": {
+                "title": "[%key:ui::panel::config::backup::overview::onboarding::title%]",
+                "description": "[%key:ui::panel::config::backup::overview::onboarding::description%]"
+              },
+              "key": {
+                "title": "Encryption key",
+                "description": "All your backups are encrypted to keep your data private and secure. We recommend saving this key somewhere secure. As you can only restore your data with this encryption key."
+              },
+              "setup": {
+                "title": "Set up automatic backups",
+                "recommended_heading": "Recommended",
+                "recommended_description": "Backup everything daily, keeping three days of backups",
+                "custom_heading": "Custom",
+                "custom_description": "Select when, where, and what to backup"
+              },
+              "schedule": {
+                "title": "Automatic backups",
+                "description": "Let Home Assistant take care of your backups by creating a scheduled backup that also removes older backups."
+              },
+              "data": {
+                "title": "Backup data",
+                "description": "Choose what data to include in your backups. You can always change this later."
+              },
+              "locations": {
+                "title": "Locations",
+                "description": "Home Assistant will upload to these locations when an automatic backup is made. You can use all locations for manual backups."
+              },
+              "save_and_create": "Save and create backup"
+            },
+            "change_encryption_key": {
+              "current": {
+                "title": "Save current encryption key",
+                "description": "Backups made before this new encryption key was issued will continue to use the old key. Be sure to save the old key along with the new key to ensure that you can access all backups."
+              },
+              "new": {
+                "title": "New encryption key",
+                "description": "All future backups will use the new encryption key. Encryption keeps your backups private and secure."
+              },
+              "done": {
+                "title": "Encryption key changed"
+              },
+              "actions": {
+                "change": "Change encryption key",
+                "done": "Done"
+              }
+            },
+            "set_encryption_key": {
+              "key": {
+                "title": "Set encryption key",
+                "description": "All your backups are encrypted to keep your data private and secure. We recommend saving this key somewhere secure. As you can only restore your data with the backup encryption key."
+              },
+              "done": {
+                "title": "Encryption key set"
+              },
+              "actions": {
+                "set": "Set encryption key",
+                "done": "[%key:ui::panel::config::backup::dialogs::change_encryption_key::actions::done%]"
+              }
+            },
+            "show_encryption_key": {
+              "title": "Encryption key",
+              "description": "Make sure you save the encryption key in a secure place so you always have access to your backups."
+            },
+            "download": {
+              "decryption_unsupported_title": "Decryption unsupported",
+              "decryption_unsupported": "Decryption is not supported for this backup. The downloaded backup will remain encrypted and can't be opened. To restore it, you will need the encryption key.",
+              "error_check_title": "Error checking backup",
+              "error_check_description": "An error occurred while checking the backup, please try again. Error message: {error}",
+              "title": "Download backup",
+              "description": "This backup is encrypted with a different encryption key than the current one, please enter the encryption key of this backup.",
+              "download_backup_encrypted": "You can still {download_it_encrypted}. To restore it, you will need the encryption key.",
+              "download_it_encrypted": "download the backup encrypted",
+              "encryption_key": "Encryption key",
+              "incorrect_encryption_key": "Incorrect encryption key",
+              "decryption_not_supported": "Decryption not supported",
+              "download": "Download"
+            }
+          },
+          "agents": {
+            "cloud_agent_description": "Note: It stores only the most recent backup, regardless of your retention settings, with a maximum size of 5 GB.",
+            "cloud_agent_no_subcription": "You currently do not have an active Home Assistant Cloud subscription.",
+            "network_mount_agent_description": "Network storage",
+            "unavailable_agents": "Unavailable locations",
+            "no_agents": "No locations configured",
+            "encryption_turned_off": "Encryption turned off",
+            "local_agent": "This system"
+          },
+          "data": {
+            "ha_settings": "Home Assistant settings",
+            "ha_settings_description": "The bare minimum needed to restore the system.",
+            "ha_settings_included_description": "The bare minimum needed to restore the system. It is always included in automatic backup data.",
+            "history": "History",
+            "history_description": "Historical data of your sensors, including your energy dashboard.",
+            "media": "Media",
+            "media_description": "For example, camera recordings.",
+            "share_folder": "Share folder",
+            "share_folder_description": "Folder that is often used by add-ons for advanced or older configurations.",
+            "local_addons": "Local add-ons folder",
+            "local_addons_description": "Folder that contains the data of your local add-ons.",
+            "addons": "Add-ons",
+            "addons_description": "Select what add-ons you want to include.",
+            "addons_all": "All",
+            "addons_none": "None",
+            "addons_custom": "Custom"
+          },
+          "data_picker": {
+            "settings": "Settings",
+            "settings_and_history": "Settings and history",
+            "media": "Media",
+            "share_folder": "Share folder",
+            "local_addons": "Local add-ons folder",
+            "addons": "Add-ons",
+            "ssl": "SSL certificates"
+          },
+          "schedule": {
+            "schedule": "Schedule",
+            "backup_every": "Backup every",
+            "custom_schedule": "Custom schedule",
+            "time": "Time",
+            "custom_time": "Custom time",
+            "custom_time_label": "Backup at",
+            "custom_time_description": "The optimal time is after Home Assistant finished cleaning up the database. This is done at {time}.",
+            "schedule_description": "How often you want to create a backup.",
+            "schedule_time_description": "When the backup creation starts. By default Home Assistant picks the optimal time between {time_range_start} and {time_range_end}.",
+            "tip": "You can create your own custom backup automation with the {backup_create} action",
+            "schedule_options": {
+              "never": "Never",
+              "daily": "Daily",
+              "custom_days": "Custom days"
+            },
+            "time_options": {
+              "default": "System optimal",
+              "custom": "Custom"
+            },
+            "retention": "Retention",
+            "custom_retention": "Custom retention",
+            "custom_retention_label": "Keep only",
+            "retention_description": "Based on the maximum number of backups or how many days they should be kept.",
+            "retention_presets": {
+              "copies_3": "3 backups",
+              "forever": "Forever",
+              "custom": "Custom"
+            },
+            "retention_units": {
+              "copies": "backups",
+              "days": "days"
+            }
+          },
+          "encryption_key": {
+            "download_emergency_kit": "Download emergency kit",
+            "download_emergency_kit_description": "We recommend to save this encryption key somewhere secure.",
+            "download_emergency_kit_action": "Download",
+            "download_old_emergency_kit": "Download old emergency kit",
+            "download_old_emergency_kit_description": "[%key:ui::panel::config::backup::encryption_key::download_emergency_kit_description%]",
+            "download_old_emergency_kit_action": "[%key:ui::panel::config::backup::encryption_key::download_emergency_kit_action%]",
+            "show_encryption_key": "Show my encryption key",
+            "show_encryption_key_description": "Please keep your encryption key private.",
+            "show_encryption_key_action": "Show",
+            "change_encryption_key": "Change encryption key",
+            "change_encryption_key_description": "All future backups will use this encryption key.",
+            "change_encryption_key_action": "Change",
+            "set_encryption_key": "Set encryption key",
+            "set_encryption_key_description": "Set an encryption key for your backups.",
+            "set_encryption_key_action": "Set"
+          },
+          "emergency_kit_file": {
+            "title": "Home Assistant Backup Emergency Kit",
+            "description": "This emergency kit contains your backup encryption key. You need this key to be able to restore your Home Assistant backups.",
+            "date": "Date:",
+            "instance": "Instance:",
+            "url": "URL:",
+            "encryption_key": "Encryption key:",
+            "more_info": "For more information, visit {link}"
+          },
+          "overview": {
+            "header": "Backup",
+            "menu": {
+              "upload_backup": "Upload backup"
+            },
+            "agent_error": "Error in location {name}",
+            "new_backup": "Backup now",
+            "onboarding": {
+              "title": "Set up backups",
+              "description": "Backups are essential for a reliable smart home. They help protect the work you've put into setting up your smart home, and if the worst happens, you can get back up and running quickly.",
+              "setup": "Set up backups"
+            },
+            "progress": {
+              "heading": {
+                "create_backup": "Creating backup",
+                "restore_backup": "Restoring backup",
+                "receive_backup": "Receiving backup"
+              },
+              "description": {
+                "create_backup": {
+                  "addon_repositories": "Backing up add-ons repositories",
+                  "addons": "Backing up add-ons",
+                  "await_addon_restarts": "Waiting for add-ons to restart",
+                  "docker_config": "Backing up Docker configuration",
+                  "finishing_file": "Finishing backup file",
+                  "folders": "Backing up folders",
+                  "home_assistant": "Backing up Home Assistant",
+                  "upload_to_agents": "Uploading to locations"
+                },
+                "restore_backup": {
+                  "addon_repositories": "Restoring add-ons repositories",
+                  "addons": "Restoring add-ons",
+                  "await_addon_restarts": "Waiting for add-ons to restart",
+                  "await_home_assistant_restart": "Waiting for Home Assistant to restart",
+                  "check_home_assistant": "Checking Home Assistant",
+                  "docker_config": "Restoring Docker configuration",
+                  "download_from_agent": "Downloading from location",
+                  "folders": "Restoring folders",
+                  "home_assistant": "Restoring Home Assistant",
+                  "remove_delta_addons": "Removing delta add-ons"
+                },
+                "receive_backup": {
+                  "receive_file": "Receiving file",
+                  "upload_to_agents": "Uploading to locations"
+                }
+              }
+            },
+            "summary": {
+              "no_automatic_backup": "No automatic backups scheduled",
+              "next_automatic_backup": "Next automatic backup {day} at {time}",
+              "today": "today",
+              "tomorrow": "tomorrow",
+              "loading": "Loading backups...",
+              "last_backup_failed_heading": "Last automatic backup failed",
+              "last_backup_failed_description": "The last automatic backup triggered {relative_time} wasn't successful.",
+              "last_backup_failed_locations_description": "The last automatic backup created {relative_time} wasn't stored in all locations.",
+              "last_successful_backup_description": "Last successful automatic backup {relative_time} and stored in {count} {count, plural,\n one {location}\n other {locations}\n}.",
+              "no_backup_heading": "No automatic backup available",
+              "no_backup_description": "You have no automatic backups yet.",
+              "backup_too_old_heading": "No backup for {count} {count, plural,\n one {day}\n other {days}\n}",
+              "backup_success_heading": "Backed up",
+              "additional_backup_description": "No successful automatic backup has been done since {date}. To avoid losing data, an additional backup has been scheduled."
+            },
+            "backups": {
+              "title": "My backups",
+              "automatic": "{count} automatic {count, plural,\n one {backup}\n other {backups}\n}",
+              "manual": "{count} manual {count, plural,\n one {backup}\n other {backups}\n}",
+              "addon_update": "{count} add-on update {count, plural,\n one {backup}\n other {backups}\n}",
+              "total_size": "{size} in total",
+              "show_all": "Show all backups"
+            },
+            "settings": {
+              "title": "Backup settings",
+              "configure": "Configure backup settings",
+              "schedule": "Automatic backup schedule and retention",
+              "schedule_copies_all": "and keep all backups",
+              "schedule_copies_backups": "and keep {count} {count, plural,\n one {backup}\n other {backups}\n}",
+              "schedule_copies_days": "and keep {count} {count, plural,\n one {day}\n other {days}\n}",
+              "schedule_daily": "Daily at {time}",
+              "schedule_days": "Every {days} at {time}",
+              "schedule_weekdays": "Every weekday at {time}",
+              "schedule_optimized_weekdays": "Every weekday",
+              "schedule_weekend": "Every weekends at {time}",
+              "schedule_optimized_weekend": "Every weekends",
+              "schedule_optimized_daily": "Daily",
+              "schedule_optimized_days": "Every {days}",
+              "schedule_never": "Automatic backups are not scheduled",
+              "data": "Home Assistant data that is included",
+              "data_settings_history": "Settings and history",
+              "data_settings_only": "Settings only",
+              "addons": "Add-ons that are included",
+              "addons_all": "All add-ons",
+              "addons_many": "{count} {count, plural,\n one {add-on}\n other {add-ons}\n}",
+              "addons_none": "No add-ons",
+              "locations": "Locations where backup is stored to",
+              "locations_one": "Store in {name}",
+              "locations_many": "Store in {count} off-site {count, plural,\n one {location}\n other {locations}\n}",
+              "locations_local_only": "Local backup only",
+              "locations_none": "No locations configured",
+              "system_optimal_time": "system optimal time",
+              "weekdays": {
+                "mon": "[%key:ui::weekdays::monday%]",
+                "tue": "[%key:ui::weekdays::tuesday%]",
+                "wed": "[%key:ui::weekdays::wednesday%]",
+                "thu": "[%key:ui::weekdays::thursday%]",
+                "fri": "[%key:ui::weekdays::friday%]",
+                "sat": "[%key:ui::weekdays::saturday%]",
+                "sun": "[%key:ui::weekdays::sunday%]"
+              },
+              "short_weekdays": {
+                "mon": "Mo",
+                "tue": "Tu",
+                "wed": "We",
+                "thu": "Th",
+                "fri": "Fr",
+                "sat": "Sa",
+                "sun": "So"
+              }
+            }
+          },
+          "backups": {
+            "header": "My backups",
+            "menu": {
+              "upload_backup": "[%key:ui::panel::config::backup::overview::menu::upload_backup%]"
+            },
+            "delete_selected": "Delete selected",
+            "new_backup": "[%key:ui::panel::config::backup::overview::new_backup%]"
+          },
+          "settings": {
+            "header": "Backup settings",
+            "menu": {
+              "change_default_location": "Change default action location"
+            },
+            "schedule": {
+              "title": "Automatic backups",
+              "description": "Let Home Assistant take care of your backups by creating a scheduled backup that also removes older backups."
+            },
+            "data": {
+              "title": "Backup data"
+            },
+            "locations": {
+              "title": "Locations",
+              "description": "Your backup will be stored on these locations when this default backup is created. You can use all locations for custom backups.",
+              "no_location": "No location selected",
+              "no_location_description": "You have to select at least one location to create a backup.",
+              "more_locations": "Explore more locations",
+              "manage_network_storage": "Manage network storage"
+            },
+            "encryption_key": {
+              "title": "Encryption key",
+              "description": "Keep this encryption key in a safe place, as you will need it to access your backup, allowing it to be restored. Download it as an emergency kit file and store it somewhere safe. Encryption keeps your backups private and secure."
+            }
+          },
+          "details": {
+            "header": "Backup",
+            "not_found": "Not found",
+            "not_found_description": "Backup matching ''{backupId}'' not found",
+            "error": "Could not fetch backup details",
+            "summary": {
+              "title": "Backup",
+              "size": "Size",
+              "created": "Created"
+            },
+            "restore": {
+              "title": "Select what to restore",
+              "action": "Restore"
+            },
+            "locations": {
+              "title": "Locations",
+              "backup_failed": "Backup failed",
+              "encryption_turned_off": "Encryption turned off",
+              "download": "Download from this location",
+              "unencrypted": "Unencrypted",
+              "encrypted": "Encrypted"
+            }
+          },
+          "location": {
+            "header": "Location",
+            "not_found": "Not found",
+            "not_found_description": "Location matching ''{backupId}'' not found",
+            "error": "Could not fetch location details",
+            "configuration": {
+              "title": "Configuration",
+              "cloud_description": "Home Assistant Cloud backup stores only one backup. The oldest backups are deleted."
+            },
+            "encryption": {
+              "title": "Encryption",
+              "description": "All your backups are encrypted by default to keep your data private and secure.",
+              "location_encrypted": "Backups made to this location will be encrypted",
+              "location_unencrypted": "Backups made to this location will be unencrypted",
+              "location_encrypted_description": "Your data is private and secure by encrypting backups with your encryption key.",
+              "location_encrypted_cloud_description": "Home Assistant Cloud is the privacy-focused cloud. This is why it will only accept encrypted backups and why we don’t store your encryption key.",
+              "location_encrypted_cloud_learn_more": "Learn more",
+              "location_unencrypted_description": "Please keep your backups private and secure.",
+              "encryption_turn_on": "Turn on",
+              "encryption_turn_off": "Turn off",
+              "encryption_turn_off_confirm_title": "Turn encryption off?",
+              "encryption_turn_off_confirm_text": "After confirming, backups created will be unencrypted for this location. Please ensure your backups remain private and secure.",
+              "encryption_turn_off_confirm_action": "Turn encryption off",
+              "warning_encryption_turn_off": "Encryption turned off",
+              "warning_encryption_turn_off_description": "Backups will be unencrypted."
             }
           }
         },
@@ -2438,7 +2928,7 @@
             },
             "create_helper": "Create helper",
             "no_helpers": "Looks like you don't have any helpers yet!",
-            "search": "Search {number} helpers",
+            "search": "Search {number} {number, plural,\n  one {helper}\n  other {helpers}\n}",
             "error_information": "Error information"
           },
           "dialog": {
@@ -2497,7 +2987,7 @@
           "enable_remote": "[%key:ui::common::enable%]",
           "internal_url_automatic": "Automatic",
           "internal_url_https_error_title": "Invalid local network URL",
-          "internal_url_https_error_description": "You have configured an HTTPS certificate in Home Assistant. This means that your internal URL needs to be set to a domain covered by the certficate.",
+          "internal_url_https_error_description": "You have configured an HTTPS certificate in Home Assistant. This means that your internal URL needs to be set to a domain covered by the certificate.",
           "internal_url_automatic_description": "Use the configured network settings",
           "internal_url_placeholder": "http://<some IP address>:8123"
         },
@@ -2540,6 +3030,7 @@
           "built_using": "Built using",
           "icons_by": "Icons by",
           "frontend_version_label": "Frontend",
+          "proud_part_of": "Proud part of",
           "custom_uis": "Custom UIs:",
           "system_health_error": "System Health component is not loaded. Add 'system_health:' to configuration.yaml",
           "documentation": "Documentation",
@@ -2718,6 +3209,7 @@
           "assistants": {
             "caption": "Assistants",
             "pipeline": {
+              "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]",
               "add_assistant": "Add assistant",
               "exposed_entities": "[%key:ui::panel::config::cloud::account::google::exposed_entities%]",
               "assist_devices": "{number} Assist {number, plural,\n  one {device}\n  other {devices}\n}",
@@ -2775,7 +3267,7 @@
                   },
                   "wakeword": {
                     "title": "Streaming wake word engine",
-                    "description": " If a device supports streaming wake word engines, you can activate Assist by saying this word.",
+                    "description": "If a device supports streaming wake word engines, you can activate Assist by saying this word.",
                     "note": "Most recent devices support on-device wake word engines and are configured on their device page."
                   }
                 },
@@ -2796,7 +3288,7 @@
                 },
                 "remote_access": {
                   "title": "Remote access",
-                  "text": " Secure remote access to your system while supporting the development of Home Assistant."
+                  "text": "Secure remote access to your system while supporting the development of Home Assistant."
                 }
               },
               "and_more": "And more",
@@ -2828,12 +3320,14 @@
           "expose": {
             "caption": "Expose",
             "headers": {
+              "icon": "Icon",
               "name": "Name",
               "entity_id": "Entity ID",
               "area": "Area",
               "domain": "Domain",
               "assistants": "Assistants",
-              "aliases": "Aliases"
+              "aliases": "Aliases",
+              "remove": "[%key:ui::common::remove%]"
             },
             "aliases": "{count} aliases",
             "expose": "Expose",
@@ -2963,7 +3457,7 @@
             "assign_category": "Assign category",
             "no_category_support": "You can't assign a category to this automation",
             "no_category_entity_reg": "To assign a category to an automation it needs to have a unique ID.",
-            "search": "Search {number} automations",
+            "search": "Search {number} {number, plural,\n  one {automation}\n  other {automations}\n}",
             "headers": {
               "toggle": "Enable/disable",
               "name": "Name",
@@ -3015,7 +3509,7 @@
             "run": "Run actions",
             "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
             "show_trace": "Traces",
-            "show_info": "Information",
+            "show_info": "More info",
             "default_name": "New automation",
             "missing_name": "Cannot save automation without a name",
             "traces_not_available": "Automations need an ID for history to be tracked. Add an ID to your automation to make it available in traces.",
@@ -3034,6 +3528,12 @@
               "label": "Description",
               "placeholder": "Optional description",
               "add": "Add description"
+            },
+            "leave": {
+              "unsaved_new_title": "Save new automation?",
+              "unsaved_new_text": "You can save your changes, or delete this automation. You can't undo this action.",
+              "unsaved_confirm_title": "Save changes?",
+              "unsaved_confirm_text": "You have made some changes in this automation. You can save these changes, or discard them and leave. You can't undo this action."
             },
             "icon": "Icon",
             "blueprint": {
@@ -3261,7 +3761,7 @@
                 },
                 "time": {
                   "type_value": "Fixed time",
-                  "type_input": "Value of a date/time helper, time entity or timestamp-class sensor",
+                  "type_input": "Value of a date/time helper or timestamp-class sensor",
                   "label": "Time",
                   "at": "At time",
                   "offset": "[%key:ui::panel::config::automation::editor::triggers::type::sun::offset%]",
@@ -3275,6 +3775,7 @@
                 },
                 "time_pattern": {
                   "label": "Time pattern",
+                  "help": "Prefix the value with \"/\" to match whenever the value is divisible by that number. Use \"*\" to match any value.",
                   "hours": "Hours",
                   "minutes": "Minutes",
                   "seconds": "Seconds",
@@ -3878,13 +4379,13 @@
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
             "assign_category": "[%key:ui::panel::config::automation::picker::assign_category%]",
-            "no_category_support": "You can't assign an category to this script",
-            "no_category_entity_reg": "To assign an category to an script it needs to have a unique ID.",
+            "no_category_support": "You can't assign a category to this script",
+            "no_category_entity_reg": "To assign a category to a script it needs to have a unique ID.",
             "delete": "[%key:ui::common::delete%]",
             "duplicate": "[%key:ui::common::duplicate%]",
             "empty_header": "Create your first script",
             "empty_text": "A script is a sequence of actions that can be run from a dashboard, an automation, or be triggered by voice. For example, a ''Wake-up routine''' script that gradually turns on the light in the bedroom and opens the blinds after a delay.",
-            "search": "Search {number} scripts",
+            "search": "Search {number} {number, plural,\n  one {script}\n  other {scripts}\n}",
             "migrate_script": "Migrate script?",
             "migrate_script_description": "You can migrate this script, so it can be edited from the UI. After it is migrated and you have saved it, you will have to manually delete your old script from your configuration. Do you want to migrate this script?"
           },
@@ -3956,7 +4457,13 @@
             "save_script": "Save script",
             "sequence": "Sequence",
             "sequence_sentence": "The sequence of actions of this script.",
-            "link_available_actions": "Learn more about available actions."
+            "link_available_actions": "Learn more about available actions.",
+            "leave": {
+              "unsaved_new_title": "Save new script?",
+              "unsaved_new_text": "You can save your changes, or delete this script. You can't undo this action.",
+              "unsaved_confirm_title": "Save changes?",
+              "unsaved_confirm_text": "You have made some changes in this script. You can save these changes, or discard them and leave. You can't undo this action."
+            }
           },
           "trace": {
             "edit_script": "Edit script"
@@ -3994,11 +4501,11 @@
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
             "assign_category": "[%key:ui::panel::config::automation::picker::assign_category%]",
-            "no_category_support": "You can't assign an category to this scene",
-            "no_category_entity_reg": "To assign an category to an scene it needs to have a unique ID.",
+            "no_category_support": "You can't assign a category to this scene",
+            "no_category_entity_reg": "To assign a category to a scene it needs to have a unique ID.",
             "empty_header": "Create your first scene",
             "empty_text": "Scenes capture entities' states, so you can re-experience the same scene later on. For example, a ''Watching TV'' scene that dims the living room lights, sets a warm white color and turns on the TV.",
-            "search": "Search {number} scenes"
+            "search": "Search {number} {number, plural,\n  one {scene}\n  other {scenes}\n}"
           },
           "editor": {
             "review_mode": "Review Mode",
@@ -4100,6 +4607,7 @@
             "account_created": "Account created! Check your email for instructions on how to activate your account."
           },
           "account": {
+            "download_support_package": "Download support package",
             "reset_cloud_data": "Reset cloud data",
             "reset_data_confirm_title": "Reset cloud data?",
             "reset_data_confirm_text": "This will reset all your cloud settings. This includes your remote connection, Google Assistant and Amazon Alexa integrations. This action cannot be undone.",
@@ -4225,6 +4733,23 @@
             "fingerprint": "Certificate fingerprint:",
             "close": "Close"
           },
+          "dialog_already_connected": {
+            "heading": "Account linked to other Home Assistant",
+            "description": "We noticed that another instance is currently connected to your Home Assistant Cloud account. Your Home Assistant Cloud account can only be signed into one Home Assistant instance at a time. If you log in here, the other instance will be disconnected along with its Cloud services.",
+            "other_home_assistant": "Other Home Assistant",
+            "ip_address": "IP Address",
+            "connected_at": "Connected at",
+            "obfuscated_ip": {
+              "show": "Show IP address",
+              "hide": "Hide IP address"
+            },
+            "info_backups": {
+              "title": "Home Assistant Cloud backups",
+              "description": "Your Cloud backup may be overwritten if you proceed. We strongly recommend downloading your current backup from your Nabu Casa account page before continuing."
+            },
+            "close": "Close",
+            "login_here": "Log in here"
+          },
           "dialog_cloudhook": {
             "webhook_for": "Webhook for {name}",
             "managed_by_integration": "This webhook is managed by an integration and cannot be disabled.",
@@ -4242,6 +4767,7 @@
           "add_device": "Add device",
           "caption": "Devices",
           "description": "Manage configured devices",
+          "filtering_by_config_entry": "[%key:ui::panel::config::entities::picker::filtering_by_config_entry%]",
           "device_info": "{type} info",
           "edit_settings": "Edit settings",
           "unnamed_device": "Unnamed {type}",
@@ -4371,7 +4897,7 @@
           "confirm_delete_integration": "Are you sure you want to remove this device from {integration}?",
           "error_delete": "Error deleting device",
           "picker": {
-            "search": "Search {number} devices",
+            "search": "Search {number} {number, plural,\n  one {device}\n  other {devices}\n}",
             "state": "Status",
             "bulk_actions": {
               "move_area": "Move to area",
@@ -4387,8 +4913,9 @@
             "header": "Entities",
             "introduction": "Home Assistant keeps a registry of every entity it has ever seen that can be uniquely identified. Each of these entities will have an entity ID assigned which will be reserved for just this entity.",
             "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant.",
-            "search": "Search {number} entities",
+            "search": "Search {number} {number, plural,\n  one {entity}\n  other {entities}\n}",
             "unnamed_entity": "Unnamed entity",
+            "filtering_by_config_entry": "Filtering by config entry",
             "status": {
               "available": "Available",
               "unavailable": "Unavailable",
@@ -4539,6 +5066,7 @@
           "rename_input_label": "Entry name",
           "search": "Search integrations",
           "search_brand": "Search for a brand name",
+          "search_helper": "Search for a helper",
           "add_zwave_js_device": "Add Z-Wave device",
           "add_zha_device": "Add Zigbee device",
           "add_matter_device": "Add Matter device",
@@ -4585,7 +5113,7 @@
             "application_credentials": {
               "delete_title": "Application credentials",
               "delete_prompt": "Would you like to also delete Application Credentials for this integration?",
-              "delete_detail": "If you delete them, you will need to enter credentials when setting up the integration again. If you keep them, they will be used automatically when setting up the integration again or may be acccessed from the Application Credentials menu.",
+              "delete_detail": "If you delete them, you will need to enter credentials when setting up the integration again. If you keep them, they will be used automatically when setting up the integration again or may be accessed from the Application Credentials menu.",
               "delete_error_title": "Deleting application credentials failed",
               "dismiss": "Keep",
               "learn_more": "Learn more about application credentials"
@@ -4811,7 +5339,7 @@
         "mqtt": {
           "title": "MQTT",
           "settings_title": "MQTT settings",
-          "reconfigure": "Re-configure MQTT",
+          "option_flow": "Configure MQTT options",
           "description_publish": "Publish a packet",
           "topic": "Topic",
           "payload": "Payload (template allowed)",
@@ -4827,6 +5355,30 @@
           "message_received": "Message {id} received on {topic} at {time}:",
           "qos": "QoS",
           "retain": "Retain"
+        },
+        "bluetooth": {
+          "title": "Bluetooth",
+          "settings_title": "Bluetooth settings",
+          "option_flow": "Configure Bluetooth options",
+          "advertisement_monitor": "Advertisement monitor",
+          "advertisement_monitor_details": "The advertisement monitor listens for Bluetooth advertisements and displays the data in a structured format.",
+          "connection_slot_allocations_monitor": "Connection slot allocations monitor",
+          "connection_slot_allocations_monitor_details": "The connection slot allocations monitor displays the (GATT) connection slot allocations for the adapter. This adapter supports up to {slots} simultaneous connections. Each remote Bluetooth device that requires an active connection will use one connection slot while the Bluetooth device is connecting or connected.",
+          "used_connection_slot_allocations": "Used connection slot allocations",
+          "no_connection_slot_allocations": "No connection slot allocations information available",
+          "no_active_connection_support": "This adapter does not support making active (GATT) connections.",
+          "address": "Address",
+          "name": "Name",
+          "source": "Source",
+          "rssi": "RSSI",
+          "source_address": "Source address",
+          "last_seen": "Last seen",
+          "device": "Device",
+          "device_information": "Device information",
+          "advertisement_data": "Advertisement data",
+          "manufacturer_data": "Manufacturer data",
+          "service_data": "Service data",
+          "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
         },
         "thread": {
           "other_networks": "Other networks",
@@ -4858,7 +5410,7 @@
           "operational_dataset": "Operational dataset",
           "change_channel": "Change channel",
           "change_channel_initiated_title": "Channel change in progress",
-          "change_channel_initiated_text": "The channel change has been initiated and will complete in {delay} minutes.",
+          "change_channel_initiated_text": "The channel change has been initiated and will complete in {delay} {delay, plural,\n  one {minute}\n  other {minutes}\n}.",
           "change_channel_invalid": "Invalid channel",
           "change_channel_label": "Channel",
           "change_channel_multiprotocol_enabled_title": "The Thread radio has multiprotocol enabled",
@@ -5252,7 +5804,7 @@
           "provisioned": {
             "dsk": "DSK",
             "security_classes": "Security classes",
-            "unprovison": "Unprovison",
+            "unprovision": "Unprovision",
             "included": "Included",
             "not_included": "Not Included",
             "confirm_unprovision_title": "Are you sure you want to unprovision the device?",
@@ -5512,7 +6064,7 @@
           "ping_node": {
             "title": "Ping a Matter device",
             "introduction": "Perform a (server-side) ping on your Matter device on all its (known) IP-addresses.",
-            "battery_device_warning": "Note that especially for battery powered devices this can take a a while. You may need to wake up battery powered devices before starting the pinging to speed up the process. Refer to your device's manual for instructions on how to wake the device.",
+            "battery_device_warning": "Note that especially for battery powered devices this can take a while. You may need to wake up battery powered devices before starting the pinging to speed up the process. Refer to your device's manual for instructions on how to wake the device.",
             "start_ping": "Start ping",
             "in_progress": "The device is being pinged. This may take some time.",
             "ping_failed": "The device ping failed. Additional information may be available in the logs.",
@@ -5533,8 +6085,10 @@
         },
         "tips": {
           "tip": "Tip!",
-          "join": "Join the community on our {forums}, {twitter}, {discord}, {blog} or {newsletter}",
+          "join": "Join the community on our {forums}, {mastodon}, {bluesky}, {twitter}, {discord}, {blog} or {newsletter}",
           "join_x": "X (formerly Twitter)",
+          "join_mastodon": "Mastodon",
+          "join_bluesky": "Bluesky",
           "join_forums": "Forums",
           "join_chat": "Chat",
           "join_blog": "Blog",
@@ -5603,7 +6157,12 @@
           },
           "network_adapter": "Network adapter",
           "network_adapter_info": "Configure which network adapters integrations will use. Currently this setting only affects multicast traffic. A restart is required for these settings to apply.",
-          "ip_information": "IP Information"
+          "ip_information": "IP Information",
+          "adapter": {
+            "auto_configure": "Auto configure",
+            "detected": "Detected",
+            "adapter": "Adapter"
+          }
         },
         "storage": {
           "caption": "Storage",
@@ -5681,7 +6240,7 @@
               },
               "version": {
                 "title": "Samba/Windows (CIFS) version",
-                "description": "This choses the version of the protocol to use"
+                "description": "This chooses the version of the protocol to use"
               },
               "username": {
                 "title": "Username",
@@ -5775,7 +6334,8 @@
             "description": "Home Assistant is starting, please wait…"
           },
           "map": {
-            "reset_focus": "Reset focus"
+            "reset_focus": "Reset focus",
+            "toggle_grouping": "Toggle grouping"
           },
           "energy": {
             "loading": "Loading…",
@@ -6009,6 +6569,8 @@
             "section_specifics": "Sections view specific settings",
             "dense_section_placement": "Dense section placement",
             "dense_section_placement_helper": "Will try to fill gaps with sections that fit the gap. This may make section placement less predictable.",
+            "top_margin": "Add additional space above",
+            "top_margin_helper": "Helps reveal more of the background",
             "subview_helper": "Subviews don't appear in tabs and have a back button.",
             "edit_ui": "Edit in visual editor",
             "edit_yaml": "Edit in YAML",
@@ -6016,13 +6578,38 @@
             "error_same_url": "You cannot save a view with the same URL as a different existing view.",
             "move_to_dashboard": "Move to dashboard"
           },
+          "edit_view_header": {
+            "add_title": "Add title",
+            "header": "Header settings",
+            "edit_ui": "[%key:ui::panel::lovelace::editor::edit_view::edit_ui%]",
+            "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
+            "saving_failed": "[%key:ui::panel::lovelace::editor::edit_view::saving_failed%]",
+            "default_title": "# Hello {user}\nAdd your text here, template variables are supported ✨",
+            "settings": {
+              "layout": "Layout",
+              "layout_options": {
+                "responsive": "Responsive",
+                "responsive_description": "Stacked on mobile",
+                "start": "Left aligned",
+                "start_description": "Always stacked",
+                "start_rtl": "Right aligned",
+                "center": "Centered",
+                "center_description": "Always stacked"
+              },
+              "badges_position": "Badges position",
+              "badges_position_options": {
+                "top": "Top",
+                "bottom": "Bottom"
+              }
+            }
+          },
           "edit_badges": {
             "view_no_badges": "Badges are not be supported by the current view type."
           },
           "edit_card": {
             "header": "Card configuration",
             "typed_header": "{type} Card configuration",
-            "pick_card": "Which card would you like to add?",
+            "pick_card": "Add to dashboard",
             "pick_card_title": "Which card would you like to add to {name}",
             "toggle_editor": "Toggle editor",
             "unsaved_changes": "You have unsaved changes",
@@ -6135,8 +6722,6 @@
             "edit_ui": "[%key:ui::panel::lovelace::editor::edit_view::edit_ui%]",
             "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
             "settings": {
-              "title": "Title",
-              "title_helper": "The title will appear at the top of section. Leave empty to hide the title.",
               "column_span": "Width",
               "column_span_helper": "Larger sections will be made smaller to fit the display. (e.g. on mobile devices)"
             },
@@ -6411,7 +6996,7 @@
             },
             "humidifier": {
               "name": "Humidifier",
-              "description": "The Humidifier card gives control of a humidifier entity for humidifying or dehumdifying, allowing you to set its mode and desired humidity.",
+              "description": "The Humidifier card gives control of a humidifier entity for humidifying or dehumidifying, allowing you to set its mode and desired humidity.",
               "show_current_as_primary": "Show current humidity as primary information"
             },
             "iframe": {
@@ -6462,7 +7047,9 @@
               "suggested_cards": "Suggested cards",
               "other_cards": "Other cards",
               "custom_cards": "Custom cards",
-              "features": "Features"
+              "features": "Features",
+              "actions": "Actions",
+              "content": "Content"
             },
             "heading": {
               "name": "Heading",
@@ -6481,7 +7068,6 @@
                 "name_helper": "Visible if selected in state content",
                 "visibility": "Visibility",
                 "visibility_explanation": "The entity will be shown when ALL conditions below are fulfilled. If no conditions are set, the entity will always be shown.",
-                "appearance": "Appearance",
                 "state_content": "State content",
                 "displayed_elements": "[%key:ui::panel::lovelace::editor::badge::entity::displayed_elements%]",
                 "displayed_elements_options": {
@@ -6509,6 +7095,11 @@
             "markdown": {
               "name": "Markdown",
               "content": "Content",
+              "style": "Style",
+              "style_options": {
+                "card": "Card",
+                "text-only": "Text only"
+              },
               "description": "The Markdown card is used to render Markdown."
             },
             "media-control": {
@@ -6557,13 +7148,24 @@
               "name": "Sensor",
               "show_more_detail": "Show more detail",
               "graph_type": "Graph type",
-              "description": "The Sensor card gives you a quick overview of your sensors state with an optional graph to visualize change over time."
+              "description": "The Sensor card gives you a quick overview of your sensors state with an optional graph to visualize change over time.",
+              "limit_min": "Minimum value",
+              "limit_max": "Maximum value"
             },
             "todo-list": {
               "name": "To-do list",
               "description": "The To-do list card allows you to add, edit, check-off, and remove items from your to-do list.",
               "integration_not_loaded": "This card requires the `todo` integration to be set up.",
-              "hide_completed": "Hide completed items"
+              "hide_completed": "Hide completed items",
+              "display_order": "Display Order",
+              "sort_modes": {
+                "none": "Default",
+                "manual": "Manual",
+                "alpha_asc": "Alphabetical (A-Z)",
+                "alpha_desc": "Alphabetical (Z-A)",
+                "duedate_asc": "Due Date (Soonest First)",
+                "duedate_desc": "Due Date (Latest First)"
+              }
             },
             "thermostat": {
               "name": "Thermostat",
@@ -6576,12 +7178,22 @@
               "color": "Color",
               "color_helper": "Inactive state (e.g. off, closed) will not be colored.",
               "icon_tap_action": "Icon tap behavior",
-              "interactions": "Interactions",
-              "appearance": "Appearance",
+              "icon_hold_action": "Icon hold behavior",
+              "icon_double_tap_action": "Icon double tap behavior",
               "show_entity_picture": "Show entity picture",
-              "vertical": "Vertical",
               "hide_state": "Hide state",
-              "state_content": "State content"
+              "state_content": "State content",
+              "features_position": "Features position",
+              "features_position_options": {
+                "bottom": "Bottom",
+                "inline": "Inline"
+              },
+              "features_position_helper_vertical": "Always displayed at the bottom if the content layout is vertical",
+              "content_layout": "Content layout",
+              "content_layout_options": {
+                "horizontal": "Horizontal",
+                "vertical": "Vertical"
+              }
             },
             "vertical-stack": {
               "name": "Vertical stack",
@@ -6596,6 +7208,7 @@
               "show_only_current": "Show only current Weather",
               "show_only_forecast": "Show only forecast",
               "forecast_type": "Select forecast type",
+              "forecast_slots": "Maximum number of forecast elements to show",
               "no_type": "No type",
               "daily": "Daily",
               "hourly": "Hourly",
@@ -6616,8 +7229,6 @@
               "description": "The Entity badge gives you a quick overview of your entity.",
               "color": "[%key:ui::panel::lovelace::editor::card::tile::color%]",
               "color_helper": "[%key:ui::panel::lovelace::editor::card::tile::color_helper%]",
-              "interactions": "Interactions",
-              "appearance": "Appearance",
               "show_entity_picture": "Show entity picture",
               "state_content": "State content",
               "displayed_elements": "Displayed elements",
@@ -6756,6 +7367,14 @@
                 "customize_modes": "Customize preset modes",
                 "preset_modes": "Preset modes"
               },
+              "counter-actions": {
+                "label": "Counter actions",
+                "actions": {
+                  "increment": "Increment",
+                  "decrement": "Decrement",
+                  "reset": "Reset"
+                }
+              },
               "fan-preset-modes": {
                 "label": "Fan preset modes",
                 "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
@@ -6783,6 +7402,9 @@
                 "label": "Select options",
                 "options": "Options",
                 "customize_options": "Customize options"
+              },
+              "toggle": {
+                "label": "Toggle"
               },
               "numeric-input": {
                 "label": "Numeric input",
@@ -6840,7 +7462,6 @@
           },
           "cardpicker": {
             "no_description": "No description available.",
-            "custom_card": "Custom",
             "domain": "Domain",
             "entity": "Entity",
             "by_entity": "By entity",
@@ -6887,7 +7508,7 @@
           "entity_not_found": "Entity not available: {entity}",
           "entity_non_numeric": "Entity is non-numeric: {entity}",
           "entity_unavailable": "Entity is currently unavailable: {entity}",
-          "starting": "Home Assistant is starting, not everything may be available yet"
+          "starting": "Home Assistant is starting. Not everything may be available yet."
         },
         "changed_toast": {
           "message": "Your dashboard was updated. Refresh to see changes?"
@@ -7128,7 +7749,7 @@
         "create_list": "Create list",
         "delete_list": "Delete list",
         "add_item": "Add item",
-        "information": "Information",
+        "information": "More info",
         "delete_confirm_title": "Remove {name}?",
         "delete_confirm_text": "Are you sure you want to remove this list and all of its items?",
         "restart_confirm": "Restart Home Assistant to finish removing this to-do list"
@@ -7500,7 +8121,7 @@
             "data_table": {
               "select_all_issues": "Select all with issues",
               "name": "Name",
-              "statistic_id": "Statistic id",
+              "statistic_id": "Statistic ID",
               "statistics_unit": "Statistics unit",
               "source": "Source",
               "issue": "Issue",
@@ -7658,9 +8279,53 @@
         },
         "restore": {
           "header": "Restore a backup",
+          "upload_backup": "[%key:ui::panel::config::backup::dialogs::upload::title%]",
+          "unsupported": {
+            "title": "[%key:ui::panel::config::backup::dialogs::upload::unsupported::title%]",
+            "text": "[%key:ui::panel::config::backup::dialogs::upload::unsupported::text%]"
+          },
+          "ok": "[%key:ui::common::ok%]",
+          "upload_input_label": "[%key:ui::panel::config::backup::dialogs::upload::input_label%]",
+          "upload_supports_tar": "[%key:ui::panel::config::backup::dialogs::upload::supports_tar%]",
+          "upload_secondary": "[%key:ui::components::file-upload::secondary%]",
+          "delete": "[%key:ui::common::delete%]",
+          "uploading": "[%key:ui::components::file-upload::uploading%]",
+          "details": {
+            "home_assistant_missing": "This backup does not include your Home Assistant configuration, you cannot use it to restore your instance.",
+            "addons_unsupported": "This backup includes add-ons and folders, which are not supported in this installation method of Home Assistant. You can still restore Home Assistant, but the unsupported files will not be restored.",
+            "summary": {
+              "title": "[%key:ui::panel::config::backup::details::summary::title%]",
+              "size": "[%key:ui::panel::config::backup::details::summary::size%]",
+              "created": "[%key:ui::panel::config::backup::details::summary::created%]",
+              "upload_another": "Upload another",
+              "home": "Home"
+            },
+            "restore": {
+              "title": "[%key:ui::panel::config::backup::details::restore::title%]",
+              "action": "[%key:ui::panel::config::backup::details::restore::action%]",
+              "encryption": {
+                "title": "[%key:ui::panel::config::backup::dialogs::restore::encryption::different_key%]",
+                "incorrect_key": "[%key:ui::panel::config::backup::dialogs::restore::encryption::incorrect_key%]",
+                "input_label": "[%key:ui::panel::config::backup::dialogs::restore::encryption::input_label%]"
+              }
+            }
+          },
+          "data_picker": {
+            "settings": "[%key:ui::panel::config::backup::data_picker::settings%]",
+            "settings_and_history": "[%key:ui::panel::config::backup::data_picker::settings_and_history%]",
+            "media": "[%key:ui::panel::config::backup::data_picker::media%]",
+            "share_folder": "[%key:ui::panel::config::backup::data_picker::share_folder%]",
+            "local_addons": "[%key:ui::panel::config::backup::data_picker::local_addons%]",
+            "addons": "[%key:ui::panel::config::backup::data_picker::addons%]",
+            "ssl": "[%key:ui::panel::config::backup::data_picker::ssl%]"
+          },
+          "restore_no_home_assistant": "[%key:supervisor::backup::restore_no_home_assistant%]",
           "in_progress": "Restore in progress",
+          "in_progress_description": "The restore process is running in the background. Home Assistant will automatically start again once the restore is complete. Please be patient, this can take a while. Do not close or refresh this page.",
           "failed": "Restore failed",
-          "upload_backup": "[%key:supervisor::backup::upload_backup%]",
+          "failed_status_description": "The backup could not be restored. Please try again.",
+          "failed_description": "The last restore attempt failed. Please try it again.",
+          "failed_wrong_password_description": "The last restore attempt failed, because the encryption key was incorrect. Please try it again.",
           "upload_supports": "Supports .TAR files",
           "upload_drop": "[%key:ui::components::file-upload::secondary%]",
           "show_log": "Show full log",
@@ -7668,7 +8333,6 @@
           "full_backup": "[%key:supervisor::backup::full_backup%]",
           "partial_backup": "[%key:supervisor::backup::partial_backup%]",
           "name": "[%key:supervisor::backup::name%]",
-          "type": "[%key:supervisor::backup::type%]",
           "select_type": "[%key:supervisor::backup::select_type%]",
           "folders": "[%key:supervisor::backup::folders%]",
           "addons": "[%key:supervisor::backup::addons%]",
@@ -7683,10 +8347,16 @@
           "close": "[%key:ui::common::close%]",
           "cancel": "[%key:ui::common::cancel%]",
           "retry": "Retry",
+          "back": "[%key:ui::common::back%]",
           "restore_start_failed": "[%key:supervisor::backup::restore_start_failed%]",
           "no_backup_found": "[%key:supervisor::backup::no_backup_found%]",
-          "restore_no_home_assistant": "[%key:supervisor::backup::restore_no_home_assistant%]",
-          "unnamed_backup": "[%key:supervisor::backup::unnamed_backup%]"
+          "unnamed_backup": "[%key:supervisor::backup::unnamed_backup%]",
+          "cancel_restore": {
+            "title": "Cancel restore process?",
+            "text": "Are you sure you want to cancel the restore process and return to the onboarding?",
+            "yes": "[%key:ui::common::yes%]",
+            "no": "[%key:ui::common::no%]"
+          }
         }
       },
       "custom": {
@@ -8001,10 +8671,14 @@
     "update_available": {
       "update_name": "Update {name}",
       "open_release_notes": "Open release notes",
-      "create_backup": "Create backup before updating",
       "description": "You have {version} installed. Press update to update to version {newest_version}",
       "updating": "Updating {name} to version {version}",
-      "no_update": "No update available for {name}"
+      "no_update": "No update available for {name}",
+      "create_backup": {
+        "addon": "[%key:ui::dialogs::more_info_control::update::create_backup::addon%]",
+        "addon_description": "[%key:ui::dialogs::more_info_control::update::create_backup::addon_description%]",
+        "generic": "[%key:ui::dialogs::more_info_control::update::create_backup::generic%]"
+      }
     },
     "confirm": {
       "restart": {

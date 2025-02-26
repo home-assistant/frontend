@@ -66,7 +66,7 @@ class HuiHumidifierToggleCardFeature
 
     try {
       await this._setState(newState);
-    } catch (err) {
+    } catch (_err) {
       this._currentState = oldState;
     }
   }

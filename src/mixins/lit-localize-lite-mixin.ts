@@ -17,7 +17,7 @@ export const litLocalizeLiteMixin = <T extends Constructor<LitElement>>(
     @property({ attribute: false }) public localize: LocalizeFunc = empty;
 
     // Use browser language setup before login.
-    @property() public language?: string = getLocalLanguage();
+    @property() public language: string = getLocalLanguage();
 
     @property() public translationFragment?: string;
 

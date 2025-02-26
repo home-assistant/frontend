@@ -1,6 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -18,6 +18,7 @@ export class HuiStartingCard extends LitElement implements LovelaceCard {
     return 2;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   public setConfig(_config: LovelaceCardConfig): void {}
 
   protected updated(changedProperties: PropertyValues) {
@@ -44,24 +45,22 @@ export class HuiStartingCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-        height: calc(100vh - var(--header-height));
-      }
-      ha-circular-progress {
-        margin-bottom: 20px;
-      }
-      .content {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+      height: calc(100vh - var(--header-height));
+    }
+    ha-circular-progress {
+      margin-bottom: 20px;
+    }
+    .content {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+  `;
 }
 
 declare global {

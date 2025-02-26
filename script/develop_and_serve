@@ -30,7 +30,7 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-# parse input paramters
+# parse input parameters
 if [ -n "$DEVCONTAINER" ]; then
     frontendPort=8123
 else
@@ -64,7 +64,7 @@ echo Core is used from ${coreUrl}
 HASS_URL="$coreUrl" ./script/develop &
 
 # serve the frontend
-yarn dlx serve -l $frontendPort ./hass_frontend -s &
+./node_modules/.bin/serve -p $frontendPort --single --no-port-switching --config ../script/serve-config.json ./hass_frontend &
 
 # keep the script running while serving
 wait

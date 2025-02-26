@@ -1,5 +1,4 @@
 import { consume } from "@lit-labs/context";
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
   mdiChevronRight,
   mdiDotsVertical,
@@ -51,8 +50,8 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import { createAreaRegistryEntry } from "../../../data/area_registry";
-import type { ConfigEntry } from "../../../data/config_entries";
-import { sortConfigEntries } from "../../../data/config_entries";
+import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
+import { getSubEntries, sortConfigEntries } from "../../../data/config_entries";
 import { fullEntitiesContext } from "../../../data/context";
 import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
@@ -107,6 +106,8 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ attribute: false }) public entries!: ConfigEntry[];
+
+  @state() private _subEntries?: SubEntry[];
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -219,6 +220,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
   private _setFiltersFromUrl() {
     const domain = this._searchParms.get("domain");
     const configEntry = this._searchParms.get("config_entry");
+    const subEntry = this._searchParms.get("sub_entry");
     const label = this._searchParms.has("label");
 
     if (!domain && !configEntry && !label) {
@@ -241,6 +243,10 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
       },
       config_entry: {
         value: configEntry ? [configEntry] : [],
+        items: undefined,
+      },
+      sub_entry: {
+        value: subEntry ? [subEntry] : [],
         items: undefined,
       },
     };
@@ -296,12 +302,12 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         deviceEntityLookup[entity.device_id].push(entity);
       }
 
-      const entryLookup: { [entryId: string]: ConfigEntry } = {};
+      const entryLookup: Record<string, ConfigEntry> = {};
       for (const entry of entries) {
         entryLookup[entry.entry_id] = entry;
       }
 
-      const manifestLookup: { [domain: string]: IntegrationManifest } = {};
+      const manifestLookup: Record<string, IntegrationManifest> = {};
       for (const manifest of manifests) {
         manifestLookup[manifest.domain] = manifest;
       }
@@ -333,6 +339,32 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
           });
           if (configEntries.length === 1) {
             filteredConfigEntry = configEntries[0];
+          }
+        } else if (
+          key === "sub_entry" &&
+          Array.isArray(filter.value) &&
+          filter.value.length
+        ) {
+          if (
+            !(
+              Array.isArray(this._filters.config_entry?.value) &&
+              this._filters.config_entry.value.length === 1
+            )
+          ) {
+            return;
+          }
+          const configEntryId = this._filters.config_entry.value[0];
+          outputDevices = outputDevices.filter(
+            (device) =>
+              device.config_entries_subentries[configEntryId] &&
+              (filter.value as string[]).some((subEntryId) =>
+                device.config_entries_subentries[configEntryId].includes(
+                  subEntryId
+                )
+              )
+          );
+          if (!this._subEntries) {
+            this._loadSubEntries(configEntryId);
           }
         } else if (
           key === "ha-filter-integrations" &&
@@ -626,7 +658,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         (area) =>
           html`<ha-md-menu-item
             .value=${area.area_id}
-            @click=${this._handleBulkArea}
+            .clickAction=${this._handleBulkArea}
           >
             ${area.icon
               ? html`<ha-icon slot="start" .icon=${area.icon}></ha-icon>`
@@ -637,7 +669,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
             <div slot="headline">${area.name}</div>
           </ha-md-menu-item>`
       )}
-      <ha-md-menu-item .value=${null} @click=${this._handleBulkArea}>
+      <ha-md-menu-item .value=${null} .clickAction=${this._handleBulkArea}>
         <div slot="headline">
           ${this.hass.localize(
             "ui.panel.config.devices.picker.bulk_actions.no_area"
@@ -645,7 +677,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         </div>
       </ha-md-menu-item>
       <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-      <ha-md-menu-item @click=${this._bulkCreateArea}>
+      <ha-md-menu-item .clickAction=${this._bulkCreateArea}>
         <div slot="headline">
           ${this.hass.localize(
             "ui.panel.config.devices.picker.bulk_actions.add_area"
@@ -684,7 +716,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         </ha-md-menu-item>`;
       })}
       <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-      <ha-md-menu-item @click=${this._bulkCreateLabel}>
+      <ha-md-menu-item .clickAction=${this._bulkCreateLabel}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.labels.add_label")}
         </div></ha-md-menu-item
@@ -749,11 +781,21 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         ${Array.isArray(this._filters.config_entry?.value) &&
         this._filters.config_entry?.value.length
           ? html`<ha-alert slot="filter-pane">
-              Filtering by config entry
+              ${this.hass.localize(
+                "ui.panel.config.devices.filtering_by_config_entry"
+              )}
               ${this.entries?.find(
                 (entry) =>
                   entry.entry_id === this._filters.config_entry!.value![0]
-              )?.title || this._filters.config_entry.value[0]}
+              )?.title || this._filters.config_entry.value[0]}${this._filters
+                .config_entry.value.length === 1 &&
+              Array.isArray(this._filters.sub_entry?.value) &&
+              this._filters.sub_entry.value.length
+                ? html` (${this._subEntries?.find(
+                    (entry) =>
+                      entry.subentry_id === this._filters.sub_entry!.value![0]
+                  )?.title || this._filters.sub_entry!.value![0]})`
+                : nothing}
             </ha-alert>`
           : nothing}
         <ha-filter-floor-areas
@@ -845,7 +887,9 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                   </ha-assist-chip>`
                 : html`<ha-icon-button
                     .path=${mdiDotsVertical}
-                    .label=${"ui.panel.config.automation.picker.bulk_action"}
+                    .label=${this.hass.localize(
+                      "ui.panel.config.automation.picker.bulk_action"
+                    )}
                     slot="trigger"
                   ></ha-icon-button>`}
               ${this.narrow
@@ -882,6 +926,10 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
           : nothing}
       </hass-tabs-subpage-data-table>
     `;
+  }
+
+  private async _loadSubEntries(entryId: string) {
+    this._subEntries = await getSubEntries(this.hass, entryId);
   }
 
   private _filterExpanded(ev) {
@@ -945,7 +993,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
 
     if (
       filteredDomains.size === 1 &&
-      (PROTOCOL_INTEGRATIONS as ReadonlyArray<string>).includes(
+      (PROTOCOL_INTEGRATIONS as readonly string[]).includes(
         [...filteredDomains][0]
       )
     ) {
@@ -965,10 +1013,10 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
     this._selected = ev.detail.value;
   }
 
-  private async _handleBulkArea(ev) {
-    const area = ev.currentTarget.value;
+  private _handleBulkArea = (item) => {
+    const area = item.value;
     this._bulkAddArea(area);
-  }
+  };
 
   private async _bulkAddArea(area: string) {
     const promises: Promise<DeviceRegistryEntry>[] = [];
@@ -995,7 +1043,7 @@ ${rejected
     }
   }
 
-  private async _bulkCreateArea() {
+  private _bulkCreateArea = () => {
     showAreaRegistryDetailDialog(this, {
       createEntry: async (values) => {
         const area = await createAreaRegistryEntry(this.hass, values);
@@ -1003,7 +1051,7 @@ ${rejected
         return area;
       },
     });
-  }
+  };
 
   private async _handleBulkLabel(ev) {
     const label = ev.currentTarget.value;
@@ -1041,7 +1089,7 @@ ${rejected
     }
   }
 
-  private _bulkCreateLabel() {
+  private _bulkCreateLabel = () => {
     showLabelDetailDialog(this, {
       createEntry: async (values) => {
         const label = await createLabelRegistryEntry(this.hass, values);
@@ -1049,7 +1097,7 @@ ${rejected
         return label;
       },
     });
-  }
+  };
 
   private _handleSortingChanged(ev: CustomEvent) {
     this._activeSorting = ev.detail;

@@ -218,8 +218,8 @@ export class DialogDataTableSettings extends LitElement {
 
       // Array.findLastIndex when supported or core-js polyfill
       const findLastIndex = (
-        arr: Array<any>,
-        fn: (item: any, index: number, arr: Array<any>) => boolean
+        arr: any[],
+        fn: (item: any, index: number, arr: any[]) => boolean
       ) => {
         for (let i = arr.length - 1; i >= 0; i--) {
           if (fn(arr[i], i, arr)) return i;

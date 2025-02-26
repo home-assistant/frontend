@@ -284,7 +284,7 @@ export class HaConfigLovelaceRescources extends LitElement {
         confirm: () => location.reload(),
       });
       return true;
-    } catch (err: any) {
+    } catch (_err: any) {
       return false;
     }
   };

@@ -85,7 +85,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
         <div class="rows">
           ${this.assistConfiguration &&
           this.assistConfiguration.available_wake_words.length > 1
-            ? html` <div class="row">
+            ? html`<div class="row">
                 <ha-select
                   .label=${"Wake word"}
                   @closed=${stopPropagation}
@@ -234,7 +234,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
         const result = await getTranslation(null, pipeline.language, false);
         this._announce(result.data["ui.dialogs.tts-try.message_example"]);
         return;
-      } catch (e) {
+      } catch (_e) {
         // ignore fallback to user language
       }
     }

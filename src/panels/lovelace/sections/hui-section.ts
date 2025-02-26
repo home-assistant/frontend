@@ -21,6 +21,7 @@ import {
 import { createSectionElement } from "../create-element/create-section-element";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
+import { replaceCard } from "../editor/config-util";
 import { performDeleteCard } from "../editor/delete-card";
 import { parseLovelaceCardPath } from "../editor/lovelace-path";
 import { generateLovelaceSectionStrategy } from "../strategies/get-strategy";
@@ -253,11 +254,23 @@ export class HuiSection extends ReactiveElement {
       ev.stopPropagation();
       if (!this.lovelace) return;
       const { cardIndex } = parseLovelaceCardPath(ev.detail.path);
+      const sectionConfig = this.config;
+      if (isStrategySection(sectionConfig)) {
+        return;
+      }
+      const cardConfig = sectionConfig.cards![cardIndex];
       showEditCardDialog(this, {
         lovelaceConfig: this.lovelace.config,
-        saveConfig: this.lovelace.saveConfig,
-        path: [this.viewIndex, this.index],
-        cardIndex,
+        saveCardConfig: async (newCardConfig) => {
+          const newConfig = replaceCard(
+            this.lovelace!.config,
+            [this.viewIndex, this.index, cardIndex],
+            newCardConfig
+          );
+          await this.lovelace!.saveConfig(newConfig);
+        },
+        sectionConfig,
+        cardConfig,
       });
     });
     this._layoutElement.addEventListener("ll-delete-card", (ev) => {

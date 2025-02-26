@@ -1,15 +1,13 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
-import type { ChartResizeOptions } from "../../components/chart/ha-chart-base";
+import { customElement, property, state } from "lit/decorators";
 import type { HomeAssistant } from "../../types";
 import {
   computeShowHistoryComponent,
   computeShowLogBookComponent,
 } from "./const";
 import "./ha-more-info-history";
-import type { MoreInfoHistory } from "./ha-more-info-history";
 import "./ha-more-info-logbook";
+import { getSensorNumericDeviceClasses } from "../../data/sensor";
 
 @customElement("ha-more-info-history-and-logbook")
 export class MoreInfoHistoryAndLogbook extends LitElement {
@@ -17,11 +15,16 @@ export class MoreInfoHistoryAndLogbook extends LitElement {
 
   @property({ attribute: false }) public entityId!: string;
 
-  @query("ha-more-info-history")
-  private _history?: MoreInfoHistory;
+  @state() private _sensorNumericDeviceClasses?: string[] = [];
 
-  public resize(options?: ChartResizeOptions) {
-    this._history?.resize(options);
+  private async _loadNumericDeviceClasses() {
+    const deviceClasses = await getSensorNumericDeviceClasses(this.hass);
+    this._sensorNumericDeviceClasses = deviceClasses.numeric_device_classes;
+  }
+
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    this._loadNumericDeviceClasses();
   }
 
   protected render() {
@@ -34,7 +37,11 @@ export class MoreInfoHistoryAndLogbook extends LitElement {
             ></ha-more-info-history>
           `
         : ""}
-      ${computeShowLogBookComponent(this.hass, this.entityId)
+      ${computeShowLogBookComponent(
+        this.hass,
+        this.entityId,
+        this._sensorNumericDeviceClasses
+      )
         ? html`
             <ha-more-info-logbook
               .hass=${this.hass}
@@ -45,17 +52,15 @@ export class MoreInfoHistoryAndLogbook extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-more-info-history,
-      ha-more-info-logbook {
-        display: block;
-      }
-      ha-more-info-history + ha-more-info-logbook {
-        margin-top: 16px;
-      }
-    `;
-  }
+  static styles = css`
+    ha-more-info-history,
+    ha-more-info-logbook {
+      display: block;
+    }
+    ha-more-info-history + ha-more-info-logbook {
+      margin-top: 16px;
+    }
+  `;
 }
 
 declare global {

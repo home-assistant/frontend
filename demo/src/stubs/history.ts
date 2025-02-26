@@ -131,6 +131,7 @@ export const mockHistory = (mockHass: MockHomeAssistant) => {
         });
       }, 1);
 
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       return () => {};
     }
   );

@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -21,6 +21,9 @@ import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { PictureEntityCardConfig } from "./types";
 import type { CameraEntity } from "../../../data/camera";
 import type { PersonEntity } from "../../../data/person";
+
+export const STUB_IMAGE =
+  "https://demo.home-assistant.io/stub_config/bedroom.png";
 
 @customElement("hui-picture-entity-card")
 class HuiPictureEntityCard extends LitElement implements LovelaceCard {
@@ -46,7 +49,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     return {
       type: "picture-entity",
       entity: foundEntities[0] || "",
-      image: "https://demo.home-assistant.io/stub_config/bedroom.png",
+      image: STUB_IMAGE,
     };
   }
 
@@ -134,15 +137,17 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
 
     const domain: string = computeDomain(this._config.entity);
     let image: string | undefined = this._config.image;
-    switch (domain) {
-      case "image":
-        image = computeImageUrl(stateObj as ImageEntity);
-        break;
-      case "person":
-        if ((stateObj as PersonEntity).attributes.entity_picture) {
-          image = (stateObj as PersonEntity).attributes.entity_picture;
-        }
-        break;
+    if (!image) {
+      switch (domain) {
+        case "image":
+          image = computeImageUrl(stateObj as ImageEntity);
+          break;
+        case "person":
+          if ((stateObj as PersonEntity).attributes.entity_picture) {
+            image = (stateObj as PersonEntity).attributes.entity_picture;
+          }
+          break;
+      }
     }
 
     return html`
@@ -175,53 +180,51 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-card {
-        min-height: 75px;
-        overflow: hidden;
-        position: relative;
-        height: 100%;
-        box-sizing: border-box;
-      }
+  static styles = css`
+    ha-card {
+      min-height: 75px;
+      overflow: hidden;
+      position: relative;
+      height: 100%;
+      box-sizing: border-box;
+    }
 
-      hui-image {
-        cursor: pointer;
-        height: 100%;
-      }
+    hui-image {
+      cursor: pointer;
+      height: 100%;
+    }
 
-      .footer {
-        /* start paper-font-common-nowrap style */
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        /* end paper-font-common-nowrap style */
+    .footer {
+      /* start paper-font-common-nowrap style */
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      /* end paper-font-common-nowrap style */
 
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: var(
-          --ha-picture-card-background-color,
-          rgba(0, 0, 0, 0.3)
-        );
-        padding: 16px;
-        font-size: 16px;
-        line-height: 16px;
-        color: var(--ha-picture-card-text-color, white);
-        pointer-events: none;
-      }
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(
+        --ha-picture-card-background-color,
+        rgba(0, 0, 0, 0.3)
+      );
+      padding: 16px;
+      font-size: 16px;
+      line-height: 16px;
+      color: var(--ha-picture-card-text-color, white);
+      pointer-events: none;
+    }
 
-      .both {
-        display: flex;
-        justify-content: space-between;
-      }
+    .both {
+      display: flex;
+      justify-content: space-between;
+    }
 
-      .single {
-        text-align: center;
-      }
-    `;
-  }
+    .single {
+      text-align: center;
+    }
+  `;
 
   private _handleAction(ev: ActionHandlerEvent) {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);

@@ -17,8 +17,9 @@ export {
 export interface DeviceRegistryEntry extends RegistryEntry {
   id: string;
   config_entries: string[];
-  connections: Array<[string, string]>;
-  identifiers: Array<[string, string]>;
+  config_entries_subentries: Record<string, (string | null)[]>;
+  connections: [string, string][];
+  identifiers: [string, string][];
   manufacturer: string | null;
   model: string | null;
   model_id: string | null;
@@ -36,13 +37,12 @@ export interface DeviceRegistryEntry extends RegistryEntry {
   primary_config_entry: string | null;
 }
 
-export interface DeviceEntityDisplayLookup {
-  [deviceId: string]: EntityRegistryDisplayEntry[];
-}
+export type DeviceEntityDisplayLookup = Record<
+  string,
+  EntityRegistryDisplayEntry[]
+>;
 
-export interface DeviceEntityLookup {
-  [deviceId: string]: EntityRegistryEntry[];
-}
+export type DeviceEntityLookup = Record<string, EntityRegistryEntry[]>;
 
 export interface DeviceRegistryEntryMutableParams {
   area_id?: string | null;

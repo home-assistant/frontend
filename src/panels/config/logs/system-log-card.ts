@@ -1,6 +1,5 @@
 import "@material/mwc-list/mwc-list";
 import { mdiDotsVertical, mdiDownload, mdiRefresh, mdiText } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -241,70 +240,69 @@ export class SystemLogCard extends LitElement {
     showSystemLogDetailDialog(this, { item });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-card {
-        padding-top: 8px;
-      }
+  static styles = css`
+    ha-card {
+      padding-top: 8px;
+    }
 
-      :host {
-        direction: var(--direction);
-      }
-      mwc-list {
-        direction: ltr;
-      }
+    :host {
+      direction: var(--direction);
+    }
+    mwc-list {
+      direction: ltr;
+    }
 
-      .header {
-        display: flex;
-        justify-content: space-between;
-        padding: 0 16px;
-      }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 16px;
+    }
 
-      .header-buttons {
-        display: flex;
-        align-items: center;
-      }
+    .header-buttons {
+      display: flex;
+      align-items: flex-start;
+    }
 
-      .card-header {
-        color: var(--ha-card-header-color, var(--primary-text-color));
-        font-family: var(--ha-card-header-font-family, inherit);
-        font-size: var(--ha-card-header-font-size, 24px);
-        letter-spacing: -0.012em;
-        line-height: 48px;
-        display: block;
-        margin-block-start: 0px;
-        margin-block-end: 0px;
-        font-weight: normal;
-      }
+    .card-header {
+      color: var(--ha-card-header-color, var(--primary-text-color));
+      font-family: var(--ha-card-header-font-family, inherit);
+      font-size: var(--ha-card-header-font-size, 24px);
+      letter-spacing: -0.012em;
+      line-height: 48px;
+      display: block;
+      margin-block-start: 0px;
+      font-weight: normal;
+    }
 
-      .system-log-intro {
-        margin: 16px;
-      }
+    .system-log-intro {
+      margin: 16px;
+    }
 
-      .loading-container {
-        height: 100px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
+    .loading-container {
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-      .error {
-        color: var(--error-color);
-      }
+    .error {
+      color: var(--error-color);
+    }
 
-      .warning {
-        color: var(--warning-color);
-      }
+    .warning {
+      color: var(--warning-color);
+    }
 
-      .card-content {
-        border-top: 1px solid var(--divider-color);
-      }
+    .card-content {
+      border-top: 1px solid var(--divider-color);
+      padding-top: 16px;
+      padding-bottom: 16px;
+    }
 
-      .row-secondary {
-        text-align: left;
-      }
-    `;
-  }
+    .row-secondary {
+      text-align: left;
+    }
+  `;
 }
 
 declare global {

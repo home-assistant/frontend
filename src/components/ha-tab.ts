@@ -1,4 +1,4 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -34,59 +34,57 @@ export class HaTab extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      div {
-        padding: 0 32px;
-        display: flex;
-        flex-direction: column;
-        text-align: center;
-        box-sizing: border-box;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        height: var(--header-height);
-        cursor: pointer;
-        position: relative;
-        outline: none;
-      }
+  static styles = css`
+    div {
+      padding: 0 32px;
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      box-sizing: border-box;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: var(--header-height);
+      cursor: pointer;
+      position: relative;
+      outline: none;
+    }
 
-      .name {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 100%;
-      }
+    .name {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
 
-      :host([active]) {
-        color: var(--primary-color);
-      }
+    :host([active]) {
+      color: var(--primary-color);
+    }
 
-      :host(:not([narrow])[active]) div {
-        border-bottom: 2px solid var(--primary-color);
-      }
+    :host(:not([narrow])[active]) div {
+      border-bottom: 2px solid var(--primary-color);
+    }
 
-      :host([narrow]) {
-        min-width: 0;
-        display: flex;
-        justify-content: center;
-        overflow: hidden;
-      }
+    :host([narrow]) {
+      min-width: 0;
+      display: flex;
+      justify-content: center;
+      overflow: hidden;
+    }
 
-      :host([narrow]) div {
-        padding: 0 4px;
-      }
+    :host([narrow]) div {
+      padding: 0 4px;
+    }
 
-      div:focus-visible:before {
-        position: absolute;
-        display: block;
-        content: "";
-        inset: 0;
-        background-color: var(--secondary-text-color);
-        opacity: 0.08;
-      }
-    `;
-  }
+    div:focus-visible:before {
+      position: absolute;
+      display: block;
+      content: "";
+      inset: 0;
+      background-color: var(--secondary-text-color);
+      opacity: 0.08;
+    }
+  `;
 }
 declare global {
   interface HTMLElementTagNameMap {

@@ -66,6 +66,18 @@ const randomTip = (hass: HomeAssistant, narrow: boolean) => {
           rel="noreferrer"
           >${hass.localize("ui.panel.config.tips.join_x")}</a
         >`,
+        mastodon: html`<a
+          href=${documentationUrl(hass, `/mastodon`)}
+          target="_blank"
+          rel="noreferrer"
+          >${hass.localize("ui.panel.config.tips.join_mastodon")}</a
+        >`,
+        bluesky: html`<a
+          href=${documentationUrl(hass, `/bluesky`)}
+          target="_blank"
+          rel="noreferrer"
+          >${hass.localize("ui.panel.config.tips.join_bluesky")}</a
+        >`,
         discord: html`<a
           href=${documentationUrl(hass, `/join-chat`)}
           target="_blank"
@@ -168,7 +180,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
           total: repairsIssues.length,
         };
 
-        const integrations: Set<string> = new Set();
+        const integrations = new Set<string>();
         for (const issue of this._repairsIssues.issues) {
           integrations.add(issue.domain);
         }

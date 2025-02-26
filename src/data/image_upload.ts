@@ -32,7 +32,7 @@ export const getIdFromUrl = (url: string): string | undefined => {
 export const generateImageThumbnailUrl = (
   mediaId: string,
   size?: number,
-  original: boolean = false
+  original = false
 ) => {
   if (!original && !size) {
     throw new Error("Size must be provided if original is false");

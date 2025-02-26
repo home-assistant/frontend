@@ -32,6 +32,7 @@ const cardConfigStruct = assign(
     period: optional(any()),
     theme: optional(string()),
     footer: optional(headerFooterConfigStructs),
+    collection_key: optional(string()),
   })
 );
 

@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-attributes";
@@ -59,16 +58,14 @@ class MoreInfoTimer extends LitElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .actions {
-        margin: 8px 0;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-    `;
-  }
+  static styles = css`
+    .actions {
+      margin: 8px 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  `;
 }
 
 declare global {

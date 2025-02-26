@@ -1,5 +1,5 @@
 import { mdiPlus } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -70,6 +70,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     this._mqls = undefined;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   public setConfig(_config: LovelaceViewConfig): void {}
 
   protected render(): TemplateResult {
@@ -79,6 +80,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
         .badges=${this.badges}
         .lovelace=${this.lovelace}
         .viewIndex=${this.index}
+        show-add-label
       ></hui-view-badges>
       <div
         id="columns"
@@ -204,7 +206,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     // Calculate the size of every card and determine in what column it should go
     for (const [index, el] of this.cards.entries()) {
       if (tillNextRender === undefined) {
-        // eslint-disable-next-line @typescript-eslint/no-loop-func
+        // eslint-disable-next-line no-loop-func
         tillNextRender = nextRender().then(() => {
           tillNextRender = undefined;
           start = undefined;
@@ -231,7 +233,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
         // An other create columns is started, abort this one
         return;
       }
-      // Calculate in wich column the card should go based on the size and the cards already in there
+      // Calculate in which column the card should go based on the size and the cards already in there
       this._addCardToColumn(
         columnElements[getColumnIndex(columnSizes, cardSize as number)],
         index,
@@ -281,74 +283,72 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     this._createColumns();
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-        padding-top: 4px;
-      }
+  static styles = css`
+    :host {
+      display: block;
+      padding-top: 4px;
+    }
 
-      hui-view-badges {
-        display: block;
-        margin: 4px 8px 4px 8px;
-        font-size: 85%;
-      }
+    hui-view-badges {
+      display: block;
+      margin: 4px 8px 4px 8px;
+      font-size: 85%;
+    }
 
-      #columns {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        margin-left: 4px;
-        margin-right: 4px;
-      }
+    #columns {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      margin-left: 4px;
+      margin-right: 4px;
+    }
 
-      #columns.edit-mode {
-        margin-bottom: 72px;
-      }
+    #columns.edit-mode {
+      margin-bottom: 72px;
+    }
 
+    .column {
+      flex: 1 0 0;
+      max-width: 500px;
+      min-width: 0;
+    }
+
+    /* Fix for safari */
+    .column:has(> *) {
+      flex-grow: 1;
+    }
+
+    .column:not(:has(> *:not([hidden]))) {
+      flex-grow: 0;
+    }
+
+    .column > *:not([hidden]) {
+      display: block;
+      margin: var(--masonry-view-card-margin, 4px 4px 8px);
+    }
+
+    ha-fab {
+      position: fixed;
+      right: calc(16px + env(safe-area-inset-right));
+      bottom: calc(16px + env(safe-area-inset-bottom));
+      inset-inline-end: calc(16px + env(safe-area-inset-right));
+      inset-inline-start: initial;
+      z-index: 1;
+    }
+
+    @media (max-width: 500px) {
+      .column > * {
+        margin-left: 0;
+        margin-right: 0;
+      }
+    }
+
+    @media (max-width: 599px) {
       .column {
-        flex: 1 0 0;
-        max-width: 500px;
-        min-width: 0;
+        max-width: 600px;
       }
-
-      /* Fix for safari */
-      .column:has(> *) {
-        flex-grow: 1;
-      }
-
-      .column:not(:has(> *:not([hidden]))) {
-        flex-grow: 0;
-      }
-
-      .column > *:not([hidden]) {
-        display: block;
-        margin: var(--masonry-view-card-margin, 4px 4px 8px);
-      }
-
-      ha-fab {
-        position: fixed;
-        right: calc(16px + env(safe-area-inset-right));
-        bottom: calc(16px + env(safe-area-inset-bottom));
-        inset-inline-end: calc(16px + env(safe-area-inset-right));
-        inset-inline-start: initial;
-        z-index: 1;
-      }
-
-      @media (max-width: 500px) {
-        .column > * {
-          margin-left: 0;
-          margin-right: 0;
-        }
-      }
-
-      @media (max-width: 599px) {
-        .column {
-          max-width: 600px;
-        }
-      }
-    `;
-  }
+    }
+  `;
 }
 
 declare global {

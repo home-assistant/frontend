@@ -11,17 +11,16 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stringCompare } from "../../../common/string/compare";
-import { stripDiacritics } from "../../../common/string/strip-diacritics";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/ha-dialog";
 import type { HaDialog } from "../../../components/ha-dialog";
 import "../../../components/ha-dialog-header";
-import "../../../components/ha-md-divider";
 import "../../../components/ha-domain-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-md-divider";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-service-icon";
@@ -45,7 +44,6 @@ import { TRIGGER_GROUPS, TRIGGER_ICONS } from "../../../data/trigger";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import { getStripDiacriticsFn } from "../../../util/fuse";
 import type { AddAutomationElementDialogParams } from "./show-add-automation-element-dialog";
 import { PASTE_VALUE } from "./show-add-automation-element-dialog";
 
@@ -70,9 +68,7 @@ interface ListItem {
   group: boolean;
 }
 
-interface DomainManifestLookup {
-  [domain: string]: IntegrationManifest;
-}
+type DomainManifestLookup = Record<string, IntegrationManifest>;
 
 const ENTITY_DOMAINS_OTHER = new Set([
   "date",
@@ -126,7 +122,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     ).matches;
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     if (this._params) {
       fireEvent(this, "dialog-closed", { dialog: this.localName });
     }
@@ -138,6 +134,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
     this._filter = "";
     this._manifests = undefined;
     this._domains = undefined;
+    return true;
   }
 
   private _getGroups = (
@@ -203,10 +200,10 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         ignoreLocation: true,
         minMatchCharLength: Math.min(filter.length, 2),
         threshold: 0.2,
-        getFn: getStripDiacriticsFn,
+        ignoreDiacritics: true,
       };
       const fuse = new Fuse(items, options);
-      return fuse.search(stripDiacritics(filter)).map((result) => result.item);
+      return fuse.search(filter).map((result) => result.item);
     }
   );
 

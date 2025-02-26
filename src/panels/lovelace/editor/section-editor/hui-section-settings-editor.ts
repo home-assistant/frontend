@@ -11,9 +11,9 @@ import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 
-type SettingsData = {
+interface SettingsData {
   column_span?: number;
-};
+}
 
 @customElement("hui-section-settings-editor")
 export class HuiDialogEditSection extends LitElement {

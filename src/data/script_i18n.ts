@@ -43,7 +43,7 @@ export const describeAction = <T extends ActionType>(
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],
   labelRegistry: LabelRegistryEntry[],
-  floorRegistry: { [id: string]: FloorRegistryEntry },
+  floorRegistry: Record<string, FloorRegistryEntry>,
   action: ActionTypes[T],
   actionType?: T,
   ignoreAlias = false
@@ -77,7 +77,7 @@ const tryDescribeAction = <T extends ActionType>(
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],
   labelRegistry: LabelRegistryEntry[],
-  floorRegistry: { [id: string]: FloorRegistryEntry },
+  floorRegistry: Record<string, FloorRegistryEntry>,
   action: ActionTypes[T],
   actionType?: T,
   ignoreAlias = false

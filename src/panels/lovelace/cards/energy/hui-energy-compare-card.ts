@@ -1,6 +1,6 @@
 import { differenceInDays, endOfDay } from "date-fns";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDate } from "../../../../common/datetime/format_date";
@@ -117,13 +117,11 @@ export class HuiEnergyCompareCard
     energyCollection.refresh();
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      mwc-button {
-        width: max-content;
-      }
-    `;
-  }
+  static styles = css`
+    mwc-button {
+      width: max-content;
+    }
+  `;
 }
 
 declare global {

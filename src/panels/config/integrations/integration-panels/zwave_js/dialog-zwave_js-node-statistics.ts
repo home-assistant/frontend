@@ -46,7 +46,7 @@ class DialogZWaveJSNodeStatistics extends LitElement {
     rssi_translated?: TemplateResult | string;
   };
 
-  @state() private _deviceIDsToName: { [key: string]: string } = {};
+  @state() private _deviceIDsToName: Record<string, string> = {};
 
   @state() private _workingRoutes: {
     lwr?: WorkingRouteStatistics;

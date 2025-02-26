@@ -1,7 +1,15 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { assert, assign, boolean, object, optional, string } from "superstruct";
+import {
+  assert,
+  assign,
+  boolean,
+  object,
+  optional,
+  string,
+  number,
+} from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
@@ -25,6 +33,7 @@ const cardConfigStruct = assign(
     show_current: optional(boolean()),
     show_forecast: optional(boolean()),
     forecast_type: optional(string()),
+    forecast_slots: optional(number()),
     secondary_info_attribute: optional(string()),
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
@@ -225,6 +234,11 @@ export class HuiWeatherForecastCardEditor
                   },
                 },
               },
+              {
+                name: "forecast_slots",
+                selector: { number: { min: 1, max: 12 } },
+                default: 5,
+              },
             ] as const)
           : []),
       ] as const
@@ -303,6 +317,10 @@ export class HuiWeatherForecastCardEditor
       case "forecast_type":
         return this.hass!.localize(
           "ui.panel.lovelace.editor.card.weather-forecast.forecast_type"
+        );
+      case "forecast_slots":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.weather-forecast.forecast_slots"
         );
       case "forecast":
         return this.hass!.localize(

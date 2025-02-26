@@ -21,6 +21,7 @@ import type { LocalizeFunc } from "../../../common/translations/localize";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-icon-button-prev";
 import "../../../components/search-input";
+import { getConfigEntries } from "../../../data/config_entries";
 import { fetchConfigFlowInProgress } from "../../../data/config_flow";
 import type { DataEntryFlowProgress } from "../../../data/data_entry_flow";
 import {
@@ -49,9 +50,6 @@ import "./ha-domain-integrations";
 import "./ha-integration-list-item";
 import type { AddIntegrationDialogParams } from "./show-add-integration-dialog";
 import { showYamlIntegrationDialog } from "./show-add-integration-dialog";
-import { getConfigEntries } from "../../../data/config_entries";
-import { stripDiacritics } from "../../../common/string/strip-diacritics";
-import { getStripDiacriticsFn } from "../../../util/fuse";
 
 export interface IntegrationListItem {
   name: string;
@@ -189,6 +187,14 @@ class AddIntegrationDialog extends LitElement {
       Object.entries(i).forEach(([domain, integration]) => {
         if (
           "integration_type" in integration &&
+          integration.integration_type === "hardware"
+        ) {
+          // Ignore hardware integrations, they cannot be added via UI
+          return;
+        }
+
+        if (
+          "integration_type" in integration &&
           (integration.config_flow ||
             integration.iot_standards ||
             integration.supported_by)
@@ -256,7 +262,7 @@ class AddIntegrationDialog extends LitElement {
           isCaseSensitive: false,
           minMatchCharLength: Math.min(filter.length, 2),
           threshold: 0.2,
-          getFn: getStripDiacriticsFn,
+          ignoreDiacritics: true,
         };
         const helpers = Object.entries(h).map(([domain, integration]) => ({
           domain,
@@ -266,16 +272,15 @@ class AddIntegrationDialog extends LitElement {
           is_built_in: integration.is_built_in !== false,
           cloud: integration.iot_class?.startsWith("cloud_"),
         }));
-        const normalizedFilter = stripDiacritics(filter);
         return [
           ...new Fuse(integrations, options)
-            .search(normalizedFilter)
+            .search(filter)
             .map((result) => result.item),
           ...new Fuse(yamlIntegrations, options)
-            .search(normalizedFilter)
+            .search(filter)
             .map((result) => result.item),
           ...new Fuse(helpers, options)
-            .search(normalizedFilter)
+            .search(filter)
             .map((result) => result.item),
         ];
       }
@@ -319,7 +324,6 @@ class AddIntegrationDialog extends LitElement {
       open
       @closed=${this.closeDialog}
       scrimClickAction
-      escapeKeyAction
       hideActions
       .heading=${createCloseHeading(
         this.hass,
@@ -449,12 +453,14 @@ class AddIntegrationDialog extends LitElement {
           >
             <lit-virtualizer
               scroller
+              tabindex="-1"
               class="ha-scrollbar"
               style=${styleMap({
                 width: `${this._width}px`,
                 height: this._narrow ? "calc(100vh - 184px)" : "500px",
               })}
               @click=${this._integrationPicked}
+              @keypress=${this._handleKeyPress}
               .items=${integrations}
               .keyFunction=${this._keyFunction}
               .renderItem=${this._renderRow}
@@ -478,6 +484,7 @@ class AddIntegrationDialog extends LitElement {
         brand
         .hass=${this.hass}
         .integration=${integration}
+        tabindex="0"
       >
       </ha-integration-list-item>
     `;
@@ -534,6 +541,12 @@ class AddIntegrationDialog extends LitElement {
     this._handleIntegrationPicked(listItem.integration);
   }
 
+  private _handleKeyPress(ev) {
+    if (ev.key === "Enter") {
+      this._integrationPicked(ev);
+    }
+  }
+
   private async _handleIntegrationPicked(integration: IntegrationListItem) {
     if (integration.supported_by) {
       this._supportedBy(integration);
@@ -555,7 +568,7 @@ class AddIntegrationDialog extends LitElement {
     if (integration.integrations) {
       let domains = integration.domains || [];
       if (integration.domain === "apple") {
-        // we show discoverd homekit devices in their own brand section, dont show them at apple
+        // we show discovered homekit devices in their own brand section, dont show them in apple
         domains = domains.filter((domain) => domain !== "homekit_controller");
       }
       this._fetchFlowsInProgress(domains);
@@ -564,7 +577,7 @@ class AddIntegrationDialog extends LitElement {
     }
 
     if (
-      (PROTOCOL_INTEGRATIONS as ReadonlyArray<string>).includes(
+      (PROTOCOL_INTEGRATIONS as readonly string[]).includes(
         integration.domain
       ) &&
       isComponentLoaded(this.hass, integration.domain)
@@ -649,6 +662,7 @@ class AddIntegrationDialog extends LitElement {
       startFlowHandler: domain,
       showAdvanced: this.hass.userData?.showAdvanced,
       manifest,
+      navigateToResult: true,
     });
   }
 

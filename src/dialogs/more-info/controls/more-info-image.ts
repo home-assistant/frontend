@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-camera-stream";
@@ -22,17 +21,15 @@ class MoreInfoImage extends LitElement {
     /> `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-        text-align: center;
-      }
-      img {
-        max-width: 100%;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+      text-align: center;
+    }
+    img {
+      max-width: 100%;
+    }
+  `;
 }
 
 declare global {

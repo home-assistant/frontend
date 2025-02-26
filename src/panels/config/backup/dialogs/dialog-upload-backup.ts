@@ -3,7 +3,10 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import {
+  fireEvent,
+  type HASSDomEvent,
+} from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-expansion-panel";
@@ -14,23 +17,16 @@ import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 import {
   CORE_LOCAL_AGENT,
   HASSIO_LOCAL_AGENT,
+  SUPPORTED_UPLOAD_FORMAT,
   uploadBackup,
+  INITIAL_UPLOAD_FORM_DATA,
+  type BackupUploadFileFormData,
 } from "../../../../data/backup";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showAlertDialog } from "../../../lovelace/custom-card-helpers";
 import type { UploadBackupDialogParams } from "./show-dialog-upload-backup";
-
-const SUPPORTED_FORMAT = "application/x-tar";
-
-type FormData = {
-  file?: File;
-};
-
-const INITIAL_DATA: FormData = {
-  file: undefined,
-};
 
 @customElement("ha-dialog-upload-backup")
 export class DialogUploadBackup
@@ -45,13 +41,13 @@ export class DialogUploadBackup
 
   @state() private _error?: string;
 
-  @state() private _formData?: FormData;
+  @state() private _formData?: BackupUploadFileFormData;
 
   @query("ha-md-dialog") private _dialog?: HaMdDialog;
 
   public async showDialog(params: UploadBackupDialogParams): Promise<void> {
     this._params = params;
-    this._formData = INITIAL_DATA;
+    this._formData = INITIAL_UPLOAD_FORM_DATA;
   }
 
   private _dialogClosed() {
@@ -65,6 +61,7 @@ export class DialogUploadBackup
 
   public closeDialog() {
     this._dialog?.close();
+    return true;
   }
 
   private _formValid() {
@@ -77,42 +74,62 @@ export class DialogUploadBackup
     }
 
     return html`
-      <ha-md-dialog open @closed=${this._dialogClosed}>
+      <ha-md-dialog
+        open
+        @closed=${this._dialogClosed}
+        .disableCancelAction=${this._uploading}
+      >
         <ha-dialog-header slot="headline">
           <ha-icon-button
             slot="navigationIcon"
             .label=${this.hass.localize("ui.dialogs.generic.close")}
             .path=${mdiClose}
             @click=${this.closeDialog}
+            .disabled=${this._uploading}
           ></ha-icon-button>
 
-          <span slot="title">Upload backup</span>
+          <span slot="title">
+            ${this.hass.localize("ui.panel.config.backup.dialogs.upload.title")}
+          </span>
         </ha-dialog-header>
         <div slot="content">
+          ${this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing}
           <ha-file-upload
             .hass=${this.hass}
             .uploading=${this._uploading}
             .icon=${mdiFolderUpload}
-            accept=${SUPPORTED_FORMAT}
-            label="Select backup file"
-            supports="Supports .tar files"
+            .accept=${SUPPORTED_UPLOAD_FORMAT}
+            .localize=${this.hass.localize}
+            .label=${this.hass.localize(
+              "ui.panel.config.backup.dialogs.upload.input_label"
+            )}
+            .supports=${this.hass.localize(
+              "ui.panel.config.backup.dialogs.upload.supports_tar"
+            )}
             @file-picked=${this._filePicked}
+            @files-cleared=${this._filesCleared}
           ></ha-file-upload>
-          ${this._error
-            ? html`<ha-alert alertType="error">${this._error}</ha-alert>`
-            : nothing}
         </div>
         <div slot="actions">
-          <ha-button @click=${this.closeDialog}>Cancel</ha-button>
-          <ha-button @click=${this._upload} .disabled=${!this._formValid()}>
-            Upload backup
+          <ha-button @click=${this.closeDialog} .disabled=${this._uploading}
+            >${this.hass.localize("ui.common.cancel")}</ha-button
+          >
+          <ha-button
+            @click=${this._upload}
+            .disabled=${!this._formValid() || this._uploading}
+          >
+            ${this.hass.localize(
+              "ui.panel.config.backup.dialogs.upload.action"
+            )}
           </ha-button>
         </div>
       </ha-md-dialog>
     `;
   }
 
-  private async _filePicked(ev: CustomEvent<{ files: File[] }>): Promise<void> {
+  private _filePicked(ev: HASSDomEvent<{ files: File[] }>) {
     this._error = undefined;
     const file = ev.detail.files[0];
 
@@ -122,13 +139,22 @@ export class DialogUploadBackup
     };
   }
 
+  private _filesCleared() {
+    this._error = undefined;
+    this._formData = INITIAL_UPLOAD_FORM_DATA;
+  }
+
   private async _upload() {
     const { file } = this._formData!;
-    if (!file || file.type !== SUPPORTED_FORMAT) {
+    if (!file || file.type !== SUPPORTED_UPLOAD_FORMAT) {
       showAlertDialog(this, {
-        title: "Unsupported file format",
-        text: "Please choose a Home Assistant backup file (.tar)",
-        confirmText: "ok",
+        title: this.hass.localize(
+          "ui.panel.config.backup.dialogs.upload.unsupported.title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.backup.dialogs.upload.unsupported.text"
+        ),
+        confirmText: this.hass.localize("ui.common.ok"),
       });
       return;
     }
@@ -139,7 +165,7 @@ export class DialogUploadBackup
 
     this._uploading = true;
     try {
-      await uploadBackup(this.hass!, file, agentIds);
+      await uploadBackup(this.hass, file, agentIds);
       this._params!.submit?.();
       this.closeDialog();
     } catch (err: any) {
@@ -159,6 +185,10 @@ export class DialogUploadBackup
           width: 100%;
           max-width: 500px;
           max-height: 100%;
+        }
+        ha-alert {
+          display: block;
+          margin-bottom: 16px;
         }
       `,
     ];

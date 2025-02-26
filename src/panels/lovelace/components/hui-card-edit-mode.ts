@@ -23,8 +23,10 @@ import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
+import { addCard } from "../editor/config-util";
 import type { LovelaceCardPath } from "../editor/lovelace-path";
 import {
+  findLovelaceContainer,
   findLovelaceItems,
   getLovelaceContainerPath,
   parseLovelaceCardPath,
@@ -48,14 +50,17 @@ export class HuiCardEditMode extends LitElement {
   @property({ type: Boolean, attribute: "no-duplicate" })
   public noDuplicate = false;
 
-  @state()
-  public _menuOpened: boolean = false;
+  @property({ type: Boolean, attribute: "no-move" })
+  public noMove = false;
 
   @state()
-  public _hover: boolean = false;
+  public _menuOpened = false;
 
   @state()
-  public _focused: boolean = false;
+  public _hover = false;
+
+  @state()
+  public _focused = false;
 
   @storage({
     key: "dashboardCardClipboard",
@@ -177,23 +182,39 @@ export class HuiCardEditMode extends LitElement {
                   )}
                 </ha-list-item>
               `}
-          <ha-list-item
-            graphic="icon"
-            @click=${this._handleAction}
-            .action=${"copy"}
-          >
-            <ha-svg-icon slot="graphic" .path=${mdiContentCopy}></ha-svg-icon>
-            ${this.hass.localize("ui.panel.lovelace.editor.edit_card.copy")}
-          </ha-list-item>
-          <ha-list-item
-            graphic="icon"
-            @click=${this._handleAction}
-            .action=${"cut"}
-          >
-            <ha-svg-icon slot="graphic" .path=${mdiContentCut}></ha-svg-icon>
-            ${this.hass.localize("ui.panel.lovelace.editor.edit_card.cut")}
-          </ha-list-item>
-          <li divider role="separator"></li>
+          ${this.noMove
+            ? nothing
+            : html`
+                <ha-list-item
+                  graphic="icon"
+                  @click=${this._handleAction}
+                  .action=${"copy"}
+                >
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiContentCopy}
+                  ></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.editor.edit_card.copy"
+                  )}
+                </ha-list-item>
+                <ha-list-item
+                  graphic="icon"
+                  @click=${this._handleAction}
+                  .action=${"cut"}
+                >
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiContentCut}
+                  ></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.editor.edit_card.cut"
+                  )}
+                </ha-list-item>
+              `}
+          ${this.noDuplicate && this.noEdit && this.noMove
+            ? nothing
+            : html`<li divider role="separator"></li>`}
           <ha-list-item
             graphic="icon"
             class="warning"
@@ -253,14 +274,24 @@ export class HuiCardEditMode extends LitElement {
   }
 
   private _duplicateCard(): void {
-    const { cardIndex } = parseLovelaceCardPath(this.path!);
+    const { cardIndex, sectionIndex } = parseLovelaceCardPath(this.path!);
     const containerPath = getLovelaceContainerPath(this.path!);
+    const sectionConfig =
+      sectionIndex !== undefined
+        ? findLovelaceContainer(this.lovelace!.config, containerPath)
+        : undefined;
+
     const cardConfig = this._cards![cardIndex];
+
     showEditCardDialog(this, {
       lovelaceConfig: this.lovelace!.config,
-      saveConfig: this.lovelace!.saveConfig,
-      path: containerPath,
+      saveCardConfig: async (config) => {
+        const newConfig = addCard(this.lovelace!.config, containerPath, config);
+        await this.lovelace!.saveConfig(newConfig);
+      },
       cardConfig,
+      sectionConfig,
+      isNew: true,
     });
   }
 

@@ -1,6 +1,5 @@
 import { mdiAlertCircle } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -164,19 +163,17 @@ export class HuiEntityHeadingBadge
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      [role="button"] {
-        cursor: pointer;
-      }
-      ha-heading-badge {
-        --state-inactive-color: initial;
-      }
-      ha-heading-badge.error {
-        --icon-color: var(--red-color);
-      }
-    `;
-  }
+  static styles = css`
+    [role="button"] {
+      cursor: pointer;
+    }
+    ha-heading-badge {
+      --state-inactive-color: initial;
+    }
+    ha-heading-badge.error {
+      --icon-color: var(--red-color);
+    }
+  `;
 }
 
 declare global {

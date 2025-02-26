@@ -133,7 +133,7 @@ class DialogMatterReinterviewNode extends LitElement {
     try {
       await interviewMatterNode(this.hass, this.device_id!);
       this._status = "finished";
-    } catch (err) {
+    } catch (_err) {
       this._status = "failed";
     }
   }

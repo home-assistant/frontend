@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -133,36 +133,34 @@ export class AssistPipelineDetailWakeWord extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .section {
-        border: 1px solid var(--divider-color);
-        border-radius: 8px;
-      }
-      .content {
-        padding: 16px;
-      }
-      .intro {
-        margin-bottom: 16px;
-      }
-      h3 {
-        font-weight: normal;
-        font-size: 22px;
-        line-height: 28px;
-        margin-top: 0;
-        margin-bottom: 4px;
-      }
-      p {
-        color: var(--secondary-text-color);
-        font-size: var(--mdc-typography-body2-font-size, 0.875rem);
-        margin-top: 0;
-        margin-bottom: 0;
-      }
-      a {
-        color: var(--primary-color);
-      }
-    `;
-  }
+  static styles = css`
+    .section {
+      border: 1px solid var(--divider-color);
+      border-radius: 8px;
+    }
+    .content {
+      padding: 16px;
+    }
+    .intro {
+      margin-bottom: 16px;
+    }
+    h3 {
+      font-weight: normal;
+      font-size: 22px;
+      line-height: 28px;
+      margin-top: 0;
+      margin-bottom: 4px;
+    }
+    p {
+      color: var(--secondary-text-color);
+      font-size: var(--mdc-typography-body2-font-size, 0.875rem);
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+    a {
+      color: var(--primary-color);
+    }
+  `;
 }
 
 declare global {

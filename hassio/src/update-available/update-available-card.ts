@@ -9,6 +9,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-alert";
@@ -18,7 +19,8 @@ import "../../../src/components/ha-checkbox";
 import "../../../src/components/ha-faded";
 import "../../../src/components/ha-icon-button";
 import "../../../src/components/ha-markdown";
-import "../../../src/components/ha-settings-row";
+import "../../../src/components/ha-md-list";
+import "../../../src/components/ha-md-list-item";
 import "../../../src/components/ha-svg-icon";
 import "../../../src/components/ha-switch";
 import type { HaSwitch } from "../../../src/components/ha-switch";
@@ -124,6 +126,8 @@ class UpdateAvailableCard extends LitElement {
 
     const changelog = changelogUrl(this._updateType, this._version_latest);
 
+    const createBackupTexts = this._computeCreateBackupTexts();
+
     return html`
       <ha-card
         outlined
@@ -163,17 +167,28 @@ class UpdateAvailableCard extends LitElement {
                       )}
                     </p>
                   </div>
-                  ${["core", "addon"].includes(this._updateType)
+                  ${createBackupTexts
                     ? html`
                         <hr />
-                        <ha-settings-row>
-                          <span slot="heading">
-                            ${this.supervisor.localize(
-                              "update_available.create_backup"
-                            )}
-                          </span>
-                          <ha-switch id="create_backup" checked></ha-switch>
-                        </ha-settings-row>
+                        <ha-md-list>
+                          <ha-md-list-item>
+                            <span slot="headline">
+                              ${createBackupTexts.title}
+                            </span>
+
+                            ${createBackupTexts.description
+                              ? html`
+                                  <span slot="supporting-text">
+                                    ${createBackupTexts.description}
+                                  </span>
+                                `
+                              : nothing}
+                            <ha-switch
+                              slot="end"
+                              id="create-backup"
+                            ></ha-switch>
+                          </ha-md-list-item>
+                        </ha-md-list>
                       `
                     : nothing}
                 `
@@ -241,6 +256,35 @@ class UpdateAvailableCard extends LitElement {
         this._loadOsData();
         break;
     }
+  }
+
+  private _computeCreateBackupTexts():
+    | { title: string; description?: string }
+    | undefined {
+    // Addon backup
+    if (
+      this._updateType === "addon" &&
+      atLeastVersion(this.hass.config.version, 2025, 2, 0)
+    ) {
+      const version = this._version;
+      return {
+        title: this.supervisor.localize("update_available.create_backup.addon"),
+        description: this.supervisor.localize(
+          "update_available.create_backup.addon_description",
+          { version: version }
+        ),
+      };
+    }
+
+    // Old behavior
+    if (this._updateType && ["core", "addon"].includes(this._updateType)) {
+      return {
+        title: this.supervisor.localize(
+          "update_available.create_backup.generic"
+        ),
+      };
+    }
+    return undefined;
   }
 
   get _shouldCreateBackup(): boolean {
@@ -374,7 +418,6 @@ class UpdateAvailableCard extends LitElement {
       this._error = this.supervisor.localize("backup.backup_already_running");
       return;
     }
-
     this._error = undefined;
     this._updating = true;
 
@@ -436,15 +479,21 @@ class UpdateAvailableCard extends LitElement {
           padding-bottom: 8px;
         }
 
-        ha-settings-row {
-          padding: 0;
-          margin-bottom: -16px;
-        }
-
         hr {
           border-color: var(--divider-color);
           border-bottom: none;
           margin: 16px 0 0 0;
+        }
+
+        ha-md-list {
+          padding: 0;
+          margin-bottom: -16px;
+        }
+
+        ha-md-list-item {
+          --md-list-item-leading-space: 0;
+          --md-list-item-trailing-space: 0;
+          --md-item-overflow: visible;
         }
       `,
     ];

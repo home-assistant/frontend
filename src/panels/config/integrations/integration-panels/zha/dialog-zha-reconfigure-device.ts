@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
@@ -9,6 +8,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/ha-tooltip";
 import type {
   AttributeConfigurationStatus,
   Cluster,
@@ -34,10 +34,10 @@ class DialogZHAReconfigureDevice extends LitElement {
 
   @state() private _stages?: string[];
 
-  @state() private _clusterConfigurationStatuses?: Map<
+  @state() private _clusterConfigurationStatuses? = new Map<
     number,
     ClusterConfigurationStatus
-  > = new Map();
+  >();
 
   @state() private _params: ZHAReconfigureDeviceDialogParams | undefined =
     undefined;
@@ -295,16 +295,15 @@ class DialogZHAReconfigureDevice extends LitElement {
                                               `
                                             : html`
                                                 <span class="stage">
-                                                  <simple-tooltip
-                                                    animation-delay="0"
-                                                    position="top"
+                                                  <ha-tooltip
+                                                    placement="top"
+                                                    .content=${attribute.status}
                                                   >
-                                                    ${attribute.status}
-                                                  </simple-tooltip>
-                                                  <ha-svg-icon
-                                                    .path=${mdiCloseCircle}
-                                                    class="failed"
-                                                  ></ha-svg-icon>
+                                                    <ha-svg-icon
+                                                      .path=${mdiCloseCircle}
+                                                      class="failed"
+                                                    ></ha-svg-icon>
+                                                  </ha-tooltip>
                                                 </span>
                                               `}
                                         </span>

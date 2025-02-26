@@ -21,14 +21,19 @@ export class HassBaseEl extends LitElement {
   }
 
   // Exists so all methods can safely call super method
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected hassConnected() {}
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected hassReconnected() {}
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected hassDisconnected() {}
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected panelUrlChanged(_newPanelUrl) {}
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected checkDataBaseMigration() {}
 
   protected hassChanged(hass, _oldHass) {

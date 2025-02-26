@@ -316,6 +316,15 @@ export const updateHassioAddon = async (
   slug: string,
   backup: boolean
 ): Promise<void> => {
+  if (atLeastVersion(hass.config.version, 2025, 2, 0)) {
+    await hass.callWS({
+      type: "hassio/update/addon",
+      addon: slug,
+      backup: backup,
+    });
+    return;
+  }
+
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
     await hass.callWS({
       type: "supervisor/api",
@@ -324,13 +333,14 @@ export const updateHassioAddon = async (
       timeout: null,
       data: { backup },
     });
-  } else {
-    await hass.callApi<HassioResponse<void>>(
-      "POST",
-      `hassio/addons/${slug}/update`,
-      { backup }
-    );
+    return;
   }
+
+  await hass.callApi<HassioResponse<void>>(
+    "POST",
+    `hassio/addons/${slug}/update`,
+    { backup }
+  );
 };
 
 export const restartHassioAddon = async (
@@ -393,7 +403,7 @@ export const rebuildLocalAddon = async (
   slug: string
 ): Promise<void> => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS<void>({
+    return hass.callWS<undefined>({
       type: "supervisor/api",
       endpoint: `/addons/${slug}/rebuild`,
       method: "post",

@@ -1,5 +1,5 @@
 import { mdiCheck, mdiMinus, mdiPlus } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -248,89 +248,87 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .container {
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: -8px;
-        flex-wrap: wrap;
-        max-width: 250px;
-        user-select: none;
-      }
+  static styles = css`
+    .container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: -8px;
+      flex-wrap: wrap;
+      max-width: 250px;
+      user-select: none;
+    }
 
-      .container > * {
-        margin: 8px;
-      }
+    .container > * {
+      margin: 8px;
+    }
 
-      .color {
-        display: block;
-      }
+    .color {
+      display: block;
+    }
 
-      .color .color-bubble.shake {
-        position: relative;
-        display: block;
-        animation: shake 0.45s linear infinite;
-      }
-      .color:nth-child(3n + 1) .color-bubble.shake {
-        animation-delay: 0.15s;
-      }
-      .color:nth-child(3n + 2) .color-bubble.shake {
-        animation-delay: 0.3s;
-      }
+    .color .color-bubble.shake {
+      position: relative;
+      display: block;
+      animation: shake 0.45s linear infinite;
+    }
+    .color:nth-child(3n + 1) .color-bubble.shake {
+      animation-delay: 0.15s;
+    }
+    .color:nth-child(3n + 2) .color-bubble.shake {
+      animation-delay: 0.3s;
+    }
 
-      .sortable-ghost {
-        opacity: 0.4;
-      }
-      .sortable-fallback {
-        display: none;
-      }
+    .sortable-ghost {
+      opacity: 0.4;
+    }
+    .sortable-fallback {
+      display: none;
+    }
 
-      @keyframes shake {
-        0% {
-          transform: rotateZ(0deg) translateX(-1px) translateY(0) scale(1);
-        }
-        20% {
-          transform: rotateZ(-3deg) translateX(0) translateY();
-        }
-        40% {
-          transform: rotateZ(0deg) translateX(1px) translateY(0);
-        }
-        60% {
-          transform: rotateZ(3deg) translateX(0) translateY(0);
-        }
-        100% {
-          transform: rotateZ(0deg) translateX(-1px) translateY(0);
-        }
+    @keyframes shake {
+      0% {
+        transform: rotateZ(0deg) translateX(-1px) translateY(0) scale(1);
       }
+      20% {
+        transform: rotateZ(-3deg) translateX(0) translateY();
+      }
+      40% {
+        transform: rotateZ(0deg) translateX(1px) translateY(0);
+      }
+      60% {
+        transform: rotateZ(3deg) translateX(0) translateY(0);
+      }
+      100% {
+        transform: rotateZ(0deg) translateX(-1px) translateY(0);
+      }
+    }
 
-      .delete {
-        position: absolute;
-        top: -6px;
-        right: -6px;
-        inset-inline-end: -6px;
-        inset-inline-start: initial;
-        width: 20px;
-        height: 20px;
-        outline: none;
-        background-color: var(--secondary-background-color);
-        padding: 0;
-        border-radius: 10px;
-        border: none;
-        cursor: pointer;
-        display: block;
-      }
-      .delete {
-        --mdc-icon-size: 12px;
-        color: var(--primary-text-color);
-      }
-      .delete * {
-        pointer-events: none;
-      }
-    `;
-  }
+    .delete {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      inset-inline-end: -6px;
+      inset-inline-start: initial;
+      width: 20px;
+      height: 20px;
+      outline: none;
+      background-color: var(--secondary-background-color);
+      padding: 0;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      display: block;
+    }
+    .delete {
+      --mdc-icon-size: 12px;
+      color: var(--primary-text-color);
+    }
+    .delete * {
+      pointer-events: none;
+    }
+  `;
 }
 
 declare global {

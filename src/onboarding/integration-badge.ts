@@ -1,4 +1,4 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/ha-svg-icon";
@@ -35,36 +35,34 @@ class IntegrationBadge extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: inline-flex;
-        flex-direction: column;
-        text-align: center;
-        color: var(--primary-text-color);
-      }
+  static styles = css`
+    :host {
+      display: inline-flex;
+      flex-direction: column;
+      text-align: center;
+      color: var(--primary-text-color);
+    }
 
-      img {
-        max-width: 100%;
-        max-height: 100%;
-      }
+    img {
+      max-width: 100%;
+      max-height: 100%;
+    }
 
-      .icon {
-        position: relative;
-        margin: 0 auto 8px;
-        height: 40px;
-        width: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
+    .icon {
+      position: relative;
+      margin: 0 auto 8px;
+      height: 40px;
+      width: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-      .title {
-        min-height: 2.3em;
-        word-break: break-word;
-      }
-    `;
-  }
+    .title {
+      min-height: 2.3em;
+      word-break: break-word;
+    }
+  `;
 }
 
 declare global {

@@ -391,7 +391,9 @@ class ZWaveJSNodeConfig extends LitElement {
   }
 
   private _handleNewValue() {
-    this._fetchData();
+    setTimeout(() => {
+      this._fetchData();
+    }, 750);
   }
 
   private _switchToggled(ev) {
@@ -543,7 +545,7 @@ class ZWaveJSNodeConfig extends LitElement {
 
       await this._fetchData();
       progressButton.actionSuccess();
-    } catch (err: any) {
+    } catch (_err: any) {
       fireEvent(this, "hass-notification", {
         message: this.hass.localize(
           "ui.panel.config.zwave_js.node_config.reset_to_default.dialog.text_error"

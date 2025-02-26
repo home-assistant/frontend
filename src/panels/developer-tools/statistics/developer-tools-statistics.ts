@@ -3,7 +3,7 @@ import {
   mdiArrowDown,
   mdiArrowUp,
   mdiClose,
-  mdiCog,
+  mdiTableCog,
   mdiFormatListChecks,
   mdiMenuDown,
   mdiSlopeUphill,
@@ -49,6 +49,7 @@ import type { HomeAssistant } from "../../../types";
 import { showConfirmationDialog } from "../../lovelace/custom-card-helpers";
 import { fixStatisticsIssue } from "./fix-statistics";
 import { showStatisticsAdjustSumDialog } from "./show-dialog-statistics-adjust-sum";
+import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 
 const FIX_ISSUES_ORDER: Record<StatisticsValidationResult["type"], number> = {
   no_state: 0,
@@ -77,7 +78,7 @@ type DisplayedStatisticData = StatisticData & {
 };
 
 @customElement("developer-tools-statistics")
-class HaPanelDevStatistics extends LitElement {
+class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -107,6 +108,8 @@ class HaPanelDevStatistics extends LitElement {
   @query("#group-by-menu") private _groupByMenu!: HaMenu;
 
   @query("#sort-by-menu") private _sortByMenu!: HaMenu;
+
+  @query("search-input-outlined") private _searchInput!: HTMLElement;
 
   private _toggleGroupBy() {
     this._groupByMenu.open = !this._groupByMenu.open;
@@ -300,7 +303,7 @@ class HaPanelDevStatistics extends LitElement {
       @click=${this._openSettings}
       .title=${localize("ui.components.subpage-data-table.settings")}
     >
-      <ha-svg-icon slot="icon" .path=${mdiCog}></ha-svg-icon>
+      <ha-svg-icon slot="icon" .path=${mdiTableCog}></ha-svg-icon>
     </ha-assist-chip>`;
 
     return html`
@@ -682,6 +685,12 @@ class HaPanelDevStatistics extends LitElement {
     this._validateStatistics();
   };
 
+  protected supportedShortcuts(): SupportedShortcuts {
+    return {
+      f: () => this._searchInput.focus(),
+    };
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -697,7 +706,7 @@ class HaPanelDevStatistics extends LitElement {
           --data-table-border-width: 0;
         }
         :host(:not([narrow])) ha-data-table {
-          height: calc(100vh - 1px - var(--header-height));
+          height: calc(100vh - 1px - var(--header-height) - 48px);
           display: block;
         }
 

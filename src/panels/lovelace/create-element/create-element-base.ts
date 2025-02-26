@@ -217,8 +217,8 @@ const _lazyCreate = <T extends keyof CreateElementConfigTypes>(
       fireEvent(element, "ll-upgrade");
       // @ts-ignore
       element.setConfig(config);
-    } catch (err: any) {
-      // We let it rebuild and the error wil be handled by _createElement
+    } catch (_err: any) {
+      // We let it rebuild and the error will be handled by _createElement
       fireEvent(element, "ll-rebuild");
     }
   });
@@ -232,7 +232,7 @@ export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
   tagSuffix: T,
   config: CreateElementConfigTypes[T]["config"],
   alwaysLoadTypes?: Set<string>,
-  lazyLoadTypes?: { [domain: string]: () => Promise<unknown> },
+  lazyLoadTypes?: Record<string, () => Promise<unknown>>,
   // Allow looking at "entity" in config and mapping that to a type
   domainTypes?: { _domain_not_found: string; [domain: string]: string },
   // Default type if no type given. If given, entity types will not work.
@@ -260,7 +260,7 @@ export const tryCreateLovelaceElement = <
   tagSuffix: T,
   config: CreateElementConfigTypes[T]["config"],
   alwaysLoadTypes?: Set<string>,
-  lazyLoadTypes?: { [domain: string]: () => Promise<unknown> },
+  lazyLoadTypes?: Record<string, () => Promise<unknown>>,
   // Allow looking at "entity" in config and mapping that to a type
   domainTypes?: { _domain_not_found: string; [domain: string]: string },
   // Default type if no type given. If given, entity types will not work.
@@ -321,7 +321,7 @@ export const getLovelaceElementClass = async <
   type: string,
   tagSuffix: T,
   alwaysLoadTypes?: Set<string>,
-  lazyLoadTypes?: { [domain: string]: () => Promise<unknown> }
+  lazyLoadTypes?: Record<string, () => Promise<unknown>>
 ): Promise<CreateElementConfigTypes[T]["constructor"]> => {
   const customTag = _getCustomTag(type);
 

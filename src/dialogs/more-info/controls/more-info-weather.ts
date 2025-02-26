@@ -1,19 +1,15 @@
 import "@material/mwc-tab";
 import "@material/mwc-tab-bar";
-import {
-  mdiEye,
-  mdiGauge,
-  mdiThermometer,
-  mdiWaterPercent,
-  mdiWeatherWindy,
-} from "@mdi/js";
+import { mdiEye, mdiGauge, mdiWaterPercent, mdiWeatherWindy } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { formatDateWeekdayDay } from "../../../common/datetime/format_date";
-import { formatTimeWeekday } from "../../../common/datetime/format_time";
+import { formatDateWeekdayShort } from "../../../common/datetime/format_date";
+import { formatTime } from "../../../common/datetime/format_time";
+import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-tooltip";
 import type {
   ForecastEvent,
   ModernForecastType,
@@ -23,11 +19,16 @@ import {
   getDefaultForecastType,
   getForecast,
   getSupportedForecastTypes,
+  getSecondaryWeatherAttribute,
+  getWeatherStateIcon,
+  getWeatherUnit,
   getWind,
   subscribeForecast,
-  weatherIcons,
+  weatherSVGStyles,
 } from "../../../data/weather";
 import type { HomeAssistant } from "../../../types";
+import "../../../components/ha-relative-time";
+import "../../../components/ha-state-icon";
 
 @customElement("more-info-weather")
 class MoreInfoWeather extends LitElement {
@@ -137,23 +138,89 @@ class MoreInfoWeather extends LitElement {
     const hourly = forecastData?.type === "hourly";
     const dayNight = forecastData?.type === "twice_daily";
 
+    const weatherStateIcon = getWeatherStateIcon(this.stateObj.state, this);
+
     return html`
-      ${this._showValue(this.stateObj.attributes.temperature)
-        ? html`
-            <div class="flex">
-              <ha-svg-icon .path=${mdiThermometer}></ha-svg-icon>
-              <div class="main">
-                ${this.hass.localize("ui.card.weather.attributes.temperature")}
-              </div>
-              <div>
-                ${this.hass.formatEntityAttributeValue(
-                  this.stateObj,
-                  "temperature"
-                )}
-              </div>
+      <div class="content">
+        <div class="icon-image">
+          ${weatherStateIcon ||
+          html`
+            <ha-state-icon
+              class="weather-icon"
+              .stateObj=${this.stateObj}
+              .hass=${this.hass}
+            ></ha-state-icon>
+          `}
+        </div>
+        <div class="info">
+          <div class="name-state">
+            <div class="state">
+              ${this.hass.formatEntityState(this.stateObj)}
             </div>
-          `
-        : ""}
+            <div class="time-ago">
+              <ha-tooltip>
+                <ha-relative-time
+                  .hass=${this.hass}
+                  .datetime=${this.stateObj.last_changed}
+                  capitalize
+                ></ha-relative-time>
+                <div slot="content">
+                  <div class="row">
+                    <span class="column-name">
+                      ${this.hass.localize(
+                        "ui.dialogs.more_info_control.last_changed"
+                      )}:
+                    </span>
+                    <ha-relative-time
+                      .hass=${this.hass}
+                      .datetime=${this.stateObj.last_changed}
+                      capitalize
+                    ></ha-relative-time>
+                  </div>
+                  <div class="row">
+                    <span>
+                      ${this.hass.localize(
+                        "ui.dialogs.more_info_control.last_updated"
+                      )}:
+                    </span>
+                    <ha-relative-time
+                      .hass=${this.hass}
+                      .datetime=${this.stateObj.last_updated}
+                      capitalize
+                    ></ha-relative-time>
+                  </div>
+                </div>
+              </ha-tooltip>
+            </div>
+          </div>
+          <div class="temp-attribute">
+            <div class="temp">
+              ${this.stateObj.attributes.temperature !== undefined &&
+              this.stateObj.attributes.temperature !== null
+                ? html`
+                    ${formatNumber(
+                      this.stateObj.attributes.temperature,
+                      this.hass.locale
+                    )}&nbsp;<span
+                      >${getWeatherUnit(
+                        this.hass.config,
+                        this.stateObj,
+                        "temperature"
+                      )}</span
+                    >
+                  `
+                : nothing}
+            </div>
+            <div class="attribute">
+              ${getSecondaryWeatherAttribute(
+                this.hass,
+                this.stateObj,
+                forecast!
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
       ${this._showValue(this.stateObj.attributes.pressure)
         ? html`
             <div class="flex">
@@ -169,7 +236,7 @@ class MoreInfoWeather extends LitElement {
               </div>
             </div>
           `
-        : ""}
+        : nothing}
       ${this._showValue(this.stateObj.attributes.humidity)
         ? html`
             <div class="flex">
@@ -185,7 +252,7 @@ class MoreInfoWeather extends LitElement {
               </div>
             </div>
           `
-        : ""}
+        : nothing}
       ${this._showValue(this.stateObj.attributes.wind_speed)
         ? html`
             <div class="flex">
@@ -203,7 +270,7 @@ class MoreInfoWeather extends LitElement {
               </div>
             </div>
           `
-        : ""}
+        : nothing}
       ${this._showValue(this.stateObj.attributes.visibility)
         ? html`
             <div class="flex">
@@ -219,7 +286,7 @@ class MoreInfoWeather extends LitElement {
               </div>
             </div>
           `
-        : ""}
+        : nothing}
       ${forecast
         ? html`
             <div class="section">
@@ -242,76 +309,90 @@ class MoreInfoWeather extends LitElement {
                   )}
                 </mwc-tab-bar>`
               : nothing}
-            ${forecast.map((item) =>
-              this._showValue(item.templow) || this._showValue(item.temperature)
-                ? html`<div class="flex">
-                    ${item.condition
-                      ? html`
-                          <ha-svg-icon
-                            .path=${weatherIcons[item.condition]}
-                          ></ha-svg-icon>
-                        `
-                      : ""}
-                    <div class="main">
-                      ${dayNight
-                        ? html`
-                            ${formatDateWeekdayDay(
-                              new Date(item.datetime),
-                              this.hass!.locale,
-                              this.hass!.config
-                            )}
-                            (${item.is_daytime !== false
-                              ? this.hass!.localize("ui.card.weather.day")
-                              : this.hass!.localize("ui.card.weather.night")})
-                          `
-                        : hourly
+            <div class="forecast">
+              ${forecast.map((item) =>
+                this._showValue(item.templow) ||
+                this._showValue(item.temperature)
+                  ? html`
+                      <div>
+                        <div>
+                          ${dayNight
+                            ? html`
+                                ${formatDateWeekdayShort(
+                                  new Date(item.datetime),
+                                  this.hass!.locale,
+                                  this.hass!.config
+                                )}
+                                <div class="daynight">
+                                  ${item.is_daytime !== false
+                                    ? this.hass!.localize("ui.card.weather.day")
+                                    : this.hass!.localize(
+                                        "ui.card.weather.night"
+                                      )}<br />
+                                </div>
+                              `
+                            : hourly
+                              ? html`
+                                  ${formatTime(
+                                    new Date(item.datetime),
+                                    this.hass!.locale,
+                                    this.hass!.config
+                                  )}
+                                `
+                              : html`
+                                  ${formatDateWeekdayShort(
+                                    new Date(item.datetime),
+                                    this.hass!.locale,
+                                    this.hass!.config
+                                  )}
+                                `}
+                        </div>
+                        ${this._showValue(item.condition)
                           ? html`
-                              ${formatTimeWeekday(
-                                new Date(item.datetime),
-                                this.hass!.locale,
-                                this.hass!.config
-                              )}
+                              <div class="forecast-image-icon">
+                                ${getWeatherStateIcon(
+                                  item.condition!,
+                                  this,
+                                  !(
+                                    item.is_daytime ||
+                                    item.is_daytime === undefined
+                                  )
+                                )}
+                              </div>
                             `
-                          : html`
-                              ${formatDateWeekdayDay(
-                                new Date(item.datetime),
-                                this.hass!.locale,
-                                this.hass!.config
-                              )}
-                            `}
-                    </div>
-                    <div class="templow">
-                      ${this._showValue(item.templow)
-                        ? this.hass.formatEntityAttributeValue(
-                            this.stateObj!,
-                            "templow",
-                            item.templow
-                          )
-                        : hourly
-                          ? ""
-                          : "—"}
-                    </div>
-                    <div class="temp">
-                      ${this._showValue(item.temperature)
-                        ? this.hass.formatEntityAttributeValue(
-                            this.stateObj!,
-                            "temperature",
-                            item.temperature
-                          )
-                        : "—"}
-                    </div>
-                  </div>`
-                : ""
-            )}
+                          : nothing}
+                        <div class="temp">
+                          ${this._showValue(item.temperature)
+                            ? html`${formatNumber(
+                                item.temperature,
+                                this.hass!.locale
+                              )}°`
+                            : "—"}
+                        </div>
+                        <div class="templow">
+                          ${this._showValue(item.templow)
+                            ? html`${formatNumber(
+                                item.templow!,
+                                this.hass!.locale
+                              )}°`
+                            : hourly
+                              ? nothing
+                              : "—"}
+                        </div>
+                      </div>
+                    `
+                  : nothing
+              )}
+            </div>
           `
-        : ""}
+        : nothing}
       ${this.stateObj.attributes.attribution
         ? html`
             <div class="attribution">
               ${this.stateObj.attributes.attribution}
             </div>
           `
-        : ""}
+        : nothing}
     `;
   }
 
@@ -322,56 +403,184 @@ class MoreInfoWeather extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      ha-svg-icon {
-        color: var(--paper-item-icon-color);
-        margin-left: 8px;
-        margin-inline-start: 8px;
-        margin-inline-end: initial;
-      }
+    return [
+      weatherSVGStyles,
+      css`
+        ha-svg-icon {
+          color: var(--paper-item-icon-color);
+          margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
+        }
 
-      mwc-tab-bar {
-        margin-bottom: 4px;
-      }
+        mwc-tab-bar {
+          margin-bottom: 4px;
+        }
 
-      .section {
-        margin: 16px 0 8px 0;
-        font-size: 1.2em;
-      }
+        .section {
+          margin: 16px 0 8px 0;
+          font-size: 1.2em;
+        }
 
-      .flex {
-        display: flex;
-        height: 32px;
-        align-items: center;
-      }
-      .flex > div:last-child {
-        direction: ltr;
-      }
+        .flex {
+          display: flex;
+          height: 32px;
+          align-items: center;
+        }
+        .flex > div:last-child {
+          direction: ltr;
+        }
 
-      .main {
-        flex: 1;
-        margin-left: 24px;
-        margin-inline-start: 24px;
-        margin-inline-end: initial;
-      }
+        .main {
+          flex: 1;
+          margin-left: 24px;
+          margin-inline-start: 24px;
+          margin-inline-end: initial;
+        }
 
-      .temp,
-      .templow {
-        min-width: 48px;
-        text-align: right;
-        direction: ltr;
-      }
+        .attribution {
+          text-align: center;
+          margin-top: 16px;
+        }
 
-      .templow {
-        margin: 0 16px;
-        color: var(--secondary-text-color);
-      }
+        .time-ago,
+        .attribute {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
 
-      .attribution {
-        color: var(--secondary-text-color);
-        text-align: center;
-      }
-    `;
+        .attribution,
+        .templow,
+        .daynight,
+        .attribute,
+        .time-ago {
+          color: var(--secondary-text-color);
+        }
+
+        .content {
+          display: flex;
+          flex-wrap: nowrap;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 16px;
+        }
+
+        .icon-image {
+          display: flex;
+          align-items: center;
+          min-width: 64px;
+          margin-right: 16px;
+          margin-inline-end: 16px;
+          margin-inline-start: initial;
+        }
+
+        .icon-image > * {
+          flex: 0 0 64px;
+          height: 64px;
+        }
+
+        .weather-icon {
+          --mdc-icon-size: 64px;
+        }
+
+        .info {
+          display: flex;
+          justify-content: space-between;
+          flex-grow: 1;
+          overflow: hidden;
+        }
+
+        .temp-attribute {
+          text-align: var(--float-end);
+        }
+
+        .temp-attribute .temp {
+          position: relative;
+          margin-right: 24px;
+          direction: ltr;
+        }
+
+        .temp-attribute .temp span {
+          position: absolute;
+          font-size: 24px;
+          top: 1px;
+        }
+
+        .state,
+        .temp-attribute .temp {
+          font-size: 28px;
+          line-height: 1.2;
+        }
+
+        .attribute {
+          font-size: 14px;
+          line-height: 1;
+        }
+
+        .name-state {
+          overflow: hidden;
+          padding-right: 12px;
+          padding-inline-end: 12px;
+          padding-inline-start: initial;
+          width: 100%;
+        }
+
+        .state {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .forecast {
+          display: flex;
+          justify-content: space-around;
+          padding: 16px;
+          padding-bottom: 0px;
+          overflow-x: auto;
+          scrollbar-color: var(--scrollbar-thumb-color) transparent;
+          scrollbar-width: thin;
+          mask-image: linear-gradient(
+            90deg,
+            transparent 0%,
+            black 5%,
+            black 94%,
+            transparent 100%
+          );
+        }
+
+        .forecast > div {
+          text-align: center;
+          padding: 0 10px;
+        }
+
+        .forecast .icon,
+        .forecast .temp {
+          margin: 4px 0;
+        }
+
+        .forecast .temp {
+          font-size: 16px;
+        }
+
+        .forecast-image-icon {
+          padding-top: 4px;
+          padding-bottom: 4px;
+          display: flex;
+          justify-content: center;
+        }
+
+        .forecast-image-icon > * {
+          width: 40px;
+          height: 40px;
+          --mdc-icon-size: 40px;
+        }
+
+        .forecast-icon {
+          --mdc-icon-size: 40px;
+        }
+      `,
+    ];
   }
 
   private _showValue(item: number | string | undefined): boolean {

@@ -67,7 +67,7 @@ export class MQTTConfigPanel extends LitElement {
             <div class="card-actions">
               <mwc-button @click=${this._openOptionFlow}
                 >${this.hass.localize(
-                  "ui.panel.config.mqtt.reconfigure"
+                  "ui.panel.config.mqtt.option_flow"
                 )}</mwc-button
               >
             </div>

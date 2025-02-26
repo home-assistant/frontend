@@ -11,6 +11,8 @@ import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { configElementStyle } from "./config-elements-style";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { STUB_IMAGE } from "../../cards/hui-picture-entity-card";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -110,7 +112,19 @@ export class HuiPictureEntityCardEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    fireEvent(this, "config-changed", { config: ev.detail.value });
+    const config = ev.detail.value;
+    if (
+      config.entity &&
+      config.entity !== this._config?.entity &&
+      (computeDomain(config.entity) === "image" ||
+        (computeDomain(config.entity) === "person" &&
+          this.hass?.states[config.entity]?.attributes.entity_picture)) &&
+      config.image === STUB_IMAGE
+    ) {
+      delete config.image;
+    }
+
+    fireEvent(this, "config-changed", { config });
   }
 
   private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
