@@ -196,7 +196,7 @@ class HaBackupConfigData extends LitElement {
         </ha-md-list-item>
 
         ${this._dbCanbeIncluded
-          ? html` <ha-md-list-item>
+          ? html`<ha-md-list-item>
               <ha-svg-icon slot="start" .path=${mdiChartBox}></ha-svg-icon>
               <span slot="headline">
                 ${this.hass.localize("ui.panel.config.backup.data.history")}
