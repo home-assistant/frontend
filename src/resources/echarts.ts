@@ -13,6 +13,7 @@ import {
   GridComponent,
   DataZoomComponent,
   VisualMapComponent,
+  ToolboxComponent,
 } from "echarts/components";
 
 // Features like Universal Transition and Label Layout
@@ -69,6 +70,7 @@ echarts.use([
   LabelLayout,
   UniversalTransition,
   CanvasRenderer,
+  ToolboxComponent,
 ]);
 
 export default echarts;
