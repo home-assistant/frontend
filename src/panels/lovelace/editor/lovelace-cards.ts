@@ -129,4 +129,8 @@ export const coreCards: Card[] = [
     type: "heading",
     showElement: true,
   },
+  {
+    type: "spacing",
+    showElement: false,
+  },
 ];

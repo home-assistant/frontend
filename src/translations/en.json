@@ -7213,6 +7213,11 @@
               "daily": "Daily",
               "hourly": "Hourly",
               "twice_daily": "Twice daily"
+            },
+            "spacing": {
+              "name": "Spacing",
+              "description": "Add custom spacing between cards.",
+              "no_config_options": "This card has no config options, use the Layout tab to set the size."
             }
           },
           "elements": {
