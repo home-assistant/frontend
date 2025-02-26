@@ -388,6 +388,8 @@ export class HaChartBase extends LitElement {
       aria: { show: true },
       dataZoom: this._getDataZoomConfig(),
       toolbox: {
+        top: Infinity,
+        left: Infinity,
         feature: {
           dataZoom: { show: true, yAxisIndex: false, filterMode: "none" },
         },
