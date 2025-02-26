@@ -303,6 +303,9 @@ export class HaChartBase extends LitElement {
       this.chart.getZr().on("dblclick", this._handleClickZoom);
       if (this._isTouchDevice) {
         this.chart.getZr().on("click", (e: ECElementEvent) => {
+          if (!e.zrByTouch) {
+            return;
+          }
           if (
             this._lastTapTime &&
             Date.now() - this._lastTapTime < DOUBLE_TAP_TIME
