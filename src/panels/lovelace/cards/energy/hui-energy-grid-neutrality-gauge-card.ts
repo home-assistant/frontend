@@ -125,7 +125,7 @@ class HuiEnergyGridGaugeCard
                 label="kWh"
                 needle
               ></ha-gauge>
-              <ha-tooltip placement="left">
+              <ha-tooltip placement="left" hoist>
                 <span slot="content">
                   ${this.hass.localize(
                     "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.energy_dependency"
