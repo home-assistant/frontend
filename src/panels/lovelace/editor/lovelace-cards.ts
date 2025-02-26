@@ -131,6 +131,6 @@ export const coreCards: Card[] = [
   },
   {
     type: "spacing",
-    showElement: false,
+    sectionsViewOnly: true
   },
 ];
