@@ -117,7 +117,7 @@ class HuiEnergySolarGaugeCard
                   "--gauge-color": this._computeSeverity(value),
                 })}
               ></ha-gauge>
-              <ha-tooltip placement="left">
+              <ha-tooltip placement="left" hoist>
                 <span slot="content">
                   ${this.hass.localize(
                     "ui.panel.lovelace.cards.energy.solar_consumed_gauge.card_indicates_solar_energy_used"

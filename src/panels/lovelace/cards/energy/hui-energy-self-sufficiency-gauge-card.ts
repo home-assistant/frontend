@@ -192,6 +192,7 @@ class HuiEnergySelfSufficiencyGaugeCard
                 .content=${this.hass.localize(
                   "ui.panel.lovelace.cards.energy.self_sufficiency_gauge.card_indicates_self_sufficiency_quota"
                 )}
+                hoist
               >
                 <ha-svg-icon .path=${mdiInformation}></ha-svg-icon>
               </ha-tooltip>
