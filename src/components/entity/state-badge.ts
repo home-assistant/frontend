@@ -179,26 +179,25 @@ export class StateBadge extends LitElement {
 
     this._iconStyle = iconStyle;
     this.style.backgroundImage = backgroundImage;
-    this.style.borderRadius = this._getBorderRadius();
   }
 
-  private _getBorderRadius() {
-    let radius;
+  private _getClass() {
+    let cls;
     if (this.stateObj) {
       const domain = computeDomain(this.stateObj.entity_id);
       if (domain === "update") {
-        radius = "0";
+        cls = "has-no-radius";
       } else if (domain === "media_player" || domain === "camera") {
-        radius = "8%";
+        cls = "has-media-image";
       } else if (this.style.backgroundImage !== "") {
-        radius = "var(--state-badge-with-image-border-radius, 50%)";
+        cls = "has-image";
       } else {
-        radius = "50%";
+        cls = "";
       }
     } else {
-      radius = "50%";
+      cls = "";
     }
-    return radius;
+    return cls;
   }
 
   static get styles(): CSSResultGroup {
@@ -216,7 +215,17 @@ export class StateBadge extends LitElement {
           line-height: 40px;
           vertical-align: middle;
           box-sizing: border-box;
+          border-radius: var(--state-badge-border-radius, 50%);
           --state-inactive-color: initial;
+        }
+        .has-image {
+          border-radius: var(--state-badge-with-image-border-radius, 50%) !important;
+        }
+        .has-media-image {
+          border-radius: var(--state-badge-with-media-image-border-radius, 8%) !important;
+        }
+        .has-no-radius {
+          border-radius: 0 !important;
         }
         :host(:focus) {
           outline: none;
