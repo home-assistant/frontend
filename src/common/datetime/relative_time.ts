@@ -25,8 +25,8 @@ export const relativeTime = (
   from: Date,
   locale: FrontendLocaleData,
   to?: Date,
-  includeTense = true,
-  format?: RelativeTimeFormat
+  format?: RelativeTimeFormat,
+  includeTense = true
 ): string => {
   const diff = selectUnit(from, to, locale);
   const style: RelativeTimeStyle = format ? RelativeTimeFormat[format] : "long";

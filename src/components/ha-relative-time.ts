@@ -74,8 +74,8 @@ class HaRelativeTime extends ReactiveElement {
         date,
         this.hass.locale,
         undefined,
-        undefined,
-        this.format
+        this.format,
+        undefined
       );
       this.innerHTML = this.capitalize
         ? capitalizeFirstLetter(relTime)

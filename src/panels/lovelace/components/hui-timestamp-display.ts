@@ -118,10 +118,16 @@ class HuiTimestampDisplay extends LitElement {
             this.ts,
             this.hass!.locale,
             undefined,
-            undefined,
-            this._format
+            this._format,
+            undefined
           )
-        : relativeTime(new Date(), this.hass!.locale, this.ts, false);
+        : relativeTime(
+            new Date(),
+            this.hass!.locale,
+            this.ts,
+            undefined,
+            false
+          );
 
       this._relative = this.capitalize
         ? capitalizeFirstLetter(this._relative)
