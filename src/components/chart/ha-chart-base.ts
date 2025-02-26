@@ -31,6 +31,7 @@ import "../chips/ha-assist-chip";
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 const LEGEND_OVERFLOW_LIMIT = 10;
 const LEGEND_OVERFLOW_LIMIT_MOBILE = 6;
+const DOUBLE_TAP_TIME = 300;
 
 @customElement("ha-chart-base")
 export class HaChartBase extends LitElement {
@@ -64,6 +65,8 @@ export class HaChartBase extends LitElement {
   private _modifierPressed = false;
 
   private _isTouchDevice = "ontouchstart" in window;
+
+  private _lastTapTime?: number;
 
   // @ts-ignore
   private _resizeController = new ResizeController(this, {
@@ -297,22 +300,19 @@ export class HaChartBase extends LitElement {
       this.chart.on("click", (e: ECElementEvent) => {
         fireEvent(this, "chart-click", e);
       });
-      this.chart.getZr().on("dblclick", (e: ECElementEvent) => {
-        if (!this.chart) {
-          return;
-        }
-        const range = this._isZoomed
-          ? [0, 100]
-          : [
-              (e.offsetX / this.chart.getWidth()) * 100 - 15,
-              (e.offsetX / this.chart.getWidth()) * 100 + 15,
-            ];
-        this.chart.dispatchAction({
-          type: "dataZoom",
-          start: range[0],
-          end: range[1],
+      this.chart.getZr().on("dblclick", this._handleClickZoom);
+      if (this._isTouchDevice) {
+        this.chart.getZr().on("click", (e: ECElementEvent) => {
+          if (
+            this._lastTapTime &&
+            Date.now() - this._lastTapTime < DOUBLE_TAP_TIME
+          ) {
+            this._handleClickZoom(e);
+          } else {
+            this._lastTapTime = Date.now();
+          }
         });
-      });
+      }
       this.chart.setOption({
         ...this._createOptions(),
         series: this._getSeries(),
@@ -604,6 +604,23 @@ export class HaChartBase extends LitElement {
     const replaceMerge = options.series ? ["series"] : [];
     this.chart.setOption(options, { replaceMerge });
   }
+
+  private _handleClickZoom = (e: ECElementEvent) => {
+    if (!this.chart) {
+      return;
+    }
+    const range = this._isZoomed
+      ? [0, 100]
+      : [
+          (e.offsetX / this.chart.getWidth()) * 100 - 15,
+          (e.offsetX / this.chart.getWidth()) * 100 + 15,
+        ];
+    this.chart.dispatchAction({
+      type: "dataZoom",
+      start: range[0],
+      end: range[1],
+    });
+  };
 
   private _handleZoomReset() {
     this.chart?.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
