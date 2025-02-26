@@ -150,6 +150,7 @@ class HuiEnergyCarbonGaugeCard
                   "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.card_indicates_energy_used"
                 )}
                 placement="left"
+                hoist
               >
                 <ha-svg-icon .path=${mdiInformation}></ha-svg-icon>
               </ha-tooltip>
