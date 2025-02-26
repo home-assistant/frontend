@@ -76,11 +76,11 @@ class HaBackupConfigData extends LitElement {
 
   @state() private _showAddons = false;
 
-  @state() private _dbCanbeIncluded = true;
+  @state() private _showDbOption = true;
 
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
-    this._checkDbCanBeIncluded();
+    this._checkDbOption();
     if (isComponentLoaded(this.hass, "hassio")) {
       this._fetchAddons();
     }
@@ -102,15 +102,15 @@ class HaBackupConfigData extends LitElement {
     fireEvent(this, "backup-addons-fetched");
   }
 
-  private async _checkDbCanBeIncluded() {
+  private async _checkDbOption() {
     if (isComponentLoaded(this.hass, "recorder")) {
       const info = await getRecorderInfo(this.hass.connection);
-      this._dbCanbeIncluded = info.db_in_default_location;
-      if (!this._dbCanbeIncluded && this.value?.include_database) {
+      this._showDbOption = info.db_in_default_location;
+      if (!this._showDbOption && this.value?.include_database) {
         this.value.include_database = false;
       }
     } else {
-      this._dbCanbeIncluded = false;
+      this._showDbOption = false;
     }
   }
 
@@ -195,7 +195,7 @@ class HaBackupConfigData extends LitElement {
           ></ha-switch>
         </ha-md-list-item>
 
-        ${this._dbCanbeIncluded
+        ${this._showDbOption
           ? html`<ha-md-list-item>
               <ha-svg-icon slot="start" .path=${mdiChartBox}></ha-svg-icon>
               <span slot="headline">
