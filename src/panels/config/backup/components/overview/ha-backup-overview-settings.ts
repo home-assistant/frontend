@@ -1,7 +1,7 @@
 import { mdiCalendar, mdiDatabase, mdiPuzzle, mdiUpload } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
@@ -18,6 +18,8 @@ import {
 } from "../../../../../data/backup";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
+import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
+import { getRecorderInfo } from "../../../../../data/recorder";
 
 @customElement("ha-backup-overview-settings")
 class HaBackupBackupsSummary extends LitElement {
@@ -27,8 +29,24 @@ class HaBackupBackupsSummary extends LitElement {
 
   @property({ attribute: false }) public agents!: BackupAgent[];
 
+  @state() private _showDbOption = true;
+
+  protected firstUpdated(changedProperties: PropertyValues): void {
+    super.firstUpdated(changedProperties);
+    this._checkDbOption();
+  }
+
   private _configure() {
     navigate("/config/backup/settings");
+  }
+
+  private async _checkDbOption() {
+    if (isComponentLoaded(this.hass, "recorder")) {
+      const info = await getRecorderInfo(this.hass.connection);
+      this._showDbOption = info.db_in_default_location;
+    } else {
+      this._showDbOption = false;
+    }
   }
 
   private _scheduleDescription(config: BackupConfig): string {
@@ -214,7 +232,8 @@ class HaBackupBackupsSummary extends LitElement {
             <ha-md-list-item type="link" href="/config/backup/settings#data">
               <ha-svg-icon slot="start" .path=${mdiDatabase}></ha-svg-icon>
               <div slot="headline">
-                ${this.config.create_backup.include_database
+                ${this._showDbOption &&
+                this.config.create_backup.include_database
                   ? this.hass.localize(
                       "ui.panel.config.backup.overview.settings.data_settings_history"
                     )
