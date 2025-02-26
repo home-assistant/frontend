@@ -110,6 +110,12 @@ export class HaChartBase extends LitElement {
         if (!this.options?.dataZoom) {
           this._setChartOptions({ dataZoom: this._getDataZoomConfig() });
         }
+        // drag to zoom
+        this.chart?.dispatchAction({
+          type: "takeGlobalCursor",
+          key: "dataZoomSelect",
+          dataZoomSelectActive: true,
+        });
       }
     };
 
@@ -119,6 +125,11 @@ export class HaChartBase extends LitElement {
         if (!this.options?.dataZoom) {
           this._setChartOptions({ dataZoom: this._getDataZoomConfig() });
         }
+        this.chart?.dispatchAction({
+          type: "takeGlobalCursor",
+          key: "dataZoomSelect",
+          dataZoomSelectActive: false,
+        });
       }
     };
 
@@ -160,9 +171,7 @@ export class HaChartBase extends LitElement {
     return html`
       <div
         class="container ${classMap({ "has-height": !!this.height })}"
-        style=${styleMap({
-          height: this.height,
-        })}
+        style=${styleMap({ height: this.height })}
       >
         <div
           class="chart-container"
@@ -288,11 +297,21 @@ export class HaChartBase extends LitElement {
       this.chart.on("click", (e: ECElementEvent) => {
         fireEvent(this, "chart-click", e);
       });
-      this.chart.on("mousemove", (e: ECElementEvent) => {
-        if (e.componentType === "series" && e.componentSubType === "custom") {
-          // custom series do not support cursor style so we need to set it manually
-          this.chart?.getZr()?.setCursorStyle("default");
+      this.chart.getZr().on("dblclick", (e: ECElementEvent) => {
+        if (!this.chart) {
+          return;
         }
+        const range = this._isZoomed
+          ? [0, 100]
+          : [
+              (e.offsetX / this.chart.getWidth()) * 100 - 15,
+              (e.offsetX / this.chart.getWidth()) * 100 + 15,
+            ];
+        this.chart.dispatchAction({
+          type: "dataZoom",
+          start: range[0],
+          end: range[1],
+        });
       });
       this.chart.setOption({
         ...this._createOptions(),
@@ -350,20 +369,12 @@ export class HaChartBase extends LitElement {
                 : undefined;
         }
         return {
-          axisLine: {
-            show: false,
-          },
-          splitLine: {
-            show: true,
-          },
+          axisLine: { show: false },
+          splitLine: { show: true },
           ...axis,
           axisLabel: {
             formatter: this._formatTimeLabel,
-            rich: {
-              bold: {
-                fontWeight: "bold",
-              },
-            },
+            rich: { bold: { fontWeight: "bold" } },
             hideOverlap: true,
             ...axis.axisLabel,
           },
@@ -374,14 +385,16 @@ export class HaChartBase extends LitElement {
     const options = {
       animation: !this._reducedMotion,
       darkMode: this._themes.darkMode ?? false,
-      aria: {
-        show: true,
-      },
+      aria: { show: true },
       dataZoom: this._getDataZoomConfig(),
-      ...this.options,
-      legend: {
-        show: false,
+      toolbox: {
+        feature: {
+          dataZoom: { show: true, yAxisIndex: false, filterMode: "none" },
+        },
+        iconStyle: { opacity: 0 },
       },
+      ...this.options,
+      legend: { show: false },
       xAxis,
     };
 
@@ -413,42 +426,28 @@ export class HaChartBase extends LitElement {
         fontFamily: "Roboto, Noto, sans-serif",
       },
       title: {
-        textStyle: {
-          color: style.getPropertyValue("--primary-text-color"),
-        },
+        textStyle: { color: style.getPropertyValue("--primary-text-color") },
         subtextStyle: {
           color: style.getPropertyValue("--secondary-text-color"),
         },
       },
       line: {
-        lineStyle: {
-          width: 1.5,
-        },
+        lineStyle: { width: 1.5 },
         symbolSize: 1,
         symbol: "circle",
         smooth: false,
       },
-      bar: {
-        itemStyle: {
-          barBorderWidth: 1.5,
-        },
-      },
+      bar: { itemStyle: { barBorderWidth: 1.5 } },
       categoryAxis: {
-        axisLine: {
-          show: false,
-        },
-        axisTick: {
-          show: false,
-        },
+        axisLine: { show: false },
+        axisTick: { show: false },
         axisLabel: {
           show: true,
           color: style.getPropertyValue("--primary-text-color"),
         },
         splitLine: {
           show: false,
-          lineStyle: {
-            color: style.getPropertyValue("--divider-color"),
-          },
+          lineStyle: { color: style.getPropertyValue("--divider-color") },
         },
         splitArea: {
           show: false,
@@ -463,15 +462,11 @@ export class HaChartBase extends LitElement {
       valueAxis: {
         axisLine: {
           show: true,
-          lineStyle: {
-            color: style.getPropertyValue("--divider-color"),
-          },
+          lineStyle: { color: style.getPropertyValue("--divider-color") },
         },
         axisTick: {
           show: true,
-          lineStyle: {
-            color: style.getPropertyValue("--divider-color"),
-          },
+          lineStyle: { color: style.getPropertyValue("--divider-color") },
         },
         axisLabel: {
           show: true,
@@ -479,9 +474,7 @@ export class HaChartBase extends LitElement {
         },
         splitLine: {
           show: true,
-          lineStyle: {
-            color: style.getPropertyValue("--divider-color"),
-          },
+          lineStyle: { color: style.getPropertyValue("--divider-color") },
         },
         splitArea: {
           show: false,
@@ -496,15 +489,11 @@ export class HaChartBase extends LitElement {
       logAxis: {
         axisLine: {
           show: true,
-          lineStyle: {
-            color: style.getPropertyValue("--divider-color"),
-          },
+          lineStyle: { color: style.getPropertyValue("--divider-color") },
         },
         axisTick: {
           show: true,
-          lineStyle: {
-            color: style.getPropertyValue("--divider-color"),
-          },
+          lineStyle: { color: style.getPropertyValue("--divider-color") },
         },
         axisLabel: {
           show: true,
@@ -512,9 +501,7 @@ export class HaChartBase extends LitElement {
         },
         splitLine: {
           show: true,
-          lineStyle: {
-            color: style.getPropertyValue("--divider-color"),
-          },
+          lineStyle: { color: style.getPropertyValue("--divider-color") },
         },
         splitArea: {
           show: false,
@@ -529,15 +516,11 @@ export class HaChartBase extends LitElement {
       timeAxis: {
         axisLine: {
           show: true,
-          lineStyle: {
-            color: style.getPropertyValue("--divider-color"),
-          },
+          lineStyle: { color: style.getPropertyValue("--divider-color") },
         },
         axisTick: {
           show: true,
-          lineStyle: {
-            color: style.getPropertyValue("--divider-color"),
-          },
+          lineStyle: { color: style.getPropertyValue("--divider-color") },
         },
         axisLabel: {
           show: true,
@@ -545,9 +528,7 @@ export class HaChartBase extends LitElement {
         },
         splitLine: {
           show: true,
-          lineStyle: {
-            color: style.getPropertyValue("--divider-color"),
-          },
+          lineStyle: { color: style.getPropertyValue("--divider-color") },
         },
         splitArea: {
           show: false,
@@ -560,9 +541,7 @@ export class HaChartBase extends LitElement {
         },
       },
       legend: {
-        textStyle: {
-          color: style.getPropertyValue("--primary-text-color"),
-        },
+        textStyle: { color: style.getPropertyValue("--primary-text-color") },
         inactiveColor: style.getPropertyValue("--disabled-text-color"),
         pageIconColor: style.getPropertyValue("--primary-text-color"),
         pageIconInactiveColor: style.getPropertyValue("--disabled-text-color"),
@@ -578,12 +557,8 @@ export class HaChartBase extends LitElement {
           fontSize: 12,
         },
         axisPointer: {
-          lineStyle: {
-            color: style.getPropertyValue("--divider-color"),
-          },
-          crossStyle: {
-            color: style.getPropertyValue("--divider-color"),
-          },
+          lineStyle: { color: style.getPropertyValue("--divider-color") },
+          crossStyle: { color: style.getPropertyValue("--divider-color") },
         },
       },
       timeline: {},
@@ -609,7 +584,7 @@ export class HaChartBase extends LitElement {
     }
     if (!this._originalZrFlush) {
       const dataSize = ensureArray(this.data).reduce(
-        (acc, series) => acc + (series.data as any[]).length,
+        (acc, series) => acc + ((series.data as any[]) || []).length,
         0
       );
       if (dataSize > 10000) {
