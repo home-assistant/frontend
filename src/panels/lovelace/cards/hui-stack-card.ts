@@ -89,7 +89,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
       <div
         id="root"
         class=${classMap({
-          "empty": !this._cards,
+          empty: !this._cards,
         })}
         dir=${this.hass ? computeRTLDirection(this.hass) : "ltr"}
       >
