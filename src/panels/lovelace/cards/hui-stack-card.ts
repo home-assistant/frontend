@@ -7,6 +7,7 @@ import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import "./hui-card";
 import type { HuiCard } from "./hui-card";
 import type { StackCardConfig } from "./types";
+import { classMap } from "lit/directives/class-map";
 
 export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
   extends LitElement
@@ -85,7 +86,13 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
       ${this._config.title
         ? html`<h1 class="card-header">${this._config.title}</h1>`
         : ""}
-      <div id="root" dir=${this.hass ? computeRTLDirection(this.hass) : "ltr"}>
+      <div
+        id="root"
+        class=${classMap({
+          "empty": !this._cards,
+        })}
+        dir=${this.hass ? computeRTLDirection(this.hass) : "ltr"}
+      >
         ${this._cards}
       </div>
     `;
