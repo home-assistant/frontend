@@ -34,7 +34,10 @@ describe("relativeTime", () => {
       assert.strictEqual(relativeTime(now, locale, now), "now");
     });
     it("returns 0 seconds without tense", () => {
-      assert.strictEqual(relativeTime(now, locale, now, false), "0 seconds");
+      assert.strictEqual(
+        relativeTime(now, locale, now, undefined, false),
+        "0 seconds"
+      );
     });
   });
 
@@ -52,12 +55,12 @@ describe("relativeTime", () => {
 
     it("without tense", () => {
       assert.strictEqual(
-        relativeTime(date1, locale, date2, false),
+        relativeTime(date1, locale, date2, undefined, false),
         "33 seconds"
       );
 
       assert.strictEqual(
-        relativeTime(date2, locale, date1, false),
+        relativeTime(date2, locale, date1, undefined, false),
         "33 seconds"
       );
     });
@@ -77,12 +80,12 @@ describe("relativeTime", () => {
 
     it("without tense", () => {
       assert.strictEqual(
-        relativeTime(date1, locale, date2, false),
+        relativeTime(date1, locale, date2, undefined, false),
         "2 minutes"
       );
 
       assert.strictEqual(
-        relativeTime(date2, locale, date1, false),
+        relativeTime(date2, locale, date1, undefined, false),
         "2 minutes"
       );
     });
@@ -101,9 +104,15 @@ describe("relativeTime", () => {
     });
 
     it("without tense", () => {
-      assert.strictEqual(relativeTime(date1, locale, date2, false), "2 hours");
+      assert.strictEqual(
+        relativeTime(date1, locale, date2, undefined, false),
+        "2 hours"
+      );
 
-      assert.strictEqual(relativeTime(date2, locale, date1, false), "2 hours");
+      assert.strictEqual(
+        relativeTime(date2, locale, date1, undefined, false),
+        "2 hours"
+      );
     });
   });
 
@@ -120,9 +129,15 @@ describe("relativeTime", () => {
     });
 
     it("without tense", () => {
-      assert.strictEqual(relativeTime(date1, locale, date2, false), "23 hours");
+      assert.strictEqual(
+        relativeTime(date1, locale, date2, undefined, false),
+        "23 hours"
+      );
 
-      assert.strictEqual(relativeTime(date2, locale, date1, false), "23 hours");
+      assert.strictEqual(
+        relativeTime(date2, locale, date1, undefined, false),
+        "23 hours"
+      );
     });
   });
 
@@ -139,9 +154,15 @@ describe("relativeTime", () => {
     });
 
     it("without tense", () => {
-      assert.strictEqual(relativeTime(date1, locale, date2, false), "1 day");
+      assert.strictEqual(
+        relativeTime(date1, locale, date2, undefined, false),
+        "1 day"
+      );
 
-      assert.strictEqual(relativeTime(date2, locale, date1, false), "1 day");
+      assert.strictEqual(
+        relativeTime(date2, locale, date1, undefined, false),
+        "1 day"
+      );
     });
   });
 
@@ -158,9 +179,15 @@ describe("relativeTime", () => {
     });
 
     it("without tense", () => {
-      assert.strictEqual(relativeTime(date1, locale, date2, false), "2 days");
+      assert.strictEqual(
+        relativeTime(date1, locale, date2, undefined, false),
+        "2 days"
+      );
 
-      assert.strictEqual(relativeTime(date2, locale, date1, false), "2 days");
+      assert.strictEqual(
+        relativeTime(date2, locale, date1, undefined, false),
+        "2 days"
+      );
     });
   });
 
@@ -178,9 +205,15 @@ describe("relativeTime", () => {
       });
 
       it("without tense", () => {
-        assert.strictEqual(relativeTime(date1, locale, date2, false), "5 days");
+        assert.strictEqual(
+          relativeTime(date1, locale, date2, undefined, false),
+          "5 days"
+        );
 
-        assert.strictEqual(relativeTime(date2, locale, date1, false), "5 days");
+        assert.strictEqual(
+          relativeTime(date2, locale, date1, undefined, false),
+          "5 days"
+        );
       });
     });
 
@@ -201,12 +234,12 @@ describe("relativeTime", () => {
 
       it("without tense", () => {
         assert.strictEqual(
-          relativeTime(date1, locale_monday, date2, false),
+          relativeTime(date1, locale_monday, date2, undefined, false),
           "1 week"
         );
 
         assert.strictEqual(
-          relativeTime(date2, locale_monday, date1, false),
+          relativeTime(date2, locale_monday, date1, undefined, false),
           "1 week"
         );
       });
@@ -227,9 +260,15 @@ describe("relativeTime", () => {
       });
 
       it("without tense", () => {
-        assert.strictEqual(relativeTime(date1, locale, date2, false), "1 week");
+        assert.strictEqual(
+          relativeTime(date1, locale, date2, undefined, false),
+          "1 week"
+        );
 
-        assert.strictEqual(relativeTime(date2, locale, date1, false), "1 week");
+        assert.strictEqual(
+          relativeTime(date2, locale, date1, undefined, false),
+          "1 week"
+        );
       });
     });
 
@@ -250,12 +289,12 @@ describe("relativeTime", () => {
 
       it("without tense", () => {
         assert.strictEqual(
-          relativeTime(date1, locale_monday, date2, false),
+          relativeTime(date1, locale_monday, date2, undefined, false),
           "5 days"
         );
 
         assert.strictEqual(
-          relativeTime(date2, locale_monday, date1, false),
+          relativeTime(date2, locale_monday, date1, undefined, false),
           "5 days"
         );
       });
@@ -275,9 +314,15 @@ describe("relativeTime", () => {
     });
 
     it("without tense", () => {
-      assert.strictEqual(relativeTime(date1, locale, date2, false), "2 weeks");
+      assert.strictEqual(
+        relativeTime(date1, locale, date2, undefined, false),
+        "2 weeks"
+      );
 
-      assert.strictEqual(relativeTime(date2, locale, date1, false), "2 weeks");
+      assert.strictEqual(
+        relativeTime(date2, locale, date1, undefined, false),
+        "2 weeks"
+      );
     });
   });
 
@@ -294,9 +339,15 @@ describe("relativeTime", () => {
     });
 
     it("without tense", () => {
-      assert.strictEqual(relativeTime(date1, locale, date2, false), "4 weeks");
+      assert.strictEqual(
+        relativeTime(date1, locale, date2, undefined, false),
+        "4 weeks"
+      );
 
-      assert.strictEqual(relativeTime(date2, locale, date1, false), "4 weeks");
+      assert.strictEqual(
+        relativeTime(date2, locale, date1, undefined, false),
+        "4 weeks"
+      );
     });
   });
 
@@ -313,9 +364,15 @@ describe("relativeTime", () => {
     });
 
     it("without tense", () => {
-      assert.strictEqual(relativeTime(date1, locale, date2, false), "1 month");
+      assert.strictEqual(
+        relativeTime(date1, locale, date2, undefined, false),
+        "1 month"
+      );
 
-      assert.strictEqual(relativeTime(date2, locale, date1, false), "1 month");
+      assert.strictEqual(
+        relativeTime(date2, locale, date1, undefined, false),
+        "1 month"
+      );
     });
   });
 
@@ -333,12 +390,12 @@ describe("relativeTime", () => {
 
     it("without tense", () => {
       assert.strictEqual(
-        relativeTime(date1, locale, date2, false),
+        relativeTime(date1, locale, date2, undefined, false),
         "11 months"
       );
 
       assert.strictEqual(
-        relativeTime(date2, locale, date1, false),
+        relativeTime(date2, locale, date1, undefined, false),
         "11 months"
       );
     });
@@ -357,9 +414,15 @@ describe("relativeTime", () => {
     });
 
     it("without tense", () => {
-      assert.strictEqual(relativeTime(date1, locale, date2, false), "1 year");
+      assert.strictEqual(
+        relativeTime(date1, locale, date2, undefined, false),
+        "1 year"
+      );
 
-      assert.strictEqual(relativeTime(date2, locale, date1, false), "1 year");
+      assert.strictEqual(
+        relativeTime(date2, locale, date1, undefined, false),
+        "1 year"
+      );
     });
   });
 });
