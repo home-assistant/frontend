@@ -372,8 +372,7 @@
       "default": "Default",
       "dont_save": "Don't save",
       "copy": "Copy",
-      "show": "Show",
-      "hide": "Hide"
+      "show": "Show"
     },
     "components": {
       "selectors": {
