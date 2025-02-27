@@ -113,7 +113,7 @@ class DialogBluetoothDeviceInfo extends LitElement implements HassDialog {
         <table width="100%">
           <tbody>
             ${Object.entries(this._params.entry.service_uuids).map(
-              (key) => html`
+              ([key]) => html`
                 <tr>
                   ${key}
                 </tr>
