@@ -151,6 +151,38 @@ customCardFeatures.forEach((feature) => {
   CUSTOM_FEATURE_ENTRIES[feature.type] = feature;
 });
 
+export const getSupportedFeaturesType = (
+  stateObj: HassEntity,
+  featuresTypes?: string[]
+) => {
+  const filteredFeaturesTypes = UI_FEATURE_TYPES.filter(
+    (type) => !featuresTypes || featuresTypes.includes(type)
+  ) as string[];
+
+  const customFeaturesTypes = customCardFeatures.map(
+    (feature) => `${CUSTOM_TYPE_PREFIX}${feature.type}`
+  );
+  return filteredFeaturesTypes
+    .concat(customFeaturesTypes)
+    .filter((type) => supportsFeaturesType(stateObj, type));
+};
+
+export const supportsFeaturesType = (stateObj: HassEntity, type: string) => {
+  if (isCustomType(type)) {
+    const customType = stripCustomPrefix(type);
+    const customFeatureEntry = CUSTOM_FEATURE_ENTRIES[customType];
+    if (!customFeatureEntry?.supported) return true;
+    try {
+      return customFeatureEntry.supported(stateObj);
+    } catch {
+      return false;
+    }
+  }
+
+  const supportsFeature = SUPPORTS_FEATURE_TYPES[type];
+  return !supportsFeature || supportsFeature(stateObj);
+};
+
 declare global {
   interface HASSDomEvents {
     "features-changed": {
@@ -178,20 +210,12 @@ export class HuiCardFeaturesEditor extends LitElement {
 
   private _supportsFeatureType(type: string): boolean {
     if (!this.stateObj) return false;
+    return supportsFeaturesType(this.stateObj, type);
+  }
 
-    if (isCustomType(type)) {
-      const customType = stripCustomPrefix(type);
-      const customFeatureEntry = CUSTOM_FEATURE_ENTRIES[customType];
-      if (!customFeatureEntry?.supported) return true;
-      try {
-        return customFeatureEntry.supported(this.stateObj);
-      } catch {
-        return false;
-      }
-    }
-
-    const supportsFeature = SUPPORTS_FEATURE_TYPES[type];
-    return !supportsFeature || supportsFeature(this.stateObj);
+  private _getSupportedFeaturesType() {
+    if (!this.stateObj) return [];
+    return getSupportedFeaturesType(this.stateObj, this.featuresTypes);
   }
 
   private _isFeatureTypeEditable(type: string) {
@@ -223,18 +247,6 @@ export class HuiCardFeaturesEditor extends LitElement {
     }
 
     return this._featuresKeys.get(feature)!;
-  }
-
-  private _getSupportedFeaturesType() {
-    const featuresTypes = UI_FEATURE_TYPES.filter(
-      (type) => !this.featuresTypes || this.featuresTypes.includes(type)
-    ) as readonly string[];
-    const customFeaturesTypes = customCardFeatures.map(
-      (feature) => `${CUSTOM_TYPE_PREFIX}${feature.type}`
-    );
-    return featuresTypes
-      .concat(customFeaturesTypes)
-      .filter((type) => this._supportsFeatureType(type));
   }
 
   protected render() {
