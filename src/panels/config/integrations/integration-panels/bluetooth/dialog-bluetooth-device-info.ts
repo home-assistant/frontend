@@ -107,6 +107,21 @@ class DialogBluetoothDeviceInfo extends LitElement implements HassDialog {
           </tbody>
         </table>
 
+        <h4>
+          ${this.hass.localize("ui.panel.config.bluetooth.service_uuids")}
+        </h4>
+        <table width="100%">
+          <tbody>
+            ${Object.entries(this._params.entry.service_uuids).map(
+              (key) => html`
+                <tr>
+                  ${key}
+                </tr>
+              `
+            )}
+          </tbody>
+        </table>
+
         <ha-button slot="secondaryAction" @click=${this._copyToClipboard}
           >${this.hass.localize(
             "ui.panel.config.bluetooth.copy_to_clipboard"
