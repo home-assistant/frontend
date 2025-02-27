@@ -53,7 +53,7 @@ class HuiToggleCardFeature extends LitElement implements LovelaceCardFeature {
 
     const color = stateColorCss(this.stateObj);
 
-    const options = ["on", "off"].map<ControlSelectOption>((entityState) => ({
+    const options = ["off", "on"].map<ControlSelectOption>((entityState) => ({
       value: entityState,
       label: this.hass!.formatEntityState(this.stateObj!, entityState),
       path: entityState === "on" ? mdiPower : mdiPowerOff,
