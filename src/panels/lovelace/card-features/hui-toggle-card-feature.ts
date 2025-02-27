@@ -1,4 +1,13 @@
-import { mdiPower, mdiPowerOff } from "@mdi/js";
+import {
+  mdiFan,
+  mdiFanOff,
+  mdiLightbulbOff,
+  mdiLightbulbOn,
+  mdiPower,
+  mdiPowerOff,
+  mdiVolumeHigh,
+  mdiVolumeOff,
+} from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -18,7 +27,24 @@ import type { ToggleCardFeatureConfig } from "./types";
 
 export const supportsToggleCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
-  return ["switch", "input_boolean", "light", "fan"].includes(domain);
+  return ["switch", "input_boolean", "light", "fan", "siren", "valve"].includes(
+    domain
+  );
+};
+
+const DOMAIN_ICONS: Record<string, { on: string; off: string }> = {
+  siren: {
+    on: mdiVolumeHigh,
+    off: mdiVolumeOff,
+  },
+  light: {
+    on: mdiLightbulbOn,
+    off: mdiLightbulbOff,
+  },
+  fan: {
+    on: mdiFan,
+    off: mdiFanOff,
+  },
 };
 
 @customElement("hui-toggle-card-feature")
@@ -90,6 +116,10 @@ class HuiToggleCardFeature extends LitElement implements LovelaceCardFeature {
     const isOn = this.stateObj.state === "on";
     const isOff = this.stateObj.state === "off";
 
+    const domain = computeDomain(this.stateObj.entity_id);
+    const onIcon = DOMAIN_ICONS[domain]?.on || mdiPower;
+    const offIcon = DOMAIN_ICONS[domain]?.off || mdiPowerOff;
+
     if (
       this.stateObj.attributes.assumed_state ||
       this.stateObj.state === UNKNOWN
@@ -107,7 +137,7 @@ class HuiToggleCardFeature extends LitElement implements LovelaceCardFeature {
               "--color": offColor,
             })}
           >
-            <ha-svg-icon .path=${mdiPowerOff}></ha-svg-icon>
+            <ha-svg-icon .path=${offIcon}></ha-svg-icon>
           </ha-control-button>
           <ha-control-button
             .label=${this.hass.localize("ui.card.common.turn_on")}
@@ -120,7 +150,7 @@ class HuiToggleCardFeature extends LitElement implements LovelaceCardFeature {
               "--color": onColor,
             })}
           >
-            <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
+            <ha-svg-icon .path=${onIcon}></ha-svg-icon>
           </ha-control-button>
         </ha-control-button-group>
       `;
@@ -129,8 +159,8 @@ class HuiToggleCardFeature extends LitElement implements LovelaceCardFeature {
     return html`
       <ha-control-switch
         touch-action="none"
-        .pathOn=${mdiPower}
-        .pathOff=${mdiPowerOff}
+        .pathOn=${onIcon}
+        .pathOff=${offIcon}
         .checked=${isOn}
         @change=${this._valueChanged}
         .ariaLabel=${this.hass.localize("ui.card.common.toggle")}
