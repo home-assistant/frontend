@@ -20,6 +20,10 @@ export const cardFeatureStyles = css`
     --control-button-group-spacing: var(--feature-button-spacing);
     --control-button-group-thickness: var(--feature-height);
   }
+  ha-control-button-group > ha-control-button {
+    flex-basis: 20px;
+    --control-button-padding: 0px;
+  }
   ha-control-slider {
     --control-slider-color: var(--feature-color);
     --control-slider-background: var(--feature-color);
