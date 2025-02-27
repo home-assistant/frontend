@@ -186,7 +186,9 @@ export class HaIntegrationCard extends LitElement {
                 </ha-tooltip>
               </div>`
             : nothing}
-          ${this.manifest && !this.manifest?.config_flow
+          ${this.manifest &&
+          !this.manifest?.config_flow &&
+          !this.items.every((itm) => itm.source === "system")
             ? html`<div class="icon yaml">
                 <ha-tooltip
                   .placement=${computeRTL(this.hass) ? "right" : "left"}
