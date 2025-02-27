@@ -245,6 +245,9 @@ export class HuiTileCardEditor
                 label: localize(
                   `ui.panel.lovelace.editor.card.tile.features_position_options.${value}`
                 ),
+                description: localize(
+                  `ui.panel.lovelace.editor.card.tile.features_position_options.${value}_description`
+                ),
                 value,
                 image: {
                   src: `/static/images/form/tile_features_position_${value}.svg`,
