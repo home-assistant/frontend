@@ -27,4 +27,12 @@ export const cardFeatureStyles = css`
     --control-slider-thickness: var(--feature-height);
     --control-slider-border-radius: var(--feature-border-radius);
   }
+  ha-control-switch {
+    --control-switch-on-color: var(--feature-color);
+    --control-switch-off-color: var(--feature-color);
+    --control-switch-background-opacity: 0.2;
+    --control-switch-thickness: var(--feature-height);
+    --control-switch-border-radius: var(--feature-border-radius);
+    --control-switch-padding: 0px;
+  }
 `;
