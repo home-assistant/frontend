@@ -5,6 +5,7 @@ export const cardFeatureStyles = css`
     box-sizing: border-box;
     --control-select-menu-height: var(--feature-height);
     --control-select-menu-border-radius: var(--feature-border-radius);
+    --control-select-menu-focus-color: var(--feature-color);
     line-height: 1.2;
     display: block;
     width: 100%;
@@ -23,6 +24,9 @@ export const cardFeatureStyles = css`
   ha-control-button-group > ha-control-button {
     flex-basis: 20px;
     --control-button-padding: 0px;
+  }
+  ha-control-button {
+    --control-button-focus-color: var(--feature-color);
   }
   ha-control-slider {
     --control-slider-color: var(--feature-color);
