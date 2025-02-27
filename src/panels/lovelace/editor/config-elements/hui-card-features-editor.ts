@@ -203,6 +203,9 @@ export class HuiCardFeaturesEditor extends LitElement {
   @property({ attribute: false })
   public featuresTypes?: FeatureType[];
 
+  @property({ type: Number, attribute: "max-feature-count" })
+  public maxFeaturesCount?: number;
+
   @property()
   public label?: string;
 
@@ -280,6 +283,10 @@ export class HuiCardFeaturesEditor extends LitElement {
               const type = featureConf.type;
               const supported = this._supportsFeatureType(type);
               const editable = this._isFeatureTypeEditable(type);
+              const hidden =
+                this.maxFeaturesCount !== undefined &&
+                index >= this.maxFeaturesCount;
+
               return html`
                 <div class="feature">
                   <div class="handle">
@@ -296,7 +303,15 @@ export class HuiCardFeaturesEditor extends LitElement {
                               )}
                             </span>
                           `
-                        : nothing}
+                        : hidden
+                          ? html`
+                              <span class="secondary">
+                                ${this.hass!.localize(
+                                  "ui.panel.lovelace.editor.features.not_displayed"
+                                )}
+                              </span>
+                            `
+                          : nothing}
                     </div>
                   </div>
                   ${editable

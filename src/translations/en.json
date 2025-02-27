@@ -7259,6 +7259,7 @@
           "features": {
             "name": "Features",
             "not_compatible": "Not compatible",
+            "not_displayed": "Not displayed",
             "no_compatible_available": "No compatible features available for this entity",
             "add": "Add feature",
             "edit": "Edit feature",

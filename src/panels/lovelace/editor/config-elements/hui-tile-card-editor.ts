@@ -300,6 +300,9 @@ export class HuiTileCardEditor
     const hasCompatibleFeatures =
       (stateObj && this._hasCompatibleFeatures(stateObj)) || false;
 
+    const maxFeaturesCount =
+      this._config.features_position === "inline" ? 1 : undefined;
+
     return html`
       <ha-form
         .hass=${this.hass}
@@ -334,6 +337,7 @@ export class HuiTileCardEditor
             .hass=${this.hass}
             .stateObj=${stateObj}
             .features=${this._config!.features ?? []}
+            .maxFeaturesCount=${maxFeaturesCount}
             @features-changed=${this._featuresChanged}
             @edit-detail-element=${this._editDetailElement}
           ></hui-card-features-editor>
