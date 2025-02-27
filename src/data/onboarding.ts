@@ -1,5 +1,6 @@
 import type { HomeAssistant } from "../types";
 import { handleFetchPromise } from "../util/hass-call-api";
+import type { CloudStatus } from "./cloud";
 
 export interface InstallationType {
   installation_type:
@@ -34,6 +35,18 @@ export type ValidOnboardingStep = keyof OnboardingResponses;
 export interface OnboardingStep {
   step: ValidOnboardingStep;
   done: boolean;
+}
+
+interface CloudLoginBase {
+  email: string;
+}
+
+export interface CloudLoginPassword extends CloudLoginBase {
+  password: string;
+}
+
+export interface CloudLoginMFA extends CloudLoginBase {
+  code: string;
 }
 
 export const fetchOnboardingOverview = () =>
@@ -88,3 +101,16 @@ export const fetchInstallationType = async (): Promise<InstallationType> => {
 
   return response.json();
 };
+
+export const loginHaCloud = async (
+  params: CloudLoginPassword | CloudLoginMFA
+) =>
+  handleFetchPromise(
+    fetch("/api/onboarding/cloud/login", {
+      method: "POST",
+      body: JSON.stringify(params),
+    })
+  );
+
+export const fetchHaCloudStatus = async (): Promise<CloudStatus> =>
+  handleFetchPromise(fetch("/api/onboarding/cloud/status"));

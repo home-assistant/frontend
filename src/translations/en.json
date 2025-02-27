@@ -8355,6 +8355,41 @@
             "text": "Are you sure you want to cancel the restore process and return to the onboarding?",
             "yes": "[%key:ui::common::yes%]",
             "no": "[%key:ui::common::no%]"
+          },
+          "ha-cloud": {
+            "title": "Home Assistant Cloud",
+            "description": "Restore from your Home Assistant Cloud backup.",
+            "login": {
+              "title": "Cloud login",
+              "introduction": "Home Assistant Cloud provides you with a secure remote connection to your instance while away from home. It also allows you to connect with cloud-only services: Amazon Alexa and Google Assistant.",
+              "introduction2": "This service is run by our partner ",
+              "introduction2a": ", a company founded by the founders of Home Assistant.",
+              "introduction3": "Home Assistant Cloud is a subscription service with a free one month trial. No payment information necessary.",
+              "learn_more_link": "Learn more about Home Assistant Cloud",
+              "dismiss": "Dismiss",
+              "sign_in": "Sign in",
+              "email": "Email",
+              "email_error_msg": "Invalid email",
+              "password": "Password",
+              "password_error_msg": "Passwords are at least 8 characters",
+              "totp_code_prompt_title": "Two-factor authentication",
+              "totp_code": "TOTP code",
+              "submit": "Submit",
+              "forgot_password": "Forgot password?",
+              "start_trial": "Start your free 1 month trial",
+              "trial_info": "No payment information necessary",
+              "alert_password_change_required": "You need to change your password before logging in.",
+              "alert_email_confirm_necessary": "You need to confirm your email before logging in.",
+              "alert_mfa_code_required": "You need to enter your two-factor authentication code.",
+              "alert_mfa_expired_or_not_started": "Multi-factor authentication expired, or not started. Please try again.",
+              "alert_totp_code_invalid": "Invalid two-factor authentication code.",
+              "cloud_pipeline_title": "Want to use Home Assistant Cloud for your voice assistant?",
+              "cloud_pipeline_text": "We created a new assistant for you, using the superior text-to-speech and speech-to-text engines from Home Assistant Cloud. Would you like to set this assistant as the preferred assistant?"
+            }
+          },
+          "options": {
+            "title": "How to restore?",
+            "upload_description": "Upload a backup file from your machine."
           }
         }
       },

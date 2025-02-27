@@ -5,6 +5,8 @@ import "./restore-backup/onboarding-restore-backup-upload";
 import "./restore-backup/onboarding-restore-backup-details";
 import "./restore-backup/onboarding-restore-backup-restore";
 import "./restore-backup/onboarding-restore-backup-status";
+import "./restore-backup/onboarding-restore-backup-options";
+import "./restore-backup/onboarding-restore-backup-cloud-login";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-card";
 import "../components/ha-icon-button-arrow-prev";
@@ -19,11 +21,19 @@ import {
   type BackupOnboardingConfig,
   type BackupOnboardingInfo,
 } from "../data/backup_onboarding";
-import type { BackupContentExtended, BackupData } from "../data/backup";
+import {
+  CLOUD_AGENT,
+  type BackupContentExtended,
+  type BackupData,
+} from "../data/backup";
 import { showConfirmationDialog } from "../dialogs/generic/show-dialog-box";
 import { storage } from "../common/decorators/storage";
+import { fetchHaCloudStatus } from "../data/onboarding";
+import type { CloudStatus } from "../data/cloud";
 
 const STATUS_INTERVAL_IN_MS = 5000;
+
+const HOME_ASSISTANT_CLOUD_PLACEHOLDER_ID = "HOME_ASSISTANT_CLOUD";
 
 @customElement("onboarding-restore-backup")
 class OnboardingRestoreBackup extends LitElement {
@@ -35,7 +45,9 @@ class OnboardingRestoreBackup extends LitElement {
 
   @state() private _view:
     | "loading"
+    | "options"
     | "upload"
+    | "cloud_login"
     | "select_data"
     | "confirm_restore"
     | "status" = "loading";
@@ -49,6 +61,8 @@ class OnboardingRestoreBackup extends LitElement {
   @state() private _error?: string;
 
   @state() private _failed?: boolean;
+
+  @state() private _cloudStatus?: CloudStatus;
 
   @storage({
     key: "onboarding-restore-backup-backup-id",
@@ -93,29 +107,41 @@ class OnboardingRestoreBackup extends LitElement {
           ? html`<div class="loading">
               <ha-circular-progress indeterminate></ha-circular-progress>
             </div>`
-          : this._view === "upload"
-            ? html`
-                <onboarding-restore-backup-upload
-                  .supervisor=${this.supervisor}
-                  .localize=${this.localize}
-                  @backup-uploaded=${this._backupUploaded}
-                ></onboarding-restore-backup-upload>
-              `
-            : this._view === "select_data"
-              ? html`<onboarding-restore-backup-details
-                  .localize=${this.localize}
-                  .backup=${this._backup!}
-                  @backup-restore=${this._restore}
-                ></onboarding-restore-backup-details>`
-              : this._view === "confirm_restore"
-                ? html`<onboarding-restore-backup-restore
-                    .localize=${this.localize}
-                    .backup=${this._backup!}
+          : this._view === "options"
+            ? html`<onboarding-restore-backup-options
+                .localize=${this.localize}
+                @upload-option-selected=${this._showSelectedView}
+              ></onboarding-restore-backup-options>`
+            : this._view === "upload"
+              ? html`
+                  <onboarding-restore-backup-upload
                     .supervisor=${this.supervisor}
-                    .selectedData=${this._selectedData!}
-                    @restore-started=${this._restoreStarted}
-                  ></onboarding-restore-backup-restore>`
-                : nothing
+                    .localize=${this.localize}
+                    @backup-uploaded=${this._backupUploaded}
+                  ></onboarding-restore-backup-upload>
+                `
+              : this._view === "cloud_login"
+                ? html`
+                    <onboarding-restore-backup-cloud-login
+                      .localize=${this.localize}
+                      @backup-uploaded=${this._backupUploaded}
+                    ></onboarding-restore-backup-cloud-login>
+                  `
+                : this._view === "select_data"
+                  ? html`<onboarding-restore-backup-details
+                      .localize=${this.localize}
+                      .backup=${this._backup!}
+                      @backup-restore=${this._restore}
+                    ></onboarding-restore-backup-details>`
+                  : this._view === "confirm_restore"
+                    ? html`<onboarding-restore-backup-restore
+                        .localize=${this.localize}
+                        .backup=${this._backup!}
+                        .supervisor=${this.supervisor}
+                        .selectedData=${this._selectedData!}
+                        @restore-started=${this._restoreStarted}
+                      ></onboarding-restore-backup-restore>`
+                    : nothing
       }
       ${
         this._view === "status" && this._backupInfo
@@ -194,7 +220,12 @@ class OnboardingRestoreBackup extends LitElement {
       last_non_idle_event: lastNonIdleEvent,
     };
 
-    if (this._backupId) {
+    if (this._backupId === HOME_ASSISTANT_CLOUD_PLACEHOLDER_ID) {
+      this._backup = backups.find(({ agents }) =>
+        Object.keys(agents).includes(CLOUD_AGENT)
+      );
+      this._backupId = this._backup?.backup_id;
+    } else if (this._backupId) {
       this._backup = backups.find(
         ({ backup_id }) => backup_id === this._backupId
       );
@@ -206,6 +237,12 @@ class OnboardingRestoreBackup extends LitElement {
 
     if (failedRestore) {
       this._failed = true;
+    }
+
+    try {
+      this._cloudStatus = await fetchHaCloudStatus();
+    } catch (err: any) {
+      this._error = err?.message || "Cannot get Home Assistant Cloud status";
     }
 
     if (this._restoreRunning) {
@@ -243,7 +280,18 @@ class OnboardingRestoreBackup extends LitElement {
     }
 
     // show upload as default
-    this._view = "upload";
+    this._view = "options";
+  }
+
+  private _showSelectedView(ev: CustomEvent) {
+    if (ev.detail === "upload") {
+      this._view = "upload";
+    } else if (this._cloudStatus?.logged_in) {
+      this._backupId = HOME_ASSISTANT_CLOUD_PLACEHOLDER_ID;
+      this._loadBackupInfo();
+    } else {
+      this._view = "cloud_login";
+    }
   }
 
   private _scheduleLoadBackupInfo() {
@@ -265,7 +313,7 @@ class OnboardingRestoreBackup extends LitElement {
   }
 
   private async _back() {
-    if (this._view === "upload" || (this._view === "status" && this._failed)) {
+    if (this._view === "options" || (this._view === "status" && this._failed)) {
       navigate(`${location.pathname}?${removeSearchParam("page")}`);
     } else {
       const confirmed = await showConfirmationDialog(this, {

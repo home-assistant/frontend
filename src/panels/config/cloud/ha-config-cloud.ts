@@ -5,7 +5,7 @@ import type { RouterOptions } from "../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../layouts/hass-router-page";
 import type { ValueChangedEvent, HomeAssistant, Route } from "../../../types";
 import "./account/cloud-account";
-import "./login/cloud-login";
+import "./login/cloud-login-panel";
 
 const LOGGED_IN_URLS = ["account", "google-assistant", "alexa"];
 const NOT_LOGGED_IN_URLS = ["login", "register", "forgot-password"];
@@ -39,7 +39,7 @@ class HaConfigCloud extends HassRouterPage {
     },
     routes: {
       login: {
-        tag: "cloud-login",
+        tag: "cloud-login-panel",
       },
       register: {
         tag: "cloud-register",
