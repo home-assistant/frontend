@@ -81,6 +81,7 @@ export class HuiViewHeader extends LitElement {
       } else {
         this.card = undefined;
       }
+      this._checkHidden();
       return;
     }
 
