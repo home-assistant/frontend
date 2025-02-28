@@ -238,6 +238,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     ha-markdown {
       padding: 16px;
       word-wrap: break-word;
+      text-align: var(--card-text-align, inherit);
     }
     .with-header ha-markdown {
       padding: 0 16px 16px;
