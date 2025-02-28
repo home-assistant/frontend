@@ -81,7 +81,7 @@ type DisplayedStatisticData = StatisticData & {
 class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow = false;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @state() private _data: StatisticData[] = [] as StatisticsMetaData[];
 
@@ -307,7 +307,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
     </ha-assist-chip>`;
 
     return html`
-      <div>
+      <div class="table-with-toolbars">
         ${this._selectMode
           ? html`<div class="selection-bar">
               <div class="selection-controls">
@@ -700,14 +700,15 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           height: 100%;
         }
 
+        .table-with-toolbars {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+        }
         ha-data-table {
           width: 100%;
-          height: 100%;
+          flex-grow: 1;
           --data-table-border-width: 0;
-        }
-        :host(:not([narrow])) ha-data-table {
-          height: calc(100vh - 1px - var(--header-height) - 48px);
-          display: block;
         }
 
         :host([narrow]) {
