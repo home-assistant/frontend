@@ -5378,6 +5378,7 @@
           "advertisement_data": "Advertisement data",
           "manufacturer_data": "Manufacturer data",
           "service_data": "Service data",
+          "service_uuids": "Service UUIDs",
           "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
         },
         "thread": {
