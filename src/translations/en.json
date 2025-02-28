@@ -1252,7 +1252,7 @@
         "clear": "Clear"
       },
       "more_info_control": {
-        "dismiss": "Dismiss dialog",
+        "dismiss": "Close info",
         "settings": "Settings",
         "edit": "Edit entity",
         "details": "Details",
