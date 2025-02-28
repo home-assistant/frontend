@@ -254,7 +254,7 @@ export class HaControlNumberButton extends LitElement {
       bottom: 0;
       padding: 0;
       width: 35px;
-      height: 40px;
+      height: 100%;
       border: none;
       background: none;
       cursor: pointer;
