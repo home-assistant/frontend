@@ -106,7 +106,7 @@ class DialogMediaManage extends LitElement {
                   ? ""
                   : html`
                       <ha-icon-button
-                        .label=${this.hass.localize("ui.dialogs.generic.close")}
+                        .label=${this.hass.localize("ui.common.close")}
                         .path=${mdiClose}
                         dialogAction="close"
                         slot="navigationIcon"

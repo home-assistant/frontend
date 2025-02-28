@@ -185,7 +185,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
             ? html`
                 <ha-icon-button
                   slot="navigationIcon"
-                  .label=${this.hass.localize("ui.dialogs.generic.close")}
+                  .label=${this.hass.localize("ui.common.close")}
                   .path=${mdiClose}
                   @click=${this.closeDialog}
                 ></ha-icon-button>
