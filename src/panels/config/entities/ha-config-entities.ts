@@ -288,7 +288,11 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             : entry.entity
               ? html`
                   <ha-state-icon
-                    title=${ifDefined(entry.entity?.state)}
+                    title=${ifDefined(
+                      entry.entity
+                        ? this.hass.formatEntityState(entry.entity)
+                        : undefined
+                    )}
                     slot="item-icon"
                     .hass=${this.hass}
                     .stateObj=${entry.entity}

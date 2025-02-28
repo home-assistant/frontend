@@ -7,6 +7,7 @@ import type { HaRadio } from "./ha-radio";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HomeAssistant } from "../types";
 import { computeRTL } from "../common/util/compute_rtl";
+import { stopPropagation } from "../common/dom/stop_propagation";
 
 interface SelectBoxOptionImage {
   src: string;
@@ -76,6 +77,7 @@ export class HaSelectBox extends LitElement {
             .value=${option.value}
             .disabled=${disabled}
             @change=${this._radioChanged}
+            @click=${stopPropagation}
           ></ha-radio>
           <div class="text">
             <span class="label">${option.label}</span>
@@ -99,6 +101,7 @@ export class HaSelectBox extends LitElement {
   }
 
   private _radioChanged(ev: CustomEvent) {
+    ev.stopPropagation();
     const radio = ev.currentTarget as HaRadio;
     const value = radio.value;
     if (this.disabled || value === undefined || value === (this.value ?? "")) {
