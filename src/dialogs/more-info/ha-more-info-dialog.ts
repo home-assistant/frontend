@@ -14,11 +14,15 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
+import { classMap } from "lit/directives/class-map";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
+import { computeAreaName } from "../../common/entity/compute_area_name";
+import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { computeStateName } from "../../common/entity/compute_state_name";
+import { computeEntityName } from "../../common/entity/compute_entity_name";
+import { getEntityContext } from "../../common/entity/get_entity_context";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-button-menu";
@@ -34,7 +38,9 @@ import type {
 } from "../../data/entity_registry";
 import { getExtendedEntityRegistryEntry } from "../../data/entity_registry";
 import { lightSupportsFavoriteColors } from "../../data/light";
+import type { ItemType } from "../../data/search";
 import { SearchableDomains } from "../../data/search";
+import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import { haStyleDialog } from "../../resources/styles";
 import "../../state-summary/state-card-content";
 import type { HomeAssistant } from "../../types";
@@ -50,7 +56,6 @@ import "./ha-more-info-history-and-logbook";
 import "./ha-more-info-info";
 import "./ha-more-info-settings";
 import "./more-info-content";
-import { getSensorNumericDeviceClasses } from "../../data/sensor";
 
 export interface MoreInfoDialogParams {
   entityId: string | null;
@@ -278,18 +283,29 @@ export class MoreInfoDialog extends LitElement {
     const stateObj = this.hass.states[entityId] as HassEntity | undefined;
 
     const domain = computeDomain(entityId);
-    const name = (stateObj && computeStateName(stateObj)) || entityId;
 
     const isAdmin = this.hass.user!.is_admin;
 
     const deviceId = this._getDeviceId();
 
-    const title = this._childView?.viewTitle ?? name;
-
     const isDefaultView = this._currView === DEFAULT_VIEW && !this._childView;
     const isSpecificInitialView =
       this._initialView !== DEFAULT_VIEW && !this._childView;
     const showCloseIcon = isDefaultView || isSpecificInitialView;
+
+    const context = stateObj ? getEntityContext(stateObj, this.hass) : null;
+
+    const entityName = stateObj ? computeEntityName(stateObj, this.hass) : "";
+    const deviceName = context?.device ? computeDeviceName(context.device) : "";
+    const areaName = context?.area ? computeAreaName(context.area) : "";
+
+    const title = this._childView?.viewTitle || entityName || entityId;
+
+    const subtitle = this._childView?.viewTitle
+      ? undefined
+      : [entityName !== deviceName ? deviceName : undefined, areaName] // Do not include device name if it's the same as entity name
+          .filter(Boolean)
+          .join(" ⸱ ");
 
     return html`
       <ha-dialog
@@ -320,8 +336,14 @@ export class MoreInfoDialog extends LitElement {
                   )}
                 ></ha-icon-button-prev>
               `}
-          <span slot="title" .title=${title} @click=${this._enlarge}>
-            ${title}
+          <span
+            slot="title"
+            .title=${title}
+            @click=${this._enlarge}
+            class="title ${classMap({ "two-line": !!subtitle })}"
+          >
+            <p class="primary">${title}</p>
+            ${subtitle ? html`<p class="secondary">${subtitle}</p>` : nothing}
           </span>
           ${isDefaultView
             ? html`
@@ -512,7 +534,7 @@ export class MoreInfoDialog extends LitElement {
                             .hass=${this.hass}
                             .itemId=${entityId}
                             .itemType=${SearchableDomains.has(domain)
-                              ? domain
+                              ? (domain as ItemType)
                               : "entity"}
                           ></ha-related-items>
                         `
@@ -609,6 +631,33 @@ export class MoreInfoDialog extends LitElement {
             --mdc-dialog-min-width: 90vw;
             --mdc-dialog-max-width: 90vw;
           }
+        }
+
+        .title {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .title p {
+          margin: 0;
+          min-width: 0;
+          width: 100%;
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
+
+        .title .primary {
+          color: var(--primary-text-color);
+        }
+
+        .title .secondary {
+          color: var(--secondary-text-color);
+          font-size: 14px;
+        }
+
+        .title.two-line .primary {
+          margin-top: -4px;
+          margin-bottom: -6px;
         }
       `,
     ];
