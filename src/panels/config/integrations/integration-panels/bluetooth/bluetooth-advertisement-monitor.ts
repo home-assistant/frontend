@@ -142,7 +142,7 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
           defaultHidden: true,
         },
         time: {
-          title: localize("ui.panel.config.bluetooth.last_seen"),
+          title: localize("ui.panel.config.bluetooth.updated"),
           filterable: false,
           sortable: true,
           defaultHidden: false,
