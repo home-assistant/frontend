@@ -7,10 +7,7 @@ import type { BackupContentExtended } from "../../data/backup";
 import { fireEvent } from "../../common/dom/fire_event";
 import { brandsUrl } from "../../util/brands-url";
 import { loginHaCloud } from "../../data/onboarding";
-import {
-  showAlertDialog,
-  showPromptDialog,
-} from "../../dialogs/generic/show-dialog-box";
+import { handleCloudLoginError } from "../../data/cloud";
 
 @customElement("onboarding-restore-backup-cloud-login")
 class OnboardingRestoreBackupCloudLogin extends LitElement {
@@ -26,8 +23,6 @@ class OnboardingRestoreBackupCloudLogin extends LitElement {
 
   @state() private _error?: string;
 
-  // TODO translations should have a reference to the cloud translation key
-
   render() {
     return html`
       <h2>
@@ -41,7 +36,6 @@ class OnboardingRestoreBackupCloudLogin extends LitElement {
           crossorigin="anonymous"
           referrerpolicy="no-referrer"
           alt="Nabu Casa logo"
-          slot="start"
         />
         ${this.localize("ui.panel.page-onboarding.restore.ha-cloud.title")}
       </h2>
@@ -58,81 +52,50 @@ class OnboardingRestoreBackupCloudLogin extends LitElement {
     `;
   }
 
-  // TODO extract this into data/cloud.ts
-  private async _doLogin(email: string, password?: string, code?: string) {
+  private async _doLogin(
+    email: string,
+    password: string,
+    checkConnection: boolean,
+    code?: string
+  ) {
+    if (!password && !code) {
+      throw new Error("Password or code required");
+    }
+
     try {
       await loginHaCloud({
         email,
         ...(code ? { code } : { password: password! }),
       });
     } catch (err: any) {
-      const errCode = err && err.body && err.body.code;
-      if (errCode === "mfarequired") {
-        const totpCode = await showPromptDialog(this, {
-          title: this.localize(
-            "ui.panel.page-onboarding.restore.ha-cloud.login.totp_code_prompt_title"
-          ),
-          inputLabel: this.localize(
-            "ui.panel.page-onboarding.restore.ha-cloud.login.totp_code"
-          ),
-          inputType: "text",
-          defaultValue: "",
-          confirmText: this.localize(
-            "ui.panel.page-onboarding.restore.ha-cloud.login.submit"
-          ),
-        });
-        if (totpCode !== null && totpCode !== "") {
-          await this._doLogin(email, totpCode);
-          return;
-        }
-      }
-      if (errCode === "PasswordChangeRequired") {
-        showAlertDialog(this, {
-          title: this.localize(
-            "ui.panel.page-onboarding.restore.ha-cloud.login.alert_password_change_required"
-          ),
-        });
-        // TODO navigate to forgot pw
+      const error = await handleCloudLoginError(
+        err,
+        this,
+        email,
+        password,
+        checkConnection,
+        this.localize,
+        this._doLogin,
+        "page-onboarding.restore.ha-cloud"
+      );
+
+      if (error === "cancel") {
+        this._requestInProgress = false;
+        this._email = "";
+        this._password = "";
         return;
       }
-      if (errCode === "usernotfound" && email !== email.toLowerCase()) {
-        await this._doLogin(email.toLowerCase());
+      if (error === "password-change") {
+        this._handleForgotPassword();
+        return;
+      }
+      if (error === "re-login") {
         return;
       }
 
       this._password = "";
       this._requestInProgress = false;
-
-      switch (errCode) {
-        case "UserNotConfirmed":
-          this._error = this.localize(
-            "ui.panel.page-onboarding.restore.ha-cloud.login.alert_email_confirm_necessary"
-          );
-          break;
-        case "mfarequired":
-          this._error = this.localize(
-            "ui.panel.page-onboarding.restore.ha-cloud.login.alert_mfa_code_required"
-          );
-          break;
-        case "mfaexpiredornotstarted":
-          this._error = this.localize(
-            "ui.panel.page-onboarding.restore.ha-cloud.login.alert_mfa_expired_or_not_started"
-          );
-          break;
-        case "invalidtotpcode":
-          this._error = this.localize(
-            "ui.panel.page-onboarding.restore.ha-cloud.login.alert_totp_code_invalid"
-          );
-          break;
-        default:
-          this._error =
-            err && err.body && err.body.message
-              ? err.body.message
-              : "Unknown error";
-          break;
-      }
-
-      // TODO focus email field
+      this._error = error;
       // this._cloudLoginElement._emailField.focus();
     }
   }
@@ -143,8 +106,7 @@ class OnboardingRestoreBackupCloudLogin extends LitElement {
 
     this._requestInProgress = true;
 
-    await this._doLogin(email, password);
-    // TODO reset email and password
+    await this._doLogin(email, password, false);
 
     fireEvent(this, "upload-option-selected", "cloud");
   }

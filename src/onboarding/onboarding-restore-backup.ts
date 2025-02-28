@@ -7,6 +7,7 @@ import "./restore-backup/onboarding-restore-backup-restore";
 import "./restore-backup/onboarding-restore-backup-status";
 import "./restore-backup/onboarding-restore-backup-options";
 import "./restore-backup/onboarding-restore-backup-cloud-login";
+import "./restore-backup/onboarding-restore-backup-empty-cloud";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-card";
 import "../components/ha-icon-button-arrow-prev";
@@ -48,6 +49,7 @@ class OnboardingRestoreBackup extends LitElement {
     | "options"
     | "upload"
     | "cloud_login"
+    | "empty_cloud"
     | "select_data"
     | "confirm_restore"
     | "status" = "loading";
@@ -125,23 +127,31 @@ class OnboardingRestoreBackup extends LitElement {
                     <onboarding-restore-backup-cloud-login
                       .localize=${this.localize}
                       @backup-uploaded=${this._backupUploaded}
+                      @upload-option-selected=${this._showSelectedView}
                     ></onboarding-restore-backup-cloud-login>
                   `
-                : this._view === "select_data"
-                  ? html`<onboarding-restore-backup-details
-                      .localize=${this.localize}
-                      .backup=${this._backup!}
-                      @backup-restore=${this._restore}
-                    ></onboarding-restore-backup-details>`
-                  : this._view === "confirm_restore"
-                    ? html`<onboarding-restore-backup-restore
+                : this._view === "empty_cloud"
+                  ? html`
+                      <onboarding-restore-backup-empty-cloud
+                        .localize=${this.localize}
+                        @upload-option-selected=${this._showSelectedView}
+                      ></onboarding-restore-backup-empty-cloud>
+                    `
+                  : this._view === "select_data"
+                    ? html`<onboarding-restore-backup-details
                         .localize=${this.localize}
                         .backup=${this._backup!}
-                        .supervisor=${this.supervisor}
-                        .selectedData=${this._selectedData!}
-                        @restore-started=${this._restoreStarted}
-                      ></onboarding-restore-backup-restore>`
-                    : nothing
+                        @backup-restore=${this._restore}
+                      ></onboarding-restore-backup-details>`
+                    : this._view === "confirm_restore"
+                      ? html`<onboarding-restore-backup-restore
+                          .localize=${this.localize}
+                          .backup=${this._backup!}
+                          .supervisor=${this.supervisor}
+                          .selectedData=${this._selectedData!}
+                          @restore-started=${this._restoreStarted}
+                        ></onboarding-restore-backup-restore>`
+                      : nothing
       }
       ${
         this._view === "status" && this._backupInfo
@@ -220,10 +230,21 @@ class OnboardingRestoreBackup extends LitElement {
       last_non_idle_event: lastNonIdleEvent,
     };
 
-    if (this._backupId === HOME_ASSISTANT_CLOUD_PLACEHOLDER_ID) {
+    try {
+      this._cloudStatus = await fetchHaCloudStatus();
+    } catch (err: any) {
+      this._error = err?.message || "Cannot get Home Assistant Cloud status";
+    }
+
+    if (this._cloudStatus?.logged_in && this._backupId === HOME_ASSISTANT_CLOUD_PLACEHOLDER_ID) {
       this._backup = backups.find(({ agents }) =>
         Object.keys(agents).includes(CLOUD_AGENT)
       );
+
+      if (!this._backup) {
+        this._view = "empty_cloud";
+        return;
+      }
       this._backupId = this._backup?.backup_id;
     } else if (this._backupId) {
       this._backup = backups.find(
@@ -239,12 +260,6 @@ class OnboardingRestoreBackup extends LitElement {
       this._failed = true;
     }
 
-    try {
-      this._cloudStatus = await fetchHaCloudStatus();
-    } catch (err: any) {
-      this._error = err?.message || "Cannot get Home Assistant Cloud status";
-    }
-
     if (this._restoreRunning) {
       this._view = "status";
       if (failedRestore || currentState !== "restore_backup") {
@@ -256,13 +271,7 @@ class OnboardingRestoreBackup extends LitElement {
       return;
     }
 
-    if (
-      this._backup &&
-      // after backup was uploaded
-      (lastNonIdleEvent?.manager_state === "receive_backup" ||
-        // when restore was confirmed but failed to start (for example, encryption key was wrong)
-        failedRestore)
-    ) {
+    if (this._backup) {
       if (!this.supervisor && this._backup.homeassistant_included) {
         this._selectedData = {
           homeassistant_included: true,
@@ -287,6 +296,8 @@ class OnboardingRestoreBackup extends LitElement {
     if (ev.detail === "upload") {
       this._view = "upload";
     } else if (this._cloudStatus?.logged_in) {
+      // When HA cloud is logged in, cloud backup agent is available
+      // If it won't be available, the login should have failed
       this._backupId = HOME_ASSISTANT_CLOUD_PLACEHOLDER_ID;
       this._loadBackupInfo();
     } else {
@@ -334,6 +345,8 @@ class OnboardingRestoreBackup extends LitElement {
       if (!confirmed) {
         return;
       }
+
+      this._backupId = undefined;
       navigate(`${location.pathname}?${removeSearchParam("page")}`);
     }
   }
@@ -350,7 +363,7 @@ class OnboardingRestoreBackup extends LitElement {
   private _reupload() {
     this._backup = undefined;
     this._backupId = undefined;
-    this._view = "upload";
+    this._view = "options";
   }
 
   static styles = [

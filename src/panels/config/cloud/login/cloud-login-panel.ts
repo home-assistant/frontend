@@ -11,11 +11,14 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-icon-next";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-button-menu";
-import { cloudLogin, removeCloudData } from "../../../../data/cloud";
+import {
+  cloudLogin,
+  handleCloudLoginError,
+  removeCloudData,
+} from "../../../../data/cloud";
 import {
   showAlertDialog,
   showConfirmationDialog,
-  showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
@@ -25,7 +28,6 @@ import "./cloud-login";
 import { showSupportPackageDialog } from "../account/show-dialog-cloud-support-package";
 import type { CloudLogin } from "./cloud-login";
 import { setAssistPipelinePreferred } from "../../../../data/assist_pipeline";
-import { showCloudAlreadyConnectedDialog } from "../dialog-cloud-already-connected/show-dialog-cloud-already-connected";
 
 @customElement("cloud-login-panel")
 export class CloudLoginPanel extends LitElement {
@@ -38,8 +40,6 @@ export class CloudLoginPanel extends LitElement {
   @property() public email?: string;
 
   @property({ attribute: false }) public flashMessage?: string;
-
-  @state() private _checkConnection = true;
 
   @state() private _requestInProgress = false;
 
@@ -157,124 +157,81 @@ export class CloudLoginPanel extends LitElement {
     `;
   }
 
+  private async _doLogin(
+    email: string,
+    password: string,
+    checkConnection: boolean,
+    code?: string
+  ) {
+    if (!password && !code) {
+      throw new Error("Password or code required");
+    }
+
+    try {
+      const result = await cloudLogin({
+        hass: this.hass,
+        email,
+        ...(code ? { code } : { password }),
+        check_connection: checkConnection,
+      });
+      this.email = "";
+      this._password = "";
+      if (result.cloud_pipeline) {
+        if (
+          await showConfirmationDialog(this, {
+            title: this.hass.localize(
+              "ui.panel.config.cloud.login.cloud_pipeline_title"
+            ),
+            text: this.hass.localize(
+              "ui.panel.config.cloud.login.cloud_pipeline_text"
+            ),
+          })
+        ) {
+          setAssistPipelinePreferred(this.hass, result.cloud_pipeline);
+        }
+      }
+      fireEvent(this, "ha-refresh-cloud-status");
+    } catch (err: any) {
+      const error = await handleCloudLoginError(
+        err,
+        this,
+        email,
+        password,
+        checkConnection,
+        this.hass.localize,
+        this._doLogin
+      );
+
+      if (error === "cancel") {
+        this._requestInProgress = false;
+        this.email = "";
+        this._password = "";
+        return;
+      }
+      if (error === "password-change") {
+        navigate("/config/cloud/forgot-password");
+        return;
+      }
+      if (error === "re-login") {
+        return;
+      }
+
+      this._password = "";
+      this._requestInProgress = false;
+      this._error = error;
+      this._cloudLoginElement._emailField.focus();
+    }
+  }
+
   private async _handleLogin(ev: CustomEvent) {
     const email = ev.detail.email;
     const password = ev.detail.password;
 
     this._requestInProgress = true;
 
-    const doLogin = async (username: string, code?: string) => {
-      try {
-        const result = await cloudLogin({
-          hass: this.hass,
-          email: username,
-          ...(code ? { code } : { password }),
-          check_connection: this._checkConnection,
-        });
-        this.email = "";
-        this._password = "";
-        if (result.cloud_pipeline) {
-          if (
-            await showConfirmationDialog(this, {
-              title: this.hass.localize(
-                "ui.panel.config.cloud.login.cloud_pipeline_title"
-              ),
-              text: this.hass.localize(
-                "ui.panel.config.cloud.login.cloud_pipeline_text"
-              ),
-            })
-          ) {
-            setAssistPipelinePreferred(this.hass, result.cloud_pipeline);
-          }
-        }
-        fireEvent(this, "ha-refresh-cloud-status");
-      } catch (err: any) {
-        const errCode = err && err.body && err.body.code;
-        if (errCode === "mfarequired") {
-          const totpCode = await showPromptDialog(this, {
-            title: this.hass.localize(
-              "ui.panel.config.cloud.login.totp_code_prompt_title"
-            ),
-            inputLabel: this.hass.localize(
-              "ui.panel.config.cloud.login.totp_code"
-            ),
-            inputType: "text",
-            defaultValue: "",
-            confirmText: this.hass.localize(
-              "ui.panel.config.cloud.login.submit"
-            ),
-          });
-          if (totpCode !== null && totpCode !== "") {
-            await doLogin(username, totpCode);
-            return;
-          }
-        }
-        if (errCode === "alreadyconnectederror") {
-          showCloudAlreadyConnectedDialog(this, {
-            details: JSON.parse(err.body.message),
-            logInHereAction: () => {
-              this._checkConnection = false;
-              doLogin(username);
-            },
-            closeDialog: () => {
-              this._requestInProgress = false;
-              this.email = "";
-              this._password = "";
-            },
-          });
-          return;
-        }
-        if (errCode === "PasswordChangeRequired") {
-          showAlertDialog(this, {
-            title: this.hass.localize(
-              "ui.panel.config.cloud.login.alert_password_change_required"
-            ),
-          });
-          navigate("/config/cloud/forgot-password");
-          return;
-        }
-        if (errCode === "usernotfound" && username !== username.toLowerCase()) {
-          await doLogin(username.toLowerCase());
-          return;
-        }
+    await this._doLogin(email, password, true);
 
-        this._password = "";
-        this._requestInProgress = false;
-
-        switch (errCode) {
-          case "UserNotConfirmed":
-            this._error = this.hass.localize(
-              "ui.panel.config.cloud.login.alert_email_confirm_necessary"
-            );
-            break;
-          case "mfarequired":
-            this._error = this.hass.localize(
-              "ui.panel.config.cloud.login.alert_mfa_code_required"
-            );
-            break;
-          case "mfaexpiredornotstarted":
-            this._error = this.hass.localize(
-              "ui.panel.config.cloud.login.alert_mfa_expired_or_not_started"
-            );
-            break;
-          case "invalidtotpcode":
-            this._error = this.hass.localize(
-              "ui.panel.config.cloud.login.alert_totp_code_invalid"
-            );
-            break;
-          default:
-            this._error =
-              err && err.body && err.body.message
-                ? err.body.message
-                : "Unknown error";
-            break;
-        }
-
-        this._cloudLoginElement._emailField.focus();
-      }
-    };
-
-    await doLogin(email);
+    this._requestInProgress = false;
   }
 
   private _handleForgotPassword() {

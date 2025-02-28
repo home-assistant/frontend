@@ -36,7 +36,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
   @state() private _loading = false;
 
   render() {
-    const agentId = this.supervisor ? HASSIO_LOCAL_AGENT : CORE_LOCAL_AGENT;
+    const agentId = Object.keys(this.backup.agents)[0];
     const backupProtected = this.backup.agents[agentId].protected;
 
     return html`
