@@ -108,7 +108,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
               `}
         </ul>
         <mwc-button slot="primaryAction" @click=${this._close}>
-          ${this.hass!.localize("ui.dialogs.generic.close")}
+          ${this.hass!.localize("ui.common.close")}
         </mwc-button>
       </ha-dialog>
     `;
