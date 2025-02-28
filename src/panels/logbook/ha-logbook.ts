@@ -212,11 +212,12 @@ export class HaLogbook extends LitElement {
     if (this._subscribed) {
       try {
         await this._subscribed();
-        this._subscribed = undefined;
-        this._pendingStreamMessages = [];
       } catch (err: any) {
         // eslint-disable-next-line
         console.error("Error unsubscribing:", err);
+      } finally {
+        this._subscribed = undefined;
+        this._pendingStreamMessages = [];
       }
     }
   }
@@ -288,13 +289,13 @@ export class HaLogbook extends LitElement {
       return;
     }
     try {
-      this._subscribed = await subscribeLogbook(
+      const subscribePromise = subscribeLogbook(
         this.hass,
         (streamMessage) => {
           // "recent" means start time is a sliding window
           // so we need to calculate an expireTime to
           // purge old events
-          if (!this._subscribed) {
+          if (!subscribePromise) {
             // Message came in before we had a chance to unload
             return;
           }
@@ -305,6 +306,7 @@ export class HaLogbook extends LitElement {
         this.entityIds,
         this.deviceIds
       );
+      this._subscribed = await subscribePromise;
     } catch (err: any) {
       this._subscribed = undefined;
       this._error = err;
