@@ -1240,10 +1240,7 @@
         "not_found_error_load_assist": "Cannot find the assist pipeline"
       },
       "generic": {
-        "cancel": "Cancel",
-        "ok": "OK",
-        "default_confirmation_title": "Are you sure?",
-        "close": "Close"
+        "default_confirmation_title": "Are you sure?"
       },
       "image_cropper": {
         "crop": "Crop",
