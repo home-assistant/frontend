@@ -26,6 +26,10 @@ export interface LightColorTempCardFeatureConfig {
   type: "light-color-temp";
 }
 
+export interface LightColorHueCardFeatureConfig {
+  type: "light-color-hue";
+}
+
 export interface LockCommandsCardFeatureConfig {
   type: "lock-commands";
 }
@@ -177,6 +181,7 @@ export type LovelaceCardFeatureConfig =
   | LawnMowerCommandsCardFeatureConfig
   | LightBrightnessCardFeatureConfig
   | LightColorTempCardFeatureConfig
+  | LightColorHueCardFeatureConfig
   | LockCommandsCardFeatureConfig
   | LockOpenDoorCardFeatureConfig
   | MediaPlayerVolumeSliderCardFeatureConfig
