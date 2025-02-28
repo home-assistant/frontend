@@ -8,6 +8,7 @@ import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
+import { DERIVED_ATTRIBUTES } from "../../data/entity_attributes";
 import {
   STATE_DISPLAY_SPECIAL_CONTENT,
   STATE_DISPLAY_SPECIAL_CONTENT_DOMAINS,
@@ -145,6 +146,11 @@ class HaEntityStatePicker extends LitElement {
           : []),
         ...Object.keys(stateObj?.attributes ?? {})
           .filter((a) => !HIDDEN_ATTRIBUTES.includes(a))
+          .flatMap((attribute) =>
+            domain
+              ? [attribute, ...(DERIVED_ATTRIBUTES[domain]?.[attribute] || [])]
+              : []
+          )
           .map((attribute) => ({
             value: attribute,
             label: this.hass.formatEntityAttributeName(stateObj!, attribute),
