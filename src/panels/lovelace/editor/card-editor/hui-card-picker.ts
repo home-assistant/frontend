@@ -43,6 +43,8 @@ export class HuiCardPicker extends LitElement {
 
   @property({ attribute: false }) public suggestedCards?: string[];
 
+  @property({ type: Boolean, attribute: false }) public isSectionsView = false;
+
   @storage({
     key: "dashboardCardClipboard",
     state: true,
@@ -263,16 +265,20 @@ export class HuiCardPicker extends LitElement {
   }
 
   private _loadCards() {
-    let cards: Card[] = coreCards.map((card: Card) => ({
-      name: this.hass!.localize(
-        `ui.panel.lovelace.editor.card.${card.type}.name`
-      ),
-      description: this.hass!.localize(
-        `ui.panel.lovelace.editor.card.${card.type}.description`
-      ),
-      isSuggested: this.suggestedCards?.includes(card.type) || false,
-      ...card,
-    }));
+    let cards: Card[] = coreCards
+      .filter((card: Card) =>
+        this.isSectionsView ? true : !card.sectionsViewOnly
+      )
+      .map((card: Card) => ({
+        name: this.hass!.localize(
+          `ui.panel.lovelace.editor.card.${card.type}.name`
+        ),
+        description: this.hass!.localize(
+          `ui.panel.lovelace.editor.card.${card.type}.description`
+        ),
+        isSuggested: this.suggestedCards?.includes(card.type) || false,
+        ...card,
+      }));
 
     cards = cards.sort((a, b) => {
       if (a.isSuggested && !b.isSuggested) {

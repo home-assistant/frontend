@@ -146,6 +146,10 @@ export class HuiCreateDialogCard
                   .lovelace=${this._params.lovelaceConfig}
                   .hass=${this.hass}
                   @config-changed=${this._handleCardPicked}
+                  .isSectionsView=${this._isSectionsView(
+                    this._params.lovelaceConfig,
+                    this._params.path
+                  )}
                 ></hui-card-picker>
               `
             : html`
@@ -231,6 +235,15 @@ export class HuiCreateDialogCard
       `,
     ];
   }
+
+  private _isSectionsView = memoize((lovelaceConfig, containerPath) => {
+    const { viewIndex } = parseLovelaceContainerPath(containerPath);
+    // sections is default when undefined
+    return (
+      !lovelaceConfig.views[viewIndex].type ||
+      lovelaceConfig.views[viewIndex].type === "sections"
+    );
+  });
 
   private _handleCardPicked(ev) {
     const config = ev.detail.config;
