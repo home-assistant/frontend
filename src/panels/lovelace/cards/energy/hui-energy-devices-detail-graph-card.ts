@@ -62,11 +62,14 @@ export class HuiEnergyDevicesDetailGraphCard
 
   @state() private _compareEnd?: Date;
 
+  /* FIXME - this isn't working right
   @storage({
     key: "energy-devices-hidden-stats",
     state: true,
     subscribe: false,
   })
+  */
+  @state()
   private _hiddenStats: string[] = [];
 
   protected hassSubscribeRequiredHostProps = ["_config"];
@@ -147,6 +150,18 @@ export class HuiEnergyDevicesDetailGraphCard
       "ui.panel.lovelace.cards.energy.energy_usage_graph.total_consumed",
       { num: formatNumber(total, this.hass.locale), unit: UNIT }
     );
+
+  private _nameToStatId(name: string): string {
+    return (
+      this._data?.prefs.device_consumption.find(
+        (d) => (d.name ?? d.stat_consumption) === name
+      )?.stat_consumption ?? "unknown"
+    );
+  }
+
+  private get _hiddenStatIds(): string[] {
+    return this._hiddenStats.map((s) => this._nameToStatId(s));
+  }
 
   private _datasetHidden(ev) {
     this._hiddenStats = [...this._hiddenStats, ev.detail.name];
@@ -296,18 +311,16 @@ export class HuiEnergyDevicesDetailGraphCard
         );
         datasets.push(untrackedCompareData);
       }
-    } else {
-      // add empty dataset so compare bars are first
-      // `stack: devices` so it doesn't take up space yet
-      const firstId =
-        energyData.prefs.device_consumption[0]?.stat_consumption ?? "untracked";
-      datasets.push({
-        id: "compare-" + firstId,
-        type: "bar",
-        stack: "devices",
-        data: [],
-      });
     }
+
+    // add empty dataset so compare bars are first
+    // `stack: devices` so it doesn't take up space yet
+    datasets.push({
+      id: "compare-placeholder",
+      type: "bar",
+      stack: energyData.statsCompare ? "devicesCompare" : "devices",
+      data: [],
+    });
 
     const processedData = this._processDataSet(
       computedStyle,
@@ -353,7 +366,7 @@ export class HuiEnergyDevicesDetailGraphCard
       // If a child is hidden, don't count it in the total, because the parent device will grow to encompass that consumption.
       const hiddenChild =
         stat.included_in_stat &&
-        this._hiddenStats.includes(stat.stat_consumption);
+        this._hiddenStatIds.includes(stat.stat_consumption);
       if (!hiddenChild) {
         device.data.forEach((datapoint) => {
           totalDeviceConsumption[datapoint[compare ? 2 : 0]] =
@@ -382,7 +395,7 @@ export class HuiEnergyDevicesDetailGraphCard
         untrackedConsumption.push(dataPoint);
       });
     // random id to always add untracked at the end
-    const order = Date.now();
+    const order = 99999999;
     const dataset: BarSeriesOption = {
       type: "bar",
       cursor: "default",
@@ -462,7 +475,7 @@ export class HuiEnergyDevicesDetailGraphCard
           const sumVisibleChildren = (parent) => {
             const children = childMap[parent] || [];
             children.forEach((c) => {
-              if (this._hiddenStats.includes(c)) {
+              if (this._hiddenStatIds.includes(c)) {
                 sumVisibleChildren(c);
               } else {
                 const cStats = statistics[c];
