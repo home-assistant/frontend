@@ -32,7 +32,7 @@
     "@codemirror/commands": "6.8.0",
     "@codemirror/language": "6.10.8",
     "@codemirror/legacy-modes": "6.4.3",
-    "@codemirror/search": "6.5.9",
+    "@codemirror/search": "6.5.10",
     "@codemirror/state": "6.5.2",
     "@codemirror/view": "6.36.3",
     "@egjs/hammerjs": "2.0.17",
