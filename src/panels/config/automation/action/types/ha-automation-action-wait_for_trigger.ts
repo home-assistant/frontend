@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ensureArray } from "../../../../../common/array/ensure-array";
@@ -39,7 +38,7 @@ export class HaWaitForTriggerAction
         )}
         .data=${timeData}
         .disabled=${this.disabled}
-        enableMillisecond
+        enable-millisecond
         @value-changed=${this._timeoutChanged}
       ></ha-duration-input>
       <ha-formfield
@@ -82,18 +81,16 @@ export class HaWaitForTriggerAction
     handleChangeEvent(this, ev);
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-duration-input {
-        display: block;
-        margin-bottom: 24px;
-      }
-      ha-automation-trigger {
-        display: block;
-        margin-top: 24px;
-      }
-    `;
-  }
+  static styles = css`
+    ha-duration-input {
+      display: block;
+      margin-bottom: 24px;
+    }
+    ha-automation-trigger {
+      display: block;
+      margin-top: 24px;
+    }
+  `;
 }
 
 declare global {

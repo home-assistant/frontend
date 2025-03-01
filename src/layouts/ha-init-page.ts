@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { property, state } from "lit/decorators";
 
@@ -88,34 +88,32 @@ class HaInitPage extends LitElement {
     location.reload();
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        flex: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      #progress-indicator-wrapper {
-        display: flex;
-        align-items: center;
-        margin: 25px 0;
-        height: 50px;
-      }
-      a {
-        color: var(--primary-color);
-      }
-      .retry-text {
-        margin-top: 0;
-      }
-      p,
-      #loading-text {
-        max-width: 350px;
-        color: var(--primary-text-color);
-        text-align: center;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      flex: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #progress-indicator-wrapper {
+      display: flex;
+      align-items: center;
+      margin: 25px 0;
+      height: 50px;
+    }
+    a {
+      color: var(--primary-color);
+    }
+    .retry-text {
+      margin-top: 0;
+    }
+    p,
+    #loading-text {
+      max-width: 350px;
+      color: var(--primary-text-color);
+      text-align: center;
+    }
+  `;
 }
 
 customElements.define("ha-init-page", HaInitPage);

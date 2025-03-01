@@ -5,6 +5,7 @@ import type { HomeAssistant } from "../types";
 
 export interface RecorderInfo {
   backlog: number | null;
+  db_in_default_location: boolean;
   max_backlog: number;
   migration_in_progress: boolean;
   migration_is_live: boolean;
@@ -14,9 +15,7 @@ export interface RecorderInfo {
 
 export type StatisticType = "change" | "state" | "sum" | "min" | "max" | "mean";
 
-export interface Statistics {
-  [statisticId: string]: StatisticValue[];
-}
+export type Statistics = Record<string, StatisticValue[]>;
 
 export interface StatisticValue {
   start: number;
@@ -120,9 +119,10 @@ const _statisticTypes = [
 ] as const;
 export type StatisticsTypes = (typeof _statisticTypes)[number][];
 
-export interface StatisticsValidationResults {
-  [statisticId: string]: StatisticsValidationResult[];
-}
+export type StatisticsValidationResults = Record<
+  string,
+  StatisticsValidationResult[]
+>;
 
 export const getRecorderInfo = (conn: Connection) =>
   conn.sendMessagePromise<RecorderInfo>({

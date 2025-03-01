@@ -1,4 +1,4 @@
-import { mdiGestureTap, mdiPalette } from "@mdi/js";
+import { mdiGestureTap, mdiTextShort } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -74,10 +74,10 @@ export class HuiEntityBadgeEditor
       [
         { name: "entity", selector: { entity: {} } },
         {
-          name: "appearance",
+          name: "content",
           type: "expandable",
           flatten: true,
-          iconPath: mdiPalette,
+          iconPath: mdiTextShort,
           schema: [
             {
               name: "",
@@ -93,6 +93,7 @@ export class HuiEntityBadgeEditor
                   name: "color",
                   selector: {
                     ui_color: {
+                      default_color: "state",
                       include_state: true,
                     },
                   },
@@ -241,8 +242,6 @@ export class HuiEntityBadgeEditor
       case "state_content":
       case "show_entity_picture":
       case "displayed_elements":
-      case "appearance":
-      case "interactions":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.badge.entity.${schema.name}`
         );

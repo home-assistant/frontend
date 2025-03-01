@@ -3,9 +3,10 @@ import type { HomeAssistant } from "../../types";
 import type { HassioResponse } from "./common";
 import { hassioApiResultExtractor } from "./common";
 
-interface HassioDockerRegistries {
-  [key: string]: { username: string; password?: string };
-}
+type HassioDockerRegistries = Record<
+  string,
+  { username: string; password?: string }
+>;
 
 export const fetchHassioDockerRegistries = async (
   hass: HomeAssistant

@@ -1,5 +1,4 @@
 import { mdiMicrophoneMessage, mdiOpenInNew } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-card";
@@ -114,101 +113,99 @@ export class CloudDiscover extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-card {
-        display: flex;
-        flex-direction: column;
-      }
-      .card-content {
-        padding: 24px 16px;
-      }
-      .card-actions {
-        display: flex;
-        justify-content: space-between;
-      }
+  static styles = css`
+    ha-card {
+      display: flex;
+      flex-direction: column;
+    }
+    .card-content {
+      padding: 24px 16px;
+    }
+    .card-actions {
+      display: flex;
+      justify-content: space-between;
+    }
+    .header {
+      font-weight: 400;
+      font-size: 28px;
+      line-height: 36px;
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto 8px auto;
+    }
+    @media (min-width: 800px) {
       .header {
-        font-weight: 400;
-        font-size: 28px;
-        line-height: 36px;
-        text-align: center;
-        max-width: 600px;
-        margin: 0 auto 8px auto;
+        font-size: 32px;
+        line-height: 40px;
+        margin-bottom: 16px;
       }
-      @media (min-width: 800px) {
-        .header {
-          font-size: 32px;
-          line-height: 40px;
-          margin-bottom: 16px;
-        }
-      }
+    }
+    .features {
+      display: grid;
+      grid-template-columns: auto;
+      grid-gap: 16px;
+      padding: 16px;
+    }
+    @media (min-width: 600px) {
       .features {
-        display: grid;
-        grid-template-columns: auto;
-        grid-gap: 16px;
-        padding: 16px;
+        grid-template-columns: repeat(2, 1fr);
       }
-      @media (min-width: 600px) {
-        .features {
-          grid-template-columns: repeat(2, 1fr);
-        }
-      }
-      .feature {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        margin-bottom: 16px;
-      }
-      .feature .logos {
-        margin-bottom: 16px;
-      }
-      .feature .logos > * {
-        width: 40px;
-        height: 40px;
-        margin: 0 4px;
-      }
-      .round-icon {
-        border-radius: 50%;
-        color: #6e41ab;
-        background-color: #e8dcf7;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
-      }
-      .feature h2 {
-        font-weight: 500;
-        font-size: 16px;
-        line-height: 24px;
-        margin-top: 0;
-        margin-bottom: 8px;
-      }
-      .feature p {
-        font-weight: 400;
-        font-size: 14px;
-        line-height: 20px;
-        margin: 0;
-      }
-      .more {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .more a {
-        text-decoration: none;
-        color: var(--primary-color);
-        font-weight: 500;
-        font-size: 14px;
-      }
-      .more a ha-svg-icon {
-        --mdc-icon-size: 16px;
-      }
-      .no-wrap {
-        white-space: nowrap;
-      }
-    `;
-  }
+    }
+    .feature {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .feature .logos {
+      margin-bottom: 16px;
+    }
+    .feature .logos > * {
+      width: 40px;
+      height: 40px;
+      margin: 0 4px;
+    }
+    .round-icon {
+      border-radius: 50%;
+      color: #6e41ab;
+      background-color: #e8dcf7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    .feature h2 {
+      font-weight: 500;
+      font-size: 16px;
+      line-height: 24px;
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+    .feature p {
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+      margin: 0;
+    }
+    .more {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .more a {
+      text-decoration: none;
+      color: var(--primary-color);
+      font-weight: 500;
+      font-size: 14px;
+    }
+    .more a ha-svg-icon {
+      --mdc-icon-size: 16px;
+    }
+    .no-wrap {
+      white-space: nowrap;
+    }
+  `;
 }
 
 declare global {

@@ -1,18 +1,13 @@
-import { mdiContentCopy, mdiEye, mdiEyeOff, mdiHelpCircle } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import { mdiHelpCircle } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
-import "../../../../components/ha-formfield";
-import "../../../../components/ha-radio";
 import "../../../../components/ha-settings-row";
 import "../../../../components/ha-switch";
-import "../../../../components/ha-textfield";
 
 import { formatDate } from "../../../../common/datetime/format_date";
 import type { HaSwitch } from "../../../../components/ha-switch";
@@ -26,6 +21,7 @@ import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import { showCloudCertificateDialog } from "../dialog-cloud-certificate/show-dialog-cloud-certificate";
 import { obfuscateUrl } from "../../../../util/url";
+import "../../../../components/ha-copy-textfield";
 
 @customElement("cloud-remote-pref")
 export class CloudRemotePref extends LitElement {
@@ -34,8 +30,6 @@ export class CloudRemotePref extends LitElement {
   @property({ attribute: false }) public cloudStatus?: CloudStatusLoggedIn;
 
   @property({ type: Boolean }) public narrow = false;
-
-  @state() private _unmaskedUrl = false;
 
   protected render() {
     if (!this.cloudStatus) {
@@ -140,37 +134,13 @@ export class CloudRemotePref extends LitElement {
                   )}
                 </p>
               `}
-          <div class="url-container">
-            <div class="textfield-container">
-              <ha-textfield
-                .value=${this._unmaskedUrl
-                  ? `https://${remote_domain}`
-                  : obfuscateUrl(`https://${remote_domain}`)}
-                readonly
-                .suffix=${
-                  // reserve some space for the icon.
-                  html`<div style="width: 24px"></div>`
-                }
-              ></ha-textfield>
-              <ha-icon-button
-                class="toggle-unmasked-url"
-                toggles
-                .label=${this.hass.localize(
-                  `ui.panel.config.common.${this._unmaskedUrl ? "hide" : "show"}_url`
-                )}
-                @click=${this._toggleUnmaskedUrl}
-                .path=${this._unmaskedUrl ? mdiEyeOff : mdiEye}
-              ></ha-icon-button>
-            </div>
-            <ha-button
-              .url=${`https://${remote_domain}`}
-              @click=${this._copyURL}
-              unelevated
-            >
-              <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
-              ${this.hass.localize("ui.panel.config.common.copy_link")}
-            </ha-button>
-          </div>
+
+          <ha-copy-textfield
+            .hass=${this.hass}
+            .value=${`https://${remote_domain}`}
+            .maskedValue=${obfuscateUrl(`https://${remote_domain}`)}
+            .label=${this.hass!.localize("ui.panel.config.common.copy_link")}
+          ></ha-copy-textfield>
 
           <ha-expansion-panel
             outlined
@@ -235,10 +205,6 @@ export class CloudRemotePref extends LitElement {
     });
   }
 
-  private _toggleUnmaskedUrl(): void {
-    this._unmaskedUrl = !this._unmaskedUrl;
-  }
-
   private async _toggleChanged(ev) {
     const toggle = ev.target as HaSwitch;
 
@@ -269,106 +235,72 @@ export class CloudRemotePref extends LitElement {
     }
   }
 
-  private async _copyURL(ev): Promise<void> {
-    const url = ev.currentTarget.url;
-    await copyToClipboard(url);
-    showToast(this, {
-      message: this.hass.localize("ui.common.copied_clipboard"),
-    });
-  }
-
-  static get styles(): CSSResultGroup {
-    return css`
-      .preparing {
-        padding: 0 16px 16px;
-      }
-      a {
-        color: var(--primary-color);
-      }
-      .header-actions {
-        position: absolute;
-        right: 16px;
-        inset-inline-end: 16px;
-        inset-inline-start: initial;
-        top: 24px;
-        display: flex;
-        flex-direction: row;
-      }
-      .header-actions .icon-link {
-        margin-top: -16px;
-        margin-right: 8px;
-        margin-inline-end: 8px;
-        margin-inline-start: initial;
-        direction: var(--direction);
-        color: var(--secondary-text-color);
-      }
-      .warning {
-        font-weight: bold;
-        margin-bottom: 1em;
-      }
-      .break-word {
-        overflow-wrap: break-word;
-      }
-      .connection-status {
-        position: absolute;
-        right: 24px;
-        top: 24px;
-        inset-inline-end: 24px;
-        inset-inline-start: initial;
-      }
-      .card-actions {
-        display: flex;
-      }
-      .card-actions a {
-        text-decoration: none;
-      }
-      ha-expansion-panel {
-        margin-top: 16px;
-      }
-      ha-settings-row {
-        padding: 0;
-        border-top: none !important;
-      }
-      ha-expansion-panel {
-        --expansion-panel-content-padding: 0 16px;
-        --expansion-panel-summary-padding: 0 16px;
-      }
-      ha-alert {
-        display: block;
-        margin-bottom: 16px;
-      }
-      .url-container {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-top: 8px;
-      }
-      .textfield-container {
-        position: relative;
-        flex: 1;
-      }
-      .textfield-container ha-textfield {
-        display: block;
-      }
-      .toggle-unmasked-url {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        inset-inline-start: initial;
-        inset-inline-end: 8px;
-        --mdc-icon-button-size: 40px;
-        --mdc-icon-size: 20px;
-        color: var(--secondary-text-color);
-        direction: var(--direction);
-      }
-      hr {
-        border: none;
-        height: 1px;
-        background-color: var(--divider-color);
-        margin: 8px 0;
-      }
-    `;
-  }
+  static styles = css`
+    .preparing {
+      padding: 0 16px 16px;
+    }
+    a {
+      color: var(--primary-color);
+    }
+    .header-actions {
+      position: absolute;
+      right: 16px;
+      inset-inline-end: 16px;
+      inset-inline-start: initial;
+      top: 24px;
+      display: flex;
+      flex-direction: row;
+    }
+    .header-actions .icon-link {
+      margin-top: -16px;
+      margin-right: 8px;
+      margin-inline-end: 8px;
+      margin-inline-start: initial;
+      direction: var(--direction);
+      color: var(--secondary-text-color);
+    }
+    .warning {
+      font-weight: bold;
+      margin-bottom: 1em;
+    }
+    .break-word {
+      overflow-wrap: break-word;
+    }
+    .connection-status {
+      position: absolute;
+      right: 24px;
+      top: 24px;
+      inset-inline-end: 24px;
+      inset-inline-start: initial;
+    }
+    .card-actions {
+      display: flex;
+    }
+    .card-actions a {
+      text-decoration: none;
+    }
+    ha-expansion-panel {
+      margin-top: 16px;
+    }
+    ha-settings-row {
+      padding: 0;
+      border-top: none !important;
+    }
+    ha-expansion-panel {
+      --expansion-panel-content-padding: 0 16px;
+      --expansion-panel-summary-padding: 0 16px;
+    }
+    ha-alert {
+      display: block;
+      margin-bottom: 16px;
+    }
+    hr {
+      border: none;
+      height: 1px;
+      background-color: var(--divider-color);
+      margin: 8px 0;
+    }
+  `;
 }
 
 declare global {

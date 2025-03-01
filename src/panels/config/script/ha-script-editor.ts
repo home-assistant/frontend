@@ -62,8 +62,8 @@ import { haStyle } from "../../../resources/styles";
 import type { Entries, HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import { showAutomationModeDialog } from "../automation/automation-mode-dialog/show-dialog-automation-mode";
-import type { EntityRegistryUpdate } from "../automation/automation-rename-dialog/show-dialog-automation-rename";
-import { showAutomationRenameDialog } from "../automation/automation-rename-dialog/show-dialog-automation-rename";
+import type { EntityRegistryUpdate } from "../automation/automation-save-dialog/show-dialog-automation-save";
+import { showAutomationSaveDialog } from "../automation/automation-save-dialog/show-dialog-automation-save";
 import "./blueprint-script-editor";
 import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
@@ -452,7 +452,7 @@ export class HaScriptEditor extends SubscribeMixin(
           )}
           .disabled=${this._saving}
           extended
-          @click=${this._saveScript}
+          @click=${this._handleSave}
         >
           <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
         </ha-fab>
@@ -707,20 +707,48 @@ export class HaScriptEditor extends SubscribeMixin(
   }
 
   private async _confirmUnsavedChanged(): Promise<boolean> {
-    if (this._dirty) {
-      return showConfirmationDialog(this, {
-        title: this.hass!.localize(
-          "ui.panel.config.automation.editor.unsaved_confirm_title"
-        ),
-        text: this.hass!.localize(
-          "ui.panel.config.automation.editor.unsaved_confirm_text"
-        ),
-        confirmText: this.hass!.localize("ui.common.leave"),
-        dismissText: this.hass!.localize("ui.common.stay"),
-        destructive: true,
-      });
+    if (!this._dirty) {
+      return true;
     }
-    return true;
+
+    return new Promise<boolean>((resolve) => {
+      showAutomationSaveDialog(this, {
+        config: this._config!,
+        domain: "script",
+        updateConfig: async (config, entityRegistryUpdate) => {
+          this._config = config;
+          this._entityRegistryUpdate = entityRegistryUpdate;
+          this._dirty = true;
+          this.requestUpdate();
+
+          const id = this.scriptId || String(Date.now());
+          try {
+            await this._saveScript(id);
+          } catch (_err: any) {
+            this.requestUpdate();
+            resolve(false);
+            return;
+          }
+
+          resolve(true);
+        },
+        onClose: () => resolve(false),
+        onDiscard: () => resolve(true),
+        entityRegistryUpdate: this._entityRegistryUpdate,
+        entityRegistryEntry: this._registryEntry,
+        title: this.hass.localize(
+          this.scriptId
+            ? "ui.panel.config.script.editor.leave.unsaved_confirm_title"
+            : "ui.panel.config.script.editor.leave.unsaved_new_title"
+        ),
+        description: this.hass.localize(
+          this.scriptId
+            ? "ui.panel.config.script.editor.leave.unsaved_confirm_text"
+            : "ui.panel.config.script.editor.leave.unsaved_new_text"
+        ),
+        hideInputs: this.scriptId !== null,
+      });
+    });
   }
 
   private _backTapped = async () => {
@@ -843,10 +871,10 @@ export class HaScriptEditor extends SubscribeMixin(
 
   private async _promptScriptAlias(): Promise<boolean> {
     return new Promise((resolve) => {
-      showAutomationRenameDialog(this, {
+      showAutomationSaveDialog(this, {
         config: this._config!,
         domain: "script",
-        updateConfig: (config, entityRegistryUpdate) => {
+        updateConfig: async (config, entityRegistryUpdate) => {
           this._config = config;
           this._entityRegistryUpdate = entityRegistryUpdate;
           this._dirty = true;
@@ -877,7 +905,7 @@ export class HaScriptEditor extends SubscribeMixin(
     });
   }
 
-  private async _saveScript(): Promise<void> {
+  private async _handleSave() {
     if (this._yamlErrors) {
       showToast(this, {
         message: this._yamlErrors,
@@ -894,6 +922,13 @@ export class HaScriptEditor extends SubscribeMixin(
     }
     const id = this.scriptId || this._entityId || Date.now();
 
+    await this._saveScript(id);
+    if (!this.scriptId) {
+      navigate(`/config/script/edit/${id}`, { replace: true });
+    }
+  }
+
+  private async _saveScript(id): Promise<void> {
     this._saving = true;
 
     let entityRegPromise: Promise<EntityRegistryEntry> | undefined;
@@ -962,10 +997,6 @@ export class HaScriptEditor extends SubscribeMixin(
       }
 
       this._dirty = false;
-
-      if (!this.scriptId) {
-        navigate(`/config/script/edit/${id}`, { replace: true });
-      }
     } catch (errors: any) {
       this._errors = errors.body?.message || errors.error || errors.body;
       showToast(this, {
@@ -979,7 +1010,7 @@ export class HaScriptEditor extends SubscribeMixin(
 
   protected supportedShortcuts(): SupportedShortcuts {
     return {
-      s: () => this._saveScript(),
+      s: () => this._handleSave(),
     };
   }
 

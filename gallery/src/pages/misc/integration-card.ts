@@ -32,6 +32,8 @@ const createConfigEntry = (
   supports_remove_device: false,
   supports_unload: true,
   supports_reconfigure: true,
+  supported_subentry_types: {},
+  num_subentries: 0,
   disabled_by: null,
   pref_disable_new_entities: false,
   pref_disable_polling: false,
@@ -135,12 +137,12 @@ const configFlows: DataEntryFlowProgressExtended[] = [
   },
 ];
 
-const configEntries: Array<{
+const configEntries: {
   items: ConfigEntryExtended[];
   is_custom?: boolean;
   disabled?: boolean;
   highlight?: string;
-}> = [
+}[] = [
   { items: [loadedEntry] },
   { items: [configPanelEntry] },
   { items: [optionsFlowEntry] },
@@ -188,6 +190,7 @@ const createEntityRegistryEntries = (
 ): EntityRegistryEntry[] => [
   {
     config_entry_id: item.entry_id,
+    config_subentry_id: null,
     device_id: "mock-device-id",
     area_id: null,
     disabled_by: null,
@@ -214,6 +217,7 @@ const createDeviceRegistryEntries = (
   {
     entry_type: null,
     config_entries: [item.entry_id],
+    config_entries_subentries: {},
     connections: [],
     manufacturer: "ESPHome",
     model: "Mock Device",
@@ -349,26 +353,24 @@ export class DemoIntegrationCard extends LitElement {
     this.isCloud = !this.isCloud;
   }
 
-  static get styles() {
-    return css`
-      .container {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        grid-gap: 8px 8px;
-        padding: 8px 16px 16px;
-        margin-bottom: 16px;
-      }
+  static styles = css`
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      grid-gap: 8px 8px;
+      padding: 8px 16px 16px;
+      margin-bottom: 16px;
+    }
 
-      .container > * {
-        max-width: 500px;
-      }
+    .container > * {
+      max-width: 500px;
+    }
 
-      ha-formfield {
-        margin: 8px 0;
-        display: block;
-      }
-    `;
-  }
+    ha-formfield {
+      margin: 8px 0;
+      display: block;
+    }
+  `;
 }
 
 declare global {

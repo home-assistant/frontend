@@ -1,5 +1,5 @@
 import type { HassEvent } from "home-assistant-js-websocket";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -19,10 +19,10 @@ class EventSubscribeCard extends LitElement {
 
   @state() private _subscribed?: () => void;
 
-  @state() private _events: Array<{
+  @state() private _events: {
     id: number;
     event: HassEvent;
-  }> = [];
+  }[] = [];
 
   @state() private _error?: string;
 
@@ -156,33 +156,31 @@ class EventSubscribeCard extends LitElement {
     this._error = undefined;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-textfield {
-        display: block;
-        margin-bottom: 16px;
-      }
-      .error-message {
-        margin-top: 8px;
-      }
-      .event {
-        border-top: 1px solid var(--divider-color);
-        padding-top: 8px;
-        padding-bottom: 8px;
-        margin: 16px 0;
-      }
-      .event:last-child {
-        border-bottom: 0;
-        margin-bottom: 0;
-      }
-      pre {
-        font-family: var(--code-font-family, monospace);
-      }
-      ha-card {
-        margin-bottom: 5px;
-      }
-    `;
-  }
+  static styles = css`
+    ha-textfield {
+      display: block;
+      margin-bottom: 16px;
+    }
+    .error-message {
+      margin-top: 8px;
+    }
+    .event {
+      border-top: 1px solid var(--divider-color);
+      padding-top: 8px;
+      padding-bottom: 8px;
+      margin: 16px 0;
+    }
+    .event:last-child {
+      border-bottom: 0;
+      margin-bottom: 0;
+    }
+    pre {
+      font-family: var(--code-font-family, monospace);
+    }
+    ha-card {
+      margin-bottom: 5px;
+    }
+  `;
 }
 
 declare global {

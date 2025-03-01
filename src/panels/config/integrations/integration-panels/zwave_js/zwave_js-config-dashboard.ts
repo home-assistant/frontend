@@ -15,7 +15,6 @@ import { classMap } from "lit/directives/class-map";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-expansion-panel";
 import "../../../../../components/ha-fab";
-import "../../../../../components/ha-help-tooltip";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-svg-icon";
@@ -76,6 +75,10 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
   @state()
   private _statistics?: ZWaveJSControllerStatisticsUpdatedMessage;
 
+  private _dialogOpen = false;
+
+  private _s2InclusionUnsubscribe?: Promise<UnsubscribeFunc>;
+
   protected async firstUpdated() {
     if (this.hass) {
       await this._fetchData();
@@ -91,7 +94,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     }
   }
 
-  public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
+  public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
     return [
       subscribeZwaveControllerStatistics(
         this.hass,
@@ -103,13 +106,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           this._statistics = message;
         }
       ),
-      subscribeS2Inclusion(this.hass, this.configEntryId, (message) => {
-        showZWaveJSAddNodeDialog(this, {
-          entry_id: this.configEntryId,
-          dsk: message.dsk,
-          onStop: () => setTimeout(() => this._fetchData(), 100),
-        });
-      }),
+      this._subscribeS2Inclusion(),
     ];
   }
 
@@ -570,11 +567,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
   }
 
   private async _addNodeClicked() {
-    showZWaveJSAddNodeDialog(this, {
-      entry_id: this.configEntryId!,
-      // refresh the data after the dialog is closed. add a small delay for the inclusion state to update
-      onStop: () => setTimeout(() => this._fetchData(), 100),
-    });
+    this._openInclusionDialog();
   }
 
   private async _removeNodeClicked() {
@@ -611,6 +604,41 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
       (entry) => entry.entry_id === this.configEntryId
     );
     showOptionsFlowDialog(this, configEntry!);
+  }
+
+  private _openInclusionDialog(dsk?: string) {
+    if (!this._dialogOpen) {
+      // Unsubscribe from S2 inclusion before opening dialog
+      if (this._s2InclusionUnsubscribe) {
+        this._s2InclusionUnsubscribe.then((unsubscribe) => unsubscribe());
+        this._s2InclusionUnsubscribe = undefined;
+      }
+
+      showZWaveJSAddNodeDialog(this, {
+        entry_id: this.configEntryId!,
+        dsk,
+        onStop: this._handleInclusionDialogClosed,
+      });
+      this._dialogOpen = true;
+    }
+  }
+
+  private _handleInclusionDialogClosed = () => {
+    // refresh the data after the dialog is closed. add a small delay for the inclusion state to update
+    setTimeout(() => this._fetchData(), 100);
+    this._dialogOpen = false;
+    this._subscribeS2Inclusion();
+  };
+
+  private _subscribeS2Inclusion() {
+    this._s2InclusionUnsubscribe = subscribeS2Inclusion(
+      this.hass,
+      this.configEntryId,
+      (message) => {
+        this._openInclusionDialog(message.dsk);
+      }
+    );
+    return this._s2InclusionUnsubscribe;
   }
 
   static get styles(): CSSResultGroup {

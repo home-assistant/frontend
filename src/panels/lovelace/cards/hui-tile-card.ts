@@ -1,6 +1,5 @@
 import { mdiExclamationThick, mdiHelp } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -19,8 +18,7 @@ import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
 import "../../../components/tile/ha-tile-badge";
 import "../../../components/tile/ha-tile-icon";
-import "../../../components/tile/ha-tile-image";
-import type { TileImageStyle } from "../../../components/tile/ha-tile-image";
+import type { TileIconImageStyle } from "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
 import { cameraUrlWithWidthHeight } from "../../../data/camera";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
@@ -37,7 +35,7 @@ import type {
   LovelaceGridOptions,
 } from "../types";
 import { renderTileBadge } from "./tile/badges/tile-badge";
-import type { ThermostatCardConfig, TileCardConfig } from "./types";
+import type { TileCardConfig } from "./types";
 
 export const getEntityDefaultTileIconAction = (entityId: string) => {
   const domain = computeDomain(entityId);
@@ -45,10 +43,10 @@ export const getEntityDefaultTileIconAction = (entityId: string) => {
     DOMAINS_TOGGLE.has(domain) ||
     ["button", "input_button", "scene"].includes(domain);
 
-  return supportsIconAction ? "toggle" : "more-info";
+  return supportsIconAction ? "toggle" : "none";
 };
 
-const DOMAIN_IMAGE_STYLE: Record<string, TileImageStyle> = {
+const DOMAIN_IMAGE_SHAPE: Record<string, TileIconImageStyle> = {
   update: "square",
   media_player: "rounded-square",
 };
@@ -85,7 +83,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
   @state() private _config?: TileCardConfig;
 
-  public setConfig(config: ThermostatCardConfig): void {
+  public setConfig(config: TileCardConfig): void {
     if (!config.entity) {
       throw new Error("Specify an entity");
     }
@@ -102,10 +100,13 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
+    const featuresPosition =
+      this._config && this._featurePosition(this._config);
+    const featuresCount = this._config?.features?.length || 0;
     return (
       1 +
       (this._config?.vertical ? 1 : 0) +
-      (this._config?.features?.length || 0)
+      (featuresPosition === "inline" ? 0 : featuresCount)
     );
   }
 
@@ -113,9 +114,16 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     const columns = 6;
     let min_columns = 6;
     let rows = 1;
-    if (this._config?.features?.length) {
-      rows += this._config.features.length;
+    const featurePosition = this._config && this._featurePosition(this._config);
+    const featuresCount = this._config?.features?.length || 0;
+    if (featuresCount) {
+      if (featurePosition === "inline") {
+        min_columns = 12;
+      } else {
+        rows += featuresCount;
+      }
     }
+
     if (this._config?.vertical) {
       rows++;
       min_columns = 3;
@@ -197,7 +205,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     }
   );
 
-  get hasCardAction() {
+  private get _hasCardAction() {
     return (
       !this._config?.tap_action ||
       hasAction(this._config?.tap_action) ||
@@ -206,11 +214,28 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     );
   }
 
-  get hasIconAction() {
+  private get _hasIconAction() {
     return (
       !this._config?.icon_tap_action || hasAction(this._config?.icon_tap_action)
     );
   }
+
+  private _featurePosition = memoizeOne((config: TileCardConfig) => {
+    if (config.vertical) {
+      return "bottom";
+    }
+    return config.features_position || "bottom";
+  });
+
+  private _displayedFeatures = memoizeOne((config: TileCardConfig) => {
+    const features = config.features || [];
+    const featurePosition = this._featurePosition(config);
+
+    if (featurePosition === "inline") {
+      return features.slice(0, 1);
+    }
+    return features;
+  });
 
   protected render() {
     if (!this._config || !this.hass) {
@@ -225,14 +250,12 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       return html`
         <ha-card>
           <div class="content ${classMap(contentClasses)}">
-            <div class="icon-container">
-              <ha-tile-icon>
-                <ha-svg-icon .path=${mdiHelp}></ha-svg-icon>
-              </ha-tile-icon>
+            <ha-tile-icon>
+              <ha-svg-icon slot="icon" .path=${mdiHelp}></ha-svg-icon>
               <ha-tile-badge class="not-found">
                 <ha-svg-icon .path=${mdiExclamationThick}></ha-svg-icon>
               </ha-tile-badge>
-            </div>
+            </ha-tile-icon>
             <ha-tile-info
               .primary=${entityId}
               secondary=${this.hass.localize("ui.card.tile.not_found")}
@@ -267,6 +290,12 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       ? this._getImageUrl(stateObj)
       : undefined;
 
+    const featurePosition = this._featurePosition(this._config);
+    const features = this._displayedFeatures(this._config);
+
+    const containerOrientationClass =
+      featurePosition === "inline" ? "horizontal" : "";
+
     return html`
       <ha-card style=${styleMap(style)} class=${classMap({ active })}>
         <div
@@ -276,58 +305,49 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             hasHold: hasAction(this._config!.hold_action),
             hasDoubleClick: hasAction(this._config!.double_tap_action),
           })}
-          role=${ifDefined(this.hasCardAction ? "button" : undefined)}
-          tabindex=${ifDefined(this.hasCardAction ? "0" : undefined)}
+          role=${ifDefined(this._hasCardAction ? "button" : undefined)}
+          tabindex=${ifDefined(this._hasCardAction ? "0" : undefined)}
           aria-labelledby="info"
         >
-          <ha-ripple .disabled=${!this.hasCardAction}></ha-ripple>
+          <ha-ripple .disabled=${!this._hasCardAction}></ha-ripple>
         </div>
-        <div class="container">
+        <div class="container ${containerOrientationClass}">
           <div class="content ${classMap(contentClasses)}">
-            <div
-              class="icon-container"
-              role=${ifDefined(this.hasIconAction ? "button" : undefined)}
-              tabindex=${ifDefined(this.hasIconAction ? "0" : undefined)}
+            <ha-tile-icon
+              role=${ifDefined(this._hasIconAction ? "button" : undefined)}
+              tabindex=${ifDefined(this._hasIconAction ? "0" : undefined)}
               @action=${this._handleIconAction}
               .actionHandler=${actionHandler({
                 hasHold: hasAction(this._config!.icon_hold_action),
                 hasDoubleClick: hasAction(this._config!.icon_double_tap_action),
               })}
+              .interactive=${this._hasIconAction}
+              .imageStyle=${DOMAIN_IMAGE_SHAPE[domain]}
+              .imageUrl=${imageUrl}
+              data-domain=${ifDefined(domain)}
+              data-state=${ifDefined(stateObj?.state)}
             >
-              ${imageUrl
-                ? html`
-                    <ha-tile-image
-                      .imageStyle=${DOMAIN_IMAGE_STYLE[domain] || "circle"}
-                      .imageUrl=${imageUrl}
-                    ></ha-tile-image>
-                  `
-                : html`
-                    <ha-tile-icon
-                      data-domain=${ifDefined(domain)}
-                      data-state=${ifDefined(stateObj?.state)}
-                    >
-                      <ha-state-icon
-                        .icon=${this._config.icon}
-                        .stateObj=${stateObj}
-                        .hass=${this.hass}
-                      ></ha-state-icon>
-                    </ha-tile-icon>
-                  `}
+              <ha-state-icon
+                slot="icon"
+                .icon=${this._config.icon}
+                .stateObj=${stateObj}
+                .hass=${this.hass}
+              ></ha-state-icon>
               ${renderTileBadge(stateObj, this.hass)}
-            </div>
+            </ha-tile-icon>
             <ha-tile-info
               id="info"
               .primary=${name}
               .secondary=${stateDisplay}
             ></ha-tile-info>
           </div>
-          ${this._config.features
+          ${features.length > 0
             ? html`
                 <hui-card-features
                   .hass=${this.hass}
                   .stateObj=${stateObj}
                   .color=${this._config.color}
-                  .features=${this._config.features}
+                  .features=${features}
                 ></hui-card-features>
               `
             : nothing}
@@ -336,145 +356,135 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        --tile-color: var(--state-inactive-color);
-        -webkit-tap-highlight-color: transparent;
-      }
-      ha-card:has(.background:focus-visible) {
-        --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
-        --shadow-focus: 0 0 0 1px var(--tile-color);
-        border-color: var(--tile-color);
-        box-shadow: var(--shadow-default), var(--shadow-focus);
-      }
-      ha-card {
-        --ha-ripple-color: var(--tile-color);
-        --ha-ripple-hover-opacity: 0.04;
-        --ha-ripple-pressed-opacity: 0.12;
-        height: 100%;
-        transition:
-          box-shadow 180ms ease-in-out,
-          border-color 180ms ease-in-out;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-      }
-      ha-card.active {
-        --tile-color: var(--state-icon-color);
-      }
-      [role="button"] {
-        cursor: pointer;
-      }
-      [role="button"]:focus {
-        outline: none;
-      }
-      .background {
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        border-radius: var(--ha-card-border-radius, 12px);
-        margin: calc(-1 * var(--ha-card-border-width, 1px));
-        overflow: hidden;
-      }
-      .container {
-        margin: calc(-1 * var(--ha-card-border-width, 1px));
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-      }
-      .content {
-        position: relative;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        padding: 10px;
-        flex: 1;
-        box-sizing: border-box;
-        pointer-events: none;
-      }
-      .vertical {
-        flex-direction: column;
-        text-align: center;
-        justify-content: center;
-      }
-      .vertical .icon-container {
-        margin-bottom: 10px;
-        margin-right: 0;
-        margin-inline-start: initial;
-        margin-inline-end: initial;
-      }
-      .vertical ha-tile-info {
-        width: 100%;
-        flex: none;
-      }
-      .icon-container {
-        position: relative;
-        flex: none;
-        margin-right: 10px;
-        margin-inline-start: initial;
-        margin-inline-end: 10px;
-        direction: var(--direction);
-        transition: transform 180ms ease-in-out;
-      }
-      .icon-container ha-tile-icon,
-      .icon-container ha-tile-image {
-        --tile-icon-color: var(--tile-color);
-        user-select: none;
-        -ms-user-select: none;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-      }
-      .icon-container ha-tile-badge {
-        position: absolute;
-        top: -3px;
-        right: -3px;
-        inset-inline-end: -3px;
-        inset-inline-start: initial;
-      }
-      .icon-container[role="button"] {
-        pointer-events: auto;
-      }
-      .icon-container[role="button"]:focus-visible,
-      .icon-container[role="button"]:active {
-        transform: scale(1.2);
-      }
-      ha-tile-info {
-        position: relative;
-        min-width: 0;
-        transition: background-color 180ms ease-in-out;
-        box-sizing: border-box;
-      }
-      hui-card-features {
-        --feature-color: var(--tile-color);
-      }
+  static styles = css`
+    :host {
+      --tile-color: var(--state-inactive-color);
+      -webkit-tap-highlight-color: transparent;
+    }
+    ha-card:has(.background:focus-visible) {
+      --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
+      --shadow-focus: 0 0 0 1px var(--tile-color);
+      border-color: var(--tile-color);
+      box-shadow: var(--shadow-default), var(--shadow-focus);
+    }
+    ha-card {
+      --ha-ripple-color: var(--tile-color);
+      --ha-ripple-hover-opacity: 0.04;
+      --ha-ripple-pressed-opacity: 0.12;
+      height: 100%;
+      transition:
+        box-shadow 180ms ease-in-out,
+        border-color 180ms ease-in-out;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    ha-card.active {
+      --tile-color: var(--state-icon-color);
+    }
+    [role="button"] {
+      cursor: pointer;
+      pointer-events: auto;
+    }
+    [role="button"]:focus {
+      outline: none;
+    }
+    .background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      border-radius: var(--ha-card-border-radius, 12px);
+      margin: calc(-1 * var(--ha-card-border-width, 1px));
+      overflow: hidden;
+    }
+    .container {
+      margin: calc(-1 * var(--ha-card-border-width, 1px));
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .container.horizontal {
+      flex-direction: row;
+    }
 
-      ha-tile-icon[data-domain="alarm_control_panel"][data-state="pending"],
-      ha-tile-icon[data-domain="alarm_control_panel"][data-state="arming"],
-      ha-tile-icon[data-domain="alarm_control_panel"][data-state="triggered"],
-      ha-tile-icon[data-domain="lock"][data-state="jammed"] {
-        animation: pulse 1s infinite;
-      }
+    .content {
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      padding: 10px;
+      flex: 1;
+      min-width: 0;
+      box-sizing: border-box;
+      pointer-events: none;
+      gap: 10px;
+    }
 
-      ha-tile-badge.not-found {
-        --tile-badge-background-color: var(--red-color);
-      }
+    .vertical {
+      flex-direction: column;
+      text-align: center;
+      justify-content: center;
+    }
+    .vertical ha-tile-info {
+      width: 100%;
+      flex: none;
+    }
+    ha-tile-icon {
+      --tile-icon-color: var(--tile-color);
+      position: relative;
+      padding: 6px;
+      margin: -6px;
+    }
+    ha-tile-badge {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      inset-inline-end: 3px;
+      inset-inline-start: initial;
+    }
+    ha-tile-info {
+      position: relative;
+      min-width: 0;
+      transition: background-color 180ms ease-in-out;
+      box-sizing: border-box;
+    }
+    hui-card-features {
+      --feature-color: var(--tile-color);
+      padding: 0 12px 12px 12px;
+    }
+    .container.horizontal hui-card-features {
+      width: calc(50% - var(--column-gap, 0px) / 2 - 12px);
+      flex: none;
+      --feature-height: 36px;
+      padding: 0 12px;
+      padding-inline-start: 0;
+    }
 
-      @keyframes pulse {
-        0% {
-          opacity: 1;
-        }
-        50% {
-          opacity: 0;
-        }
-        100% {
-          opacity: 1;
-        }
+    ha-tile-icon[data-domain="alarm_control_panel"][data-state="pending"],
+    ha-tile-icon[data-domain="alarm_control_panel"][data-state="arming"],
+    ha-tile-icon[data-domain="alarm_control_panel"][data-state="triggered"],
+    ha-tile-icon[data-domain="lock"][data-state="jammed"] {
+      animation: pulse 1s infinite;
+    }
+
+    ha-tile-badge.not-found {
+      --tile-badge-background-color: var(--red-color);
+    }
+
+    @keyframes pulse {
+      0% {
+        opacity: 1;
       }
-    `;
-  }
+      50% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+  `;
 }
 
 declare global {

@@ -37,7 +37,10 @@ const SCHEMA = [
   },
 ] as const;
 
-type FormData = { new_password?: string; password_confirm?: string };
+interface FormData {
+  new_password?: string;
+  password_confirm?: string;
+}
 
 @customElement("dialog-admin-change-password")
 class DialogAdminChangePassword extends LitElement {
@@ -119,7 +122,7 @@ class DialogAdminChangePassword extends LitElement {
                 )}
               </p>
               <mwc-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize("ui.dialogs.generic.ok")}
+                ${this.hass.localize("ui.common.ok")}
               </mwc-button>
             `
           : html`

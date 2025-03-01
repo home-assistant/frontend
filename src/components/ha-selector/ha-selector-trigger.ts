@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -38,19 +37,17 @@ export class HaTriggerSelector extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-automation-trigger {
-        display: block;
-        margin-bottom: 16px;
-      }
-      label {
-        display: block;
-        margin-bottom: 4px;
-        font-weight: 500;
-      }
-    `;
-  }
+  static styles = css`
+    ha-automation-trigger {
+      display: block;
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+  `;
 }
 
 declare global {

@@ -5,6 +5,7 @@ import type { HomeAssistant } from "../types";
 import { debounce } from "../common/util/debounce";
 
 export const integrationsWithPanel = {
+  bluetooth: "config/bluetooth",
   matter: "config/matter",
   mqtt: "config/mqtt",
   thread: "config/thread",
@@ -33,7 +34,7 @@ export interface IntegrationManifest {
   after_dependencies?: string[];
   codeowners?: string[];
   requirements?: string[];
-  ssdp?: Array<{ manufacturer?: string; modelName?: string; st?: string }>;
+  ssdp?: { manufacturer?: string; modelName?: string; st?: string }[];
   zeroconf?: string[];
   homekit?: { models: string[] };
   integration_type?: IntegrationType;

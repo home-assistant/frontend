@@ -1,6 +1,6 @@
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
@@ -118,18 +118,15 @@ export class HuiCardElementEditor extends HuiTypedElementEditor<LovelaceCardConf
     this._currTab = newTab;
   }
 
-  static get styles(): CSSResultGroup {
-    return [
-      HuiTypedElementEditor.styles,
-      css`
-        mwc-tab-bar {
-          text-transform: uppercase;
-          margin-bottom: 16px;
-          border-bottom: 1px solid var(--divider-color);
-        }
-      `,
-    ];
-  }
+  static override styles = [
+    css`
+      mwc-tab-bar {
+        text-transform: uppercase;
+        margin-bottom: 16px;
+        border-bottom: 1px solid var(--divider-color);
+      }
+    `,
+  ];
 }
 
 declare global {

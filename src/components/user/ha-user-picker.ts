@@ -1,5 +1,5 @@
 import "@material/mwc-list/mwc-list-item";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { property } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -88,16 +88,14 @@ class HaUserPicker extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: inline-block;
-      }
-      mwc-list {
-        display: block;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: inline-block;
+    }
+    mwc-list {
+      display: block;
+    }
+  `;
 }
 
 customElements.define("ha-user-picker", HaUserPicker);

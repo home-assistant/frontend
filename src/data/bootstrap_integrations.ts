@@ -1,6 +1,6 @@
 import type { HomeAssistant } from "../types";
 
-export type BootstrapIntegrationsTimings = { [key: string]: number };
+export type BootstrapIntegrationsTimings = Record<string, number>;
 
 export const subscribeBootstrapIntegrations = (
   hass: HomeAssistant,

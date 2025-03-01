@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -65,7 +65,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     return {
       columns: 12,
       min_columns: 6,
-      min_rows: (this._config?.entities?.length || 1) * 2,
+      min_rows: 2,
     };
   }
 
@@ -243,6 +243,10 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       start_date: now.toISOString(),
     })}`;
 
+    const columns = this._config.grid_options?.columns ?? 12;
+    const narrow = typeof columns === "number" && columns <= 12;
+    const hasFixedHeight = typeof this._config.grid_options?.rows === "number";
+
     return html`
       <ha-card>
         ${this._config.title
@@ -256,6 +260,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
         <div
           class="content ${classMap({
             "has-header": !!this._config.title,
+            "has-rows": !!this._config.grid_options?.rows,
           })}"
         >
           ${this._error
@@ -280,6 +285,9 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
                   .minYAxis=${this._config.min_y_axis}
                   .maxYAxis=${this._config.max_y_axis}
                   .fitYData=${this._config.fit_y_data || false}
+                  .height=${hasFixedHeight ? "100%" : undefined}
+                  .narrow=${narrow}
+                  .expandLegend=${this._config.expand_legend}
                 ></state-history-charts>
               `}
         </div>
@@ -287,28 +295,38 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-card {
-        height: 100%;
-      }
-      .card-header {
-        justify-content: space-between;
-        display: flex;
-      }
-      .card-header ha-icon-next {
-        --mdc-icon-button-size: 24px;
-        line-height: 24px;
-        color: var(--primary-text-color);
-      }
-      .content {
-        padding: 16px;
-      }
-      .has-header {
-        padding-top: 0;
-      }
-    `;
-  }
+  static styles = css`
+    ha-card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .card-header {
+      justify-content: space-between;
+      display: flex;
+      padding-bottom: 0;
+    }
+    .card-header ha-icon-next {
+      --mdc-icon-button-size: 24px;
+      line-height: 24px;
+      color: var(--primary-text-color);
+    }
+    .content {
+      padding: 0 16px 8px;
+      flex: 1;
+      overflow: hidden;
+    }
+    .has-header {
+      padding-top: 0;
+    }
+    state-history-charts {
+      height: 100%;
+      --timeline-top-margin: 16px;
+    }
+    .has-rows {
+      --chart-max-height: 100%;
+    }
+  `;
 }
 
 declare global {

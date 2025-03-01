@@ -84,7 +84,7 @@ class HaDomainIntegrations extends LitElement {
       ${this.integration?.iot_standards
         ? this.integration.iot_standards
             .filter((standard) =>
-              (PROTOCOL_INTEGRATIONS as ReadonlyArray<string>).includes(
+              (PROTOCOL_INTEGRATIONS as readonly string[]).includes(
                 standardToDomain[standard] || standard
               )
             )
@@ -153,7 +153,7 @@ class HaDomainIntegrations extends LitElement {
                 </ha-integration-list-item>`
             )
         : ""}
-      ${(PROTOCOL_INTEGRATIONS as ReadonlyArray<string>).includes(this.domain)
+      ${(PROTOCOL_INTEGRATIONS as readonly string[]).includes(this.domain)
         ? html`<mwc-list-item
             graphic="medium"
             .domain=${this.domain}
@@ -279,6 +279,7 @@ class HaDomainIntegrations extends LitElement {
       {
         startFlowHandler: domain,
         showAdvanced: this.hass.userData?.showAdvanced,
+        navigateToResult: true,
         manifest: await fetchIntegrationManifest(this.hass, domain),
       }
     );
@@ -295,6 +296,7 @@ class HaDomainIntegrations extends LitElement {
       root instanceof ShadowRoot ? (root.host as HTMLElement) : this,
       {
         continueFlowId: flow.flow_id,
+        navigateToResult: true,
         showAdvanced: this.hass.userData?.showAdvanced,
         manifest: await fetchIntegrationManifest(this.hass, flow.handler),
       }

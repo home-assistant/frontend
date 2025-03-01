@@ -24,8 +24,9 @@ import { fetchHassioAddonsInfo } from "../../../../../data/hassio/addon";
 import type { HomeAssistant } from "../../../../../types";
 import "../ha-backup-addons-picker";
 import type { BackupAddonItem } from "../ha-backup-addons-picker";
+import { getRecorderInfo } from "../../../../../data/recorder";
 
-export type FormData = {
+export interface FormData {
   homeassistant: boolean;
   database: boolean;
   media: boolean;
@@ -33,7 +34,7 @@ export type FormData = {
   local_addons: boolean;
   addons_mode: "all" | "custom" | "none";
   addons: string[];
-};
+}
 
 const INITIAL_FORM_DATA: FormData = {
   homeassistant: false,
@@ -45,13 +46,13 @@ const INITIAL_FORM_DATA: FormData = {
   addons: [],
 };
 
-export type BackupConfigData = {
+export interface BackupConfigData {
   include_homeassistant?: boolean;
   include_database: boolean;
   include_folders?: string[];
   include_all_addons: boolean;
   include_addons?: string[];
-};
+}
 
 declare global {
   interface HASSDomEvents {
@@ -75,8 +76,11 @@ class HaBackupConfigData extends LitElement {
 
   @state() private _showAddons = false;
 
+  @state() private _showDbOption = true;
+
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
+    this._checkDbOption();
     if (isComponentLoaded(this.hass, "hassio")) {
       this._fetchAddons();
     }
@@ -96,6 +100,18 @@ class HaBackupConfigData extends LitElement {
     const { addons } = await fetchHassioAddonsInfo(this.hass);
     this._addons = addons;
     fireEvent(this, "backup-addons-fetched");
+  }
+
+  private async _checkDbOption() {
+    if (isComponentLoaded(this.hass, "recorder")) {
+      const info = await getRecorderInfo(this.hass.connection);
+      this._showDbOption = info.db_in_default_location;
+      if (!this._showDbOption && this.value?.include_database) {
+        this.value.include_database = false;
+      }
+    } else {
+      this._showDbOption = false;
+    }
   }
 
   private _hasLocalAddons(addons: BackupAddonItem[]): boolean {
@@ -179,24 +195,25 @@ class HaBackupConfigData extends LitElement {
           ></ha-switch>
         </ha-md-list-item>
 
-        <ha-md-list-item>
-          <ha-svg-icon slot="start" .path=${mdiChartBox}></ha-svg-icon>
-          <span slot="headline">
-            ${this.hass.localize("ui.panel.config.backup.data.history")}
-          </span>
-          <span slot="supporting-text">
-            ${this.hass.localize(
-              "ui.panel.config.backup.data.history_description"
-            )}
-          </span>
-          <ha-switch
-            id="database"
-            slot="end"
-            @change=${this._switchChanged}
-            .checked=${data.database}
-          ></ha-switch>
-        </ha-md-list-item>
-
+        ${this._showDbOption
+          ? html`<ha-md-list-item>
+              <ha-svg-icon slot="start" .path=${mdiChartBox}></ha-svg-icon>
+              <span slot="headline">
+                ${this.hass.localize("ui.panel.config.backup.data.history")}
+              </span>
+              <span slot="supporting-text">
+                ${this.hass.localize(
+                  "ui.panel.config.backup.data.history_description"
+                )}
+              </span>
+              <ha-switch
+                id="database"
+                slot="end"
+                @change=${this._switchChanged}
+                .checked=${data.database}
+              ></ha-switch>
+            </ha-md-list-item>`
+          : nothing}
         ${isHassio
           ? html`
               <ha-md-list-item>
@@ -378,8 +395,9 @@ class HaBackupConfigData extends LitElement {
     }
     @media all and (max-width: 450px) {
       ha-md-select {
-        min-width: 160px;
-        width: 160px;
+        min-width: 140px;
+        width: 140px;
+        --md-filled-field-content-space: 0;
       }
     }
   `;

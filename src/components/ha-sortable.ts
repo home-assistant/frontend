@@ -37,7 +37,7 @@ export class HaSortable extends LitElement {
   public disabled = false;
 
   @property({ type: Boolean, attribute: "no-style" })
-  public noStyle: boolean = false;
+  public noStyle = false;
 
   @property({ type: String, attribute: "draggable-selector" })
   public draggableSelector?: string;
@@ -56,13 +56,13 @@ export class HaSortable extends LitElement {
   public group?: string | SortableInstance.GroupOptions;
 
   @property({ type: Boolean, attribute: "invert-swap" })
-  public invertSwap: boolean = false;
+  public invertSwap = false;
 
   @property({ attribute: false })
   public options?: HaSortableOptions;
 
   @property({ type: Boolean })
-  public rollback: boolean = true;
+  public rollback = true;
 
   protected updated(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("disabled")) {

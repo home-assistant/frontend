@@ -1,4 +1,4 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { Supervisor } from "../../src/data/supervisor/supervisor";
@@ -39,15 +39,13 @@ class HassioPanel extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        --app-header-background-color: var(--sidebar-background-color);
-        --app-header-text-color: var(--sidebar-text-color);
-        --app-header-border-bottom: 1px solid var(--divider-color);
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      --app-header-background-color: var(--sidebar-background-color);
+      --app-header-text-color: var(--sidebar-text-color);
+      --app-header-border-bottom: 1px solid var(--divider-color);
+    }
+  `;
 }
 
 declare global {

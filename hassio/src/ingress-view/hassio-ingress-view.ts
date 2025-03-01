@@ -1,5 +1,5 @@
 import { mdiMenu } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../src/common/dom/fire_event";
@@ -325,51 +325,49 @@ class HassioIngressView extends LitElement {
     fireEvent(this, "hass-toggle-menu");
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      iframe {
-        display: block;
-        width: 100%;
-        height: 100%;
-        border: 0;
-      }
+  static styles = css`
+    iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
 
-      .header + iframe {
-        height: calc(100% - 40px);
-      }
+    .header + iframe {
+      height: calc(100% - 40px);
+    }
 
-      .header {
-        display: flex;
-        align-items: center;
-        font-size: 16px;
-        height: 40px;
-        padding: 0 16px;
-        pointer-events: none;
-        background-color: var(--app-header-background-color);
-        font-weight: 400;
-        color: var(--app-header-text-color, white);
-        border-bottom: var(--app-header-border-bottom, none);
-        box-sizing: border-box;
-        --mdc-icon-size: 20px;
-      }
+    .header {
+      display: flex;
+      align-items: center;
+      font-size: 16px;
+      height: 40px;
+      padding: 0 16px;
+      pointer-events: none;
+      background-color: var(--app-header-background-color);
+      font-weight: 400;
+      color: var(--app-header-text-color, white);
+      border-bottom: var(--app-header-border-bottom, none);
+      box-sizing: border-box;
+      --mdc-icon-size: 20px;
+    }
 
-      .main-title {
-        margin: var(--margin-title);
-        line-height: 20px;
-        flex-grow: 1;
-      }
+    .main-title {
+      margin: var(--margin-title);
+      line-height: 20px;
+      flex-grow: 1;
+    }
 
-      ha-icon-button {
-        pointer-events: auto;
-      }
+    ha-icon-button {
+      pointer-events: auto;
+    }
 
-      hass-subpage {
-        --app-header-background-color: var(--sidebar-background-color);
-        --app-header-text-color: var(--sidebar-text-color);
-        --app-header-border-bottom: 1px solid var(--divider-color);
-      }
-    `;
-  }
+    hass-subpage {
+      --app-header-background-color: var(--sidebar-background-color);
+      --app-header-text-color: var(--sidebar-text-color);
+      --app-header-border-bottom: 1px solid var(--divider-color);
+    }
+  `;
 }
 
 declare global {

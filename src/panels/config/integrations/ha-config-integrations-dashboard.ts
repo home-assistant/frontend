@@ -15,7 +15,6 @@ import {
 } from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
-import { stripDiacritics } from "../../../common/string/strip-diacritics";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
@@ -32,6 +31,7 @@ import { getConfigFlowInProgressCollection } from "../../../data/config_flow";
 import { fetchDiagnosticHandlers } from "../../../data/diagnostics";
 import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
+import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
 import type {
   IntegrationLogInfo,
   IntegrationManifest,
@@ -52,12 +52,13 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import type { ImprovDiscoveredDevice } from "../../../external_app/external_messaging";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage";
+import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
-import { getStripDiacriticsFn } from "../../../util/fuse";
 import { configSections } from "../ha-panel-config";
 import { isHelperDomain } from "../helpers/const";
 import "./ha-config-flow-card";
@@ -68,9 +69,6 @@ import "./ha-integration-card";
 import type { HaIntegrationCard } from "./ha-integration-card";
 import "./ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
-import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
-import type { ImprovDiscoveredDevice } from "../../../external_app/external_messaging";
-import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 
 export interface ConfigEntryExtended extends Omit<ConfigEntry, "entry_id"> {
   entry_id?: string;
@@ -109,8 +107,10 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
   @property({ attribute: false })
   public configEntriesInProgress?: DataEntryFlowProgressExtended[];
 
-  @state() private _improvDiscovered: Map<string, ImprovDiscoveredDevice> =
-    new Map();
+  @state() private _improvDiscovered = new Map<
+    string,
+    ImprovDiscoveredDevice
+  >();
 
   @state()
   private _entityRegistryEntries: EntityRegistryEntry[] = [];
@@ -134,9 +134,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
 
   @state() private _diagnosticHandlers?: Record<string, boolean>;
 
-  @state() private _logInfos?: {
-    [integration: string]: IntegrationLogInfo;
-  };
+  @state() private _logInfos?: Record<string, IntegrationLogInfo>;
 
   @query("search-input-outlined") private _searchInput!: HTMLElement;
 
@@ -152,13 +150,13 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     );
   }
 
-  public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
+  public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
     return [
       subscribeEntityRegistry(this.hass.connection, (entries) => {
         this._entityRegistryEntries = entries;
       }),
       subscribeLogInfo(this.hass.connection, (log_infos) => {
-        const logInfoLookup: { [integration: string]: IntegrationLogInfo } = {};
+        const logInfoLookup: Record<string, IntegrationLogInfo> = {};
         for (const log_info of log_infos) {
           logInfoLookup[log_info.domain] = log_info;
         }
@@ -209,6 +207,8 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
           supports_remove_device: false,
           supports_unload: false,
           supports_reconfigure: false,
+          supported_subentry_types: {},
+          num_subentries: 0,
           pref_disable_new_entities: false,
           pref_disable_polling: false,
           disabled_by: null,
@@ -304,12 +304,10 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
           isCaseSensitive: false,
           minMatchCharLength: Math.min(filter.length, 2),
           threshold: 0.2,
-          getFn: getStripDiacriticsFn,
+          ignoreDiacritics: true,
         };
         const fuse = new Fuse(inProgress, options);
-        filteredEntries = fuse
-          .search(stripDiacritics(filter))
-          .map((result) => result.item);
+        filteredEntries = fuse.search(filter).map((result) => result.item);
       } else {
         filteredEntries = inProgress;
       }
@@ -896,7 +894,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
         ),
         confirm: async () => {
           if (
-            (PROTOCOL_INTEGRATIONS as ReadonlyArray<string>).includes(
+            (PROTOCOL_INTEGRATIONS as readonly string[]).includes(
               integration.supported_by!
             )
           ) {

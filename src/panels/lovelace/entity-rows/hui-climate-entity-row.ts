@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-climate-state";
@@ -49,13 +49,11 @@ class HuiClimateEntityRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-climate-state {
-        text-align: right;
-      }
-    `;
-  }
+  static styles = css`
+    ha-climate-state {
+      text-align: right;
+    }
+  `;
 }
 
 declare global {

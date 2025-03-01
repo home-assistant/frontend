@@ -74,7 +74,7 @@ export class HuiDialogSelectDashboard extends LitElement {
         <ha-dialog-header slot="headline">
           <ha-icon-button
             slot="navigationIcon"
-            .label=${this.hass.localize("ui.dialogs.generic.close")}
+            .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
             @click=${this.closeDialog}
             .disabled=${this._saving}
@@ -161,7 +161,7 @@ export class HuiDialogSelectDashboard extends LitElement {
 
   private async _selectDashboard() {
     this._saving = true;
-    if (this._toUrlPath! === "lovelace") {
+    if (this._toUrlPath === "lovelace") {
       this._toUrlPath = null;
     }
     this._params!.dashboardSelectedCallback(this._toUrlPath!);

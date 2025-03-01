@@ -99,7 +99,12 @@ class MoreInfoSirenAdvancedControls extends LitElement {
                       this._stateObj.attributes.available_tones
                     ).map(
                       ([toneId, toneName]) => html`
-                        <ha-list-item .value=${toneId}
+                        <ha-list-item
+                          .value=${Array.isArray(
+                            this._stateObj!.attributes.available_tones
+                          )
+                            ? toneName
+                            : toneId}
                           >${toneName}</ha-list-item
                         >
                       `
@@ -179,7 +184,7 @@ class MoreInfoSirenAdvancedControls extends LitElement {
     await this.hass.callService("siren", "turn_on", {
       entity_id: this._stateObj!.entity_id,
       tone: this._tone,
-      volume: this._volume,
+      volume_level: this._volume,
       duration: this._duration,
     });
   }

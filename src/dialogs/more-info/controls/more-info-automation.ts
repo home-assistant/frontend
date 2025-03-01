@@ -1,6 +1,5 @@
 import "@material/mwc-button";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-relative-time";
@@ -45,25 +44,23 @@ class MoreInfoAutomation extends LitElement {
     triggerAutomationActions(this.hass, this.stateObj!.entity_id);
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .flex {
-        display: flex;
-        justify-content: space-between;
-      }
-      .actions {
-        margin: 8px 0;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-      hr {
-        border-color: var(--divider-color);
-        border-bottom: none;
-        margin: 16px 0;
-      }
-    `;
-  }
+  static styles = css`
+    .flex {
+      display: flex;
+      justify-content: space-between;
+    }
+    .actions {
+      margin: 8px 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    hr {
+      border-color: var(--divider-color);
+      border-bottom: none;
+      margin: 16px 0;
+    }
+  `;
 }
 
 declare global {

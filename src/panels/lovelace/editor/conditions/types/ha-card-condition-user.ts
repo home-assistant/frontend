@@ -105,16 +105,14 @@ export class HaCardConditionUser extends LitElement {
     fireEvent(this, "value-changed", { value: condition });
   }
 
-  static get styles() {
-    return css`
-      :host {
-        display: block;
-      }
-      mwc-list {
-        --mdc-list-vertical-padding: 0;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+    }
+    mwc-list {
+      --mdc-list-vertical-padding: 0;
+    }
+  `;
 }
 
 declare global {

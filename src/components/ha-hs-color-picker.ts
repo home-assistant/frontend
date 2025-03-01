@@ -379,49 +379,47 @@ class HaHsColorPicker extends LitElement {
     `;
   }
 
-  static get styles() {
-    return css`
-      :host {
-        display: block;
-        outline: none;
-      }
-      .container {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        display: flex;
-      }
-      canvas {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        border-radius: 50%;
-        cursor: pointer;
-      }
-      svg {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-      }
-      circle {
-        fill: black;
-        stroke: white;
-        stroke-width: 2;
-        filter: url(#marker-shadow);
-      }
-      .container:not(.pressed) circle {
-        transition:
-          transform 100ms ease-in-out,
-          fill 100ms ease-in-out;
-      }
-      .container:not(.pressed) .cursor {
-        transition: transform 200ms ease-in-out;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+      outline: none;
+    }
+    .container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+    }
+    canvas {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    circle {
+      fill: black;
+      stroke: white;
+      stroke-width: 2;
+      filter: url(#marker-shadow);
+    }
+    .container:not(.pressed) circle {
+      transition:
+        transform 100ms ease-in-out,
+        fill 100ms ease-in-out;
+    }
+    .container:not(.pressed) .cursor {
+      transition: transform 200ms ease-in-out;
+    }
+  `;
 }
 
 declare global {

@@ -1,4 +1,4 @@
-import { mdiDotsVertical, mdiHarddisk } from "@mdi/js";
+import { mdiDotsVertical, mdiHarddisk, mdiOpenInNew } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -16,7 +16,7 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-alert";
 import "../../../components/ha-password-field";
 import "../../../components/ha-svg-icon";
-import type { BackupConfig } from "../../../data/backup";
+import type { BackupAgent, BackupConfig } from "../../../data/backup";
 import { updateBackupConfig } from "../../../data/backup";
 import type { CloudStatus } from "../../../data/cloud";
 import "../../../layouts/hass-subpage";
@@ -28,6 +28,7 @@ import "./components/config/ha-backup-config-encryption-key";
 import "./components/config/ha-backup-config-schedule";
 import type { BackupConfigSchedule } from "./components/config/ha-backup-config-schedule";
 import { showLocalBackupLocationDialog } from "./dialogs/show-dialog-local-backup-location";
+import { documentationUrl } from "../../../util/documentation-url";
 
 @customElement("ha-config-backup-settings")
 class HaConfigBackupSettings extends LitElement {
@@ -39,6 +40,8 @@ class HaConfigBackupSettings extends LitElement {
 
   @property({ attribute: false }) public config?: BackupConfig;
 
+  @property({ attribute: false }) public agents: BackupAgent[] = [];
+
   @state() private _config?: BackupConfig;
 
   protected willUpdate(changedProperties: PropertyValues): void {
@@ -48,9 +51,11 @@ class HaConfigBackupSettings extends LitElement {
     }
   }
 
-  protected firstUpdated(_changedProperties: PropertyValues): void {
-    super.firstUpdated(_changedProperties);
+  public connectedCallback(): void {
+    super.connectedCallback();
     this._scrollToSection();
+    // Update config the page is displayed (e.g. when coming back from a location detail page)
+    this._config = this.config;
   }
 
   private async _scrollToSection() {
@@ -94,6 +99,8 @@ class HaConfigBackupSettings extends LitElement {
       return nothing;
     }
 
+    const supervisor = isComponentLoaded(this.hass, "hassio");
+
     return html`
       <hass-subpage
         back-path="/config/backup"
@@ -101,7 +108,7 @@ class HaConfigBackupSettings extends LitElement {
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.backup.settings.header")}
       >
-        ${isComponentLoaded(this.hass, "hassio")
+        ${supervisor
           ? html`
               <ha-button-menu slot="toolbar-icon">
                 <ha-icon-button
@@ -177,8 +184,11 @@ class HaConfigBackupSettings extends LitElement {
               <ha-backup-config-agents
                 .hass=${this.hass}
                 .value=${this._config.create_backup.agent_ids}
+                .agentsConfig=${this._config.agents}
                 .cloudStatus=${this.cloudStatus}
+                .agents=${this.agents}
                 @value-changed=${this._agentsConfigChanged}
+                show-settings
               ></ha-backup-config-agents>
               ${!this._config.create_backup.agent_ids.length
                 ? html`
@@ -194,6 +204,29 @@ class HaConfigBackupSettings extends LitElement {
                     </ha-alert>
                     <br />
                   `
+                : nothing}
+            </div>
+            <div class="card-actions">
+              <a
+                href=${documentationUrl(this.hass, "/integrations/#backup")}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <ha-button>
+                  <ha-svg-icon slot="icon" .path=${mdiOpenInNew}></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.panel.config.backup.settings.locations.more_locations"
+                  )}
+                </ha-button>
+              </a>
+              ${supervisor
+                ? html`<a href="/config/storage">
+                    <ha-button>
+                      ${this.hass.localize(
+                        "ui.panel.config.backup.settings.locations.manage_network_storage"
+                      )}
+                    </ha-button>
+                  </a>`
                 : nothing}
             </div>
           </ha-card>
@@ -308,7 +341,7 @@ class HaConfigBackupSettings extends LitElement {
         password: this._config!.create_backup.password,
       },
       retention: this._config!.retention,
-      schedule: this._config!.schedule.state,
+      schedule: this._config!.schedule,
     });
     fireEvent(this, "ha-refresh-backup-config");
   }
@@ -334,6 +367,9 @@ class HaConfigBackupSettings extends LitElement {
     }
     .card-content {
       padding-bottom: 0;
+    }
+    a {
+      text-decoration: none;
     }
   `;
 }

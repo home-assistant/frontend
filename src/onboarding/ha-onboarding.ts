@@ -41,6 +41,7 @@ import "./onboarding-analytics";
 import "./onboarding-create-user";
 import "./onboarding-loading";
 import "./onboarding-welcome";
+import "./onboarding-restore-backup";
 import "./onboarding-welcome-links";
 import { makeDialogManager } from "../dialogs/make-dialog-manager";
 import { navigate } from "../common/navigate";
@@ -157,8 +158,9 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   private _renderStep() {
     if (this._restoring) {
       return html`<onboarding-restore-backup
-        .hass=${this.hass}
         .localize=${this.localize}
+        .supervisor=${this._supervisor ?? false}
+        .language=${this.language}
       >
       </onboarding-restore-backup>`;
     }
@@ -166,8 +168,6 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     if (this._init) {
       return html`<onboarding-welcome
         .localize=${this.localize}
-        .language=${this.language}
-        .supervisor=${this._supervisor}
       ></onboarding-welcome>`;
     }
 
@@ -236,7 +236,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       }
     }
     if (changedProps.has("language")) {
-      document.querySelector("html")!.setAttribute("lang", this.language!);
+      document.querySelector("html")!.setAttribute("lang", this.language);
     }
     if (changedProps.has("hass")) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
@@ -272,10 +272,6 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         "Home Assistant OS",
         "Home Assistant Supervised",
       ].includes(response.installation_type);
-      if (this._supervisor) {
-        // Only load if we have supervisor
-        import("./onboarding-restore-backup");
-      }
     } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error(
@@ -454,7 +450,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       subscribeOne(conn, subscribeUser),
     ]);
     this.initializeHass(auth, conn);
-    if (this.language && this.language !== this.hass!.language) {
+    if (this.language !== this.hass!.language) {
       this._updateHass({
         locale: { ...this.hass!.locale, language: this.language },
         language: this.language,

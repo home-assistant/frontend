@@ -61,12 +61,12 @@ export interface MoreInfoDialogParams {
 
 type View = "info" | "history" | "settings" | "related";
 
-type ChildView = {
+interface ChildView {
   viewTag: string;
   viewTitle?: string;
   viewImport?: () => Promise<unknown>;
   viewParams?: any;
-};
+}
 
 declare global {
   interface HASSDomEvents {
@@ -96,6 +96,8 @@ export class MoreInfoDialog extends LitElement {
   @state() private _entry?: ExtEntityRegistryEntry | null;
 
   @state() private _infoEditMode = false;
+
+  @state() private _isEscapeEnabled = true;
 
   @state() private _sensorNumericDeviceClasses?: string[] = [];
 
@@ -132,6 +134,9 @@ export class MoreInfoDialog extends LitElement {
     this._childView = undefined;
     this._infoEditMode = false;
     this._initialView = DEFAULT_VIEW;
+    this._isEscapeEnabled = true;
+    window.removeEventListener("dialog-closed", this._enableEscapeKeyClose);
+    window.removeEventListener("show-dialog", this._disableEscapeKeyClose);
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -290,6 +295,8 @@ export class MoreInfoDialog extends LitElement {
       <ha-dialog
         open
         @closed=${this.closeDialog}
+        @opened=${this._handleOpened}
+        .escapeKeyAction=${this._isEscapeEnabled ? undefined : ""}
         .heading=${title}
         hideActions
         flexContent
@@ -300,9 +307,7 @@ export class MoreInfoDialog extends LitElement {
                 <ha-icon-button
                   slot="navigationIcon"
                   dialogAction="cancel"
-                  .label=${this.hass.localize(
-                    "ui.dialogs.more_info_control.dismiss"
-                  )}
+                  .label=${this.hass.localize("ui.common.close")}
                   .path=${mdiClose}
                 ></ha-icon-button>
               `
@@ -539,6 +544,19 @@ export class MoreInfoDialog extends LitElement {
   private _enlarge() {
     this.large = !this.large;
   }
+
+  private _handleOpened() {
+    window.addEventListener("dialog-closed", this._enableEscapeKeyClose);
+    window.addEventListener("show-dialog", this._disableEscapeKeyClose);
+  }
+
+  private _enableEscapeKeyClose = () => {
+    this._isEscapeEnabled = true;
+  };
+
+  private _disableEscapeKeyClose = () => {
+    this._isEscapeEnabled = false;
+  };
 
   static get styles() {
     return [

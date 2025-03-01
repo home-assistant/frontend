@@ -1,5 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { debounce } from "../common/util/debounce";
@@ -88,30 +88,28 @@ class StateCardInputNumber extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: flex;
-      }
-      .flex {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        flex-grow: 2;
-      }
-      .state {
-        min-width: 45px;
-        text-align: end;
-      }
-      ha-textfield {
-        text-align: end;
-      }
-      ha-slider {
-        width: 100%;
-        max-width: 200px;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: flex;
+    }
+    .flex {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-grow: 2;
+    }
+    .state {
+      min-width: 45px;
+      text-align: end;
+    }
+    ha-textfield {
+      text-align: end;
+    }
+    ha-slider {
+      width: 100%;
+      max-width: 200px;
+    }
+  `;
 
   private async _initialLoad(): Promise<void> {
     this._loaded = true;

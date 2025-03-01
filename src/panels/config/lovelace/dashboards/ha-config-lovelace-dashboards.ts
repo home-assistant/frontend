@@ -1,4 +1,3 @@
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
   mdiCheck,
   mdiCheckCircleOutline,
@@ -24,6 +23,7 @@ import "../../../../components/ha-fab";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-tooltip";
 import type { LovelacePanelConfig } from "../../../../data/lovelace";
 import type { LovelaceRawConfig } from "../../../../data/lovelace/config/types";
 import {
@@ -79,7 +79,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
     state: true,
     subscribe: false,
   })
-  private _filter: string = "";
+  private _filter = "";
 
   @storage({
     key: "lovelace-dashboards-table-sort",
@@ -153,17 +153,19 @@ export class HaConfigLovelaceDashboards extends LitElement {
                 ${dashboard.title}
                 ${dashboard.default
                   ? html`
-                      <ha-svg-icon
-                        style="padding-left: 10px; padding-inline-start: 10px; direction: var(--direction);"
-                        .path=${mdiCheckCircleOutline}
-                      ></ha-svg-icon>
-                      <simple-tooltip animation-delay="0">
-                        ${this.hass.localize(
+                      <ha-tooltip
+                        .content=${this.hass.localize(
                           `ui.panel.config.lovelace.dashboards.default_dashboard`
                         )}
-                      </simple-tooltip>
+                        placement="right"
+                      >
+                        <ha-svg-icon
+                          style="padding-left: 10px; padding-inline-start: 10px; direction: var(--direction);"
+                          .path=${mdiCheckCircleOutline}
+                        ></ha-svg-icon>
+                      </ha-tooltip>
                     `
-                  : ""}
+                  : nothing}
               `,
         },
       };

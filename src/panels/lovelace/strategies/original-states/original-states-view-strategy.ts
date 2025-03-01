@@ -8,12 +8,12 @@ import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import { generateDefaultViewConfig } from "../../common/generate-lovelace-config";
 
-export type OriginalStatesViewStrategyConfig = {
+export interface OriginalStatesViewStrategyConfig {
   type: "original-states";
   areas?: AreaFilterValue;
   hide_entities_without_area?: boolean;
   hide_energy?: boolean;
-};
+}
 
 @customElement("original-states-view-strategy")
 export class OriginalStatesViewStrategy extends ReactiveElement {

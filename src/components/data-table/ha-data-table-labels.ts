@@ -98,31 +98,29 @@ class HaDataTableLabels extends LitElement {
     }
   }
 
-  static get styles() {
-    return css`
-      :host {
-        display: block;
-        flex-grow: 1;
-        margin-top: 4px;
-        height: 22px;
-      }
-      ha-chip-set {
-        position: fixed;
-        flex-wrap: nowrap;
-      }
-      ha-label {
-        --ha-label-background-color: var(--color, var(--grey-color));
-        --ha-label-background-opacity: 0.5;
-      }
-      ha-button-menu {
-        border-radius: 10px;
-      }
-      .plus {
-        --ha-label-background-color: transparent;
-        border: 1px solid var(--divider-color);
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+      flex-grow: 1;
+      margin-top: 4px;
+      height: 22px;
+    }
+    ha-chip-set {
+      position: fixed;
+      flex-wrap: nowrap;
+    }
+    ha-label {
+      --ha-label-background-color: var(--color, var(--grey-color));
+      --ha-label-background-opacity: 0.5;
+    }
+    ha-button-menu {
+      border-radius: 10px;
+    }
+    .plus {
+      --ha-label-background-color: transparent;
+      border: 1px solid var(--divider-color);
+    }
+  `;
 }
 
 declare global {

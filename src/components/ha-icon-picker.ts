@@ -14,16 +14,16 @@ import "./ha-combo-box";
 import "./ha-list-item";
 import "./ha-icon";
 
-type IconItem = {
+interface IconItem {
   icon: string;
   parts: Set<string>;
   keywords: string[];
-};
+}
 
-type RankedIcon = {
+interface RankedIcon {
   icon: string;
   rank: number;
-};
+}
 
 let ICONS: IconItem[] = [];
 let ICONS_LOADED = false;
@@ -197,20 +197,18 @@ export class HaIconPicker extends LitElement {
     return this.value || "";
   }
 
-  static get styles() {
-    return css`
-      *[slot="icon"] {
-        color: var(--primary-text-color);
-        position: relative;
-        bottom: 2px;
-      }
-      *[slot="prefix"] {
-        margin-right: 8px;
-        margin-inline-end: 8px;
-        margin-inline-start: initial;
-      }
-    `;
-  }
+  static styles = css`
+    *[slot="icon"] {
+      color: var(--primary-text-color);
+      position: relative;
+      bottom: 2px;
+    }
+    *[slot="prefix"] {
+      margin-right: 8px;
+      margin-inline-end: 8px;
+      margin-inline-start: initial;
+    }
+  `;
 }
 
 declare global {
