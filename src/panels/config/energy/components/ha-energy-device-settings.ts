@@ -197,11 +197,11 @@ export class EnergyDeviceSettings extends LitElement {
         ),
       };
       newPrefs.device_consumption.forEach((d, idx) => {
-        if (d.parent_stat === deviceToDelete.stat_consumption) {
+        if (d.included_in_stat === deviceToDelete.stat_consumption) {
           newPrefs.device_consumption[idx] = {
             ...newPrefs.device_consumption[idx],
           };
-          delete newPrefs.device_consumption[idx].parent_stat;
+          delete newPrefs.device_consumption[idx].included_in_stat;
         }
       });
       await this._savePreferences(newPrefs);

@@ -66,7 +66,7 @@ export class DialogEnergyDeviceSettings
     const devices = this._params.device_consumptions;
     function getChildren(stat) {
       devices.forEach((d) => {
-        if (d.parent_stat === stat) {
+        if (d.included_in_stat === stat) {
           children.push(d.stat_consumption);
           getChildren(d.stat_consumption);
         }
@@ -151,7 +151,7 @@ export class DialogEnergyDeviceSettings
           .label=${this.hass.localize(
             "ui.panel.config.energy.device_consumption.dialog.parent_device"
           )}
-          .value=${this._device?.parent_stat || ""}
+          .value=${this._device?.included_in_stat || ""}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.device_consumption.dialog.parent_device_helper"
           )}
@@ -213,10 +213,10 @@ export class DialogEnergyDeviceSettings
   private _parentSelected(ev) {
     const newDevice = {
       ...this._device!,
-      parent_stat: ev.target!.value,
+      included_in_stat: ev.target!.value,
     } as DeviceConsumptionEnergyPreference;
-    if (!newDevice.parent_stat) {
-      delete newDevice.parent_stat;
+    if (!newDevice.included_in_stat) {
+      delete newDevice.included_in_stat;
     }
     this._device = newDevice;
   }

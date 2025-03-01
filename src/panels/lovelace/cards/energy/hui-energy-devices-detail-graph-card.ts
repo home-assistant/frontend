@@ -220,9 +220,9 @@ export class HuiEnergyDevicesDetailGraphCard
 
     const childMap: Record<string, string[]> = {};
     devices.forEach((d) => {
-      if (d.parent_stat) {
-        childMap[d.parent_stat] = childMap[d.parent_stat] || [];
-        childMap[d.parent_stat].push(d.stat_consumption);
+      if (d.included_in_stat) {
+        childMap[d.included_in_stat] = childMap[d.included_in_stat] || [];
+        childMap[d.included_in_stat].push(d.stat_consumption);
       }
     });
 
@@ -246,10 +246,10 @@ export class HuiEnergyDevicesDetailGraphCard
     // Recursively build an ordered list of devices, where each device has all its children immediately following it.
     function orderDevices(parent?: string) {
       sorted_devices.forEach((device) => {
-        const parent_stat = energyData.prefs.device_consumption.find(
+        const included_in_stat = energyData.prefs.device_consumption.find(
           (prf) => prf.stat_consumption === device
-        )?.parent_stat;
-        if ((!parent && !parent_stat) || parent === parent_stat) {
+        )?.included_in_stat;
+        if ((!parent && !included_in_stat) || parent === included_in_stat) {
           ordered_devices.push(device);
           orderDevices(device);
         }
@@ -352,7 +352,8 @@ export class HuiEnergyDevicesDetailGraphCard
 
       // If a child is hidden, don't count it in the total, because the parent device will grow to encompass that consumption.
       const hiddenChild =
-        stat.parent_stat && this._hiddenStats.includes(stat.stat_consumption);
+        stat.included_in_stat &&
+        this._hiddenStats.includes(stat.stat_consumption);
       if (!hiddenChild) {
         device.data.forEach((datapoint) => {
           totalDeviceConsumption[datapoint[compare ? 2 : 0]] =
