@@ -116,6 +116,15 @@ export class BluetoothConfigDashboard extends LitElement {
             <div class="card-content">
               ${this._renderConnectionAllocations()}
             </div>
+            <div class="card-actions">
+              <a href="/config/bluetooth/connection-monitor"
+                ><mwc-button>
+                  ${this.hass.localize(
+                    "ui.panel.config.bluetooth.connection_monitor"
+                  )}
+                </mwc-button></a
+              >
+            </div>
           </ha-card>
         </div>
       </hass-subpage>
