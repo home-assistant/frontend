@@ -188,7 +188,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     items: TodoItem[],
     daysToShow?: number | undefined
   ): TodoItem[] {
-    const ignoreEndDate = daysToShow === undefined || daysToShow === 0;
+    const ignoreEndDate = daysToShow === undefined;
     if (ignoreEndDate) return items;
 
     const daysToShowNum = daysToShow ?? Infinity;

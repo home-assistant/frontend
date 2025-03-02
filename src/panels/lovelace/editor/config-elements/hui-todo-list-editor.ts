@@ -60,7 +60,7 @@ export class HuiTodoListEditor
         { name: "theme", selector: { theme: {} } },
         {
           name: "days_to_show",
-          selector: { number: { min: 0, mode: "box" } },
+          selector: { number: { mode: "box" } },
         },
         { name: "hide_completed", selector: { boolean: {} } },
         {
