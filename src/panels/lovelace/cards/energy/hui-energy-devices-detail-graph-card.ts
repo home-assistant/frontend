@@ -442,7 +442,9 @@ export class HuiEnergyDevicesDetailGraphCard
     );
 
     devices.forEach((source, idx) => {
-      const order = sorted_devices.indexOf(source.stat_consumption);
+      const order = sorted_devices
+        .filter((d) => !this._hiddenStatIds.includes(d))
+        .indexOf(source.stat_consumption);
       if (this._config?.max_devices && order >= this._config.max_devices) {
         // eslint-disable-next-line no-console
         console.warn(
@@ -501,9 +503,10 @@ export class HuiEnergyDevicesDetailGraphCard
         type: "bar",
         cursor: "default",
         // add order to id, otherwise echarts refuses to reorder them
+        // FIXME - I think I need to update order by skipping the hidden sets, or else it doesn't do reordering
         id: compare
-          ? `compare-${source.stat_consumption}-${order}`
-          : `${source.stat_consumption}-${order}`,
+          ? `compare-${source.stat_consumption}#${order}`
+          : `${source.stat_consumption}#${order}`,
         name:
           source.name ||
           getStatisticLabel(
@@ -531,7 +534,7 @@ export class HuiEnergyDevicesDetailGraphCard
   private _getStatIdFromId(id: string): string {
     return id
       .replace(/^compare-/, "") // Remove compare- prefix
-      .replace(/-\d+$/, ""); // Remove numeric suffix
+      .replace(/#-?\d+$/, ""); // Remove numeric suffix
   }
 
   static styles = css`
