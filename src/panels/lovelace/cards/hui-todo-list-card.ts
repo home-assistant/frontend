@@ -160,7 +160,10 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
       items
         ? this._sortItems(
-            items.filter((item) => item.status === TodoItemStatus.Completed),
+            this._filterItemsByDueDate(
+              items.filter((item) => item.status === TodoItemStatus.Completed),
+              this._config?.days_to_show
+            ),
             sort
           )
         : []
@@ -170,11 +173,35 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
       items
         ? this._sortItems(
-            items.filter((item) => item.status === TodoItemStatus.NeedsAction),
+            this._filterItemsByDueDate(
+              items.filter(
+                (item) => item.status === TodoItemStatus.NeedsAction
+              ),
+              this._config?.days_to_show
+            ),
             sort
           )
         : []
   );
+
+  private _filterItemsByDueDate(
+    items: TodoItem[],
+    daysToShow?: number | undefined
+  ): TodoItem[] {
+    const ignoreEndDate = daysToShow === undefined || daysToShow === 0;
+    if (ignoreEndDate) return items;
+
+    const daysToShowNum = daysToShow ?? Infinity;
+    const now = new Date();
+    const endDate = new Date(now);
+
+    endDate.setDate(now.getDate() + daysToShowNum);
+
+    return items.filter((item) => {
+      const dueDate = this._getDueDate(item);
+      return dueDate && dueDate <= endDate;
+    });
+  }
 
   public willUpdate(
     changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
