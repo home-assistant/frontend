@@ -10,6 +10,7 @@ import type {
   XAXisOption,
   YAXisOption,
 } from "echarts/types/dist/shared";
+import type { BarSeriesOption } from "echarts/charts";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -32,6 +33,10 @@ export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 const LEGEND_OVERFLOW_LIMIT = 10;
 const LEGEND_OVERFLOW_LIMIT_MOBILE = 6;
 const DOUBLE_TAP_TIME = 300;
+
+export interface BarSeriesOptionExt extends BarSeriesOption {
+  entityId: string;
+}
 
 @customElement("ha-chart-base")
 export class HaChartBase extends LitElement {
@@ -316,6 +321,15 @@ export class HaChartBase extends LitElement {
           }
         });
       }
+
+      Object.entries(this.options?.legend?.selected || {}).forEach(
+        ([stat, selected]) => {
+          if (selected === false) {
+            this._hiddenDatasets.add(stat);
+          }
+        }
+      );
+
       this.chart.setOption({
         ...this._createOptions(),
         series: this._getSeries(),
