@@ -1,4 +1,4 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -129,14 +129,12 @@ export class HuiEntityPickerTable extends LitElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-data-table {
-        --data-table-border-width: 0;
-        height: 100%;
-      }
-    `;
-  }
+  static styles = css`
+    ha-data-table {
+      --data-table-border-width: 0;
+      height: 100%;
+    }
+  `;
 }
 
 declare global {

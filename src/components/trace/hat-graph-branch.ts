@@ -1,4 +1,4 @@
-import { css, html, LitElement, svg } from "lit";
+import { css, html, LitElement, nothing, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { BRANCH_HEIGHT, SPACING } from "./hat-graph-const";
@@ -41,8 +41,8 @@ export class HatGraphBranch extends LitElement {
       branches.push({
         x: width / 2 + total_width,
         height,
-        start: c.hasAttribute("graphStart"),
-        end: c.hasAttribute("graphEnd"),
+        start: c.hasAttribute("graph-start"),
+        end: c.hasAttribute("graph-end"),
         track: c.hasAttribute("track"),
       });
       total_width += width;
@@ -65,11 +65,8 @@ export class HatGraphBranch extends LitElement {
     return html`
       <slot name="head"></slot>
       ${!this.start
-        ? svg`
-            <svg
-              id="top"
-              width="${this._totalWidth}"
-            >
+        ? html`
+            <svg id="top" width=${this._totalWidth}>
               ${this._branches.map((branch) =>
                 branch.start
                   ? ""
@@ -86,7 +83,7 @@ export class HatGraphBranch extends LitElement {
               )}
             </svg>
           `
-        : ""}
+        : nothing}
       <div id="branches">
         <svg id="lines" width=${this._totalWidth} height=${this._maxHeight}>
           ${this._branches.map((branch) => {
@@ -107,11 +104,8 @@ export class HatGraphBranch extends LitElement {
       </div>
 
       ${!this.short
-        ? svg`
-            <svg
-              id="bottom"
-              width="${this._totalWidth}"
-            >
+        ? html`
+            <svg id="bottom" width=${this._totalWidth}>
               ${this._branches.map((branch) => {
                 if (branch.end) return "";
                 return svg`
@@ -128,55 +122,53 @@ export class HatGraphBranch extends LitElement {
               })}
             </svg>
           `
-        : ""}
+        : nothing}
     `;
   }
 
-  static get styles() {
-    return css`
-      :host {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      :host(:focus) {
-        outline: none;
-      }
-      #branches {
-        position: relative;
-        display: flex;
-        flex-direction: row;
-        align-items: start;
-      }
-      ::slotted(*) {
-        z-index: 1;
-      }
-      ::slotted([slot="head"]) {
-        margin-bottom: calc(var(--hat-graph-branch-height) / -2);
-      }
-      #lines {
-        position: absolute;
-      }
-      #top {
-        height: var(--hat-graph-branch-height);
-      }
-      #bottom {
-        height: calc(var(--hat-graph-branch-height) + var(--hat-graph-spacing));
-      }
-      path {
-        stroke: var(--stroke-clr);
-        stroke-width: 2;
-        fill: none;
-      }
-      path.track {
-        stroke: var(--track-clr);
-      }
-      :host([disabled]) path {
-        stroke: var(--disabled-clr);
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    :host(:focus) {
+      outline: none;
+    }
+    #branches {
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      align-items: start;
+    }
+    ::slotted(*) {
+      z-index: 1;
+    }
+    ::slotted([slot="head"]) {
+      margin-bottom: calc(var(--hat-graph-branch-height) / -2);
+    }
+    #lines {
+      position: absolute;
+    }
+    #top {
+      height: var(--hat-graph-branch-height);
+    }
+    #bottom {
+      height: calc(var(--hat-graph-branch-height) + var(--hat-graph-spacing));
+    }
+    path {
+      stroke: var(--stroke-clr);
+      stroke-width: 2;
+      fill: none;
+    }
+    path.track {
+      stroke: var(--track-clr);
+    }
+    :host([disabled]) path {
+      stroke: var(--disabled-clr);
+    }
+  `;
 }
 
 declare global {

@@ -8,16 +8,16 @@ import {
   mdiUpload,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../../common/navigate";
-import { capitalizeFirstLetter } from "../../../common/string/capitalize-first-letter";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type {
   DataTableColumnContainer,
@@ -27,6 +27,7 @@ import type {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-circular-progress";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-states";
 import "../../../components/ha-icon";
@@ -34,15 +35,20 @@ import "../../../components/ha-icon-next";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
-import { getSignedPath } from "../../../data/auth";
-import type { BackupConfig, BackupContent } from "../../../data/backup";
+import type {
+  BackupAgent,
+  BackupConfig,
+  BackupContent,
+} from "../../../data/backup";
 import {
+  compareAgents,
   computeBackupAgentName,
+  computeBackupSize,
+  computeBackupType,
   deleteBackup,
   generateBackup,
   generateBackupWithAutomaticSettings,
-  getBackupDownloadUrl,
-  getPreferredAgentForDownload,
+  getBackupTypes,
   isLocalAgent,
   isNetworkMountAgent,
 } from "../../../data/backup";
@@ -61,18 +67,16 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { bytesToString } from "../../../util/bytes-to-string";
-import { fileDownload } from "../../../util/file_download";
 import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
 import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
+import { downloadBackup } from "./helper/download_backup";
 
 interface BackupRow extends DataTableRowData, BackupContent {
   formatted_type: string;
+  size: number;
+  agent_ids: string[];
 }
-
-type BackupType = "automatic" | "manual" | "imported";
-
-const TYPE_ORDER: Array<BackupType> = ["automatic", "manual", "imported"];
 
 @customElement("ha-config-backup-backups")
 class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
@@ -89,6 +93,8 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public backups: BackupContent[] = [];
 
   @property({ attribute: false }) public config?: BackupConfig;
+
+  @property({ attribute: false }) public agents: BackupAgent[] = [];
 
   @state() private _selected: string[] = [];
 
@@ -135,7 +141,10 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   };
 
   private _columns = memoizeOne(
-    (localize: LocalizeFunc): DataTableColumnContainer<BackupRow> => ({
+    (
+      localize: LocalizeFunc,
+      maxDisplayedAgents: number
+    ): DataTableColumnContainer<BackupRow> => ({
       name: {
         title: localize("ui.panel.config.backup.name"),
         main: true,
@@ -158,62 +167,83 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
           relativeTime(new Date(backup.date), this.hass.locale),
       },
       formatted_type: {
-        title: "Type",
+        title: localize("ui.panel.config.backup.backup_type"),
         filterable: true,
         sortable: true,
         groupable: true,
       },
       locations: {
-        title: "Locations",
+        title: localize("ui.panel.config.backup.locations"),
         showNarrow: true,
-        minWidth: "60px",
-        template: (backup) => html`
-          <div style="display: flex; gap: 4px;">
-            ${(backup.agent_ids || []).map((agentId) => {
-              const name = computeBackupAgentName(
-                this.hass.localize,
-                agentId,
-                backup.agent_ids
-              );
-              if (isLocalAgent(agentId)) {
+        // 24 icon size, 4 gap, 16 left and right padding
+        minWidth: `${maxDisplayedAgents * 24 + (maxDisplayedAgents - 1) * 4 + 32}px`,
+        template: (backup) => {
+          const agentIds = backup.agent_ids;
+          const displayedAgentIds =
+            agentIds.length > maxDisplayedAgents
+              ? [...agentIds].splice(0, maxDisplayedAgents - 1)
+              : agentIds;
+          const agentsMore = Math.max(
+            agentIds.length - displayedAgentIds.length,
+            0
+          );
+          return html`
+            <div style="display: flex; gap: 4px;">
+              ${displayedAgentIds.map((agentId) => {
+                const name = computeBackupAgentName(
+                  this.hass.localize,
+                  agentId,
+                  this.agents
+                );
+                if (isLocalAgent(agentId)) {
+                  return html`
+                    <ha-svg-icon
+                      .path=${mdiHarddisk}
+                      title=${name}
+                      style="flex-shrink: 0;"
+                    ></ha-svg-icon>
+                  `;
+                }
+                if (isNetworkMountAgent(agentId)) {
+                  return html`
+                    <ha-svg-icon
+                      .path=${mdiNas}
+                      title=${name}
+                      style="flex-shrink: 0;"
+                    ></ha-svg-icon>
+                  `;
+                }
+                const domain = computeDomain(agentId);
                 return html`
-                  <ha-svg-icon
-                    .path=${mdiHarddisk}
+                  <img
                     title=${name}
+                    .src=${brandsUrl({
+                      domain,
+                      type: "icon",
+                      useFallback: true,
+                      darkOptimized: this.hass.themes?.darkMode,
+                    })}
+                    height="24"
+                    crossorigin="anonymous"
+                    referrerpolicy="no-referrer"
+                    alt=${name}
+                    slot="graphic"
                     style="flex-shrink: 0;"
-                  ></ha-svg-icon>
+                  />
                 `;
-              }
-              if (isNetworkMountAgent(agentId)) {
-                return html`
-                  <ha-svg-icon
-                    .path=${mdiNas}
-                    title=${name}
-                    style="flex-shrink: 0;"
-                  ></ha-svg-icon>
-                `;
-              }
-              const domain = computeDomain(agentId);
-              return html`
-                <img
-                  title=${name}
-                  .src=${brandsUrl({
-                    domain,
-                    type: "icon",
-                    useFallback: true,
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
-                  height="24"
-                  crossorigin="anonymous"
-                  referrerpolicy="no-referrer"
-                  alt=${name}
-                  slot="graphic"
-                  style="flex-shrink: 0;"
-                />
-              `;
-            })}
-          </div>
-        `,
+              })}
+              ${agentsMore
+                ? html`
+                    <span
+                      style="display: flex; align-items: center; font-size: 14px;"
+                    >
+                      +${agentsMore}
+                    </span>
+                  `
+                : nothing}
+            </div>
+          `;
+        },
       },
       actions: {
         title: "",
@@ -246,10 +276,17 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     })
   );
 
-  private _groupOrder = memoizeOne((activeGrouping: string | undefined) =>
-    activeGrouping === "formatted_type"
-      ? TYPE_ORDER.map((type) => this._formatBackupType(type))
-      : undefined
+  private _groupOrder = memoizeOne(
+    (
+      activeGrouping: string | undefined,
+      localize: LocalizeFunc,
+      isHassio: boolean
+    ) =>
+      activeGrouping === "formatted_type"
+        ? getBackupTypes(isHassio).map((type) =>
+            localize(`ui.panel.config.backup.type.${type}`)
+          )
+        : undefined
   );
 
   private _handleGroupingChanged(ev: CustomEvent) {
@@ -266,45 +303,59 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     this._selected = ev.detail.value;
   }
 
-  private _formatBackupType(type: BackupType): string {
-    // Todo translate
-    return capitalizeFirstLetter(type);
-  }
-
   private _data = memoizeOne(
     (
       backups: BackupContent[],
-      filters: DataTableFiltersValues
+      filters: DataTableFiltersValues,
+      localize: LocalizeFunc,
+      isHassio: boolean
     ): BackupRow[] => {
       const typeFilter = filters["ha-filter-states"] as string[] | undefined;
       let filteredBackups = backups;
       if (typeFilter?.length) {
-        filteredBackups = filteredBackups.filter(
-          (backup) =>
-            (backup.with_automatic_settings &&
-              typeFilter.includes("automatic")) ||
-            (!backup.with_automatic_settings && typeFilter.includes("manual"))
-        );
+        filteredBackups = filteredBackups.filter((backup) => {
+          const type = computeBackupType(backup, isHassio);
+          return typeFilter.includes(type);
+        });
       }
-      return filteredBackups.map((backup) => ({
-        ...backup,
-        formatted_type: this._formatBackupType(
-          backup.with_automatic_settings ? "automatic" : "manual"
-        ),
-      }));
+      return filteredBackups.map((backup) => {
+        const type = computeBackupType(backup, isHassio);
+        const agentIds = Object.keys(backup.agents);
+        return {
+          ...backup,
+          size: computeBackupSize(backup),
+          agent_ids: agentIds.sort(compareAgents),
+          formatted_type: localize(`ui.panel.config.backup.type.${type}`),
+        };
+      });
     }
+  );
+
+  private _maxAgents = memoizeOne((data: BackupRow[]): number =>
+    Math.max(...data.map((row) => row.agent_ids.length))
   );
 
   protected render(): TemplateResult {
     const backupInProgress =
       "state" in this.manager && this.manager.state === "in_progress";
+    const isHassio = isComponentLoaded(this.hass, "hassio");
+    const data = this._data(
+      this.backups,
+      this._filters,
+      this.hass.localize,
+      isHassio
+    );
+    const maxDisplayedAgents = Math.min(
+      this._maxAgents(data),
+      this.narrow ? 3 : 5
+    );
 
     return html`
       <hass-tabs-subpage-data-table
         has-fab
         .tabs=${[
           {
-            name: "My backups",
+            name: this.hass.localize("ui.panel.config.backup.backups.header"),
             path: `/config/backup/list`,
           },
         ]}
@@ -326,14 +377,18 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         .selected=${this._selected.length}
         .initialGroupColumn=${this._activeGrouping}
         .initialCollapsedGroups=${this._activeCollapsed}
-        .groupOrder=${this._groupOrder(this._activeGrouping)}
+        .groupOrder=${this._groupOrder(
+          this._activeGrouping,
+          this.hass.localize,
+          isHassio
+        )}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
         @selection-changed=${this._handleSelectionChanged}
         .route=${this.route}
         @row-click=${this._showBackupDetails}
-        .columns=${this._columns(this.hass.localize)}
-        .data=${this._data(this.backups, this._filters)}
+        .columns=${this._columns(this.hass.localize, maxDisplayedAgents)}
+        .data=${data}
         .noDataText=${this.hass.localize("ui.panel.config.backup.no_backups")}
         .searchLabel=${this.hass.localize(
           "ui.panel.config.backup.picker.search"
@@ -351,7 +406,9 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
               @request-selected=${this._uploadBackup}
             >
               <ha-svg-icon slot="graphic" .path=${mdiUpload}></ha-svg-icon>
-              Upload backup
+              ${this.hass.localize(
+                "ui.panel.config.backup.backups.menu.upload_backup"
+              )}
             </ha-list-item>
           </ha-button-menu>
         </div>
@@ -360,28 +417,28 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
           ${!this.narrow
             ? html`
                 <ha-button @click=${this._deleteSelected} class="warning">
-                  Delete selected
+                  ${this.hass.localize(
+                    "ui.panel.config.backup.backups.delete_selected"
+                  )}
                 </ha-button>
               `
             : html`
                 <ha-icon-button
-                  .label=${"Delete selected"}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.backup.backups.delete_selected"
+                  )}
                   .path=${mdiDelete}
-                  id="delete-btn"
                   class="warning"
                   @click=${this._deleteSelected}
                 ></ha-icon-button>
-                <simple-tooltip animation-delay="0" for="delete-btn">
-                  Delete selected
-                </simple-tooltip>
               `}
         </div>
 
         <ha-filter-states
           .hass=${this.hass}
-          label="Type"
+          .label=${this.hass.localize("ui.panel.config.backup.backup_type")}
           .value=${this._filters["ha-filter-states"]}
-          .states=${this._states(this.hass.localize)}
+          .states=${this._states(this.hass.localize, isHassio)}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
           expanded
@@ -392,11 +449,23 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
               <ha-fab
                 slot="fab"
                 ?disabled=${backupInProgress}
-                .label=${"Backup now"}
+                .label=${this.hass.localize(
+                  "ui.panel.config.backup.backups.new_backup"
+                )}
                 extended
                 @click=${this._newBackup}
               >
-                <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+                ${backupInProgress
+                  ? html`<div slot="icon">
+                      <ha-circular-progress
+                        .size=${"small"}
+                        indeterminate
+                      ></ha-circular-progress>
+                    </div>`
+                  : html`<ha-svg-icon
+                      slot="icon"
+                      .path=${mdiPlus}
+                    ></ha-svg-icon>`}
               </ha-fab>
             `
           : nothing}
@@ -404,16 +473,12 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     `;
   }
 
-  private _states = memoizeOne((_localize: LocalizeFunc) => [
-    {
-      value: "automatic",
-      label: "Automatic",
-    },
-    {
-      value: "manual",
-      label: "Manual",
-    },
-  ]);
+  private _states = memoizeOne((localize: LocalizeFunc, isHassio: boolean) =>
+    getBackupTypes(isHassio).map((type) => ({
+      value: type,
+      label: localize(`ui.panel.config.backup.type.${type}`),
+    }))
+  );
 
   private _filterChanged(ev) {
     const type = ev.target.localName;
@@ -434,7 +499,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   }
 
   private get _needsOnboarding() {
-    return !this.config?.create_backup.password;
+    return !this.config?.automatic_backups_configured;
   }
 
   private async _uploadBackup(ev) {
@@ -479,18 +544,13 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   }
 
   private async _downloadBackup(backup: BackupContent): Promise<void> {
-    const preferedAgent = getPreferredAgentForDownload(backup!.agent_ids!);
-    const signedUrl = await getSignedPath(
-      this.hass,
-      getBackupDownloadUrl(backup.backup_id, preferedAgent)
-    );
-    fileDownload(signedUrl.path);
+    downloadBackup(this.hass, this, backup, this.config);
   }
 
   private async _deleteBackup(backup: BackupContent): Promise<void> {
     const confirm = await showConfirmationDialog(this, {
-      title: "Delete backup",
-      text: "This backup will be permanently deleted.",
+      title: this.hass.localize("ui.panel.config.backup.dialogs.delete.title"),
+      text: this.hass.localize("ui.panel.config.backup.dialogs.delete.text"),
       confirmText: this.hass.localize("ui.common.delete"),
       destructive: true,
     });
@@ -499,17 +559,31 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
       return;
     }
 
-    await deleteBackup(this.hass, backup.backup_id);
-    if (this._selected.includes(backup.backup_id)) {
-      this._selected = this._selected.filter((id) => id !== backup.backup_id);
+    try {
+      await deleteBackup(this.hass, backup.backup_id);
+      if (this._selected.includes(backup.backup_id)) {
+        this._selected = this._selected.filter((id) => id !== backup.backup_id);
+      }
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.backup.dialogs.delete.failed"
+        ),
+        text: extractApiErrorMessage(err),
+      });
+      return;
     }
     fireEvent(this, "ha-refresh-backup-info");
   }
 
   private async _deleteSelected() {
     const confirm = await showConfirmationDialog(this, {
-      title: "Delete selected backups",
-      text: "These backups will be permanently deleted.",
+      title: this.hass.localize(
+        "ui.panel.config.backup.dialogs.delete_selected.title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.backup.dialogs.delete_selected.text"
+      ),
       confirmText: this.hass.localize("ui.common.delete"),
       destructive: true,
     });
@@ -524,7 +598,9 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
       );
     } catch (err: any) {
       showAlertDialog(this, {
-        title: "Failed to delete backups",
+        title: this.hass.localize(
+          "ui.panel.config.backup.dialogs.delete_selected.failed"
+        ),
         text: extractApiErrorMessage(err),
       });
       return;
@@ -534,7 +610,14 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   }
 
   static get styles(): CSSResultGroup {
-    return haStyle;
+    return [
+      haStyle,
+      css`
+        ha-circular-progress {
+          --md-sys-color-primary: var(--mdc-theme-on-secondary);
+        }
+      `,
+    ];
   }
 }
 

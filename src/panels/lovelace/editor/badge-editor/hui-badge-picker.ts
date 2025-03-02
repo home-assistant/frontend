@@ -10,7 +10,6 @@ import memoizeOne from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
-import { stripDiacritics } from "../../../../common/string/strip-diacritics";
 import "../../../../components/ha-circular-progress";
 import "../../../../components/search-input";
 import { isUnavailableState } from "../../../../data/entity";
@@ -23,7 +22,6 @@ import {
   getCustomBadgeEntry,
 } from "../../../../data/lovelace_custom_cards";
 import type { HomeAssistant } from "../../../../types";
-import { getStripDiacriticsFn } from "../../../../util/fuse";
 import {
   calcUnusedEntities,
   computeUsedEntities,
@@ -82,12 +80,10 @@ export class HuiBadgePicker extends LitElement {
         isCaseSensitive: false,
         minMatchCharLength: Math.min(filter.length, 2),
         threshold: 0.2,
-        getFn: getStripDiacriticsFn,
+        ignoreDiacritics: true,
       };
       const fuse = new Fuse(badges, options);
-      badges = fuse
-        .search(stripDiacritics(filter))
-        .map((result) => result.item);
+      badges = fuse.search(filter).map((result) => result.item);
       return badgeElements.filter((badgeElement: BadgeElement) =>
         badges.includes(badgeElement.badge)
       );
@@ -393,7 +389,7 @@ export class HuiBadgePicker extends LitElement {
     let newBadgeEl: LovelaceBadge;
     try {
       newBadgeEl = this._tryCreateBadgeElement(config);
-    } catch (err: any) {
+    } catch (_err: any) {
       return;
     }
     if (badgeElToReplace.parentElement) {
@@ -431,7 +427,7 @@ export class HuiBadgePicker extends LitElement {
       if (showElement) {
         try {
           element = this._tryCreateBadgeElement(badgeConfig);
-        } catch (err: any) {
+        } catch (_err: any) {
           element = undefined;
         }
       }

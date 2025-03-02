@@ -232,7 +232,7 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
 
     try {
       url = new URL(this.redirectUri);
-    } catch (err) {
+    } catch (_err) {
       this._error = "Invalid redirect URI";
       return;
     }
@@ -328,7 +328,7 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
 
     try {
       window.localStorage.setItem("selectedLanguage", JSON.stringify(language));
-    } catch (err: any) {
+    } catch (_err: any) {
       // Ignore
     }
   }

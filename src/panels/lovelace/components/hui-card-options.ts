@@ -278,9 +278,12 @@ export class HuiCardOptions extends LitElement {
     const cardConfig = this._cards![cardIndex];
     showEditCardDialog(this, {
       lovelaceConfig: this.lovelace!.config,
-      saveConfig: this.lovelace!.saveConfig,
-      path: containerPath,
+      saveCardConfig: async (config) => {
+        const newConfig = addCard(this.lovelace!.config, containerPath, config);
+        await this.lovelace!.saveConfig(newConfig);
+      },
       cardConfig,
+      isNew: true,
     });
   }
 
@@ -407,7 +410,7 @@ export class HuiCardOptions extends LitElement {
               text: this.hass!.localize("ui.common.undo"),
             },
           });
-        } catch (err: any) {
+        } catch (_err: any) {
           this.lovelace.showToast({
             message: this.hass!.localize(
               "ui.panel.lovelace.editor.move_card.error"

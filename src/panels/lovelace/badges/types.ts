@@ -7,9 +7,9 @@ import type { DisplayType } from "./hui-entity-badge";
 
 export interface EntityFilterBadgeConfig extends LovelaceBadgeConfig {
   type: "entity-filter";
-  entities: Array<EntityFilterEntityConfig | string>;
-  state_filter?: Array<LegacyStateFilter>;
-  conditions?: Array<Condition>;
+  entities: (EntityFilterEntityConfig | string)[];
+  state_filter?: LegacyStateFilter[];
+  conditions?: Condition[];
 }
 
 export interface ErrorBadgeConfig extends LovelaceBadgeConfig {

@@ -40,7 +40,7 @@ export default class HaScriptFieldRow extends LitElement {
 
   @state() private _yamlError?: undefined | "yaml_error" | "key_not_unique";
 
-  @state() private _yamlMode: boolean = false;
+  @state() private _yamlMode = false;
 
   private _errorKey?: string;
 

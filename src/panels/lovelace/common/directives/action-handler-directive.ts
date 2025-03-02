@@ -256,6 +256,7 @@ export const actionHandler = directive(
       return noChange;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     render(_options?: ActionHandlerOptions) {}
   }
 );

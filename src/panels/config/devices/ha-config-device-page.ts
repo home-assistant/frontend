@@ -1,5 +1,4 @@
 import { consume } from "@lit-labs/context";
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
   mdiCog,
   mdiDelete,
@@ -30,6 +29,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-expansion-panel";
+import "../../../components/ha-tooltip";
 import { getSignedPath } from "../../../data/auth";
 import type {
   ConfigEntry,
@@ -144,11 +144,11 @@ export class HaConfigDevicePage extends LitElement {
       entries: ConfigEntry[],
       manifests: IntegrationManifest[]
     ): ConfigEntry[] => {
-      const entryLookup: { [entryId: string]: ConfigEntry } = {};
+      const entryLookup: Record<string, ConfigEntry> = {};
       for (const entry of entries) {
         entryLookup[entry.entry_id] = entry;
       }
-      const manifestLookup: { [domain: string]: IntegrationManifest } = {};
+      const manifestLookup: Record<string, IntegrationManifest> = {};
       for (const manifest of manifests) {
         manifestLookup[manifest.domain] = manifest;
       }
@@ -444,7 +444,13 @@ export class HaConfigDevicePage extends LitElement {
                     ${this._related.automation.map((automation) => {
                       const entityState = this.hass.states[automation];
                       return entityState
-                        ? html`<div>
+                        ? html`<ha-tooltip
+                            placement="left"
+                            .disabled=${!!entityState.attributes.id}
+                            .content=${this.hass.localize(
+                              "ui.panel.config.devices.cant_edit"
+                            )}
+                          >
                             <a
                               href=${ifDefined(
                                 entityState.attributes.id
@@ -461,17 +467,8 @@ export class HaConfigDevicePage extends LitElement {
                                 <ha-icon-next slot="meta"></ha-icon-next>
                               </ha-list-item>
                             </a>
-                            ${!entityState.attributes.id
-                              ? html`
-                                  <simple-tooltip animation-delay="0">
-                                    ${this.hass.localize(
-                                      "ui.panel.config.devices.cant_edit"
-                                    )}
-                                  </simple-tooltip>
-                                `
-                              : ""}
-                          </div> `
-                        : "";
+                          </ha-tooltip>`
+                        : nothing;
                     })}
                   </div>
                 `
@@ -536,7 +533,13 @@ export class HaConfigDevicePage extends LitElement {
                         const entityState = this.hass.states[scene];
                         return entityState
                           ? html`
-                              <div>
+                              <ha-tooltip
+                                placement="left"
+                                .disabled=${!!entityState.attributes.id}
+                                .content=${this.hass.localize(
+                                  "ui.panel.config.devices.cant_edit"
+                                )}
+                              >
                                 <a
                                   href=${ifDefined(
                                     entityState.attributes.id
@@ -553,18 +556,9 @@ export class HaConfigDevicePage extends LitElement {
                                     <ha-icon-next slot="meta"></ha-icon-next>
                                   </ha-list-item>
                                 </a>
-                                ${!entityState.attributes.id
-                                  ? html`
-                                      <simple-tooltip animation-delay="0">
-                                        ${this.hass.localize(
-                                          "ui.panel.config.devices.cant_edit"
-                                        )}
-                                      </simple-tooltip>
-                                    `
-                                  : ""}
-                              </div>
+                              </ha-tooltip>
                             `
-                          : "";
+                          : nothing;
                       })}
                     </div>
                   `
@@ -1073,7 +1067,14 @@ export class HaConfigDevicePage extends LitElement {
       (ent) => computeDomain(ent.entity_id) === "assist_satellite"
     );
 
+    const domains = this._integrations(
+      device,
+      this.entries,
+      this.manifests
+    ).map((int) => int.domain);
+
     if (
+      !domains.includes("voip") &&
       assistSatellite &&
       assistSatelliteSupportsSetupFlow(
         this.hass.states[assistSatellite.entity_id]
@@ -1087,12 +1088,6 @@ export class HaConfigDevicePage extends LitElement {
         icon: mdiMicrophone,
       });
     }
-
-    const domains = this._integrations(
-      device,
-      this.entries,
-      this.manifests
-    ).map((int) => int.domain);
 
     if (domains.includes("mqtt")) {
       const mqtt = await import(

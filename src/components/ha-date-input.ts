@@ -1,6 +1,5 @@
 import { mdiCalendar } from "@mdi/js";
 import type { HassConfig } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { firstWeekdayIndex } from "../common/datetime/first_weekday";
@@ -111,16 +110,14 @@ export class HaDateInput extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-svg-icon {
-        color: var(--secondary-text-color);
-      }
-      ha-textfield {
-        display: block;
-      }
-    `;
-  }
+  static styles = css`
+    ha-svg-icon {
+      color: var(--secondary-text-color);
+    }
+    ha-textfield {
+      display: block;
+    }
+  `;
 }
 declare global {
   interface HTMLElementTagNameMap {

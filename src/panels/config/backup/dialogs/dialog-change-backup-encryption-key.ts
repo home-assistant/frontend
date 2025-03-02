@@ -48,7 +48,7 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
     this._newEncryptionKey = generateEncryptionKey();
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     if (this._params!.cancel) {
       this._params!.cancel();
     }
@@ -59,6 +59,7 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
     this._step = undefined;
     this._params = undefined;
     this._newEncryptionKey = undefined;
+    return true;
   }
 
   private _done() {
@@ -88,13 +89,11 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
     }
 
     const dialogTitle =
-      this._step === "current"
-        ? "Save current encryption key"
-        : this._step === "new"
-          ? "New encryption key"
-          : this._step === "done"
-            ? "Save new encryption key"
-            : "";
+      this._step === "current" || this._step === "new"
+        ? this.hass.localize(
+            `ui.panel.config.backup.dialogs.change_encryption_key.${this._step}.title`
+          )
+        : "";
 
     return html`
       <ha-md-dialog disable-cancel-action open @closed=${this.closeDialog}>
@@ -109,7 +108,7 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
             : html`
                 <ha-icon-button
                   slot="navigationIcon"
-                  .label=${this.hass.localize("ui.dialogs.generic.close")}
+                  .label=${this.hass.localize("ui.common.close")}
                   .path=${mdiClose}
                   @click=${this.closeDialog}
                 ></ha-icon-button>
@@ -119,7 +118,11 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
         <div slot="content">${this._renderStepContent()}</div>
         <div slot="actions">
           ${this._step === "current"
-            ? html`<ha-button @click=${this._nextStep}>Next</ha-button>`
+            ? html`
+                <ha-button @click=${this._nextStep}>
+                  ${this.hass.localize("ui.common.next")}
+                </ha-button>
+              `
             : this._step === "new"
               ? html`
                   <ha-button
@@ -127,10 +130,18 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
                     .disabled=${!this._newEncryptionKey}
                     class="danger"
                   >
-                    Change encryption key
+                    ${this.hass.localize(
+                      "ui.panel.config.backup.dialogs.change_encryption_key.actions.change"
+                    )}
                   </ha-button>
                 `
-              : html`<ha-button @click=${this._done}>Done</ha-button>`}
+              : html`
+                  <ha-button @click=${this._done}>
+                    ${this.hass.localize(
+                      "ui.panel.config.backup.dialogs.change_encryption_key.actions.done"
+                    )}
+                  </ha-button>
+                `}
         </div>
       </ha-md-dialog>
     `;
@@ -141,9 +152,9 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
       case "current":
         return html`
           <p>
-            Make sure you have saved the current encryption key to make sure you
-            have access to all your current backups. All next backups will use
-            the new encryption key.
+            ${this.hass.localize(
+              "ui.panel.config.backup.dialogs.change_encryption_key.current.description"
+            )}
           </p>
           <div class="encryption-key">
             <p>${this._params?.currentKey}</p>
@@ -154,13 +165,21 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
           </div>
           <ha-md-list>
             <ha-md-list-item>
-              <span slot="headline">Download old emergency kit</span>
+              <span slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.backup.encryption_key.download_old_emergency_kit"
+                )}
+              </span>
               <span slot="supporting-text">
-                We recommend saving this encryption key file somewhere secure.
+                ${this.hass.localize(
+                  "ui.panel.config.backup.encryption_key.download_old_emergency_kit_description"
+                )}
               </span>
               <ha-button slot="end" @click=${this._downloadOld}>
                 <ha-svg-icon .path=${mdiDownload} slot="icon"></ha-svg-icon>
-                Download
+                ${this.hass.localize(
+                  "ui.panel.config.backup.encryption_key.download_old_emergency_kit_action"
+                )}
               </ha-button>
             </ha-md-list-item>
           </ha-md-list>
@@ -168,22 +187,9 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
       case "new":
         return html`
           <p>
-            All next backups will use the new encryption key. Encryption keeps
-            your backups private and secure.
-          </p>
-          <div class="encryption-key">
-            <p>${this._newEncryptionKey}</p>
-            <ha-icon-button
-              .path=${mdiContentCopy}
-              @click=${this._copyKeyToClipboard}
-            ></ha-icon-button>
-          </div>
-        `;
-      case "done":
-        return html`<p>
-            Keep this new encryption key in a safe place, as you will need it to
-            access your backups, allowing it to be restored. Either record the
-            characters below or download them as an emergency kit file.
+            ${this.hass.localize(
+              "ui.panel.config.backup.dialogs.change_encryption_key.new.description"
+            )}
           </p>
           <div class="encryption-key">
             <p>${this._newEncryptionKey}</p>
@@ -194,16 +200,39 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
           </div>
           <ha-md-list>
             <ha-md-list-item>
-              <span slot="headline">Download new emergency kit</span>
+              <span slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.backup.encryption_key.download_emergency_kit"
+                )}
+              </span>
               <span slot="supporting-text">
-                We recommend saving this encryption key file somewhere secure.
+                ${this.hass.localize(
+                  "ui.panel.config.backup.encryption_key.download_emergency_kit_description"
+                )}
               </span>
               <ha-button slot="end" @click=${this._downloadNew}>
                 <ha-svg-icon .path=${mdiDownload} slot="icon"></ha-svg-icon>
-                Download
+                ${this.hass.localize(
+                  "ui.panel.config.backup.encryption_key.download_emergency_kit_action"
+                )}
               </ha-button>
             </ha-md-list-item>
-          </ha-md-list>`;
+          </ha-md-list>
+        `;
+      case "done":
+        return html`
+          <div class="done">
+            <img
+              src="/static/images/voice-assistant/hi.png"
+              alt="Casita Home Assistant logo"
+            />
+            <h1>
+              ${this.hass.localize(
+                "ui.panel.config.backup.dialogs.change_encryption_key.done.title"
+              )}
+            </h1>
+          </div>
+        `;
     }
     return nothing;
   }
@@ -305,6 +334,9 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
         }
         p {
           margin-top: 0;
+        }
+        .done {
+          text-align: center;
         }
       `,
     ];

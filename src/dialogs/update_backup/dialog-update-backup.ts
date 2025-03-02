@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -67,23 +66,21 @@ class DialogBox extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      p {
-        margin: 0;
-        color: var(--primary-text-color);
-      }
+  static styles = css`
+    p {
+      margin: 0;
+      color: var(--primary-text-color);
+    }
+    ha-dialog {
+      /* Place above other dialogs */
+      --dialog-z-index: 104;
+    }
+    @media all and (min-width: 600px) {
       ha-dialog {
-        /* Place above other dialogs */
-        --dialog-z-index: 104;
+        --mdc-dialog-min-width: 400px;
       }
-      @media all and (min-width: 600px) {
-        ha-dialog {
-          --mdc-dialog-min-width: 400px;
-        }
-      }
-    `;
-  }
+    }
+  `;
 }
 
 declare global {

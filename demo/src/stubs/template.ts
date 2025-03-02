@@ -11,6 +11,7 @@ export const mockTemplate = (hass: MockHomeAssistant) => {
       result: msg.template,
       listeners: { all: false, domains: [], entities: [], time: false },
     });
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     return () => {};
   });
 };

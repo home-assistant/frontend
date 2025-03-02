@@ -15,6 +15,7 @@ export const mockPersistentNotification = (hass: MockHomeAssistant) => {
         },
       },
     } as PersistentNotificationMessage);
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     return () => {};
   });
 };

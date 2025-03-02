@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -45,7 +44,7 @@ export class DialogYamlIntegration extends LitElement {
           )}
         </p>
         <mwc-button @click=${this.closeDialog} slot="secondaryAction">
-          ${this.hass.localize("ui.dialogs.generic.cancel")}
+          ${this.hass.localize("ui.common.cancel")}
         </mwc-button>
         ${docLink
           ? html`<a
@@ -61,32 +60,30 @@ export class DialogYamlIntegration extends LitElement {
               </mwc-button>
             </a>`
           : html`<mwc-button @click=${this.closeDialog} dialogInitialFocus>
-              ${this.hass.localize("ui.dialogs.generic.ok")}
+              ${this.hass.localize("ui.common.ok")}
             </mwc-button>`}
       </ha-dialog>
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host([inert]) {
-        pointer-events: initial !important;
-        cursor: initial !important;
-      }
-      a {
-        text-decoration: none;
-      }
+  static styles = css`
+    :host([inert]) {
+      pointer-events: initial !important;
+      cursor: initial !important;
+    }
+    a {
+      text-decoration: none;
+    }
+    ha-dialog {
+      /* Place above other dialogs */
+      --dialog-z-index: 104;
+    }
+    @media all and (min-width: 600px) {
       ha-dialog {
-        /* Place above other dialogs */
-        --dialog-z-index: 104;
+        --mdc-dialog-min-width: 400px;
       }
-      @media all and (min-width: 600px) {
-        ha-dialog {
-          --mdc-dialog-min-width: 400px;
-        }
-      }
-    `;
-  }
+    }
+  `;
 }
 
 declare global {

@@ -46,6 +46,7 @@ export type Selector =
   | IconSelector
   | LabelSelector
   | ImageSelector
+  | BackgroundSelector
   | LanguageSelector
   | LocationSelector
   | MediaSelector
@@ -73,7 +74,6 @@ export type Selector =
   | BackupLocationSelector;
 
 export interface ActionSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   action: {} | null;
 }
 
@@ -93,7 +93,6 @@ export interface AreaSelector {
 }
 
 export interface AreaFilterSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   area_filter: {} | null;
 }
 
@@ -105,7 +104,6 @@ export interface AttributeSelector {
 }
 
 export interface BooleanSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   boolean: {} | null;
 }
 
@@ -118,7 +116,6 @@ export interface ButtonToggleSelector {
 }
 
 export interface ColorRGBSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   color_rgb: {} | null;
 }
 
@@ -133,7 +130,6 @@ export interface ColorTempSelector {
 }
 
 export interface ConditionSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   condition: {} | null;
 }
 
@@ -163,12 +159,10 @@ export interface CountrySelector {
 }
 
 export interface DateSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   date: {} | null;
 }
 
 export interface DateTimeSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   datetime: {} | null;
 }
 
@@ -276,6 +270,10 @@ export interface ImageSelector {
   image: { original?: boolean; crop?: CropOptions } | null;
 }
 
+export interface BackgroundSelector {
+  background: { original?: boolean; crop?: CropOptions } | null;
+}
+
 export interface LabelSelector {
   label: {
     multiple?: boolean;
@@ -305,7 +303,6 @@ export interface LocationSelectorValue {
 }
 
 export interface MediaSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   media: {} | null;
 }
 
@@ -323,7 +320,6 @@ export interface MediaSelectorValue {
 }
 
 export interface NavigationSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   navigation: {} | null;
 }
 
@@ -339,7 +335,6 @@ export interface NumberSelector {
 }
 
 export interface ObjectSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   object: {} | null;
 }
 
@@ -349,9 +344,17 @@ export interface AssistPipelineSelector {
   } | null;
 }
 
+interface SelectBoxOptionImage {
+  src: string;
+  src_dark?: string;
+  flip_rtl?: boolean;
+}
+
 export interface SelectOption {
   value: any;
   label: string;
+  description?: string;
+  image?: string | SelectBoxOptionImage;
   disabled?: boolean;
 }
 
@@ -359,16 +362,16 @@ export interface SelectSelector {
   select: {
     multiple?: boolean;
     custom_value?: boolean;
-    mode?: "list" | "dropdown";
+    mode?: "list" | "dropdown" | "box";
     options: readonly string[] | readonly SelectOption[];
     translation_key?: string;
     sort?: boolean;
     reorder?: boolean;
+    box_max_columns?: number;
   } | null;
 }
 
 export interface SelectorSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   selector: {} | null;
 }
 
@@ -381,7 +384,6 @@ export interface StateSelector {
 }
 
 export interface BackupLocationSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   backup_location: {} | null;
 }
 
@@ -430,7 +432,6 @@ export interface TargetSelector {
 }
 
 export interface TemplateSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   template: {} | null;
 }
 
@@ -442,7 +443,6 @@ export interface TimeSelector {
 }
 
 export interface TriggerSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   trigger: {} | null;
 }
 

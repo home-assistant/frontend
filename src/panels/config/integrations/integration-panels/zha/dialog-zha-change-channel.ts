@@ -50,10 +50,11 @@ class DialogZHAChangeChannel extends LitElement implements HassDialog {
     this._newChannel = "auto";
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     this._params = undefined;
     this._newChannel = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+    return true;
   }
 
   protected render(): TemplateResult | typeof nothing {
@@ -129,7 +130,7 @@ class DialogZHAChangeChannel extends LitElement implements HassDialog {
           slot="secondaryAction"
           @click=${this.closeDialog}
           .disabled=${this._migrationInProgress}
-          >${this.hass.localize("ui.dialogs.generic.cancel")}</ha-button
+          >${this.hass.localize("ui.common.cancel")}</ha-button
         >
       </ha-dialog>
     `;

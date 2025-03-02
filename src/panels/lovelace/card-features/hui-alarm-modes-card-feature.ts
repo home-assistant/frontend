@@ -89,7 +89,7 @@ class HuiAlarmModeCardFeature
 
     try {
       await this._setMode(mode);
-    } catch (err) {
+    } catch (_err) {
       this._currentMode = oldMode;
     }
   }
@@ -119,7 +119,7 @@ class HuiAlarmModeCardFeature
 
     const color = stateColorCss(this.stateObj);
 
-    const supportedModes = supportedAlarmModes(this.stateObj);
+    const supportedModes = supportedAlarmModes(this.stateObj).reverse();
 
     const options = filterModes(
       supportedModes,

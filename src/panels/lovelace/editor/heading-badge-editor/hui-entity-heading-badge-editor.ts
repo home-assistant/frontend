@@ -1,4 +1,4 @@
-import { mdiEye, mdiGestureTap, mdiPalette } from "@mdi/js";
+import { mdiEye, mdiGestureTap, mdiTextShort } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -78,10 +78,10 @@ export class HuiHeadingEntityEditor
           selector: { entity: {} },
         },
         {
-          name: "appearance",
+          name: "content",
           type: "expandable",
           flatten: true,
-          iconPath: mdiPalette,
+          iconPath: mdiTextShort,
           schema: [
             {
               name: "",
@@ -256,7 +256,6 @@ export class HuiHeadingEntityEditor
     switch (schema.name) {
       case "state_content":
       case "displayed_elements":
-      case "appearance":
       case "color":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.heading.entity_config.${schema.name}`

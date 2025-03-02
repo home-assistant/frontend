@@ -20,6 +20,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list-item";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-tooltip";
 import type { AreaRegistryEntry } from "../../../data/area_registry";
 import {
   deleteAreaRegistryEntry,
@@ -53,10 +54,10 @@ import {
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
 
-declare type NameAndEntity<EntityType extends HassEntity> = {
+declare interface NameAndEntity<EntityType extends HassEntity> {
   name: string;
   entity: EntityType;
-};
+}
 
 @customElement("ha-config-area-page")
 class HaConfigAreaPage extends LitElement {
@@ -549,7 +550,11 @@ class HaConfigAreaPage extends LitElement {
   }
 
   private _renderScene(name: string, entityState: SceneEntity) {
-    return html`<div>
+    return html`<ha-tooltip
+      .distance=${-4}
+      .disabled=${!!entityState.attributes.id}
+      .content=${this.hass.localize("ui.panel.config.devices.cant_edit")}
+    >
       <a
         href=${ifDefined(
           entityState.attributes.id
@@ -562,18 +567,15 @@ class HaConfigAreaPage extends LitElement {
           <ha-icon-next slot="meta"></ha-icon-next>
         </ha-list-item>
       </a>
-      ${!entityState.attributes.id
-        ? html`
-            <simple-tooltip animation-delay="0">
-              ${this.hass.localize("ui.panel.config.devices.cant_edit")}
-            </simple-tooltip>
-          `
-        : ""}
-    </div>`;
+    </ha-tooltip>`;
   }
 
   private _renderAutomation(name: string, entityState: AutomationEntity) {
-    return html`<div>
+    return html`<ha-tooltip
+      .disabled=${!!entityState.attributes.id}
+      .distance=${-4}
+      .content=${this.hass.localize("ui.panel.config.devices.cant_edit")}
+    >
       <a
         href=${ifDefined(
           entityState.attributes.id
@@ -586,14 +588,7 @@ class HaConfigAreaPage extends LitElement {
           <ha-icon-next slot="meta"></ha-icon-next>
         </ha-list-item>
       </a>
-      ${!entityState.attributes.id
-        ? html`
-            <simple-tooltip animation-delay="0">
-              ${this.hass.localize("ui.panel.config.devices.cant_edit")}
-            </simple-tooltip>
-          `
-        : ""}
-    </div>`;
+    </ha-tooltip>`;
   }
 
   private _renderScript(name: string, entityState: ScriptEntity) {

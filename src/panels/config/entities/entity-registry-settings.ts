@@ -71,7 +71,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         this._helperConfigEntry = configEntry;
       }
       // eslint-disable-next-line no-empty
-    } catch (err) {}
+    } catch (_err) {}
   }
 
   protected render() {

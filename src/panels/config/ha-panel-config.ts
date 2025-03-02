@@ -57,7 +57,7 @@ declare global {
   }
 }
 
-export const configSections: { [name: string]: PageNavigation[] } = {
+export const configSections: Record<string, PageNavigation[]> = {
   dashboard: [
     {
       path: "/config/integrations",
@@ -548,6 +548,13 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
             "./integrations/integration-panels/thread/thread-config-panel"
           ),
       },
+      bluetooth: {
+        tag: "bluetooth-config-dashboard-router",
+        load: () =>
+          import(
+            "./integrations/integration-panels/bluetooth/bluetooth-config-dashboard-router"
+          ),
+      },
       application_credentials: {
         tag: "ha-config-application-credentials",
         load: () =>
@@ -562,7 +569,7 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
 
   @state() private _cloudStatus?: CloudStatus;
 
-  private _listeners: Array<() => void> = [];
+  private _listeners: (() => void)[] = [];
 
   public connectedCallback() {
     super.connectedCallback();

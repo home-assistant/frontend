@@ -1,6 +1,5 @@
 import "@material/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -271,7 +270,7 @@ export class CloudGooglePref extends LitElement {
         "cloud.google_assistant",
         toggle.checked
       );
-    } catch (err: any) {
+    } catch (_err: any) {
       toggle.checked = !toggle.checked;
     }
   }
@@ -281,7 +280,7 @@ export class CloudGooglePref extends LitElement {
     try {
       await updateCloudPref(this.hass, { google_enabled: toggle.checked! });
       fireEvent(this, "ha-refresh-cloud-status");
-    } catch (err: any) {
+    } catch (_err: any) {
       toggle.checked = !toggle.checked;
     }
   }
@@ -321,57 +320,55 @@ export class CloudGooglePref extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      a {
-        color: var(--primary-color);
-      }
-      .header-actions {
-        position: absolute;
-        right: 24px;
-        inset-inline-end: 24px;
-        inset-inline-start: initial;
-        top: 24px;
-        display: flex;
-        flex-direction: row;
-      }
-      .header-actions .icon-link {
-        margin-top: -16px;
-        margin-right: 8px;
-        margin-inline-end: 8px;
-        margin-inline-start: initial;
-        direction: var(--direction);
-        color: var(--secondary-text-color);
-      }
-      ha-settings-row {
-        padding: 0;
-      }
-      ha-textfield {
-        width: 250px;
-        display: block;
-        margin-top: 8px;
-      }
-      .card-actions {
-        display: flex;
-      }
-      .card-actions a {
-        text-decoration: none;
-      }
-      .warning {
-        color: var(--error-color);
-      }
-      .card-header {
-        display: flex;
-        align-items: center;
-      }
-      img {
-        height: 28px;
-        margin-right: 16px;
-        margin-inline-end: 16px;
-        margin-inline-start: initial;
-      }
-    `;
-  }
+  static styles = css`
+    a {
+      color: var(--primary-color);
+    }
+    .header-actions {
+      position: absolute;
+      right: 24px;
+      inset-inline-end: 24px;
+      inset-inline-start: initial;
+      top: 24px;
+      display: flex;
+      flex-direction: row;
+    }
+    .header-actions .icon-link {
+      margin-top: -16px;
+      margin-right: 8px;
+      margin-inline-end: 8px;
+      margin-inline-start: initial;
+      direction: var(--direction);
+      color: var(--secondary-text-color);
+    }
+    ha-settings-row {
+      padding: 0;
+    }
+    ha-textfield {
+      width: 250px;
+      display: block;
+      margin-top: 8px;
+    }
+    .card-actions {
+      display: flex;
+    }
+    .card-actions a {
+      text-decoration: none;
+    }
+    .warning {
+      color: var(--error-color);
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+    }
+    img {
+      height: 28px;
+      margin-right: 16px;
+      margin-inline-end: 16px;
+      margin-inline-start: initial;
+    }
+  `;
 }
 
 declare global {

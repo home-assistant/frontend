@@ -1,12 +1,11 @@
 import "@material/mwc-list/mwc-list-item";
-import type { CSSResultGroup } from "lit";
 import memoizeOne from "memoize-one";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
-import "../../../../components/ha-selector/ha-selector-image";
+import "../../../../components/ha-selector/ha-selector-background";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 
@@ -26,7 +25,7 @@ export class HuiViewBackgroundEditor extends LitElement {
   private _schema = memoizeOne((showSettings: boolean) => [
     {
       name: "image",
-      selector: { image: { original: true } },
+      selector: { background: { original: true } },
     },
     ...(showSettings
       ? ([
@@ -39,7 +38,7 @@ export class HuiViewBackgroundEditor extends LitElement {
               {
                 name: "opacity",
                 selector: {
-                  number: { min: 1, max: 100, mode: "slider" },
+                  number: { min: 0, max: 100, mode: "slider" },
                 },
               },
               {
@@ -145,6 +144,7 @@ export class HuiViewBackgroundEditor extends LitElement {
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
         .localizeValue=${this._localizeValueCallback}
+        style=${`--picture-opacity: ${(background.opacity ?? 100) / 100};`}
       ></ha-form>
     `;
   }
@@ -192,13 +192,12 @@ export class HuiViewBackgroundEditor extends LitElement {
     }
   };
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+      --file-upload-image-border-radius: 4px;
+    }
+  `;
 }
 
 declare global {

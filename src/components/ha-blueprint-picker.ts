@@ -1,5 +1,4 @@
 import "@material/mwc-list/mwc-list-item";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -95,18 +94,16 @@ class HaBluePrintPicker extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: inline-block;
-      }
-      ha-select {
-        width: 100%;
-        min-width: 200px;
-        display: block;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: inline-block;
+    }
+    ha-select {
+      width: 100%;
+      min-width: 200px;
+      display: block;
+    }
+  `;
 }
 
 declare global {

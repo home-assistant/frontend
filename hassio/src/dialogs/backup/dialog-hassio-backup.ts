@@ -35,7 +35,6 @@ import { fileDownload } from "../../../../src/util/file_download";
 import "../../components/supervisor-backup-content";
 import type { SupervisorBackupContent } from "../../components/supervisor-backup-content";
 import type { HassioBackupDialogParams } from "./show-dialog-hassio-backup";
-import type { BackupOrRestoreKey } from "../../util/translations";
 import type { HaMdDialog } from "../../../../src/components/ha-md-dialog";
 
 @customElement("dialog-hassio-backup")
@@ -43,7 +42,7 @@ class HassioBackupDialog
   extends LitElement
   implements HassDialog<HassioBackupDialogParams>
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _error?: string;
 
@@ -62,9 +61,13 @@ class HassioBackupDialog
     this._dialogParams = dialogParams;
     this._backup = await fetchHassioBackupInfo(this.hass, dialogParams.slug);
     if (!this._backup) {
-      this._error = this._localize("no_backup_found");
+      this._error = this._dialogParams.supervisor?.localize(
+        "backup.no_backup_found"
+      );
     } else if (this._dialogParams.onboarding && !this._backup.homeassistant) {
-      this._error = this._localize("restore_no_home_assistant");
+      this._error = this._dialogParams.supervisor?.localize(
+        "backup.restore_no_home_assistant"
+      );
     }
     this._restoringBackup = false;
   }
@@ -77,15 +80,9 @@ class HassioBackupDialog
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     this._dialog?.close();
-  }
-
-  private _localize(key: BackupOrRestoreKey) {
-    return (
-      this._dialogParams!.supervisor?.localize(`backup.${key}`) ||
-      this._dialogParams!.localize!(`ui.panel.page-onboarding.restore.${key}`)
-    );
+    return true;
   }
 
   protected render() {
@@ -101,7 +98,7 @@ class HassioBackupDialog
         <ha-dialog-header slot="headline">
           <ha-icon-button
             slot="navigationIcon"
-            .label=${this._localize("close")}
+            .label=${this._dialogParams.supervisor?.localize("backup.close")}
             .path=${mdiClose}
             @click=${this.closeDialog}
             .disabled=${this._restoringBackup}
@@ -149,7 +146,6 @@ class HassioBackupDialog
                     .supervisor=${this._dialogParams.supervisor}
                     .backup=${this._backup}
                     .onboarding=${this._dialogParams.onboarding || false}
-                    .localize=${this._dialogParams.localize}
                     dialogInitialFocus
                   >
                   </supervisor-backup-content>
@@ -160,7 +156,7 @@ class HassioBackupDialog
             .disabled=${this._restoringBackup || !!this._error}
             @click=${this._restoreClicked}
           >
-            ${this._localize("restore")}
+            ${this._dialogParams.supervisor?.localize("backup.restore")}
           </ha-button>
         </div>
       </ha-md-dialog>
@@ -195,18 +191,22 @@ class HassioBackupDialog
     }
     if (
       !(await showConfirmationDialog(this, {
-        title: this._localize(
-          this._backup!.type === "full"
-            ? "confirm_restore_full_backup_title"
-            : "confirm_restore_partial_backup_title"
+        title: supervisor?.localize(
+          `backup.${
+            this._backup!.type === "full"
+              ? "confirm_restore_full_backup_title"
+              : "confirm_restore_partial_backup_title"
+          }`
         ),
-        text: this._localize(
-          this._backup!.type === "full"
-            ? "confirm_restore_full_backup_text"
-            : "confirm_restore_partial_backup_text"
+        text: supervisor?.localize(
+          `backup.${
+            this._backup!.type === "full"
+              ? "confirm_restore_full_backup_text"
+              : "confirm_restore_partial_backup_text"
+          }`
         ),
-        confirmText: this._localize("restore"),
-        dismissText: this._localize("cancel"),
+        confirmText: supervisor?.localize("backup.restore"),
+        dismissText: supervisor?.localize("backup.cancel"),
       }))
     ) {
       this._restoringBackup = false;
@@ -226,7 +226,8 @@ class HassioBackupDialog
       this.closeDialog();
     } catch (error: any) {
       this._error =
-        error?.body?.message || this._localize("restore_start_failed");
+        error?.body?.message ||
+        supervisor?.localize("backup.restore_start_failed");
     } finally {
       this._restoringBackup = false;
     }
@@ -285,7 +286,7 @@ class HassioBackupDialog
         title: supervisor.localize("backup.remote_download_title"),
         text: supervisor.localize("backup.remote_download_text"),
         confirmText: supervisor.localize("backup.download"),
-        dismissText: this._localize("cancel"),
+        dismissText: supervisor?.localize("backup.cancel"),
       });
       if (!confirm) {
         return;
@@ -301,7 +302,7 @@ class HassioBackupDialog
   private get _computeName() {
     return this._backup
       ? this._backup.name || this._backup.slug
-      : this._localize("unnamed_backup");
+      : this._dialogParams!.supervisor?.localize("backup.unnamed_backup") || "";
   }
 
   static get styles(): CSSResultGroup {

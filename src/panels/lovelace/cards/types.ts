@@ -91,7 +91,7 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
   type: "entities";
   show_header_toggle?: boolean;
   title?: string;
-  entities: Array<LovelaceRowConfig | string>;
+  entities: (LovelaceRowConfig | string)[];
   theme?: string;
   icon?: string;
   header?: LovelaceHeaderFooterConfig;
@@ -204,9 +204,9 @@ export interface EnergySankeyCardConfig extends EnergyCardBaseConfig {
 
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
   type: "entity-filter";
-  entities: Array<EntityFilterEntityConfig | string>;
-  state_filter?: Array<LegacyStateFilter>;
-  conditions: Array<Condition>;
+  entities: (EntityFilterEntityConfig | string)[];
+  state_filter?: LegacyStateFilter[];
+  conditions: Condition[];
   card?: Partial<LovelaceCardConfig>;
   show_empty?: boolean;
 }
@@ -326,9 +326,9 @@ export interface MapCardConfig extends LovelaceCardConfig {
   auto_fit?: boolean;
   fit_zones?: boolean;
   default_zoom?: number;
-  entities?: Array<EntityConfig | string>;
+  entities?: (EntityConfig | string)[];
   hours_to_show?: number;
-  geo_location_sources?: Array<GeoLocationSourceConfig | string>;
+  geo_location_sources?: (GeoLocationSourceConfig | string)[];
   dark_mode?: boolean;
   theme_mode?: ThemeMode;
 }
@@ -336,6 +336,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
 export interface MarkdownCardConfig extends LovelaceCardConfig {
   type: "markdown";
   content: string;
+  text_only?: boolean;
   title?: string;
   card_size?: number;
   entity_ids?: string | string[];
@@ -349,7 +350,7 @@ export interface MediaControlCardConfig extends LovelaceCardConfig {
 }
 
 export interface HistoryGraphCardConfig extends LovelaceCardConfig {
-  entities: Array<EntityConfig | string>;
+  entities: (EntityConfig | string)[];
   hours_to_show?: number;
   title?: string;
   show_names?: boolean;
@@ -358,11 +359,12 @@ export interface HistoryGraphCardConfig extends LovelaceCardConfig {
   max_y_axis?: number;
   fit_y_data?: boolean;
   split_device_classes?: boolean;
+  expand_legend?: boolean;
 }
 
 export interface StatisticsGraphCardConfig extends EnergyCardBaseConfig {
   title?: string;
-  entities: Array<EntityConfig | string>;
+  entities: (EntityConfig | string)[];
   unit?: string;
   days_to_show?: number;
   period?: "5minute" | "hour" | "day" | "month";
@@ -374,16 +376,19 @@ export interface StatisticsGraphCardConfig extends EnergyCardBaseConfig {
   hide_legend?: boolean;
   logarithmic_scale?: boolean;
   energy_date_selection?: boolean;
+  expand_legend?: boolean;
 }
 
 export interface StatisticCardConfig extends LovelaceCardConfig {
   name?: string;
-  entities: Array<EntityConfig | string>;
-  period: {
-    fixed_period?: { start: string; end: string };
-    calendar?: { period: string; offset: number };
-    rolling_window?: { duration: HaDurationData; offset: HaDurationData };
-  };
+  entities: (EntityConfig | string)[];
+  period:
+    | {
+        fixed_period?: { start: string; end: string };
+        calendar?: { period: string; offset: number };
+        rolling_window?: { duration: HaDurationData; offset: HaDurationData };
+      }
+    | "energy_date_selection";
   stat_type: keyof Statistic;
   theme?: string;
 }
@@ -432,7 +437,7 @@ export interface PictureEntityCardConfig extends LovelaceCardConfig {
 }
 
 export interface PictureGlanceCardConfig extends LovelaceCardConfig {
-  entities: Array<string | PictureGlanceEntityConfig>;
+  entities: (string | PictureGlanceEntityConfig)[];
   title?: string;
   image?: string;
   image_entity?: string;
@@ -480,6 +485,7 @@ export interface TodoListCardConfig extends LovelaceCardConfig {
   entity?: string;
   hide_completed?: boolean;
   hide_create?: boolean;
+  sort?: string;
 }
 
 export interface StackCardConfig extends LovelaceCardConfig {
@@ -506,6 +512,7 @@ export interface WeatherForecastCardConfig extends LovelaceCardConfig {
   show_current?: boolean;
   show_forecast?: boolean;
   forecast_type?: ForecastType;
+  forecast_slots?: number;
   secondary_info_attribute?: keyof TranslationDict["ui"]["card"]["weather"]["attributes"];
   theme?: string;
   tap_action?: ActionConfig;
@@ -529,6 +536,7 @@ export interface TileCardConfig extends LovelaceCardConfig {
   icon_hold_action?: ActionConfig;
   icon_double_tap_action?: ActionConfig;
   features?: LovelaceCardFeatureConfig[];
+  features_position?: "bottom" | "inline";
 }
 
 export interface HeadingCardConfig extends LovelaceCardConfig {

@@ -50,9 +50,7 @@ export class HaStateControlHumidifierHumidity extends LitElement {
     }
   }
 
-  private get _step() {
-    return 1;
-  }
+  private _step = 1;
 
   private get _min() {
     return this.stateObj.attributes.min_humidity ?? 0;

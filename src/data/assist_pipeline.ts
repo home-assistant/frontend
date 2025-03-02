@@ -108,6 +108,34 @@ interface PipelineIntentStartEvent extends PipelineEventBase {
     intent_input: string;
   };
 }
+
+interface ConversationChatLogAssistantDelta {
+  role: "assistant";
+  content: string;
+  tool_calls: {
+    id: string;
+    tool_name: string;
+    tool_args: Record<string, unknown>;
+  }[];
+}
+
+interface ConversationChatLogToolResultDelta {
+  role: "tool_result";
+  agent_id: string;
+  tool_call_id: string;
+  tool_name: string;
+  tool_result: unknown;
+}
+interface PipelineIntentProgressEvent extends PipelineEventBase {
+  type: "intent-progress";
+  data: {
+    chat_log_delta:
+      | Partial<ConversationChatLogAssistantDelta>
+      // These always come in 1 chunk
+      | ConversationChatLogToolResultDelta;
+  };
+}
+
 interface PipelineIntentEndEvent extends PipelineEventBase {
   type: "intent-end";
   data: {
@@ -141,6 +169,7 @@ export type PipelineRunEvent =
   | PipelineSTTStartEvent
   | PipelineSTTEndEvent
   | PipelineIntentStartEvent
+  | PipelineIntentProgressEvent
   | PipelineIntentEndEvent
   | PipelineTTSStartEvent
   | PipelineTTSEndEvent;
@@ -366,7 +395,7 @@ export const setAssistPipelinePreferred = (
   });
 
 export const deleteAssistPipeline = (hass: HomeAssistant, pipelineId: string) =>
-  hass.callWS<void>({
+  hass.callWS<undefined>({
     type: "assist_pipeline/pipeline/delete",
     pipeline_id: pipelineId,
   });

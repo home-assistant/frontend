@@ -61,9 +61,10 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
     }
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     this._hardware = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+    return true;
   }
 
   protected render() {

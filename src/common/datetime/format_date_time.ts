@@ -26,6 +26,20 @@ const formatDateTimeMem = memoizeOne(
     })
 );
 
+export const formatDateTimeWithBrowserDefaults = (dateObj: Date) =>
+  formatDateTimeWithBrowserDefaultsMem().format(dateObj);
+
+const formatDateTimeWithBrowserDefaultsMem = memoizeOne(
+  () =>
+    new Intl.DateTimeFormat(undefined, {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    })
+);
+
 // Aug 9, 2021, 8:23 AM
 export const formatShortDateTimeWithYear = (
   dateObj: Date,
@@ -64,6 +78,18 @@ const formatShortDateTimeMem = memoizeOne(
       timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
     })
 );
+
+export const formatShortDateTimeWithConditionalYear = (
+  dateObj: Date,
+  locale: FrontendLocaleData,
+  config: HassConfig
+) => {
+  const now = new Date();
+  if (now.getFullYear() === dateObj.getFullYear()) {
+    return formatShortDateTime(dateObj, locale, config);
+  }
+  return formatShortDateTimeWithYear(dateObj, locale, config);
+};
 
 // August 9, 2021, 8:23:15 AM
 export const formatDateTimeWithSeconds = (

@@ -9,7 +9,7 @@ import {
   mdiWaterAlert,
 } from "@mdi/js";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -104,7 +104,7 @@ export class HuiAreaCard
 
   @state() private _areas?: AreaRegistryEntry[];
 
-  private _deviceClasses: { [key: string]: string[] } = DEVICE_CLASSES;
+  private _deviceClasses: Record<string, string[]> = DEVICE_CLASSES;
 
   private _ratio: {
     w: number;
@@ -116,7 +116,7 @@ export class HuiAreaCard
       areaId: string,
       devicesInArea: Set<string>,
       registryEntities: EntityRegistryEntry[],
-      deviceClasses: { [key: string]: string[] },
+      deviceClasses: Record<string, string[]>,
       states: HomeAssistant["states"]
     ) => {
       const entitiesInArea = registryEntities
@@ -130,7 +130,7 @@ export class HuiAreaCard
         )
         .map((entry) => entry.entity_id);
 
-      const entitiesByDomain: { [domain: string]: HassEntity[] } = {};
+      const entitiesByDomain: Record<string, HassEntity[]> = {};
 
       for (const entity of entitiesInArea) {
         const domain = computeDomain(entity);
@@ -376,7 +376,20 @@ export class HuiAreaCard
         return;
       }
       this._deviceClasses[domain].forEach((deviceClass) => {
+        let areaSensorEntityId: string | null = null;
+        switch (deviceClass) {
+          case "temperature":
+            areaSensorEntityId = area.temperature_entity_id;
+            break;
+          case "humidity":
+            areaSensorEntityId = area.humidity_entity_id;
+            break;
+        }
+        const areaEntity = areaSensorEntityId
+          ? this.hass.states[areaSensorEntityId]
+          : undefined;
         if (
+          areaEntity ||
           entitiesByDomain[domain].some(
             (entity) => entity.attributes.device_class === deviceClass
           )
@@ -388,7 +401,9 @@ export class HuiAreaCard
                 .domain=${domain}
                 .deviceClass=${deviceClass}
               ></ha-domain-icon>
-              ${this._average(domain, deviceClass)}
+              ${areaEntity
+                ? this.hass.formatEntityState(areaEntity)
+                : this._average(domain, deviceClass)}
             </div>
           `);
         }
@@ -542,127 +557,125 @@ export class HuiAreaCard
     };
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-card {
-        overflow: hidden;
-        position: relative;
-        background-size: cover;
-        height: 100%;
-      }
+  static styles = css`
+    ha-card {
+      overflow: hidden;
+      position: relative;
+      background-size: cover;
+      height: 100%;
+    }
 
-      .container {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: linear-gradient(
-          0,
-          rgba(33, 33, 33, 0.9) 0%,
-          rgba(33, 33, 33, 0) 45%
-        );
-      }
+    .container {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(
+        0,
+        rgba(33, 33, 33, 0.9) 0%,
+        rgba(33, 33, 33, 0) 45%
+      );
+    }
 
-      ha-card:not(.image) .container::before {
-        position: absolute;
-        content: "";
-        width: 100%;
-        height: 100%;
-        background-color: var(--sidebar-selected-icon-color);
-        opacity: 0.12;
-      }
+    ha-card:not(.image) .container::before {
+      position: absolute;
+      content: "";
+      width: 100%;
+      height: 100%;
+      background-color: var(--sidebar-selected-icon-color);
+      opacity: 0.12;
+    }
 
-      .image hui-image {
-        height: 100%;
-      }
+    .image hui-image {
+      height: 100%;
+    }
 
-      .icon-container {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
+    .icon-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-      .icon-container ha-icon {
-        --mdc-icon-size: 60px;
-        color: var(--sidebar-selected-icon-color);
-      }
+    .icon-container ha-icon {
+      --mdc-icon-size: 60px;
+      color: var(--sidebar-selected-icon-color);
+    }
 
-      .sensors {
-        color: #e3e3e3;
-        font-size: 16px;
-        --mdc-icon-size: 24px;
-        opacity: 0.6;
-        margin-top: 8px;
-      }
+    .sensors {
+      color: #e3e3e3;
+      font-size: 16px;
+      --mdc-icon-size: 24px;
+      opacity: 0.6;
+      margin-top: 8px;
+    }
 
-      .sensor {
-        white-space: nowrap;
-        float: left;
-        margin-right: 4px;
-        margin-inline-end: 4px;
-        margin-inline-start: initial;
-      }
+    .sensor {
+      white-space: nowrap;
+      float: left;
+      margin-right: 4px;
+      margin-inline-end: 4px;
+      margin-inline-start: initial;
+    }
 
-      .alerts {
-        padding: 16px;
-      }
+    .alerts {
+      padding: 16px;
+    }
 
-      ha-state-icon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-      }
+    ha-state-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
 
-      .alerts ha-state-icon {
-        background: var(--accent-color);
-        color: var(--text-accent-color, var(--text-primary-color));
-        padding: 8px;
-        margin-right: 8px;
-        margin-inline-end: 8px;
-        margin-inline-start: initial;
-        border-radius: 50%;
-      }
+    .alerts ha-state-icon {
+      background: var(--accent-color);
+      color: var(--text-accent-color, var(--text-primary-color));
+      padding: 8px;
+      margin-right: 8px;
+      margin-inline-end: 8px;
+      margin-inline-start: initial;
+      border-radius: 50%;
+    }
 
-      .name {
-        color: white;
-        font-size: 24px;
-      }
+    .name {
+      color: white;
+      font-size: 24px;
+    }
 
-      .bottom {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 16px;
-      }
+    .bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+    }
 
-      .navigate {
-        cursor: pointer;
-      }
+    .navigate {
+      cursor: pointer;
+    }
 
-      ha-icon-button {
-        color: white;
-        background-color: var(--area-button-color, #727272b2);
-        border-radius: 50%;
-        margin-left: 8px;
-        margin-inline-start: 8px;
-        margin-inline-end: initial;
-        --mdc-icon-button-size: 44px;
-      }
-      .on {
-        color: var(--state-light-active-color);
-      }
-    `;
-  }
+    ha-icon-button {
+      color: white;
+      background-color: var(--area-button-color, #727272b2);
+      border-radius: 50%;
+      margin-left: 8px;
+      margin-inline-start: 8px;
+      margin-inline-end: initial;
+      --mdc-icon-button-size: 44px;
+    }
+    .on {
+      color: var(--state-light-active-color);
+    }
+  `;
 }
 
 declare global {

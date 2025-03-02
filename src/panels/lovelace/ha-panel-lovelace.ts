@@ -115,7 +115,7 @@ export class LovelacePanel extends LitElement {
     );
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult | undefined {
     const panelState = this._panelState;
 
     if (panelState === "loaded") {

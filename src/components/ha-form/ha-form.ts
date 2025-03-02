@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, ReactiveElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
@@ -249,19 +249,17 @@ export class HaForm extends LitElement implements HaFormElement {
     return this.computeWarning ? this.computeWarning(warning, schema) : warning;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .root > * {
-        display: block;
-      }
-      .root > *:not([own-margin]):not(:last-child) {
-        margin-bottom: 24px;
-      }
-      ha-alert[own-margin] {
-        margin-bottom: 4px;
-      }
-    `;
-  }
+  static styles = css`
+    .root > * {
+      display: block;
+    }
+    .root > *:not([own-margin]):not(:last-child) {
+      margin-bottom: 24px;
+    }
+    ha-alert[own-margin] {
+      margin-bottom: 4px;
+    }
+  `;
 }
 
 declare global {

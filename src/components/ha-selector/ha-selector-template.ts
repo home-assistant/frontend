@@ -77,13 +77,11 @@ export class HaTemplateSelector extends LitElement {
     fireEvent(this, "value-changed", { value });
   }
 
-  static get styles() {
-    return css`
-      p {
-        margin-top: 0;
-      }
-    `;
-  }
+  static styles = css`
+    p {
+      margin-top: 0;
+    }
+  `;
 }
 
 declare global {

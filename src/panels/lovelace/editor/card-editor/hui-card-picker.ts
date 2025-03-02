@@ -10,7 +10,6 @@ import memoizeOne from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
-import { stripDiacritics } from "../../../../common/string/strip-diacritics";
 import "../../../../components/ha-circular-progress";
 import "../../../../components/search-input";
 import { isUnavailableState } from "../../../../data/entity";
@@ -23,7 +22,6 @@ import {
   getCustomCardEntry,
 } from "../../../../data/lovelace_custom_cards";
 import type { HomeAssistant } from "../../../../types";
-import { getStripDiacriticsFn } from "../../../../util/fuse";
 import {
   calcUnusedEntities,
   computeUsedEntities,
@@ -92,10 +90,10 @@ export class HuiCardPicker extends LitElement {
         isCaseSensitive: false,
         minMatchCharLength: Math.min(filter.length, 2),
         threshold: 0.2,
-        getFn: getStripDiacriticsFn,
+        ignoreDiacritics: true,
       };
       const fuse = new Fuse(cards, options);
-      cards = fuse.search(stripDiacritics(filter)).map((result) => result.item);
+      cards = fuse.search(filter).map((result) => result.item);
       return cardElements.filter((cardElement: CardElement) =>
         cards.includes(cardElement.card)
       );
@@ -155,12 +153,14 @@ export class HuiCardPicker extends LitElement {
           height: this._height ? `${this._height}px` : "auto",
         })}
       >
-        <div class="cards-container">
-          ${this._filter
-            ? this._filterCards(this._cards, this._filter).map(
+        ${this._filter
+          ? html`<div class="cards-container">
+              ${this._filterCards(this._cards, this._filter).map(
                 (cardElement: CardElement) => cardElement.element
-              )
-            : html`
+              )}
+            </div>`
+          : html`
+              <div class="cards-container">
                 ${suggestedCards.length > 0
                   ? html`
                       <div class="cards-container-header">
@@ -174,6 +174,8 @@ export class HuiCardPicker extends LitElement {
                 ${suggestedCards.map(
                   (cardElement: CardElement) => cardElement.element
                 )}
+              </div>
+              <div class="cards-container">
                 ${suggestedCards.length > 0
                   ? html`
                       <div class="cards-container-header">
@@ -186,6 +188,8 @@ export class HuiCardPicker extends LitElement {
                 ${othersCards.map(
                   (cardElement: CardElement) => cardElement.element
                 )}
+              </div>
+              <div class="cards-container">
                 ${customCardsItems.length > 0
                   ? html`
                       <div class="cards-container-header">
@@ -198,8 +202,8 @@ export class HuiCardPicker extends LitElement {
                 ${customCardsItems.map(
                   (cardElement: CardElement) => cardElement.element
                 )}
-              `}
-        </div>
+              </div>
+            `}
         <div class="cards-container">
           <div
             class="card manual"
@@ -216,6 +220,7 @@ export class HuiCardPicker extends LitElement {
                 `ui.panel.lovelace.editor.card.generic.manual_description`
               )}
             </div>
+            <ha-ripple></ha-ripple>
           </div>
         </div>
       </div>
@@ -401,7 +406,7 @@ export class HuiCardPicker extends LitElement {
     let newCardEl: LovelaceCard;
     try {
       newCardEl = this._tryCreateCardElement(config);
-    } catch (err: any) {
+    } catch (_err: any) {
       return;
     }
     if (cardElToReplace.parentElement) {
@@ -436,25 +441,26 @@ export class HuiCardPicker extends LitElement {
       if (showElement) {
         try {
           element = this._tryCreateCardElement(cardConfig);
-        } catch (err: any) {
+        } catch (_err: any) {
           element = undefined;
         }
       }
     }
 
+    // prevent tabbing to card
+    if (element) {
+      element.tabIndex = -1;
+    }
+
     return html`
-      <div class="card">
+      <div class="card" tabindex="0">
         <div
           class="overlay"
           @click=${this._cardPicked}
           .config=${cardConfig}
         ></div>
         <div class="card-header">
-          ${customCard
-            ? `${this.hass!.localize(
-                "ui.panel.lovelace.editor.cardpicker.custom_card"
-              )}: ${customCard.name || customCard.type}`
-            : name}
+          ${customCard ? customCard.name || customCard.type : name}
         </div>
         <div
           class="preview ${classMap({
@@ -470,6 +476,7 @@ export class HuiCardPicker extends LitElement {
                 )
               : description}
         </div>
+        <ha-ripple></ha-ripple>
       </div>
     `;
   }
@@ -481,14 +488,28 @@ export class HuiCardPicker extends LitElement {
           display: block;
           --mdc-shape-small: var(--card-picker-search-shape);
           margin: var(--card-picker-search-margin);
+          position: sticky;
+          top: 0;
+          z-index: 10;
+          background-color: var(
+              --ha-dialog-surface-background,
+              var(--mdc-theme-surface, #fff)
+          );
         }
 
         .cards-container-header {
           font-size: 16px;
           font-weight: 500;
-          padding: 12px 8px 4px 8px;
+          padding: 12px 8px;
           margin: 0;
           grid-column: 1 / -1;
+          position: sticky;
+          top: 56px;
+          z-index: 1;
+          background: linear-gradient(90deg, var(
+                  --ha-dialog-surface-background,
+                  var(--mdc-theme-surface, #fff)
+          ) 0%, #ffffff00 80%);
         }
 
         .cards-container {
@@ -508,8 +529,7 @@ export class HuiCardPicker extends LitElement {
           cursor: pointer;
           position: relative;
           overflow: hidden;
-          border: var(--ha-card-border-width, 1px) solid
-            var(--ha-card-border-color, var(--divider-color));
+          border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color));
         }
 
         .card-header {
@@ -522,11 +542,6 @@ export class HuiCardPicker extends LitElement {
           padding: 12px 16px;
           display: block;
           text-align: center;
-          background: var(
-            --ha-card-background,
-            var(--card-background-color, white)
-          );
-          border-bottom: 1px solid var(--divider-color);
         }
 
         .preview {
@@ -539,7 +554,6 @@ export class HuiCardPicker extends LitElement {
         }
 
         .preview > :first-child {
-          zoom: 0.6;
           display: block;
           width: 100%;
         }

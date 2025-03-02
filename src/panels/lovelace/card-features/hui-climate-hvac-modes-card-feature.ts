@@ -96,7 +96,7 @@ class HuiClimateHvacModesCardFeature
 
     try {
       await this._setMode(mode);
-    } catch (err) {
+    } catch (_err) {
       this._currentHvacMode = oldMode;
     }
   }
@@ -122,7 +122,8 @@ class HuiClimateHvacModesCardFeature
 
     const ordererHvacModes = (this.stateObj.attributes.hvac_modes || [])
       .concat()
-      .sort(compareClimateHvacModes);
+      .sort(compareClimateHvacModes)
+      .reverse();
 
     const options = filterModes(
       ordererHvacModes,

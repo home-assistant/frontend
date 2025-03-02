@@ -34,6 +34,7 @@ const LOAD_ELEMENTS = {
   floor: () => import("./ha-selector-floor"),
   label: () => import("./ha-selector-label"),
   image: () => import("./ha-selector-image"),
+  background: () => import("./ha-selector-background"),
   language: () => import("./ha-selector-language"),
   navigation: () => import("./ha-selector-navigation"),
   number: () => import("./ha-selector-number"),

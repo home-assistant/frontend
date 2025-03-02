@@ -27,10 +27,10 @@ export const getMyRedirects = (): Redirects => ({
     redirect: "/developer-tools/state",
   },
   developer_services: {
-    redirect: "/developer-tools/service",
+    redirect: "/developer-tools/action",
   },
   developer_call_service: {
-    redirect: "/developer-tools/service",
+    redirect: "/developer-tools/action",
     params: {
       service: "string",
     },
@@ -105,6 +105,10 @@ export const getMyRedirects = (): Redirects => ({
   add_matter_device: {
     component: "matter",
     redirect: "/config/matter/add",
+  },
+  config_bluetooth: {
+    component: "bluetooth",
+    redirect: "/config/bluetooth",
   },
   config_energy: {
     component: "energy",
@@ -291,18 +295,14 @@ const getRedirect = (path: string): Redirect | undefined =>
 
 export type ParamType = "url" | "string" | "string?";
 
-export type Redirects = { [key: string]: Redirect };
+export type Redirects = Record<string, Redirect>;
 export interface Redirect {
   redirect: string;
   // Set to True to use browser redirect instead of frontend navigation
   navigate_outside_spa?: boolean;
   component?: string;
-  params?: {
-    [key: string]: ParamType;
-  };
-  optional_params?: {
-    [key: string]: ParamType;
-  };
+  params?: Record<string, ParamType>;
+  optional_params?: Record<string, ParamType>;
 }
 
 @customElement("ha-panel-my")
@@ -354,9 +354,7 @@ class HaPanelMy extends LitElement {
       this.hass.loadBackendTranslation("title", this._redirect.component);
       this._error = "no_component";
       const component = this._redirect.component;
-      if (
-        (PROTOCOL_INTEGRATIONS as ReadonlyArray<string>).includes(component)
-      ) {
+      if ((PROTOCOL_INTEGRATIONS as readonly string[]).includes(component)) {
         const params = extractSearchParamsObject();
         this.hass
           .loadFragmentTranslation("config")
@@ -374,7 +372,7 @@ class HaPanelMy extends LitElement {
     let url: string;
     try {
       url = this._createRedirectUrl();
-    } catch (err: any) {
+    } catch (_err: any) {
       this._error = "url_error";
       return;
     }

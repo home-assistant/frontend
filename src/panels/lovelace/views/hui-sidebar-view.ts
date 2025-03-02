@@ -1,5 +1,5 @@
 import { mdiArrowLeft, mdiArrowRight, mdiPlus } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -88,6 +88,7 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
         .badges=${this.badges}
         .lovelace=${this.lovelace}
         .viewIndex=${this.index}
+        show-add-label
       ></hui-view-badges>
       <div
         class="container ${this.lovelace?.editMode ? "edit-mode" : ""}"
@@ -188,68 +189,66 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-        padding-top: 4px;
-      }
+  static styles = css`
+    :host {
+      display: block;
+      padding-top: 4px;
+    }
 
-      hui-view-badges {
-        display: block;
-        margin: 4px 8px 4px 8px;
-        font-size: 85%;
-      }
+    hui-view-badges {
+      display: block;
+      margin: 4px 8px 4px 8px;
+      font-size: 85%;
+    }
 
-      .container {
-        display: flex;
-        justify-content: center;
-        margin-left: 4px;
-        margin-right: 4px;
-      }
+    .container {
+      display: flex;
+      justify-content: center;
+      margin-left: 4px;
+      margin-right: 4px;
+    }
 
-      .container.edit-mode {
-        margin-bottom: 72px;
-      }
+    .container.edit-mode {
+      margin-bottom: 72px;
+    }
 
-      #main {
-        max-width: 1620px;
-        flex-grow: 2;
-      }
+    #main {
+      max-width: 1620px;
+      flex-grow: 2;
+    }
 
-      #sidebar {
-        flex-grow: 1;
-        flex-shrink: 0;
-        max-width: 380px;
-      }
+    #sidebar {
+      flex-grow: 1;
+      flex-shrink: 0;
+      max-width: 380px;
+    }
 
-      .container > div {
-        min-width: 0;
-        box-sizing: border-box;
-      }
+    .container > div {
+      min-width: 0;
+      box-sizing: border-box;
+    }
 
-      .container > div > *:not([hidden]) {
-        display: block;
-        margin: var(--masonry-view-card-margin, 4px 4px 8px);
-      }
+    .container > div > *:not([hidden]) {
+      display: block;
+      margin: var(--masonry-view-card-margin, 4px 4px 8px);
+    }
 
-      @media (max-width: 500px) {
-        .container > div > * {
-          margin-left: 0;
-          margin-right: 0;
-        }
+    @media (max-width: 500px) {
+      .container > div > * {
+        margin-left: 0;
+        margin-right: 0;
       }
+    }
 
-      ha-fab {
-        position: fixed;
-        right: calc(16px + env(safe-area-inset-right));
-        bottom: calc(16px + env(safe-area-inset-bottom));
-        inset-inline-end: calc(16px + env(safe-area-inset-right));
-        inset-inline-start: initial;
-        z-index: 1;
-      }
-    `;
-  }
+    ha-fab {
+      position: fixed;
+      right: calc(16px + env(safe-area-inset-right));
+      bottom: calc(16px + env(safe-area-inset-bottom));
+      inset-inline-end: calc(16px + env(safe-area-inset-right));
+      inset-inline-start: initial;
+      z-index: 1;
+    }
+  `;
 }
 
 declare global {

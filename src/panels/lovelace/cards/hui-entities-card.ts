@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { DOMAINS_TOGGLE } from "../../../common/const";
@@ -224,68 +224,66 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-card {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-      }
-      .card-header {
-        display: flex;
-        justify-content: space-between;
-      }
+  static styles = css`
+    ha-card {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+    }
 
-      .card-header .name {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
+    .card-header .name {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-      #states {
-        flex: 1;
-      }
+    #states {
+      flex: 1;
+    }
 
-      #states > * {
-        margin: 8px 0;
-      }
+    #states > * {
+      margin: 8px 0;
+    }
 
-      #states > *:first-child {
-        margin-top: 0;
-      }
+    #states > *:first-child {
+      margin-top: 0;
+    }
 
-      #states > *:last-child {
-        margin-bottom: 0;
-      }
+    #states > *:last-child {
+      margin-bottom: 0;
+    }
 
-      #states > div > * {
-        overflow: clip visible;
-      }
+    #states > div > * {
+      overflow: clip visible;
+    }
 
-      #states > div {
-        position: relative;
-      }
+    #states > div {
+      position: relative;
+    }
 
-      .icon {
-        padding: 0px 18px 0px 8px;
-      }
+    .icon {
+      padding: 0px 18px 0px 8px;
+    }
 
-      .header {
-        border-top-left-radius: var(--ha-card-border-radius, 12px);
-        border-top-right-radius: var(--ha-card-border-radius, 12px);
-        margin-bottom: 16px;
-        overflow: hidden;
-      }
+    .header {
+      border-top-left-radius: var(--ha-card-border-radius, 12px);
+      border-top-right-radius: var(--ha-card-border-radius, 12px);
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
 
-      .footer {
-        border-bottom-left-radius: var(--ha-card-border-radius, 12px);
-        border-bottom-right-radius: var(--ha-card-border-radius, 12px);
-        margin-top: -16px;
-        overflow: hidden;
-      }
-    `;
-  }
+    .footer {
+      border-bottom-left-radius: var(--ha-card-border-radius, 12px);
+      border-bottom-right-radius: var(--ha-card-border-radius, 12px);
+      margin-top: -16px;
+      overflow: hidden;
+    }
+  `;
 
   private _renderEntity(entityConf: LovelaceRowConfig): TemplateResult {
     const element = createRowElement(

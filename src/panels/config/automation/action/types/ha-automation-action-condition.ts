@@ -99,13 +99,11 @@ export class HaConditionAction extends LitElement implements ActionElement {
     }
   }
 
-  static get styles() {
-    return css`
-      ha-select {
-        margin-bottom: 24px;
-      }
-    `;
-  }
+  static styles = css`
+    ha-select {
+      margin-bottom: 24px;
+    }
+  `;
 }
 
 declare global {

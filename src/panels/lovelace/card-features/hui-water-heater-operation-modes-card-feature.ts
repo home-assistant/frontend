@@ -84,7 +84,7 @@ class HuiWaterHeaterOperationModeCardFeature
 
     try {
       await this._setMode(mode);
-    } catch (err) {
+    } catch (_err) {
       this._currentOperationMode = oldMode;
     }
   }
@@ -110,7 +110,8 @@ class HuiWaterHeaterOperationModeCardFeature
 
     const orderedModes = (this.stateObj.attributes.operation_list || [])
       .concat()
-      .sort(compareWaterHeaterOperationMode);
+      .sort(compareWaterHeaterOperationMode)
+      .reverse();
 
     const options = filterModes(
       orderedModes,

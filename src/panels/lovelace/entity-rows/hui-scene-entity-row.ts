@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/entity/ha-entity-toggle";
@@ -58,15 +58,13 @@ class HuiSceneEntityRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      mwc-button {
-        margin-right: -0.57em;
-        margin-inline-end: -0.57em;
-        margin-inline-start: initial;
-      }
-    `;
-  }
+  static styles = css`
+    mwc-button {
+      margin-right: -0.57em;
+      margin-inline-end: -0.57em;
+      margin-inline-start: initial;
+    }
+  `;
 
   private async _callService(ev: Event): Promise<void> {
     ev.stopPropagation();

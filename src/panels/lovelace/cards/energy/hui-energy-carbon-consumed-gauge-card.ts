@@ -1,7 +1,6 @@
 import { mdiInformation } from "@mdi/js";
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -9,6 +8,7 @@ import { round } from "../../../../common/number/round";
 import "../../../../components/ha-card";
 import "../../../../components/ha-gauge";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-tooltip";
 import type { EnergyData } from "../../../../data/energy";
 import {
   energySourcesByType,
@@ -134,14 +134,6 @@ class HuiEnergyCarbonGaugeCard
       <ha-card>
         ${value !== undefined
           ? html`
-              <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
-              <simple-tooltip animation-delay="0" for="info" position="left">
-                <span>
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.card_indicates_energy_used"
-                  )}
-                </span>
-              </simple-tooltip>
               <ha-gauge
                 min="0"
                 max="100"
@@ -153,6 +145,15 @@ class HuiEnergyCarbonGaugeCard
                   "--gauge-color": this._computeSeverity(value),
                 })}
               ></ha-gauge>
+              <ha-tooltip
+                .content=${this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.card_indicates_energy_used"
+                )}
+                placement="left"
+                hoist
+              >
+                <ha-svg-icon .path=${mdiInformation}></ha-svg-icon>
+              </ha-tooltip>
               <div class="name">
                 ${this.hass.localize(
                   "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.low_carbon_energy_consumed"
@@ -179,52 +180,45 @@ class HuiEnergyCarbonGaugeCard
     return severityMap.normal;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-card {
-        height: 100%;
-        overflow: hidden;
-        padding: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        box-sizing: border-box;
-      }
+  static styles = css`
+    ha-card {
+      height: 100%;
+      overflow: hidden;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      box-sizing: border-box;
+    }
 
-      ha-gauge {
-        width: 100%;
-        max-width: 250px;
-      }
+    ha-gauge {
+      width: 100%;
+      max-width: 250px;
+    }
 
-      .name {
-        text-align: center;
-        line-height: initial;
-        color: var(--primary-text-color);
-        width: 100%;
-        font-size: 15px;
-        margin-top: 8px;
-      }
+    .name {
+      text-align: center;
+      line-height: initial;
+      color: var(--primary-text-color);
+      width: 100%;
+      font-size: 15px;
+      margin-top: 8px;
+    }
 
-      ha-svg-icon {
-        position: absolute;
-        right: 4px;
-        inset-inline-end: 4px;
-        inset-inline-start: initial;
-        top: 4px;
-        color: var(--secondary-text-color);
-      }
-      simple-tooltip > span {
-        font-size: 12px;
-        line-height: 12px;
-      }
-      simple-tooltip {
-        width: 80%;
-        max-width: 250px;
-        top: 8px !important;
-      }
-    `;
-  }
+    ha-svg-icon {
+      position: absolute;
+      right: 4px;
+      inset-inline-end: 4px;
+      inset-inline-start: initial;
+      top: 4px;
+      color: var(--secondary-text-color);
+    }
+
+    ha-tooltip::part(base__popup) {
+      margin-top: 4px;
+    }
+  `;
 }
 
 declare global {

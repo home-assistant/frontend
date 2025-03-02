@@ -66,7 +66,7 @@ class HuiHumidifierToggleCardFeature
 
     try {
       await this._setState(newState);
-    } catch (err) {
+    } catch (_err) {
       this._currentState = oldState;
     }
   }
@@ -93,7 +93,7 @@ class HuiHumidifierToggleCardFeature
 
     const color = stateColorCss(this.stateObj);
 
-    const options = ["on", "off"].map<ControlSelectOption>((entityState) => ({
+    const options = ["off", "on"].map<ControlSelectOption>((entityState) => ({
       value: entityState,
       label: this.hass!.formatEntityState(this.stateObj!, entityState),
       path: entityState === "on" ? mdiWaterPercent : mdiPower,

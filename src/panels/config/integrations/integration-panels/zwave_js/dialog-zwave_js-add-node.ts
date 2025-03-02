@@ -90,7 +90,7 @@ class DialogZWaveJSAddNode extends LitElement {
 
   private _addNodeTimeoutHandle?: number;
 
-  private _subscribed?: Promise<UnsubscribeFunc>;
+  private _subscribed?: Promise<UnsubscribeFunc | undefined>;
 
   private _qrProcessing = false;
 
@@ -116,10 +116,8 @@ class DialogZWaveJSAddNode extends LitElement {
     if (params.dsk) {
       this._status = "validate_dsk_enter_pin";
       this._dsk = params.dsk;
-      this._startInclusion(undefined, params.dsk);
-    } else {
-      this._startInclusion();
     }
+    this._startInclusion();
   }
 
   @query("#pin-input") private _pinInput?: HaTextField;
@@ -849,15 +847,15 @@ class DialogZWaveJSAddNode extends LitElement {
           }
         }
       },
-      this._inclusionStrategy,
       qrProvisioningInformation,
       undefined,
       undefined,
-      dsk
+      dsk,
+      this._inclusionStrategy
     ).catch((err) => {
       this._error = err.message;
       this._status = "failed";
-      return () => {};
+      return undefined;
     });
     this._addNodeTimeoutHandle = window.setTimeout(() => {
       this._unsubscribe();
@@ -874,7 +872,7 @@ class DialogZWaveJSAddNode extends LitElement {
 
   private _unsubscribe(): void {
     if (this._subscribed) {
-      this._subscribed.then((unsub) => unsub());
+      this._subscribed.then((unsub) => unsub && unsub());
       this._subscribed = undefined;
     }
     if (this._entryId) {
