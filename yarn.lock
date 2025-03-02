@@ -5608,10 +5608,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@webcomponents/scoped-custom-element-registry@npm:0.0.9":
-  version: 0.0.9
-  resolution: "@webcomponents/scoped-custom-element-registry@npm:0.0.9"
-  checksum: 10/de67c17aa0321f5270e0f53f49091676dc5c45b2c5555bde80f85551902a24ea905af0772f4a9c19400e2e9db8ed0a64329040d16bb278697869a88b67ceed1c
+"@webcomponents/scoped-custom-element-registry@npm:0.0.10":
+  version: 0.0.10
+  resolution: "@webcomponents/scoped-custom-element-registry@npm:0.0.10"
+  checksum: 10/c910ca7acf9758615ab1160203d3c57138953b403e13109307be08689909026d6cb6c79f02291c71467fca71d34c186e230bb00b139d79e040689211c993b97e
   languageName: node
   linkType: hard
 
@@ -9480,7 +9480,7 @@ __metadata:
     "@vibrant/color": "npm:4.0.0"
     "@vitest/coverage-v8": "npm:3.0.7"
     "@vue/web-component-wrapper": "npm:1.3.0"
-    "@webcomponents/scoped-custom-element-registry": "npm:0.0.9"
+    "@webcomponents/scoped-custom-element-registry": "npm:0.0.10"
     "@webcomponents/webcomponentsjs": "npm:2.8.0"
     app-datepicker: "npm:5.1.1"
     babel-loader: "npm:9.2.1"
