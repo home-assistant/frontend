@@ -11,6 +11,12 @@ import "../../../../../components/ha-button-menu";
 import "../../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../../components/ha-checkbox";
 import "../../../../../components/ha-formfield";
+import "../../../../../components/chart/ha-network-graph";
+import type {
+  NetworkData,
+  NetworkNode,
+  NetworkLink,
+} from "../../../../../components/chart/ha-network-graph";
 import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
 import type { ZHADevice } from "../../../../../data/zha";
 import { fetchDevices, refreshTopology } from "../../../../../data/zha";
@@ -52,10 +58,16 @@ export class ZHANetworkVisualizationPage extends LitElement {
   private _nodes: Node[] = [];
 
   @state()
+  private _networkData?: NetworkData;
+
+  @state()
   private _network?: Network;
 
   @state()
   private _filter?: string;
+
+  @state()
+  private _useEcharts = true;
 
   private _autoZoom = true;
 
@@ -73,6 +85,12 @@ export class ZHANetworkVisualizationPage extends LitElement {
       this._fetchData();
     }
 
+    if (!this._useEcharts) {
+      this._setupVisNetwork();
+    }
+  }
+
+  private _setupVisNetwork(): void {
     this._network = new Network(
       this._visualization!,
       {},
@@ -192,16 +210,26 @@ export class ZHANetworkVisualizationPage extends LitElement {
               >
               </ha-checkbox>
             </ha-formfield>
-            <ha-formfield
-              .label=${this.hass!.localize(
-                "ui.panel.config.zha.visualization.enable_physics"
-              )}
-              ><ha-checkbox
-                @change=${this._handlePhysicsCheckboxChange}
-                .checked=${this._enablePhysics}
-              >
-              </ha-checkbox
-            ></ha-formfield>
+            ${!this._useEcharts
+              ? html`
+                  <ha-formfield
+                    .label=${this.hass!.localize(
+                      "ui.panel.config.zha.visualization.enable_physics"
+                    )}
+                    ><ha-checkbox
+                      @change=${this._handlePhysicsCheckboxChange}
+                      .checked=${this._enablePhysics}
+                    >
+                    </ha-checkbox
+                  ></ha-formfield>
+                `
+              : ""}
+            <ha-formfield .label=${"Use ECharts"}>
+              <ha-checkbox
+                @change=${this._handleEChartsToggle}
+                .checked=${this._useEcharts}
+              ></ha-checkbox>
+            </ha-formfield>
             <mwc-button @click=${this._refreshTopology}>
               ${this.hass!.localize(
                 "ui.panel.config.zha.visualization.refresh_topology"
@@ -209,9 +237,55 @@ export class ZHANetworkVisualizationPage extends LitElement {
             </mwc-button>
           </div>
         </div>
-        <div id="visualization"></div>
+
+        ${this._useEcharts
+          ? html`
+              <ha-network-graph
+                .hass=${this.hass}
+                .data=${this._networkData}
+                .selectedNode=${this._getSelectedNodeIEEE()}
+                @node-selected=${this._handleNodeSelected}
+                height="calc(100vh - 198px)"
+              ></ha-network-graph>
+            `
+          : html`<div id="visualization"></div>`}
       </hass-tabs-subpage>
     `;
+  }
+
+  private _getSelectedNodeIEEE(): string | undefined {
+    if (
+      !this.zoomedDeviceId ||
+      !this._devicesByDeviceId.has(this.zoomedDeviceId)
+    ) {
+      return undefined;
+    }
+    return this._devicesByDeviceId.get(this.zoomedDeviceId)?.ieee;
+  }
+
+  private _handleNodeSelected(ev: CustomEvent): void {
+    const ieee = ev.detail.id;
+    if (ieee) {
+      const device = this._devices.get(ieee);
+      if (device) {
+        this.zoomedDeviceId = device.device_reg_id;
+      }
+    }
+  }
+
+  private _handleEChartsToggle(ev: Event): void {
+    this._useEcharts = (ev.target as HaCheckbox).checked;
+    if (!this._useEcharts && !this._network) {
+      this.updateComplete.then(() => {
+        this._setupVisNetwork();
+        if (this._nodes.length > 0) {
+          this._network?.setData({
+            nodes: this._nodes,
+            edges: this._createEdges(),
+          });
+        }
+      });
+    }
   }
 
   private async _fetchData() {
@@ -225,20 +299,111 @@ export class ZHANetworkVisualizationPage extends LitElement {
     this._updateDevices(devices);
   }
 
-  private _updateDevices(devices: ZHADevice[]) {
-    this._nodes = [];
-    const edges: Edge[] = [];
+  private _createEChartsData(devices: ZHADevice[]): NetworkData {
+    const nodes: NetworkNode[] = [];
+    const links: NetworkLink[] = [];
+    const categories = [
+      { name: "Coordinator" },
+      { name: "Router" },
+      { name: "End Device" },
+      { name: "Offline" },
+    ];
 
     devices.forEach((device) => {
-      this._nodes.push({
+      // Determine category (Coordinator, Router, End Device)
+      let category: number;
+      if (!device.available) {
+        category = 3; // Offline
+      } else if (device.device_type === "Coordinator") {
+        category = 0;
+      } else if (device.device_type === "Router") {
+        category = 1;
+      } else {
+        category = 2; // End Device
+      }
+
+      // Create node
+      // console.log("device", device, device.name.includes("IKEA"));
+      nodes.push({
         id: device.ieee,
-        label: this._buildLabel(device),
-        shape: this._getShape(device),
-        mass: this._getMass(device),
-        color: {
-          background: device.available ? "#66FF99" : "#FF9999",
+        name: device.user_given_name || device.name || device.ieee,
+        category,
+        symbolSize:
+          device.device_type === "Coordinator"
+            ? 40
+            : device.device_type === "Router"
+              ? 30
+              : 20,
+        symbol: device.device_type === "Coordinator" ? "rect" : "circle",
+        itemStyle: {
+          color: device.available
+            ? device.device_type === "Coordinator"
+              ? "#4CAF50"
+              : device.device_type === "Router"
+                ? "#2196F3"
+                : "#9E9E9E"
+            : "#F44336",
         },
+        label: this._buildLabel(device),
+        // fixed: device.name.includes("IKEA"),
+        // fixed: device.device_type === "Coordinator" || device.device_type === "Router",
       });
+
+      // Create links (edges)
+      if (device.neighbors && device.neighbors.length > 0) {
+        device.neighbors.forEach((neighbor) => {
+          // Check if the link exists in reverse direction
+          const reverseLink = links.find(
+            (link) =>
+              link.source === neighbor.ieee && link.target === device.ieee
+          );
+
+          if (reverseLink) {
+            // Update the existing link to be bidirectional
+            reverseLink.lineStyle = {
+              ...reverseLink.lineStyle,
+              width: Math.max(
+                Number(reverseLink.lineStyle?.width || 1),
+                this._getLQIWidth(parseInt(neighbor.lqi))
+              ),
+            };
+          } else {
+            // Create a new link
+            links.push({
+              source: device.ieee,
+              target: neighbor.ieee,
+              value: parseInt(neighbor.lqi),
+              lineStyle: {
+                width: this._getLQIWidth(parseInt(neighbor.lqi)),
+                color: this._getLQIColor(parseInt(neighbor.lqi)),
+                type: neighbor.relationship !== "Child" ? "dashed" : "solid",
+              },
+            });
+          }
+        });
+      }
+    });
+
+    return { nodes, links, categories };
+  }
+
+  private _getLQIWidth(lqi: number): number {
+    if (lqi > 192) return 4;
+    if (lqi > 128) return 3;
+    if (lqi > 80) return 2;
+    return 1;
+  }
+
+  private _getLQIColor(lqi: number): string {
+    if (lqi > 192) return "#17ab00";
+    if (lqi > 128) return "#e6b402";
+    if (lqi > 80) return "#fc4c4c";
+    return "#bfbfbf";
+  }
+
+  private _createEdges(): Edge[] {
+    const edges: Edge[] = [];
+    this._devices.forEach((device) => {
       if (device.neighbors && device.neighbors.length > 0) {
         device.neighbors.forEach((neighbor) => {
           const idx = edges.findIndex(
@@ -276,8 +441,32 @@ export class ZHANetworkVisualizationPage extends LitElement {
         });
       }
     });
+    return edges;
+  }
 
-    this._network?.setData({ nodes: this._nodes, edges: edges });
+  private _updateDevices(devices: ZHADevice[]) {
+    this._nodes = [];
+
+    // Create nodes for vis-network
+    devices.forEach((device) => {
+      this._nodes.push({
+        id: device.ieee,
+        label: this._buildLabel(device),
+        shape: this._getShape(device),
+        mass: this._getMass(device),
+        color: {
+          background: device.available ? "#66FF99" : "#FF9999",
+        },
+      });
+    });
+
+    // Create network data for ECharts
+    this._networkData = this._createEChartsData(devices);
+
+    // Update vis-network if it's active
+    if (!this._useEcharts && this._network) {
+      this._network.setData({ nodes: this._nodes, edges: this._createEdges() });
+    }
   }
 
   private _getLQI(lqi: number): EdgeOptions {
@@ -340,6 +529,13 @@ export class ZHANetworkVisualizationPage extends LitElement {
   private _handleSearchChange(ev: CustomEvent) {
     this._filter = ev.detail.value;
     const filterText = this._filter!.toLowerCase();
+
+    if (this._useEcharts) {
+      // Filter handling for ECharts is handled by the component itself
+      // We might want to pass the filter to the component in future
+      return;
+    }
+
     if (!this._network) {
       return;
     }
@@ -361,6 +557,10 @@ export class ZHANetworkVisualizationPage extends LitElement {
   private _onZoomToDevice(event: ValueChangedEvent<string>) {
     event.stopPropagation();
     this.zoomedDeviceId = event.detail.value;
+    if (this._useEcharts) {
+      // The ECharts component will handle the zooming based on selectedNode prop
+      return;
+    }
     if (!this._network) {
       return;
     }
@@ -481,11 +681,11 @@ export class ZHANetworkVisualizationPage extends LitElement {
         }
 
         #visualization {
-          height: calc(100% - var(--header-height));
+          height: calc(100vh - 198px);
           width: 100%;
         }
         :host([narrow]) #visualization {
-          height: calc(100% - (var(--header-height) * 2));
+          height: calc(100vh - (var(--header-height) * 2) - 56px);
         }
       `,
     ];
