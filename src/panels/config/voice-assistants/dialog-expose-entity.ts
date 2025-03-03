@@ -74,7 +74,7 @@ class DialogExposeEntity extends LitElement {
             </span>
           </h2>
           <ha-icon-button
-            .label=${this.hass.localize("ui.dialogs.generic.close")}
+            .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
             dialogAction="close"
             slot="navigationIcon"

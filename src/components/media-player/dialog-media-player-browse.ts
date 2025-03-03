@@ -150,7 +150,7 @@ class DialogMediaPlayerBrowse extends LitElement {
             </mwc-list-item>
           </ha-button-menu>
           <ha-icon-button
-            .label=${this.hass.localize("ui.dialogs.generic.close")}
+            .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
             dialogAction="close"
             slot="actionItems"

@@ -1240,10 +1240,7 @@
         "not_found_error_load_assist": "Cannot find the assist pipeline"
       },
       "generic": {
-        "cancel": "Cancel",
-        "ok": "OK",
-        "default_confirmation_title": "Are you sure?",
-        "close": "Close"
+        "default_confirmation_title": "Are you sure?"
       },
       "image_cropper": {
         "crop": "Crop",
@@ -1255,7 +1252,6 @@
         "clear": "Clear"
       },
       "more_info_control": {
-        "dismiss": "Dismiss dialog",
         "settings": "Settings",
         "edit": "Edit entity",
         "details": "Details",
@@ -1389,7 +1385,6 @@
         "settings": "Settings",
         "control": "Control",
         "related": "Related",
-        "dismiss": "Dismiss",
         "no_unique_id": "This entity (''{entity_id}'') does not have a unique ID, therefore its settings cannot be managed from the UI. See the {faq_link} for more detail.",
         "faq": "documentation",
         "editor": {
@@ -3150,7 +3145,6 @@
             "detail": {
               "edit_dashboard": "Edit dashboard",
               "new_dashboard": "Add new dashboard",
-              "dismiss": "Close",
               "show_sidebar": "Show in sidebar",
               "icon": "Icon",
               "title": "Title",
@@ -3192,7 +3186,6 @@
             "detail": {
               "new_resource": "Add new resource",
               "edit_resource": "Edit resource",
-              "dismiss": "Close",
               "warning_header": "Be cautious!",
               "warning_text": "Adding resources can be dangerous, make sure you know the source of the resource and trust them. Bad resources could seriously harm your system.",
               "url": "URL",
@@ -4551,7 +4544,6 @@
             "introduction2a": ", a company founded by the founders of Home Assistant.",
             "introduction3": "Home Assistant Cloud is a subscription service with a free one month trial. No payment information necessary.",
             "learn_more_link": "Learn more about Home Assistant Cloud",
-            "dismiss": "Dismiss",
             "sign_in": "Sign in",
             "email": "Email",
             "email_error_msg": "Invalid email",
@@ -5193,7 +5185,6 @@
             "success": "Success",
             "aborted": "Aborted",
             "close": "Close",
-            "dismiss": "Dismiss dialog",
             "finish": "Finish",
             "submit": "Submit",
             "next": "Next",
@@ -5371,12 +5362,13 @@
           "source": "Source",
           "rssi": "RSSI",
           "source_address": "Source address",
-          "last_seen": "Last seen",
+          "updated": "Updated",
           "device": "Device",
           "device_information": "Device information",
           "advertisement_data": "Advertisement data",
           "manufacturer_data": "Manufacturer data",
           "service_data": "Service data",
+          "service_uuids": "Service UUIDs",
           "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
         },
         "thread": {
