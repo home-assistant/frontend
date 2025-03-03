@@ -149,11 +149,11 @@ export class DialogEnergyDeviceSettings
 
         <ha-select
           .label=${this.hass.localize(
-            "ui.panel.config.energy.device_consumption.dialog.parent_device"
+            "ui.panel.config.energy.device_consumption.dialog.included_in_device"
           )}
           .value=${this._device?.included_in_stat || ""}
           .helper=${this.hass.localize(
-            "ui.panel.config.energy.device_consumption.dialog.parent_device_helper"
+            "ui.panel.config.energy.device_consumption.dialog.included_in_device_helper"
           )}
           .disabled=${!this._device}
           @selected=${this._parentSelected}

@@ -62,14 +62,11 @@ export class HuiEnergyDevicesDetailGraphCard
 
   @state() private _compareEnd?: Date;
 
-  /* FIXME - this isn't working right
   @storage({
     key: "energy-devices-hidden-stats",
     state: true,
     subscribe: false,
   })
-  */
-  @state()
   private _hiddenStats: string[] = [];
 
   protected hassSubscribeRequiredHostProps = ["_config"];
@@ -151,16 +148,22 @@ export class HuiEnergyDevicesDetailGraphCard
       { num: formatNumber(total, this.hass.locale), unit: UNIT }
     );
 
-  private _nameToStatId(name: string): string {
-    return (
-      this._data?.prefs.device_consumption.find(
-        (d) => (d.name ?? d.stat_consumption) === name
-      )?.stat_consumption ?? "unknown"
-    );
+  private _nameToStatId(name: string): string | undefined {
+    return this._data?.prefs.device_consumption.find(
+      (d) =>
+        (d.name ??
+          getStatisticLabel(
+            this.hass,
+            d.stat_consumption,
+            this._data?.statsMetadata[d.stat_consumption]
+          )) === name
+    )?.stat_consumption;
   }
 
   private get _hiddenStatIds(): string[] {
-    return this._hiddenStats.map((s) => this._nameToStatId(s));
+    return this._hiddenStats
+      .map((s) => this._nameToStatId(s))
+      .filter((s) => s) as string[];
   }
 
   private _datasetHidden(ev) {
@@ -395,7 +398,7 @@ export class HuiEnergyDevicesDetailGraphCard
         untrackedConsumption.push(dataPoint);
       });
     // random id to always add untracked at the end
-    const order = 99999999;
+    const order = Date.now();
     const dataset: BarSeriesOption = {
       type: "bar",
       cursor: "default",
@@ -442,9 +445,7 @@ export class HuiEnergyDevicesDetailGraphCard
     );
 
     devices.forEach((source, idx) => {
-      const order = sorted_devices
-        .filter((d) => !this._hiddenStatIds.includes(d))
-        .indexOf(source.stat_consumption);
+      const order = sorted_devices.indexOf(source.stat_consumption);
       if (this._config?.max_devices && order >= this._config.max_devices) {
         // eslint-disable-next-line no-console
         console.warn(
@@ -503,10 +504,9 @@ export class HuiEnergyDevicesDetailGraphCard
         type: "bar",
         cursor: "default",
         // add order to id, otherwise echarts refuses to reorder them
-        // FIXME - I think I need to update order by skipping the hidden sets, or else it doesn't do reordering
         id: compare
-          ? `compare-${source.stat_consumption}#${order}`
-          : `${source.stat_consumption}#${order}`,
+          ? `compare-${source.stat_consumption}-${order}`
+          : `${source.stat_consumption}-${order}`,
         name:
           source.name ||
           getStatisticLabel(
@@ -534,7 +534,7 @@ export class HuiEnergyDevicesDetailGraphCard
   private _getStatIdFromId(id: string): string {
     return id
       .replace(/^compare-/, "") // Remove compare- prefix
-      .replace(/#-?\d+$/, ""); // Remove numeric suffix
+      .replace(/-\d+$/, ""); // Remove numeric suffix
   }
 
   static styles = css`
