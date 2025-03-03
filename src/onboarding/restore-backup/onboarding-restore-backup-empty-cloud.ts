@@ -36,7 +36,7 @@ class OnboardingRestoreBackupEmptyCloud extends LitElement {
         <ha-button @click=${this._handleUploadBackup}>
           ${this.localize("ui.panel.page-onboarding.restore.upload_backup")}
         </ha-button>
-        <ha-button destructive>
+        <ha-button destructive @click=${this._signOut}>
           ${this.localize("ui.panel.page-onboarding.restore.ha-cloud.sign_out")}
         </ha-button>
       </div>
@@ -45,6 +45,10 @@ class OnboardingRestoreBackupEmptyCloud extends LitElement {
 
   private _handleUploadBackup() {
     fireEvent(this, "upload-option-selected", "upload");
+  }
+
+  private _signOut() {
+    fireEvent(this, "sign-out");
   }
 
   static styles = css`
@@ -69,5 +73,8 @@ class OnboardingRestoreBackupEmptyCloud extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "onboarding-restore-backup-empty-cloud": OnboardingRestoreBackupEmptyCloud;
+  }
+  interface HASSDomEvents {
+    "sign-out": undefined;
   }
 }

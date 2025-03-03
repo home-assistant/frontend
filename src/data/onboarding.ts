@@ -114,3 +114,14 @@ export const loginHaCloud = async (
 
 export const fetchHaCloudStatus = async (): Promise<CloudStatus> =>
   handleFetchPromise(fetch("/api/onboarding/cloud/status"));
+
+export const signOutHaCloud = async () =>
+  handleFetchPromise(fetch("/api/onboarding/cloud/logout", { method: "POST" }));
+
+export const forgotPasswordHaCloud = async (email: string) =>
+  handleFetchPromise(
+    fetch("/api/onboarding/cloud/forgot_password", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    })
+  );

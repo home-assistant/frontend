@@ -13,6 +13,7 @@ import "../components/ha-card";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-circular-progress";
 import "../components/ha-alert";
+import "../components/ha-button";
 import "./onboarding-loading";
 import { removeSearchParam } from "../common/url/search-params";
 import { navigate } from "../common/navigate";
@@ -29,8 +30,9 @@ import {
 } from "../data/backup";
 import { showConfirmationDialog } from "../dialogs/generic/show-dialog-box";
 import { storage } from "../common/decorators/storage";
-import { fetchHaCloudStatus } from "../data/onboarding";
+import { fetchHaCloudStatus, signOutHaCloud } from "../data/onboarding";
 import type { CloudStatus } from "../data/cloud";
+import { showToast } from "../util/toast";
 
 const STATUS_INTERVAL_IN_MS = 5000;
 
@@ -39,8 +41,6 @@ const HOME_ASSISTANT_CLOUD_PLACEHOLDER_ID = "HOME_ASSISTANT_CLOUD";
 @customElement("onboarding-restore-backup")
 class OnboardingRestoreBackup extends LitElement {
   @property({ attribute: false }) public localize!: LocalizeFunc;
-
-  @property() public language!: string;
 
   @property({ type: Boolean }) public supervisor = false;
 
@@ -127,7 +127,7 @@ class OnboardingRestoreBackup extends LitElement {
                     <onboarding-restore-backup-cloud-login
                       .localize=${this.localize}
                       @backup-uploaded=${this._backupUploaded}
-                      @upload-option-selected=${this._showSelectedView}
+                      @ha-refresh-cloud-status=${this._showCloudBackup}
                     ></onboarding-restore-backup-cloud-login>
                   `
                 : this._view === "empty_cloud"
@@ -135,6 +135,7 @@ class OnboardingRestoreBackup extends LitElement {
                       <onboarding-restore-backup-empty-cloud
                         .localize=${this.localize}
                         @upload-option-selected=${this._showSelectedView}
+                        @sign-out=${this._signOutHaCloud}
                       ></onboarding-restore-backup-empty-cloud>
                     `
                   : this._view === "select_data"
@@ -165,6 +166,14 @@ class OnboardingRestoreBackup extends LitElement {
       ${
         ["select_data", "confirm_restore"].includes(this._view) && this._backup
           ? html`<div class="backup-summary-wrapper">
+              <ha-alert title="Home Assistant Cloud">
+                ${this.localize(
+                  "ui.panel.page-onboarding.restore.ha-cloud.stored_in_cloud_description"
+                )}
+                <ha-button class="logout" slot="action" destructive @click=${this._signOutHaCloud}>
+                  ${this.localize("ui.panel.page-onboarding.restore.ha-cloud.sign_out")}
+                </ha-button>
+              </ha-alert>
               <ha-backup-details-summary
                 translation-key-panel="page-onboarding.restore"
                 show-upload-another
@@ -236,7 +245,10 @@ class OnboardingRestoreBackup extends LitElement {
       this._error = err?.message || "Cannot get Home Assistant Cloud status";
     }
 
-    if (this._cloudStatus?.logged_in && this._backupId === HOME_ASSISTANT_CLOUD_PLACEHOLDER_ID) {
+    if (
+      this._cloudStatus?.logged_in &&
+      this._backupId === HOME_ASSISTANT_CLOUD_PLACEHOLDER_ID
+    ) {
       this._backup = backups.find(({ agents }) =>
         Object.keys(agents).includes(CLOUD_AGENT)
       );
@@ -292,7 +304,12 @@ class OnboardingRestoreBackup extends LitElement {
     this._view = "options";
   }
 
-  private _showSelectedView(ev: CustomEvent) {
+  private _showCloudBackup() {
+    this._view = "loading";
+    this._loadBackupInfo()
+  }
+
+  private async _showSelectedView(ev: CustomEvent) {
     if (ev.detail === "upload") {
       this._view = "upload";
     } else if (this._cloudStatus?.logged_in) {
@@ -366,6 +383,36 @@ class OnboardingRestoreBackup extends LitElement {
     this._view = "options";
   }
 
+  private async _signOutHaCloud() {
+    showToast(this, {
+      id: "sign-out-ha-cloud",
+      message: this.localize(
+        "ui.panel.page-onboarding.restore.ha-cloud.sign_out_progress"
+      ),
+    });
+    this._backupId = undefined;
+    this._cloudStatus = undefined;
+    this._view = "options";
+    try {
+      await signOutHaCloud();
+      showToast(this, {
+        id: "sign-out-ha-cloud",
+        message: this.localize(
+          "ui.panel.page-onboarding.restore.ha-cloud.sign_out_success"
+        ),
+      });
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      showToast(this, {
+        id: "sign-out-ha-cloud",
+        message: this.localize(
+          "ui.panel.page-onboarding.restore.ha-cloud.sign_out_error"
+        ),
+      });
+    }
+  }
+
   static styles = [
     onBoardingStyles,
     css`
@@ -389,6 +436,13 @@ class OnboardingRestoreBackup extends LitElement {
       .backup-summary-wrapper {
         margin-top: 24px;
         padding: 0 20px;
+      }
+      ha-alert {
+        display: block;
+        margin-bottom: 8px;
+      }
+      .logout {
+        white-space: nowrap;
       }
     `,
   ];

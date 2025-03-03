@@ -8361,6 +8361,10 @@
             "description": "Restore from your Home Assistant Cloud backup.",
             "no_cloud_backup": "Your Home Assistant Cloud has no backups available.",
             "sign_out": "[%key:ui::panel::config::cloud::account::sign_out%]",
+            "sign_out_progress": "Home Assistant cloud signing out...",
+            "sign_out_success": "Home Assistant cloud signed out",
+            "sign_out_error": "Failed to sign out from Home Assistant cloud",
+            "stored_in_cloud_description": "This backup is stored in Home Assistant Cloud.",
             "login": {
               "title": "[%key:ui::panel::config::cloud::login::title%]",
               "dismiss": "[%key:ui::panel::config::cloud::login::dismiss%]",
@@ -8380,6 +8384,15 @@
               "alert_mfa_code_required": "[%key:ui::panel::config::cloud::login::alert_mfa_code_required%]",
               "alert_mfa_expired_or_not_started": "[%key:ui::panel::config::cloud::login::alert_mfa_expired_or_not_started%]",
               "alert_totp_code_invalid": "[%key:ui::panel::config::cloud::login::alert_totp_code_invalid%]"
+            },
+            "forgot_password": {
+              "title": "[%key:ui::panel::config::cloud::forgot_password::title%]",
+              "subtitle": "[%key:ui::panel::config::cloud::forgot_password::subtitle%]",
+              "instructions": "[%key:ui::panel::config::cloud::forgot_password::instructions%]",
+              "email": "[%key:ui::panel::config::cloud::forgot_password::email%]",
+              "email_error_msg": "[%key:ui::panel::config::cloud::forgot_password::email_error_msg%]",
+              "send_reset_email": "[%key:ui::panel::config::cloud::forgot_password::send_reset_email%]",
+              "check_your_email": "[%key:ui::panel::config::cloud::forgot_password::check_your_email%]"
             }
           },
           "options": {

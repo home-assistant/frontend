@@ -167,6 +167,5 @@ declare global {
       email: string;
       password: string;
     };
-    "cloud-forgot-password";
   }
 }
