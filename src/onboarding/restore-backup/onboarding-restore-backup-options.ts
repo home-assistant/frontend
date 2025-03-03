@@ -82,7 +82,7 @@ class OnboardingRestoreBackupOptions extends LitElement {
       haStyle,
       css`
         :host {
-          padding: 0 20px;
+          padding: 0 20px 16px;
         }
         h2 {
           font-size: 24px;
@@ -91,8 +91,11 @@ class OnboardingRestoreBackupOptions extends LitElement {
           gap: 16px;
         }
         ha-md-list-item {
-          border: 1px solid var(--primary-color);
+          border: 1px solid var(--divider-color);
           border-radius: 4px;
+        }
+        ha-md-list-item:hover {
+          border: 1px solid var(--primary-text-color);
         }
         .icon {
           width: 48px;
@@ -110,7 +113,10 @@ class OnboardingRestoreBackupOptions extends LitElement {
           width: 48px;
         }
         ha-icon-button-next {
-          color: var(--primary-color);
+          color: var(--divider-color);
+        }
+        ha-md-list-item:hover ha-icon-button-next {
+          color: var(--primary-text-color);
         }
       `,
     ];
