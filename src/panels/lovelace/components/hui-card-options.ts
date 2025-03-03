@@ -10,7 +10,6 @@ import {
   mdiPlus,
   mdiPlusCircleMultipleOutline,
 } from "@mdi/js";
-import deepClone from "deep-clone-simple";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, queryAssignedNodes } from "lit/decorators";
@@ -267,7 +266,7 @@ export class HuiCardOptions extends LitElement {
         this._cutCard();
         break;
       case 4:
-        this._deleteCard({ silent: false });
+        this._deleteCard();
         break;
     }
   }
@@ -281,14 +280,16 @@ export class HuiCardOptions extends LitElement {
   }
 
   private _cutCard(): void {
-    this._copyCard();
-    this._deleteCard({ silent: true });
+    fireEvent(this, "ll-copy-card", { path: this.path! });
+    fireEvent(this, "ll-delete-card", { path: this.path!, silent: true });
   }
 
   private _copyCard(): void {
-    const { cardIndex } = parseLovelaceCardPath(this.path!);
-    const cardConfig = this._cards[cardIndex];
-    this._clipboard = deepClone(cardConfig);
+    fireEvent(this, "ll-copy-card", { path: this.path! });
+  }
+
+  private _deleteCard(): void {
+    fireEvent(this, "ll-delete-card", { path: this.path!, silent: false });
   }
 
   private _decreaseCardPosiion(): void {
@@ -408,10 +409,6 @@ export class HuiCardOptions extends LitElement {
         }
       },
     });
-  }
-
-  private _deleteCard({ silent }: { silent: boolean }): void {
-    fireEvent(this, "ll-delete-card", { path: this.path!, silent });
   }
 }
 

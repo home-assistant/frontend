@@ -1,6 +1,8 @@
+import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { MediaQueriesListener } from "../../../common/dom/media_query";
 import "../../../components/ha-svg-icon";
@@ -58,6 +60,14 @@ export class HuiSection extends ReactiveElement {
   private _layoutElement?: LovelaceSectionElement;
 
   private _listeners: MediaQueriesListener[] = [];
+
+  @storage({
+    key: "dashboardCardClipboard",
+    state: false,
+    subscribe: false,
+    storage: "sessionStorage",
+  })
+  protected _clipboard?: LovelaceCardConfig;
 
   private _createCardElement(cardConfig: LovelaceCardConfig) {
     const element = document.createElement("hui-card");
@@ -302,6 +312,18 @@ export class HuiSection extends ReactiveElement {
         sectionConfig,
         isNew: true,
       });
+    });
+    this._layoutElement.addEventListener("ll-copy-card", (ev) => {
+      ev.stopPropagation();
+      if (!this.lovelace) return;
+      const { cardIndex } = parseLovelaceCardPath(ev.detail.path);
+      const sectionConfig = this.config;
+
+      if (isStrategySection(sectionConfig)) {
+        return;
+      }
+      const cardConfig = sectionConfig.cards![cardIndex];
+      this._clipboard = deepClone(cardConfig);
     });
   }
 

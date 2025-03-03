@@ -1,6 +1,8 @@
+import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-state-label-badge";
 import "../../../components/ha-svg-icon";
@@ -46,6 +48,7 @@ declare global {
     "ll-edit-card": { path: LovelaceCardPath };
     "ll-delete-card": DeleteCardParams;
     "ll-duplicate-card": { path: LovelaceCardPath };
+    "ll-copy-card": { path: LovelaceCardPath };
     "ll-create-badge": undefined;
     "ll-edit-badge": { path: LovelaceCardPath };
     "ll-delete-badge": DeleteBadgeParams;
@@ -80,6 +83,14 @@ export class HUIView extends ReactiveElement {
   private _layoutElementType?: string;
 
   private _layoutElement?: LovelaceViewElement;
+
+  @storage({
+    key: "dashboardCardClipboard",
+    state: false,
+    subscribe: false,
+    storage: "sessionStorage",
+  })
+  protected _clipboard?: LovelaceCardConfig;
 
   private _createCardElement(cardConfig: LovelaceCardConfig) {
     const element = document.createElement("hui-card");
@@ -335,6 +346,16 @@ export class HUIView extends ReactiveElement {
         cardConfig,
         isNew: true,
       });
+    });
+    this._layoutElement.addEventListener("ll-copy-card", (ev) => {
+      if (!this.lovelace) return;
+      const { cardIndex } = parseLovelaceCardPath(ev.detail.path);
+      const viewConfig = this.lovelace!.config.views[this.index];
+      if (isStrategyView(viewConfig)) {
+        return;
+      }
+      const cardConfig = viewConfig.cards![cardIndex];
+      this._clipboard = deepClone(cardConfig);
     });
   }
 
