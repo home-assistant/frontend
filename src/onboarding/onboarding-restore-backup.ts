@@ -170,8 +170,15 @@ class OnboardingRestoreBackup extends LitElement {
                 ${this.localize(
                   "ui.panel.page-onboarding.restore.ha-cloud.stored_in_cloud_description"
                 )}
-                <ha-button class="logout" slot="action" destructive @click=${this._signOutHaCloud}>
-                  ${this.localize("ui.panel.page-onboarding.restore.ha-cloud.sign_out")}
+                <ha-button
+                  class="logout"
+                  slot="action"
+                  destructive
+                  @click=${this._signOutHaCloud}
+                >
+                  ${this.localize(
+                    "ui.panel.page-onboarding.restore.ha-cloud.sign_out"
+                  )}
                 </ha-button>
               </ha-alert>
               <ha-backup-details-summary
@@ -306,7 +313,8 @@ class OnboardingRestoreBackup extends LitElement {
 
   private _showCloudBackup() {
     this._view = "loading";
-    this._loadBackupInfo()
+    this._backupId = HOME_ASSISTANT_CLOUD_PLACEHOLDER_ID;
+    this._loadBackupInfo();
   }
 
   private async _showSelectedView(ev: CustomEvent) {
