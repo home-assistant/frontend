@@ -21,7 +21,7 @@ import {
 import { createSectionElement } from "../create-element/create-section-element";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-import { replaceCard } from "../editor/config-util";
+import { addCard, replaceCard } from "../editor/config-util";
 import { performDeleteCard } from "../editor/delete-card";
 import { parseLovelaceCardPath } from "../editor/lovelace-path";
 import { generateLovelaceSectionStrategy } from "../strategies/get-strategy";
@@ -277,6 +277,31 @@ export class HuiSection extends ReactiveElement {
       ev.stopPropagation();
       if (!this.lovelace) return;
       performDeleteCard(this.hass, this.lovelace, ev.detail);
+    });
+    this._layoutElement.addEventListener("ll-duplicate-card", (ev) => {
+      ev.stopPropagation();
+      if (!this.lovelace) return;
+      const { cardIndex } = parseLovelaceCardPath(ev.detail.path);
+      const sectionConfig = this.config;
+      if (isStrategySection(sectionConfig)) {
+        return;
+      }
+      const cardConfig = sectionConfig.cards![cardIndex];
+
+      showEditCardDialog(this, {
+        lovelaceConfig: this.lovelace!.config,
+        saveCardConfig: async (newCardConfig) => {
+          const newConfig = addCard(
+            this.lovelace!.config,
+            [this.viewIndex, this.index],
+            newCardConfig
+          );
+          await this.lovelace!.saveConfig(newConfig);
+        },
+        cardConfig,
+        sectionConfig,
+        isNew: true,
+      });
     });
   }
 
