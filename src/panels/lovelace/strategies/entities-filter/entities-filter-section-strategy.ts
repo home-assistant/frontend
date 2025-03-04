@@ -117,6 +117,13 @@ export class EntitiesFilterSectionStrategy extends ReactiveElement {
       }
     }
 
+    if (isEmpty) {
+      cards.push({
+        type: "markdown",
+        content: "No entities found.",
+      });
+    }
+
     return {
       type: "grid",
       cards: cards,
