@@ -376,7 +376,6 @@ export class QuickBar extends LitElement {
       <ha-list-item
         .item=${item}
         index=${ifDefined(index)}
-        class="command-item"
         hasMeta
         tabindex="0"
       >
@@ -925,10 +924,6 @@ export class QuickBar extends LitElement {
         ha-list-item {
           width: 100%;
           --mdc-list-item-graphic-margin: 20px;
-        }
-
-        ha-list-item.command-item {
-          text-transform: capitalize;
         }
 
         ha-tip {

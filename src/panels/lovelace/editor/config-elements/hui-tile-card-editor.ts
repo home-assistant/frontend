@@ -14,6 +14,7 @@ import {
   string,
   union,
 } from "superstruct";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
@@ -36,7 +37,7 @@ import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import type { EditDetailElementEvent, EditSubElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import "./hui-card-features-editor";
+import { getSupportedFeaturesType } from "./hui-card-features-editor";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -245,6 +246,9 @@ export class HuiTileCardEditor
                 label: localize(
                   `ui.panel.lovelace.editor.card.tile.features_position_options.${value}`
                 ),
+                description: localize(
+                  `ui.panel.lovelace.editor.card.tile.features_position_options.${value}_description`
+                ),
                 value,
                 image: {
                   src: `/static/images/form/tile_features_position_${value}.svg`,
@@ -257,6 +261,10 @@ export class HuiTileCardEditor
           },
         },
       ] as const satisfies readonly HaFormSchema[]
+  );
+
+  private _hasCompatibleFeatures = memoizeOne(
+    (stateObj: HassEntity) => getSupportedFeaturesType(stateObj).length > 0
   );
 
   protected render() {
@@ -289,6 +297,9 @@ export class HuiTileCardEditor
       data.features_position = "bottom";
     }
 
+    const hasCompatibleFeatures =
+      (stateObj && this._hasCompatibleFeatures(stateObj)) || false;
+
     return html`
       <ha-form
         .hass=${this.hass}
@@ -306,15 +317,19 @@ export class HuiTileCardEditor
           )}
         </h3>
         <div class="content">
-          <ha-form
-            class="features-form"
-            .hass=${this.hass}
-            .data=${data}
-            .schema=${featuresSchema}
-            .computeLabel=${this._computeLabelCallback}
-            .computeHelper=${this._computeHelperCallback}
-            @value-changed=${this._valueChanged}
-          ></ha-form>
+          ${hasCompatibleFeatures
+            ? html`
+                <ha-form
+                  class="features-form"
+                  .hass=${this.hass}
+                  .data=${data}
+                  .schema=${featuresSchema}
+                  .computeLabel=${this._computeLabelCallback}
+                  .computeHelper=${this._computeHelperCallback}
+                  @value-changed=${this._valueChanged}
+                ></ha-form>
+              `
+            : nothing}
           <hui-card-features-editor
             .hass=${this.hass}
             .stateObj=${stateObj}

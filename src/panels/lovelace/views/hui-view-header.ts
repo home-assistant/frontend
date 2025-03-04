@@ -81,6 +81,7 @@ export class HuiViewHeader extends LitElement {
       } else {
         this.card = undefined;
       }
+      this._checkHidden();
       return;
     }
 
@@ -351,11 +352,11 @@ export class HuiViewHeader extends LitElement {
     }
 
     .layout .heading {
-      text-align: start;
+      --card-text-align: start;
     }
 
     .layout.center .heading {
-      text-align: center;
+      --card-text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;

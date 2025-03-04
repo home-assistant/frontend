@@ -125,7 +125,7 @@ class DialogZHAReconfigureDevice extends LitElement {
                 </div>
               </div>
               <mwc-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize("ui.dialogs.generic.close")}
+                ${this.hass.localize("ui.common.close")}
               </mwc-button>
               <mwc-button slot="secondaryAction" @click=${this._toggleDetails}>
                 ${this._showDetails
@@ -154,7 +154,7 @@ class DialogZHAReconfigureDevice extends LitElement {
                 </div>
               </div>
               <mwc-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize("ui.dialogs.generic.close")}
+                ${this.hass.localize("ui.common.close")}
               </mwc-button>
               <mwc-button slot="secondaryAction" @click=${this._toggleDetails}>
                 ${this._showDetails
@@ -183,7 +183,7 @@ class DialogZHAReconfigureDevice extends LitElement {
                 </div>
               </div>
               <mwc-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize("ui.dialogs.generic.close")}
+                ${this.hass.localize("ui.common.close")}
               </mwc-button>
               <mwc-button slot="secondaryAction" @click=${this._toggleDetails}>
                 ${this._showDetails

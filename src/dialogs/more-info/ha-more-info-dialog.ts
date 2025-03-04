@@ -307,9 +307,7 @@ export class MoreInfoDialog extends LitElement {
                 <ha-icon-button
                   slot="navigationIcon"
                   dialogAction="cancel"
-                  .label=${this.hass.localize(
-                    "ui.dialogs.more_info_control.dismiss"
-                  )}
+                  .label=${this.hass.localize("ui.common.close")}
                   .path=${mdiClose}
                 ></ha-icon-button>
               `
