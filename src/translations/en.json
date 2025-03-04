@@ -4728,6 +4728,8 @@
             "heading": "Account linked to other Home Assistant",
             "description": "We noticed that another instance is currently connected to your Home Assistant Cloud account. Your Home Assistant Cloud account can only be signed into one Home Assistant instance at a time. If you log in here, the other instance will be disconnected along with its Cloud services.",
             "other_home_assistant": "Other Home Assistant",
+            "instance_name": "Instance name",
+            "instance_version": "Instance version",
             "ip_address": "IP Address",
             "connected_at": "Connected at",
             "obfuscated_ip": {
