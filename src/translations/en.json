@@ -8363,7 +8363,6 @@
             "stored_in_cloud_description": "This backup is stored in Home Assistant Cloud.",
             "login": {
               "title": "[%key:ui::panel::config::cloud::login::title%]",
-              "dismiss": "[%key:ui::panel::config::cloud::login::dismiss%]",
               "sign_in": "[%key:ui::panel::config::cloud::login::sign_in%]",
               "email": "[%key:ui::panel::config::cloud::login::email%]",
               "email_error_msg": "[%key:ui::panel::config::cloud::login::email_error_msg%]",
