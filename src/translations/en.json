@@ -843,8 +843,8 @@
         "source_history": "Source: History",
         "source_stats": "Source: Long term statistics",
         "zoom_reset": "Reset zoom",
-        "expand_legend": "Show more",
-        "collapse_legend": "Show less"
+        "expand_legend": "More",
+        "collapse_legend": "Less"
       },
       "map": {
         "error": "Unable to load map"

@@ -251,14 +251,10 @@ export class HaChartBase extends LitElement {
           ? html`<li>
               <ha-assist-chip
                 @click=${this._toggleExpandedLegend}
-                class=${classMap({
-                  expanded: this.expandLegend,
-                })}
                 filled
-                title=${this.hass.localize(
+                label=${`${this.hass.localize(
                   `ui.components.history_charts.${this.expandLegend ? "collapse_legend" : "expand_legend"}`
-                )}
-                label=${`${this.expandLegend ? "" : `+${items.length - overflowLimit}`}`}
+                )} (${items.length})`}
               >
                 <ha-svg-icon
                   slot="trailing-icon"
@@ -750,9 +746,6 @@ export class HaChartBase extends LitElement {
       --_leading-space: 8px;
       --_trailing-space: 8px;
       --_icon-label-space: 4px;
-    }
-    ha-assist-chip.expanded {
-      --_icon-label-space: 0px;
     }
   `;
 }
