@@ -61,7 +61,6 @@ class DialogCloudAlreadyConnected extends LitElement {
             )}
           </b>
         </div>
-
         ${details.name
           ? html` <div class="instance-details">
               <span>
