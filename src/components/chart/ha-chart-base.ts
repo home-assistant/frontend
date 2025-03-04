@@ -252,9 +252,11 @@ export class HaChartBase extends LitElement {
               <ha-assist-chip
                 @click=${this._toggleExpandedLegend}
                 filled
-                label=${`${this.hass.localize(
-                  `ui.components.history_charts.${this.expandLegend ? "collapse_legend" : "expand_legend"}`
-                )} (${items.length})`}
+                label=${this.expandLegend
+                  ? this.hass.localize(
+                      "ui.components.history_charts.collapse_legend"
+                    )
+                  : `${this.hass.localize("ui.components.history_charts.expand_legend")} (${items.length - overflowLimit})`}
               >
                 <ha-svg-icon
                   slot="trailing-icon"
