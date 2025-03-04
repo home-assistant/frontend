@@ -6,13 +6,13 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type {
-  EntityFilter,
-  FilterFunc,
-} from "../../../common/entity/entity_filter";
+  EntityVoiceAssistantFilter,
+  VoiceAssistantFilterFunc,
+} from "../../../common/entity/entity_voice_assistant_filter";
 import {
-  generateFilter,
-  isEmptyFilter,
-} from "../../../common/entity/entity_filter";
+  generateVoiceAssistantFilter,
+  isEmptyVoiceAssistantFilter,
+} from "../../../common/entity/entity_voice_assistant_filter";
 import "../../../components/ha-aliases-editor";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-switch";
@@ -101,14 +101,17 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
   }
 
   private _getEntityFilterFuncs = memoizeOne(
-    (googleFilter: EntityFilter, alexaFilter: EntityFilter) => ({
-      google: generateFilter(
+    (
+      googleFilter: EntityVoiceAssistantFilter,
+      alexaFilter: EntityVoiceAssistantFilter
+    ) => ({
+      google: generateVoiceAssistantFilter(
         googleFilter.include_domains,
         googleFilter.include_entities,
         googleFilter.exclude_domains,
         googleFilter.exclude_entities
       ),
-      alexa: generateFilter(
+      alexa: generateVoiceAssistantFilter(
         alexaFilter.include_domains,
         alexaFilter.include_entities,
         alexaFilter.exclude_domains,
@@ -131,10 +134,12 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
 
     const alexaManual =
       alexaEnabled &&
-      !isEmptyFilter((this._cloudStatus as CloudStatusLoggedIn).alexa_entities);
+      !isEmptyVoiceAssistantFilter(
+        (this._cloudStatus as CloudStatusLoggedIn).alexa_entities
+      );
     const googleManual =
       googleEnabled &&
-      !isEmptyFilter(
+      !isEmptyVoiceAssistantFilter(
         (this._cloudStatus as CloudStatusLoggedIn).google_entities
       );
 
@@ -159,8 +164,8 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
 
     let manFilterFuncs:
       | {
-          google: FilterFunc;
-          alexa: FilterFunc;
+          google: VoiceAssistantFilterFunc;
+          alexa: VoiceAssistantFilterFunc;
         }
       | undefined;
 
