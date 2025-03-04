@@ -114,7 +114,9 @@ class HassioAddonConfig extends LitElement {
                   selector: {
                     text: {
                       type:
-                        entry.format || MASKED_FIELDS.includes(entry.name)
+                        entry.format
+                          ? entry.format
+                          : MASKED_FIELDS.includes(entry.name)
                           ? "password"
                           : "text",
                     },
