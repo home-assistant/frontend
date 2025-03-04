@@ -100,12 +100,14 @@ export class EntitiesFilterSectionStrategy extends ReactiveElement {
 
         if (groupEntities.length > 0) {
           isEmpty = false;
-          cards.push({
-            type: "heading",
-            heading: group.title,
-            heading_style: "subtitle",
-            icon: group.icon,
-          });
+          if (group.title) {
+            cards.push({
+              type: "heading",
+              heading: group.title,
+              heading_style: "subtitle",
+              icon: group.icon,
+            });
+          }
 
           for (const entityId of groupEntities) {
             const tileCard: TileCardConfig = {
