@@ -58,6 +58,7 @@ declare global {
     "ll-edit-card": HASSDomEvent<HASSDomEvents["ll-edit-card"]>;
     "ll-delete-card": HASSDomEvent<HASSDomEvents["ll-delete-card"]>;
     "ll-duplicate-card": HASSDomEvent<HASSDomEvents["ll-duplicate-card"]>;
+    "ll-copy-card": HASSDomEvent<HASSDomEvents["ll-copy-card"]>;
     "ll-create-badge": HASSDomEvent<HASSDomEvents["ll-create-badge"]>;
     "ll-edit-badge": HASSDomEvent<HASSDomEvents["ll-edit-badge"]>;
     "ll-delete-badge": HASSDomEvent<HASSDomEvents["ll-delete-badge"]>;
