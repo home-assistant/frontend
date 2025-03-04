@@ -1,78 +1,114 @@
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { HomeAssistant } from "../../types";
+import { ensureArray } from "../array/ensure-array";
 import { computeDomain } from "./compute_domain";
+import { getEntityContext } from "./context/get_entity_context";
 
-export type FilterFunc = (entityId: string) => boolean;
+type EntityCategory = "none" | "config" | "diagnostic";
 
 export interface EntityFilter {
-  include_domains: string[];
-  include_entities: string[];
-  exclude_domains: string[];
-  exclude_entities: string[];
+  domain?: string | string[];
+  device_class?: string | string[];
+  device: string | string[];
+  area?: string | string[];
+  floor?: string | string[];
+  label?: string | string[];
+  entity_category?: EntityCategory | EntityCategory[];
+  hidden_platform?: string | string[];
 }
 
-export const isEmptyFilter = (filter: EntityFilter) =>
-  filter.include_domains.length +
-    filter.include_entities.length +
-    filter.exclude_domains.length +
-    filter.exclude_entities.length ===
-  0;
+type EntityFilterFunc = (entityId: string) => boolean;
 
-export const generateFilter = (
-  includeDomains?: string[],
-  includeEntities?: string[],
-  excludeDomains?: string[],
-  excludeEntities?: string[]
-): FilterFunc => {
-  const includeDomainsSet = new Set(includeDomains);
-  const includeEntitiesSet = new Set(includeEntities);
-  const excludeDomainsSet = new Set(excludeDomains);
-  const excludeEntitiesSet = new Set(excludeEntities);
+export const generateEntityFilter = (
+  hass: HomeAssistant,
+  filter: EntityFilter
+): EntityFilterFunc => {
+  const domains = new Set(ensureArray(filter.domain) ?? []);
+  const deviceClasses = new Set(ensureArray(filter.device_class) ?? []);
+  const floors = new Set(ensureArray(filter.floor) ?? []);
+  const areas = new Set(ensureArray(filter.area) ?? []);
+  const devices = new Set(ensureArray(filter.device) ?? []);
+  const entityCategories = new Set(ensureArray(filter.entity_category) ?? []);
+  const labels = new Set(ensureArray(filter.label) ?? []);
+  const hiddenPlatforms = new Set(ensureArray(filter.hidden_platform) ?? []);
 
-  const haveInclude = includeDomainsSet.size > 0 || includeEntitiesSet.size > 0;
-  const haveExclude = excludeDomainsSet.size > 0 || excludeEntitiesSet.size > 0;
+  return (entityId: string) => {
+    const stateObj = hass.states[entityId] as HassEntity | undefined;
+    if (!stateObj) {
+      return false;
+    }
+    if (domains.size > 0) {
+      const domain = computeDomain(entityId);
+      if (!domains.has(domain)) {
+        return false;
+      }
+    }
+    if (deviceClasses.size > 0) {
+      const dc = stateObj.attributes.device_class;
+      if (!dc) {
+        return false;
+      }
+      if (!deviceClasses.has(dc)) {
+        return false;
+      }
+    }
 
-  // Case 1 - no includes or excludes - pass all entities
-  if (!haveInclude && !haveExclude) {
-    return () => true;
-  }
+    const { area, floor, device, entity } = getEntityContext(stateObj, hass);
 
-  // Case 2 - includes, no excludes - only include specified entities
-  if (haveInclude && !haveExclude) {
-    return (entityId) =>
-      includeEntitiesSet.has(entityId) ||
-      includeDomainsSet.has(computeDomain(entityId));
-  }
+    if (entity && entity.hidden) {
+      return false;
+    }
 
-  // Case 3 - excludes, no includes - only exclude specified entities
-  if (!haveInclude && haveExclude) {
-    return (entityId) =>
-      !excludeEntitiesSet.has(entityId) &&
-      !excludeDomainsSet.has(computeDomain(entityId));
-  }
+    if (floors.size > 0) {
+      if (!floor) {
+        return false;
+      }
+      if (!floors.has(floor.floor_id)) {
+        return false;
+      }
+    }
+    if (areas.size > 0) {
+      if (!area) {
+        return false;
+      }
+      if (!areas.has(area.area_id)) {
+        return false;
+      }
+    }
+    if (devices.size > 0) {
+      if (!device) {
+        return false;
+      }
+      if (!devices.has(device.id)) {
+        return false;
+      }
+    }
+    if (labels.size > 0) {
+      if (!entity) {
+        return false;
+      }
+      if (!entity.labels.some((label) => labels.has(label))) {
+        return false;
+      }
+    }
+    if (entityCategories.size > 0) {
+      if (!entity) {
+        return false;
+      }
+      const category = entity?.entity_category || "none";
+      if (!entityCategories.has(category)) {
+        return false;
+      }
+    }
+    if (hiddenPlatforms.size > 0) {
+      if (!entity) {
+        return false;
+      }
+      if (entity.platform && hiddenPlatforms.has(entity.platform)) {
+        return false;
+      }
+    }
 
-  // Case 4 - both includes and excludes specified
-  // Case 4a - include domain specified
-  //  - if domain is included, pass if entity not excluded
-  //  - if domain is not included, pass if entity is included
-  // note: if both include and exclude domains specified,
-  //   the exclude domains are ignored
-  if (includeDomainsSet.size) {
-    return (entityId) =>
-      includeDomainsSet.has(computeDomain(entityId))
-        ? !excludeEntitiesSet.has(entityId)
-        : includeEntitiesSet.has(entityId);
-  }
-
-  // Case 4b - exclude domain specified
-  //  - if domain is excluded, pass if entity is included
-  //  - if domain is not excluded, pass if entity not excluded
-  if (excludeDomainsSet.size) {
-    return (entityId) =>
-      excludeDomainsSet.has(computeDomain(entityId))
-        ? includeEntitiesSet.has(entityId)
-        : !excludeEntitiesSet.has(entityId);
-  }
-
-  // Case 4c - neither include or exclude domain specified
-  //  - Only pass if entity is included.  Ignore entity excludes.
-  return (entityId) => includeEntitiesSet.has(entityId);
+    return true;
+  };
 };
