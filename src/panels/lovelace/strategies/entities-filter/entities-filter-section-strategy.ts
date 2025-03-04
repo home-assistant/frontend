@@ -10,7 +10,7 @@ import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/sec
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import { ensureArray } from "../../../../common/array/ensure-array";
 
-export interface EntitiesFilterSectionStrategyConfig {
+interface EntityFilterConfig {
   title?: string;
   icon?: string;
   filter?: EntityFilter | EntityFilter[];
@@ -19,6 +19,48 @@ export interface EntitiesFilterSectionStrategyConfig {
   order?: string[];
 }
 
+export type EntitiesFilterSectionStrategyConfig = EntityFilterConfig & {
+  groups?: EntityFilterConfig[];
+};
+
+const getEntities = (hass: HomeAssistant, config: EntityFilterConfig) => {
+  let entitiesIds =
+    config.filter || config.exclude_entities ? Object.keys(hass.states) : [];
+
+  if (config.exclude_entities) {
+    entitiesIds = entitiesIds.filter(
+      (entityId) => !config.exclude_entities!.includes(entityId)
+    );
+  }
+
+  if (config.filter) {
+    const filters = ensureArray(config.filter);
+    const entityFilters = filters.map((filter) =>
+      generateEntityFilter(hass, filter)
+    );
+
+    entitiesIds = entitiesIds.filter((entityId) =>
+      entityFilters.some((filter) => filter(entityId))
+    );
+  }
+
+  if (config.include_entities) {
+    entitiesIds.push(...config.include_entities);
+  }
+
+  if (config.order) {
+    entitiesIds.sort((a, b) => {
+      const aIndex = config.order!.indexOf(a);
+      const bIndex = config.order!.indexOf(b);
+      if (aIndex === -1) return 1;
+      if (bIndex === -1) return -1;
+      return aIndex - bIndex;
+    });
+  }
+
+  return entitiesIds;
+};
+
 @customElement("entities-filter-section-strategy")
 export class EntitiesFilterSectionStrategy extends ReactiveElement {
   static async generate(
@@ -26,6 +68,7 @@ export class EntitiesFilterSectionStrategy extends ReactiveElement {
     hass: HomeAssistant
   ): Promise<LovelaceSectionConfig> {
     const cards: LovelaceCardConfig[] = [];
+    let isEmpty = true;
 
     if (config.title) {
       const headingCard: HeadingCardConfig = {
@@ -37,50 +80,47 @@ export class EntitiesFilterSectionStrategy extends ReactiveElement {
       cards.push(headingCard);
     }
 
-    const filters = ensureArray(config.filter) ?? [];
-    if (
-      filters.length > 0 ||
-      config.include_entities ||
-      config.exclude_entities
-    ) {
-      const entityFilters = filters.map((filter) =>
-        generateEntityFilter(hass, filter)
-      );
+    const entities = getEntities(hass, config);
 
-      let entitiesIds = Object.keys(hass.states).filter((entityId) =>
-        entityFilters.some((filter) => filter(entityId))
-      );
-
-      if (config.exclude_entities) {
-        entitiesIds = entitiesIds.filter(
-          (entityId) => !config.exclude_entities!.includes(entityId)
-        );
+    if (entities.length > 0) {
+      isEmpty = false;
+      for (const entityId of entities) {
+        const tileCard: TileCardConfig = {
+          type: "tile",
+          entity: entityId,
+        };
+        cards.push(tileCard);
       }
-      if (config.include_entities) {
-        entitiesIds.push(...config.include_entities);
+    }
+
+    if (config.groups) {
+      for (const group of config.groups) {
+        const groupEntities = getEntities(hass, group);
+
+        if (groupEntities.length > 0) {
+          isEmpty = false;
+          cards.push({
+            type: "heading",
+            heading: group.title,
+            heading_style: "subtitle",
+            icon: group.icon,
+          });
+
+          for (const entityId of groupEntities) {
+            const tileCard: TileCardConfig = {
+              type: "tile",
+              entity: entityId,
+            };
+            cards.push(tileCard);
+          }
+        }
       }
-
-      if (config.order) {
-        entitiesIds.sort((a, b) => {
-          const aIndex = config.order!.indexOf(a);
-          const bIndex = config.order!.indexOf(b);
-          if (aIndex === -1) return 1;
-          if (bIndex === -1) return -1;
-          return aIndex - bIndex;
-        });
-      }
-
-      const entitiesCards = entitiesIds.map<TileCardConfig>((entityId) => ({
-        type: "tile",
-        entity: entityId,
-      }));
-
-      cards.push(...entitiesCards);
     }
 
     return {
       type: "grid",
       cards: cards,
+      hidden: isEmpty,
     };
   }
 }
