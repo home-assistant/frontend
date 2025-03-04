@@ -9,7 +9,7 @@ type EntityCategory = "none" | "config" | "diagnostic";
 export interface EntityFilter {
   domain?: string | string[];
   device_class?: string | string[];
-  device: string | string[];
+  device?: string | string[];
   area?: string | string[];
   floor?: string | string[];
   label?: string | string[];
