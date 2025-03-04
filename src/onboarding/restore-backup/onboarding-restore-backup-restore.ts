@@ -6,10 +6,7 @@ import "../../components/buttons/ha-progress-button";
 import "../../components/ha-password-field";
 import { haStyle } from "../../resources/styles";
 import type { LocalizeFunc } from "../../common/translations/localize";
-import type {
-  BackupContentExtended,
-  BackupData,
-} from "../../data/backup";
+import type { BackupContentExtended, BackupData } from "../../data/backup";
 import { restoreOnboardingBackup } from "../../data/backup_onboarding";
 import type { HaProgressButton } from "../../components/buttons/ha-progress-button";
 import { fireEvent } from "../../common/dom/fire_event";
