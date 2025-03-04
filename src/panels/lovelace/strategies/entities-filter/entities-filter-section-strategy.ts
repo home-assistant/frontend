@@ -14,8 +14,8 @@ export interface EntitiesFilterSectionStrategyConfig {
   title?: string;
   icon?: string;
   filter?: EntityFilter | EntityFilter[];
-  includes?: string[];
-  excludes?: string[];
+  include_entities?: string[];
+  exclude_entities?: string[];
   order?: string[];
 }
 
@@ -38,7 +38,11 @@ export class EntitiesFilterSectionStrategy extends ReactiveElement {
     }
 
     const filters = ensureArray(config.filter) ?? [];
-    if (filters.length > 0 || config.includes || config.excludes) {
+    if (
+      filters.length > 0 ||
+      config.include_entities ||
+      config.exclude_entities
+    ) {
       const entityFilters = filters.map((filter) =>
         generateEntityFilter(hass, filter)
       );
@@ -47,13 +51,13 @@ export class EntitiesFilterSectionStrategy extends ReactiveElement {
         entityFilters.some((filter) => filter(entityId))
       );
 
-      if (config.excludes) {
+      if (config.exclude_entities) {
         entitiesIds = entitiesIds.filter(
-          (entityId) => !config.excludes!.includes(entityId)
+          (entityId) => !config.exclude_entities!.includes(entityId)
         );
       }
-      if (config.includes) {
-        entitiesIds.push(...config.includes);
+      if (config.include_entities) {
+        entitiesIds.push(...config.include_entities);
       }
 
       if (config.order) {
