@@ -10,6 +10,7 @@ import { extractSearchParam } from "../../src/common/url/search-params";
 import { onBoardingStyles } from "../../src/onboarding/styles";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
 import { LandingPageBaseElement } from "./landing-page-base-element";
+import { waitForSeconds } from "../../src/common/util/wait";
 
 const SCHEDULE_CORE_CHECK_SECONDS = 5;
 
@@ -38,6 +39,7 @@ class HaLandingPage extends LandingPageBaseElement {
           <landing-page-network
             @value-changed=${this._networkInfoChanged}
             .localize=${this.localize}
+            .checkCore=${this._checkCoreAvailability}
           ></landing-page-network>
 
           ${this._supervisorError
@@ -53,6 +55,7 @@ class HaLandingPage extends LandingPageBaseElement {
           <landing-page-logs
             .localize=${this.localize}
             @landing-page-error=${this._showError}
+            .checkCore=${this._checkCoreAvailability}
           ></landing-page-logs>
         </div>
       </ha-card>
@@ -87,25 +90,20 @@ class HaLandingPage extends LandingPageBaseElement {
       import("../../src/resources/particles");
     }
     import("../../src/components/ha-language-picker");
-
-    this._scheduleCoreCheck();
-  }
-
-  private _scheduleCoreCheck() {
-    setTimeout(
-      () => this._checkCoreAvailability(),
-      SCHEDULE_CORE_CHECK_SECONDS * 1000
-    );
   }
 
   private async _checkCoreAvailability() {
+    // wait because there is a moment where landingpage is down and core is not up yet
+    await waitForSeconds(SCHEDULE_CORE_CHECK_SECONDS);
     try {
       const response = await fetch("/manifest.json");
       if (response.ok) {
         location.reload();
+        return true;
       }
-    } finally {
-      this._scheduleCoreCheck();
+      return false;
+    } catch (_err) {
+      return false;
     }
   }
 

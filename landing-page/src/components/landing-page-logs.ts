@@ -37,6 +37,8 @@ class LandingPageLogs extends LitElement {
   @property({ attribute: false })
   public localize!: LocalizeFunc<LandingPageKeys>;
 
+  @property({ attribute: false }) public checkCore!: () => Promise<boolean>;
+
   @query("ha-ansi-to-html") private _ansiToHtmlElement?: HaAnsiToHtml;
 
   @query(".logs") private _logElement?: HTMLElement;
@@ -184,7 +186,7 @@ class LandingPageLogs extends LitElement {
     return tempLogLine;
   }
 
-  private async _startLogStream() {
+  private async _startLogStream(retry = false) {
     this._error = false;
     this._newLogsIndicator = false;
     this._ansiToHtmlElement?.clear();
@@ -207,6 +209,8 @@ class LandingPageLogs extends LitElement {
         const { value, done: readerDone } = await reader.read();
         done = readerDone;
 
+        retry = false;
+
         if (value) {
           const chunk = decoder.decode(value, { stream: !done });
           tempLogLine = this._displayLogs(chunk, tempLogLine);
@@ -216,7 +220,12 @@ class LandingPageLogs extends LitElement {
       // eslint-disable-next-line no-console
       console.error(err);
 
-      // fallback to observerlogs if there is a problem with supervisor
+      if (!retry) {
+        this._startLogStream(true);
+        return;
+      }
+
+      // fallback to observer logs if there is a problem with supervisor
       this._loadObserverLogs();
     }
   }
@@ -251,9 +260,13 @@ class LandingPageLogs extends LitElement {
 
       this._scheduleObserverLogs();
     } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error(err);
-      this._error = true;
+      const coreIsUp = await this.checkCore();
+
+      if (!coreIsUp) {
+        // eslint-disable-next-line no-console
+        console.error(err);
+        this._error = true;
+      }
     }
   }
 

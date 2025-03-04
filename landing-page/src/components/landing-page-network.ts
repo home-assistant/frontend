@@ -30,6 +30,8 @@ class LandingPageNetwork extends LitElement {
   @property({ attribute: false })
   public localize!: LocalizeFunc<LandingPageKeys>;
 
+  @property({ attribute: false }) public checkCore!: () => Promise<boolean>;
+
   @state() private _networkIssue = false;
 
   @state() private _getNetworkInfoError = false;
@@ -127,11 +129,14 @@ class LandingPageNetwork extends LitElement {
 
       ({ data } = await response.json());
     } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error(err);
-      this._getNetworkInfoError = true;
-      this._dnsPrimaryInterfaceNameservers = undefined;
-      this._dnsPrimaryInterface = undefined;
+      const coreUp = this.checkCore();
+      if (!coreUp) {
+        // eslint-disable-next-line no-console
+        console.error(err);
+        this._getNetworkInfoError = true;
+        this._dnsPrimaryInterfaceNameservers = undefined;
+        this._dnsPrimaryInterface = undefined;
+      }
       return;
     }
 
