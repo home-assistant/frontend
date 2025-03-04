@@ -20,6 +20,7 @@ interface EntityFilterConfig {
 }
 
 export type EntitiesFilterSectionStrategyConfig = EntityFilterConfig & {
+  type: "entities-filter";
   groups?: EntityFilterConfig[];
 };
 
