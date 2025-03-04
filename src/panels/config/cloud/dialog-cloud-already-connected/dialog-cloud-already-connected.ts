@@ -61,7 +61,28 @@ class DialogCloudAlreadyConnected extends LitElement {
             )}
           </b>
         </div>
-        <div class="instance-details">
+
+        ${details.name
+          ? html` <div class="instance-details">
+              <span>
+                ${this.hass.localize(
+                  "ui.panel.config.cloud.dialog_already_connected.instance_name"
+                )}:
+              </span>
+              <span>${details.name})}</span>
+            </div>`
+          : nothing}
+        ${details.version
+          ? html` <div class="instance-details">
+              <span>
+                ${this.hass.localize(
+                  "ui.panel.config.cloud.dialog_already_connected.instance_version"
+                )}:
+              </span>
+              <span>${details.version})}</span>
+            </div>`
+          : nothing}
+        <div class="instance-detail">
           <div class="instance-detail">
             <span>
               ${this.hass.localize(
