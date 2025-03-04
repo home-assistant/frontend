@@ -56,10 +56,11 @@ class MoreInfoScript extends LitElement {
     }
     const stateObj = this.stateObj;
 
-    const fields =
+    const script =
       this.hass.services.script[
         this.entry?.unique_id || computeObjectId(this.stateObj.entity_id)
-      ]?.fields;
+      ];
+    const fields = script?.fields;
 
     const hasFields = fields && Object.keys(fields).length > 0;
 
@@ -81,6 +82,8 @@ class MoreInfoScript extends LitElement {
           : this.hass.localize("ui.card.script.idle")}
         .changedOverride=${this.stateObj.attributes.last_triggered || 0}
       ></ha-more-info-state-header>
+
+      ${script?.description ? html`<p>${script?.description}</p>` : nothing}
 
       <div class=${`queue ${hasQueue ? "has-queue" : ""}`}>
         ${hasQueue
@@ -226,6 +229,10 @@ class MoreInfoScript extends LitElement {
     ha-service-control {
       --service-control-padding: 0;
       --service-control-items-border-top: none;
+    }
+    p {
+      text-align: center;
+      padding: 0 16px;
     }
   `;
 }
