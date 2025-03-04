@@ -69,6 +69,8 @@ export class AreaViewStrategy extends ReactiveElement {
         icon: "mdi:home-thermometer",
         groups: [
           {
+            title: "Thermostat and humidifier",
+            icon: "mdi:thermostat",
             filter: {
               domain: ["climate", "humidifier"],
               area: config.area,
@@ -76,6 +78,8 @@ export class AreaViewStrategy extends ReactiveElement {
             },
           },
           {
+            title: "Shutters",
+            icon: "mdi:window-shutter",
             filter: {
               domain: "cover",
               device_class: [
@@ -92,6 +96,8 @@ export class AreaViewStrategy extends ReactiveElement {
             },
           },
           {
+            title: "Sensors",
+            icon: "mdi:wifi",
             filter: {
               domain: "binary_sensor",
               device_class: "window",
@@ -125,6 +131,8 @@ export class AreaViewStrategy extends ReactiveElement {
         icon: "mdi:shield",
         groups: [
           {
+            title: "Alarm and locks",
+            icon: "mdi:alarm-light",
             filter: {
               domain: ["lock", "alarm_control_panel"],
               area: config.area,
@@ -132,6 +140,8 @@ export class AreaViewStrategy extends ReactiveElement {
             },
           },
           {
+            title: "Doors",
+            icon: "mdi:door",
             filter: {
               domain: "cover",
               device_class: ["door", "garage", "gate"],
@@ -140,6 +150,8 @@ export class AreaViewStrategy extends ReactiveElement {
             },
           },
           {
+            title: "Sensors",
+            icon: "mdi:wifi",
             filter: {
               domain: "binary_sensor",
               device_class: ["door", "garage_door"],
