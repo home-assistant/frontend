@@ -55,6 +55,8 @@ export class HuiSection extends ReactiveElement {
 
   @state() private _cards: HuiCard[] = [];
 
+  @state() private _config?: LovelaceSectionConfig;
+
   private _layoutElementType?: string;
 
   private _layoutElement?: LovelaceSectionElement;
@@ -195,6 +197,8 @@ export class HuiSection extends ReactiveElement {
       type: sectionConfig.type || DEFAULT_SECTION_LAYOUT,
     };
 
+    this._config = sectionConfig;
+
     // Create a new layout element if necessary.
     let addLayoutElement = false;
 
@@ -223,14 +227,16 @@ export class HuiSection extends ReactiveElement {
   }
 
   private _updateElement(forceVisible?: boolean) {
-    if (!this._layoutElement) {
+    if (!this._layoutElement || !this._config) {
       return;
     }
+
     const visible =
       forceVisible ||
       this.preview ||
-      !this.config.visibility ||
-      checkConditionsMet(this.config.visibility, this.hass);
+      (!this._config.hidden &&
+        (!this.config.visibility ||
+          checkConditionsMet(this.config.visibility, this.hass)));
 
     if (this.hidden !== !visible) {
       this.style.setProperty("display", visible ? "" : "none");
