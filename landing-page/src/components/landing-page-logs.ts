@@ -22,6 +22,8 @@ import {
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import { fileDownload } from "../../../src/util/file_download";
 import { getSupervisorLogs, getSupervisorLogsFollow } from "../data/supervisor";
+import { waitForSeconds } from "../../../src/common/util/wait";
+import { CORE_CHECK_SECONDS } from "../ha-landing-page";
 
 const ERROR_CHECK = /^[\d\s-:]+(ERROR|CRITICAL)(.*)/gm;
 declare global {
@@ -36,8 +38,6 @@ const SCHEDULE_FETCH_OBSERVER_LOGS = 5;
 class LandingPageLogs extends LitElement {
   @property({ attribute: false })
   public localize!: LocalizeFunc<LandingPageKeys>;
-
-  @property({ attribute: false }) public checkCore!: () => Promise<boolean>;
 
   @query("ha-ansi-to-html") private _ansiToHtmlElement?: HaAnsiToHtml;
 
@@ -186,7 +186,7 @@ class LandingPageLogs extends LitElement {
     return tempLogLine;
   }
 
-  private async _startLogStream(retry = false) {
+  private async _startLogStream() {
     this._error = false;
     this._newLogsIndicator = false;
     this._ansiToHtmlElement?.clear();
@@ -209,8 +209,6 @@ class LandingPageLogs extends LitElement {
         const { value, done: readerDone } = await reader.read();
         done = readerDone;
 
-        retry = false;
-
         if (value) {
           const chunk = decoder.decode(value, { stream: !done });
           tempLogLine = this._displayLogs(chunk, tempLogLine);
@@ -219,11 +217,6 @@ class LandingPageLogs extends LitElement {
     } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error(err);
-
-      if (!retry) {
-        this._startLogStream(true);
-        return;
-      }
 
       // fallback to observer logs if there is a problem with supervisor
       this._loadObserverLogs();
@@ -260,13 +253,12 @@ class LandingPageLogs extends LitElement {
 
       this._scheduleObserverLogs();
     } catch (err) {
-      const coreIsUp = await this.checkCore();
+      // wait because there is a moment where landingpage is down and core is not up yet
+      await waitForSeconds(CORE_CHECK_SECONDS);
 
-      if (!coreIsUp) {
-        // eslint-disable-next-line no-console
-        console.error(err);
-        this._error = true;
-      }
+      // eslint-disable-next-line no-console
+      console.error(err);
+      this._error = true;
     }
   }
 

@@ -11,37 +11,53 @@ import { onBoardingStyles } from "../../src/onboarding/styles";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
 import { LandingPageBaseElement } from "./landing-page-base-element";
 import { waitForSeconds } from "../../src/common/util/wait";
+import {
+  getSupervisorNetworkInfo,
+  pingSupervisor,
+  type NetworkInfo,
+} from "./data/supervisor";
 
-const SCHEDULE_CORE_CHECK_SECONDS = 5;
+export const CORE_CHECK_SECONDS = 5;
+const SCHEDULE_FETCH_NETWORK_INFO_SECONDS = 5;
 
 @customElement("ha-landing-page")
 class HaLandingPage extends LandingPageBaseElement {
   @property({ attribute: false }) public translationFragment = "landing-page";
 
-  @state() private _networkIssue = false;
-
   @state() private _supervisorError = false;
+
+  @state() private _networkInfo?: NetworkInfo;
+
+  @state() private _coreStatusChecked = false;
+
+  @state() private _networkInfoError = false;
 
   private _mobileApp =
     extractSearchParam("redirect_uri") === "homeassistant://auth-callback";
 
   render() {
+    const networkIssue = this._networkInfo && !this._networkInfo.host_internet;
+
     return html`
       <ha-card>
         <div class="card-content">
           <h1>${this.localize("header")}</h1>
-          ${!this._networkIssue && !this._supervisorError
+          ${!networkIssue && !this._supervisorError
             ? html`
                 <p>${this.localize("subheader")}</p>
                 <mwc-linear-progress indeterminate></mwc-linear-progress>
               `
             : nothing}
-          <landing-page-network
-            @value-changed=${this._networkInfoChanged}
-            .localize=${this.localize}
-            .checkCore=${this._checkCoreAvailability}
-          ></landing-page-network>
-
+          ${networkIssue || this._networkInfoError
+            ? html`
+                <landing-page-network
+                  .localize=${this.localize}
+                  .networkInfo=${this._networkInfo}
+                  .error=${this._networkInfoError}
+                  @dns-set=${this._fetchSupervisorInfo}
+                ></landing-page-network>
+              `
+            : nothing}
           ${this._supervisorError
             ? html`
                 <ha-alert
@@ -55,7 +71,6 @@ class HaLandingPage extends LandingPageBaseElement {
           <landing-page-logs
             .localize=${this.localize}
             @landing-page-error=${this._showError}
-            .checkCore=${this._checkCoreAvailability}
           ></landing-page-logs>
         </div>
       </ha-card>
@@ -90,29 +105,84 @@ class HaLandingPage extends LandingPageBaseElement {
       import("../../src/resources/particles");
     }
     import("../../src/components/ha-language-picker");
+
+    this._pingSupervisor();
+  }
+
+  private _schedulePingSupervisor() {
+    setTimeout(
+      () => this._pingSupervisor(),
+      SCHEDULE_FETCH_NETWORK_INFO_SECONDS * 1000
+    );
+  }
+
+  private async _pingSupervisor() {
+    try {
+      const response = await pingSupervisor();
+      if (!response.ok) {
+        throw new Error("Failed to ping supervisor, assume update in progress");
+      }
+      this._fetchSupervisorInfo(true);
+    } catch (_err) {
+      this._schedulePingSupervisor();
+    }
+  }
+
+  private _scheduleFetchSupervisorInfo() {
+    setTimeout(
+      () => this._fetchSupervisorInfo(true),
+      SCHEDULE_FETCH_NETWORK_INFO_SECONDS * 1000
+    );
+  }
+
+  private async _fetchSupervisorInfo(schedule = false) {
+    try {
+      let first = false;
+      if (!this._networkInfo) {
+        first = true;
+      }
+      this._networkInfo = await getSupervisorNetworkInfo();
+      if (first) {
+        this._networkInfo.host_internet = false;
+      }
+      this._networkInfoError = false;
+    } catch (err) {
+      if (!this._coreStatusChecked) {
+        // wait because there is a moment where landingpage is down and core is not up yet
+        await waitForSeconds(CORE_CHECK_SECONDS);
+        await this._checkCoreAvailability();
+      }
+      // eslint-disable-next-line no-console
+      console.error(err);
+      this._networkInfoError = true;
+    }
+
+    if (schedule) {
+      this._scheduleFetchSupervisorInfo();
+    }
+  }
+
+  private _scheduleCheckCoreAvailability() {
+    setTimeout(() => this._checkCoreAvailability(), CORE_CHECK_SECONDS * 1000);
   }
 
   private async _checkCoreAvailability() {
-    // wait because there is a moment where landingpage is down and core is not up yet
-    await waitForSeconds(SCHEDULE_CORE_CHECK_SECONDS);
     try {
       const response = await fetch("/manifest.json");
       if (response.ok) {
         location.reload();
-        return true;
+      } else {
+        throw new Error("Failed to fetch manifest");
       }
-      return false;
     } catch (_err) {
-      return false;
+      this._coreStatusChecked = true;
+      // checking core if it takes longer than 5 seconds to start
+      this._scheduleCheckCoreAvailability();
     }
   }
 
   private _showError() {
     this._supervisorError = true;
-  }
-
-  private _networkInfoChanged(ev: CustomEvent) {
-    this._networkIssue = ev.detail.value;
   }
 
   private _languageChanged(ev: CustomEvent) {
