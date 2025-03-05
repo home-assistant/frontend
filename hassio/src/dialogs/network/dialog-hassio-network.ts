@@ -161,11 +161,7 @@ export class DialogHassioNetwork
                   .disabled=${this._scanning}
                 >
                   ${this._scanning
-                    ? html`<ha-spinner
-                        aria-label="Scanning"
-                        indeterminate
-                        size="small"
-                      >
+                    ? html`<ha-spinner aria-label="Scanning" size="small">
                       </ha-spinner>`
                     : this.supervisor.localize("dialog.network.scan_ap")}
                 </mwc-button>

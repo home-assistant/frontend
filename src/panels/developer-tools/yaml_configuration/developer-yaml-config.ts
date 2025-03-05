@@ -6,7 +6,7 @@ import { componentsWithService } from "../../../common/config/components_with_se
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-spinner";
 import type { CheckConfigResult } from "../../../data/core";
 import { checkCoreConfig } from "../../../data/core";
 import { domainToName } from "../../../data/integration";
@@ -94,7 +94,7 @@ export class DeveloperYamlConfig extends LitElement {
                 ? html`<div
                     class="validate-container layout vertical center-center"
                   >
-                    <ha-circular-progress indeterminate></ha-circular-progress>
+                    <ha-spinner></ha-spinner>
                   </div> `
                 : nothing
               : html`

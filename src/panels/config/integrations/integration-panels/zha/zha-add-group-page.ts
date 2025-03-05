@@ -5,7 +5,7 @@ import { customElement, property, state, query } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
 import type { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
-import "../../../../../components/ha-circular-progress";
+import "../../../../../components/ha-spinner";
 import type { ZHADeviceEndpoint, ZHAGroup } from "../../../../../data/zha";
 import { addGroup, fetchGroupableDevices } from "../../../../../data/zha";
 import "../../../../../layouts/hass-subpage";
@@ -105,13 +105,12 @@ export class ZHAAddGroupPage extends LitElement {
               class="button"
             >
               ${this._processingAdd
-                ? html`<ha-circular-progress
-                    indeterminate
+                ? html`<ha-spinner
                     size="small"
                     .ariaLabel=${this.hass!.localize(
                       "ui.panel.config.zha.groups.creating_group"
                     )}
-                  ></ha-circular-progress>`
+                  ></ha-spinner>`
                 : ""}
               ${this.hass!.localize(
                 "ui.panel.config.zha.groups.create"

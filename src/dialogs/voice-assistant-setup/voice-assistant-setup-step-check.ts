@@ -2,6 +2,7 @@ import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
+import "../../components/ha-spinner";
 import "../../components/ha-circular-progress";
 import { testAssistSatelliteConnection } from "../../data/assist_satellite";
 import type { HomeAssistant } from "../../types";
@@ -83,11 +84,7 @@ export class HaVoiceAssistantSetupStepCheck extends LitElement {
               )}
             </p>
 
-            ${this._showLoader
-              ? html`<ha-circular-progress
-                  indeterminate
-                ></ha-circular-progress>`
-              : nothing} `}
+            ${this._showLoader ? html`<ha-spinner></ha-spinner>` : nothing}`}
     </div>`;
   }
 

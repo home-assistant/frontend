@@ -25,7 +25,7 @@ import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { ScorableTextItem } from "../../common/string/filter/sequence-matching";
 import { fuzzyFilterSort } from "../../common/string/filter/sequence-matching";
 import { debounce } from "../../common/util/debounce";
-import "../../components/ha-circular-progress";
+import "../../components/ha-spinner";
 import "../../components/ha-icon-button";
 import "../../components/ha-label";
 import "../../components/ha-list-item";
@@ -237,10 +237,7 @@ export class QuickBar extends LitElement {
           </ha-textfield>
         </div>
         ${!items
-          ? html`<ha-circular-progress
-              size="small"
-              indeterminate
-            ></ha-circular-progress>`
+          ? html`<ha-spinner size="small"></ha-spinner>`
           : items.length === 0
             ? html`
                 <div class="nothing-found">
@@ -426,10 +423,9 @@ export class QuickBar extends LitElement {
   }
 
   private _addSpinnerToCommandItem(index: number): void {
-    const spinner = document.createElement("ha-circular-progress");
+    const spinner = document.createElement("ha-spinner");
     spinner.size = "small";
     spinner.slot = "meta";
-    spinner.indeterminate = true;
     this._getItemAtIndex(index)?.appendChild(spinner);
   }
 

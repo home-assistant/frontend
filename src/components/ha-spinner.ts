@@ -33,8 +33,11 @@ export class HaSpinner extends Spinner {
     spinnerStyles,
     css`
       :host {
-        --indicator-color: var(--primary-color);
-        --track-color: var(--divider-color);
+        --indicator-color: var(
+          --ha-spinner-indicator-color,
+          var(--primary-color)
+        );
+        --track-color: var(--ha-spinner-divider-color, var(--divider-color));
         --track-width: 4px;
         --speed: 3.5s;
         font-size: var(--ha-spinner-size, 48px);

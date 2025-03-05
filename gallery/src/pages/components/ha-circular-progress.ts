@@ -17,21 +17,15 @@ export class DemoHaCircularProgress extends LitElement {
       ></ha-card>
       <ha-card header="Different circular progress sizes">
         <div class="card-content">
-          <ha-spinner indeterminate size="tiny"></ha-spinner>
-          <ha-spinner indeterminate size="small"></ha-spinner>
-          <ha-spinner indeterminate size="medium"></ha-spinner>
-          <ha-spinner indeterminate size="large"></ha-spinner></div
+          <ha-spinner size="tiny"></ha-spinner>
+          <ha-spinner size="small"></ha-spinner>
+          <ha-spinner size="medium"></ha-spinner>
+          <ha-spinner size="large"></ha-spinner></div
       ></ha-card>
       <ha-card header="Circular progress with an aria-label">
         <div class="card-content">
-          <ha-spinner
-            indeterminate
-            aria-label="Doing something..."
-          ></ha-spinner>
-          <ha-spinner
-            indeterminate
-            .ariaLabel=${"Doing something..."}
-          ></ha-spinner></div
+          <ha-spinner aria-label="Doing something..."></ha-spinner>
+          <ha-spinner .ariaLabel=${"Doing something..."}></ha-spinner></div
       ></ha-card>`;
   }
 
