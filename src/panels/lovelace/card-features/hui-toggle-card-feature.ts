@@ -163,7 +163,6 @@ class HuiToggleCardFeature extends LitElement implements LovelaceCardFeature {
 
     return html`
       <ha-control-switch
-        touch-action="none"
         .pathOn=${onIcon}
         .pathOff=${offIcon}
         .checked=${isOn}
