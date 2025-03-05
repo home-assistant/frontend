@@ -3,48 +3,35 @@ import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../src/components/ha-bar";
 import "../../../../src/components/ha-card";
-import "../../../../src/components/ha-circular-progress";
-import "@material/web/progress/circular-progress";
+import "../../../../src/components/ha-spinner";
 import type { HomeAssistant } from "../../../../src/types";
 
-@customElement("demo-components-ha-circular-progress")
+@customElement("demo-components-ha-spinner")
 export class DemoHaCircularProgress extends LitElement {
   @property({ attribute: false }) hass!: HomeAssistant;
 
   protected render(): TemplateResult {
     return html`<ha-card header="Basic circular progress">
         <div class="card-content">
-          <ha-circular-progress indeterminate></ha-circular-progress></div
+          <ha-spinner></ha-spinner></div
       ></ha-card>
       <ha-card header="Different circular progress sizes">
         <div class="card-content">
-          <ha-circular-progress
-            indeterminate
-            size="tiny"
-          ></ha-circular-progress>
-          <ha-circular-progress
-            indeterminate
-            size="small"
-          ></ha-circular-progress>
-          <ha-circular-progress
-            indeterminate
-            size="medium"
-          ></ha-circular-progress>
-          <ha-circular-progress
-            indeterminate
-            size="large"
-          ></ha-circular-progress></div
+          <ha-spinner indeterminate size="tiny"></ha-spinner>
+          <ha-spinner indeterminate size="small"></ha-spinner>
+          <ha-spinner indeterminate size="medium"></ha-spinner>
+          <ha-spinner indeterminate size="large"></ha-spinner></div
       ></ha-card>
       <ha-card header="Circular progress with an aria-label">
         <div class="card-content">
-          <ha-circular-progress
+          <ha-spinner
             indeterminate
             aria-label="Doing something..."
-          ></ha-circular-progress>
-          <ha-circular-progress
+          ></ha-spinner>
+          <ha-spinner
             indeterminate
             .ariaLabel=${"Doing something..."}
-          ></ha-circular-progress></div
+          ></ha-spinner></div
       ></ha-card>`;
   }
 
@@ -58,6 +45,6 @@ export class DemoHaCircularProgress extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "demo-components-ha-circular-progress": DemoHaCircularProgress;
+    "demo-components-ha-spinner": DemoHaCircularProgress;
   }
 }

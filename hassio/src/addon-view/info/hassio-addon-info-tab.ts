@@ -1,7 +1,7 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../../src/components/ha-loading-spinner";
+import "../../../../src/components/ha-spinner";
 import type { HassioAddonDetails } from "../../../../src/data/hassio/addon";
 import type { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import { haStyle } from "../../../../src/resources/styles";
@@ -23,7 +23,7 @@ class HassioAddonInfoDashboard extends LitElement {
 
   protected render(): TemplateResult {
     if (!this.addon) {
-      return html`<ha-loading-spinner></ha-loading-spinner>`;
+      return html`<ha-spinner></ha-spinner>`;
     }
 
     return html`

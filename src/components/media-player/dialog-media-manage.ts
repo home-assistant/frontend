@@ -22,7 +22,7 @@ import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../ha-button";
 import "../ha-check-list-item";
-import "../ha-circular-progress";
+import "../ha-spinner";
 import "../ha-dialog";
 import "../ha-dialog-header";
 import "../ha-svg-icon";
@@ -151,7 +151,7 @@ class DialogMediaManage extends LitElement {
         ${!this._currentItem
           ? html`
               <div class="refresh">
-                <ha-circular-progress indeterminate></ha-circular-progress>
+                <ha-spinner></ha-spinner>
               </div>
             `
           : !children.length

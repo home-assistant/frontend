@@ -4,8 +4,8 @@ import type { PropertyValues } from "lit";
 import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 
-@customElement("ha-loading-spinner")
-export class HaLoadingSpinner extends Spinner {
+@customElement("ha-spinner")
+export class HaSpinner extends Spinner {
   @property() public size?: "tiny" | "small" | "medium" | "large";
 
   protected updated(changedProps: PropertyValues) {
@@ -45,6 +45,6 @@ export class HaLoadingSpinner extends Spinner {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-loading-spinner": HaLoadingSpinner;
+    "ha-spinner": HaSpinner;
   }
 }
