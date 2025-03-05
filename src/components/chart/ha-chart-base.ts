@@ -574,8 +574,8 @@ export class HaChartBase extends LitElement {
           fontSize: 12,
         },
         axisPointer: {
-          lineStyle: { color: style.getPropertyValue("--divider-color") },
-          crossStyle: { color: style.getPropertyValue("--divider-color") },
+          lineStyle: { color: style.getPropertyValue("--info-color") },
+          crossStyle: { color: style.getPropertyValue("--info-color") },
         },
       },
       timeline: {},
