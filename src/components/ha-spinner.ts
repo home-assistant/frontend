@@ -37,7 +37,7 @@ export class HaSpinner extends Spinner {
         --track-color: var(--divider-color);
         --track-width: 4px;
         --speed: 3.5s;
-        font-size: 48px;
+        font-size: var(--ha-spinner-size, 48px);
       }
     `,
   ];
