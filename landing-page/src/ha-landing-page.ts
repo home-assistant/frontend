@@ -137,14 +137,7 @@ class HaLandingPage extends LandingPageBaseElement {
 
   private async _fetchSupervisorInfo(schedule = false) {
     try {
-      let first = false;
-      if (!this._networkInfo) {
-        first = true;
-      }
       this._networkInfo = await getSupervisorNetworkInfo();
-      if (first) {
-        this._networkInfo.host_internet = false;
-      }
       this._networkInfoError = false;
     } catch (err) {
       if (!this._coreStatusChecked) {
