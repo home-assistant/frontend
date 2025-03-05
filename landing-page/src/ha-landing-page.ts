@@ -10,14 +10,14 @@ import { extractSearchParam } from "../../src/common/url/search-params";
 import { onBoardingStyles } from "../../src/onboarding/styles";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
 import { LandingPageBaseElement } from "./landing-page-base-element";
-import { waitForSeconds } from "../../src/common/util/wait";
 import {
   getSupervisorNetworkInfo,
   pingSupervisor,
   type NetworkInfo,
 } from "./data/supervisor";
 
-export const CORE_CHECK_SECONDS = 5;
+export const ASSUME_CORE_START_SECONDS = 30;
+export const SCHEDULE_CORE_CHECK_SECONDS = 5;
 const SCHEDULE_FETCH_NETWORK_INFO_SECONDS = 5;
 
 @customElement("ha-landing-page")
@@ -31,6 +31,8 @@ class HaLandingPage extends LandingPageBaseElement {
   @state() private _coreStatusChecked = false;
 
   @state() private _networkInfoError = false;
+
+  @state() private _coreCheckActive = false;
 
   private _mobileApp =
     extractSearchParam("redirect_uri") === "homeassistant://auth-callback";
@@ -116,6 +118,12 @@ class HaLandingPage extends LandingPageBaseElement {
     );
   }
 
+  private _turnOfCoreCheck() {
+    setTimeout(() => {
+      this._coreCheckActive = false;
+    }, ASSUME_CORE_START_SECONDS * 1000);
+  }
+
   private async _fetchSupervisorInfo(schedule = false) {
     try {
       if (!this._networkInfo) {
@@ -130,13 +138,14 @@ class HaLandingPage extends LandingPageBaseElement {
       this._coreStatusChecked = false;
     } catch (err: any) {
       if (!this._coreStatusChecked) {
-        // wait because there is a moment where landingpage is down and core is not up yet
-        await waitForSeconds(CORE_CHECK_SECONDS);
+        // wait before show errors, because we assume that core is starting
+        this._coreCheckActive = true;
+        this._turnOfCoreCheck();
       }
       await this._checkCoreAvailability();
 
       // assume supervisor update if ping fails and network info was never fetched -> don't show an error
-      if (err.message !== "ping-failed") {
+      if (!this._coreCheckActive && err.message !== "ping-failed") {
         // eslint-disable-next-line no-console
         console.error(err);
         this._networkInfoError = true;

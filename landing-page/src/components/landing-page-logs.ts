@@ -23,7 +23,7 @@ import { fireEvent } from "../../../src/common/dom/fire_event";
 import { fileDownload } from "../../../src/util/file_download";
 import { getSupervisorLogs, getSupervisorLogsFollow } from "../data/supervisor";
 import { waitForSeconds } from "../../../src/common/util/wait";
-import { CORE_CHECK_SECONDS } from "../ha-landing-page";
+import { ASSUME_CORE_START_SECONDS } from "../ha-landing-page";
 
 const ERROR_CHECK = /^[\d\s-:]+(ERROR|CRITICAL)(.*)/gm;
 declare global {
@@ -254,7 +254,7 @@ class LandingPageLogs extends LitElement {
       this._scheduleObserverLogs();
     } catch (err) {
       // wait because there is a moment where landingpage is down and core is not up yet
-      await waitForSeconds(CORE_CHECK_SECONDS);
+      await waitForSeconds(ASSUME_CORE_START_SECONDS);
 
       // eslint-disable-next-line no-console
       console.error(err);
