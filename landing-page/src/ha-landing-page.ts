@@ -17,7 +17,7 @@ import {
 } from "./data/supervisor";
 
 export const ASSUME_CORE_START_SECONDS = 30;
-export const SCHEDULE_CORE_CHECK_SECONDS = 5;
+export const SCHEDULE_CORE_CHECK_SECONDS = 1;
 const SCHEDULE_FETCH_NETWORK_INFO_SECONDS = 5;
 
 @customElement("ha-landing-page")
