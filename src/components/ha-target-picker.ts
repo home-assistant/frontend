@@ -1,4 +1,3 @@
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 // @ts-ignore
 import chipStyles from "@material/chips/dist/mdc.chips.min.css";
 import "@material/mwc-button/mwc-button";
@@ -47,6 +46,7 @@ import { floorDefaultIconPath } from "./ha-floor-icon";
 import "./ha-icon-button";
 import "./ha-input-helper-text";
 import "./ha-svg-icon";
+import "./ha-tooltip";
 
 @customElement("ha-target-picker")
 export class HaTargetPicker extends SubscribeMixin(LitElement) {
@@ -339,38 +339,40 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         ${type === "entity_id"
           ? ""
           : html`<span role="gridcell">
-              <ha-icon-button
-                class="expand-btn mdc-chip__icon mdc-chip__icon--trailing"
-                .label=${this.hass.localize(
-                  "ui.components.target-picker.expand"
-                )}
-                .path=${mdiUnfoldMoreVertical}
-                hide-title
-                .id=${id}
-                .type=${type}
-                @click=${this._handleExpand}
-              ></ha-icon-button>
-              <simple-tooltip class="expand" animation-delay="0"
-                >${this.hass.localize(
+              <ha-tooltip
+                .content=${this.hass.localize(
                   `ui.components.target-picker.expand_${type}`
-                )}</simple-tooltip
+                )}
               >
+                <ha-icon-button
+                  class="expand-btn mdc-chip__icon mdc-chip__icon--trailing"
+                  .label=${this.hass.localize(
+                    "ui.components.target-picker.expand"
+                  )}
+                  .path=${mdiUnfoldMoreVertical}
+                  hide-title
+                  .id=${id}
+                  .type=${type}
+                  @click=${this._handleExpand}
+                ></ha-icon-button>
+              </ha-tooltip>
             </span>`}
         <span role="gridcell">
-          <ha-icon-button
-            class="mdc-chip__icon mdc-chip__icon--trailing"
-            .label=${this.hass.localize("ui.components.target-picker.remove")}
-            .path=${mdiClose}
-            hide-title
-            .id=${id}
-            .type=${type}
-            @click=${this._handleRemove}
-          ></ha-icon-button>
-          <simple-tooltip animation-delay="0"
-            >${this.hass.localize(
+          <ha-tooltip
+            .content=${this.hass.localize(
               `ui.components.target-picker.remove_${type}`
-            )}</simple-tooltip
+            )}
           >
+            <ha-icon-button
+              class="mdc-chip__icon mdc-chip__icon--trailing"
+              .label=${this.hass.localize("ui.components.target-picker.remove")}
+              .path=${mdiClose}
+              hide-title
+              .id=${id}
+              .type=${type}
+              @click=${this._handleRemove}
+            ></ha-icon-button>
+          </ha-tooltip>
         </span>
       </div>
     `;
@@ -828,9 +830,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       .mdc-chip:hover {
         z-index: 5;
       }
-      simple-tooltip.expand {
-        min-width: 200px;
-      }
       :host([disabled]) .mdc-chip {
         opacity: var(--light-disabled-opacity);
         pointer-events: none;
@@ -843,6 +842,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       ha-area-floor-picker {
         display: block;
         width: 100%;
+      }
+      ha-tooltip {
+        --ha-tooltip-arrow-size: 0;
       }
     `;
   }

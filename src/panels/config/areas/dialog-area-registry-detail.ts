@@ -1,5 +1,3 @@
-import "@material/mwc-button";
-import "@material/mwc-list/mwc-list";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
@@ -7,7 +5,6 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-aliases-editor";
-import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-picture-upload";
 import type { HaPictureUpload } from "../../../components/ha-picture-upload";
 import "../../../components/ha-settings-row";
@@ -17,7 +14,11 @@ import "../../../components/entity/ha-entity-picker";
 import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-textfield";
 import "../../../components/ha-labels-picker";
-import type { AreaRegistryEntryMutableParams } from "../../../data/area_registry";
+import type {
+  AreaRegistryEntry,
+  AreaRegistryEntryMutableParams,
+} from "../../../data/area_registry";
+import { deleteAreaRegistryEntry } from "../../../data/area_registry";
 import type { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
@@ -26,6 +27,8 @@ import {
   SENSOR_DEVICE_CLASS_HUMIDITY,
   SENSOR_DEVICE_CLASS_TEMPERATURE,
 } from "../../../data/sensor";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import { createCloseHeading } from "../../../components/ha-dialog";
 
 const cropOptions: CropOptions = {
   round: false,
@@ -97,6 +100,130 @@ class DialogAreaDetail extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
+  private _renderSettings(entry: AreaRegistryEntry | undefined) {
+    return html`
+      ${entry
+        ? html`
+            <ha-settings-row>
+              <span slot="heading">
+                ${this.hass.localize("ui.panel.config.areas.editor.area_id")}
+              </span>
+              <span slot="description"> ${entry.area_id} </span>
+            </ha-settings-row>
+          `
+        : nothing}
+
+      <ha-textfield
+        .value=${this._name}
+        @input=${this._nameChanged}
+        .label=${this.hass.localize("ui.panel.config.areas.editor.name")}
+        .validationMessage=${this.hass.localize(
+          "ui.panel.config.areas.editor.name_required"
+        )}
+        required
+        dialogInitialFocus
+      ></ha-textfield>
+
+      <ha-icon-picker
+        .hass=${this.hass}
+        .value=${this._icon}
+        @value-changed=${this._iconChanged}
+        .label=${this.hass.localize("ui.panel.config.areas.editor.icon")}
+      ></ha-icon-picker>
+
+      <ha-floor-picker
+        .hass=${this.hass}
+        .value=${this._floor}
+        @value-changed=${this._floorChanged}
+        .label=${this.hass.localize("ui.panel.config.areas.editor.floor")}
+      ></ha-floor-picker>
+
+      <ha-labels-picker
+        .hass=${this.hass}
+        .value=${this._labels}
+        @value-changed=${this._labelsChanged}
+      ></ha-labels-picker>
+
+      <ha-picture-upload
+        .hass=${this.hass}
+        .value=${this._picture}
+        crop
+        select-media
+        .cropOptions=${cropOptions}
+        @change=${this._pictureChanged}
+      ></ha-picture-upload>
+    `;
+  }
+
+  private _renderAliasExpansion() {
+    return html`
+      <ha-expansion-panel
+        outlined
+        .header=${this.hass.localize(
+          "ui.panel.config.areas.editor.aliases_section"
+        )}
+        expanded
+      >
+        <div class="content">
+          <p class="description">
+            ${this.hass.localize(
+              "ui.panel.config.areas.editor.aliases_description"
+            )}
+          </p>
+          <ha-aliases-editor
+            .hass=${this.hass}
+            .aliases=${this._aliases}
+            @value-changed=${this._aliasesChanged}
+          ></ha-aliases-editor>
+        </div>
+      </ha-expansion-panel>
+    `;
+  }
+
+  private _renderRelatedEntitiesExpansion() {
+    return html`
+      <ha-expansion-panel
+        outlined
+        .header=${this.hass.localize(
+          "ui.panel.config.areas.editor.related_entities_section"
+        )}
+        expanded
+      >
+        <div class="content">
+          <ha-entity-picker
+            .hass=${this.hass}
+            .label=${this.hass.localize(
+              "ui.panel.config.areas.editor.temperature_entity"
+            )}
+            .helper=${this.hass.localize(
+              "ui.panel.config.areas.editor.temperature_entity_description"
+            )}
+            .value=${this._temperatureEntity}
+            .includeDomains=${SENSOR_DOMAINS}
+            .includeDeviceClasses=${TEMPERATURE_DEVICE_CLASSES}
+            .entityFilter=${this._areaEntityFilter}
+            @value-changed=${this._sensorChanged}
+          ></ha-entity-picker>
+
+          <ha-entity-picker
+            .hass=${this.hass}
+            .label=${this.hass.localize(
+              "ui.panel.config.areas.editor.humidity_entity"
+            )}
+            .helper=${this.hass.localize(
+              "ui.panel.config.areas.editor.humidity_entity_description"
+            )}
+            .value=${this._humidityEntity}
+            .includeDomains=${SENSOR_DOMAINS}
+            .includeDeviceClasses=${HUMIDITY_DEVICE_CLASSES}
+            .entityFilter=${this._areaEntityFilter}
+            @value-changed=${this._sensorChanged}
+          ></ha-entity-picker>
+        </div>
+      </ha-expansion-panel>
+    `;
+  }
+
   protected render() {
     if (!this._params) {
       return nothing;
@@ -104,6 +231,7 @@ class DialogAreaDetail extends LitElement {
     const entry = this._params.entry;
     const nameInvalid = !this._isNameValid();
     const isNew = !entry;
+
     return html`
       <ha-dialog
         open
@@ -120,123 +248,32 @@ class DialogAreaDetail extends LitElement {
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : ""}
           <div class="form">
-            ${entry
-              ? html`
-                  <ha-settings-row>
-                    <span slot="heading">
-                      ${this.hass.localize(
-                        "ui.panel.config.areas.editor.area_id"
-                      )}
-                    </span>
-                    <span slot="description"> ${entry.area_id} </span>
-                  </ha-settings-row>
-                `
-              : nothing}
-
-            <ha-textfield
-              .value=${this._name}
-              @input=${this._nameChanged}
-              .label=${this.hass.localize("ui.panel.config.areas.editor.name")}
-              .validationMessage=${this.hass.localize(
-                "ui.panel.config.areas.editor.name_required"
-              )}
-              required
-              dialogInitialFocus
-            ></ha-textfield>
-
-            <ha-icon-picker
-              .hass=${this.hass}
-              .value=${this._icon}
-              @value-changed=${this._iconChanged}
-              .label=${this.hass.localize("ui.panel.config.areas.editor.icon")}
-            ></ha-icon-picker>
-
-            <ha-floor-picker
-              .hass=${this.hass}
-              .value=${this._floor}
-              @value-changed=${this._floorChanged}
-              .label=${this.hass.localize("ui.panel.config.areas.editor.floor")}
-            ></ha-floor-picker>
-
-            <ha-labels-picker
-              .hass=${this.hass}
-              .value=${this._labels}
-              @value-changed=${this._labelsChanged}
-            ></ha-labels-picker>
-
-            <ha-picture-upload
-              .hass=${this.hass}
-              .value=${this._picture}
-              crop
-              select-media
-              .cropOptions=${cropOptions}
-              @change=${this._pictureChanged}
-            ></ha-picture-upload>
-
-            <h3 class="header">
-              ${this.hass.localize(
-                "ui.panel.config.areas.editor.aliases_section"
-              )}
-            </h3>
-
-            <p class="description">
-              ${this.hass.localize(
-                "ui.panel.config.areas.editor.aliases_description"
-              )}
-            </p>
-            <ha-aliases-editor
-              .hass=${this.hass}
-              .aliases=${this._aliases}
-              @value-changed=${this._aliasesChanged}
-            ></ha-aliases-editor>
-
-            ${!isNew
-              ? html`
-                  <ha-entity-picker
-                    .hass=${this.hass}
-                    .label=${this.hass.localize(
-                      "ui.panel.config.areas.editor.temperature_entity"
-                    )}
-                    .helper=${this.hass.localize(
-                      "ui.panel.config.areas.editor.temperature_entity_description"
-                    )}
-                    .value=${this._temperatureEntity}
-                    .includeDomains=${SENSOR_DOMAINS}
-                    .includeDeviceClasses=${TEMPERATURE_DEVICE_CLASSES}
-                    .entityFilter=${this._areaEntityFilter}
-                    @value-changed=${this._sensorChanged}
-                  ></ha-entity-picker>
-
-                  <ha-entity-picker
-                    .hass=${this.hass}
-                    .label=${this.hass.localize(
-                      "ui.panel.config.areas.editor.humidity_entity"
-                    )}
-                    .helper=${this.hass.localize(
-                      "ui.panel.config.areas.editor.humidity_entity_description"
-                    )}
-                    .value=${this._humidityEntity}
-                    .includeDomains=${SENSOR_DOMAINS}
-                    .includeDeviceClasses=${HUMIDITY_DEVICE_CLASSES}
-                    .entityFilter=${this._areaEntityFilter}
-                    @value-changed=${this._sensorChanged}
-                  ></ha-entity-picker>
-                `
-              : ""}
+            ${this._renderSettings(entry)} ${this._renderAliasExpansion()}
+            ${!isNew ? this._renderRelatedEntitiesExpansion() : nothing}
           </div>
         </div>
-        <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
-          ${this.hass.localize("ui.common.cancel")}
-        </mwc-button>
-        <mwc-button
-          slot="primaryAction"
-          @click=${this._updateEntry}
-          .disabled=${nameInvalid || this._submitting}
-        >
-          ${entry
-            ? this.hass.localize("ui.common.save")
-            : this.hass.localize("ui.common.create")}
-        </mwc-button>
+        ${!isNew
+          ? html`<ha-button
+              slot="secondaryAction"
+              destructive
+              @click=${this._deleteArea}
+            >
+              ${this.hass.localize("ui.common.delete")}
+            </ha-button>`
+          : nothing}
+        <div slot="primaryAction">
+          <ha-button @click=${this.closeDialog}>
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            @click=${this._updateEntry}
+            .disabled=${nameInvalid || this._submitting}
+          >
+            ${entry
+              ? this.hass.localize("ui.common.save")
+              : this.hass.localize("ui.common.create")}
+          </ha-button>
+        </div>
       </ha-dialog>
     `;
   }
@@ -325,6 +362,31 @@ class DialogAreaDetail extends LitElement {
     }
   }
 
+  private async _deleteArea() {
+    if (!this._params?.entry) {
+      return;
+    }
+
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.areas.delete.confirmation_title",
+        { name: this._params.entry.name }
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.areas.delete.confirmation_text"
+      ),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      confirmText: this.hass.localize("ui.common.delete"),
+      destructive: true,
+    });
+    if (!confirmed) {
+      return;
+    }
+
+    await deleteAreaRegistryEntry(this.hass!, this._params!.entry!.area_id);
+    this.closeDialog();
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
@@ -332,14 +394,27 @@ class DialogAreaDetail extends LitElement {
         ha-textfield {
           display: block;
         }
+        ha-expansion-panel {
+          --expansion-panel-content-padding: 0;
+        }
         ha-aliases-editor,
         ha-entity-picker,
         ha-floor-picker,
         ha-icon-picker,
         ha-labels-picker,
-        ha-picture-upload {
+        ha-picture-upload,
+        ha-expansion-panel {
           display: block;
           margin-bottom: 16px;
+        }
+        ha-dialog {
+          --mdc-dialog-min-width: min(600px, 100vw);
+        }
+        .content {
+          padding: 12px;
+        }
+        .description {
+          margin: 0 0 16px 0;
         }
       `,
     ];

@@ -63,4 +63,28 @@ describe("canToggleState", () => {
     };
     assert.isFalse(canToggleState(hass, stateObj));
   });
+
+  it("Detects group with missing entity", () => {
+    const stateObj: any = {
+      entity_id: "group.bla",
+      state: "on",
+      attributes: {
+        entity_id: ["light.non_existing"],
+      },
+    };
+
+    assert.isFalse(canToggleState(hass, stateObj));
+  });
+
+  it("Detects group with off state", () => {
+    const stateObj: any = {
+      entity_id: "group.bla",
+      state: "off",
+      attributes: {
+        entity_id: ["light.test"],
+      },
+    };
+
+    assert.isTrue(canToggleState(hass, stateObj));
+  });
 });

@@ -90,6 +90,10 @@ function copyMapPanel(staticDir) {
     npmPath("leaflet/dist/leaflet.css"),
     staticPath("images/leaflet/")
   );
+  copyFileDir(
+    npmPath("leaflet.markercluster/dist/MarkerCluster.css"),
+    staticPath("images/leaflet/")
+  );
   fs.copySync(
     npmPath("leaflet/dist/images"),
     staticPath("images/leaflet/images/")

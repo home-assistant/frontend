@@ -263,7 +263,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
 
         <div slot="primaryAction">
           <mwc-button @click=${this.closeDialog}>
-            ${this.hass.localize("ui.dialogs.generic.cancel")}
+            ${this.hass.localize("ui.common.cancel")}
           </mwc-button>
           <mwc-button @click=${this._save}>
             ${this.hass.localize(

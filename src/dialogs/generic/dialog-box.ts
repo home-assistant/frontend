@@ -109,7 +109,7 @@ class DialogBox extends LitElement {
             >
               ${this._params.dismissText
                 ? this._params.dismissText
-                : this.hass.localize("ui.dialogs.generic.cancel")}
+                : this.hass.localize("ui.common.cancel")}
             </ha-button>
           `}
           <ha-button
@@ -120,7 +120,7 @@ class DialogBox extends LitElement {
           >
             ${this._params.confirmText
               ? this._params.confirmText
-              : this.hass.localize("ui.dialogs.generic.ok")}
+              : this.hass.localize("ui.common.ok")}
           </ha-button>
         </div>
       </ha-md-dialog>

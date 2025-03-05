@@ -1,6 +1,5 @@
 import { consume } from "@lit-labs/context";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
   mdiChevronRight,
   mdiCog,
@@ -58,7 +57,6 @@ import "../../../components/ha-filter-entities";
 import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-md-menu-item";
 import type { HaMdMenuItem } from "../../../components/ha-md-menu-item";
 import "../../../components/ha-menu";

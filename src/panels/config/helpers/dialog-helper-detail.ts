@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -10,6 +9,7 @@ import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
 import "../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-list-item";
+import "../../../components/ha-tooltip";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
 import { createCounter } from "../../../data/counter";
 import { createInputBoolean } from "../../../data/input_boolean";
@@ -210,39 +210,39 @@ export class DialogHelperDetail extends LitElement {
             const isLoaded =
               !(domain in HELPERS) || isComponentLoaded(this.hass, domain);
             return html`
-              <ha-list-item
-                .disabled=${!isLoaded}
-                hasmeta
-                .domain=${domain}
-                @request-selected=${this._domainPicked}
-                graphic="icon"
+              <ha-tooltip
+                .disabled=${isLoaded}
+                .content=${this.hass.localize(
+                  "ui.dialogs.helper_settings.platform_not_loaded",
+                  { platform: domain }
+                )}
               >
-                <img
-                  slot="graphic"
-                  loading="lazy"
-                  alt=""
-                  src=${brandsUrl({
-                    domain,
-                    type: "icon",
-                    useFallback: true,
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
-                  crossorigin="anonymous"
-                  referrerpolicy="no-referrer"
-                />
-                <span class="item-text"> ${label} </span>
-                <ha-icon-next slot="meta"></ha-icon-next>
-              </ha-list-item>
-              ${!isLoaded
-                ? html`
-                    <simple-tooltip animation-delay="0"
-                      >${this.hass.localize(
-                        "ui.dialogs.helper_settings.platform_not_loaded",
-                        { platform: domain }
-                      )}</simple-tooltip
-                    >
-                  `
-                : ""}
+                <div>
+                  <ha-list-item
+                    .disabled=${!isLoaded}
+                    hasmeta
+                    .domain=${domain}
+                    @request-selected=${this._domainPicked}
+                    graphic="icon"
+                  >
+                    <img
+                      slot="graphic"
+                      loading="lazy"
+                      alt=""
+                      src=${brandsUrl({
+                        domain,
+                        type: "icon",
+                        useFallback: true,
+                        darkOptimized: this.hass.themes?.darkMode,
+                      })}
+                      crossorigin="anonymous"
+                      referrerpolicy="no-referrer"
+                    />
+                    <span class="item-text"> ${label} </span>
+                    <ha-icon-next slot="meta"></ha-icon-next>
+                  </ha-list-item>
+                </div>
+              </ha-tooltip>
             `;
           })}
         </mwc-list>

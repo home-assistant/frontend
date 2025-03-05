@@ -63,6 +63,9 @@ export class StateHistoryChartLine extends LitElement {
 
   @property({ type: String }) public height?: string;
 
+  @property({ attribute: "expand-legend", type: Boolean })
+  public expandLegend?: boolean;
+
   @state() private _chartData: LineSeriesOption[] = [];
 
   @state() private _entityIds: string[] = [];
@@ -87,9 +90,9 @@ export class StateHistoryChartLine extends LitElement {
         .options=${this._chartOptions}
         .height=${this.height}
         style=${styleMap({ height: this.height })}
-        external-hidden
         @dataset-hidden=${this._datasetHidden}
         @dataset-unhidden=${this._datasetUnhidden}
+        .expandLegend=${this.expandLegend}
       ></ha-chart-base>
     `;
   }
@@ -256,7 +259,21 @@ export class StateHistoryChartLine extends LitElement {
           axisLabel: {
             margin: 5,
             formatter: (value: number) => {
-              const label = formatNumber(value, this.hass.locale);
+              const formatOptions =
+                value >= 1 || value <= -1
+                  ? undefined
+                  : {
+                      // show the first significant digit for tiny values
+                      maximumFractionDigits: Math.max(
+                        2,
+                        -Math.floor(Math.log10(Math.abs(value % 1 || 1)))
+                      ),
+                    };
+              const label = formatNumber(
+                value,
+                this.hass.locale,
+                formatOptions
+              );
               const width = measureTextWidth(label, 12) + 5;
               if (width > this._yWidth) {
                 this._yWidth = width;
@@ -271,16 +288,12 @@ export class StateHistoryChartLine extends LitElement {
         } as YAXisOption,
         legend: {
           show: this.showNames,
-          type: "scroll",
-          animationDurationUpdate: 400,
-          icon: "circle",
-          padding: [20, 0],
         },
         grid: {
-          ...(this.showNames ? {} : { top: 30 }), // undefined is the same as 0
+          top: 15,
           left: rtl ? 1 : Math.max(this.paddingYAxis, this._yWidth),
           right: rtl ? Math.max(this.paddingYAxis, this._yWidth) : 1,
-          bottom: 30,
+          bottom: 20,
         },
         visualMap: this._visualMap,
         tooltip: {
@@ -354,9 +367,10 @@ export class StateHistoryChartLine extends LitElement {
           name: nameY,
           color,
           symbol: "circle",
-          step: "end",
-          animationDurationUpdate: 0,
           symbolSize: 1,
+          step: "end",
+          sampling: "minmax",
+          animationDurationUpdate: 0,
           lineStyle: {
             width: fill ? 0 : 1.5,
           },

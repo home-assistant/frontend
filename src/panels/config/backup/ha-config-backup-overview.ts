@@ -8,6 +8,7 @@ import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
+import "../../../components/ha-circular-progress";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-icon-overflow-menu";
@@ -17,8 +18,10 @@ import type {
   BackupAgent,
   BackupConfig,
   BackupContent,
+  BackupInfo,
 } from "../../../data/backup";
 import {
+  computeBackupAgentName,
   generateBackup,
   generateBackupWithAutomaticSettings,
 } from "../../../data/backup";
@@ -50,6 +53,8 @@ class HaConfigBackupOverview extends LitElement {
 
   @property({ attribute: false }) public manager!: ManagerStateEvent;
 
+  @property({ attribute: false }) public info?: BackupInfo;
+
   @property({ attribute: false }) public backups: BackupContent[] = [];
 
   @property({ attribute: false }) public fetching = false;
@@ -73,6 +78,7 @@ class HaConfigBackupOverview extends LitElement {
 
   private async _setupAutomaticBackup(skipWelcome = false) {
     const success = await showBackupOnboardingDialog(this, {
+      config: this.config!,
       cloudStatus: this.cloudStatus,
       skipWelcome,
     });
@@ -123,7 +129,7 @@ class HaConfigBackupOverview extends LitElement {
   }
 
   private get _needsOnboarding() {
-    return this.config && !this.config.create_backup.password;
+    return this.config && !this.config.automatic_backups_configured;
   }
 
   protected render(): TemplateResult {
@@ -151,6 +157,26 @@ class HaConfigBackupOverview extends LitElement {
           </ha-list-item>
         </ha-button-menu>
         <div class="content">
+          ${this.info && Object.keys(this.info.agent_errors).length
+            ? html`${Object.entries(this.info.agent_errors).map(
+                ([agentId, error]) =>
+                  html`<ha-alert
+                    alert-type="error"
+                    .title=${this.hass.localize(
+                      "ui.panel.config.backup.overview.agent_error",
+                      {
+                        name: computeBackupAgentName(
+                          this.hass.localize,
+                          agentId,
+                          this.agents
+                        ),
+                      }
+                    )}
+                  >
+                    ${error}
+                  </ha-alert>`
+              )}`
+            : nothing}
           ${backupInProgress
             ? html`
                 <ha-backup-overview-progress
@@ -204,7 +230,14 @@ class HaConfigBackupOverview extends LitElement {
           extended
           @click=${this._newBackup}
         >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+          ${backupInProgress
+            ? html`<div slot="icon">
+                <ha-circular-progress
+                  .size=${"small"}
+                  indeterminate
+                ></ha-circular-progress>
+              </div>`
+            : html`<ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>`}
         </ha-fab>
       </hass-subpage>
     `;
@@ -230,6 +263,9 @@ class HaConfigBackupOverview extends LitElement {
         .card-content {
           padding-left: 0;
           padding-right: 0;
+        }
+        ha-circular-progress {
+          --md-sys-color-primary: var(--mdc-theme-on-secondary);
         }
       `,
     ];

@@ -82,7 +82,7 @@ export class DialogUploadBackup
         <ha-dialog-header slot="headline">
           <ha-icon-button
             slot="navigationIcon"
-            .label=${this.hass.localize("ui.dialogs.generic.close")}
+            .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
             @click=${this.closeDialog}
             .disabled=${this._uploading}

@@ -1,6 +1,5 @@
 import "@material/mwc-button/mwc-button";
 import { mdiDelete, mdiDeleteOff } from "@mdi/js";
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -8,6 +7,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../../../../src/common/string/compare";
 import "../../../../src/components/ha-alert";
+import "../../../../src/components/ha-tooltip";
 import "../../../../src/components/ha-circular-progress";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-icon-button";
@@ -118,28 +118,27 @@ class HassioRepositoriesDialog extends LitElement {
                         <div>${repo.maintainer}</div>
                         <div>${repo.url}</div>
                       </div>
-                      <div class="delete" slot="end">
-                        <ha-icon-button
-                          .disabled=${usedRepositories.includes(repo.slug)}
-                          .slug=${repo.slug}
-                          .path=${usedRepositories.includes(repo.slug)
-                            ? mdiDeleteOff
-                            : mdiDelete}
-                          @click=${this._removeRepository}
-                        >
-                        </ha-icon-button>
-                        <simple-tooltip
-                          animation-delay="0"
-                          position="bottom"
-                          offset="1"
-                        >
-                          ${this._dialogParams!.supervisor.localize(
-                            usedRepositories.includes(repo.slug)
-                              ? "dialog.repositories.used"
-                              : "dialog.repositories.remove"
-                          )}
-                        </simple-tooltip>
-                      </div>
+                      <ha-tooltip
+                        class="delete"
+                        slot="end"
+                        .content=${this._dialogParams!.supervisor.localize(
+                          usedRepositories.includes(repo.slug)
+                            ? "dialog.repositories.used"
+                            : "dialog.repositories.remove"
+                        )}
+                      >
+                        <div>
+                          <ha-icon-button
+                            .disabled=${usedRepositories.includes(repo.slug)}
+                            .slug=${repo.slug}
+                            .path=${usedRepositories.includes(repo.slug)
+                              ? mdiDeleteOff
+                              : mdiDelete}
+                            @click=${this._removeRepository}
+                          >
+                          </ha-icon-button>
+                        </div>
+                      </ha-tooltip>
                     </ha-md-list-item>
                   `
                 )

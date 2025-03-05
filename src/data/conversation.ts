@@ -51,6 +51,7 @@ export interface ConversationResult {
     | IntentResultActionDone
     | IntentResultQueryAnswer
     | IntentResultError;
+  continue_conversation: boolean;
 }
 
 export interface Agent {

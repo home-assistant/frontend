@@ -1,7 +1,6 @@
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { mdiDotsVertical } from "@mdi/js";
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { haStyle } from "../resources/styles";
@@ -10,6 +9,7 @@ import "./ha-button-menu";
 import "./ha-icon-button";
 import "./ha-list-item";
 import "./ha-svg-icon";
+import "./ha-tooltip";
 
 export interface IconOverflowMenuItem {
   [key: string]: any;
@@ -70,25 +70,20 @@ export class HaIconOverflowMenu extends LitElement {
             <!-- Icon representation for big screens -->
             ${this.items.map((item) =>
               item.narrowOnly
-                ? ""
+                ? nothing
                 : item.divider
                   ? html`<div role="separator"></div>`
-                  : html`<div>
-                      ${item.tooltip
-                        ? html`<simple-tooltip
-                            animation-delay="0"
-                            position="left"
-                          >
-                            ${item.tooltip}
-                          </simple-tooltip>`
-                        : ""}
+                  : html`<ha-tooltip
+                      .disabled=${!item.tooltip}
+                      .content=${item.tooltip ?? ""}
+                    >
                       <ha-icon-button
                         @click=${item.action}
                         .label=${item.label}
                         .path=${item.path}
                         ?disabled=${item.disabled}
                       ></ha-icon-button>
-                    </div> `
+                    </ha-tooltip>`
             )}
           `}
     `;

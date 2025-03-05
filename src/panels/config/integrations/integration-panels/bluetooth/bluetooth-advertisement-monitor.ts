@@ -12,6 +12,7 @@ import type {
 } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-relative-time";
 import type {
   BluetoothDeviceData,
   BluetoothScannersDetails,
@@ -140,6 +141,18 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
           sortable: true,
           defaultHidden: true,
         },
+        time: {
+          title: localize("ui.panel.config.bluetooth.updated"),
+          filterable: false,
+          sortable: true,
+          defaultHidden: false,
+          template: (ad) =>
+            html`<ha-relative-time
+              .hass=${this.hass}
+              .datetime=${ad.datetime}
+              capitalize
+            ></ha-relative-time>`,
+        },
         rssi: {
           title: localize("ui.panel.config.bluetooth.rssi"),
           type: "numeric",
@@ -167,6 +180,7 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
           scanner?.name ||
           row.source,
         device: device?.name_by_user || device?.name || undefined,
+        datetime: new Date(row.time * 1000),
       };
     })
   );

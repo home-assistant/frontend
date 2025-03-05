@@ -8,7 +8,7 @@ import {
   mdiUpload,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -27,6 +27,7 @@ import type {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-circular-progress";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-states";
 import "../../../components/ha-icon";
@@ -427,15 +428,9 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
                     "ui.panel.config.backup.backups.delete_selected"
                   )}
                   .path=${mdiDelete}
-                  id="delete-btn"
                   class="warning"
                   @click=${this._deleteSelected}
                 ></ha-icon-button>
-                <simple-tooltip animation-delay="0" for="delete-btn">
-                  ${this.hass.localize(
-                    "ui.panel.config.backup.backups.delete_selected"
-                  )}
-                </simple-tooltip>
               `}
         </div>
 
@@ -460,7 +455,17 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
                 extended
                 @click=${this._newBackup}
               >
-                <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+                ${backupInProgress
+                  ? html`<div slot="icon">
+                      <ha-circular-progress
+                        .size=${"small"}
+                        indeterminate
+                      ></ha-circular-progress>
+                    </div>`
+                  : html`<ha-svg-icon
+                      slot="icon"
+                      .path=${mdiPlus}
+                    ></ha-svg-icon>`}
               </ha-fab>
             `
           : nothing}
@@ -494,7 +499,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   }
 
   private get _needsOnboarding() {
-    return !this.config?.create_backup.password;
+    return !this.config?.automatic_backups_configured;
   }
 
   private async _uploadBackup(ev) {
@@ -605,7 +610,14 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   }
 
   static get styles(): CSSResultGroup {
-    return haStyle;
+    return [
+      haStyle,
+      css`
+        ha-circular-progress {
+          --md-sys-color-primary: var(--mdc-theme-on-secondary);
+        }
+      `,
+    ];
   }
 }
 

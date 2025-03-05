@@ -153,7 +153,6 @@ class ConfigUrlForm extends LitElement {
                 ? html`
                     <ha-icon-button
                       class="toggle-unmasked-url"
-                      toggles
                       .label=${this.hass.localize(
                         `ui.panel.config.common.${this._unmaskedExternalUrl ? "hide" : "show"}_url`
                       )}
@@ -254,7 +253,6 @@ class ConfigUrlForm extends LitElement {
                 ? html`
                     <ha-icon-button
                       class="toggle-unmasked-url"
-                      toggles
                       .label=${this.hass.localize(
                         `ui.panel.config.common.${this._unmaskedInternalUrl ? "hide" : "show"}_url`
                       )}

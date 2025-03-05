@@ -1,5 +1,4 @@
 import { consume } from "@lit-labs/context";
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
   mdiAlertCircle,
   mdiCancel,
@@ -66,6 +65,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-tooltip";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
 import { getConfigEntries, getSubEntries } from "../../../data/config_entries";
 import { fullEntitiesContext } from "../../../data/context";
@@ -288,7 +288,11 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             : entry.entity
               ? html`
                   <ha-state-icon
-                    title=${ifDefined(entry.entity?.state)}
+                    title=${ifDefined(
+                      entry.entity
+                        ? this.hass.formatEntityState(entry.entity)
+                        : undefined
+                    )}
                     slot="item-icon"
                     .hass=${this.hass}
                     .stateObj=${entry.entity}
@@ -367,22 +371,9 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                   tabindex="0"
                   style="display:inline-block; position: relative;"
                 >
-                  <ha-svg-icon
-                    style=${styleMap({
-                      color: entry.unavailable ? "var(--error-color)" : "",
-                    })}
-                    .path=${entry.restored
-                      ? mdiRestoreAlert
-                      : entry.unavailable
-                        ? mdiAlertCircle
-                        : entry.disabled_by
-                          ? mdiCancel
-                          : entry.hidden_by
-                            ? mdiEyeOff
-                            : mdiPencilOff}
-                  ></ha-svg-icon>
-                  <simple-tooltip animation-delay="0" position="left">
-                    ${entry.restored
+                  <ha-tooltip
+                    placement="left"
+                    .content=${entry.restored
                       ? this.hass.localize(
                           "ui.panel.config.entities.picker.status.not_provided"
                         )
@@ -401,7 +392,22 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                             : this.hass.localize(
                                 "ui.panel.config.entities.picker.status.unmanageable"
                               )}
-                  </simple-tooltip>
+                  >
+                    <ha-svg-icon
+                      style=${styleMap({
+                        color: entry.unavailable ? "var(--error-color)" : "",
+                      })}
+                      .path=${entry.restored
+                        ? mdiRestoreAlert
+                        : entry.unavailable
+                          ? mdiAlertCircle
+                          : entry.disabled_by
+                            ? mdiCancel
+                            : entry.hidden_by
+                              ? mdiEyeOff
+                              : mdiPencilOff}
+                    ></ha-svg-icon>
+                  </ha-tooltip>
                 </div>
               `
             : "—",

@@ -251,6 +251,7 @@ export class QuickBar extends LitElement {
                 <mwc-list>
                   ${this._opened
                     ? html`<lit-virtualizer
+                        tabindex="-1"
                         scroller
                         @keydown=${this._handleListItemKeyDown}
                         @rangechange=${this._handleRangeChanged}
@@ -326,6 +327,7 @@ export class QuickBar extends LitElement {
         .twoline=${Boolean(item.area)}
         .item=${item}
         index=${ifDefined(index)}
+        tabindex="0"
       >
         <span>${item.primaryText}</span>
         ${item.area
@@ -346,6 +348,7 @@ export class QuickBar extends LitElement {
         .item=${item}
         index=${ifDefined(index)}
         graphic="icon"
+        tabindex="0"
       >
         ${item.iconPath
           ? html`
@@ -373,8 +376,8 @@ export class QuickBar extends LitElement {
       <ha-list-item
         .item=${item}
         index=${ifDefined(index)}
-        class="command-item"
         hasMeta
+        tabindex="0"
       >
         <span>
           <ha-label
@@ -921,10 +924,6 @@ export class QuickBar extends LitElement {
         ha-list-item {
           width: 100%;
           --mdc-list-item-graphic-margin: 20px;
-        }
-
-        ha-list-item.command-item {
-          text-transform: capitalize;
         }
 
         ha-tip {
