@@ -252,9 +252,11 @@ export class HaChartBase extends LitElement {
               <ha-assist-chip
                 @click=${this._toggleExpandedLegend}
                 filled
-                label=${`${this.hass.localize(
-                  `ui.components.history_charts.${this.expandLegend ? "collapse_legend" : "expand_legend"}`
-                )} (${items.length})`}
+                label=${this.expandLegend
+                  ? this.hass.localize(
+                      "ui.components.history_charts.collapse_legend"
+                    )
+                  : `${this.hass.localize("ui.components.history_charts.expand_legend")} (${items.length - overflowLimit})`}
               >
                 <ha-svg-icon
                   slot="trailing-icon"
@@ -316,6 +318,16 @@ export class HaChartBase extends LitElement {
           }
         });
       }
+
+      const legend = ensureArray(this.options?.legend || [])[0] as
+        | LegendComponentOption
+        | undefined;
+      Object.entries(legend?.selected || {}).forEach(([stat, selected]) => {
+        if (selected === false) {
+          this._hiddenDatasets.add(stat);
+        }
+      });
+
       this.chart.setOption({
         ...this._createOptions(),
         series: this._getSeries(),
@@ -562,8 +574,8 @@ export class HaChartBase extends LitElement {
           fontSize: 12,
         },
         axisPointer: {
-          lineStyle: { color: style.getPropertyValue("--divider-color") },
-          crossStyle: { color: style.getPropertyValue("--divider-color") },
+          lineStyle: { color: style.getPropertyValue("--info-color") },
+          crossStyle: { color: style.getPropertyValue("--info-color") },
         },
       },
       timeline: {},
@@ -689,7 +701,7 @@ export class HaChartBase extends LitElement {
     .chart-legend {
       max-height: 60%;
       overflow-y: auto;
-      margin: 12px 0 0;
+      padding: 12px 0 0;
       font-size: 12px;
       color: var(--primary-text-color);
     }
