@@ -17,6 +17,7 @@ import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { listenMediaQuery } from "../../../common/dom/media_query";
 import "../components/ha-more-info-state-header";
 import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
+import "../../../components/ha-markdown";
 
 @customElement("more-info-script")
 class MoreInfoScript extends LitElement {
@@ -83,7 +84,12 @@ class MoreInfoScript extends LitElement {
         .changedOverride=${this.stateObj.attributes.last_triggered || 0}
       ></ha-more-info-state-header>
 
-      ${script?.description ? html`<p>${script?.description}</p>` : nothing}
+      ${script?.description
+        ? html`<ha-markdown
+            breaks
+            .content=${script.description}
+          ></ha-markdown>`
+        : nothing}
 
       <div class=${`queue ${hasQueue ? "has-queue" : ""}`}>
         ${hasQueue
@@ -230,7 +236,7 @@ class MoreInfoScript extends LitElement {
       --service-control-padding: 0;
       --service-control-items-border-top: none;
     }
-    p {
+    ha-markdown {
       text-align: center;
       padding: 0 16px;
     }
