@@ -139,12 +139,13 @@ class HaLandingPage extends LandingPageBaseElement {
     try {
       this._networkInfo = await getSupervisorNetworkInfo();
       this._networkInfoError = false;
+      this._coreStatusChecked = false;
     } catch (err) {
       if (!this._coreStatusChecked) {
         // wait because there is a moment where landingpage is down and core is not up yet
         await waitForSeconds(CORE_CHECK_SECONDS);
-        await this._checkCoreAvailability();
       }
+      await this._checkCoreAvailability();
       // eslint-disable-next-line no-console
       console.error(err);
       this._networkInfoError = true;
@@ -153,10 +154,6 @@ class HaLandingPage extends LandingPageBaseElement {
     if (schedule) {
       this._scheduleFetchSupervisorInfo();
     }
-  }
-
-  private _scheduleCheckCoreAvailability() {
-    setTimeout(() => this._checkCoreAvailability(), CORE_CHECK_SECONDS * 1000);
   }
 
   private async _checkCoreAvailability() {
@@ -169,8 +166,6 @@ class HaLandingPage extends LandingPageBaseElement {
       }
     } catch (_err) {
       this._coreStatusChecked = true;
-      // checking core if it takes longer than 5 seconds to start
-      this._scheduleCheckCoreAvailability();
     }
   }
 
