@@ -22,8 +22,6 @@ class LandingPageNetwork extends LitElement {
   @property({ attribute: false })
   public localize!: LocalizeFunc<LandingPageKeys>;
 
-  @property({ attribute: false }) public checkCore!: () => Promise<boolean>;
-
   @property({ attribute: false }) public networkInfo?: NetworkInfo;
 
   @property({ type: Boolean }) public error = false;
