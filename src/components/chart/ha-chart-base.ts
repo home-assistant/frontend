@@ -318,6 +318,16 @@ export class HaChartBase extends LitElement {
           }
         });
       }
+
+      const legend = ensureArray(this.options?.legend || [])[0] as
+        | LegendComponentOption
+        | undefined;
+      Object.entries(legend?.selected || {}).forEach(([stat, selected]) => {
+        if (selected === false) {
+          this._hiddenDatasets.add(stat);
+        }
+      });
+
       this.chart.setOption({
         ...this._createOptions(),
         series: this._getSeries(),
