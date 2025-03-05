@@ -106,26 +106,7 @@ class HaLandingPage extends LandingPageBaseElement {
     }
     import("../../src/components/ha-language-picker");
 
-    this._pingSupervisor();
-  }
-
-  private _schedulePingSupervisor() {
-    setTimeout(
-      () => this._pingSupervisor(),
-      SCHEDULE_FETCH_NETWORK_INFO_SECONDS * 1000
-    );
-  }
-
-  private async _pingSupervisor() {
-    try {
-      const response = await pingSupervisor();
-      if (!response.ok) {
-        throw new Error("Failed to ping supervisor, assume update in progress");
-      }
-      this._fetchSupervisorInfo(true);
-    } catch (_err) {
-      this._schedulePingSupervisor();
-    }
+    this._fetchSupervisorInfo(true);
   }
 
   private _scheduleFetchSupervisorInfo() {
@@ -137,18 +118,29 @@ class HaLandingPage extends LandingPageBaseElement {
 
   private async _fetchSupervisorInfo(schedule = false) {
     try {
+      if (!this._networkInfo) {
+        const response = await pingSupervisor();
+        if (!response.ok) {
+          throw new Error("ping-failed");
+        }
+      }
+
       this._networkInfo = await getSupervisorNetworkInfo();
       this._networkInfoError = false;
       this._coreStatusChecked = false;
-    } catch (err) {
+    } catch (err: any) {
       if (!this._coreStatusChecked) {
         // wait because there is a moment where landingpage is down and core is not up yet
         await waitForSeconds(CORE_CHECK_SECONDS);
       }
       await this._checkCoreAvailability();
-      // eslint-disable-next-line no-console
-      console.error(err);
-      this._networkInfoError = true;
+
+      // assume supervisor update if ping fails and network info was never fetched -> don't show an error
+      if (err.message !== "ping-failed") {
+        // eslint-disable-next-line no-console
+        console.error(err);
+        this._networkInfoError = true;
+      }
     }
 
     if (schedule) {
