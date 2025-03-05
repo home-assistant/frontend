@@ -295,6 +295,7 @@ export class HaAssistChat extends LitElement {
     this._addMessage(userMessage);
     this.requestUpdate("_audioRecorder");
 
+    let continueConversation = false;
     let hassMessage = {
       who: "hass",
       text: "…",
@@ -369,6 +370,8 @@ export class HaAssistChat extends LitElement {
 
           if (event.type === "intent-end") {
             this._conversationId = event.data.intent_output.conversation_id;
+            continueConversation =
+              event.data.intent_output.continue_conversation;
             const plain = event.data.intent_output.response.speech?.plain;
             if (plain) {
               hassMessage.text = plain.speech;
@@ -380,7 +383,12 @@ export class HaAssistChat extends LitElement {
             const url = event.data.tts_output.url;
             this._audio = new Audio(url);
             this._audio.play();
-            this._audio.addEventListener("ended", this._unloadAudio);
+            this._audio.addEventListener("ended", () => {
+              this._unloadAudio();
+              if (continueConversation) {
+                this._startListening();
+              }
+            });
             this._audio.addEventListener("pause", this._unloadAudio);
             this._audio.addEventListener("canplaythrough", this._playAudio);
             this._audio.addEventListener("error", this._audioError);
