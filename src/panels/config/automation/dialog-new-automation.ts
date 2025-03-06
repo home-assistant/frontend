@@ -12,6 +12,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { load } from "js-yaml";
+import { until } from "lit/directives/until";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { stringCompare } from "../../../common/string/compare";
@@ -59,7 +60,7 @@ class DialogNewAutomation extends LitElement implements HassDialog {
 
   @state() public blueprints?: Blueprints;
 
-  @state() private _config?: AutomationConfig | ScriptConfig;
+  private _config?: AutomationConfig | ScriptConfig;
 
   public async showDialog(params: NewAutomationDialogParams): Promise<void> {
     this._opened = true;
@@ -68,11 +69,9 @@ class DialogNewAutomation extends LitElement implements HassDialog {
     fetchBlueprints(this.hass!, this._mode).then((blueprints) => {
       this.blueprints = blueprints;
     });
-
-    await this._checkClipboard();
   }
 
-  private async _checkClipboard() {
+  private async _scanClipboardForConfig() {
     try {
       const clipboardText = await navigator.clipboard.readText();
       const parsedConfig: any = load(clipboardText);
@@ -129,6 +128,62 @@ class DialogNewAutomation extends LitElement implements HassDialog {
     );
   });
 
+  private async _renderClipboardAction() {
+    const permission = await navigator.permissions.query({
+      // @ts-ignore
+      name: "clipboard-read",
+    });
+
+    if (permission.state === "denied") {
+      return nothing;
+    }
+
+    if (permission.state === "prompt") {
+      return html`
+        <ha-list-item
+          hasmeta
+          twoline
+          graphic="icon"
+          @request-selected=${this._scanAndImportClipboard}
+        >
+          <ha-svg-icon slot="graphic" .path=${mdiClipboardEdit}></ha-svg-icon>
+          ${this.hass.localize(
+            `ui.panel.config.${this._mode}.dialog_new.create_from_clipboard`
+          )}
+          <span slot="secondary">
+            ${this.hass.localize(
+              `ui.panel.config.${this._mode}.dialog_new.create_from_clipboard_permission`
+            )}
+          </span>
+          <ha-icon-next slot="meta"></ha-icon-next>
+        </ha-list-item>
+      `;
+    }
+
+    await this._scanClipboardForConfig();
+    if (!this._config) {
+      return nothing;
+    }
+
+    return html`<ha-list-item
+      hasmeta
+      twoline
+      graphic="icon"
+      @request-selected=${this._handleClipboard}
+    >
+      <ha-svg-icon slot="graphic" .path=${mdiClipboardEdit}></ha-svg-icon>
+      ${this.hass.localize(
+        `ui.panel.config.${this._mode}.dialog_new.create_from_clipboard`
+      )}
+      <span slot="secondary">
+        ${this.hass.localize(
+          `ui.panel.config.${this._mode}.dialog_new.create_from_clipboard_description`
+        )}
+      </span>
+      <ha-icon-next slot="meta"></ha-icon-next>
+    </ha-list-item>`;
+  }
+
   protected render() {
     if (!this._opened) {
       return nothing;
@@ -155,30 +210,6 @@ class DialogNewAutomation extends LitElement implements HassDialog {
           rootTabbable
           dialogInitialFocus
         >
-          ${this._config
-            ? html`
-                <ha-list-item
-                  hasmeta
-                  twoline
-                  graphic="icon"
-                  @request-selected=${this._handleClipboard}
-                >
-                  <ha-svg-icon
-                    slot="graphic"
-                    .path=${mdiClipboardEdit}
-                  ></ha-svg-icon>
-                  ${this.hass.localize(
-                    `ui.panel.config.${this._mode}.dialog_new.create_from_clipboard`
-                  )}
-                  <span slot="secondary">
-                    ${this.hass.localize(
-                      `ui.panel.config.${this._mode}.dialog_new.create_from_clipboard_description`
-                    )}
-                  </span>
-                  <ha-icon-next slot="meta"></ha-icon-next>
-                </ha-list-item>
-              `
-            : nothing}
           <ha-list-item
             hasmeta
             twoline
@@ -196,6 +227,7 @@ class DialogNewAutomation extends LitElement implements HassDialog {
             </span>
             <ha-icon-next slot="meta"></ha-icon-next>
           </ha-list-item>
+          ${until(this._renderClipboardAction())}
           <li divider role="separator"></li>
           ${processedBlueprints.map(
             (blueprint) => html`
@@ -288,10 +320,7 @@ class DialogNewAutomation extends LitElement implements HassDialog {
     }
   }
 
-  private async _handleClipboard(ev) {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
+  private _importConfig() {
     if (this._config) {
       if (this._mode === "script") {
         showScriptEditor(this._config);
@@ -299,6 +328,22 @@ class DialogNewAutomation extends LitElement implements HassDialog {
         showAutomationEditor(this._config);
       }
     }
+  }
+
+  private async _handleClipboard(ev) {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+    this._importConfig();
+  }
+
+  private async _scanAndImportClipboard(ev) {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+
+    await this._scanClipboardForConfig();
+    this._importConfig();
   }
 
   static get styles(): CSSResultGroup {

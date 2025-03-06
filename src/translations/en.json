@@ -3478,8 +3478,9 @@
             "header": "Create automation",
             "create_empty": "Create new automation",
             "create_empty_description": "Start with an empty automation from scratch",
-            "create_from_clipboard": "Create from clipboard",
+            "create_from_clipboard": "Paste from clipboard",
             "create_from_clipboard_description": "Paste an automation from your clipboard",
+            "create_from_clipboard_permission": "Home Assistant will request permission to read your clipboard.",
             "create_blueprint": "Create from blueprint",
             "create_blueprint_description": "Discover community blueprints",
             "blueprint_source": {
@@ -4387,8 +4388,9 @@
             "header": "Create script",
             "create_empty": "Create new script",
             "create_empty_description": "Start with an empty script from scratch",
-            "create_from_clipboard": "Create from clipboard",
+            "create_from_clipboard": "Paste from clipboard",
             "create_from_clipboard_description": "Paste a script from your clipboard",
+            "create_from_clipboard_permission": "[%key:ui::panel::config::automation::dialog_new::create_from_clipboard_permission%]",
             "create_blueprint": "[%key:ui::panel::config::automation::dialog_new::create_blueprint%]",
             "create_blueprint_description": "[%key:ui::panel::config::automation::dialog_new::create_blueprint_description%]",
             "blueprint_source": {
