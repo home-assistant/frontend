@@ -1,10 +1,10 @@
-import { css, html } from "lit";
 import { CheckListItemBase } from "@material/mwc-list/mwc-check-list-item-base";
 import { styles as controlStyles } from "@material/mwc-list/mwc-control-list-item.css";
 import { styles } from "@material/mwc-list/mwc-list-item.css";
+import { css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../common/dom/fire_event";
 import { classMap } from "lit/directives/class-map";
+import { fireEvent } from "../common/dom/fire_event";
 import "./ha-checkbox";
 
 @customElement("ha-check-list-item")
@@ -27,8 +27,8 @@ export class HaCheckListItem extends CheckListItemBase {
     const graphic =
       this.graphic && this.graphic !== "control" && !this.left
         ? this.renderGraphic()
-        : html``;
-    const meta = this.hasMeta && this.left ? this.renderMeta() : html``;
+        : nothing;
+    const meta = this.hasMeta && this.left ? this.renderMeta() : nothing;
     const ripple = this.renderRipple();
 
     return html` ${ripple} ${graphic} ${this.left ? "" : text}
