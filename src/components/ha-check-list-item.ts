@@ -1,15 +1,48 @@
-import { css } from "lit";
+import { css, html } from "lit";
 import { CheckListItemBase } from "@material/mwc-list/mwc-check-list-item-base";
 import { styles as controlStyles } from "@material/mwc-list/mwc-control-list-item.css";
 import { styles } from "@material/mwc-list/mwc-list-item.css";
-import { customElement } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
+import { classMap } from "lit/directives/class-map";
+import "./ha-checkbox";
 
 @customElement("ha-check-list-item")
 export class HaCheckListItem extends CheckListItemBase {
+  @property({ type: Boolean, attribute: "checkbox-disabled" })
+  checkboxDisabled = false;
+
   async onChange(event) {
     super.onChange(event);
     fireEvent(this, event.type);
+  }
+
+  override render() {
+    const checkboxClasses = {
+      "mdc-deprecated-list-item__graphic": this.left,
+      "mdc-deprecated-list-item__meta": !this.left,
+    };
+
+    const text = this.renderText();
+    const graphic =
+      this.graphic && this.graphic !== "control" && !this.left
+        ? this.renderGraphic()
+        : html``;
+    const meta = this.hasMeta && this.left ? this.renderMeta() : html``;
+    const ripple = this.renderRipple();
+
+    return html` ${ripple} ${graphic} ${this.left ? "" : text}
+      <span class=${classMap(checkboxClasses)}>
+        <ha-checkbox
+          reducedTouchTarget
+          tabindex=${this.tabindex}
+          .checked=${this.selected}
+          ?disabled=${this.disabled || this.checkboxDisabled}
+          @change=${this.onChange}
+        >
+        </ha-checkbox>
+      </span>
+      ${this.left ? text : ""} ${meta}`;
   }
 
   static override styles = [

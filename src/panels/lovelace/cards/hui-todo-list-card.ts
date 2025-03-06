@@ -176,6 +176,16 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
         : []
   );
 
+  private _getItemsWithoutStatus = memoizeOne(
+    (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
+      items
+        ? this._sortItems(
+            items.filter((item) => !item.status),
+            sort
+          )
+        : []
+  );
+
   public willUpdate(
     changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
   ): void {
@@ -231,6 +241,11 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       this._config.display_order
     );
     const uncheckedItems = this._getUncheckedItems(
+      this._items,
+      this._config.display_order
+    );
+
+    const itemsWithoutStatus = this._getItemsWithoutStatus(
       this._items,
       this._config.display_order
     );
@@ -319,10 +334,16 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                     "ui.panel.lovelace.cards.todo-list.no_unchecked_items"
                   )}
                 </p>`}
+            ${itemsWithoutStatus.length
+              ? html`
+                  <div class="divider" role="seperator"></div>
+                  ${this._renderItems(itemsWithoutStatus, unavailable)}
+                `
+              : nothing}
             ${!this._config.hide_completed && checkedItems.length
               ? html`
-                  <div role="separator">
-                    <div class="divider"></div>
+                  <div>
+                    <div class="divider" role="separator"></div>
                     <div class="header">
                       <h2>
                         ${this.hass!.localize(
@@ -359,7 +380,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                   </div>
                   ${this._renderItems(checkedItems, unavailable)}
                 `
-              : ""}
+              : nothing}
           </ha-list>
         </ha-sortable>
       </ha-card>
@@ -402,11 +423,13 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                 multiline: Boolean(item.description || item.due),
               })}"
               .selected=${item.status === TodoItemStatus.Completed}
-              .disabled=${unavailable ||
-              !this._todoListSupportsFeature(
+              .disabled=${unavailable}
+              .checkboxDisabled=${!this._todoListSupportsFeature(
                 TodoListEntityFeature.UPDATE_TODO_ITEM
               )}
-              item-id=${item.uid}
+              .noninteractive=${!this._todoListSupportsFeature(
+                TodoListEntityFeature.UPDATE_TODO_ITEM
+              )}
               .itemId=${item.uid}
               @change=${this._completeItem}
               @click=${this._openItem}
