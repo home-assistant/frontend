@@ -121,7 +121,7 @@ class HaLandingPage extends LandingPageBaseElement {
     );
   }
 
-  private _scheduleTurnOfCoreCheck() {
+  private _scheduleTurnOffCoreCheck() {
     setTimeout(() => {
       this._coreCheckActive = false;
     }, ASSUME_CORE_START_SECONDS * 1000);
@@ -141,7 +141,7 @@ class HaLandingPage extends LandingPageBaseElement {
       if (!this._coreStatusChecked) {
         // wait before show errors, because we assume that core is starting
         this._coreCheckActive = true;
-        this._scheduleTurnOfCoreCheck();
+        this._scheduleTurnOffCoreCheck();
       }
       await this._checkCoreAvailability();
 
