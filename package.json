@@ -225,7 +225,7 @@
     "terser-webpack-plugin": "5.3.12",
     "ts-lit-plugin": "2.0.2",
     "typescript": "5.8.2",
-    "typescript-eslint": "8.25.0",
+    "typescript-eslint": "8.26.0",
     "vite-tsconfig-paths": "5.1.4",
     "vitest": "3.0.7",
     "webpack-stats-plugin": "1.1.3",
