@@ -17,7 +17,7 @@ import {
 } from "./data/supervisor";
 
 export const ASSUME_CORE_START_SECONDS = 30;
-export const SCHEDULE_CORE_CHECK_SECONDS = 1;
+const SCHEDULE_CORE_CHECK_SECONDS = 1;
 const SCHEDULE_FETCH_NETWORK_INFO_SECONDS = 5;
 
 @customElement("ha-landing-page")
@@ -114,11 +114,14 @@ class HaLandingPage extends LandingPageBaseElement {
   private _scheduleFetchSupervisorInfo() {
     setTimeout(
       () => this._fetchSupervisorInfo(true),
-      SCHEDULE_FETCH_NETWORK_INFO_SECONDS * 1000
+      // on assumed core start check every second, otherwise every 5 seconds
+      (this._coreCheckActive
+        ? SCHEDULE_CORE_CHECK_SECONDS
+        : SCHEDULE_FETCH_NETWORK_INFO_SECONDS) * 1000
     );
   }
 
-  private _turnOfCoreCheck() {
+  private _scheduleTurnOfCoreCheck() {
     setTimeout(() => {
       this._coreCheckActive = false;
     }, ASSUME_CORE_START_SECONDS * 1000);
@@ -126,11 +129,9 @@ class HaLandingPage extends LandingPageBaseElement {
 
   private async _fetchSupervisorInfo(schedule = false) {
     try {
-      if (!this._networkInfo) {
-        const response = await pingSupervisor();
-        if (!response.ok) {
-          throw new Error("ping-failed");
-        }
+      const response = await pingSupervisor();
+      if (!response.ok) {
+        throw new Error("ping-failed");
       }
 
       this._networkInfo = await getSupervisorNetworkInfo();
@@ -140,11 +141,11 @@ class HaLandingPage extends LandingPageBaseElement {
       if (!this._coreStatusChecked) {
         // wait before show errors, because we assume that core is starting
         this._coreCheckActive = true;
-        this._turnOfCoreCheck();
+        this._scheduleTurnOfCoreCheck();
       }
       await this._checkCoreAvailability();
 
-      // assume supervisor update if ping fails and network info was never fetched -> don't show an error
+      // assume supervisor update if ping fails -> don't show an error
       if (!this._coreCheckActive && err.message !== "ping-failed") {
         // eslint-disable-next-line no-console
         console.error(err);
