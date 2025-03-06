@@ -6,7 +6,7 @@ import "../cards/hui-entity-button-card";
 import "../cards/hui-glance-card";
 import "../cards/hui-grid-card";
 import "../cards/hui-light-card";
-import "../cards/hui-spacing-card";
+import "../cards/hui-empty-card";
 import "../cards/hui-sensor-card";
 import "../cards/hui-thermostat-card";
 import "../cards/hui-weather-forecast-card";
@@ -90,7 +90,7 @@ const LAZY_LOAD_TYPES = {
   "statistics-graph": () => import("../cards/hui-statistics-graph-card"),
   statistic: () => import("../cards/hui-statistic-card"),
   "vertical-stack": () => import("../cards/hui-vertical-stack-card"),
-  spacing: () => import("../cards/hui-spacing-card"),
+  empty: () => import("../cards/hui-empty-card"),
 };
 
 // This will not return an error card but will throw the error

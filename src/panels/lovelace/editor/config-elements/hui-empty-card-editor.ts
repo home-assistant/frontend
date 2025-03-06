@@ -14,8 +14,8 @@ const SCHEMA = [
   },
 ] as const;
 
-@customElement("hui-spacing-card-editor")
-export class HuiSpacingCardEditor
+@customElement("hui-empty-card-editor")
+export class HuiEmptyCardEditor
   extends LitElement
   implements LovelaceCardEditor
 {
@@ -43,7 +43,7 @@ export class HuiSpacingCardEditor
   private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
     if (schema.name === "description") {
       return this.hass!.localize(
-        "ui.panel.lovelace.editor.card.spacing.no_config_options"
+        "ui.panel.lovelace.editor.card.empty.no_config_options"
       );
     }
     return this.hass!.localize(
@@ -56,6 +56,6 @@ export class HuiSpacingCardEditor
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-spacing-card-editor": HuiSpacingCardEditor;
+    "hui-empty-card-editor": HuiEmptyCardEditor;
   }
 }

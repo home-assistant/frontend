@@ -9,13 +9,13 @@ import type {
   LovelaceLayoutOptions,
 } from "../types";
 
-@customElement("hui-spacing-card")
-export class HuiSpacingCard extends LitElement implements LovelaceCard {
+@customElement("hui-empty-card")
+export class HuiEmptyCard extends LitElement implements LovelaceCard {
   @property({ type: Boolean }) public preview = false;
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import("../editor/config-elements/hui-spacing-card-editor");
-    return document.createElement("hui-spacing-card-editor");
+    await import("../editor/config-elements/hui-empty-card-editor");
+    return document.createElement("hui-empty-card-editor");
   }
 
   public getCardSize(): number {
@@ -52,6 +52,7 @@ export class HuiSpacingCard extends LitElement implements LovelaceCard {
     ha-card {
       background: none;
       height: 100%;
+      min-height: 56px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -63,6 +64,6 @@ export class HuiSpacingCard extends LitElement implements LovelaceCard {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-spacing-card": HuiSpacingCard;
+    "hui-empty-card": HuiEmptyCard;
   }
 }

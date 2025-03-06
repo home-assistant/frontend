@@ -7214,9 +7214,9 @@
               "hourly": "Hourly",
               "twice_daily": "Twice daily"
             },
-            "spacing": {
-              "name": "Spacing",
-              "description": "Add custom spacing between cards.",
+            "empty": {
+              "name": "Empty",
+              "description": "The empty card allows you to add a placeholder between your cards.",
               "no_config_options": "This card has no config options, use the Layout tab to set the size."
             }
           },

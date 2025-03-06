@@ -130,7 +130,6 @@ export const coreCards: Card[] = [
     showElement: true,
   },
   {
-    type: "spacing",
-    sectionsViewOnly: true,
+    type: "empty",
   },
 ];
