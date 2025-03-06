@@ -29,6 +29,8 @@ export interface NetworkNode {
     borderWidth?: number;
   };
   fixed?: boolean;
+  x?: number;
+  y?: number;
 }
 
 export interface NetworkLink {
@@ -44,6 +46,7 @@ export interface NetworkLink {
     show?: boolean;
     formatter?: string;
   };
+  ignoreForceLayout?: boolean;
 }
 
 export interface NetworkData {
@@ -80,7 +83,10 @@ export class HaNetworkGraph extends LitElement {
 
   // @ts-ignore
   private _resizeController = new ResizeController(this, {
-    callback: () => this.chart?.resize(),
+    callback: () => {
+      this.chart?.resize();
+      setTimeout(() => this._centerCoordinatorNode(), 100);
+    },
   });
 
   private _loading = false;
@@ -211,6 +217,9 @@ export class HaNetworkGraph extends LitElement {
         series: this._getSeries(),
       });
 
+      // Center the coordinator node if it exists
+      this._centerCoordinatorNode();
+
       if (this.selectedNode) {
         this._focusOnNode();
       }
@@ -288,7 +297,9 @@ export class HaNetworkGraph extends LitElement {
           },
         },
         force: {
-          edgeLength: 500,
+          repulsion: 500,
+          edgeLength: 250,
+          gravity: 0.1,
           layoutAnimation: !this._reducedMotion,
         },
         autoCurveness: true,
@@ -308,6 +319,8 @@ export class HaNetworkGraph extends LitElement {
           label: node.label || node.name,
           itemStyle: node.itemStyle || {},
           fixed: node.fixed,
+          x: node.x,
+          y: node.y,
         })),
         links: this.data.links.map((link) => ({
           source: link.source,
@@ -315,6 +328,7 @@ export class HaNetworkGraph extends LitElement {
           value: link.value,
           lineStyle: link.lineStyle || {},
           label: link.label || {},
+          ignoreForceLayout: link.ignoreForceLayout,
         })),
         categories: this.data.categories || [],
       },
@@ -391,6 +405,35 @@ export class HaNetworkGraph extends LitElement {
     this.chart.dispatchAction({
       type: "downplay",
       seriesIndex: 0,
+    });
+  }
+
+  private _centerCoordinatorNode() {
+    if (!this.chart || !this.data) return;
+
+    // Find the coordinator node (the one that's fixed)
+    const coordinatorNode = this.data.nodes.find((node) => node.fixed);
+    if (!coordinatorNode) return;
+
+    // Get the container dimensions
+    const containerWidth = this.chart.getWidth();
+    const containerHeight = this.chart.getHeight();
+
+    // Set the coordinator position to the center of the container
+    this.chart.setOption({
+      series: this._getSeries().map((series: any) => ({
+        ...series,
+        data: series.data.map((item: any) => {
+          if (item.id === coordinatorNode.id) {
+            return {
+              ...item,
+              x: containerWidth / 2,
+              y: containerHeight / 2,
+            };
+          }
+          return item;
+        }),
+      })),
     });
   }
 

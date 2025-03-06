@@ -309,6 +309,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
       { name: "Offline" },
     ];
 
+    // First create all the nodes and links
     devices.forEach((device) => {
       // Determine category (Coordinator, Router, End Device)
       let category: number;
@@ -323,7 +324,6 @@ export class ZHANetworkVisualizationPage extends LitElement {
       }
 
       // Create node
-      // console.log("device", device, device.name.includes("IKEA"));
       nodes.push({
         id: device.ieee,
         name: device.user_given_name || device.name || device.ieee,
@@ -345,12 +345,12 @@ export class ZHANetworkVisualizationPage extends LitElement {
             : "#F44336",
         },
         label: this._buildLabel(device),
-        // fixed: device.name.includes("IKEA"),
-        // fixed: device.device_type === "Coordinator" || device.device_type === "Router",
+        fixed: device.device_type === "Coordinator",
       });
 
       // Create links (edges)
       if (device.neighbors && device.neighbors.length > 0) {
+        // Add all links, but mark only the strongest as non-ignored for force layout
         device.neighbors.forEach((neighbor) => {
           // Check if the link exists in reverse direction
           const reverseLink = links.find(
@@ -374,13 +374,89 @@ export class ZHANetworkVisualizationPage extends LitElement {
               target: neighbor.ieee,
               value: parseInt(neighbor.lqi),
               lineStyle: {
-                width: this._getLQIWidth(parseInt(neighbor.lqi)),
+                width: 1,
                 color: this._getLQIColor(parseInt(neighbor.lqi)),
                 type: neighbor.relationship !== "Child" ? "dashed" : "solid",
               },
+              // By default, all links should be ignored for force layout
+              ignoreForceLayout: true,
             });
           }
         });
+      }
+    });
+
+    // Now set ignoreForceLayout to false for the strongest connection of each device
+    // Except for the coordinator which can have multiple strong connections
+    devices.forEach((device) => {
+      if (device.neighbors && device.neighbors.length > 0) {
+        // Find the strongest neighbor for this device
+        const strongestNeighbor = [...device.neighbors].sort(
+          (a, b) => parseInt(b.lqi) - parseInt(a.lqi)
+        )[0];
+
+        // Find the link that corresponds to this strongest connection
+        const strongestLink = links.find(
+          (link) =>
+            (link.source === device.ieee &&
+              link.target === strongestNeighbor.ieee) ||
+            (link.target === device.ieee &&
+              link.source === strongestNeighbor.ieee)
+        );
+
+        if (strongestLink) {
+          // For the coordinator, allow multiple strong connections
+          if (device.device_type === "Coordinator") {
+            strongestLink.ignoreForceLayout = false;
+          } else {
+            // For non-coordinators, check if they have a direct connection to the coordinator
+            const coordinatorDevice = devices.find(
+              (d) => d.device_type === "Coordinator"
+            );
+            if (coordinatorDevice) {
+              const directCoordinatorLink = links.find(
+                (link) =>
+                  (link.source === device.ieee &&
+                    link.target === coordinatorDevice.ieee) ||
+                  (link.target === device.ieee &&
+                    link.source === coordinatorDevice.ieee)
+              );
+
+              // If device has a direct connection to coordinator, prioritize that one
+              if (directCoordinatorLink) {
+                directCoordinatorLink.ignoreForceLayout = false;
+                directCoordinatorLink.lineStyle = {
+                  ...directCoordinatorLink.lineStyle,
+                  width: 4,
+                };
+              } else {
+                // Otherwise use the strongest connection
+                // If this is already the strongest connection for the neighbor, keep it
+                const neighborDevice = devices.find(
+                  (d) => d.ieee === strongestNeighbor.ieee
+                );
+                if (neighborDevice) {
+                  const neighborStrongestNeighbor = neighborDevice.neighbors
+                    ? [...neighborDevice.neighbors].sort(
+                        (a, b) => parseInt(b.lqi) - parseInt(a.lqi)
+                      )[0]
+                    : null;
+
+                  if (
+                    neighborStrongestNeighbor &&
+                    neighborStrongestNeighbor.ieee === device.ieee
+                  ) {
+                    strongestLink.ignoreForceLayout = false;
+                    strongestLink.lineStyle = {
+                      ...strongestLink.lineStyle,
+                      width: 4,
+                    };
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     });
 
