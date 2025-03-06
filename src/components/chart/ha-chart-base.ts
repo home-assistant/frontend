@@ -109,8 +109,8 @@ export class HaChartBase extends LitElement {
     // Add keyboard event listeners
     const handleKeyDown = (ev: KeyboardEvent) => {
       if (
-        (!this._modifierPressed && isMac && ev.key === "Meta") ||
-        (!isMac && ev.key === "Control")
+        !this._modifierPressed &&
+        ((isMac && ev.key === "Meta") || (!isMac && ev.key === "Control"))
       ) {
         this._modifierPressed = true;
         if (!this.options?.dataZoom) {
@@ -127,8 +127,8 @@ export class HaChartBase extends LitElement {
 
     const handleKeyUp = (ev: KeyboardEvent) => {
       if (
-        (this._modifierPressed && isMac && ev.key === "Meta") ||
-        (!isMac && ev.key === "Control")
+        this._modifierPressed &&
+        ((isMac && ev.key === "Meta") || (!isMac && ev.key === "Control"))
       ) {
         this._modifierPressed = false;
         if (!this.options?.dataZoom) {
