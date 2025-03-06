@@ -46,7 +46,6 @@ import "../ha-alert";
 import "../ha-button-menu";
 import "../ha-card";
 import "../ha-spinner";
-import "../ha-circular-progress";
 import "../ha-fab";
 import "../ha-icon-button";
 import "../ha-svg-icon";
