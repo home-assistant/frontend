@@ -43,8 +43,6 @@ export class HuiCardPicker extends LitElement {
 
   @property({ attribute: false }) public suggestedCards?: string[];
 
-  @property({ type: Boolean, attribute: false }) public isSectionsView = false;
-
   @storage({
     key: "dashboardCardClipboard",
     state: true,
