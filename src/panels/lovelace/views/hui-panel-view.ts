@@ -135,11 +135,11 @@ export class PanelView extends LitElement implements LovelaceViewElement {
 
     ha-fab {
       position: fixed;
-      right: calc(16px + env(safe-area-inset-right));
-      bottom: calc(16px + env(safe-area-inset-bottom));
+      right: calc(16px + var(--safe-area-inset-right));
+      bottom: calc(16px + var(--safe-area-inset-bottom));
       z-index: 1;
       float: var(--float-end);
-      inset-inline-end: calc(16px + env(safe-area-inset-right));
+      inset-inline-end: calc(16px + var(--safe-area-inset-right));
       inset-inline-start: initial;
     }
   `;
