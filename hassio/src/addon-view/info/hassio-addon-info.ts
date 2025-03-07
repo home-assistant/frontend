@@ -1332,7 +1332,7 @@ class HassioAddonInfo extends LitElement {
           --mdc-theme-primary: var(--primary-text-color);
         }
 
-        ha-alert {
+        :host > ha-alert {
           display: block;
           margin-bottom: 16px;
         }
