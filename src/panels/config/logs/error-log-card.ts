@@ -34,7 +34,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-spinner";
 import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-menu";
 import "../../../components/ha-md-menu-item";
@@ -284,9 +284,7 @@ class ErrorLogCard extends LitElement {
             <div id="scroll-top-marker"></div>
             ${this._loadingPrevState === "loading"
               ? html`<div class="loading-old">
-                  <ha-circular-progress
-                    .indeterminate=${this._loadingPrevState === "loading"}
-                  ></ha-circular-progress>
+                  <ha-spinner></ha-spinner>
                 </div>`
               : nothing}
             ${this._loadingState === "loading"

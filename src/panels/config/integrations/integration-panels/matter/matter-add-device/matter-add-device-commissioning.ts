@@ -2,7 +2,7 @@ import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { HomeAssistant } from "../../../../../../types";
 import { sharedStyles } from "./matter-add-device-shared-styles";
-import "../../../../../../components/ha-circular-progress";
+import "../../../../../../components/ha-spinner";
 
 @customElement("matter-add-device-commissioning")
 class MatterAddDeviceCommissioning extends LitElement {
@@ -11,10 +11,7 @@ class MatterAddDeviceCommissioning extends LitElement {
   render() {
     return html`
       <div class="content">
-        <ha-circular-progress
-          size="medium"
-          indeterminate
-        ></ha-circular-progress>
+        <ha-spinner size="medium"></ha-spinner>
         <p>
           ${this.hass.localize(
             "ui.dialogs.matter-add-device.commissioning.note"
@@ -33,7 +30,7 @@ class MatterAddDeviceCommissioning extends LitElement {
         flex-direction: column;
         text-align: center;
       }
-      ha-circular-progress {
+      ha-spinner {
         margin-bottom: 24px;
       }
     `,

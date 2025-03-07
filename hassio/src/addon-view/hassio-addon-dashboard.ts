@@ -11,7 +11,6 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import { navigate } from "../../../src/common/navigate";
 import { extractSearchParam } from "../../../src/common/url/search-params";
-import "../../../src/components/ha-circular-progress";
 import type { HassioAddonDetails } from "../../../src/data/hassio/addon";
 import {
   fetchAddonInfo,

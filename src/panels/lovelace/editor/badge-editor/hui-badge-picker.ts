@@ -10,7 +10,7 @@ import memoizeOne from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
-import "../../../../components/ha-circular-progress";
+import "../../../../components/ha-spinner";
 import "../../../../components/search-input";
 import { isUnavailableState } from "../../../../data/entity";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
@@ -296,7 +296,7 @@ export class HuiBadgePicker extends LitElement {
         this._renderBadgeElement(badge),
         html`
           <div class="badge spinner">
-            <ha-circular-progress indeterminate></ha-circular-progress>
+            <ha-spinner></ha-spinner>
           </div>
         `
       )}`,
@@ -328,7 +328,7 @@ export class HuiBadgePicker extends LitElement {
       ),
       html`
         <div class="badge spinner">
-          <ha-circular-progress indeterminate></ha-circular-progress>
+          <ha-spinner></ha-spinner>
         </div>
       `
     )}`;

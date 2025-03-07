@@ -2,7 +2,7 @@ import "@material/mwc-button";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../../../components/ha-circular-progress";
+import "../../../../../components/ha-spinner";
 import type { ZHADevice } from "../../../../../data/zha";
 import { DEVICE_MESSAGE_TYPES, LOG_OUTPUT } from "../../../../../data/zha";
 import "../../../../../layouts/hass-tabs-subpage";
@@ -89,10 +89,7 @@ class ZHAAddDevicesPage extends LitElement {
                     "ui.panel.config.zha.add_device_page.spinner"
                   )}
                 </h1>
-                <ha-circular-progress
-                  indeterminate
-                  aria-label="Searching"
-                ></ha-circular-progress>
+                <ha-spinner aria-label="Searching"></ha-spinner>
               `
             : html`
                 <div>
@@ -237,7 +234,7 @@ class ZHAAddDevicesPage extends LitElement {
         .error {
           color: var(--error-color);
         }
-        ha-circular-progress {
+        ha-spinner {
           margin: 20px;
         }
         .searching {

@@ -18,7 +18,7 @@ import { navigate } from "../../../../common/navigate";
 import { deepEqual } from "../../../../common/util/deep-equal";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
-import "../../../../components/ha-circular-progress";
+import "../../../../components/ha-spinner";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-yaml-editor";
@@ -312,11 +312,7 @@ export class HuiDialogEditView extends LitElement {
           @click=${this._save}
         >
           ${this._saving
-            ? html`<ha-circular-progress
-                indeterminate
-                size="small"
-                aria-label="Saving"
-              ></ha-circular-progress>`
+            ? html`<ha-spinner size="small" aria-label="Saving"></ha-spinner>`
             : nothing}
           ${this.hass!.localize("ui.common.save")}</ha-button
         >

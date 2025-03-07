@@ -8,7 +8,7 @@ import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../../../../src/common/string/compare";
 import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-tooltip";
-import "../../../../src/components/ha-circular-progress";
+import "../../../../src/components/ha-spinner";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-icon-button";
 import type {
@@ -161,10 +161,7 @@ class HassioRepositoriesDialog extends LitElement {
             ></ha-textfield>
             <mwc-button @click=${this._addRepository}>
               ${this._processing
-                ? html`<ha-circular-progress
-                    indeterminate
-                    size="small"
-                  ></ha-circular-progress>`
+                ? html`<ha-spinner size="small"></ha-spinner>`
                 : this._dialogParams!.supervisor.localize(
                     "dialog.repositories.add"
                   )}
@@ -202,7 +199,7 @@ class HassioRepositoriesDialog extends LitElement {
           margin-inline-start: 8px;
           margin-inline-end: initial;
         }
-        ha-circular-progress {
+        ha-spinner {
           display: block;
           margin: 32px;
           text-align: center;

@@ -10,7 +10,7 @@ import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import { subscribePollingCollection } from "../../../common/util/subscribe-polling";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-spinner";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-metric";
 import type { HassioStats } from "../../../data/hassio/common";
@@ -295,7 +295,7 @@ class DialogSystemInformation extends LitElement {
     if (!this._systemInfo) {
       sections.push(html`
         <div class="loading-container">
-          <ha-circular-progress indeterminate></ha-circular-progress>
+          <ha-spinner></ha-spinner>
         </div>
       `);
     } else {
@@ -314,12 +314,7 @@ class DialogSystemInformation extends LitElement {
             const info = domainInfo.info[key] as SystemCheckValueObject;
 
             if (info.type === "pending") {
-              value = html`
-                <ha-circular-progress
-                  indeterminate
-                  size="small"
-                ></ha-circular-progress>
-              `;
+              value = html` <ha-spinner size="small"></ha-spinner> `;
             } else if (info.type === "failed") {
               value = html`
                 <span class="error">${info.error}</span>${!info.more_info

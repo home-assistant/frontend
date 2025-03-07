@@ -5,7 +5,7 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-circular-progress";
+import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-list-item";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-qr-code";
@@ -80,7 +80,7 @@ class DialogMatterManageFabrics extends LitElement {
               )}
             </mwc-list>`
           : html`<div class="center">
-              <ha-circular-progress indeterminate></ha-circular-progress>
+              <ha-spinner></ha-spinner>
             </div>`}
       </ha-dialog>
     `;

@@ -8,7 +8,7 @@ import { debounce } from "../../../common/util/debounce";
 import { handleStructError } from "../../../common/structs/handle-errors";
 import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/ha-alert";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-spinner";
 import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import type { LovelaceConfig } from "../../../data/lovelace/config/types";
@@ -223,12 +223,7 @@ export abstract class HuiElementEditor<
           ? html`
               <div class="gui-editor" @edit-sub-element=${this._editSubElement}>
                 ${this._loading
-                  ? html`
-                      <ha-circular-progress
-                        indeterminate
-                        class="center margin-bot"
-                      ></ha-circular-progress>
-                    `
+                  ? html` <ha-spinner class="center margin-bot"></ha-spinner> `
                   : cache(
                       this._subElementEditorConfig
                         ? this._renderSubElement()
@@ -470,7 +465,7 @@ export abstract class HuiElementEditor<
     ha-code-editor {
       --code-mirror-max-height: calc(100vh - 245px);
     }
-    ha-circular-progress {
+    ha-spinner {
       display: block;
       margin: auto;
     }

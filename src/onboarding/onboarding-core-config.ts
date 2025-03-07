@@ -6,7 +6,7 @@ import { LOCAL_TIME_ZONE } from "../common/datetime/resolve-time-zone";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
-import "../components/ha-circular-progress";
+import "../components/ha-spinner";
 import "../components/ha-country-picker";
 import type { ConfigUpdateValues } from "../data/core";
 import { saveCoreConfig } from "../data/core";
@@ -52,7 +52,7 @@ class OnboardingCoreConfig extends LitElement {
     }
     if (this._skipCore) {
       return html`<div class="row center">
-        <ha-circular-progress indeterminate></ha-circular-progress>
+        <ha-spinner></ha-spinner>
       </div>`;
     }
     return html`

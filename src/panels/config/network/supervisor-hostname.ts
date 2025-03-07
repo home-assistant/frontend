@@ -6,7 +6,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-spinner";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-formfield";
 import "../../../components/ha-icon-button";
@@ -70,8 +70,7 @@ export class HassioHostname extends LitElement {
         <div class="card-actions">
           <mwc-button @click=${this._save} .disabled=${this._processing}>
             ${this._processing
-              ? html`<ha-circular-progress indeterminate size="small">
-                </ha-circular-progress>`
+              ? html`<ha-spinner size="small"></ha-spinner>`
               : this.hass.localize("ui.common.save")}
           </mwc-button>
         </div>

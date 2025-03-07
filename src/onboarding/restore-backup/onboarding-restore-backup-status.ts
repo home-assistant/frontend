@@ -1,7 +1,7 @@
 import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../components/ha-card";
-import "../../components/ha-circular-progress";
+import "../../components/ha-spinner";
 import "../../components/ha-alert";
 import "../../components/ha-button";
 import { haStyle } from "../../resources/styles";
@@ -29,7 +29,7 @@ class OnboardingRestoreBackupStatus extends LitElement {
           ${this.backupInfo.state === "restore_backup"
             ? html`
                 <div class="loading">
-                  <ha-circular-progress indeterminate></ha-circular-progress>
+                  <ha-spinner></ha-spinner>
                 </div>
                 <p>
                   ${this.localize(

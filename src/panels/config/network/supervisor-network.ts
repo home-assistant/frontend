@@ -9,7 +9,7 @@ import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-spinner";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-formfield";
 import "../../../components/ha-icon-button";
@@ -146,8 +146,7 @@ export class HassioNetwork extends LitElement {
                   .disabled=${this._scanning}
                 >
                   ${this._scanning
-                    ? html`<ha-circular-progress indeterminate size="small">
-                      </ha-circular-progress>`
+                    ? html`<ha-spinner size="small"> </ha-spinner>`
                     : this.hass.localize(
                         "ui.panel.config.network.supervisor.scan_ap"
                       )}
@@ -263,8 +262,7 @@ export class HassioNetwork extends LitElement {
       <div class="card-actions">
         <ha-button @click=${this._updateNetwork} .disabled=${!this._dirty}>
           ${this._processing
-            ? html`<ha-circular-progress indeterminate size="small">
-              </ha-circular-progress>`
+            ? html`<ha-spinner size="small"></ha-spinner>`
             : this.hass.localize("ui.common.save")}
         </ha-button>
         <ha-button @click=${this._clear}>

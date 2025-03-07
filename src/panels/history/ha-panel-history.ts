@@ -27,7 +27,7 @@ import {
 import { MIN_TIME_BETWEEN_UPDATES } from "../../components/chart/ha-chart-base";
 import "../../components/chart/state-history-charts";
 import type { StateHistoryCharts } from "../../components/chart/state-history-charts";
-import "../../components/ha-circular-progress";
+import "../../components/ha-spinner";
 import "../../components/ha-date-range-picker";
 import "../../components/ha-icon-button";
 import "../../components/ha-button-menu";
@@ -185,7 +185,7 @@ class HaPanelHistory extends LitElement {
           </div>
           ${this._isLoading
             ? html`<div class="progress-wrapper">
-                <ha-circular-progress indeterminate></ha-circular-progress>
+                <ha-spinner></ha-spinner>
               </div>`
             : !entitiesSelected
               ? html`<div class="start-search">

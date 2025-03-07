@@ -5,7 +5,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
-import "../../../../components/ha-circular-progress";
+import "../../../../components/ha-spinner";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-password-field";
 
@@ -239,7 +239,7 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
 
   private _renderProgress() {
     return html`<div class="centered">
-      <ha-circular-progress indeterminate></ha-circular-progress>
+      <ha-spinner></ha-spinner>
       <p>
         ${this.hass.connected
           ? this._restoreState()
@@ -366,7 +366,7 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
           flex-direction: column;
           align-items: center;
         }
-        ha-circular-progress {
+        ha-spinner {
           margin-bottom: 16px;
         }
         ha-alert[alert-type="warning"] {

@@ -2,7 +2,7 @@ import "@material/mwc-button";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../components/ha-circular-progress";
+import "../../components/ha-spinner";
 import type { DataEntryFlowStepProgress } from "../../data/data_entry_flow";
 import type { HomeAssistant } from "../../types";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
@@ -25,7 +25,7 @@ class StepFlowProgress extends LitElement {
         ${this.flowConfig.renderShowFormProgressHeader(this.hass, this.step)}
       </h2>
       <div class="content">
-        <ha-circular-progress indeterminate></ha-circular-progress>
+        <ha-spinner></ha-spinner>
         ${this.flowConfig.renderShowFormProgressDescription(
           this.hass,
           this.step
@@ -42,7 +42,7 @@ class StepFlowProgress extends LitElement {
           padding: 50px 100px;
           text-align: center;
         }
-        ha-circular-progress {
+        ha-spinner {
           margin-bottom: 16px;
         }
       `,

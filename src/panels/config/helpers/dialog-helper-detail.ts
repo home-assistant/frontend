@@ -6,7 +6,7 @@ import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-spinner";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-list-item";
 import "../../../components/ha-tooltip";
@@ -175,9 +175,7 @@ export class DialogHelperDetail extends LitElement {
             </mwc-button>`}
       `;
     } else if (this._loading || this._helperFlows === undefined) {
-      content = html`<ha-circular-progress
-        indeterminate
-      ></ha-circular-progress>`;
+      content = html`<ha-spinner></ha-spinner>`;
     } else {
       const items = this._filterHelpers(
         HELPERS,

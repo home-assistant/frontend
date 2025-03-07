@@ -10,7 +10,7 @@ import memoizeOne from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
-import "../../../../components/ha-circular-progress";
+import "../../../../components/ha-spinner";
 import "../../../../components/search-input";
 import { isUnavailableState } from "../../../../data/entity";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
@@ -313,7 +313,7 @@ export class HuiCardPicker extends LitElement {
         this._renderCardElement(card),
         html`
           <div class="card spinner">
-            <ha-circular-progress indeterminate></ha-circular-progress>
+            <ha-spinner></ha-spinner>
           </div>
         `
       )}`,
@@ -345,7 +345,7 @@ export class HuiCardPicker extends LitElement {
       ),
       html`
         <div class="card spinner">
-          <ha-circular-progress indeterminate></ha-circular-progress>
+          <ha-spinner></ha-spinner>
         </div>
       `
     )}`;

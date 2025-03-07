@@ -4,7 +4,7 @@ import { customElement, property } from "lit/decorators";
 import "../../../../components/ha-card";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
-import "../../../../components/ha-circular-progress";
+import "../../../../components/ha-spinner";
 import "../../../../components/ha-expansion-panel";
 import type { PipelineRun } from "../../../../data/assist_pipeline";
 import type { HomeAssistant } from "../../../../types";
@@ -90,9 +90,7 @@ const renderProgress = (
     if ("error" in pipelineRun) {
       return html`❌`;
     }
-    return html`
-      <ha-circular-progress size="small" indeterminate></ha-circular-progress>
-    `;
+    return html` <ha-spinner size="small"></ha-spinner> `;
   }
 
   const duration =

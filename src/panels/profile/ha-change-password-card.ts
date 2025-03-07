@@ -3,7 +3,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-card";
-import "../../components/ha-circular-progress";
+import "../../components/ha-spinner";
 import "../../components/ha-textfield";
 import "../../components/ha-password-field";
 import { haStyle } from "../../resources/styles";
@@ -91,7 +91,7 @@ class HaChangePasswordCard extends LitElement {
         <div class="card-actions">
           ${this._loading
             ? html`<div>
-                <ha-circular-progress indeterminate></ha-circular-progress>
+                <ha-spinner></ha-spinner>
               </div>`
             : html`<mwc-button
                 @click=${this._changePassword}

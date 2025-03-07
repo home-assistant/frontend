@@ -10,7 +10,7 @@ import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-alert";
-import "../../../../src/components/ha-circular-progress";
+import "../../../../src/components/ha-spinner";
 import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-expansion-panel";
 import "../../../../src/components/ha-formfield";
@@ -161,12 +161,8 @@ export class DialogHassioNetwork
                   .disabled=${this._scanning}
                 >
                   ${this._scanning
-                    ? html`<ha-circular-progress
-                        aria-label="Scanning"
-                        indeterminate
-                        size="small"
-                      >
-                      </ha-circular-progress>`
+                    ? html`<ha-spinner aria-label="Scanning" size="small">
+                      </ha-spinner>`
                     : this.supervisor.localize("dialog.network.scan_ap")}
                 </mwc-button>
                 ${this._accessPoints &&
@@ -282,8 +278,7 @@ export class DialogHassioNetwork
         </mwc-button>
         <mwc-button @click=${this._updateNetwork} .disabled=${!this._dirty}>
           ${this._processing
-            ? html`<ha-circular-progress indeterminate size="small">
-              </ha-circular-progress>`
+            ? html`<ha-spinner size="small"> </ha-spinner>`
             : this.supervisor.localize("common.save")}
         </mwc-button>
       </div>`;

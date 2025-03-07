@@ -9,7 +9,7 @@ import "../../../components/buttons/ha-call-service-button";
 import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-spinner";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import { getSignedPath } from "../../../data/auth";
@@ -102,7 +102,7 @@ export class SystemLogCard extends LitElement {
           ${this._items === undefined
             ? html`
                 <div class="loading-container">
-                  <ha-circular-progress indeterminate></ha-circular-progress>
+                  <ha-spinner></ha-spinner>
                 </div>
               `
             : html`

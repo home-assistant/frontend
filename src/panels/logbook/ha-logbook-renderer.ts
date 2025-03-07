@@ -14,7 +14,6 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { navigate } from "../../common/navigate";
 import { computeTimelineColor } from "../../components/chart/timeline-color";
 import "../../components/entity/state-badge";
-import "../../components/ha-circular-progress";
 import "../../components/ha-icon-next";
 import "../../components/ha-relative-time";
 import type { LogbookEntry } from "../../data/logbook";

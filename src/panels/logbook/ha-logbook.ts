@@ -4,7 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { throttle } from "../../common/util/throttle";
-import "../../components/ha-circular-progress";
+import "../../components/ha-spinner";
 import type { LogbookEntry, LogbookStreamMessage } from "../../data/logbook";
 import { subscribeLogbook } from "../../data/logbook";
 import type { TraceContexts } from "../../data/trace";
@@ -103,7 +103,7 @@ export class HaLogbook extends LitElement {
     if (this._logbookEntries === undefined) {
       return html`
         <div class="progress-wrapper">
-          <ha-circular-progress indeterminate></ha-circular-progress>
+          <ha-spinner></ha-spinner>
         </div>
       `;
     }

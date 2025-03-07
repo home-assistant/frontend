@@ -45,7 +45,7 @@ import "../entity/ha-entity-picker";
 import "../ha-alert";
 import "../ha-button-menu";
 import "../ha-card";
-import "../ha-circular-progress";
+import "../ha-spinner";
 import "../ha-fab";
 import "../ha-icon-button";
 import "../ha-svg-icon";
@@ -325,7 +325,7 @@ export class HaMediaPlayerBrowse extends LitElement {
     }
 
     if (!this._currentItem) {
-      return html`<ha-circular-progress indeterminate></ha-circular-progress>`;
+      return html`<ha-spinner></ha-spinner>`;
     }
 
     const currentItem = this._currentItem;
@@ -873,11 +873,8 @@ export class HaMediaPlayerBrowse extends LitElement {
           direction: ltr;
         }
 
-        ha-circular-progress {
-          --mdc-theme-primary: var(--primary-color);
-          display: flex;
-          justify-content: center;
-          margin: 40px;
+        ha-spinner {
+          margin: 40px auto;
         }
 
         .container {

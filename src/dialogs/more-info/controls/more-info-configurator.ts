@@ -3,7 +3,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-alert";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-spinner";
 import "../../../components/ha-markdown";
 import "../../../components/ha-textfield";
 import type { HomeAssistant } from "../../../types";
@@ -52,10 +52,10 @@ export class MoreInfoConfigurator extends LitElement {
                 @click=${this._submitClicked}
               >
                 ${this._isConfiguring
-                  ? html`<ha-circular-progress
-                      indeterminate
+                  ? html`<ha-spinner
+                      size="tiny"
                       aria-label="Configuring"
-                    ></ha-circular-progress>`
+                    ></ha-spinner>`
                   : ""}
                 ${this.stateObj.attributes.submit_caption}
               </mwc-button>
@@ -114,12 +114,10 @@ export class MoreInfoConfigurator extends LitElement {
       height: 41px;
     }
 
-    ha-circular-progress {
-      width: 14px;
-      height: 14px;
-      margin-right: 20px;
-      margin-inline-end: 20px;
-      margin-inline-start: initial;
+    ha-spinner {
+      --ha-spinner-indicator-color: var(--primary-text-color);
+      margin-right: auto;
+      margin-left: auto;
     }
   `;
 }
