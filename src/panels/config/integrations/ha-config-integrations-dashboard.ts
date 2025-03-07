@@ -915,7 +915,6 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
               integration.supported_by!
             ),
             showAdvanced: this.hass.userData?.showAdvanced,
-            virtualDomain: domain,
           });
         },
       });
