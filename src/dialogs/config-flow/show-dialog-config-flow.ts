@@ -25,7 +25,7 @@ export const showConfigFlowDialog = (
     showDevices: true,
     createFlow: async (hass, handler) => {
       const [step] = await Promise.all([
-        createConfigFlow(hass, handler, dialogParams.entryId),
+        createConfigFlow(hass, handler, dialogParams.entryId, dialogParams?.virtualDomain),
         hass.loadFragmentTranslation("config"),
         hass.loadBackendTranslation("config", handler),
         hass.loadBackendTranslation("selector", handler),
