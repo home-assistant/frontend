@@ -7,7 +7,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
 import "../components/ha-circular-progress";
-import "../components/ha-country-picker";
+import { COUNTRIES } from "../components/ha-country-picker";
 import type { ConfigUpdateValues } from "../data/core";
 import { saveCoreConfig } from "../data/core";
 import { countryCurrency } from "../data/currency";
@@ -131,6 +131,16 @@ class OnboardingCoreConfig extends LitElement {
       this._save(ev);
       return;
     }
+
+    // Set suggested country
+    if (navigator.language) {
+      let suggested = navigator.language.split("-")[1].toUpperCase();
+      if (!COUNTRIES.includes(suggested)) {
+        suggested = "NL";
+      }
+      this._country = suggested;
+    }
+
     fireEvent(this, "onboarding-progress", { increase: 0.5 });
     await this.updateComplete;
     setTimeout(
