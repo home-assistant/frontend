@@ -148,7 +148,6 @@ export interface DataEntryFlowDialogParams {
   }) => void;
   flowConfig: FlowConfig;
   showAdvanced?: boolean;
-  virtualDomain?: string;
   dialogParentElement?: HTMLElement;
   navigateToResult?: boolean;
 }

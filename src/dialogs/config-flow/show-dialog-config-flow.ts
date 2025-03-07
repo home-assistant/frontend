@@ -18,6 +18,7 @@ export const showConfigFlowDialog = (
   element: HTMLElement,
   dialogParams: Omit<DataEntryFlowDialogParams, "flowConfig"> & {
     entryId?: string;
+    virtualDomain?: string;
   }
 ): void =>
   showFlowDialog(element, dialogParams, {
@@ -25,7 +26,12 @@ export const showConfigFlowDialog = (
     showDevices: true,
     createFlow: async (hass, handler) => {
       const [step] = await Promise.all([
-        createConfigFlow(hass, handler, dialogParams.entryId, dialogParams?.virtualDomain),
+        createConfigFlow(
+          hass,
+          handler,
+          dialogParams.entryId,
+          dialogParams?.virtualDomain
+        ),
         hass.loadFragmentTranslation("config"),
         hass.loadBackendTranslation("config", handler),
         hass.loadBackendTranslation("selector", handler),
