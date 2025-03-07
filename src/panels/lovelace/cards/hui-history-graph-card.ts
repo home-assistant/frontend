@@ -183,7 +183,6 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     );
 
     this._mergeHistory();
-    this._redrawGraph();
   }
 
   private _redrawGraph() {
