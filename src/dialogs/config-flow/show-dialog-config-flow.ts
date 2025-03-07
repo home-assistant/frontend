@@ -30,7 +30,7 @@ export const showConfigFlowDialog = (
           hass,
           handler,
           dialogParams.entryId,
-          dialogParams?.virtualDomain
+          dialogParams.virtualDomain
         ),
         hass.loadFragmentTranslation("config"),
         hass.loadBackendTranslation("config", handler),
