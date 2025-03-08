@@ -1,5 +1,6 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../types";
+import { handleFetchPromise } from "../util/hass-call-api";
 
 export enum InclusionState {
   /** The controller isn't doing anything regarding inclusion. */
@@ -915,6 +916,25 @@ export const abortZwaveNodeFirmwareUpdate = (
     type: "zwave_js/abort_firmware_update",
     device_id,
   });
+
+export const getNVMBackupDownloadUrl = (entryId: string) =>
+  `/api/zwave_js/nvm_backup/${entryId}`;
+
+export const restoreZwaveNVMBackup = async (
+  hass: HomeAssistant,
+  file: File,
+  entryId: string
+): Promise<{ backup_id: string }> => {
+  const fd = new FormData();
+  fd.append("file", file);
+
+  return handleFetchPromise(
+    hass.fetchWithAuth(`/api/zwave_js/nvm_restore/${entryId}`, {
+      method: "POST",
+      body: fd,
+    })
+  );
+};
 
 export type ZWaveJSLogUpdate = ZWaveJSLogMessageUpdate | ZWaveJSLogConfigUpdate;
 
