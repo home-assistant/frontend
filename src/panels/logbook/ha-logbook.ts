@@ -140,7 +140,7 @@ export class HaLogbook extends LitElement {
     this._throttleGetLogbookEntries.cancel();
     this._updateTraceContexts.cancel();
     this._updateUsers.cancel();
-    await this._unsubscribe(true);
+    this._unsubscribe(true);
 
     this._liveUpdatesEnabled = true;
 
@@ -215,7 +215,7 @@ export class HaLogbook extends LitElement {
    * - we are about to resubscribe
    * - the entity is not being tracked in the logbook
    *   and will not return results ever
-   * - the requested start time in the future
+   * - the requested start time is in the future
    *
    * In cases where no events are expected, we set this._logbookEntries
    * to an empty list to show a no results message.
