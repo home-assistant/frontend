@@ -35,7 +35,7 @@ export const createConfigFlow = (
   hass: HomeAssistant,
   handler: string,
   entry_id?: string,
-  virtual_domain?: string, 
+  virtual_domain?: string
 ) =>
   hass.callApi<DataEntryFlowStep>(
     "POST",
