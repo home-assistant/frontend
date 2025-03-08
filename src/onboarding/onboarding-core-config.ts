@@ -133,7 +133,7 @@ class OnboardingCoreConfig extends LitElement {
     }
 
     // Set suggested country
-    let suggested = "NL";
+    let suggested: string | undefined;
     if (navigator.language) {
       const lang = navigator.language.split("-").pop()!.toUpperCase();
       if (COUNTRIES.includes(lang)) {
