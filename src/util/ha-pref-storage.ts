@@ -1,8 +1,9 @@
+import { SELECTED_THEME_KEY } from "../data/ws-themes";
 import type { HomeAssistant } from "../types";
 
 const STORED_STATE = [
   "dockedSidebar",
-  "selectedTheme",
+  SELECTED_THEME_KEY,
   "selectedLanguage",
   "vibrate",
   "debugConnection",
@@ -11,9 +12,17 @@ const STORED_STATE = [
   "defaultPanel",
 ];
 
+const CLEARABLE_STATE = [SELECTED_THEME_KEY];
+
 export function storeState(hass: HomeAssistant) {
   try {
-    STORED_STATE.forEach((key) => {
+    const states = [...STORED_STATE];
+
+    if (!hass.browserThemeEnabled) {
+      states.splice(states.indexOf(SELECTED_THEME_KEY), 1);
+    }
+
+    states.forEach((key) => {
       const value = hass[key];
       window.localStorage.setItem(
         key,
@@ -32,15 +41,18 @@ export function storeState(hass: HomeAssistant) {
 }
 
 export function getState() {
-  const state = {};
+  const state: Partial<HomeAssistant> = {};
 
   STORED_STATE.forEach((key) => {
     const storageItem = window.localStorage.getItem(key);
     if (storageItem !== null) {
       let value = JSON.parse(storageItem);
       // selectedTheme went from string to object on 20200718
-      if (key === "selectedTheme" && typeof value === "string") {
-        value = { theme: value };
+      if (key === SELECTED_THEME_KEY) {
+        if (typeof value === "string") {
+          value = { theme: value };
+        }
+        state.browserThemeEnabled = true;
       }
       // dockedSidebar went from boolean to enum on 20190720
       if (key === "dockedSidebar" && typeof value === "boolean") {
@@ -54,4 +66,10 @@ export function getState() {
 
 export function clearState() {
   window.localStorage.clear();
+}
+
+export function clearStateKey(key: string) {
+  if (CLEARABLE_STATE.includes(key)) {
+    window.localStorage.removeItem(key);
+  }
 }

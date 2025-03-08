@@ -1,10 +1,12 @@
-import "@material/mwc-button";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
+import "../../components/ha-button";
+import "../../components/ha-expansion-panel";
+import "../../components/ha-switch";
 import "../../layouts/hass-tabs-subpage";
 import { profileSections } from "./ha-panel-profile";
 import { isExternal } from "../../data/external";
@@ -27,6 +29,7 @@ import "./ha-pick-time-zone-row";
 import "./ha-push-notifications-row";
 import "./ha-set-suspend-row";
 import "./ha-set-vibrate-row";
+import type { HaSwitch } from "../../components/ha-switch";
 
 @customElement("ha-profile-section-general")
 class HaProfileSectionGeneral extends LitElement {
@@ -37,6 +40,8 @@ class HaProfileSectionGeneral extends LitElement {
   @state() private _coreUserData?: CoreFrontendUserData | null;
 
   @property({ attribute: false }) public route!: Route;
+
+  @state() private _browserThemeActivated = false;
 
   private _unsubCoreData?: UnsubscribeFunc;
 
@@ -91,9 +96,9 @@ class HaProfileSectionGeneral extends LitElement {
                 : ""}
             </div>
             <div class="card-actions">
-              <mwc-button class="warning" @click=${this._handleLogOut}>
+              <ha-button class="warning" @click=${this._handleLogOut}>
                 ${this.hass.localize("ui.panel.profile.logout")}
-              </mwc-button>
+              </ha-button>
             </div>
           </ha-card>
           <ha-card
@@ -128,6 +133,12 @@ class HaProfileSectionGeneral extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-first-weekday-row>
+            <ha-pick-theme-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+              this._browserThemeActivated}
+              .storageLocation=${"user"}
+            ></ha-pick-theme-row>
             ${this.hass.user!.is_admin
               ? html`
                   <ha-advanced-mode-row
@@ -148,10 +159,42 @@ class HaProfileSectionGeneral extends LitElement {
             <div class="card-content">
               ${this.hass.localize("ui.panel.profile.client_settings_detail")}
             </div>
-            <ha-pick-theme-row
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-pick-theme-row>
+            <ha-settings-row .narrow=${this.narrow}>
+              <span slot="heading">
+                ${this.hass.localize(
+                  isExternal
+                    ? "ui.panel.profile.themes.device.mobile_app_header"
+                    : "ui.panel.profile.themes.device.browser_header"
+                )}
+              </span>
+              <span slot="description">
+                ${this.hass.localize(
+                  "ui.panel.profile.themes.device.description"
+                )}
+              </span>
+              <ha-switch
+                .checked=${this.hass.browserThemeEnabled ||
+                this._browserThemeActivated}
+                @change=${this._toggleBrowserTheme}
+              ></ha-switch>
+            </ha-settings-row>
+            ${this.hass.browserThemeEnabled || this._browserThemeActivated
+              ? html`
+                  <ha-expansion-panel
+                    outlined
+                    .header=${this.hass.localize(
+                      "ui.panel.profile.themes.device.custom_theme"
+                    )}
+                    expanded
+                  >
+                    <ha-pick-theme-row
+                      class="device-theme"
+                      .narrow=${this.narrow}
+                      .hass=${this.hass}
+                    ></ha-pick-theme-row>
+                  </ha-expansion-panel>
+                `
+              : nothing}
             <ha-pick-dashboard-row
               .narrow=${this.narrow}
               .hass=${this.hass}
@@ -167,11 +210,11 @@ class HaProfileSectionGeneral extends LitElement {
                   "ui.panel.profile.customize_sidebar.description"
                 )}
               </span>
-              <mwc-button @click=${this._customizeSidebar}>
+              <ha-button @click=${this._customizeSidebar}>
                 ${this.hass.localize(
                   "ui.panel.profile.customize_sidebar.button"
                 )}
-              </mwc-button>
+              </ha-button>
             </ha-settings-row>
             ${this.hass.dockedSidebar !== "auto" || !this.narrow
               ? html`
@@ -225,6 +268,39 @@ class HaProfileSectionGeneral extends LitElement {
     });
   }
 
+  private async _toggleBrowserTheme(ev: Event) {
+    const switchElement = ev.target as HaSwitch;
+    const enabled = switchElement.checked;
+
+    if (!enabled) {
+      if (!this.hass.browserThemeEnabled && this._browserThemeActivated) {
+        // no changed have made, disable without confirmation
+        this._browserThemeActivated = false;
+      } else {
+        const confirm = await showConfirmationDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.profile.themes.device.delete_header"
+          ),
+          text: this.hass.localize(
+            "ui.panel.profile.themes.device.delete_description"
+          ),
+          confirmText: this.hass.localize("ui.common.delete"),
+          destructive: true,
+        });
+
+        if (confirm) {
+          this._browserThemeActivated = false;
+          fireEvent(this, "resetBrowserTheme");
+        } else {
+          // revert switch
+          switchElement.click();
+        }
+      }
+    } else {
+      this._browserThemeActivated = true;
+    }
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -250,6 +326,14 @@ class HaProfileSectionGeneral extends LitElement {
         .promo-advanced {
           text-align: center;
           color: var(--secondary-text-color);
+        }
+
+        ha-expansion-panel {
+          margin: 0 8px 8px;
+        }
+        .device-theme {
+          display: block;
+          padding-bottom: 16px;
         }
       `,
     ];
