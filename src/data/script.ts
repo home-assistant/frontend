@@ -474,3 +474,16 @@ export const migrateAutomationAction = (
 
   return action;
 };
+
+export const normalizeScriptConfig = (config: ScriptConfig): ScriptConfig => {
+  // Normalize data: ensure sequence is a list
+  // Happens when people copy paste their scripts into the config
+  const value = config.sequence;
+  if (value && !Array.isArray(value)) {
+    config.sequence = [value];
+  }
+  if (config.sequence) {
+    config.sequence = migrateAutomationAction(config.sequence);
+  }
+  return config;
+};

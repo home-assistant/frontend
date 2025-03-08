@@ -1,6 +1,7 @@
 import "@material/mwc-list/mwc-list";
 import {
   mdiAccount,
+  mdiClipboardEdit,
   mdiFile,
   mdiOpenInNew,
   mdiPencilOutline,
@@ -10,6 +11,8 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { load } from "js-yaml";
+import { until } from "lit/directives/until";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { stringCompare } from "../../../common/string/compare";
@@ -17,7 +20,11 @@ import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list-item";
 import "../../../components/ha-tip";
-import { showAutomationEditor } from "../../../data/automation";
+import type { AutomationConfig } from "../../../data/automation";
+import {
+  normalizeAutomationConfig,
+  showAutomationEditor,
+} from "../../../data/automation";
 import type {
   Blueprint,
   BlueprintDomain,
@@ -28,7 +35,8 @@ import {
   fetchBlueprints,
   getBlueprintSourceType,
 } from "../../../data/blueprint";
-import { showScriptEditor } from "../../../data/script";
+import type { ScriptConfig } from "../../../data/script";
+import { normalizeScriptConfig, showScriptEditor } from "../../../data/script";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
@@ -52,7 +60,9 @@ class DialogNewAutomation extends LitElement implements HassDialog {
 
   @state() public blueprints?: Blueprints;
 
-  public showDialog(params: NewAutomationDialogParams): void {
+  private _config?: AutomationConfig | ScriptConfig;
+
+  public async showDialog(params: NewAutomationDialogParams): Promise<void> {
     this._opened = true;
     this._mode = params?.mode || "automation";
 
@@ -61,11 +71,40 @@ class DialogNewAutomation extends LitElement implements HassDialog {
     });
   }
 
+  private async _scanClipboardForConfig() {
+    try {
+      const clipboardText = await navigator.clipboard.readText();
+      const parsedConfig: any = load(clipboardText);
+      const isAutomation = this._mode === "automation";
+      const processedConfig = isAutomation
+        ? normalizeAutomationConfig(parsedConfig)
+        : normalizeScriptConfig(parsedConfig);
+
+      if (
+        (isAutomation && this._automationFieldsSet(processedConfig)) ||
+        (!isAutomation && this._scriptFieldsSet(processedConfig))
+      ) {
+        this._config = processedConfig;
+      }
+    } catch {
+      this._config = undefined;
+    }
+  }
+
+  private _automationFieldsSet(config: AutomationConfig) {
+    return config.triggers || config.actions || config.conditions;
+  }
+
+  private _scriptFieldsSet(config: ScriptConfig) {
+    return config.sequence;
+  }
+
   public closeDialog() {
     if (this._opened) {
       fireEvent(this, "dialog-closed", { dialog: this.localName });
     }
     this._opened = false;
+    this._config = undefined;
     return true;
   }
 
@@ -88,6 +127,62 @@ class DialogNewAutomation extends LitElement implements HassDialog {
       stringCompare(a.name, b.name, this.hass!.locale.language)
     );
   });
+
+  private async _renderClipboardAction() {
+    const permission = await navigator.permissions.query({
+      // @ts-ignore
+      name: "clipboard-read",
+    });
+
+    if (permission.state === "denied") {
+      return nothing;
+    }
+
+    if (permission.state === "prompt") {
+      return html`
+        <ha-list-item
+          hasmeta
+          twoline
+          graphic="icon"
+          @request-selected=${this._scanAndImportClipboard}
+        >
+          <ha-svg-icon slot="graphic" .path=${mdiClipboardEdit}></ha-svg-icon>
+          ${this.hass.localize(
+            `ui.panel.config.${this._mode}.dialog_new.create_from_clipboard`
+          )}
+          <span slot="secondary">
+            ${this.hass.localize(
+              `ui.panel.config.${this._mode}.dialog_new.create_from_clipboard_permission`
+            )}
+          </span>
+          <ha-icon-next slot="meta"></ha-icon-next>
+        </ha-list-item>
+      `;
+    }
+
+    await this._scanClipboardForConfig();
+    if (!this._config) {
+      return nothing;
+    }
+
+    return html`<ha-list-item
+      hasmeta
+      twoline
+      graphic="icon"
+      @request-selected=${this._handleClipboard}
+    >
+      <ha-svg-icon slot="graphic" .path=${mdiClipboardEdit}></ha-svg-icon>
+      ${this.hass.localize(
+        `ui.panel.config.${this._mode}.dialog_new.create_from_clipboard`
+      )}
+      <span slot="secondary">
+        ${this.hass.localize(
+          `ui.panel.config.${this._mode}.dialog_new.create_from_clipboard_description`
+        )}
+      </span>
+      <ha-icon-next slot="meta"></ha-icon-next>
+    </ha-list-item>`;
+  }
 
   protected render() {
     if (!this._opened) {
@@ -132,6 +227,7 @@ class DialogNewAutomation extends LitElement implements HassDialog {
             </span>
             <ha-icon-next slot="meta"></ha-icon-next>
           </ha-list-item>
+          ${until(this._renderClipboardAction())}
           <li divider role="separator"></li>
           ${processedBlueprints.map(
             (blueprint) => html`
@@ -222,6 +318,32 @@ class DialogNewAutomation extends LitElement implements HassDialog {
     } else {
       showAutomationEditor();
     }
+  }
+
+  private _importConfig() {
+    if (this._config) {
+      if (this._mode === "script") {
+        showScriptEditor(this._config);
+      } else {
+        showAutomationEditor(this._config);
+      }
+    }
+  }
+
+  private async _handleClipboard(ev) {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+    this._importConfig();
+  }
+
+  private async _scanAndImportClipboard(ev) {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+
+    await this._scanClipboardForConfig();
+    this._importConfig();
   }
 
   static get styles(): CSSResultGroup {
