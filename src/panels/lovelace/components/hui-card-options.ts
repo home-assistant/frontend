@@ -10,13 +10,13 @@ import {
   mdiPlus,
   mdiPlusCircleMultipleOutline,
 } from "@mdi/js";
-import deepClone from "deep-clone-simple";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, queryAssignedNodes } from "lit/decorators";
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
@@ -29,7 +29,6 @@ import {
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
-import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import {
   addCard,
   deleteCard,
@@ -267,24 +266,13 @@ export class HuiCardOptions extends LitElement {
         this._cutCard();
         break;
       case 4:
-        this._deleteCard({ silent: false });
+        this._deleteCard();
         break;
     }
   }
 
   private _duplicateCard(): void {
-    const { cardIndex } = parseLovelaceCardPath(this.path!);
-    const containerPath = getLovelaceContainerPath(this.path!);
-    const cardConfig = this._cards![cardIndex];
-    showEditCardDialog(this, {
-      lovelaceConfig: this.lovelace!.config,
-      saveCardConfig: async (config) => {
-        const newConfig = addCard(this.lovelace!.config, containerPath, config);
-        await this.lovelace!.saveConfig(newConfig);
-      },
-      cardConfig,
-      isNew: true,
-    });
+    fireEvent(this, "ll-duplicate-card", { path: this.path! });
   }
 
   private _editCard(): void {
@@ -292,14 +280,16 @@ export class HuiCardOptions extends LitElement {
   }
 
   private _cutCard(): void {
-    this._copyCard();
-    this._deleteCard({ silent: true });
+    fireEvent(this, "ll-copy-card", { path: this.path! });
+    fireEvent(this, "ll-delete-card", { path: this.path!, silent: true });
   }
 
   private _copyCard(): void {
-    const { cardIndex } = parseLovelaceCardPath(this.path!);
-    const cardConfig = this._cards[cardIndex];
-    this._clipboard = deepClone(cardConfig);
+    fireEvent(this, "ll-copy-card", { path: this.path! });
+  }
+
+  private _deleteCard(): void {
+    fireEvent(this, "ll-delete-card", { path: this.path!, silent: false });
   }
 
   private _decreaseCardPosiion(): void {
@@ -419,10 +409,6 @@ export class HuiCardOptions extends LitElement {
         }
       },
     });
-  }
-
-  private _deleteCard({ silent }: { silent: boolean }): void {
-    fireEvent(this, "ll-delete-card", { path: this.path!, silent });
   }
 }
 
