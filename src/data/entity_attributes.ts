@@ -106,4 +106,14 @@ export const DOMAIN_ATTRIBUTES_FORMATERS: Record<
       return formatDurationDigital(locale, { hours, minutes, seconds })!;
     },
   },
+  input_datetime: {
+    year: (value) => value.toString(),
+    timestamp: (value) => value.toString(),
+  },
+};
+
+export const DERIVED_ATTRIBUTES: Record<string, Record<string, string[]>> = {
+  input_datetime: {
+    timestamp: ["timestamp_relative"],
+  },
 };
