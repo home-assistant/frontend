@@ -133,13 +133,14 @@ class OnboardingCoreConfig extends LitElement {
     }
 
     // Set suggested country
+    let suggested = "NL";
     if (navigator.language) {
-      let suggested = navigator.language.split("-")[1].toUpperCase();
-      if (!COUNTRIES.includes(suggested)) {
-        suggested = "NL";
+      const lang = navigator.language.split("-").pop()!.toUpperCase();
+      if (COUNTRIES.includes(lang)) {
+        suggested = lang;
       }
-      this._country = suggested;
     }
+    this._country = suggested;
 
     fireEvent(this, "onboarding-progress", { increase: 0.5 });
     await this.updateComplete;
