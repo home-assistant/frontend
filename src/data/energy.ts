@@ -711,8 +711,10 @@ export const getEnergyDataCollection = (
         );
         scheduleUpdatePeriod();
       },
-      addHours(calcDate(now, endOfDay, hass.locale, hass.config), 1).getTime() -
-        Date.now() // Switch to next day an hour after the day changed
+      addHours(
+        calcDate(new Date(), endOfDay, hass.locale, hass.config),
+        1
+      ).getTime() - Date.now() // Switch to next day an hour after the day changed
     );
   };
   scheduleUpdatePeriod();
@@ -721,19 +723,19 @@ export const getEnergyDataCollection = (
     collection.prefs = undefined;
   };
   collection.setPeriod = (newStart: Date, newEnd?: Date) => {
+    if (collection._updatePeriodTimeout) {
+      clearTimeout(collection._updatePeriodTimeout);
+      collection._updatePeriodTimeout = undefined;
+    }
     collection.start = newStart;
     collection.end = newEnd;
     if (
       collection.start.getTime() ===
         calcDate(new Date(), startOfDay, hass.locale, hass.config).getTime() &&
       collection.end?.getTime() ===
-        calcDate(new Date(), endOfDay, hass.locale, hass.config).getTime() &&
-      !collection._updatePeriodTimeout
+        calcDate(new Date(), endOfDay, hass.locale, hass.config).getTime()
     ) {
       scheduleUpdatePeriod();
-    } else if (collection._updatePeriodTimeout) {
-      clearTimeout(collection._updatePeriodTimeout);
-      collection._updatePeriodTimeout = undefined;
     }
   };
   collection.setCompare = (compare: boolean) => {
