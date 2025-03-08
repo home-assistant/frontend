@@ -6,12 +6,7 @@ import "../../components/buttons/ha-progress-button";
 import "../../components/ha-password-field";
 import { haStyle } from "../../resources/styles";
 import type { LocalizeFunc } from "../../common/translations/localize";
-import {
-  CORE_LOCAL_AGENT,
-  HASSIO_LOCAL_AGENT,
-  type BackupContentExtended,
-  type BackupData,
-} from "../../data/backup";
+import type { BackupContentExtended, BackupData } from "../../data/backup";
 import { restoreOnboardingBackup } from "../../data/backup_onboarding";
 import type { HaProgressButton } from "../../components/buttons/ha-progress-button";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -36,7 +31,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
   @state() private _loading = false;
 
   render() {
-    const agentId = this.supervisor ? HASSIO_LOCAL_AGENT : CORE_LOCAL_AGENT;
+    const agentId = Object.keys(this.backup.agents)[0];
     const backupProtected = this.backup.agents[agentId].protected;
 
     return html`
@@ -113,7 +108,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
     this._error = undefined;
     this._encryptionKeyWrong = false;
 
-    const backupAgent = this.supervisor ? HASSIO_LOCAL_AGENT : CORE_LOCAL_AGENT;
+    const backupAgent = Object.keys(this.backup.agents)[0];
 
     try {
       await restoreOnboardingBackup({

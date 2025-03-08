@@ -1,7 +1,6 @@
 import { mdiClose } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { property, query, state } from "lit/decorators";
-import { computeRTL } from "../common/util/compute_rtl";
 import "../components/ha-button";
 import "../components/ha-toast";
 import "../components/ha-icon-button";
@@ -63,7 +62,6 @@ class NotificationManager extends LitElement {
     return html`
       <ha-toast
         leading
-        dir=${computeRTL(this.hass) ? "rtl" : "ltr"}
         .labelText=${this._parameters.message}
         .timeoutMs=${this._parameters.duration!}
         @MDCSnackbar:closed=${this._toastClosed}

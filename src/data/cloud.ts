@@ -1,5 +1,12 @@
+import type { LitElement } from "lit";
 import type { EntityFilter } from "../common/entity/entity_filter";
+import {
+  showAlertDialog,
+  showPromptDialog,
+} from "../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../types";
+import type { LocalizeFunc } from "../common/translations/localize";
+import { showCloudAlreadyConnectedDialog } from "../panels/config/cloud/dialog-cloud-already-connected/show-dialog-cloud-already-connected";
 
 type StrictConnectionMode = "disabled" | "guard_page" | "drop_connection";
 
@@ -185,3 +192,88 @@ export const cloudSyncGoogleAssistant = (hass: HomeAssistant) =>
 
 export const fetchSupportPackage = (hass: HomeAssistant) =>
   hass.callApi<string>("GET", "cloud/support_package");
+
+export type LoginFunction = (
+  email: string,
+  password: string,
+  checkConnection: boolean,
+  code?: string
+) => void;
+
+export const handleCloudLoginError = async (
+  err: any,
+  element: LitElement,
+  email: string,
+  password: string,
+  checkConnection: boolean,
+  localize: LocalizeFunc,
+  loginFunction: LoginFunction,
+  translationKeyPanel:
+    | "page-onboarding.restore.ha-cloud"
+    | "config.cloud" = "config.cloud"
+): Promise<"cancel" | "password-change" | "re-login" | string> => {
+  const errCode = err && err.body && err.body.code;
+  if (errCode === "mfarequired") {
+    const totpCode = await showPromptDialog(element, {
+      title: localize(
+        `ui.panel.${translationKeyPanel}.login.totp_code_prompt_title`
+      ),
+      inputLabel: localize(`ui.panel.${translationKeyPanel}.login.totp_code`),
+      inputType: "text",
+      defaultValue: "",
+      confirmText: localize(`ui.panel.${translationKeyPanel}.login.submit`),
+    });
+    if (totpCode !== null && totpCode !== "") {
+      await loginFunction(email, password, checkConnection, totpCode);
+      return "re-login";
+    }
+  }
+  if (errCode === "alreadyconnectederror") {
+    let returnValue;
+    showCloudAlreadyConnectedDialog(element, {
+      details: JSON.parse(err.body.message),
+      logInHereAction: () => {
+        loginFunction(email, password, false);
+      },
+      closeDialog: () => {
+        returnValue = "cancel";
+      },
+    });
+    return returnValue;
+  }
+  if (errCode === "PasswordChangeRequired") {
+    showAlertDialog(element, {
+      title: localize(
+        `ui.panel.${translationKeyPanel}.login.alert_password_change_required`
+      ),
+    });
+    return "password-change";
+  }
+  if (errCode === "usernotfound" && email !== email.toLowerCase()) {
+    await loginFunction(email.toLowerCase(), password, checkConnection);
+    return "re-login";
+  }
+
+  switch (errCode) {
+    case "UserNotConfirmed":
+      return localize(
+        `ui.panel.${translationKeyPanel}.login.alert_email_confirm_necessary`
+      );
+    case "mfarequired":
+      return localize(
+        `ui.panel.${translationKeyPanel}.login.alert_mfa_code_required`
+      );
+    case "mfaexpiredornotstarted":
+      return localize(
+        `ui.panel.${translationKeyPanel}.login.alert_mfa_expired_or_not_started`
+      );
+    case "invalidtotpcode":
+      return localize(
+        `ui.panel.${translationKeyPanel}.login.alert_totp_code_invalid`
+      );
+    default:
+      return err && err.body && err.body.message
+        ? err.body.message
+        : "Unknown error";
+  }
+};
