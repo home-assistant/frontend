@@ -1331,6 +1331,12 @@ class HassioAddonInfo extends LitElement {
         ha-alert mwc-button {
           --mdc-theme-primary: var(--primary-text-color);
         }
+
+        :host > ha-alert {
+          display: block;
+          margin-bottom: 16px;
+        }
+
         a {
           text-decoration: none;
         }
