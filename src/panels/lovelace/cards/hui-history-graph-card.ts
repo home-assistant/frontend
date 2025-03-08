@@ -57,6 +57,8 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   private _subscribed?: Promise<(() => Promise<void>) | undefined>;
 
+  private _stateHistory?: HistoryResult;
+
   public getCardSize(): number {
     return this._config?.title ? 2 : 0 + 2 * (this._entityIds?.length || 1);
   }
@@ -123,7 +125,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
           return;
         }
 
-        const stateHistory = computeHistory(
+        this._stateHistory = computeHistory(
           this.hass!,
           combinedHistory,
           this._entityIds,
@@ -132,11 +134,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
           this._config?.split_device_classes
         );
 
-        this._history = mergeHistoryResults(
-          stateHistory,
-          this._statisticsHistory,
-          this._config?.split_device_classes
-        );
+        this._mergeHistory();
       },
       this._hoursToShow,
       this._entityIds
@@ -149,6 +147,16 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     await this._fetchStatistics(sensorNumericDeviceClasses);
 
     this._setRedrawTimer();
+  }
+
+  private _mergeHistory() {
+    if (this._stateHistory) {
+      this._history = mergeHistoryResults(
+        this._stateHistory,
+        this._statisticsHistory,
+        this._config?.split_device_classes
+      );
+    }
   }
 
   private async _fetchStatistics(sensorNumericDeviceClasses: string[]) {
@@ -173,6 +181,8 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       sensorNumericDeviceClasses,
       this._config?.split_device_classes
     );
+
+    this._mergeHistory();
   }
 
   private _redrawGraph() {
