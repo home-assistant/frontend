@@ -2303,10 +2303,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lokalise/node-api@npm:13.2.1":
-  version: 13.2.1
-  resolution: "@lokalise/node-api@npm:13.2.1"
-  checksum: 10/e7a20df90acb90d5f6e75252638662059d2704d32c02245ff800b2914cc4a1d134aa706d4649726e7d94e4be2bcb2ccc3f0a6f3223c9f844a75de080659ba7eb
+"@lokalise/node-api@npm:14.0.0":
+  version: 14.0.0
+  resolution: "@lokalise/node-api@npm:14.0.0"
+  checksum: 10/02084babf7ed5539eb125e7261c07270053ad44cd0a0ff9d1ead4cc8618685263b99c9d116ea47e76661e9224671e6dade0cd63cc24d4914bdf053c443ea7a96
   languageName: node
   linkType: hard
 
@@ -6110,13 +6110,13 @@ __metadata:
   linkType: hard
 
 "axios@npm:^1.7.9":
-  version: 1.7.9
-  resolution: "axios@npm:1.7.9"
+  version: 1.8.2
+  resolution: "axios@npm:1.8.2"
   dependencies:
     follow-redirects: "npm:^1.15.6"
     form-data: "npm:^4.0.0"
     proxy-from-env: "npm:^1.1.0"
-  checksum: 10/b7a5f660ea53ba9c2a745bf5ad77ad8bf4f1338e13ccc3f9f09f810267d6c638c03dac88b55dae8dc98b79c57d2d6835be651d58d2af97c174f43d289a9fd007
+  checksum: 10/d4328758128d0602cc809a8e7627622cb7839b379eae5e4d6b9d603dd4d5fb89159985630243ec107cf5c675cd8825dba737a319dff9499f3b7688d9a69ec9ed
   languageName: node
   linkType: hard
 
@@ -9387,7 +9387,7 @@ __metadata:
     "@lit-labs/motion": "npm:1.0.8"
     "@lit-labs/observers": "npm:2.0.5"
     "@lit-labs/virtualizer": "npm:2.1.0"
-    "@lokalise/node-api": "npm:13.2.1"
+    "@lokalise/node-api": "npm:14.0.0"
     "@material/chips": "npm:=14.0.0-canary.53b3cad2f.0"
     "@material/data-table": "npm:=14.0.0-canary.53b3cad2f.0"
     "@material/mwc-base": "npm:0.27.0"
@@ -9528,7 +9528,7 @@ __metadata:
     stacktrace-js: "npm:2.0.2"
     superstruct: "npm:2.0.2"
     tar: "npm:7.4.3"
-    terser-webpack-plugin: "npm:5.3.12"
+    terser-webpack-plugin: "npm:5.3.13"
     tinykeys: "npm:3.0.0"
     ts-lit-plugin: "npm:2.0.2"
     tsparticles-engine: "npm:2.12.0"
@@ -14188,9 +14188,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"terser-webpack-plugin@npm:5.3.12":
-  version: 5.3.12
-  resolution: "terser-webpack-plugin@npm:5.3.12"
+"terser-webpack-plugin@npm:5.3.13":
+  version: 5.3.13
+  resolution: "terser-webpack-plugin@npm:5.3.13"
   dependencies:
     "@jridgewell/trace-mapping": "npm:^0.3.25"
     jest-worker: "npm:^27.4.5"
@@ -14206,7 +14206,7 @@ __metadata:
       optional: true
     uglify-js:
       optional: true
-  checksum: 10/3717232881a0fe23d914219bbf97fda371aa2a5f884968697e8df3414d33b36168120c41dcbdf3fe6ceb233e87c370ad091a032aebca79d8b64762f46cf5daa7
+  checksum: 10/6313764800616248759eb3714f918d454892d487f152a7a87105821c2af4032061d886f3e5f834613818d8b65507e6f7f71d1bf85a74536bfe04f7d612838472
   languageName: node
   linkType: hard
 
