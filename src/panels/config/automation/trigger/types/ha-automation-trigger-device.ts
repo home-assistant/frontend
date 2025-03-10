@@ -141,6 +141,9 @@ export class HaDeviceTrigger extends LitElement {
   }
 
   protected updated(changedProps) {
+    if (this.hass && changedProps.has("hass") && !changedProps.get("hass")) {
+      this.hass.loadBackendTranslation("device_automation");
+    }
     if (!changedProps.has("trigger")) {
       return;
     }
