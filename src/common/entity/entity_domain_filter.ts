@@ -1,27 +1,27 @@
 import { computeDomain } from "./compute_domain";
 
-export type FilterFunc = (entityId: string) => boolean;
+export type EntityDomainFilterFunc = (entityId: string) => boolean;
 
-export interface EntityFilter {
+export interface EntityDomainFilter {
   include_domains: string[];
   include_entities: string[];
   exclude_domains: string[];
   exclude_entities: string[];
 }
 
-export const isEmptyFilter = (filter: EntityFilter) =>
+export const isEmptyEntityDomainFilter = (filter: EntityDomainFilter) =>
   filter.include_domains.length +
     filter.include_entities.length +
     filter.exclude_domains.length +
     filter.exclude_entities.length ===
   0;
 
-export const generateFilter = (
+export const generateEntityDomainFilter = (
   includeDomains?: string[],
   includeEntities?: string[],
   excludeDomains?: string[],
   excludeEntities?: string[]
-): FilterFunc => {
+): EntityDomainFilterFunc => {
   const includeDomainsSet = new Set(includeDomains);
   const includeEntitiesSet = new Set(includeEntities);
   const excludeDomainsSet = new Set(excludeDomains);
