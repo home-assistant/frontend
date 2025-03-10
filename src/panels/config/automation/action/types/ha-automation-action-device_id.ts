@@ -135,8 +135,11 @@ export class HaDeviceAction extends LitElement {
     }
   }
 
-  protected updated(changedPros) {
-    const prevAction = changedPros.get("action");
+  protected updated(changedProps) {
+    if (this.hass && changedProps.has("hass") && !changedProps.get("hass")) {
+      this.hass.loadBackendTranslation("device_automation");
+    }
+    const prevAction = changedProps.get("action");
     if (
       prevAction &&
       !deviceAutomationsEqual(this._entityReg, prevAction, this.action)

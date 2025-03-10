@@ -44,7 +44,6 @@ export class HaActionSelector extends SubscribeMixin(LitElement) {
 
   protected firstUpdated() {
     if (!this._entityReg) {
-      this.hass.loadBackendTranslation("device_automation");
       this._entitiesContext = new ContextProvider(this, {
         context: fullEntitiesContext,
         initialValue: [],
