@@ -58,7 +58,7 @@ export class AreaViewStrategy extends ReactiveElement {
           area: config.area,
           entity_category: "none",
         },
-      } as EntitiesFilterSectionStrategyConfig,
+      } satisfies EntitiesFilterSectionStrategyConfig,
     });
 
     // Climate
@@ -106,7 +106,7 @@ export class AreaViewStrategy extends ReactiveElement {
             },
           },
         ],
-      } as EntitiesFilterSectionStrategyConfig,
+      } satisfies EntitiesFilterSectionStrategyConfig,
     });
 
     // Entertainment
@@ -120,7 +120,7 @@ export class AreaViewStrategy extends ReactiveElement {
           area: config.area,
           entity_category: "none",
         },
-      } as EntitiesFilterSectionStrategyConfig,
+      } satisfies EntitiesFilterSectionStrategyConfig,
     });
 
     // Security
@@ -160,7 +160,7 @@ export class AreaViewStrategy extends ReactiveElement {
             },
           },
         ],
-      } as EntitiesFilterSectionStrategyConfig,
+      } satisfies EntitiesFilterSectionStrategyConfig,
     });
 
     // Switches
@@ -174,7 +174,7 @@ export class AreaViewStrategy extends ReactiveElement {
           area: config.area,
           entity_category: "none",
         },
-      } as EntitiesFilterSectionStrategyConfig,
+      } satisfies EntitiesFilterSectionStrategyConfig,
     });
 
     return {

@@ -23,7 +23,7 @@ export class AreasDashboardStrategy extends ReactiveElement {
       strategy: {
         type: "area",
         area: area.area_id,
-      } as AreaViewStrategyConfig,
+      } satisfies AreaViewStrategyConfig,
     }));
 
     return {
