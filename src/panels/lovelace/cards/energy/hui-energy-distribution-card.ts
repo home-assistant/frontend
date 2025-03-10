@@ -47,6 +47,8 @@ class HuiEnergyDistrubutionCard
 
   @state() private _data?: EnergyData;
 
+  @state() private _animate = true;
+
   protected hassSubscribeRequiredHostProps = ["_config"];
 
   public setConfig(config: EnergyDistributionCardConfig): void {
@@ -65,6 +67,12 @@ class HuiEnergyDistrubutionCard
 
   public getCardSize(): Promise<number> | number {
     return 3;
+  }
+
+  protected firstUpdated() {
+    if (matchMedia("(prefers-reduced-motion)").matches) {
+      this._animate = false;
+    }
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -349,7 +357,7 @@ class HuiEnergyDistrubutionCard
                       </div>
                       <svg width="80" height="30">
                         <path d="M40 0 v30" id="gas" />
-                        ${gasUsage
+                        ${gasUsage && this._animate
                           ? svg`<circle
                     r="1"
                     class="gas"
@@ -382,7 +390,7 @@ class HuiEnergyDistrubutionCard
                         </div>
                         <svg width="80" height="30">
                           <path d="M40 0 v30" id="water" />
-                          ${waterUsage
+                          ${waterUsage && this._animate
                             ? svg`<circle
                 r="1"
                 class="water"
@@ -577,7 +585,7 @@ class HuiEnergyDistrubutionCard
                   ? html`<div class="circle-container water bottom">
                       <svg width="80" height="30">
                         <path d="M40 30 v-30" id="water" />
-                        ${waterUsage
+                        ${waterUsage && this._animate
                           ? svg`<circle
                     r="1"
                     class="water"
@@ -671,7 +679,7 @@ class HuiEnergyDistrubutionCard
                 d="M0,${hasBattery ? 50 : hasSolarProduction ? 56 : 53} H100"
                 vector-effect="non-scaling-stroke"
               ></path>
-              ${returnedToGrid && hasSolarProduction
+              ${returnedToGrid && hasSolarProduction && this._animate
                 ? svg`<circle
                     r="1"
                     class="return"
@@ -690,7 +698,7 @@ class HuiEnergyDistrubutionCard
                     </animateMotion>
                   </circle>`
                 : ""}
-              ${solarConsumption
+              ${solarConsumption && this._animate
                 ? svg`<circle
                     r="1"
                     class="solar"
@@ -705,7 +713,7 @@ class HuiEnergyDistrubutionCard
                     </animateMotion>
                   </circle>`
                 : ""}
-              ${gridConsumption
+              ${gridConsumption && this._animate
                 ? svg`<circle
                     r="1"
                     class="grid"
@@ -720,7 +728,7 @@ class HuiEnergyDistrubutionCard
                     </animateMotion>
                   </circle>`
                 : ""}
-              ${solarToBattery
+              ${solarToBattery && this._animate
                 ? svg`<circle
                     r="1"
                     class="battery-solar"
@@ -735,7 +743,7 @@ class HuiEnergyDistrubutionCard
                     </animateMotion>
                   </circle>`
                 : ""}
-              ${batteryConsumption
+              ${batteryConsumption && this._animate
                 ? svg`<circle
                     r="1"
                     class="battery-house"
@@ -750,7 +758,7 @@ class HuiEnergyDistrubutionCard
                     </animateMotion>
                   </circle>`
                 : ""}
-              ${batteryFromGrid
+              ${batteryFromGrid && this._animate
                 ? svg`<circle
                     r="1"
                     class="battery-from-grid"
@@ -766,7 +774,7 @@ class HuiEnergyDistrubutionCard
                     </animateMotion>
                   </circle>`
                 : ""}
-              ${batteryToGrid
+              ${batteryToGrid && this._animate
                 ? svg`<circle
                     r="1"
                     class="battery-to-grid"
