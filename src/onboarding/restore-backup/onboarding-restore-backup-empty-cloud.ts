@@ -59,6 +59,10 @@ class OnboardingRestoreBackupEmptyCloud extends LitElement {
     return [
       onBoardingStyles,
       css`
+        h1,
+        p {
+          text-align: left;
+        }
         .description {
           font-size: 1rem;
           line-height: 1.5rem;

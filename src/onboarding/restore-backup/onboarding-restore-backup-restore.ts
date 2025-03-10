@@ -266,6 +266,10 @@ class OnboardingRestoreBackupRestore extends LitElement {
         :host {
           padding: 0 20px 16px;
         }
+        h1,
+        p {
+          text-align: left;
+        }
         .description {
           font-size: 1rem;
           line-height: 1.5rem;

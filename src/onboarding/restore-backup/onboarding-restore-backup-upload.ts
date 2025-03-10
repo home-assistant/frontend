@@ -123,6 +123,10 @@ class OnboardingRestoreBackupUpload extends LitElement {
         :host {
           padding: 0 20px 16px;
         }
+        h1,
+        p {
+          text-align: left;
+        }
         .card-actions {
           display: flex;
           justify-content: flex-end;

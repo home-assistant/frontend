@@ -34,9 +34,7 @@ class OnboardingRestoreBackupCloudLogin extends LitElement {
         .label=${this.localize("ui.panel.page-onboarding.restore.back")}
         @click=${this._back}
       ></ha-icon-button-arrow-prev>
-      <h1>
-        Home Assistant Cloud
-      </h1>
+      <h1>Home Assistant Cloud</h1>
       <p>
         ${this.localize(
           "ui.panel.page-onboarding.restore.ha-cloud.sign_in_description"
@@ -195,6 +193,10 @@ class OnboardingRestoreBackupCloudLogin extends LitElement {
       css`
         :host {
           padding: 0 20px 24px;
+        }
+        h1,
+        p {
+          text-align: left;
         }
         h2 {
           font-size: 24px;

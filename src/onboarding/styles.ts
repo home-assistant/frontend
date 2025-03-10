@@ -9,7 +9,7 @@ export const onBoardingStyles = css`
     margin-bottom: 8px;
   }
   ha-icon-button-arrow-prev {
-    margin-top: 12px;
+    margin-left: -12px;
     display: block;
   }
   p {

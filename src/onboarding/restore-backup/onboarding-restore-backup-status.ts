@@ -75,6 +75,10 @@ class OnboardingRestoreBackupStatus extends LitElement {
         :host {
           padding: 28px 20px 0;
         }
+        h1,
+        p {
+          text-align: left;
+        }
         .actions {
           display: flex;
           justify-content: flex-end;
