@@ -69,12 +69,6 @@ class HuiEnergyDistrubutionCard
     return 3;
   }
 
-  protected firstUpdated() {
-    if (matchMedia("(prefers-reduced-motion)").matches) {
-      this._animate = false;
-    }
-  }
-
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return (
       hasConfigChanged(this, changedProps) ||
@@ -84,6 +78,12 @@ class HuiEnergyDistrubutionCard
         this.hass.states[this._data.co2SignalEntity] !==
           changedProps.get("hass").states[this._data.co2SignalEntity])
     );
+  }
+
+  protected willUpdate() {
+    if (!this.hasUpdated && matchMedia("(prefers-reduced-motion)").matches) {
+      this._animate = false;
+    }
   }
 
   protected render() {
@@ -1044,16 +1044,20 @@ class HuiEnergyDistrubutionCard
       border-width: 2px;
     }
     .circle svg circle {
-      animation: rotate-in 0.6s ease-in;
-      transition:
-        stroke-dashoffset 0.4s,
-        stroke-dasharray 0.4s;
       fill: none;
     }
-    @keyframes rotate-in {
-      from {
-        stroke-dashoffset: 238.76104;
-        stroke-dasharray: 238.76104;
+    @media not (prefers-reduced-motion) {
+      .circle svg circle {
+        animation: rotate-in 0.6s ease-in;
+        transition:
+          stroke-dashoffset 0.4s,
+          stroke-dasharray 0.4s;
+      }
+      @keyframes rotate-in {
+        from {
+          stroke-dashoffset: 238.76104;
+          stroke-dasharray: 238.76104;
+        }
       }
     }
     .card-actions a {
