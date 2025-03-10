@@ -6,7 +6,8 @@ import "../../../components/ha-button";
 import "../../../components/ha-switch";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
-import "../../../components/ha-spinner-delayed";
+import "../../../components/ha-fade-in";
+import "../../../components/ha-spinner";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-md-list";
@@ -77,7 +78,7 @@ class HaConfigBackupDetails extends LitElement {
         <div class="content">
           ${this._error &&
           html`<ha-alert alert-type="error">${this._error}</ha-alert>`}
-          ${this._agent === null
+          ${this._agent === null && false
             ? html`
                 <ha-alert
                   alert-type="warning"
@@ -91,8 +92,10 @@ class HaConfigBackupDetails extends LitElement {
                   )}
                 </ha-alert>
               `
-            : !this.agentId
-              ? html`<ha-spinner-delayed></ha-spinner-delayed>`
+            : !this.agentId || true
+              ? html`<ha-fade-in .delay=${1000}
+                  ><ha-spinner></ha-spinner
+                ></ha-fade-in>`
               : html`
                   ${CLOUD_AGENT === this.agentId
                     ? html`
@@ -358,7 +361,7 @@ class HaConfigBackupDetails extends LitElement {
     .card-header {
       padding-bottom: 8px;
     }
-    ha-spinner-delayed {
+    ha-spinner {
       margin: 24px auto;
     }
   `;

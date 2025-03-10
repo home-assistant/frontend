@@ -14,7 +14,8 @@ import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
-import "../../../components/ha-spinner-delayed";
+import "../../../components/ha-fade-in";
+import "../../../components/ha-spinner";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-md-list";
@@ -146,7 +147,9 @@ class HaConfigBackupDetails extends LitElement {
                 </ha-alert>
               `
             : !this._backup
-              ? html`<ha-spinner-delayed></ha-spinner-delayed>`
+              ? html`<ha-fade-in .delay=${1000}
+                  ><ha-spinner></ha-spinner
+                ></ha-fade-in>`
               : html`
                   <ha-backup-details-summary
                     .backup=${this._backup}
@@ -357,7 +360,7 @@ class HaConfigBackupDetails extends LitElement {
       display: grid;
       margin-bottom: 24px;
     }
-    ha-spinner-delayed {
+    ha-spinner {
       margin: 24px auto;
     }
     .card-content {
