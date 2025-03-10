@@ -1,11 +1,11 @@
 import { assert, describe, it } from "vitest";
 
-import { generateFilter } from "../../../src/common/entity/entity_filter";
+import { generateEntityDomainFilter } from "../../../src/common/entity/entity_domain_filter";
 
 describe("EntityFilter", () => {
   // case 1
   it("passes all when no filters passed in", () => {
-    const filter = generateFilter();
+    const filter = generateEntityDomainFilter();
 
     assert(filter("sensor.test"));
     assert(filter("sun.sun"));
@@ -14,14 +14,14 @@ describe("EntityFilter", () => {
 
   // case 2
   it("allows entities by entity id", () => {
-    const filter = generateFilter(undefined, ["light.kitchen"]);
+    const filter = generateEntityDomainFilter(undefined, ["light.kitchen"]);
 
     assert(filter("light.kitchen"));
     assert(!filter("light.living_room"));
   });
 
   it("allows entities by domain", () => {
-    const filter = generateFilter(["switch"]);
+    const filter = generateEntityDomainFilter(["switch"]);
 
     assert(filter("switch.bla"));
     assert(!filter("light.kitchen"));
@@ -29,7 +29,7 @@ describe("EntityFilter", () => {
 
   // case 3
   it("excluding entities by entity id", () => {
-    const filter = generateFilter(undefined, undefined, undefined, [
+    const filter = generateEntityDomainFilter(undefined, undefined, undefined, [
       "light.kitchen",
     ]);
 
@@ -38,7 +38,7 @@ describe("EntityFilter", () => {
   });
 
   it("excluding entities by domain", () => {
-    const filter = generateFilter(undefined, undefined, ["switch"]);
+    const filter = generateEntityDomainFilter(undefined, undefined, ["switch"]);
 
     assert(!filter("switch.bla"));
     assert(filter("light.kitchen"));
@@ -46,9 +46,12 @@ describe("EntityFilter", () => {
 
   // case 4a
   it("allows domain and excluding entity", () => {
-    const filter = generateFilter(["switch"], undefined, undefined, [
-      "switch.kitchen",
-    ]);
+    const filter = generateEntityDomainFilter(
+      ["switch"],
+      undefined,
+      undefined,
+      ["switch.kitchen"]
+    );
 
     assert(filter("switch.living_room"));
     assert(!filter("switch.kitchen"));
@@ -56,7 +59,7 @@ describe("EntityFilter", () => {
   });
 
   it("allows entity while other domains", () => {
-    const filter = generateFilter(["switch"], ["light.kitchen"]);
+    const filter = generateEntityDomainFilter(["switch"], ["light.kitchen"]);
 
     assert(filter("switch.living_room"));
     assert(filter("light.kitchen"));
@@ -65,7 +68,11 @@ describe("EntityFilter", () => {
 
   // case 4b
   it("excluding domain and entity", () => {
-    const filter = generateFilter(undefined, ["switch.kitchen"], ["switch"]);
+    const filter = generateEntityDomainFilter(
+      undefined,
+      ["switch.kitchen"],
+      ["switch"]
+    );
 
     assert(filter("switch.kitchen"));
     assert(!filter("switch.living_room"));
@@ -73,7 +80,7 @@ describe("EntityFilter", () => {
   });
 
   it("excluding domain and excluding entities", () => {
-    const filter = generateFilter(
+    const filter = generateEntityDomainFilter(
       undefined,
       undefined,
       ["switch"],
@@ -87,7 +94,7 @@ describe("EntityFilter", () => {
 
   // case 4c
   it("allows entities", () => {
-    const filter = generateFilter(undefined, ["light.kitchen"]);
+    const filter = generateEntityDomainFilter(undefined, ["light.kitchen"]);
 
     assert(filter("light.kitchen"));
     assert(!filter("switch.living_room"));
