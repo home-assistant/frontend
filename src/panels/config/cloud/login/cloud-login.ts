@@ -5,6 +5,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/buttons/ha-progress-button";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
+import "../../../../components/ha-button";
 import "../../../../components/ha-password-field";
 import type { HaPasswordField } from "../../../../components/ha-password-field";
 import "../../../../components/ha-textfield";
@@ -29,11 +30,17 @@ export class CloudLogin extends LitElement {
     | "page-onboarding.restore.ha-cloud"
     | "config.cloud" = "config.cloud";
 
+  @property({ type: Boolean, attribute: "card-less" }) public cardLess = false;
+
   @query("#email", true) public _emailField!: HaTextField;
 
   @query("#password", true) private _passwordField!: HaPasswordField;
 
   protected render(): TemplateResult {
+    if (this.cardLess) {
+      return this._renderLoginForm();
+    }
+
     return html`
       <ha-card
         outlined
@@ -41,62 +48,68 @@ export class CloudLogin extends LitElement {
           `ui.panel.${this.translationKeyPanel}.login.sign_in`
         )}
       >
-        <div class="card-content login-form">
-          ${this.error
-            ? html`<ha-alert alert-type="error">${this.error}</ha-alert>`
-            : nothing}
-          <ha-textfield
-            .label=${this.localize(
-              `ui.panel.${this.translationKeyPanel}.login.email`
-            )}
-            id="email"
-            name="username"
-            type="email"
-            autocomplete="username"
-            required
-            .value=${this.email ?? ""}
-            @keydown=${this._keyDown}
-            .disabled=${this.inProgress}
-            .validationMessage=${this.localize(
-              `ui.panel.${this.translationKeyPanel}.login.email_error_msg`
-            )}
-          ></ha-textfield>
-          <ha-password-field
-            id="password"
-            name="password"
-            .label=${this.localize(
-              `ui.panel.${this.translationKeyPanel}.login.password`
-            )}
-            .value=${this.password || ""}
-            autocomplete="current-password"
-            required
-            minlength="8"
-            @keydown=${this._keyDown}
-            .disabled=${this.inProgress}
-            .validationMessage=${this.localize(
-              `ui.panel.${this.translationKeyPanel}.login.password_error_msg`
-            )}
-          ></ha-password-field>
-        </div>
-        <div class="card-actions">
-          <button
-            class="link"
-            .disabled=${this.inProgress}
-            @click=${this._handleForgotPassword}
-          >
-            ${this.localize(
-              `ui.panel.${this.translationKeyPanel}.login.forgot_password`
-            )}
-          </button>
-          <ha-progress-button
-            @click=${this._handleLogin}
-            .progress=${this.inProgress}
-            >${this.localize(
-              `ui.panel.${this.translationKeyPanel}.login.sign_in`
-            )}</ha-progress-button
-          >
-        </div>
+        ${this._renderLoginForm()}
       </ha-card>
+    `;
+  }
+
+  private _renderLoginForm() {
+    return html`
+      <div class="card-content login-form">
+        ${this.error
+          ? html`<ha-alert alert-type="error">${this.error}</ha-alert>`
+          : nothing}
+        <ha-textfield
+          .label=${this.localize(
+            `ui.panel.${this.translationKeyPanel}.login.email`
+          )}
+          id="email"
+          name="username"
+          type="email"
+          autocomplete="username"
+          required
+          .value=${this.email ?? ""}
+          @keydown=${this._keyDown}
+          .disabled=${this.inProgress}
+          .validationMessage=${this.localize(
+            `ui.panel.${this.translationKeyPanel}.login.email_error_msg`
+          )}
+        ></ha-textfield>
+        <ha-password-field
+          id="password"
+          name="password"
+          .label=${this.localize(
+            `ui.panel.${this.translationKeyPanel}.login.password`
+          )}
+          .value=${this.password || ""}
+          autocomplete="current-password"
+          required
+          minlength="8"
+          @keydown=${this._keyDown}
+          .disabled=${this.inProgress}
+          .validationMessage=${this.localize(
+            `ui.panel.${this.translationKeyPanel}.login.password_error_msg`
+          )}
+        ></ha-password-field>
+      </div>
+      <div class="card-actions">
+        <ha-button
+          .disabled=${this.inProgress}
+          @click=${this._handleForgotPassword}
+        >
+          ${this.localize(
+            `ui.panel.${this.translationKeyPanel}.login.forgot_password`
+          )}
+        </ha-button>
+        <ha-progress-button
+          unelevated
+          @click=${this._handleLogin}
+          .progress=${this.inProgress}
+          >${this.localize(
+            `ui.panel.${this.translationKeyPanel}.login.sign_in`
+          )}</ha-progress-button
+        >
+      </div>
     `;
   }
 
@@ -107,26 +120,28 @@ export class CloudLogin extends LitElement {
   }
 
   private async _handleLogin() {
-    const emailField = this._emailField;
-    const passwordField = this._passwordField;
-
-    const email = emailField.value;
-    const password = passwordField.value;
-
-    if (!emailField.reportValidity()) {
-      passwordField.reportValidity();
-      emailField.focus();
-      return;
+    if (!this.inProgress) {
+      const emailField = this._emailField;
+      const passwordField = this._passwordField;
+  
+      const email = emailField.value;
+      const password = passwordField.value;
+  
+      if (!emailField.reportValidity()) {
+        passwordField.reportValidity();
+        emailField.focus();
+        return;
+      }
+  
+      if (!passwordField.reportValidity()) {
+        passwordField.focus();
+        return;
+      }
+  
+      this.inProgress = true;
+  
+      fireEvent(this, "cloud-login", { email, password });
     }
-
-    if (!passwordField.reportValidity()) {
-      passwordField.focus();
-      return;
-    }
-
-    this.inProgress = true;
-
-    fireEvent(this, "cloud-login", { email, password });
   }
 
   private _handleForgotPassword() {

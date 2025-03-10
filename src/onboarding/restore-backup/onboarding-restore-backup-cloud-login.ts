@@ -1,13 +1,14 @@
 import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../panels/config/cloud/login/cloud-login";
-import { haStyle } from "../../resources/styles";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import type { BackupContentExtended } from "../../data/backup";
 import { fireEvent } from "../../common/dom/fire_event";
-import { brandsUrl } from "../../util/brands-url";
 import { forgotPasswordHaCloud, loginHaCloud } from "../../data/onboarding";
 import { handleCloudLoginError } from "../../data/cloud";
+import { navigate } from "../../common/navigate";
+import { removeSearchParam } from "../../common/url/search-params";
+import { onBoardingStyles } from "../styles";
 
 @customElement("onboarding-restore-backup-cloud-login")
 class OnboardingRestoreBackupCloudLogin extends LitElement {
@@ -29,23 +30,22 @@ class OnboardingRestoreBackupCloudLogin extends LitElement {
 
   render() {
     return html`
-      <h2>
-        <img
-          .src=${brandsUrl({
-            domain: "cloud",
-            type: "icon",
-            useFallback: true,
-            darkOptimized: matchMedia("(prefers-color-scheme: dark)").matches,
-          })}
-          crossorigin="anonymous"
-          referrerpolicy="no-referrer"
-          alt="Nabu Casa logo"
-        />
+      <ha-icon-button-arrow-prev
+        .label=${this.localize("ui.panel.page-onboarding.restore.back")}
+        @click=${this._back}
+      ></ha-icon-button-arrow-prev>
+      <h1>
         ${this.localize("ui.panel.page-onboarding.restore.ha-cloud.title")}
-      </h2>
+      </h1>
+      <p>
+        ${this.localize(
+          "ui.panel.page-onboarding.restore.ha-cloud.sign_in_description"
+        )}
+      </p>
       ${this._showResetPasswordDone ? this._renderResetPasswordDone() : nothing}
       ${this._view === "login"
         ? html`<cloud-login
+            card-less
             .email=${this._email}
             .password=${this._password}
             .inProgress=${this._requestInProgress}
@@ -63,6 +63,7 @@ class OnboardingRestoreBackupCloudLogin extends LitElement {
               ></ha-circular-progress>
             </div>`
           : html`<cloud-forgot-password-card
+              card-less
               .localize=${this.localize}
               .inProgress=${this._requestInProgress}
               .error=${this._error}
@@ -70,6 +71,15 @@ class OnboardingRestoreBackupCloudLogin extends LitElement {
               @cloud-forgot-password=${this._handleForgotPassword}
             ></cloud-forgot-password-card>`}
     `;
+  }
+
+  private _back() {
+    if (this._view === "forgot-password") {
+      this._view = "login";
+      return;
+    }
+
+    navigate(`${location.pathname}?${removeSearchParam("page")}`);
   }
 
   private async _doLogin(
@@ -104,7 +114,6 @@ class OnboardingRestoreBackupCloudLogin extends LitElement {
         this._requestInProgress = false;
         this._email = "";
         this._password = "";
-        return;
       }
       if (error === "password-change") {
         this._showForgotPassword();
@@ -127,8 +136,6 @@ class OnboardingRestoreBackupCloudLogin extends LitElement {
     this._requestInProgress = true;
 
     await this._doLogin(email, password, false);
-
-    fireEvent(this, "upload-option-selected", "cloud");
   }
 
   private _renderResetPasswordDone() {
@@ -184,7 +191,7 @@ class OnboardingRestoreBackupCloudLogin extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
-      haStyle,
+      onBoardingStyles,
       css`
         :host {
           padding: 0 20px 24px;

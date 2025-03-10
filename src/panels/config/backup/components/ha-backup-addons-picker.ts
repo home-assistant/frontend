@@ -30,6 +30,8 @@ export class HaBackupAddonsPicker extends LitElement {
   @property({ attribute: "hide-version", type: Boolean })
   public hideVersion = false;
 
+  @property({ type: Boolean }) public disabled = false;
+
   private _addons = memoizeOne((addons: BackupAddonItem[]) =>
     addons.sort((a, b) =>
       stringCompare(a.name, b.name, this.hass?.locale?.language)
@@ -56,6 +58,7 @@ export class HaBackupAddonsPicker extends LitElement {
                 .id=${item.slug}
                 .checked=${this.value?.includes(item.slug) || false}
                 @change=${this._checkboxChanged}
+                .disabled=${this.disabled}
               ></ha-checkbox>
             </ha-formfield>
           `

@@ -62,6 +62,8 @@ export class HaBackupDataPicker extends LitElement {
     | "page-onboarding.restore"
     | "config.backup" = "config.backup";
 
+  @property({ type: Boolean }) public disabled = false;
+
   @state() public _addonIcons: Record<string, boolean> = {};
 
   protected firstUpdated(changedProps: PropertyValues): void {
@@ -304,6 +306,7 @@ export class HaBackupDataPicker extends LitElement {
                   .indeterminate=${selectedItems.addons.length > 0 &&
                   selectedItems.addons.length < addonsItems.length}
                   @change=${this._sectionChanged}
+                  .disabled=${this.disabled}
                 ></ha-checkbox>
               </ha-formfield>
               <ha-backup-addons-picker
@@ -311,6 +314,7 @@ export class HaBackupDataPicker extends LitElement {
                 .value=${selectedItems.addons}
                 @value-changed=${this._addonsChanged}
                 .addons=${addonsItems}
+                .disabled=${this.disabled}
               >
               </ha-backup-addons-picker>
             </div>

@@ -1,10 +1,12 @@
-import { LitElement, html, css } from "lit";
+import { LitElement, html, css, type CSSResultGroup } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { LocalizeFunc } from "../../common/translations/localize";
-import { brandsUrl } from "../../util/brands-url";
 import "../../components/ha-button";
-import "../../components/ha-alert";
+import "../../components/ha-icon-button-arrow-prev";
 import { fireEvent } from "../../common/dom/fire_event";
+import { navigate } from "../../common/navigate";
+import { removeSearchParam } from "../../common/url/search-params";
+import { onBoardingStyles } from "../styles";
 
 @customElement("onboarding-restore-backup-empty-cloud")
 class OnboardingRestoreBackupEmptyCloud extends LitElement {
@@ -12,62 +14,64 @@ class OnboardingRestoreBackupEmptyCloud extends LitElement {
 
   render() {
     return html`
-      <h2>
-        <img
-          .src=${brandsUrl({
-            domain: "cloud",
-            type: "icon",
-            useFallback: true,
-            darkOptimized: matchMedia("(prefers-color-scheme: dark)").matches,
-          })}
-          crossorigin="anonymous"
-          referrerpolicy="no-referrer"
-          alt="Nabu Casa logo"
-          slot="start"
-        />
-        ${this.localize("ui.panel.page-onboarding.restore.ha-cloud.title")}
-      </h2>
-      <ha-alert type="warning">
+      <ha-icon-button-arrow-prev
+        .label=${this.localize("ui.panel.page-onboarding.restore.back")}
+        @click=${this._back}
+      ></ha-icon-button-arrow-prev>
+      <h1>
         ${this.localize(
           "ui.panel.page-onboarding.restore.ha-cloud.no_cloud_backup"
         )}
-      </ha-alert>
-      <div class="buttons">
-        <ha-button @click=${this._handleUploadBackup}>
-          ${this.localize("ui.panel.page-onboarding.restore.upload_backup")}
-        </ha-button>
-        <ha-button destructive @click=${this._signOut}>
+      </h1>
+      <div class="description">
+        ${this.localize(
+          "ui.panel.page-onboarding.restore.ha-cloud.no_cloud_backup_description"
+        )}
+      </div>
+      <div class="actions">
+        <ha-button @click=${this._signOut}>
           ${this.localize("ui.panel.page-onboarding.restore.ha-cloud.sign_out")}
         </ha-button>
+        <a
+          href="https://www.nabucasa.com/config/backups/"
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          <ha-button @click=${this._signOut}>
+            ${this.localize(
+              "ui.panel.page-onboarding.restore.ha-cloud.learn_more"
+            )}
+          </ha-button>
+        </a>
       </div>
     `;
   }
 
-  private _handleUploadBackup() {
-    fireEvent(this, "upload-option-selected", "upload");
+  private _back() {
+    navigate(`${location.pathname}?${removeSearchParam("page")}`);
   }
 
   private _signOut() {
     fireEvent(this, "sign-out");
   }
 
-  static styles = css`
-    h2 {
-      font-size: 24px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-    h2 img {
-      width: 48px;
-    }
-    .buttons {
-      margin-top: 16px;
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-    }
-  `;
+  static get styles(): CSSResultGroup {
+    return [
+      onBoardingStyles,
+      css`
+        .description {
+          font-size: 1rem;
+          line-height: 1.5rem;
+          margin-top: 24px;
+          margin-bottom: 32px;
+        }
+        .actions {
+          display: flex;
+          justify-content: space-between;
+        }
+      `,
+    ];
+  }
 }
 
 declare global {

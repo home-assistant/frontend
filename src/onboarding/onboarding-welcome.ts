@@ -6,6 +6,10 @@ import type { HomeAssistant } from "../types";
 import { onBoardingStyles } from "./styles";
 import { fireEvent } from "../common/dom/fire_event";
 import "../components/ha-button";
+import "../components/ha-divider";
+import "../components/ha-md-list";
+import "../components/ha-md-list-item";
+import "../components/ha-icon-button-next";
 
 @customElement("onboarding-welcome")
 class OnboardingWelcome extends LitElement {
@@ -15,6 +19,10 @@ class OnboardingWelcome extends LitElement {
 
   protected render(): TemplateResult {
     return html`
+      <img
+        src=${`/static/icons/casita/Loving.png`}
+        alt="Casita in love"
+      />
       <h1>${this.localize("ui.panel.page-onboarding.welcome.header")}</h1>
       <p>${this.localize("ui.panel.page-onboarding.intro")}</p>
 
@@ -22,23 +30,52 @@ class OnboardingWelcome extends LitElement {
         ${this.localize("ui.panel.page-onboarding.welcome.start")}
       </ha-button>
 
-      <ha-button @click=${this._restoreBackup}>
-        ${this.localize("ui.panel.page-onboarding.welcome.restore_backup")}
-      </ha-button>
+      <ha-divider .label=${this.localize("ui.panel.page-onboarding.welcome.or_restore")}></ha-divider>
+
+      <ha-md-list>
+        <ha-md-list-item type="button" @click=${this._restoreBackupUpload}>
+          <div slot="headline">
+            ${this.localize("ui.panel.page-onboarding.restore.upload_backup")}
+          </div>
+          <div slot="supporting-text">
+            ${this.localize(
+              "ui.panel.page-onboarding.restore.options.upload_description"
+            )}
+          </div>
+          <ha-icon-button-next slot="end"></ha-icon-button-next>
+        </ha-md-list-item>
+        <ha-md-list-item type="button" @click=${this._restoreBackupCloud}>
+          <div slot="headline">
+            ${this.localize("ui.panel.page-onboarding.restore.ha-cloud.title")}
+          </div>
+          <div slot="supporting-text">
+            ${this.localize(
+              "ui.panel.page-onboarding.restore.ha-cloud.description"
+            )}
+          </div>
+          <ha-icon-button-next slot="end"></ha-icon-button-next>
+        </ha-md-list-item>
+      </ha-md-list>
     `;
   }
 
   private _start(): void {
     fireEvent(this, "onboarding-step", {
       type: "init",
-      result: { restore: false },
     });
   }
 
-  private _restoreBackup(): void {
+  private _restoreBackupUpload(): void {
     fireEvent(this, "onboarding-step", {
       type: "init",
-      result: { restore: true },
+      result: { restore: "upload" },
+    });
+  }
+
+  private _restoreBackupCloud(): void {
+    fireEvent(this, "onboarding-step", {
+      type: "init",
+      result: { restore: "cloud" },
     });
   }
 
@@ -51,11 +88,27 @@ class OnboardingWelcome extends LitElement {
           flex-direction: column;
           align-items: center;
         }
+        img {
+          margin: 16px 0;
+        }
+        h1 {
+          margin-top: 16px;
+          margin-bottom: 8px;
+        }
+        p {
+          margin: 0;
+        }
         .start {
           --button-height: 48px;
           --mdc-typography-button-font-size: 1rem;
           --mdc-button-horizontal-padding: 24px;
-          margin: 16px 0;
+          margin: 32px 0;
+        }
+        ha-divider {
+          --ha-divider-width: calc(100% + 32px);
+        }
+        ha-md-list { 
+          width: 100%;
         }
       `,
     ];

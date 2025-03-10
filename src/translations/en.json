@@ -8194,7 +8194,7 @@
         "welcome": {
           "header": "Welcome!",
           "start": "Create my smart home",
-          "restore_backup": "Restore from backup",
+          "or_restore": "Or restore",
           "vision": "Read our vision",
           "community": "Join our community",
           "download_app": "Download our app",
@@ -8275,6 +8275,7 @@
         "restore": {
           "header": "Restore a backup",
           "upload_backup": "[%key:ui::panel::config::backup::dialogs::upload::title%]",
+          "upload_backup_subtitle": "Upload a backup file from your device",
           "unsupported": {
             "title": "[%key:ui::panel::config::backup::dialogs::upload::unsupported::title%]",
             "text": "[%key:ui::panel::config::backup::dialogs::upload::unsupported::text%]"
@@ -8287,19 +8288,19 @@
           "uploading": "[%key:ui::components::file-upload::uploading%]",
           "details": {
             "home_assistant_missing": "This backup does not include your Home Assistant configuration, you cannot use it to restore your instance.",
-            "addons_unsupported": "This backup includes add-ons and folders, which are not supported in this installation method of Home Assistant. You can still restore Home Assistant, but the unsupported files will not be restored.",
+            "addons_unsupported": "Your installation method doesn’t support add-ons. If you wan’t to restore these, you have to install Home Assistant Operating System",
             "summary": {
               "title": "[%key:ui::panel::config::backup::details::summary::title%]",
               "size": "[%key:ui::panel::config::backup::details::summary::size%]",
-              "created": "[%key:ui::panel::config::backup::details::summary::created%]",
-              "upload_another": "Upload another",
-              "home": "Home"
+              "created": "[%key:ui::panel::config::backup::details::summary::created%]"
             },
             "restore": {
-              "title": "[%key:ui::panel::config::backup::details::restore::title%]",
-              "action": "[%key:ui::panel::config::backup::details::restore::action%]",
+              "title": "[%key:ui::panel::config::backup::dialogs::restore::title%]",
+              "action": "Restore backup",
               "encryption": {
-                "title": "[%key:ui::panel::config::backup::dialogs::restore::encryption::different_key%]",
+                "title": "[%key:ui::panel::config::backup::dialogs::onboarding::key::title%]",
+                "description": "[%key:ui::panel::config::backup::dialogs::restore::encryption::different_key%]",
+                "description_cloud": "Home Assistant Cloud is the privacy-focused cloud. We don’t store your encryption key. Enter the encryption key you saved or use the emergency kit you have downloaded.",
                 "incorrect_key": "[%key:ui::panel::config::backup::dialogs::restore::encryption::incorrect_key%]",
                 "input_label": "[%key:ui::panel::config::backup::dialogs::restore::encryption::input_label%]"
               }
@@ -8355,12 +8356,14 @@
           "ha-cloud": {
             "title": "Home Assistant Cloud",
             "description": "Restore from your Home Assistant Cloud backup.",
-            "no_cloud_backup": "Your Home Assistant Cloud has no backups available.",
+            "no_cloud_backup": "No backup available",
+            "no_cloud_backup_description": "This Home Assistant Cloud account doesn’t have a backup stored. You can learn more how Cloud backups work at the Nabu Casa website.",
             "sign_out": "[%key:ui::panel::config::cloud::account::sign_out%]",
             "sign_out_progress": "Home Assistant cloud signing out...",
             "sign_out_success": "Home Assistant cloud signed out",
             "sign_out_error": "Failed to sign out from Home Assistant cloud",
-            "stored_in_cloud_description": "This backup is stored in Home Assistant Cloud.",
+            "learn_more": "Learn more",
+            "sign_in_description": "Sign in to your Nabu Casa account and restore your Home Assistant Cloud backup.",
             "login": {
               "title": "[%key:ui::panel::config::cloud::login::title%]",
               "sign_in": "[%key:ui::panel::config::cloud::login::sign_in%]",

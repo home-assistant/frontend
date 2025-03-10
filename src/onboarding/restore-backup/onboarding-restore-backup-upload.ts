@@ -4,7 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-card";
 import "../../components/ha-file-upload";
 import "../../components/ha-alert";
-import { haStyle } from "../../resources/styles";
+import "../../components/ha-icon-button-arrow-prev";
 import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import {
@@ -14,6 +14,9 @@ import {
 } from "../../data/backup";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import { uploadOnboardingBackup } from "../../data/backup_onboarding";
+import { onBoardingStyles } from "../styles";
+import { navigate } from "../../common/navigate";
+import { removeSearchParam } from "../../common/url/search-params";
 
 declare global {
   interface HASSDomEvents {
@@ -32,9 +35,18 @@ class OnboardingRestoreBackupUpload extends LitElement {
 
   render() {
     return html`
-      <h2>
+      <ha-icon-button-arrow-prev
+        .label=${this.localize("ui.panel.page-onboarding.restore.back")}
+        @click=${this._back}
+      ></ha-icon-button-arrow-prev>
+      <h1>
         ${this.localize("ui.panel.page-onboarding.restore.upload_backup")}
-      </h2>
+      </h1>
+      <p>
+        ${this.localize(
+          "ui.panel.page-onboarding.restore.upload_backup_subtitle"
+        )}
+      </p>
       <div class="card-content">
         ${this._error
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
@@ -100,15 +112,16 @@ class OnboardingRestoreBackupUpload extends LitElement {
     }
   }
 
+  private _back() {
+    navigate(`${location.pathname}?${removeSearchParam("page")}`);
+  }
+
   static get styles(): CSSResultGroup {
     return [
-      haStyle,
+      onBoardingStyles,
       css`
         :host {
           padding: 0 20px 16px;
-        }
-        h2 {
-          font-size: 24px;
         }
         .card-actions {
           display: flex;

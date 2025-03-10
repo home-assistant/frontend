@@ -28,9 +28,15 @@ export class CloudForgotPasswordCard extends LitElement {
 
   @property() public error?: string;
 
+  @property({ type: Boolean, attribute: "card-less" }) public cardLess = false;
+
   @query("#email", true) private _emailField!: HaTextField;
 
   protected render(): TemplateResult {
+    if (this.cardLess) {
+      return this._renderContent();
+    }
+
     return html`
       <ha-card
         outlined
@@ -38,40 +44,44 @@ export class CloudForgotPasswordCard extends LitElement {
           `ui.panel.${this.translationKeyPanel}.subtitle`
         )}
       >
-        <div class="card-content">
-          <p>
-            ${this.localize(
-              `ui.panel.${this.translationKeyPanel}.instructions`
-            )}
-          </p>
-          ${this.error
-            ? html`<ha-alert alert-type="error">${this.error}</ha-alert>`
-            : nothing}
-          <ha-textfield
-            autofocus
-            id="email"
-            label=${this.localize(`ui.panel.${this.translationKeyPanel}.email`)}
-            .value=${this.email ?? ""}
-            type="email"
-            required
-            .disabled=${this.inProgress}
-            @keydown=${this._keyDown}
-            .validationMessage=${this.localize(
-              `ui.panel.${this.translationKeyPanel}.email_error_msg`
-            )}
-          ></ha-textfield>
-        </div>
-        <div class="card-actions">
-          <ha-progress-button
-            @click=${this._handleEmailPasswordReset}
-            .progress=${this.inProgress}
-          >
-            ${this.localize(
-              `ui.panel.${this.translationKeyPanel}.send_reset_email`
-            )}
-          </ha-progress-button>
-        </div>
+        ${this._renderContent()}
       </ha-card>
+    `;
+  }
+
+  private _renderContent() {
+    return html`
+      <div class="card-content">
+        <p>
+          ${this.localize(`ui.panel.${this.translationKeyPanel}.instructions`)}
+        </p>
+        ${this.error
+          ? html`<ha-alert alert-type="error">${this.error}</ha-alert>`
+          : nothing}
+        <ha-textfield
+          autofocus
+          id="email"
+          label=${this.localize(`ui.panel.${this.translationKeyPanel}.email`)}
+          .value=${this.email ?? ""}
+          type="email"
+          required
+          .disabled=${this.inProgress}
+          @keydown=${this._keyDown}
+          .validationMessage=${this.localize(
+            `ui.panel.${this.translationKeyPanel}.email_error_msg`
+          )}
+        ></ha-textfield>
+      </div>
+      <div class="card-actions">
+        <ha-progress-button
+          @click=${this._handleEmailPasswordReset}
+          .progress=${this.inProgress}
+        >
+          ${this.localize(
+            `ui.panel.${this.translationKeyPanel}.send_reset_email`
+          )}
+        </ha-progress-button>
+      </div>
     `;
   }
 
