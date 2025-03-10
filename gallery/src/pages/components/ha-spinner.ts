@@ -7,22 +7,22 @@ import "../../../../src/components/ha-spinner";
 import type { HomeAssistant } from "../../../../src/types";
 
 @customElement("demo-components-ha-spinner")
-export class DemoHaCircularProgress extends LitElement {
+export class DemoHaSpinner extends LitElement {
   @property({ attribute: false }) hass!: HomeAssistant;
 
   protected render(): TemplateResult {
-    return html`<ha-card header="Basic circular progress">
+    return html`<ha-card header="Basic spinner">
         <div class="card-content">
           <ha-spinner></ha-spinner></div
       ></ha-card>
-      <ha-card header="Different circular progress sizes">
+      <ha-card header="Different spinner sizes">
         <div class="card-content">
           <ha-spinner size="tiny"></ha-spinner>
           <ha-spinner size="small"></ha-spinner>
           <ha-spinner size="medium"></ha-spinner>
           <ha-spinner size="large"></ha-spinner></div
       ></ha-card>
-      <ha-card header="Circular progress with an aria-label">
+      <ha-card header="Spinner with an aria-label">
         <div class="card-content">
           <ha-spinner aria-label="Doing something..."></ha-spinner>
           <ha-spinner .ariaLabel=${"Doing something..."}></ha-spinner></div
@@ -39,6 +39,6 @@ export class DemoHaCircularProgress extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "demo-components-ha-spinner": DemoHaCircularProgress;
+    "demo-components-ha-spinner": DemoHaSpinner;
   }
 }
