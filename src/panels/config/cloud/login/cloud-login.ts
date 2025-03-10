@@ -123,23 +123,23 @@ export class CloudLogin extends LitElement {
     if (!this.inProgress) {
       const emailField = this._emailField;
       const passwordField = this._passwordField;
-  
+
       const email = emailField.value;
       const password = passwordField.value;
-  
+
       if (!emailField.reportValidity()) {
         passwordField.reportValidity();
         emailField.focus();
         return;
       }
-  
+
       if (!passwordField.reportValidity()) {
         passwordField.focus();
         return;
       }
-  
+
       this.inProgress = true;
-  
+
       fireEvent(this, "cloud-login", { email, password });
     }
   }

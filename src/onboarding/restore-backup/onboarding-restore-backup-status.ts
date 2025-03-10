@@ -35,9 +35,7 @@ class OnboardingRestoreBackupStatus extends LitElement {
         ${this.backupInfo.state === "restore_backup"
           ? html`
               <div class="loading">
-                <mwc-linear-progress
-                  indeterminate
-                ></mwc-linear-progress>
+                <mwc-linear-progress indeterminate></mwc-linear-progress>
               </div>
             `
           : html`

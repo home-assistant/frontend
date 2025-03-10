@@ -19,10 +19,7 @@ class OnboardingWelcome extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <img
-        src=${`/static/icons/casita/Loving.png`}
-        alt="Casita in love"
-      />
+      <img src=${`/static/icons/casita/Loving.png`} alt="Casita in love" />
       <h1>${this.localize("ui.panel.page-onboarding.welcome.header")}</h1>
       <p>${this.localize("ui.panel.page-onboarding.intro")}</p>
 
@@ -30,7 +27,9 @@ class OnboardingWelcome extends LitElement {
         ${this.localize("ui.panel.page-onboarding.welcome.start")}
       </ha-button>
 
-      <ha-divider .label=${this.localize("ui.panel.page-onboarding.welcome.or_restore")}></ha-divider>
+      <ha-divider
+        .label=${this.localize("ui.panel.page-onboarding.welcome.or_restore")}
+      ></ha-divider>
 
       <ha-md-list>
         <ha-md-list-item type="button" @click=${this._restoreBackupUpload}>
@@ -107,7 +106,7 @@ class OnboardingWelcome extends LitElement {
         ha-divider {
           --ha-divider-width: calc(100% + 32px);
         }
-        ha-md-list { 
+        ha-md-list {
           width: 100%;
         }
       `,

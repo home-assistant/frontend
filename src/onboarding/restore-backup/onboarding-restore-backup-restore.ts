@@ -122,7 +122,6 @@ class OnboardingRestoreBackupRestore extends LitElement {
       ${this._error
         ? html`<ha-alert alert-type="error">${this._error}</ha-alert> `
         : nothing}
-      
       ${backupProtected
         ? html` <div class="encryption">
             <h2>
@@ -152,7 +151,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
             ></ha-password-field>
           </div>`
         : nothing}
-      
+
       <div class=${`actions${this.mode === "cloud" ? " cloud" : ""}`}>
         ${this.mode === "cloud"
           ? html`<ha-button @click=${this._signOut}>

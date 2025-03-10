@@ -16,10 +16,7 @@ import {
   type BackupOnboardingConfig,
   type BackupOnboardingInfo,
 } from "../data/backup_onboarding";
-import {
-  CLOUD_AGENT,
-  type BackupContentExtended,
-} from "../data/backup";
+import { CLOUD_AGENT, type BackupContentExtended } from "../data/backup";
 import { storage } from "../common/decorators/storage";
 import { fetchHaCloudStatus, signOutHaCloud } from "../data/onboarding";
 import type { CloudStatus } from "../data/cloud";

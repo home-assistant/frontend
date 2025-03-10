@@ -50,9 +50,7 @@ class HaBackupDetailsSummary extends LitElement {
             `ui.panel.${this.translationKeyPanel}.details.summary.title`
           )}
         </div>
-        <div class="card-content">
-          ${this._renderContent(formattedDate)}
-        </div>
+        <div class="card-content">${this._renderContent(formattedDate)}</div>
       </ha-card>
     `;
   }
