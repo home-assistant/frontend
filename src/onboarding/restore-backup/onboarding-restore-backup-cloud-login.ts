@@ -35,7 +35,7 @@ class OnboardingRestoreBackupCloudLogin extends LitElement {
         @click=${this._back}
       ></ha-icon-button-arrow-prev>
       <h1>
-        ${this.localize("ui.panel.page-onboarding.restore.ha-cloud.title")}
+        Home Assistant Cloud
       </h1>
       <p>
         ${this.localize(

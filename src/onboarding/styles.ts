@@ -9,8 +9,8 @@ export const onBoardingStyles = css`
     margin-bottom: 8px;
   }
   ha-icon-button-arrow-prev {
-    position: absolute;
-    top: 12px;
+    margin-top: 12px;
+    display: block;
   }
   p {
     font-size: 1rem;

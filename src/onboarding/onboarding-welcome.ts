@@ -45,7 +45,7 @@ class OnboardingWelcome extends LitElement {
         </ha-md-list-item>
         <ha-md-list-item type="button" @click=${this._restoreBackupCloud}>
           <div slot="headline">
-            ${this.localize("ui.panel.page-onboarding.restore.ha-cloud.title")}
+            Home Assistant Cloud
           </div>
           <div slot="supporting-text">
             ${this.localize(

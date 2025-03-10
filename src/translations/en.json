@@ -8354,7 +8354,6 @@
             "no": "[%key:ui::common::no%]"
           },
           "ha-cloud": {
-            "title": "Home Assistant Cloud",
             "description": "Restore from your Home Assistant Cloud backup.",
             "no_cloud_backup": "No backup available",
             "no_cloud_backup_description": "This Home Assistant Cloud account doesn’t have a backup stored. You can learn more how Cloud backups work at the Nabu Casa website.",
