@@ -44,7 +44,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
         <div class="picker">
           <div class="label">
             ${this._switching
-              ? html` <ha-spinner></ha-spinner> `
+              ? html`<ha-spinner></ha-spinner>`
               : until(
                   selectedDemoConfig.then(
                     (conf) => html`
