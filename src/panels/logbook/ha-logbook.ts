@@ -224,16 +224,10 @@ export class HaLogbook extends LitElement {
    */
   private _unsubscribe(loading: boolean): void {
     if (this._unsubLogbook) {
-      try {
-        this._unsubLogbook.then((unsub) => unsub());
-      } catch (err: any) {
-        // eslint-disable-next-line
-        console.error("Error unsubscribing:", err);
-      } finally {
-        this._unsubLogbook = undefined;
-        this._logbookEntries = loading ? undefined : [];
-        this._pendingStreamMessages = [];
-      }
+      this._unsubLogbook.then((unsub) => unsub());
+      this._unsubLogbook = undefined;
+      this._logbookEntries = loading ? undefined : [];
+      this._pendingStreamMessages = [];
     }
   }
 
@@ -282,6 +276,7 @@ export class HaLogbook extends LitElement {
     if (this._unsubLogbook) {
       return;
     }
+
     try {
       this._unsubLogbook = subscribeLogbook(
         this.hass,
@@ -293,6 +288,7 @@ export class HaLogbook extends LitElement {
         this.entityIds,
         this.deviceIds
       );
+      await this._unsubLogbook;
     } catch (err: any) {
       this._unsubLogbook = undefined;
       this._error = err;
