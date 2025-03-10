@@ -269,7 +269,6 @@ export interface EnergyData {
   stats: Statistics;
   statsMetadata: Record<string, StatisticsMetaData>;
   statsCompare: Statistics;
-  co2SignalConfigEntry?: ConfigEntry;
   co2SignalEntity?: string;
   fossilEnergyConsumption?: FossilEnergyConsumption;
   fossilEnergyConsumptionCompare?: FossilEnergyConsumption;
@@ -552,7 +551,6 @@ const getEnergyData = async (
     stats,
     statsMetadata,
     statsCompare,
-    co2SignalConfigEntry,
     co2SignalEntity,
     fossilEnergyConsumption,
     fossilEnergyConsumptionCompare,
