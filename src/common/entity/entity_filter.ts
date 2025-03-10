@@ -23,27 +23,37 @@ export const generateEntityFilter = (
   hass: HomeAssistant,
   filter: EntityFilter
 ): EntityFilterFunc => {
-  const domains = new Set(ensureArray(filter.domain) ?? []);
-  const deviceClasses = new Set(ensureArray(filter.device_class) ?? []);
-  const floors = new Set(ensureArray(filter.floor) ?? []);
-  const areas = new Set(ensureArray(filter.area) ?? []);
-  const devices = new Set(ensureArray(filter.device) ?? []);
-  const entityCategories = new Set(ensureArray(filter.entity_category) ?? []);
-  const labels = new Set(ensureArray(filter.label) ?? []);
-  const hiddenPlatforms = new Set(ensureArray(filter.hidden_platform) ?? []);
+  const domains = filter.domain
+    ? new Set(ensureArray(filter.domain))
+    : undefined;
+  const deviceClasses = filter.device_class
+    ? new Set(ensureArray(filter.device_class))
+    : undefined;
+  const floors = filter.floor ? new Set(ensureArray(filter.floor)) : undefined;
+  const areas = filter.area ? new Set(ensureArray(filter.area)) : undefined;
+  const devices = filter.device
+    ? new Set(ensureArray(filter.device))
+    : undefined;
+  const entityCategories = filter.entity_category
+    ? new Set(ensureArray(filter.entity_category))
+    : undefined;
+  const labels = filter.label ? new Set(ensureArray(filter.label)) : undefined;
+  const hiddenPlatforms = filter.hidden_platform
+    ? new Set(ensureArray(filter.hidden_platform))
+    : undefined;
 
   return (entityId: string) => {
     const stateObj = hass.states[entityId] as HassEntity | undefined;
     if (!stateObj) {
       return false;
     }
-    if (domains.size > 0) {
+    if (domains) {
       const domain = computeDomain(entityId);
       if (!domains.has(domain)) {
         return false;
       }
     }
-    if (deviceClasses.size > 0) {
+    if (deviceClasses) {
       const dc = stateObj.attributes.device_class;
       if (!dc) {
         return false;
@@ -59,15 +69,15 @@ export const generateEntityFilter = (
       return false;
     }
 
-    if (floors.size > 0) {
+    if (floors) {
       if (!floor) {
         return false;
       }
-      if (!floors.has(floor.floor_id)) {
+      if (!floors) {
         return false;
       }
     }
-    if (areas.size > 0) {
+    if (areas) {
       if (!area) {
         return false;
       }
@@ -75,7 +85,7 @@ export const generateEntityFilter = (
         return false;
       }
     }
-    if (devices.size > 0) {
+    if (devices) {
       if (!device) {
         return false;
       }
@@ -83,7 +93,7 @@ export const generateEntityFilter = (
         return false;
       }
     }
-    if (labels.size > 0) {
+    if (labels) {
       if (!entity) {
         return false;
       }
@@ -91,7 +101,7 @@ export const generateEntityFilter = (
         return false;
       }
     }
-    if (entityCategories.size > 0) {
+    if (entityCategories) {
       if (!entity) {
         return false;
       }
@@ -100,7 +110,7 @@ export const generateEntityFilter = (
         return false;
       }
     }
-    if (hiddenPlatforms.size > 0) {
+    if (hiddenPlatforms) {
       if (!entity) {
         return false;
       }
