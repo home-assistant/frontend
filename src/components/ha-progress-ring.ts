@@ -13,20 +13,20 @@ export class HaProgressRing extends ProgressRing {
     if (changedProps.has("size")) {
       switch (this.size) {
         case "tiny":
-          this.style.setProperty("--size", "16px");
+          this.style.setProperty("--ha-progress-ring-size", "16px");
           break;
         case "small":
-          this.style.setProperty("--size", "28px");
+          this.style.setProperty("--ha-progress-ring-size", "28px");
           break;
         case "medium":
-          this.style.setProperty("--size", "48px");
+          this.style.setProperty("--ha-progress-ring-size", "48px");
           break;
         case "large":
-          this.style.setProperty("--size", "68px");
+          this.style.setProperty("--ha-progress-ring-size", "68px");
           break;
         default:
           if (this.size !== undefined && !isNaN(this.size)) {
-            this.style.setProperty("--size", `${this.size}px`);
+            this.style.setProperty("--ha-progress-ring-size", `${this.size}px`);
           }
       }
     }

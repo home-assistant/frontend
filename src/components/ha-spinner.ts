@@ -14,20 +14,20 @@ export class HaSpinner extends Spinner {
     if (changedProps.has("size")) {
       switch (this.size) {
         case "tiny":
-          this.style.setProperty("font-size", "16px");
+          this.style.setProperty("--ha-spinner-size", "16px");
           break;
         case "small":
-          this.style.setProperty("font-size", "28px");
+          this.style.setProperty("--ha-spinner-size", "28px");
           break;
         case "medium":
-          this.style.setProperty("font-size", "48px");
+          this.style.setProperty("--ha-spinner-size", "48px");
           break;
         case "large":
-          this.style.setProperty("font-size", "68px");
+          this.style.setProperty("--ha-spinner-size", "68px");
           break;
         default:
           if (this.size !== undefined && !isNaN(this.size)) {
-            this.style.setProperty("font-size", `${this.size}px`);
+            this.style.setProperty("--ha-spinner-size", `${this.size}px`);
           }
       }
     }
