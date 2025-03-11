@@ -24,7 +24,6 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ type: Boolean }) public preview = false;
 
   @state() private _config?: ClockCardConfig;
 
