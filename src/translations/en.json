@@ -7050,6 +7050,21 @@
               "content": "Content",
               "description": "The Markdown card is used to render Markdown."
             },
+            "clock": {
+              "name": "Clock",
+              "description": "A card to display the current time.",
+              "clock_size": "Clock size",
+              "clock_sizes": {
+                "small": "Small",
+                "medium": "Medium",
+                "large": "Large"
+              },
+              "time_format": "Time format",
+              "time_formats": {
+                "hh:mm": "hh:mm",
+                "hh:mm:ss": "hh:mm:ss"
+              }
+            },
             "media-control": {
               "name": "Media control",
               "description": "The Media control card is used to display media player entities on an interface with easy to use controls."
