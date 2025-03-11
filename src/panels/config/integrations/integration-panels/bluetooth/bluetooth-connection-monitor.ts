@@ -4,31 +4,29 @@ import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../../../common/decorators/storage";
-import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
-import type {
-  DataTableColumnContainer,
-  RowClickedEvent,
-} from "../../../../../components/data-table/ha-data-table";
+import type { DataTableColumnContainer } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-relative-time";
 import type {
-  BluetoothDeviceData,
   BluetoothScannersDetails,
+  BluetoothConnectionData,
+  BluetoothAllocationsData,
 } from "../../../../../data/bluetooth";
 import {
-  subscribeBluetoothAdvertisements,
   subscribeBluetoothScannersDetails,
+  subscribeBluetoothConnectionAllocations,
+  subscribeBluetoothAdvertisements,
 } from "../../../../../data/bluetooth";
 import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
-import { showBluetoothDeviceInfoDialog } from "./show-dialog-bluetooth-device-info";
+import "../../../../../components/ha-metric";
 
-@customElement("bluetooth-advertisement-monitor")
-export class BluetoothAdvertisementMonitorPanel extends LitElement {
+@customElement("bluetooth-connection-monitor")
+export class BluetoothConnectionMonitorPanel extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public route!: Route;
@@ -37,46 +35,56 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @state() private _data: BluetoothDeviceData[] = [];
+  @state() private _data: BluetoothConnectionData[] = [];
 
   @state() private _scanners: BluetoothScannersDetails = {};
+
+  @state() private _addressNames: Record<string, string> = {};
 
   @state() private _sourceDevices: Record<string, DeviceRegistryEntry> = {};
 
   @storage({
-    key: "bluetooth-advertisement-table-grouping",
+    key: "bluetooth-connection-table-grouping",
     state: false,
     subscribe: false,
   })
   private _activeGrouping?: string = "source";
 
   @storage({
-    key: "bluetooth-advertisement-table-collapsed",
+    key: "bluetooth-connection-table-collapsed",
     state: false,
     subscribe: false,
   })
   private _activeCollapsed: string[] = [];
 
+  private _unsubConnectionAllocations?: (() => Promise<void>) | undefined;
+
+  private _unsubScanners?: UnsubscribeFunc;
+
   private _unsub_advertisements?: UnsubscribeFunc;
 
-  private _unsub_scanners?: UnsubscribeFunc;
+  @state() private _connectionAllocationData: Record<
+    string,
+    BluetoothAllocationsData
+  > = {};
 
   public connectedCallback(): void {
     super.connectedCallback();
     if (this.hass) {
-      this._unsub_advertisements = subscribeBluetoothAdvertisements(
-        this.hass.connection,
-        (data) => {
-          this._data = data;
-        }
-      );
-      this._unsub_scanners = subscribeBluetoothScannersDetails(
+      this._unsubScanners = subscribeBluetoothScannersDetails(
         this.hass.connection,
         (scanners) => {
           this._scanners = scanners;
         }
       );
-
+      this._unsub_advertisements = subscribeBluetoothAdvertisements(
+        this.hass.connection,
+        (data) => {
+          for (const device of data) {
+            this._addressNames[device.address] = device.name;
+          }
+        }
+      );
       const devices = Object.values(this.hass.devices);
       const bluetoothDevices = devices.filter((device) =>
         device.connections.find((connection) => connection[0] === "bluetooth")
@@ -89,7 +97,35 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
           return [connection[1], device];
         })
       );
+      this._subscribeBluetoothConnectionAllocations();
     }
+  }
+
+  private async _subscribeBluetoothConnectionAllocations(): Promise<void> {
+    if (this._unsubConnectionAllocations) {
+      return;
+    }
+    this._unsubConnectionAllocations =
+      await subscribeBluetoothConnectionAllocations(
+        this.hass.connection,
+        (data) => {
+          for (const allocation of data) {
+            this._connectionAllocationData[allocation.source] = allocation;
+          }
+          const newData: BluetoothConnectionData[] = [];
+          for (const allocation of Object.values(
+            this._connectionAllocationData
+          )) {
+            for (const address of allocation.allocated) {
+              newData.push({
+                address: address,
+                source: allocation.source,
+              });
+            }
+          }
+          this._data = newData;
+        }
+      );
   }
 
   public disconnectedCallback() {
@@ -98,15 +134,19 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
       this._unsub_advertisements();
       this._unsub_advertisements = undefined;
     }
-    if (this._unsub_scanners) {
-      this._unsub_scanners();
-      this._unsub_scanners = undefined;
+    if (this._unsubConnectionAllocations) {
+      this._unsubConnectionAllocations();
+      this._unsubConnectionAllocations = undefined;
+    }
+    if (this._unsubScanners) {
+      this._unsubScanners();
+      this._unsubScanners = undefined;
     }
   }
 
   private _columns = memoizeOne(
     (localize: LocalizeFunc): DataTableColumnContainer => {
-      const columns: DataTableColumnContainer<BluetoothDeviceData> = {
+      const columns: DataTableColumnContainer<BluetoothConnectionData> = {
         address: {
           title: localize("ui.panel.config.bluetooth.address"),
           sortable: true,
@@ -141,24 +181,6 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
           sortable: true,
           defaultHidden: true,
         },
-        time: {
-          title: localize("ui.panel.config.bluetooth.updated"),
-          filterable: false,
-          sortable: true,
-          defaultHidden: false,
-          template: (ad) =>
-            html`<ha-relative-time
-              .hass=${this.hass}
-              .datetime=${ad.datetime}
-              capitalize
-            ></ha-relative-time>`,
-        },
-        rssi: {
-          title: localize("ui.panel.config.bluetooth.rssi"),
-          type: "numeric",
-          maxWidth: "60px",
-          sortable: true,
-        },
       };
 
       return columns;
@@ -170,9 +192,11 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
       const device = this._sourceDevices[row.address];
       const scannerDevice = this._sourceDevices[row.source];
       const scanner = this._scanners[row.source];
+      const name = this._addressNames[row.address] || row.address;
       return {
         ...row,
         id: row.address,
+        name: name,
         source_address: row.source,
         source:
           scannerDevice?.name_by_user ||
@@ -180,7 +204,6 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
           scanner?.name ||
           row.source,
         device: device?.name_by_user || device?.name || undefined,
-        datetime: new Date(row.time * 1000),
       };
     })
   );
@@ -193,12 +216,13 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
         .route=${this.route}
         .columns=${this._columns(this.hass.localize)}
         .data=${this._dataWithNamedSourceAndIds(this._data)}
-        @row-click=${this._handleRowClicked}
         .initialGroupColumn=${this._activeGrouping}
         .initialCollapsedGroups=${this._activeCollapsed}
+        .noDataText=${this.hass.localize(
+          "ui.panel.config.bluetooth.no_connections"
+        )}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
-        clickable
       ></hass-tabs-subpage-data-table>
     `;
   }
@@ -211,18 +235,11 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
     this._activeCollapsed = ev.detail.value;
   }
 
-  private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
-    const entry = this._data.find((ent) => ent.address === ev.detail.id);
-    showBluetoothDeviceInfoDialog(this, {
-      entry: entry!,
-    });
-  }
-
   static styles: CSSResultGroup = haStyle;
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "bluetooth-advertisement-monitor": BluetoothAdvertisementMonitorPanel;
+    "bluetooth-connection-monitor": BluetoothConnectionMonitorPanel;
   }
 }

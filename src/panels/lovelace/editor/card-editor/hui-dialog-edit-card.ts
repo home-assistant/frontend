@@ -493,6 +493,8 @@ export class HuiDialogEditCard
           background: var(--primary-background-color);
           padding: 4px;
           border-radius: 4px;
+          position: sticky;
+          top: 0;
         }
         .element-preview ha-spinner {
           top: calc(50% - 24px);
