@@ -68,10 +68,11 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
     const locale = this.hass?.locale?.language;
     const timeZone = this.hass?.config.time_zone;
 
-    this._time = DateTime.now();
+    let time = DateTime.now();
 
-    if (locale) this._time = this._time.setLocale(locale);
-    if (timeZone) this._time = this._time.setZone(timeZone);
+    if (locale) time = time.setLocale(locale);
+    if (timeZone) time = time.setZone(timeZone);
+    this._time = time;
   }
 
   protected render() {
