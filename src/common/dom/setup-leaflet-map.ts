@@ -32,14 +32,6 @@ export const setupLeafletMap = async (
   markerClusterStyle.setAttribute("rel", "stylesheet");
   mapElement.parentNode.appendChild(markerClusterStyle);
 
-  const defaultMarkerClusterStyle = document.createElement("link");
-  defaultMarkerClusterStyle.setAttribute(
-    "href",
-    "/static/images/leaflet/MarkerCluster.Default.css"
-  );
-  defaultMarkerClusterStyle.setAttribute("rel", "stylesheet");
-  mapElement.parentNode.appendChild(defaultMarkerClusterStyle);
-
   map.setView([52.3731339, 4.8903147], 13);
 
   const tileLayer = createTileLayer(Leaflet).addTo(map);

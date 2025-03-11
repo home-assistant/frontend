@@ -120,11 +120,6 @@ export const computeStateDisplayFromEntityAttributes = (
     return value;
   }
 
-  if (domain === "datetime") {
-    const time = new Date(state);
-    return formatDateTime(time, locale, config);
-  }
-
   if (["date", "input_datetime", "time"].includes(domain)) {
     // If trying to display an explicit state, need to parse the explicit state to `Date` then format.
     // Attributes aren't available, we have to use `state`.
@@ -181,6 +176,7 @@ export const computeStateDisplayFromEntityAttributes = (
       "tag",
       "tts",
       "wake_word",
+      "datetime",
     ].includes(domain) ||
     (domain === "sensor" && attributes.device_class === "timestamp")
   ) {

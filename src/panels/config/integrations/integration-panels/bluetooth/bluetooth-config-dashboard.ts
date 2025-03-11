@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -6,6 +5,7 @@ import "../../../../../components/ha-card";
 import "../../../../../components/ha-code-editor";
 import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-switch";
+import "../../../../../components/ha-button";
 import { getConfigEntries } from "../../../../../data/config_entries";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
 import "../../../../../layouts/hass-subpage";
@@ -79,10 +79,10 @@ export class BluetoothConfigDashboard extends LitElement {
             )}
           >
             <div class="card-actions">
-              <mwc-button @click=${this._openOptionFlow}
+              <ha-button @click=${this._openOptionFlow}
                 >${this.hass.localize(
                   "ui.panel.config.bluetooth.option_flow"
-                )}</mwc-button
+                )}</ha-button
               >
             </div>
           </ha-card>
@@ -100,11 +100,11 @@ export class BluetoothConfigDashboard extends LitElement {
             </div>
             <div class="card-actions">
               <a href="/config/bluetooth/advertisement-monitor"
-                ><mwc-button>
+                ><ha-button>
                   ${this.hass.localize(
                     "ui.panel.config.bluetooth.advertisement_monitor"
                   )}
-                </mwc-button></a
+                </ha-button></a
               >
             </div>
           </ha-card>
@@ -115,6 +115,15 @@ export class BluetoothConfigDashboard extends LitElement {
           >
             <div class="card-content">
               ${this._renderConnectionAllocations()}
+            </div>
+            <div class="card-actions">
+              <a href="/config/bluetooth/connection-monitor"
+                ><ha-button>
+                  ${this.hass.localize(
+                    "ui.panel.config.bluetooth.connection_monitor"
+                  )}
+                </ha-button></a
+              >
             </div>
           </ha-card>
         </div>

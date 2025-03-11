@@ -1,5 +1,4 @@
 import { mdiStar } from "@mdi/js";
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";

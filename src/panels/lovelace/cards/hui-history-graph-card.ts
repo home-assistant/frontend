@@ -57,6 +57,8 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   private _subscribed?: Promise<(() => Promise<void>) | undefined>;
 
+  private _stateHistory?: HistoryResult;
+
   public getCardSize(): number {
     return this._config?.title ? 2 : 0 + 2 * (this._entityIds?.length || 1);
   }
@@ -123,7 +125,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
           return;
         }
 
-        const stateHistory = computeHistory(
+        this._stateHistory = computeHistory(
           this.hass!,
           combinedHistory,
           this._entityIds,
@@ -132,11 +134,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
           this._config?.split_device_classes
         );
 
-        this._history = mergeHistoryResults(
-          stateHistory,
-          this._statisticsHistory,
-          this._config?.split_device_classes
-        );
+        this._mergeHistory();
       },
       this._hoursToShow,
       this._entityIds
@@ -149,6 +147,16 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     await this._fetchStatistics(sensorNumericDeviceClasses);
 
     this._setRedrawTimer();
+  }
+
+  private _mergeHistory() {
+    if (this._stateHistory) {
+      this._history = mergeHistoryResults(
+        this._stateHistory,
+        this._statisticsHistory,
+        this._config?.split_device_classes
+      );
+    }
   }
 
   private async _fetchStatistics(sensorNumericDeviceClasses: string[]) {
@@ -173,6 +181,8 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       sensorNumericDeviceClasses,
       this._config?.split_device_classes
     );
+
+    this._mergeHistory();
   }
 
   private _redrawGraph() {
@@ -261,6 +271,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
           class="content ${classMap({
             "has-header": !!this._config.title,
             "has-rows": !!this._config.grid_options?.rows,
+            "has-height": hasFixedHeight,
           })}"
         >
           ${this._error
@@ -287,6 +298,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
                   .fitYData=${this._config.fit_y_data || false}
                   .height=${hasFixedHeight ? "100%" : undefined}
                   .narrow=${narrow}
+                  .expandLegend=${this._config.expand_legend}
                 ></state-history-charts>
               `}
         </div>
@@ -311,15 +323,18 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       color: var(--primary-text-color);
     }
     .content {
-      padding: 0 16px 8px 16px;
+      padding: 0 16px 8px;
       flex: 1;
+      overflow: hidden;
     }
     .has-header {
       padding-top: 0;
     }
     state-history-charts {
-      height: 100%;
       --timeline-top-margin: 16px;
+    }
+    .has-height state-history-charts {
+      height: 100%;
     }
     .has-rows {
       --chart-max-height: 100%;

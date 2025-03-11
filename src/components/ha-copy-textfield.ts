@@ -40,7 +40,6 @@ export class HaCopyTextfield extends LitElement {
           ${this.maskedValue
             ? html`<ha-icon-button
                 class="toggle-unmasked"
-                toggles
                 .label=${this.hass.localize(
                   `ui.common.${this._showMasked ? "show" : "hide"}`
                 )}

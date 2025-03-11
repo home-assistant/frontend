@@ -38,6 +38,7 @@ export const sortWeekdays = (weekdays) =>
   weekdays.sort((a, b) => BACKUP_DAYS.indexOf(a) - BACKUP_DAYS.indexOf(b));
 
 export interface BackupConfig {
+  automatic_backups_configured: boolean;
   last_attempted_automatic_backup: string | null;
   last_completed_automatic_backup: string | null;
   next_automatic_backup: string | null;
@@ -64,6 +65,7 @@ export interface BackupConfig {
 }
 
 export interface BackupMutableConfig {
+  automatic_backups_configured?: boolean;
   create_backup?: {
     agent_ids?: string[];
     include_addons?: string[];

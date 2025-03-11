@@ -37,7 +37,7 @@ jobs:
       - name: Build resources
         run: ./node_modules/.bin/gulp gen-icons-json build-translations build-locale-data gather-gallery-pages
       - name: Setup lint cache
-        uses: actions/cache@v4.2.0
+        uses: actions/cache@v4.2.2
         with:
           path: |
             node_modules/.cache/prettier
@@ -89,7 +89,7 @@ jobs:
         env:
           IS_TEST: "true"
       - name: Upload bundle stats
-        uses: actions/upload-artifact@v4.6.0
+        uses: actions/upload-artifact@v4.6.1
         with:
           name: frontend-bundle-stats
           path: build/stats/*.json
@@ -113,7 +113,7 @@ jobs:
         env:
           IS_TEST: "true"
       - name: Upload bundle stats
-        uses: actions/upload-artifact@v4.6.0
+        uses: actions/upload-artifact@v4.6.1
         with:
           name: supervisor-bundle-stats
           path: build/stats/*.json

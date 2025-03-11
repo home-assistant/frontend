@@ -1,5 +1,4 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import "@material/mwc-button/mwc-button";
 import {
   mdiArrowDown,

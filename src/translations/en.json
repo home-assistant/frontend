@@ -372,8 +372,7 @@
       "default": "Default",
       "dont_save": "Don't save",
       "copy": "Copy",
-      "show": "Show",
-      "hide": "Hide"
+      "show": "Show"
     },
     "components": {
       "selectors": {
@@ -843,7 +842,9 @@
         "duration": "Duration",
         "source_history": "Source: History",
         "source_stats": "Source: Long term statistics",
-        "zoom_reset": "Reset zoom"
+        "zoom_reset": "Reset zoom",
+        "expand_legend": "More",
+        "collapse_legend": "Less"
       },
       "map": {
         "error": "Unable to load map"
@@ -1239,10 +1240,7 @@
         "not_found_error_load_assist": "Cannot find the assist pipeline"
       },
       "generic": {
-        "cancel": "Cancel",
-        "ok": "OK",
-        "default_confirmation_title": "Are you sure?",
-        "close": "Close"
+        "default_confirmation_title": "Are you sure?"
       },
       "image_cropper": {
         "crop": "Crop",
@@ -1254,7 +1252,6 @@
         "clear": "Clear"
       },
       "more_info_control": {
-        "dismiss": "Dismiss dialog",
         "settings": "Settings",
         "edit": "Edit entity",
         "details": "Details",
@@ -1388,7 +1385,6 @@
         "settings": "Settings",
         "control": "Control",
         "related": "Related",
-        "dismiss": "Dismiss",
         "no_unique_id": "This entity (''{entity_id}'') does not have a unique ID, therefore its settings cannot be managed from the UI. See the {faq_link} for more detail.",
         "faq": "documentation",
         "editor": {
@@ -1758,8 +1754,8 @@
         "title": "{device} debug info",
         "deserialize": "Attempt to parse MQTT messages as JSON",
         "entities": "Entities",
-        "no_entities": "No entities",
-        "no_triggers": "No triggers",
+        "no_entity_debug_info": "No entity debug info",
+        "no_trigger_debug_info": "No trigger debug info",
         "payload_display": "Payload display",
         "recent_messages": "{n} most recently received {n, plural,\n  one {message}\n  other {messages}\n}",
         "recent_tx_messages": "{n} most recently transmitted {n, plural,\n  one {message}\n  other {messages}\n}",
@@ -2209,7 +2205,8 @@
             "temperature_entity": "Temperature sensor",
             "temperature_entity_description": "Sensor that represents the area temperature.",
             "humidity_entity": "Humidity sensor",
-            "humidity_entity_description": "Sensor that represents the area humidity."
+            "humidity_entity_description": "Sensor that represents the area humidity.",
+            "related_entities_section": "Related sensors"
           },
           "delete": {
             "confirmation_title": "Delete {name}?",
@@ -3148,7 +3145,6 @@
             "detail": {
               "edit_dashboard": "Edit dashboard",
               "new_dashboard": "Add new dashboard",
-              "dismiss": "Close",
               "show_sidebar": "Show in sidebar",
               "icon": "Icon",
               "title": "Title",
@@ -3190,7 +3186,6 @@
             "detail": {
               "new_resource": "Add new resource",
               "edit_resource": "Edit resource",
-              "dismiss": "Close",
               "warning_header": "Be cautious!",
               "warning_text": "Adding resources can be dangerous, make sure you know the source of the resource and trust them. Bad resources could seriously harm your system.",
               "url": "URL",
@@ -4549,7 +4544,6 @@
             "introduction2a": ", a company founded by the founders of Home Assistant.",
             "introduction3": "Home Assistant Cloud is a subscription service with a free one month trial. No payment information necessary.",
             "learn_more_link": "Learn more about Home Assistant Cloud",
-            "dismiss": "Dismiss",
             "sign_in": "Sign in",
             "email": "Email",
             "email_error_msg": "Invalid email",
@@ -4729,6 +4723,25 @@
             "will_be_auto_renewed": "will be automatically renewed",
             "fingerprint": "Certificate fingerprint:",
             "close": "Close"
+          },
+          "dialog_already_connected": {
+            "heading": "Account linked to other Home Assistant",
+            "description": "We noticed that another instance is currently connected to your Home Assistant Cloud account. Your Home Assistant Cloud account can only be signed into one Home Assistant instance at a time. If you log in here, the other instance will be disconnected along with its Cloud services.",
+            "other_home_assistant": "Other Home Assistant",
+            "instance_name": "Instance name",
+            "instance_version": "Instance version",
+            "ip_address": "IP Address",
+            "connected_at": "Connected at",
+            "obfuscated_ip": {
+              "show": "Show IP address",
+              "hide": "Hide IP address"
+            },
+            "info_backups": {
+              "title": "Home Assistant Cloud backups",
+              "description": "Your Cloud backup may be overwritten if you proceed. We strongly recommend downloading your current backup from your Nabu Casa account page before continuing."
+            },
+            "close": "Close",
+            "login_here": "Log in here"
           },
           "dialog_cloudhook": {
             "webhook_for": "Webhook for {name}",
@@ -5174,7 +5187,6 @@
             "success": "Success",
             "aborted": "Aborted",
             "close": "Close",
-            "dismiss": "Dismiss dialog",
             "finish": "Finish",
             "submit": "Submit",
             "next": "Next",
@@ -5344,7 +5356,9 @@
           "advertisement_monitor_details": "The advertisement monitor listens for Bluetooth advertisements and displays the data in a structured format.",
           "connection_slot_allocations_monitor": "Connection slot allocations monitor",
           "connection_slot_allocations_monitor_details": "The connection slot allocations monitor displays the (GATT) connection slot allocations for the adapter. This adapter supports up to {slots} simultaneous connections. Each remote Bluetooth device that requires an active connection will use one connection slot while the Bluetooth device is connecting or connected.",
+          "connection_monitor": "Connection monitor",
           "used_connection_slot_allocations": "Used connection slot allocations",
+          "no_connections": "No active connections",
           "no_connection_slot_allocations": "No connection slot allocations information available",
           "no_active_connection_support": "This adapter does not support making active (GATT) connections.",
           "address": "Address",
@@ -5352,11 +5366,13 @@
           "source": "Source",
           "rssi": "RSSI",
           "source_address": "Source address",
+          "updated": "Updated",
           "device": "Device",
           "device_information": "Device information",
           "advertisement_data": "Advertisement data",
           "manufacturer_data": "Manufacturer data",
           "service_data": "Service data",
+          "service_uuids": "Service UUIDs",
           "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
         },
         "thread": {
@@ -6112,7 +6128,7 @@
             "signal_strength": "Signal strength",
             "open": "Open",
             "wep": "WEP",
-            "wpa": "wpa-psk",
+            "wpa": "WPA-PSK",
             "wifi": "Wi-Fi",
             "wifi_password": "Wi-Fi password",
             "warning": "If you are changing the Wi-Fi, IP or gateway addresses, you might lose the connection!",
@@ -6548,12 +6564,39 @@
             "section_specifics": "Sections view specific settings",
             "dense_section_placement": "Dense section placement",
             "dense_section_placement_helper": "Will try to fill gaps with sections that fit the gap. This may make section placement less predictable.",
+            "top_margin": "Add additional space above",
+            "top_margin_helper": "Helps reveal more of the background",
             "subview_helper": "Subviews don't appear in tabs and have a back button.",
             "edit_ui": "Edit in visual editor",
             "edit_yaml": "Edit in YAML",
             "saving_failed": "Saving failed",
             "error_same_url": "You cannot save a view with the same URL as a different existing view.",
             "move_to_dashboard": "Move to dashboard"
+          },
+          "edit_view_header": {
+            "add_title": "Add title",
+            "header": "Header settings",
+            "edit_ui": "[%key:ui::panel::lovelace::editor::edit_view::edit_ui%]",
+            "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
+            "saving_failed": "[%key:ui::panel::lovelace::editor::edit_view::saving_failed%]",
+            "default_title": "# Hello {user}\nAdd your text here, template variables are supported ✨",
+            "settings": {
+              "layout": "Layout",
+              "layout_options": {
+                "responsive": "Responsive",
+                "responsive_description": "Stacked on mobile",
+                "start": "Left aligned",
+                "start_description": "Always stacked",
+                "start_rtl": "Right aligned",
+                "center": "Centered",
+                "center_description": "Always stacked"
+              },
+              "badges_position": "Badges position",
+              "badges_position_options": {
+                "top": "Top",
+                "bottom": "Bottom"
+              }
+            }
           },
           "edit_badges": {
             "view_no_badges": "Badges are not be supported by the current view type."
@@ -6674,8 +6717,6 @@
             "edit_ui": "[%key:ui::panel::lovelace::editor::edit_view::edit_ui%]",
             "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
             "settings": {
-              "title": "Title",
-              "title_helper": "The title will appear at the top of section. Leave empty to hide the title.",
               "column_span": "Width",
               "column_span_helper": "Larger sections will be made smaller to fit the display. (e.g. on mobile devices)"
             },
@@ -7001,7 +7042,9 @@
               "suggested_cards": "Suggested cards",
               "other_cards": "Other cards",
               "custom_cards": "Custom cards",
-              "features": "Features"
+              "features": "Features",
+              "actions": "Actions",
+              "content": "Content"
             },
             "heading": {
               "name": "Heading",
@@ -7020,7 +7063,6 @@
                 "name_helper": "Visible if selected in state content",
                 "visibility": "Visibility",
                 "visibility_explanation": "The entity will be shown when ALL conditions below are fulfilled. If no conditions are set, the entity will always be shown.",
-                "appearance": "Appearance",
                 "state_content": "State content",
                 "displayed_elements": "[%key:ui::panel::lovelace::editor::badge::entity::displayed_elements%]",
                 "displayed_elements_options": {
@@ -7048,6 +7090,11 @@
             "markdown": {
               "name": "Markdown",
               "content": "Content",
+              "style": "Style",
+              "style_options": {
+                "card": "Card",
+                "text-only": "Text only"
+              },
               "description": "The Markdown card is used to render Markdown."
             },
             "clock": {
@@ -7111,7 +7158,9 @@
               "name": "Sensor",
               "show_more_detail": "Show more detail",
               "graph_type": "Graph type",
-              "description": "The Sensor card gives you a quick overview of your sensors state with an optional graph to visualize change over time."
+              "description": "The Sensor card gives you a quick overview of your sensors state with an optional graph to visualize change over time.",
+              "limit_min": "Minimum value",
+              "limit_max": "Maximum value"
             },
             "todo-list": {
               "name": "To-do list",
@@ -7141,15 +7190,17 @@
               "icon_tap_action": "Icon tap behavior",
               "icon_hold_action": "Icon hold behavior",
               "icon_double_tap_action": "Icon double tap behavior",
-              "appearance": "Appearance",
               "show_entity_picture": "Show entity picture",
               "hide_state": "Hide state",
               "state_content": "State content",
               "features_position": "Features position",
               "features_position_options": {
                 "bottom": "Bottom",
-                "inline": "Inline"
+                "bottom_description": "Displays all features stacked",
+                "inline": "Inline",
+                "inline_description": "Displays only the first feature"
               },
+              "features_position_helper_vertical": "Always displayed at the bottom if the content layout is vertical",
               "content_layout": "Content layout",
               "content_layout_options": {
                 "horizontal": "Horizontal",
@@ -7190,8 +7241,6 @@
               "description": "The Entity badge gives you a quick overview of your entity.",
               "color": "[%key:ui::panel::lovelace::editor::card::tile::color%]",
               "color_helper": "[%key:ui::panel::lovelace::editor::card::tile::color_helper%]",
-              "interactions": "Interactions",
-              "appearance": "Appearance",
               "show_entity_picture": "Show entity picture",
               "state_content": "State content",
               "displayed_elements": "Displayed elements",
@@ -7330,6 +7379,14 @@
                 "customize_modes": "Customize preset modes",
                 "preset_modes": "Preset modes"
               },
+              "counter-actions": {
+                "label": "Counter actions",
+                "actions": {
+                  "increment": "Increment",
+                  "decrement": "Decrement",
+                  "reset": "Reset"
+                }
+              },
               "fan-preset-modes": {
                 "label": "Fan preset modes",
                 "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
@@ -7357,6 +7414,9 @@
                 "label": "Select options",
                 "options": "Options",
                 "customize_options": "Customize options"
+              },
+              "toggle": {
+                "label": "Toggle"
               },
               "numeric-input": {
                 "label": "Numeric input",
@@ -8189,7 +8249,7 @@
           "osm_privacy_policy": "Privacy policy",
           "title_location_detect": "Do you want us to detect your location?",
           "intro_location_detect": "We can detect your location by making a one-time request to an external service.",
-          "country_intro": "We would like to know the country your home is in, so we can use the correct units for you.",
+          "country_intro": "We would like to know the country your home is in, so we can use the correct units.",
           "location_name": "Name of your Home Assistant installation",
           "location_name_default": "Home",
           "address_label": "Search address",
@@ -8832,7 +8892,7 @@
         "signal_strength": "[%key:ui::panel::config::network::supervisor::signal_strength%]",
         "open": "Open",
         "wep": "WEP",
-        "wpa": "wpa-psk",
+        "wpa": "WPA-PSK",
         "wifi": "[%key:ui::panel::config::network::supervisor::wifi%]",
         "wifi_password": "[%key:ui::panel::config::network::supervisor::wifi_password%]",
         "warning": "If you are changing the Wi-Fi, IP or gateway addresses, you might lose the connection!",

@@ -1,7 +1,8 @@
-import type { PropertyValues, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import "../ha-svg-icon";
+import "../ha-tooltip";
 
 @customElement("ha-data-table-icon")
 class HaDataTableIcon extends LitElement {
@@ -9,28 +10,12 @@ class HaDataTableIcon extends LitElement {
 
   @property() public path!: string;
 
-  @state() private _hovered = false;
-
   protected render(): TemplateResult {
     return html`
-      ${this._hovered ? html`<div>${this.tooltip}</div>` : ""}
-      <ha-svg-icon .path=${this.path}></ha-svg-icon>
+      <ha-tooltip .content=${this.tooltip}>
+        <ha-svg-icon .path=${this.path}></ha-svg-icon>
+      </ha-tooltip>
     `;
-  }
-
-  protected override firstUpdated(changedProps: PropertyValues): void {
-    super.firstUpdated(changedProps);
-    const show = () => {
-      this._hovered = true;
-    };
-    const hide = () => {
-      this._hovered = false;
-    };
-    this.addEventListener("mouseenter", show);
-    this.addEventListener("focus", show);
-    this.addEventListener("mouseleave", hide);
-    this.addEventListener("blur", hide);
-    this.addEventListener("tap", hide);
   }
 
   static styles = css`
@@ -40,20 +25,6 @@ class HaDataTableIcon extends LitElement {
     }
     ha-svg-icon {
       color: var(--secondary-text-color);
-    }
-    div {
-      position: absolute;
-      right: 28px;
-      inset-inline-end: 28px;
-      inset-inline-start: initial;
-      z-index: 1002;
-      outline: none;
-      font-size: 10px;
-      line-height: 1;
-      background-color: var(--simple-tooltip-background, #616161);
-      color: var(--simple-tooltip-text-color, white);
-      padding: 8px;
-      border-radius: 2px;
     }
   `;
 }

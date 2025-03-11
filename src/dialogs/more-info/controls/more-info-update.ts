@@ -73,6 +73,7 @@ class MoreInfoUpdate extends LitElement {
     if (updateType === "home_assistant") {
       const isBackupConfigValid =
         !!this._backupConfig &&
+        !!this._backupConfig.automatic_backups_configured &&
         !!this._backupConfig.create_backup.password &&
         this._backupConfig.create_backup.agent_ids.length > 0;
 

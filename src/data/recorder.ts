@@ -5,6 +5,7 @@ import type { HomeAssistant } from "../types";
 
 export interface RecorderInfo {
   backlog: number | null;
+  db_in_default_location: boolean;
   max_backlog: number;
   migration_in_progress: boolean;
   migration_is_live: boolean;

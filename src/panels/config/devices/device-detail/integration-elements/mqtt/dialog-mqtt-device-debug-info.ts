@@ -91,7 +91,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
             ? this._renderEntities()
             : html`
                 ${this.hass!.localize(
-                  "ui.dialogs.mqtt_device_debug_info.no_entities"
+                  "ui.dialogs.mqtt_device_debug_info.no_entity_debug_info"
                 )}
               `}
         </ul>
@@ -103,12 +103,12 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
             ? this._renderTriggers()
             : html`
                 ${this.hass!.localize(
-                  "ui.dialogs.mqtt_device_debug_info.no_triggers"
+                  "ui.dialogs.mqtt_device_debug_info.no_trigger_debug_info"
                 )}
               `}
         </ul>
         <mwc-button slot="primaryAction" @click=${this._close}>
-          ${this.hass!.localize("ui.dialogs.generic.close")}
+          ${this.hass!.localize("ui.common.close")}
         </mwc-button>
       </ha-dialog>
     `;
