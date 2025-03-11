@@ -78,7 +78,7 @@ class HaConfigBackupDetails extends LitElement {
         <div class="content">
           ${this._error &&
           html`<ha-alert alert-type="error">${this._error}</ha-alert>`}
-          ${this._agent === null && false
+          ${this._agent === null
             ? html`
                 <ha-alert
                   alert-type="warning"
@@ -92,7 +92,7 @@ class HaConfigBackupDetails extends LitElement {
                   )}
                 </ha-alert>
               `
-            : !this.agentId || true
+            : !this.agentId
               ? html`<ha-fade-in .delay=${1000}
                   ><ha-spinner></ha-spinner
                 ></ha-fade-in>`
