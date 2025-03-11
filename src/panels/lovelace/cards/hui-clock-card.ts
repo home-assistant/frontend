@@ -84,7 +84,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
         <div
           class="time-wrapper ${this._config.clock_size
             ? `size-${this._config.clock_size}`
-            : ""}"
+            : nothing}"
         >
           <div class="time-parts">
             <div class="time-part hour">
