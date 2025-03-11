@@ -1,10 +1,8 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import hash from "object-hash";
 import { DateTime } from "luxon";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
-import type { RenderTemplateResult } from "../../../data/ws-templates";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { ClockCardConfig } from "./types";
@@ -20,7 +18,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
     return {
       type: "clock",
       time_format: "hh:mm:ss",
-      size: "normal",
+      clock_size: "medium",
     };
   }
 
@@ -29,8 +27,6 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
   @property({ type: Boolean }) public preview = false;
 
   @state() private _config?: ClockCardConfig;
-
-  @state() private _templateResult?: RenderTemplateResult;
 
   @state() private _time?: DateTime;
 
@@ -49,10 +45,6 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
   public connectedCallback() {
     super.connectedCallback();
     this._startTick();
-  }
-
-  private _computeCacheKey() {
-    return hash(this._config);
   }
 
   public disconnectedCallback() {

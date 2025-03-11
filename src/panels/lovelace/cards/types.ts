@@ -347,7 +347,7 @@ export interface MarkdownCardConfig extends LovelaceCardConfig {
 export interface ClockCardConfig extends LovelaceCardConfig {
   type: "clock";
   time_format: string;
-  card_size?: number;
+  clock_size?: string;
   entity_ids?: string | string[];
   show_empty?: boolean;
 }
