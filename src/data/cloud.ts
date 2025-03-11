@@ -222,6 +222,7 @@ export const handleCloudLoginError = async (
       inputType: "text",
       defaultValue: "",
       confirmText: localize(`ui.panel.${translationKeyPanel}.login.submit`),
+      dismissText: localize(`ui.panel.${translationKeyPanel}.login.cancel`),
     });
     if (totpCode !== null && totpCode !== "") {
       await loginFunction(email, password, checkConnection, totpCode);

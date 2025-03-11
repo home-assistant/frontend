@@ -81,12 +81,12 @@ class OnboardingRestoreBackupCloudLogin extends LitElement {
     navigate(`${location.pathname}?${removeSearchParam("page")}`);
   }
 
-  private async _doLogin(
+  private _doLogin = async (
     email: string,
     password: string,
     checkConnection: boolean,
     code?: string
-  ) {
+  ) => {
     if (!password && !code) {
       throw new Error("Password or code required");
     }
