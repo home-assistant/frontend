@@ -1,10 +1,14 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { DateTime } from "luxon";
+import { DateTime, type DateTimeMaybeValid } from "luxon";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import type { HomeAssistant } from "../../../types";
-import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceGridOptions,
+} from "../types";
 import type { ClockCardConfig } from "./types";
 
 @customElement("hui-clock-card")
@@ -24,7 +28,6 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-
   @state() private _config?: ClockCardConfig;
 
   @state() private _time?: DateTime;
@@ -39,6 +42,41 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
     }
 
     this._config = config;
+  }
+
+  public getCardSize(): number {
+    if (this._config?.clock_size === "small") return 1;
+    return 2;
+  }
+
+  public getGridOptions(): LovelaceGridOptions {
+    if (this._config?.clock_size === "small") {
+      return {
+        min_rows: 1,
+        rows: 1,
+        max_rows: 4,
+        min_columns: 4,
+        columns: 6,
+      };
+    }
+
+    if (this._config?.clock_size === "large") {
+      return {
+        min_rows: 2,
+        rows: 2,
+        max_rows: 4,
+        min_columns: 6,
+        columns: 6,
+      };
+    }
+
+    return {
+      min_rows: 1,
+      rows: 2,
+      max_rows: 4,
+      min_columns: 4,
+      columns: 6,
+    };
   }
 
   public connectedCallback() {
@@ -67,7 +105,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
     const locale = this.hass?.locale?.language;
     const timeZone = this.hass?.config.time_zone;
 
-    let time = DateTime.now();
+    let time: DateTimeMaybeValid = DateTime.now();
 
     if (locale) time = time.setLocale(locale);
     if (timeZone) time = time.setZone(timeZone);
@@ -126,12 +164,10 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
 
     .time-wrapper.size-medium .time-parts {
       font-size: 2rem;
-      padding: 1.5rem 0;
     }
 
     .time-wrapper.size-large .time-parts {
       font-size: 3rem;
-      padding: 2rem 0;
     }
 
     .time-wrapper.size-medium .time-parts .time-part.second {
