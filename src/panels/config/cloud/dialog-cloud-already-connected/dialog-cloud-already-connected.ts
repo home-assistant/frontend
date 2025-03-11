@@ -69,7 +69,7 @@ class DialogCloudAlreadyConnected extends LitElement {
                     "ui.panel.config.cloud.dialog_already_connected.instance_name"
                   )}:
                 </span>
-                <span>${details.name})}</span>
+                <span>${details.name}</span>
               </div>`
             : nothing}
           ${details.version
@@ -79,7 +79,7 @@ class DialogCloudAlreadyConnected extends LitElement {
                     "ui.panel.config.cloud.dialog_already_connected.instance_version"
                   )}:
                 </span>
-                <span>${details.version})}</span>
+                <span>${details.version}</span>
               </div>`
             : nothing}
           <div class="instance-detail">

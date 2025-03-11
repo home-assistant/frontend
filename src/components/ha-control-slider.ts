@@ -1,4 +1,4 @@
-import { DIRECTION_ALL, Manager, Pan, Tap } from "@egjs/hammerjs";
+import { DIRECTION_ALL, Manager, Pan, Press, Tap } from "@egjs/hammerjs";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -159,6 +159,7 @@ export class HaControlSlider extends LitElement {
       );
 
       this._mc.add(new Tap({ event: "singletap" }));
+      this._mc.add(new Press());
 
       let savedValue;
       this._mc.on("panstart", () => {
@@ -190,7 +191,7 @@ export class HaControlSlider extends LitElement {
         fireEvent(this, "value-changed", { value: this.value });
       });
 
-      this._mc.on("singletap", (e) => {
+      this._mc.on("singletap pressup", (e) => {
         if (this.disabled) return;
         const percentage = this._getPercentageFromEvent(e);
         this.value = this.steppedValue(this.percentageToValue(percentage));

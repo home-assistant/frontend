@@ -1,9 +1,9 @@
 import type { LitElement } from "lit";
-import type { EntityFilter } from "../common/entity/entity_filter";
 import {
   showAlertDialog,
   showPromptDialog,
 } from "../dialogs/generic/show-dialog-box";
+import type { EntityDomainFilter } from "../common/entity/entity_domain_filter";
 import type { HomeAssistant } from "../types";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { showCloudAlreadyConnectedDialog } from "../panels/config/cloud/dialog-cloud-already-connected/show-dialog-cloud-already-connected";
@@ -43,10 +43,10 @@ export interface CloudStatusLoggedIn {
   cloud_last_disconnect_reason: { clean: boolean; reason: string } | null;
   email: string;
   google_registered: boolean;
-  google_entities: EntityFilter;
+  google_entities: EntityDomainFilter;
   google_domains: string[];
   alexa_registered: boolean;
-  alexa_entities: EntityFilter;
+  alexa_entities: EntityDomainFilter;
   prefs: CloudPreferences;
   remote_domain: string | undefined;
   remote_connected: boolean;

@@ -1,4 +1,17 @@
 import type { LandingPageKeys } from "../../../src/common/translations/localize";
+import type { HassioResponse } from "../../../src/data/hassio/common";
+import type {
+  DockerNetwork,
+  NetworkInterface,
+} from "../../../src/data/hassio/network";
+import { handleFetchPromise } from "../../../src/util/hass-call-api";
+
+export interface NetworkInfo {
+  interfaces: NetworkInterface[];
+  docker: DockerNetwork;
+  host_internet: boolean;
+  supervisor_internet: boolean;
+}
 
 export const ALTERNATIVE_DNS_SERVERS: {
   ipv4: string[];
@@ -37,8 +50,11 @@ export async function pingSupervisor() {
   return fetch("/supervisor-api/supervisor/ping");
 }
 
-export async function getSupervisorNetworkInfo() {
-  return fetch("/supervisor-api/network/info");
+export async function getSupervisorNetworkInfo(): Promise<NetworkInfo> {
+  const responseData = await handleFetchPromise<HassioResponse<NetworkInfo>>(
+    fetch("/supervisor-api/network/info")
+  );
+  return responseData?.data;
 }
 
 export const setSupervisorNetworkDns = async (
