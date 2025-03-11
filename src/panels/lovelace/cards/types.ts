@@ -348,8 +348,6 @@ export interface ClockCardConfig extends LovelaceCardConfig {
   type: "clock";
   time_format: string;
   clock_size?: string;
-  entity_ids?: string | string[];
-  show_empty?: boolean;
 }
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
