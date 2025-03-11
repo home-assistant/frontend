@@ -21,7 +21,6 @@ import {
 import { formatTime24h } from "../common/datetime/format_time";
 import { groupBy } from "../common/util/group-by";
 import type { HomeAssistant } from "../types";
-import type { ConfigEntry } from "./config_entries";
 import type {
   Statistics,
   StatisticsMetaData,
