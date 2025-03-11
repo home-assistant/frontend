@@ -126,7 +126,7 @@ class OnboardingRestoreBackupCloudLogin extends LitElement {
       this._requestInProgress = false;
       this._error = error;
     }
-  }
+  };
 
   private async _handleLogin(ev: CustomEvent) {
     const email: string = ev.detail.email;
