@@ -19,7 +19,6 @@ class OnboardingWelcome extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <img src=${`/static/icons/casita/Loving.png`} alt="Casita in love" />
       <h1>${this.localize("ui.panel.page-onboarding.welcome.header")}</h1>
       <p>${this.localize("ui.panel.page-onboarding.intro")}</p>
 
@@ -85,10 +84,7 @@ class OnboardingWelcome extends LitElement {
         :host {
           display: flex;
           flex-direction: column;
-          align-items: center;
-        }
-        img {
-          margin: 16px 0;
+          align-items: flex-start;
         }
         h1 {
           margin-top: 16px;
@@ -104,10 +100,15 @@ class OnboardingWelcome extends LitElement {
           margin: 32px 0;
         }
         ha-divider {
-          --ha-divider-width: calc(100% + 32px);
+          --ha-divider-width: calc(100% + 64px);
+          margin-left: -32px;
+          margin-right: -32px;
         }
         ha-md-list {
-          width: 100%;
+          width: calc(100% + 32px);
+          margin-left: -16px;
+          margin-right: -16px;
+          padding-bottom: 0;
         }
       `,
     ];

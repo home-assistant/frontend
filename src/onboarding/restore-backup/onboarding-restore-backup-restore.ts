@@ -116,17 +116,17 @@ class OnboardingRestoreBackupRestore extends LitElement {
         .value=${this._selectedData}
         @value-changed=${this._selectedBackupChanged}
         .requiredItems=${["config"]}
-        disabled
+        .addonsDisabled=${!this.supervisor}
       ></ha-backup-data-picker>
 
       ${this._error
         ? html`<ha-alert alert-type="error">${this._error}</ha-alert> `
         : nothing}
       ${backupProtected
-        ? html` <div class="encryption">
+        ? html`<div class="encryption">
             <h2>
               ${this.localize(
-                "ui.panel.page-onboarding.restore.details.restore.encryption.title"
+                "ui.panel.page-onboarding.restore.details.restore.encryption.label"
               )}
             </h2>
             <span>
@@ -263,9 +263,6 @@ class OnboardingRestoreBackupRestore extends LitElement {
     return [
       onBoardingStyles,
       css`
-        :host {
-          padding: 0 20px 16px;
-        }
         h1,
         p {
           text-align: left;

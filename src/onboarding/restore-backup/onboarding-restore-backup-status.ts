@@ -72,9 +72,6 @@ class OnboardingRestoreBackupStatus extends LitElement {
     return [
       onBoardingStyles,
       css`
-        :host {
-          padding: 28px 20px 0;
-        }
         h1,
         p {
           text-align: left;

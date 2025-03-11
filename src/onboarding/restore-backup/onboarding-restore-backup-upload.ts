@@ -107,8 +107,6 @@ class OnboardingRestoreBackupUpload extends LitElement {
         typeof err.body === "string"
           ? err.body
           : err.body?.message || err.message || "Unknown error occurred";
-    } finally {
-      this._uploading = false;
     }
   }
 
@@ -120,12 +118,12 @@ class OnboardingRestoreBackupUpload extends LitElement {
     return [
       onBoardingStyles,
       css`
-        :host {
-          padding: 0 20px 16px;
-        }
         h1,
         p {
           text-align: left;
+        }
+        .card-content {
+          padding: 0;
         }
         .card-actions {
           display: flex;

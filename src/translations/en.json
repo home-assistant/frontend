@@ -8298,7 +8298,7 @@
               "title": "[%key:ui::panel::config::backup::dialogs::restore::title%]",
               "action": "Restore backup",
               "encryption": {
-                "title": "[%key:ui::panel::config::backup::dialogs::onboarding::key::title%]",
+                "label": "Encryption",
                 "description": "[%key:ui::panel::config::backup::dialogs::restore::encryption::different_key%]",
                 "description_cloud": "Home Assistant Cloud is the privacy-focused cloud. We don’t store your encryption key. Enter the encryption key you saved or use the emergency kit you have downloaded.",
                 "incorrect_key": "[%key:ui::panel::config::backup::dialogs::restore::encryption::incorrect_key%]",

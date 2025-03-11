@@ -157,12 +157,12 @@ export class CloudLoginPanel extends LitElement {
     `;
   }
 
-  private async _doLogin(
+  private _doLogin = async (
     email: string,
     password: string,
     checkConnection: boolean,
     code?: string
-  ) {
+  ) => {
     if (!password && !code) {
       throw new Error("Password or code required");
     }
@@ -221,7 +221,7 @@ export class CloudLoginPanel extends LitElement {
       this._error = error;
       this._cloudLoginElement._emailField.focus();
     }
-  }
+  };
 
   private async _handleLogin(ev: CustomEvent) {
     const email = ev.detail.email;

@@ -191,9 +191,6 @@ class OnboardingRestoreBackupCloudLogin extends LitElement {
     return [
       onBoardingStyles,
       css`
-        :host {
-          padding: 0 20px 24px;
-        }
         h1,
         p {
           text-align: left;

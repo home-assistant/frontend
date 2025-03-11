@@ -41,7 +41,6 @@ import "./onboarding-analytics";
 import "./onboarding-create-user";
 import "./onboarding-loading";
 import "./onboarding-welcome";
-import "./onboarding-restore-backup";
 import "./onboarding-welcome-links";
 import { makeDialogManager } from "../dialogs/make-dialog-manager";
 import { navigate } from "../common/navigate";
@@ -215,6 +214,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     this._fetchOnboardingSteps();
     import("./onboarding-integrations");
     import("./onboarding-core-config");
+    import("./onboarding-restore-backup");
     registerServiceWorker(this, false);
     this.addEventListener("onboarding-step", (ev) => this._handleStepDone(ev));
     this.addEventListener("onboarding-progress", (ev) =>
@@ -494,6 +494,9 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   }
 
   static styles = css`
+    .card-content {
+      padding: 32px;
+    }
     mwc-linear-progress {
       position: fixed;
       top: 0;
