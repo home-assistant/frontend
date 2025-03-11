@@ -4,9 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import "./restore-backup/onboarding-restore-backup-restore";
 import "./restore-backup/onboarding-restore-backup-status";
 import type { LocalizeFunc } from "../common/translations/localize";
-import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-circular-progress";
-import "../components/ha-button";
 import "./onboarding-loading";
 import { removeSearchParam } from "../common/url/search-params";
 import { navigate } from "../common/navigate";
@@ -63,9 +61,7 @@ class OnboardingRestoreBackup extends LitElement {
   protected render(): TemplateResult {
     return html`
       ${this._view === "loading"
-        ? html`<div class="loading">
-            <ha-circular-progress indeterminate></ha-circular-progress>
-          </div>`
+        ? html`<onboarding-loading></onboarding-loading>`
         : this._view === "upload"
           ? html`
               <onboarding-restore-backup-upload
@@ -306,11 +302,6 @@ class OnboardingRestoreBackup extends LitElement {
         display: flex;
         flex-direction: column;
         position: relative;
-      }
-      .loading {
-        display: flex;
-        justify-content: center;
-        padding: 32px;
       }
       .logout {
         white-space: nowrap;

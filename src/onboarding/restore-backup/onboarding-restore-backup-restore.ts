@@ -1,7 +1,6 @@
 import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import "../../components/ha-button";
-import "../../components/ha-card";
 import "../../components/ha-alert";
 import "../../components/buttons/ha-progress-button";
 import "../../components/ha-icon-button-arrow-prev";

@@ -1,7 +1,6 @@
 import { mdiFolderUpload } from "@mdi/js";
 import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../components/ha-card";
 import "../../components/ha-file-upload";
 import "../../components/ha-alert";
 import "../../components/ha-icon-button-arrow-prev";

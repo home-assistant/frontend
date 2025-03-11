@@ -1,8 +1,6 @@
 import "@material/mwc-linear-progress/mwc-linear-progress";
 import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../components/ha-card";
-import "../../components/ha-circular-progress";
 import "../../components/ha-alert";
 import "../../components/ha-button";
 import type { LocalizeFunc } from "../../common/translations/localize";

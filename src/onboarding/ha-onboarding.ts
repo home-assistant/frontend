@@ -173,7 +173,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     const step = this._curStep()!;
 
     if (this._loading || !step) {
-      return html`<onboarding-loading></onboarding-loading> `;
+      return html`<onboarding-loading></onboarding-loading>`;
     }
     if (step.step === "user") {
       return html`<onboarding-create-user

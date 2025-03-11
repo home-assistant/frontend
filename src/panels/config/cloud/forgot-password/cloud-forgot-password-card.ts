@@ -7,7 +7,6 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
 import type { HaTextField } from "../../../../components/ha-textfield";
 import "../../../../components/ha-textfield";
-import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 
