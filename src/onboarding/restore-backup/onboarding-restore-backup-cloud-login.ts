@@ -1,6 +1,7 @@
 import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../panels/config/cloud/login/cloud-login";
+import "../../components/ha-icon-button-arrow-prev";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import type { BackupContentExtended } from "../../data/backup";
 import { fireEvent } from "../../common/dom/fire_event";
