@@ -55,7 +55,7 @@ module.exports.definedVars = ({ isProdBuild, latestBuild, defineOverlay }) => ({
   __STATIC_PATH__: "/static/",
   __HASS_URL__: `\`${"HASS_URL" in process.env
     ? process.env.HASS_URL
-    : `${location.protocol}//${location.host}`
+    : "${location.protocol}//${location.host}"
     }\``,
   "process.env.NODE_ENV": JSON.stringify(
     isProdBuild ? "production" : "development"
