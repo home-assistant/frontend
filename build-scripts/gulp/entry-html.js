@@ -56,6 +56,7 @@ const getCommonTemplateVars = () => {
   );
   return {
     modernRegex: compileRegex(browserRegexes.concat(haMacOSRegex)).toString(),
+    hassUrl: process.env.HASS_URL || "",
   };
 };
 
@@ -98,26 +99,26 @@ const genPagesDevTask =
     inputSub = "src/html",
     publicRoot = ""
   ) =>
-  async () => {
-    const commonVars = getCommonTemplateVars();
-    for (const [page, entries] of Object.entries(pageEntries)) {
-      const content = renderTemplate(
-        resolve(inputRoot, inputSub, `${page}.template`),
-        {
-          ...commonVars,
-          latestEntryJS: entries.map(
-            (entry) => `${publicRoot}/frontend_latest/${entry}.js`
-          ),
-          es5EntryJS: entries.map(
-            (entry) => `${publicRoot}/frontend_es5/${entry}.js`
-          ),
-          latestCustomPanelJS: `${publicRoot}/frontend_latest/custom-panel.js`,
-          es5CustomPanelJS: `${publicRoot}/frontend_es5/custom-panel.js`,
-        }
-      );
-      fs.outputFileSync(resolve(outputRoot, page), content);
-    }
-  };
+    async () => {
+      const commonVars = getCommonTemplateVars();
+      for (const [page, entries] of Object.entries(pageEntries)) {
+        const content = renderTemplate(
+          resolve(inputRoot, inputSub, `${page}.template`),
+          {
+            ...commonVars,
+            latestEntryJS: entries.map(
+              (entry) => `${publicRoot}/frontend_latest/${entry}.js`
+            ),
+            es5EntryJS: entries.map(
+              (entry) => `${publicRoot}/frontend_es5/${entry}.js`
+            ),
+            latestCustomPanelJS: `${publicRoot}/frontend_latest/custom-panel.js`,
+            es5CustomPanelJS: `${publicRoot}/frontend_es5/custom-panel.js`,
+          }
+        );
+        fs.outputFileSync(resolve(outputRoot, page), content);
+      }
+    };
 
 // Same as previous but for production builds
 // (includes minification and hashed file names from manifest)
@@ -130,34 +131,34 @@ const genPagesProdTask =
     outputES5,
     inputSub = "src/html"
   ) =>
-  async () => {
-    const latestManifest = fs.readJsonSync(
-      resolve(outputLatest, "manifest.json")
-    );
-    const es5Manifest = outputES5
-      ? fs.readJsonSync(resolve(outputES5, "manifest.json"))
-      : {};
-    const commonVars = getCommonTemplateVars();
-    const minifiedHTML = [];
-    for (const [page, entries] of Object.entries(pageEntries)) {
-      const content = renderTemplate(
-        resolve(inputRoot, inputSub, `${page}.template`),
-        {
-          ...commonVars,
-          latestEntryJS: entries.map((entry) => latestManifest[`${entry}.js`]),
-          es5EntryJS: entries.map((entry) => es5Manifest[`${entry}.js`]),
-          latestCustomPanelJS: latestManifest["custom-panel.js"],
-          es5CustomPanelJS: es5Manifest["custom-panel.js"],
-        }
+    async () => {
+      const latestManifest = fs.readJsonSync(
+        resolve(outputLatest, "manifest.json")
       );
-      minifiedHTML.push(
-        minifyHtml(content, extname(page)).then((minified) =>
-          fs.outputFileSync(resolve(outputRoot, page), minified)
-        )
-      );
-    }
-    await Promise.all(minifiedHTML);
-  };
+      const es5Manifest = outputES5
+        ? fs.readJsonSync(resolve(outputES5, "manifest.json"))
+        : {};
+      const commonVars = getCommonTemplateVars();
+      const minifiedHTML = [];
+      for (const [page, entries] of Object.entries(pageEntries)) {
+        const content = renderTemplate(
+          resolve(inputRoot, inputSub, `${page}.template`),
+          {
+            ...commonVars,
+            latestEntryJS: entries.map((entry) => latestManifest[`${entry}.js`]),
+            es5EntryJS: entries.map((entry) => es5Manifest[`${entry}.js`]),
+            latestCustomPanelJS: latestManifest["custom-panel.js"],
+            es5CustomPanelJS: es5Manifest["custom-panel.js"],
+          }
+        );
+        minifiedHTML.push(
+          minifyHtml(content, extname(page)).then((minified) =>
+            fs.outputFileSync(resolve(outputRoot, page), minified)
+          )
+        );
+      }
+      await Promise.all(minifiedHTML);
+    };
 
 // Map HTML pages to their required entrypoints
 const APP_PAGE_ENTRIES = {
