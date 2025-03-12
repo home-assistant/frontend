@@ -493,14 +493,14 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                             "ui.panel.config.zwave_js.dashboard.nvm_backup.restoring"
                           )}
                           ${(this._restoreProgress * 100).toFixed(0)}%`
-                      : html`<ha-button @click=${this._downloadNVMBackup}>
+                      : html`<ha-button @click=${this._downloadBackup}>
                             ${this.hass.localize(
                               "ui.panel.config.zwave_js.dashboard.nvm_backup.download_backup"
                             )}
                           </ha-button>
                           <div class="upload-button">
                             <ha-button
-                              @click=${this._uploadButtonClick}
+                              @click=${this._restoreButtonClick}
                               class="warning"
                             >
                               <span class="button-content">
@@ -513,7 +513,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                               type="file"
                               id="nvm-restore-file"
                               accept=".bin"
-                              @change=${this._handleFileSelected}
+                              @change=${this._handleRestoreFileSelected}
                               style="display: none"
                             />
                           </div>`}
@@ -679,13 +679,13 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     showOptionsFlowDialog(this, configEntry!);
   }
 
-  private async _downloadNVMBackup() {
+  private async _downloadBackup() {
     try {
       this._backupProgress = 0;
       this._unsubscribeBackup = await subscribeZwaveNVMBackup(
         this.hass!,
         this.configEntryId!,
-        this._handleNVMBackupMessage
+        this._handleBackupMessage
       );
     } catch (err: any) {
       showAlertDialog(this, {
@@ -699,14 +699,14 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _uploadButtonClick() {
+  private _restoreButtonClick() {
     const fileInput = this.shadowRoot?.querySelector(
       "#nvm-restore-file"
     ) as HTMLInputElement;
     fileInput?.click();
   }
 
-  private async _handleFileSelected(ev: Event) {
+  private async _handleRestoreFileSelected(ev: Event) {
     const file = (ev.target as HTMLInputElement).files?.[0];
     if (!file) return;
     const input = ev.target as HTMLInputElement;
@@ -786,7 +786,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     return this._s2InclusionUnsubscribe;
   }
 
-  private _handleNVMBackupMessage = (message: any) => {
+  private _handleBackupMessage = (message: any) => {
     if (message.event === "finished") {
       this._backupProgress = undefined;
       this._unsubscribeBackup?.();
