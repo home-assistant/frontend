@@ -53,6 +53,7 @@ const getEntities = (hass: HomeAssistant, config: EntityFilterConfig) => {
     entitiesIds.sort((a, b) => {
       const aIndex = config.order!.indexOf(a);
       const bIndex = config.order!.indexOf(b);
+      if (aIndex === -1 && bIndex === -1) return 0;
       if (aIndex === -1) return 1;
       if (bIndex === -1) return -1;
       return aIndex - bIndex;
