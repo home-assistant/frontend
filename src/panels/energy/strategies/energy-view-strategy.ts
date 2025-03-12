@@ -148,11 +148,13 @@ export class EnergyViewStrategy extends ReactiveElement {
           collection_key: "energy_dashboard",
         });
       }
-      view.cards!.push({
-        type: "energy-self-sufficiency-gauge",
-        view_layout: { position: "sidebar" },
-        collection_key: "energy_dashboard",
-      });
+      if (hasGrid) {
+        view.cards!.push({
+          type: "energy-self-sufficiency-gauge",
+          view_layout: { position: "sidebar" },
+          collection_key: "energy_dashboard",
+        });
+      }
     }
 
     // Only include if we have a grid
