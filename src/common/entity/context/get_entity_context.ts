@@ -1,9 +1,8 @@
-import type { HassEntity } from "home-assistant-js-websocket";
-import type { DeviceRegistryEntry } from "../../../data/device_registry";
 import type { AreaRegistryEntry } from "../../../data/area_registry";
+import type { DeviceRegistryEntry } from "../../../data/device_registry";
+import type { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
 import type { FloorRegistryEntry } from "../../../data/floor_registry";
 import type { HomeAssistant } from "../../../types";
-import type { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
 
 interface EntityContext {
   entity: EntityRegistryDisplayEntry | null;
@@ -13,13 +12,20 @@ interface EntityContext {
 }
 
 export const getEntityContext = (
-  stateObj: HassEntity,
+  entityId: string,
   hass: HomeAssistant
 ): EntityContext => {
   const entity =
-    (hass.entities[stateObj.entity_id] as
-      | EntityRegistryDisplayEntry
-      | undefined) || null;
+    (hass.entities[entityId] as EntityRegistryDisplayEntry | undefined) || null;
+
+  if (!entity) {
+    return {
+      entity: null,
+      device: null,
+      area: null,
+      floor: null,
+    };
+  }
 
   const deviceId = entity?.device_id;
   const device = deviceId ? hass.devices[deviceId] : null;
