@@ -1,24 +1,23 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
-import { areaCompare } from "../../../../data/area_registry";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
+import { getAreas } from "./helpers/areas-strategy-helpers";
 
 export interface AreasViewStrategyConfig {
   type: "areas";
+  hidden_areas?: string[];
+  areas_order?: string[];
 }
 
 @customElement("areas-view-strategy")
 export class AreasViewStrategy extends ReactiveElement {
   static async generate(
-    _config: AreasViewStrategyConfig,
+    config: AreasViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
-    const compare = areaCompare(hass.areas);
-    const areas = Object.values(hass.areas).sort((a, b) =>
-      compare(a.area_id, b.area_id)
-    );
+    const areas = getAreas(hass.areas, config.hidden_areas, config.areas_order);
 
     const areaSections = areas.map<LovelaceSectionConfig>((area) => {
       const areaPath = `areas-${area.area_id}`;
