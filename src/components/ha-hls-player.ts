@@ -123,7 +123,7 @@ class HaHLSPlayer extends LitElement {
     try {
       const { url } = await fetchStreamUrl(this.hass!, this.entityid);
 
-      this._url = __HASS_URL__ + url;
+      this._url = this.hass.hassUrl(url);
       this._cleanUp();
       this._resetError();
       this._startHls();
