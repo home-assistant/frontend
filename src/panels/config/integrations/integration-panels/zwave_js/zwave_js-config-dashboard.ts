@@ -493,9 +493,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                             "ui.panel.config.zwave_js.dashboard.nvm_backup.restoring"
                           )}
                           ${(this._restoreProgress * 100).toFixed(0)}%`
-                      : html`<ha-button
-                            @click=${this._downloadNVMBackup}
-                          >
+                      : html`<ha-button @click=${this._downloadNVMBackup}>
                             ${this.hass.localize(
                               "ui.panel.config.zwave_js.dashboard.nvm_backup.download_backup"
                             )}
