@@ -16,6 +16,7 @@ import "../../../../../components/ha-card";
 import "../../../../../components/ha-expansion-panel";
 import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-button";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-svg-icon";
 import type { ConfigEntry } from "../../../../../data/config_entries";
@@ -34,11 +35,11 @@ import {
   fetchZwaveNetworkStatus,
   fetchZwaveProvisioningEntries,
   InclusionState,
+  restoreZwaveNVM,
   setZwaveDataCollectionPreference,
   subscribeS2Inclusion,
   subscribeZwaveControllerStatistics,
-  getNVMBackupDownloadUrl,
-  restoreZwaveNVMBackup,
+  subscribeZwaveNVMBackup,
 } from "../../../../../data/zwave_js";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
@@ -51,7 +52,6 @@ import { showZWaveJSRebuildNetworkRoutesDialog } from "./show-dialog-zwave_js-re
 import { showZWaveJSRemoveNodeDialog } from "./show-dialog-zwave_js-remove-node";
 import { configTabs } from "./zwave_js-config-router";
 import { fileDownload } from "../../../../../util/file_download";
-import { getSignedPath } from "../../../../../data/auth";
 
 @customElement("zwave_js-config-dashboard")
 class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
@@ -83,6 +83,14 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
   private _dialogOpen = false;
 
   private _s2InclusionUnsubscribe?: Promise<UnsubscribeFunc>;
+
+  private _unsubscribeBackup?: UnsubscribeFunc;
+
+  private _unsubscribeRestore?: UnsubscribeFunc;
+
+  private _backupProgress?: number;
+
+  private _restoreProgress?: number;
 
   protected async firstUpdated() {
     if (this.hass) {
@@ -192,25 +200,25 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                   <a
                     href=${`/config/devices/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
                   >
-                    <mwc-button>
+                    <ha-button>
                       ${this.hass.localize("ui.panel.config.devices.caption")}
-                    </mwc-button>
+                    </ha-button>
                   </a>
                   <a
                     href=${`/config/entities/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
                   >
-                    <mwc-button>
+                    <ha-button>
                       ${this.hass.localize("ui.panel.config.entities.caption")}
-                    </mwc-button>
+                    </ha-button>
                   </a>
                   ${this._provisioningEntries?.length
                     ? html`<a
                         href=${`provisioned?config_entry=${this.configEntryId}`}
-                        ><mwc-button>
+                        ><ha-button>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.provisioned_devices"
                           )}
-                        </mwc-button></a
+                        </ha-button></a
                       >`
                     : nothing}
                 </div>
@@ -391,7 +399,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                   </ha-expansion-panel>
                 </div>
                 <div class="card-actions">
-                  <mwc-button
+                  <ha-button
                     @click=${this._removeNodeClicked}
                     .disabled=${this._status !== "connected" ||
                     (this._network?.controller.inclusion_state !==
@@ -402,20 +410,20 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                     ${this.hass.localize(
                       "ui.panel.config.zwave_js.common.remove_node"
                     )}
-                  </mwc-button>
-                  <mwc-button
+                  </ha-button>
+                  <ha-button
                     @click=${this._rebuildNetworkRoutesClicked}
                     .disabled=${this._status === "disconnected"}
                   >
                     ${this.hass.localize(
                       "ui.panel.config.zwave_js.common.rebuild_network_routes"
                     )}
-                  </mwc-button>
-                  <mwc-button @click=${this._openOptionFlow}>
+                  </ha-button>
+                  <ha-button @click=${this._openOptionFlow}>
                     ${this.hass.localize(
                       "ui.panel.config.zwave_js.common.reconfigure_server"
                     )}
-                  </mwc-button>
+                  </ha-button>
                 </div>
               </ha-card>
               <ha-card>
@@ -467,27 +475,50 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                   </p>
                 </div>
                 <div class="card-actions">
-                  <mwc-button @click=${this._downloadNVMBackup}>
-                    ${this.hass.localize(
-                      "ui.panel.config.zwave_js.dashboard.nvm_backup.download_backup"
-                    )}
-                  </mwc-button>
-                  <div class="upload-button">
-                    <mwc-button @click=${this._uploadButtonClick}>
-                      <span class="button-content">
+                  ${this._backupProgress !== undefined
+                    ? html`<ha-circular-progress
+                          size="small"
+                          .value=${this._backupProgress}
+                        ></ha-circular-progress>
                         ${this.hass.localize(
-                          "ui.panel.config.zwave_js.dashboard.nvm_backup.restore_backup"
+                          "ui.panel.config.zwave_js.dashboard.nvm_backup.downloading"
                         )}
-                      </span>
-                    </mwc-button>
-                    <input
-                      type="file"
-                      id="nvm-restore-file"
-                      accept=".bin"
-                      @change=${this._handleFileSelected}
-                      style="display: none"
-                    />
-                  </div>
+                        ${(this._backupProgress * 100).toFixed(0)}%`
+                    : this._restoreProgress !== undefined
+                      ? html`<ha-circular-progress
+                            size="small"
+                            .value=${this._restoreProgress}
+                          ></ha-circular-progress>
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.nvm_backup.restoring"
+                          )}
+                          ${(this._restoreProgress * 100).toFixed(0)}%`
+                      : html`<ha-button
+                            @click=${this._downloadNVMBackup}
+                          >
+                            ${this.hass.localize(
+                              "ui.panel.config.zwave_js.dashboard.nvm_backup.download_backup"
+                            )}
+                          </ha-button>
+                          <div class="upload-button">
+                            <ha-button
+                              @click=${this._uploadButtonClick}
+                              class="warning"
+                            >
+                              <span class="button-content">
+                                ${this.hass.localize(
+                                  "ui.panel.config.zwave_js.dashboard.nvm_backup.restore_backup"
+                                )}
+                              </span>
+                            </ha-button>
+                            <input
+                              type="file"
+                              id="nvm-restore-file"
+                              accept=".bin"
+                              @change=${this._handleFileSelected}
+                              style="display: none"
+                            />
+                          </div>`}
                 </div>
               </ha-card>
             `
@@ -562,9 +593,9 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
               ${this._configEntry!.title}: ${this.hass.localize(...stateText)}
             </h3>
             <p>${stateTextExtra}</p>
-            <mwc-button @click=${this._handleBack}>
+            <ha-button @click=${this._handleBack}>
               ${this.hass?.localize("ui.common.back")}
-            </mwc-button>
+            </ha-button>
           </div>
         `
       : nothing}`;
@@ -652,11 +683,12 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
 
   private async _downloadNVMBackup() {
     try {
-      const signedUrl = await getSignedPath(
+      this._backupProgress = 0;
+      this._unsubscribeBackup = await subscribeZwaveNVMBackup(
         this.hass!,
-        getNVMBackupDownloadUrl(this.configEntryId!)
+        this.configEntryId!,
+        this._handleNVMBackupMessage
       );
-      fileDownload(signedUrl.path);
     } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize(
@@ -665,6 +697,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         text: err.message,
         warning: true,
       });
+      this._backupProgress = undefined;
     }
   }
 
@@ -681,14 +714,30 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     const input = ev.target as HTMLInputElement;
 
     try {
-      await restoreZwaveNVMBackup(this.hass!, file, this.configEntryId!);
-
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.config.zwave_js.dashboard.nvm_backup.restore_complete"
-        ),
+      this._restoreProgress = 0;
+      // Read the file as base64
+      const base64Data = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const result = reader.result as ArrayBuffer;
+          const base64 = btoa(
+            new Uint8Array(result).reduce(
+              (data, byte) => data + String.fromCharCode(byte),
+              ""
+            )
+          );
+          resolve(base64);
+        };
+        reader.onerror = () => reject(new Error("Failed to read file"));
+        reader.readAsArrayBuffer(file);
       });
-      this._fetchData();
+
+      this._unsubscribeRestore = await restoreZwaveNVM(
+        this.hass!,
+        this.configEntryId!,
+        base64Data,
+        this._handleRestoreMessage
+      );
     } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize(
@@ -697,6 +746,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         text: err.message,
         warning: true,
       });
+      this._restoreProgress = undefined;
     }
 
     // Reset the file input so the same file can be selected again
@@ -737,6 +787,47 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     );
     return this._s2InclusionUnsubscribe;
   }
+
+  private _handleNVMBackupMessage = (message: any) => {
+    if (message.event === "finished") {
+      this._backupProgress = undefined;
+      this._unsubscribeBackup?.();
+      this._unsubscribeBackup = undefined;
+      // Create a blob and download it
+      const blob = new Blob(
+        [Uint8Array.from(atob(message.data), (c) => c.charCodeAt(0))],
+        { type: "application/octet-stream" }
+      );
+      const url = URL.createObjectURL(blob);
+      fileDownload(
+        url,
+        `zwave_js_backup_${new Date().toISOString().replace(/[:.]/g, "-")}.bin`
+      );
+      URL.revokeObjectURL(url);
+    } else if (message.event === "nvm backup progress") {
+      this._backupProgress = message.bytesRead / message.total;
+    }
+  };
+
+  private _handleRestoreMessage = (message: any) => {
+    if (message.event === "finished") {
+      this._restoreProgress = undefined;
+      this._unsubscribeRestore?.();
+      this._unsubscribeRestore = undefined;
+
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.zwave_js.dashboard.nvm_backup.restore_complete"
+        ),
+      });
+      this._fetchData();
+    } else if (message.event === "nvm convert progress") {
+      // assume convert takes half the time of restore
+      this._restoreProgress = message.bytesRead / message.total / 2;
+    } else if (message.event === "nvm restore progress") {
+      this._restoreProgress = message.bytesWritten / message.total / 2 + 0.5;
+    }
+  };
 
   static get styles(): CSSResultGroup {
     return [
@@ -841,6 +932,11 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           max-width: 600px;
         }
 
+        .card-actions {
+          display: flex;
+          align-items: center;
+        }
+
         [hidden] {
           display: none;
         }
@@ -850,7 +946,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           position: relative;
         }
 
-        .upload-button mwc-button {
+        .upload-button ha-button {
           position: relative;
           overflow: hidden;
         }
