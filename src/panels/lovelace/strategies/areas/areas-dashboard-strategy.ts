@@ -1,34 +1,39 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
-import { areaCompare } from "../../../../data/area_registry";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { LovelaceViewRawConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import type { AreaViewStrategyConfig } from "../area/area-view-strategy";
+import type { AreasViewStrategyConfig } from "./areas-view-strategy";
+import { getAreas } from "./helpers/areas-strategy-helpers";
 
-export interface AreasDashboardStrategyConfig {}
+export interface AreasDashboardStrategyConfig {
+  type: "areas";
+  hidden_areas?: string[];
+  areas_order?: string[];
+}
 
 @customElement("areas-dashboard-strategy")
 export class AreasDashboardStrategy extends ReactiveElement {
   static async generate(
-    _config: AreasDashboardStrategyConfig,
+    config: AreasDashboardStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceConfig> {
-    const compare = areaCompare(hass.areas);
-    const areas = Object.values(hass.areas).sort((a, b) =>
-      compare(a.area_id, b.area_id)
-    );
+    const areas = getAreas(hass.areas, config.hidden_areas, config.areas_order);
 
-    const areaViews = areas.map<LovelaceViewRawConfig>((area) => ({
-      title: area.name,
-      icon: area.icon || undefined,
-      path: `areas-${area.area_id}`,
-      subview: true,
-      strategy: {
-        type: "area",
-        area: area.area_id,
-      } satisfies AreaViewStrategyConfig,
-    }));
+    const areaViews = areas.map<LovelaceViewRawConfig>((area) => {
+      const areaPath = `areas-${area.area_id}`;
+      return {
+        title: area.name,
+        icon: area.icon || undefined,
+        path: areaPath,
+        subview: true,
+        strategy: {
+          type: "area",
+          area: area.area_id,
+        } satisfies AreaViewStrategyConfig,
+      };
+    });
 
     return {
       views: [
@@ -38,7 +43,9 @@ export class AreasDashboardStrategy extends ReactiveElement {
           path: "home",
           strategy: {
             type: "areas",
-          },
+            areas_order: config.areas_order,
+            hidden_areas: config.hidden_areas,
+          } satisfies AreasViewStrategyConfig,
         },
         ...areaViews,
       ],
