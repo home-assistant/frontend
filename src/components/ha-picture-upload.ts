@@ -198,7 +198,7 @@ export class HaPictureUpload extends LitElement {
             const url = generateImageThumbnailUrl(mediaId, undefined, true);
             let data;
             try {
-              data = await getImageData(url);
+              data = await getImageData(this.hass, url);
             } catch (err: any) {
               showAlertDialog(this, {
                 text: err.toString(),
