@@ -157,22 +157,22 @@ export class AreaViewStrategy extends ReactiveElement {
             : "Humidifiers";
       climateSectionCards.push(
         computeHeadingCard(title, "mdi:thermostat", "subtitle"),
-        ...thermostats.map((entity) => computeTileCard(entity)),
-        ...humidifiers.map((entity) => computeTileCard(entity))
+        ...thermostats.map(computeTileCard),
+        ...humidifiers.map(computeTileCard)
       );
     }
 
     if (shutters.length > 0) {
       climateSectionCards.push(
         computeHeadingCard("Shutters", "mdi:window-shutter", "subtitle"),
-        ...shutters.map((entity) => computeTileCard(entity))
+        ...shutters.map(computeTileCard)
       );
     }
 
     if (climateSensor.length > 0) {
       climateSectionCards.push(
         computeHeadingCard("Sensors", "mdi:window-open", "subtitle"),
-        ...climateSensor.map((entity) => computeTileCard(entity))
+        ...climateSensor.map(computeTileCard)
       );
     }
 
@@ -197,7 +197,7 @@ export class AreaViewStrategy extends ReactiveElement {
         type: "grid",
         cards: [
           computeHeadingCard("Entertainment", "mdi:multimedia"),
-          ...mediaPlayers.map((entity) => computeTileCard(entity)),
+          ...mediaPlayers.map(computeTileCard),
         ],
       });
     }
@@ -245,22 +245,22 @@ export class AreaViewStrategy extends ReactiveElement {
             : "Locks";
       securitySectionCards.push(
         computeHeadingCard(title, "mdi:shield", "subtitle"),
-        ...alarms.map((entity) => computeTileCard(entity)),
-        ...locks.map((entity) => computeTileCard(entity))
+        ...alarms.map(computeTileCard),
+        ...locks.map(computeTileCard)
       );
     }
 
     if (doors.length > 0) {
       securitySectionCards.push(
         computeHeadingCard("Doors", "mdi:door", "subtitle"),
-        ...doors.map((entity) => computeTileCard(entity))
+        ...doors.map(computeTileCard)
       );
     }
 
     if (securitySensors.length > 0) {
       securitySectionCards.push(
         computeHeadingCard("Sensors", "mdi:wifi", "subtitle"),
-        ...securitySensors.map((entity) => computeTileCard(entity))
+        ...securitySensors.map(computeTileCard)
       );
     }
 
