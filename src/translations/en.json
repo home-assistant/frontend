@@ -5313,11 +5313,18 @@
               "dismiss": "Keep",
               "learn_more": "Learn more about application credentials"
             },
+            "device": {
+              "enable": "Enable device",
+              "disable": "Disable device",
+              "configure": "Configure device",
+              "delete": "Delete device"
+            },
             "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
             "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
             "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
             "entries": "{count} {count, plural,\n  one {entry}\n  other {entries}\n}",
             "no_devices_or_entities": "No devices or entities",
+            "devices_without_subentry": "Devices that don't belong to a sub-entry",
             "rename": "Rename",
             "configure": "Configure",
             "system_options": "System options",
