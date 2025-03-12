@@ -1,9 +1,10 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
-import type { AreaViewStrategyConfig } from "../area/area-view-strategy";
-import type { HomeAssistant } from "../../../../types";
-import type { LovelaceViewRawConfig } from "../../../../data/lovelace/config/view";
+import { areaCompare } from "../../../../data/area_registry";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
+import type { LovelaceViewRawConfig } from "../../../../data/lovelace/config/view";
+import type { HomeAssistant } from "../../../../types";
+import type { AreaViewStrategyConfig } from "../area/area-view-strategy";
 
 export interface AreasDashboardStrategyConfig {}
 
@@ -13,7 +14,10 @@ export class AreasDashboardStrategy extends ReactiveElement {
     _config: AreasDashboardStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceConfig> {
-    const areas = Object.values(hass.areas);
+    const compare = areaCompare(hass.areas);
+    const areas = Object.values(hass.areas).sort((a, b) =>
+      compare(a.area_id, b.area_id)
+    );
 
     const areaViews = areas.map<LovelaceViewRawConfig>((area) => ({
       title: area.name,

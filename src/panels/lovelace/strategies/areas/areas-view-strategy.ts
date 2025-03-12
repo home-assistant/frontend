@@ -1,5 +1,6 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
+import { areaCompare } from "../../../../data/area_registry";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
@@ -14,11 +15,10 @@ export class AreasViewStrategy extends ReactiveElement {
     _config: AreasViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
-    const areas = Object.values(hass.areas).sort((a, b) => {
-      const floorA = a.floor_id ? hass.floors[a.floor_id] : null;
-      const floorB = b.floor_id ? hass.floors[b.floor_id] : null;
-      return -1 * ((floorB?.level ?? Infinity) - (floorA?.level ?? Infinity));
-    });
+    const compare = areaCompare(hass.areas);
+    const areas = Object.values(hass.areas).sort((a, b) =>
+      compare(a.area_id, b.area_id)
+    );
 
     const areaSections = areas.map<LovelaceSectionConfig>((area) => {
       const areaPath = `areas-${area.area_id}`;
