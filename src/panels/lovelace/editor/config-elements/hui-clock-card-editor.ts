@@ -4,7 +4,10 @@ import memoizeOne from "memoize-one";
 import { assert, assign, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { ClockCardConfig } from "../../cards/types";
@@ -59,7 +62,7 @@ export class HuiClockCardEditor
             },
           },
         },
-      ] as const
+      ] as const satisfies readonly HaFormSchema[]
   );
 
   public setConfig(config: ClockCardConfig): void {
@@ -99,11 +102,8 @@ export class HuiClockCardEditor
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.clock.time_format`
         );
-
       default:
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.generic.${schema.name}`
-        );
+        return undefined;
     }
   };
 }
