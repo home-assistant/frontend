@@ -159,15 +159,15 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
       font-size: 1.75rem;
       font-weight: 500;
       line-height: 1;
-      padding: 0.75rem 0;
+      padding: 0.5rem 0;
     }
 
     .time-wrapper.size-medium .time-parts {
-      font-size: 2rem;
+      font-size: 3rem;
     }
 
     .time-wrapper.size-large .time-parts {
-      font-size: 3rem;
+      font-size: 4rem;
     }
 
     .time-wrapper.size-medium .time-parts .time-part.second {
