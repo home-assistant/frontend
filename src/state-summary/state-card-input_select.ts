@@ -29,6 +29,12 @@ class StateCardInputSelect extends LitElement {
         this.stateObj.attributes.options !== oldState.attributes.options
       ) {
         this._haSelect.layoutOptions();
+        const newIdx = this.stateObj.attributes.options.findIndex(
+          (option) => option === this.stateObj.state
+        );
+        if (newIdx >= 0) {
+          this._haSelect.select(newIdx);
+        }
       }
     }
   }

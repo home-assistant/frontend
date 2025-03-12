@@ -55,6 +55,12 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
         stateObj.attributes.options !== oldStateObj?.attributes.options
       ) {
         this._haSelect.layoutOptions();
+        const newIdx = stateObj.attributes.options.findIndex(
+          (option) => option === stateObj.state
+        );
+        if (newIdx >= 0) {
+          this._haSelect.select(newIdx);
+        }
       }
     }
   }

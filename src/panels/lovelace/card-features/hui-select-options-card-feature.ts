@@ -75,6 +75,14 @@ class HuiSelectOptionsCardFeature
           oldHass?.formatEntityAttributeValue
       ) {
         this._haSelect.layoutOptions();
+        if (this.stateObj) {
+          const newIdx = this.stateObj.attributes.options.findIndex(
+            (option) => option === this.stateObj!.state
+          );
+          if (newIdx >= 0) {
+            this._haSelect.select(newIdx);
+          }
+        }
       }
     }
   }
@@ -84,7 +92,11 @@ class HuiSelectOptionsCardFeature
 
     const oldOption = this.stateObj!.state;
 
-    if (option === oldOption) return;
+    if (
+      option === oldOption ||
+      !this.stateObj!.attributes.options.includes(option)
+    )
+      return;
 
     this._currentOption = option;
 
