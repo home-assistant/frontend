@@ -6,7 +6,7 @@ import { customElement, property } from "lit/decorators";
 
 @customElement("ha-spinner")
 export class HaSpinner extends Spinner {
-  @property() public size?: "tiny" | "small" | "medium" | "large" | number;
+  @property() public size?: "tiny" | "small" | "medium" | "large";
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
@@ -25,10 +25,9 @@ export class HaSpinner extends Spinner {
         case "large":
           this.style.setProperty("--ha-spinner-size", "68px");
           break;
-        default:
-          if (this.size !== undefined && !isNaN(this.size)) {
-            this.style.setProperty("--ha-spinner-size", `${this.size}px`);
-          }
+        case undefined:
+          this.style.removeProperty("--ha-progress-ring-size");
+          break;
       }
     }
   }

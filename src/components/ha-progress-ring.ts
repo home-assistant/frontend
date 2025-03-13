@@ -5,7 +5,7 @@ import { customElement, property } from "lit/decorators";
 
 @customElement("ha-progress-ring")
 export class HaProgressRing extends ProgressRing {
-  @property() public size?: "tiny" | "small" | "medium" | "large" | number;
+  @property() public size?: "tiny" | "small" | "medium" | "large";
 
   public updated(changedProps) {
     super.updated(changedProps);
@@ -24,10 +24,9 @@ export class HaProgressRing extends ProgressRing {
         case "large":
           this.style.setProperty("--ha-progress-ring-size", "68px");
           break;
-        default:
-          if (this.size !== undefined && !isNaN(this.size)) {
-            this.style.setProperty("--ha-progress-ring-size", `${this.size}px`);
-          }
+        case undefined:
+          this.style.removeProperty("--ha-progress-ring-size");
+          break;
       }
     }
   }
