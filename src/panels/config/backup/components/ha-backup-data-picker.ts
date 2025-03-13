@@ -17,7 +17,6 @@ import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../components/ha-checkbox";
 import "../../../../components/ha-formfield";
-import "../../../../components/ha-svg-icon";
 import type { BackupData } from "../../../../data/backup";
 import { fetchHassioAddonsInfo } from "../../../../data/hassio/addon";
 import { mdiHomeAssistant } from "../../../../resources/home-assistant-logo-svg";
@@ -61,6 +60,8 @@ export class HaBackupDataPicker extends LitElement {
   @property({ attribute: "translation-key-panel" }) public translationKeyPanel:
     | "page-onboarding.restore"
     | "config.backup" = "config.backup";
+
+  @property({ type: Boolean, attribute: false }) public addonsDisabled = false;
 
   @state() public _addonIcons: Record<string, boolean> = {};
 
@@ -304,6 +305,7 @@ export class HaBackupDataPicker extends LitElement {
                   .indeterminate=${selectedItems.addons.length > 0 &&
                   selectedItems.addons.length < addonsItems.length}
                   @change=${this._sectionChanged}
+                  .disabled=${this.addonsDisabled}
                 ></ha-checkbox>
               </ha-formfield>
               <ha-backup-addons-picker
@@ -311,6 +313,7 @@ export class HaBackupDataPicker extends LitElement {
                 .value=${selectedItems.addons}
                 @value-changed=${this._addonsChanged}
                 .addons=${addonsItems}
+                .disabled=${this.addonsDisabled}
               >
               </ha-backup-addons-picker>
             </div>

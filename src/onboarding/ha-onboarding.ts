@@ -41,7 +41,6 @@ import "./onboarding-analytics";
 import "./onboarding-create-user";
 import "./onboarding-loading";
 import "./onboarding-welcome";
-import "./onboarding-restore-backup";
 import "./onboarding-welcome-links";
 import { makeDialogManager } from "../dialogs/make-dialog-manager";
 import { navigate } from "../common/navigate";
@@ -50,7 +49,7 @@ import { mainWindow } from "../common/dom/get_main_window";
 type OnboardingEvent =
   | {
       type: "init";
-      result: { restore: boolean };
+      result?: { restore: "upload" | "cloud" };
     }
   | {
       type: "user";
@@ -98,7 +97,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
 
   @state() private _init = false;
 
-  @state() private _restoring = false;
+  @state() private _restoring?: "upload" | "cloud";
 
   @state() private _supervisor?: boolean;
 
@@ -160,7 +159,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       return html`<onboarding-restore-backup
         .localize=${this.localize}
         .supervisor=${this._supervisor ?? false}
-        .language=${this.language}
+        .mode=${this._restoring}
       >
       </onboarding-restore-backup>`;
     }
@@ -174,7 +173,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     const step = this._curStep()!;
 
     if (this._loading || !step) {
-      return html`<onboarding-loading></onboarding-loading> `;
+      return html`<onboarding-loading></onboarding-loading>`;
     }
     if (step.step === "user") {
       return html`<onboarding-create-user
@@ -215,6 +214,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     this._fetchOnboardingSteps();
     import("./onboarding-integrations");
     import("./onboarding-core-config");
+    import("./onboarding-restore-backup");
     registerServiceWorker(this, false);
     this.addEventListener("onboarding-step", (ev) => this._handleStepDone(ev));
     this.addEventListener("onboarding-progress", (ev) =>
@@ -230,7 +230,12 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
     if (changedProps.has("_page")) {
-      this._restoring = this._page === "restore_backup";
+      this._restoring =
+        this._page === "restore_backup"
+          ? "upload"
+          : this._page === "restore_backup_cloud"
+            ? "cloud"
+            : undefined;
       if (this._page === null && this._steps && !this._steps[0].done) {
         this._init = true;
       }
@@ -345,12 +350,12 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
 
     if (stepResult.type === "init") {
       this._init = false;
-      this._restoring = stepResult.result.restore;
+      this._restoring = stepResult.result?.restore;
       if (!this._restoring) {
         this._progress = 0.25;
       } else {
         navigate(
-          `${location.pathname}?${addSearchParam({ page: "restore_backup" })}`
+          `${location.pathname}?${addSearchParam({ page: `restore_backup${this._restoring === "cloud" ? "_cloud" : ""}` })}`
         );
       }
     } else if (stepResult.type === "user") {
@@ -489,6 +494,9 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   }
 
   static styles = css`
+    .card-content {
+      padding: 32px;
+    }
     mwc-linear-progress {
       position: fixed;
       top: 0;

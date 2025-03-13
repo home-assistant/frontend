@@ -14,6 +14,8 @@ export class HaProgressButton extends LitElement {
 
   @property({ type: Boolean }) public raised = false;
 
+  @property({ type: Boolean }) public unelevated = false;
+
   @state() private _result?: "success" | "error";
 
   public render(): TemplateResult {
@@ -21,6 +23,7 @@ export class HaProgressButton extends LitElement {
     return html`
       <mwc-button
         ?raised=${this.raised}
+        .unelevated=${this.unelevated}
         .disabled=${this.disabled || this.progress}
         class=${this._result || ""}
       >
@@ -83,6 +86,7 @@ export class HaProgressButton extends LitElement {
       pointer-events: none;
     }
 
+    mwc-button[unelevated].success,
     mwc-button[raised].success {
       --mdc-theme-primary: var(--success-color);
       --mdc-theme-on-primary: white;
@@ -96,6 +100,7 @@ export class HaProgressButton extends LitElement {
       pointer-events: none;
     }
 
+    mwc-button[unelevated].error,
     mwc-button[raised].error {
       --mdc-theme-primary: var(--error-color);
       --mdc-theme-on-primary: white;
