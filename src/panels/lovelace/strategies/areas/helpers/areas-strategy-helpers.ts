@@ -21,3 +21,5 @@ export const getAreas = (
 
   return sortedAreas;
 };
+
+export const computeAreaPath = (areaId: string): string => `areas-${areaId}`;

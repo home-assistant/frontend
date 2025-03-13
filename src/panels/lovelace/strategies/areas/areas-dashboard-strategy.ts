@@ -5,7 +5,7 @@ import type { LovelaceViewRawConfig } from "../../../../data/lovelace/config/vie
 import type { HomeAssistant } from "../../../../types";
 import type { AreaViewStrategyConfig } from "../area/area-view-strategy";
 import type { AreasViewStrategyConfig } from "./areas-view-strategy";
-import { getAreas } from "./helpers/areas-strategy-helpers";
+import { computeAreaPath, getAreas } from "./helpers/areas-strategy-helpers";
 
 export interface AreasDashboardStrategyConfig {
   type: "areas";
@@ -22,11 +22,11 @@ export class AreasDashboardStrategy extends ReactiveElement {
     const areas = getAreas(hass.areas, config.hidden_areas, config.areas_order);
 
     const areaViews = areas.map<LovelaceViewRawConfig>((area) => {
-      const areaPath = `areas-${area.area_id}`;
+      const path = computeAreaPath(area.area_id);
       return {
         title: area.name,
         icon: area.icon || undefined,
-        path: areaPath,
+        path: path,
         subview: true,
         strategy: {
           type: "area",
