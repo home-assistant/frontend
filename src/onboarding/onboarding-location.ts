@@ -13,7 +13,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
-import "../components/ha-circular-progress";
+import "../components/ha-spinner";
 import "../components/ha-formfield";
 import "../components/ha-list-item";
 import "../components/ha-radio";
@@ -115,13 +115,7 @@ class OnboardingLocation extends LitElement {
         >
           <ha-svg-icon slot="leadingIcon" .path=${mdiMagnify}></ha-svg-icon>
           ${this._working
-            ? html`
-                <ha-circular-progress
-                  slot="trailingIcon"
-                  indeterminate
-                  size="small"
-                ></ha-circular-progress>
-              `
+            ? html` <ha-spinner slot="trailingIcon" size="small"></ha-spinner> `
             : html`
                 <ha-icon-button
                   @click=${this._handleButtonClick}
@@ -500,7 +494,7 @@ class OnboardingLocation extends LitElement {
           inset-inline-end: 10px;
           direction: var(--direction);
         }
-        ha-textfield > ha-circular-progress {
+        ha-textfield > ha-spinner {
           position: relative;
           left: 12px;
           inset-inline-start: 12px;

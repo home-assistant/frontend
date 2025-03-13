@@ -5,7 +5,7 @@ import { until } from "lit/directives/until";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-button";
-import "../../../src/components/ha-circular-progress";
+import "../../../src/components/ha-spinner";
 import type { LovelaceCardConfig } from "../../../src/data/lovelace/config/card";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 import type {
@@ -44,9 +44,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
         <div class="picker">
           <div class="label">
             ${this._switching
-              ? html`
-                  <ha-circular-progress indeterminate></ha-circular-progress>
-                `
+              ? html`<ha-spinner></ha-spinner>`
               : until(
                   selectedDemoConfig.then(
                     (conf) => html`

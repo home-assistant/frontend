@@ -6,7 +6,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
-import "../../../../components/ha-circular-progress";
+import "../../../../components/ha-spinner";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-markdown-element";
 import "../../../../components/ha-md-dialog";
@@ -67,7 +67,7 @@ export class DialogSupportPackage extends LitElement {
               ></ha-markdown-element>`
             : html`
                 <div class="progress-container">
-                  <ha-circular-progress indeterminate></ha-circular-progress>
+                  <ha-spinner></ha-spinner>
                   Generating preview...
                 </div>
               `}

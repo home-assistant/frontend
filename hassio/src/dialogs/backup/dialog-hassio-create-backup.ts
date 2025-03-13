@@ -5,6 +5,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-alert";
+import "../../../../src/components/ha-spinner";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import {
   createHassioFullBackup,
@@ -58,7 +59,7 @@ class HassioCreateBackupDialog extends LitElement {
         )}
       >
         ${this._creatingBackup
-          ? html`<ha-circular-progress indeterminate></ha-circular-progress>`
+          ? html`<ha-spinner></ha-spinner>`
           : html`<supervisor-backup-content
               .hass=${this.hass}
               .supervisor=${this._dialogParams.supervisor}
@@ -141,10 +142,6 @@ class HassioCreateBackupDialog extends LitElement {
       css`
         :host {
           direction: var(--direction);
-        }
-        ha-circular-progress {
-          display: block;
-          text-align: center;
         }
       `,
     ];
