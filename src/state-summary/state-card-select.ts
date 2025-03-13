@@ -1,7 +1,7 @@
 import "@material/mwc-list/mwc-list-item";
-import type { PropertyValues, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { computeStateName } from "../common/entity/compute_state_name";
 import "../components/entity/state-badge";
@@ -10,7 +10,6 @@ import { UNAVAILABLE } from "../data/entity";
 import type { SelectEntity } from "../data/select";
 import { setSelectOption } from "../data/select";
 import type { HomeAssistant } from "../types";
-import type { HaSelect } from "../components/ha-select";
 
 @customElement("state-card-select")
 class StateCardSelect extends LitElement {
@@ -18,33 +17,13 @@ class StateCardSelect extends LitElement {
 
   @property({ attribute: false }) public stateObj!: SelectEntity;
 
-  @query("ha-select", true) private _haSelect!: HaSelect;
-
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-    if (changedProps.has("stateObj")) {
-      const oldState = changedProps.get("stateObj");
-      if (
-        oldState &&
-        this.stateObj.attributes.options !== oldState.attributes.options
-      ) {
-        this._haSelect.layoutOptions();
-        const newIdx = this.stateObj.attributes.options.findIndex(
-          (option) => option === this.stateObj.state
-        );
-        if (newIdx >= 0) {
-          this._haSelect.select(newIdx);
-        }
-      }
-    }
-  }
-
   protected render(): TemplateResult {
     return html`
       <state-badge .hass=${this.hass} .stateObj=${this.stateObj}></state-badge>
       <ha-select
         .value=${this.stateObj.state}
         .label=${computeStateName(this.stateObj)}
+        .options=${this.stateObj.attributes.options}
         .disabled=${this.stateObj.state === UNAVAILABLE}
         naturalMenuWidth
         fixedMenuPosition

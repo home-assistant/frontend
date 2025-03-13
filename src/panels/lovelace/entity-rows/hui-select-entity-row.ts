@@ -1,11 +1,10 @@
 import "@material/mwc-list/mwc-list-item";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-select";
-import type { HaSelect } from "../../../components/ha-select";
 import { UNAVAILABLE } from "../../../data/entity";
 import { forwardHaptic } from "../../../data/haptics";
 import type { SelectEntity } from "../../../data/select";
@@ -23,8 +22,6 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
 
   @state() private _config?: EntitiesCardEntityConfig;
 
-  @query("ha-select") private _haSelect!: HaSelect;
-
   public setConfig(config: EntitiesCardEntityConfig): void {
     if (!config || !config.entity) {
       throw new Error("Entity must be specified");
@@ -35,34 +32,6 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
-  }
-
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-    if (!this._config) {
-      return;
-    }
-    if (changedProps.has("hass")) {
-      const oldHass = changedProps.get("hass");
-      const stateObj = this.hass?.states[this._config.entity] as
-        | SelectEntity
-        | undefined;
-      const oldStateObj = oldHass?.states[this._config.entity] as
-        | SelectEntity
-        | undefined;
-      if (
-        stateObj &&
-        stateObj.attributes.options !== oldStateObj?.attributes.options
-      ) {
-        this._haSelect.layoutOptions();
-        const newIdx = stateObj.attributes.options.findIndex(
-          (option) => option === stateObj.state
-        );
-        if (newIdx >= 0) {
-          this._haSelect.select(newIdx);
-        }
-      }
-    }
   }
 
   protected render() {
@@ -91,6 +60,7 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
         <ha-select
           .label=${this._config.name || computeStateName(stateObj)}
           .value=${stateObj.state}
+          .options=${stateObj.attributes.options}
           .disabled=${stateObj.state === UNAVAILABLE}
           naturalMenuWidth
           @action=${this._handleAction}
