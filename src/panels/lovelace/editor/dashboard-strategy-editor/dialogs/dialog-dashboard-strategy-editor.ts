@@ -191,8 +191,24 @@ class DialogDashboardStrategyEditor extends LitElement {
       haStyleDialog,
       css`
         ha-dialog {
-          --mdc-dialog-max-width: 800px;
           --dialog-content-padding: 0 24px;
+          --dialog-surface-position: fixed;
+          --dialog-surface-top: 40px;
+          --mdc-dialog-min-width: 600px;
+          --mdc-dialog-max-width: 90vw;
+          --mdc-dialog-max-height: calc(100% - 80px);
+        }
+
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          /* overrule the ha-style-dialog max-height on small screens */
+          ha-dialog {
+            height: 100%;
+            --dialog-surface-top: 0px;
+            --mdc-dialog-min-width: 100%;
+            --mdc-dialog-max-width: 100%;
+            --mdc-dialog-max-height: 100%;
+            --dialog-content-padding: 8px;
+          }
         }
       `,
     ];

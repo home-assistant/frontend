@@ -4,6 +4,7 @@ import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { LovelaceViewRawConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import type { AreaViewStrategyConfig } from "../area/area-view-strategy";
+import type { LovelaceStrategyEditor } from "../types";
 import type { AreasViewStrategyConfig } from "./areas-view-strategy";
 import { computeAreaPath, getAreas } from "./helpers/areas-strategy-helpers";
 
@@ -50,6 +51,11 @@ export class AreasDashboardStrategy extends ReactiveElement {
         ...areaViews,
       ],
     };
+  }
+
+  public static async getConfigElement(): Promise<LovelaceStrategyEditor> {
+    await import("./editor/hui-areas-dashboard-strategy-editor");
+    return document.createElement("hui-areas-dashboard-strategy-editor");
   }
 }
 
