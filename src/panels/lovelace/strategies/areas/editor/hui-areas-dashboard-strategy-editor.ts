@@ -3,11 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { getAreaContext } from "../../../../../common/entity/context/get_area_context";
-import "../../../../../components/ha-form/ha-form";
-import type {
-  HaFormSchema,
-  SchemaUnion,
-} from "../../../../../components/ha-form/types";
+import "../../../../../components/ha-expansion-panel";
 import type { HomeAssistant } from "../../../../../types";
 import type { LovelaceStrategyEditor } from "../../types";
 import type { AreasDashboardStrategyConfig } from "../areas-dashboard-strategy";
@@ -17,8 +13,6 @@ import type {
   VisibilityEditorItem,
   VisibilityEditorValue,
 } from "./ha-items-visibility-editor";
-
-const SCHEMA = [] as const satisfies readonly HaFormSchema[];
 
 @customElement("hui-areas-dashboard-strategy-editor")
 export class HuiAreasDashboardStrategyEditor
@@ -58,13 +52,6 @@ export class HuiAreasDashboardStrategyEditor
     };
 
     return html`
-      <ha-form
-        .hass=${this.hass}
-        .data=${this._config}
-        .schema=${SCHEMA}
-        .computeLabel=${this._computeLabelCallback}
-        @value-changed=${this._valueChanged}
-      ></ha-form>
       <ha-expansion-panel leftChevron .expanded=${true} outlined>
         <h3 slot="header">
           <ha-svg-icon .path=${mdiTextureBox}></ha-svg-icon>
@@ -96,16 +83,6 @@ export class HuiAreasDashboardStrategyEditor
 
     fireEvent(this, "config-changed", { config: newConfig });
   }
-
-  private _valueChanged(ev: CustomEvent): void {
-    const data = ev.detail.value;
-    fireEvent(this, "config-changed", { config: data });
-  }
-
-  // eslint-disable-next-line arrow-body-style
-  private _computeLabelCallback = (_schema: SchemaUnion<typeof SCHEMA>) => {
-    return "";
-  };
 
   static get styles() {
     return [
