@@ -3,7 +3,7 @@ import { customElement } from "lit/decorators";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
-import { getAreas } from "./helpers/areas-strategy-helpers";
+import { computeAreaPath, getAreas } from "./helpers/areas-strategy-helpers";
 
 export interface AreasViewStrategyConfig {
   type: "areas";
@@ -20,7 +20,7 @@ export class AreasViewStrategy extends ReactiveElement {
     const areas = getAreas(hass.areas, config.hidden_areas, config.areas_order);
 
     const areaSections = areas.map<LovelaceSectionConfig>((area) => {
-      const areaPath = `areas-${area.area_id}`;
+      const path = computeAreaPath(area.area_id);
       return {
         type: "grid",
         cards: [
@@ -38,13 +38,13 @@ export class AreasViewStrategy extends ReactiveElement {
             ],
             tap_action: {
               action: "navigate",
-              navigation_path: areaPath,
+              navigation_path: path,
             },
           },
           {
             type: "area",
             area: area.area_id,
-            navigation_path: areaPath,
+            navigation_path: path,
             alert_classes: [],
             sensor_classes: [],
           },
