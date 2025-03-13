@@ -6,7 +6,7 @@ import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { isNavigationClick } from "../../common/dom/is-navigation-click";
 import "../../components/ha-alert";
-import "../../components/ha-circular-progress";
+import "../../components/ha-spinner";
 import { computeInitialHaFormData } from "../../components/ha-form/compute-initial-ha-form-data";
 import "../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../components/ha-form/types";
@@ -84,7 +84,7 @@ class StepFlowForm extends LitElement {
         ${this._loading
           ? html`
               <div class="submit-spinner">
-                <ha-circular-progress indeterminate></ha-circular-progress>
+                <ha-spinner></ha-spinner>
               </div>
             `
           : html`

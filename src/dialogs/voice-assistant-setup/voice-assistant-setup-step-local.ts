@@ -5,7 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
-import "../../components/ha-circular-progress";
+import "../../components/ha-spinner";
 import {
   createAssistPipeline,
   listAssistPipelines,
@@ -64,7 +64,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
                 "ui.panel.config.voice_assistants.satellite_wizard.local.secondary"
               )}
             </p>
-            <ha-circular-progress indeterminate></ha-circular-progress>
+            <ha-spinner></ha-spinner>
             <p>
               ${this._detailState || "Installation can take several minutes"}
             </p>`
@@ -425,7 +425,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
   static styles = [
     AssistantSetupStyles,
     css`
-      ha-circular-progress {
+      ha-spinner {
         margin-top: 24px;
         margin-bottom: 24px;
       }
