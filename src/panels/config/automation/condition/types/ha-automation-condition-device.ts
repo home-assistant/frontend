@@ -128,6 +128,7 @@ export class HaDeviceCondition extends LitElement {
   }
 
   protected firstUpdated() {
+    this.hass.loadBackendTranslation("device_automation");
     if (!this._capabilities) {
       this._getCapabilities();
     }
@@ -137,9 +138,6 @@ export class HaDeviceCondition extends LitElement {
   }
 
   protected updated(changedProps) {
-    if (this.hass && changedProps.has("hass") && !changedProps.get("hass")) {
-      this.hass.loadBackendTranslation("device_automation");
-    }
     const prevCondition = changedProps.get("condition");
     if (
       prevCondition &&
