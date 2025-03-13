@@ -11,6 +11,8 @@ import type {
 } from "../types";
 import type { ClockCardConfig } from "./types";
 
+const INTERVAL = 1000;
+
 @customElement("hui-clock-card")
 export class HuiClockCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -32,9 +34,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
 
   @state() private _time?: DateTime;
 
-  @state() private _interval = 1000;
-
-  private _tickInterval?: number;
+  private _tickInterval?: undefined | number;
 
   public setConfig(config: ClockCardConfig): void {
     if (!config.time_format) {
@@ -91,7 +91,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
 
   private _startTick() {
     this._tick();
-    this._tickInterval = window.setInterval(() => this._tick(), this._interval);
+    this._tickInterval = window.setInterval(() => this._tick(), INTERVAL);
   }
 
   private _stopTick() {
