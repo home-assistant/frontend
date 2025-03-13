@@ -122,7 +122,7 @@ class HaBackupOverviewBackups extends LitElement {
           gap: 24px;
           display: flex;
           flex-direction: column;
-          margin-bottom: calc(72px + env(safe-area-inset-bottom));
+          margin-bottom: calc(72px + var(--safe-area-inset-bottom));
         }
         .card-actions {
           display: flex;
