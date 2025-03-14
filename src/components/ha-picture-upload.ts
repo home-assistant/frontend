@@ -17,7 +17,6 @@ import type { CropOptions } from "../dialogs/image-cropper-dialog/show-image-cro
 import { showImageCropperDialog } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import type { HomeAssistant } from "../types";
 import "./ha-button";
-import "./ha-circular-progress";
 import "./ha-file-upload";
 import { showMediaBrowserDialog } from "./media-player/show-media-browser-dialog";
 
@@ -198,7 +197,7 @@ export class HaPictureUpload extends LitElement {
             const url = generateImageThumbnailUrl(mediaId, undefined, true);
             let data;
             try {
-              data = await getImageData(url);
+              data = await getImageData(this.hass, url);
             } catch (err: any) {
               showAlertDialog(this, {
                 text: err.toString(),

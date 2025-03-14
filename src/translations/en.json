@@ -2623,7 +2623,7 @@
                 "thu": "Th",
                 "fri": "Fr",
                 "sat": "Sa",
-                "sun": "So"
+                "sun": "Su"
               }
             }
           },
@@ -5566,6 +5566,17 @@
             "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
             "provisioned_devices": "Provisioned devices",
             "not_ready": "{count} not ready",
+            "nvm_backup": {
+              "title": "Backup and Restore",
+              "description": "Back up or restore your Z-Wave controller's Non-Volatile Memory (NVM). The NVM contains your network information including paired devices. It's recommended to create a backup before making any major changes to your Z-Wave network.",
+              "download_backup": "Download backup",
+              "restore_backup": "Restore from backup",
+              "backup_failed": "Failed to download backup",
+              "restore_complete": "Backup restored",
+              "restore_failed": "Failed to restore backup",
+              "downloading": "Downloading backup",
+              "restoring": "Restoring backup"
+            },
             "statistics": {
               "title": "Controller statistics",
               "messages_tx": {
@@ -6128,7 +6139,7 @@
             "signal_strength": "Signal strength",
             "open": "Open",
             "wep": "WEP",
-            "wpa": "wpa-psk",
+            "wpa": "WPA-PSK",
             "wifi": "Wi-Fi",
             "wifi_password": "Wi-Fi password",
             "warning": "If you are changing the Wi-Fi, IP or gateway addresses, you might lose the connection!",
@@ -8877,7 +8888,7 @@
         "signal_strength": "[%key:ui::panel::config::network::supervisor::signal_strength%]",
         "open": "Open",
         "wep": "WEP",
-        "wpa": "wpa-psk",
+        "wpa": "WPA-PSK",
         "wifi": "[%key:ui::panel::config::network::supervisor::wifi%]",
         "wifi_password": "[%key:ui::panel::config::network::supervisor::wifi_password%]",
         "warning": "If you are changing the Wi-Fi, IP or gateway addresses, you might lose the connection!",

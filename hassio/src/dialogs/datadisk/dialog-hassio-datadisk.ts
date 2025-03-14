@@ -4,7 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
-import "../../../../src/components/ha-circular-progress";
+import "../../../../src/components/ha-spinner";
 import "../../../../src/components/ha-select";
 import "../../../../src/components/ha-dialog";
 import {
@@ -69,12 +69,7 @@ class HassioDatadiskDialog extends LitElement {
         ?hideActions=${this.moving}
       >
         ${this.moving
-          ? html` <ha-circular-progress
-                aria-label="Moving"
-                size="large"
-                indeterminate
-              >
-              </ha-circular-progress>
+          ? html`<ha-spinner aria-label="Moving" size="large"></ha-spinner>
               <p class="progress-text">
                 ${this.dialogParams.supervisor.localize(
                   "dialog.datadisk_move.moving_desc"
@@ -166,7 +161,7 @@ class HassioDatadiskDialog extends LitElement {
         ha-select {
           width: 100%;
         }
-        ha-circular-progress {
+        ha-spinner {
           display: block;
           margin: 32px;
           text-align: center;

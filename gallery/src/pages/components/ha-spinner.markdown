@@ -1,4 +1,4 @@
 ---
-title: Circular Progress
+title: Spinner
 subtitle: Can be used to indicate an ongoing task.
 ---

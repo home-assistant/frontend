@@ -8,7 +8,7 @@ import "./restore-backup/onboarding-restore-backup-status";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-card";
 import "../components/ha-icon-button-arrow-prev";
-import "../components/ha-circular-progress";
+import "../components/ha-spinner";
 import "../components/ha-alert";
 import "./onboarding-loading";
 import { removeSearchParam } from "../common/url/search-params";
@@ -91,7 +91,7 @@ class OnboardingRestoreBackup extends LitElement {
       ${
         this._view === "loading"
           ? html`<div class="loading">
-              <ha-circular-progress indeterminate></ha-circular-progress>
+              <ha-spinner></ha-spinner>
             </div>`
           : this._view === "upload"
             ? html`

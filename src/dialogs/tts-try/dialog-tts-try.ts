@@ -11,7 +11,7 @@ import { convertTextToSpeech } from "../../data/tts";
 import type { HomeAssistant } from "../../types";
 import { showAlertDialog } from "../generic/show-dialog-box";
 import type { TTSTryDialogParams } from "./show-dialog-tts-try";
-import "../../components/ha-circular-progress";
+import "../../components/ha-spinner";
 
 @customElement("dialog-tts-try")
 export class TTSTryDialog extends LitElement {
@@ -83,12 +83,11 @@ export class TTSTryDialog extends LitElement {
         </ha-textarea>
         ${this._loadingExample
           ? html`
-              <ha-circular-progress
+              <ha-spinner
                 size="small"
-                indeterminate
                 slot="primaryAction"
                 class="loading"
-              ></ha-circular-progress>
+              ></ha-spinner>
             `
           : html`
               <ha-button
