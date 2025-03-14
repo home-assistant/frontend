@@ -29,6 +29,7 @@ export class HaAreasDisplaySelector extends LitElement {
         .helper=${this.helper}
         .disabled=${this.disabled}
         .required=${this.required}
+        .expanded=${this.selector.areas_display?.expanded || false}
       ></ha-areas-display-editor>
     `;
   }

@@ -7,8 +7,10 @@ import { computeAreaPath, getAreas } from "./helpers/areas-strategy-helpers";
 
 export interface AreasViewStrategyConfig {
   type: "areas";
-  hidden_areas?: string[];
-  areas_order?: string[];
+  areas_display?: {
+    hidden?: string[];
+    order?: string[];
+  };
 }
 
 @customElement("areas-view-strategy")
@@ -17,7 +19,11 @@ export class AreasViewStrategy extends ReactiveElement {
     config: AreasViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
-    const areas = getAreas(hass.areas, config.hidden_areas, config.areas_order);
+    const areas = getAreas(
+      hass.areas,
+      config.areas_display?.hidden,
+      config.areas_display?.order
+    );
 
     const areaSections = areas.map<LovelaceSectionConfig>((area) => {
       const path = computeAreaPath(area.area_id);

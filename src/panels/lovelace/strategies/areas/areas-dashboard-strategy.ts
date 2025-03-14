@@ -10,8 +10,10 @@ import { computeAreaPath, getAreas } from "./helpers/areas-strategy-helpers";
 
 export interface AreasDashboardStrategyConfig {
   type: "areas";
-  hidden_areas?: string[];
-  areas_order?: string[];
+  areas_display?: {
+    hidden?: string[];
+    order?: string[];
+  };
 }
 
 @customElement("areas-dashboard-strategy")
@@ -20,7 +22,11 @@ export class AreasDashboardStrategy extends ReactiveElement {
     config: AreasDashboardStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceConfig> {
-    const areas = getAreas(hass.areas, config.hidden_areas, config.areas_order);
+    const areas = getAreas(
+      hass.areas,
+      config.areas_display?.hidden,
+      config.areas_display?.order
+    );
 
     const areaViews = areas.map<LovelaceViewRawConfig>((area) => {
       const path = computeAreaPath(area.area_id);
@@ -44,8 +50,7 @@ export class AreasDashboardStrategy extends ReactiveElement {
           path: "home",
           strategy: {
             type: "areas",
-            areas_order: config.areas_order,
-            hidden_areas: config.hidden_areas,
+            areas_display: config.areas_display,
           } satisfies AreasViewStrategyConfig,
         },
         ...areaViews,
