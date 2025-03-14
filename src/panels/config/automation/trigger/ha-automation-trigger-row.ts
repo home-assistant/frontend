@@ -160,11 +160,12 @@ export default class HaAutomationTriggerRow extends LitElement {
           : nothing}
 
         <ha-expansion-panel left-chevron>
+          <ha-svg-icon
+            slot="leading-icon"
+            class="trigger-icon"
+            .path=${TRIGGER_ICONS[type]}
+          ></ha-svg-icon>
           <h3 slot="header">
-            <ha-svg-icon
-              class="trigger-icon"
-              .path=${TRIGGER_ICONS[type]}
-            ></ha-svg-icon>
             ${describeTrigger(this.trigger, this.hass, this._entityReg)}
           </h3>
 
@@ -672,9 +673,6 @@ export default class HaAutomationTriggerRow extends LitElement {
             display: inline-block;
             color: var(--secondary-text-color);
             opacity: 0.9;
-            margin-right: 8px;
-            margin-inline-end: 8px;
-            margin-inline-start: initial;
           }
         }
         .card-content {

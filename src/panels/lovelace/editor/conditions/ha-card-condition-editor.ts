@@ -98,11 +98,12 @@ export class HaCardConditionEditor extends LitElement {
     return html`
       <div class="container">
         <ha-expansion-panel left-chevron>
+          <ha-svg-icon
+            slot="leading-icon"
+            class="condition-icon"
+            .path=${ICON_CONDITION[condition.condition]}
+          ></ha-svg-icon>
           <h3 slot="header">
-            <ha-svg-icon
-              class="condition-icon"
-              .path=${ICON_CONDITION[condition.condition]}
-            ></ha-svg-icon>
             ${this.hass.localize(
               `ui.panel.lovelace.editor.condition-editor.condition.${condition.condition}.label`
             ) || condition.condition}

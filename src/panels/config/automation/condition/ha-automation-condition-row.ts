@@ -129,11 +129,12 @@ export default class HaAutomationConditionRow extends LitElement {
           : ""}
 
         <ha-expansion-panel left-chevron>
+          <ha-svg-icon
+            slot="leading-icon"
+            class="condition-icon"
+            .path=${CONDITION_ICONS[this.condition.condition]}
+          ></ha-svg-icon>
           <h3 slot="header">
-            <ha-svg-icon
-              class="condition-icon"
-              .path=${CONDITION_ICONS[this.condition.condition]}
-            ></ha-svg-icon>
             ${capitalizeFirstLetter(
               describeCondition(this.condition, this.hass, this._entityReg)
             )}
@@ -526,9 +527,6 @@ export default class HaAutomationConditionRow extends LitElement {
             display: inline-block;
             color: var(--secondary-text-color);
             opacity: 0.9;
-            margin-right: 8px;
-            margin-inline-end: 8px;
-            margin-inline-start: initial;
           }
         }
         .card-content {

@@ -50,8 +50,8 @@ export class HaExpansionPanel extends LitElement {
           aria-expanded=${this.expanded}
           aria-controls="sect1"
         >
-          <slot name="leading-icon"></slot>
           ${this.leftChevron ? chevronIcon : nothing}
+          <slot name="leading-icon"></slot>
           <slot name="header">
             <div class="header">
               ${this.header}
