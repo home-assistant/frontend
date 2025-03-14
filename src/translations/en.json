@@ -6510,6 +6510,7 @@
             "unchecked_items": "Active",
             "no_unchecked_items": "You have no to-do items!",
             "checked_items": "Completed",
+            "no_status_items": "No status",
             "clear_items": "Remove completed items",
             "add_item": "Add item",
             "today": "Today",

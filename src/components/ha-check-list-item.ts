@@ -12,6 +12,9 @@ export class HaCheckListItem extends CheckListItemBase {
   @property({ type: Boolean, attribute: "checkbox-disabled" })
   checkboxDisabled = false;
 
+  @property({ type: Boolean })
+  indeterminate = false;
+
   async onChange(event) {
     super.onChange(event);
     fireEvent(this, event.type);
@@ -37,6 +40,7 @@ export class HaCheckListItem extends CheckListItemBase {
           reducedTouchTarget
           tabindex=${this.tabindex}
           .checked=${this.selected}
+          .indeterminate=${this.indeterminate}
           ?disabled=${this.disabled || this.checkboxDisabled}
           @change=${this.onChange}
         >
