@@ -922,7 +922,7 @@ export const subscribeZwaveNVMBackup = (
   callbackFunction: (message: any) => void
 ): Promise<UnsubscribeFunc> =>
   hass.connection.subscribeMessage(callbackFunction, {
-    type: "zwave_js/backup_nvm_raw",
+    type: "zwave_js/backup_nvm",
     entry_id,
   });
 

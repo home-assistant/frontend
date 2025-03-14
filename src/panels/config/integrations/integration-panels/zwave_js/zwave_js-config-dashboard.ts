@@ -20,6 +20,7 @@ import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/ha-progress-ring";
 import type { ConfigEntry } from "../../../../../data/config_entries";
 import {
   ERROR_STATES,
@@ -453,14 +454,11 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                   </p>
                 </div>
               </ha-card>
-              <ha-card>
-                <div class="card-header">
-                  <h1>
-                    ${this.hass.localize(
-                      "ui.panel.config.zwave_js.dashboard.nvm_backup.title"
-                    )}
-                  </h1>
-                </div>
+              <ha-card
+                .header=${this.hass.localize(
+                  "ui.panel.config.zwave_js.dashboard.nvm_backup.title"
+                )}
+              >
                 <div class="card-content">
                   <p>
                     ${this.hass.localize(
@@ -470,23 +468,23 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                 </div>
                 <div class="card-actions">
                   ${this._backupProgress !== undefined
-                    ? html`<ha-circular-progress
+                    ? html`<ha-progress-ring
                           size="small"
                           .value=${this._backupProgress}
-                        ></ha-circular-progress>
+                        ></ha-progress-ring>
                         ${this.hass.localize(
                           "ui.panel.config.zwave_js.dashboard.nvm_backup.downloading"
                         )}
-                        ${(this._backupProgress * 100).toFixed(0)}%`
+                        ${this._backupProgress}%`
                     : this._restoreProgress !== undefined
-                      ? html`<ha-circular-progress
+                      ? html`<ha-progress-ring
                             size="small"
                             .value=${this._restoreProgress}
-                          ></ha-circular-progress>
+                          ></ha-progress-ring>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.nvm_backup.restoring"
                           )}
-                          ${(this._restoreProgress * 100).toFixed(0)}%`
+                          ${this._restoreProgress}%`
                       : html`<ha-button @click=${this._downloadBackup}>
                             ${this.hass.localize(
                               "ui.panel.config.zwave_js.dashboard.nvm_backup.download_backup"
@@ -797,7 +795,9 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
       );
       URL.revokeObjectURL(url);
     } else if (message.event === "nvm backup progress") {
-      this._backupProgress = message.bytesRead / message.total;
+      this._backupProgress = Math.round(
+        (message.bytesRead / message.total) * 100
+      );
     }
   };
 
@@ -815,9 +815,12 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
       this._fetchData();
     } else if (message.event === "nvm convert progress") {
       // assume convert takes half the time of restore
-      this._restoreProgress = message.bytesRead / message.total / 2;
+      this._restoreProgress = Math.round(
+        (message.bytesRead / message.total) * 50
+      );
     } else if (message.event === "nvm restore progress") {
-      this._restoreProgress = message.bytesWritten / message.total / 2 + 0.5;
+      this._restoreProgress =
+        Math.round((message.bytesWritten / message.total) * 100 - 50) + 50;
     }
   };
 
@@ -927,6 +930,10 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         .card-actions {
           display: flex;
           align-items: center;
+        }
+
+        .card-actions ha-progress-ring {
+          margin-right: 16px;
         }
 
         [hidden] {
