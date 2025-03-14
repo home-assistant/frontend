@@ -2,7 +2,7 @@ import "@material/mwc-button/mwc-button";
 import type { CSSResultGroup } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-spinner";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-dialog";
 import { clearStatistics, getStatisticLabel } from "../../../data/recorder";
@@ -139,11 +139,10 @@ export class DialogStatisticsFix extends LitElement {
                 .disabled=${this._clearing}
               >
                 ${this._clearing
-                  ? html`<ha-circular-progress
-                      indeterminate
+                  ? html`<ha-spinner
                       size="small"
                       aria-label="Saving"
-                    ></ha-circular-progress>`
+                    ></ha-spinner>`
                   : nothing}
                 ${this.hass.localize("ui.common.delete")}
               </mwc-button>

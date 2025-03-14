@@ -21,8 +21,6 @@ import {
 import { formatTime24h } from "../common/datetime/format_time";
 import { groupBy } from "../common/util/group-by";
 import type { HomeAssistant } from "../types";
-import type { ConfigEntry } from "./config_entries";
-import { getConfigEntries } from "./config_entries";
 import type {
   Statistics,
   StatisticsMetaData,
@@ -270,7 +268,6 @@ export interface EnergyData {
   stats: Statistics;
   statsMetadata: Record<string, StatisticsMetaData>;
   statsCompare: Statistics;
-  co2SignalConfigEntry?: ConfigEntry;
   co2SignalEntity?: string;
   fossilEnergyConsumption?: FossilEnergyConsumption;
   fossilEnergyConsumptionCompare?: FossilEnergyConsumption;
@@ -348,31 +345,22 @@ const getEnergyData = async (
   end?: Date,
   compare?: boolean
 ): Promise<EnergyData> => {
-  const [configEntries, info] = await Promise.all([
-    getConfigEntries(hass, { domain: "co2signal" }),
-    getEnergyInfo(hass),
-  ]);
-
-  const co2SignalConfigEntry = configEntries.length
-    ? configEntries[0]
-    : undefined;
+  const info = await getEnergyInfo(hass);
 
   let co2SignalEntity: string | undefined;
-  if (co2SignalConfigEntry) {
-    for (const entity of Object.values(hass.entities)) {
-      if (entity.platform !== "co2signal") {
-        continue;
-      }
-
-      // The integration offers 2 entities. We want the % one.
-      const co2State = hass.states[entity.entity_id];
-      if (!co2State || co2State.attributes.unit_of_measurement !== "%") {
-        continue;
-      }
-
-      co2SignalEntity = co2State.entity_id;
-      break;
+  for (const entity of Object.values(hass.entities)) {
+    if (entity.platform !== "co2signal") {
+      continue;
     }
+
+    // The integration offers 2 entities. We want the % one.
+    const co2State = hass.states[entity.entity_id];
+    if (!co2State || co2State.attributes.unit_of_measurement !== "%") {
+      continue;
+    }
+
+    co2SignalEntity = co2State.entity_id;
+    break;
   }
 
   const consumptionStatIDs: string[] = [];
@@ -562,7 +550,6 @@ const getEnergyData = async (
     stats,
     statsMetadata,
     statsCompare,
-    co2SignalConfigEntry,
     co2SignalEntity,
     fossilEnergyConsumption,
     fossilEnergyConsumptionCompare,
@@ -711,8 +698,10 @@ export const getEnergyDataCollection = (
         );
         scheduleUpdatePeriod();
       },
-      addHours(calcDate(now, endOfDay, hass.locale, hass.config), 1).getTime() -
-        Date.now() // Switch to next day an hour after the day changed
+      addHours(
+        calcDate(new Date(), endOfDay, hass.locale, hass.config),
+        1
+      ).getTime() - Date.now() // Switch to next day an hour after the day changed
     );
   };
   scheduleUpdatePeriod();
@@ -721,19 +710,19 @@ export const getEnergyDataCollection = (
     collection.prefs = undefined;
   };
   collection.setPeriod = (newStart: Date, newEnd?: Date) => {
+    if (collection._updatePeriodTimeout) {
+      clearTimeout(collection._updatePeriodTimeout);
+      collection._updatePeriodTimeout = undefined;
+    }
     collection.start = newStart;
     collection.end = newEnd;
     if (
       collection.start.getTime() ===
         calcDate(new Date(), startOfDay, hass.locale, hass.config).getTime() &&
       collection.end?.getTime() ===
-        calcDate(new Date(), endOfDay, hass.locale, hass.config).getTime() &&
-      !collection._updatePeriodTimeout
+        calcDate(new Date(), endOfDay, hass.locale, hass.config).getTime()
     ) {
       scheduleUpdatePeriod();
-    } else if (collection._updatePeriodTimeout) {
-      clearTimeout(collection._updatePeriodTimeout);
-      collection._updatePeriodTimeout = undefined;
     }
   };
   collection.setCompare = (compare: boolean) => {

@@ -15,6 +15,7 @@ import { classMap } from "lit/directives/class-map";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-expansion-panel";
 import "../../../../../components/ha-fab";
+import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-icon-next";
@@ -154,9 +155,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                   <div class="heading">
                     <div class="icon">
                       ${this._status === "disconnected"
-                        ? html`<ha-circular-progress
-                            indeterminate
-                          ></ha-circular-progress>`
+                        ? html`<ha-spinner></ha-spinner>`
                         : html`
                             <ha-svg-icon
                               .path=${this._icon}
@@ -436,12 +435,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                           @change=${this._dataCollectionToggled}
                         ></ha-switch>
                       `
-                    : html`
-                        <ha-circular-progress
-                          size="small"
-                          indeterminate
-                        ></ha-circular-progress>
-                      `}
+                    : html` <ha-spinner size="small"></ha-spinner> `}
                 </div>
                 <div class="card-content">
                   <p>

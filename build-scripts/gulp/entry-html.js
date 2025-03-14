@@ -56,6 +56,7 @@ const getCommonTemplateVars = () => {
   );
   return {
     modernRegex: compileRegex(browserRegexes.concat(haMacOSRegex)).toString(),
+    hassUrl: process.env.HASS_URL || "",
   };
 };
 

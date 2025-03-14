@@ -3,7 +3,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import "../../../../components/ha-card";
-import "../../../../components/ha-circular-progress";
+import "../../../../components/ha-spinner";
 import "../../../../components/ha-settings-row";
 import "../../../../components/ha-switch";
 import type { CloudStatusLoggedIn, CloudWebhook } from "../../../../data/cloud";
@@ -88,9 +88,7 @@ export class CloudWebhooks extends LitElement {
                       ${this._progress.includes(entry.webhook_id)
                         ? html`
                             <div class="progress">
-                              <ha-circular-progress
-                                indeterminate
-                              ></ha-circular-progress>
+                              <ha-spinner></ha-spinner>
                             </div>
                           `
                         : this._cloudHooks![entry.webhook_id]

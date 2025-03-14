@@ -2623,7 +2623,7 @@
                 "thu": "Th",
                 "fri": "Fr",
                 "sat": "Sa",
-                "sun": "So"
+                "sun": "Su"
               }
             }
           },
@@ -6139,7 +6139,7 @@
             "signal_strength": "Signal strength",
             "open": "Open",
             "wep": "WEP",
-            "wpa": "wpa-psk",
+            "wpa": "WPA-PSK",
             "wifi": "Wi-Fi",
             "wifi_password": "Wi-Fi password",
             "warning": "If you are changing the Wi-Fi, IP or gateway addresses, you might lose the connection!",
@@ -8245,7 +8245,7 @@
           "osm_privacy_policy": "Privacy policy",
           "title_location_detect": "Do you want us to detect your location?",
           "intro_location_detect": "We can detect your location by making a one-time request to an external service.",
-          "country_intro": "We would like to know the country your home is in, so we can use the correct units for you.",
+          "country_intro": "We would like to know the country your home is in, so we can use the correct units.",
           "location_name": "Name of your Home Assistant installation",
           "location_name_default": "Home",
           "address_label": "Search address",
@@ -8888,7 +8888,7 @@
         "signal_strength": "[%key:ui::panel::config::network::supervisor::signal_strength%]",
         "open": "Open",
         "wep": "WEP",
-        "wpa": "wpa-psk",
+        "wpa": "WPA-PSK",
         "wifi": "[%key:ui::panel::config::network::supervisor::wifi%]",
         "wifi_password": "[%key:ui::panel::config::network::supervisor::wifi_password%]",
         "warning": "If you are changing the Wi-Fi, IP or gateway addresses, you might lose the connection!",
