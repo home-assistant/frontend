@@ -1,20 +1,21 @@
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { mdiDrag, mdiEye, mdiEyeOff } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-icon";
-import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-icon-button-next";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
-import "../../../../../components/ha-sortable";
-import "../../../../../components/ha-svg-icon";
-import type { HomeAssistant } from "../../../../../types";
+import { fireEvent } from "../common/dom/fire_event";
+import type { HomeAssistant } from "../types";
+import "./ha-icon";
+import "./ha-icon-button";
+import "./ha-icon-button-next";
+import "./ha-md-list";
+import "./ha-md-list-item";
+import "./ha-sortable";
+import "./ha-svg-icon";
 
-export interface VisibilityEditorItem {
+export interface DisplayItem {
   icon?: string;
   iconPath?: string;
   value: string;
@@ -22,33 +23,38 @@ export interface VisibilityEditorItem {
   description?: string;
 }
 
-export interface VisibilityEditorValue {
+export interface DisplayValue {
   order: string[];
   hidden: string[];
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-items-visibility-editor": HaItemVisibilityEditor;
+    "ha-items-display-editor": HaItemDisplayEditor;
   }
   interface HASSDomEvents {
-    "item-navigate-clicked": { value: string };
+    "item-display-navigate-clicked": { value: string };
   }
 }
 
-@customElement("ha-items-visibility-editor")
-export class HaItemVisibilityEditor extends LitElement {
+@customElement("ha-items-display-editor")
+export class HaItemDisplayEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public items: VisibilityEditorItem[] = [];
+  @property({ attribute: false }) public items: DisplayItem[] = [];
 
   @property({ type: Boolean, attribute: "show-navigation-button" })
   public showNavigationButton = false;
 
-  @property({ attribute: false }) public value: VisibilityEditorValue = {
+  @property({ attribute: false })
+  public value: DisplayValue = {
     order: [],
     hidden: [],
   };
+
+  private _showIcon = new ResizeController(this, {
+    callback: (entries) => entries[0]?.contentRect.width > 450,
+  });
 
   private _toggle(ev) {
     ev.stopPropagation();
@@ -93,18 +99,16 @@ export class HaItemVisibilityEditor extends LitElement {
 
   private _navigate(ev) {
     const value = ev.currentTarget.value;
-    fireEvent(this, "item-navigate-clicked", { value });
+    fireEvent(this, "item-display-navigate-clicked", { value });
     ev.stopPropagation();
   }
 
-  private _visibleItems = memoizeOne(
-    (items: VisibilityEditorItem[], hidden: string[]) =>
-      items.filter((item) => !hidden.includes(item.value))
+  private _visibleItems = memoizeOne((items: DisplayItem[], hidden: string[]) =>
+    items.filter((item) => !hidden.includes(item.value))
   );
 
-  private _hiddenItems = memoizeOne(
-    (items: VisibilityEditorItem[], hidden: string[]) =>
-      items.filter((item) => hidden.includes(item.value))
+  private _hiddenItems = memoizeOne((items: DisplayItem[], hidden: string[]) =>
+    items.filter((item) => hidden.includes(item.value))
   );
 
   protected render() {
@@ -113,6 +117,7 @@ export class HaItemVisibilityEditor extends LitElement {
       ...this._hiddenItems(this.items, this.value.hidden),
     ];
 
+    const showIcon = this._showIcon.value;
     return html`
       <ha-sortable
         draggable-selector=".draggable"
@@ -145,26 +150,35 @@ export class HaItemVisibilityEditor extends LitElement {
                           slot="start"
                         ></ha-svg-icon>
                       `
-                    : html` <ha-svg-icon slot="start"></ha-svg-icon> `}
-                  ${icon
-                    ? html`<ha-icon
-                        class="icon"
-                        .icon=${icon}
-                        slot="start"
-                      ></ha-icon>`
-                    : iconPath
+                    : html`<ha-svg-icon slot="start"></ha-svg-icon>`}
+                  ${!showIcon
+                    ? nothing
+                    : icon
                       ? html`
-                          <ha-svg-icon
+                          <ha-icon
                             class="icon"
-                            .path=${iconPath}
+                            .icon=${icon}
                             slot="start"
-                          ></ha-svg-icon>
+                          ></ha-icon>
                         `
-                      : nothing}
+                      : iconPath
+                        ? html`
+                            <ha-svg-icon
+                              class="icon"
+                              .path=${iconPath}
+                              slot="start"
+                            ></ha-svg-icon>
+                          `
+                        : nothing}
                   <ha-icon-button
                     .path=${isVisible ? mdiEye : mdiEyeOff}
                     slot="end"
-                    .label=${(isVisible ? "Hide" : "Show") + " " + name}
+                    .label=${this.hass.localize(
+                      `ui.components.items-display-editor.${isVisible ? "hide" : "show"}`,
+                      {
+                        label: label,
+                      }
+                    )}
                     .value=${value}
                     @click=${this._toggle}
                   ></ha-icon-button>
@@ -198,11 +212,6 @@ export class HaItemVisibilityEditor extends LitElement {
     ha-md-list {
       padding: 0;
     }
-    @media (max-width: 500px) {
-      .icon {
-        display: none;
-      }
-    }
     ha-md-list-item {
       --md-list-item-top-space: 0;
       --md-list-item-bottom-space: 0;
@@ -227,6 +236,6 @@ export class HaItemVisibilityEditor extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-items-visibility-editor": HaItemVisibilityEditor;
+    "ha-items-display-editor": HaItemDisplayEditor;
   }
 }
