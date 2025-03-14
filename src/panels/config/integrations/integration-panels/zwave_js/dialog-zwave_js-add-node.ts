@@ -50,6 +50,8 @@ export interface ZWaveJSAddNodeDevice {
 class DialogZWaveJSAddNode extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @state() private _open = false;
+
   @state() private _step?: ZWaveJSAddNodeStage;
 
   @state() private _entryId?: string;
@@ -84,8 +86,6 @@ class DialogZWaveJSAddNode extends LitElement {
 
   private _subscribed?: Promise<UnsubscribeFunc | undefined>;
 
-  // ----
-
   protected render() {
     if (!this._entryId) {
       return nothing;
@@ -96,7 +96,7 @@ class DialogZWaveJSAddNode extends LitElement {
 
     return html`
       <ha-md-dialog
-        open
+        .open=${this._open}
         .disableCancelAction=${preventClose}
         @closed=${this._dialogClosed}
       >
@@ -138,6 +138,7 @@ class DialogZWaveJSAddNode extends LitElement {
     this._step = "loading";
 
     if (params.dsk) {
+      this._open = true;
       this._step = "validate_dsk_enter_pin";
       this._dsk = params.dsk;
 
@@ -158,8 +159,10 @@ class DialogZWaveJSAddNode extends LitElement {
         this._step = "qr_scan";
       } else {
         this._step = "select_method";
+        this._open = true;
       }
     } else {
+      this._open = true;
       this._step = "started";
       this._startInclusion();
     }
@@ -261,6 +264,7 @@ class DialogZWaveJSAddNode extends LitElement {
   }
 
   private _showMoreOptions() {
+    this._open = true;
     this._step = "select_other_method";
   }
 
@@ -355,6 +359,7 @@ class DialogZWaveJSAddNode extends LitElement {
   private async _handleQrCodeScanned(ev: CustomEvent): Promise<void> {
     const qrCodeString = ev.detail.value;
     this._error = undefined;
+    this._open = true;
 
     if (this._step !== "qr_scan" || this._qrProcessing) {
       return;
@@ -462,6 +467,7 @@ class DialogZWaveJSAddNode extends LitElement {
 
   private _dialogClosed(): void {
     this._unsubscribe();
+    this._open = false;
     this._inclusionStrategy = undefined;
     this._entryId = undefined;
     this._step = undefined;
@@ -472,7 +478,11 @@ class DialogZWaveJSAddNode extends LitElement {
   }
 
   public closeDialog(): void {
-    this._dialog?.close();
+    if (this._open) {
+      this._dialog?.close();
+    } else {
+      this._dialogClosed();
+    }
   }
 
   static get styles(): CSSResultGroup {

@@ -256,10 +256,10 @@ class HaQrScanner extends LitElement {
     this.hass.auth.external!.fireMessage({
       type: "bar_code/scan",
       payload: {
-        title: this.title || "Scan QR code",
-        description: this.description || "Scan a barcode.",
+        title: this.title || this.hass.localize("ui.components.qr-scanner.app.title"),
+        description: this.description || this.hass.localize("ui.components.qr-scanner.app.description"),
         alternative_option_label:
-          this.alternativeOptionLabel || "Click to manually enter the barcode",
+          this.alternativeOptionLabel || this.hass.localize("ui.components.qr-scanner.app.alternativeOptionLabel"),
       },
     });
   }
