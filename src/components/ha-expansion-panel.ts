@@ -1,6 +1,6 @@
 import { mdiChevronDown } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
@@ -28,6 +28,14 @@ export class HaExpansionPanel extends LitElement {
   @query(".container") private _container!: HTMLDivElement;
 
   protected render(): TemplateResult {
+    const chevronIcon = this.noCollapse
+      ? nothing
+      : html`
+          <ha-svg-icon
+            .path=${mdiChevronDown}
+            class="summary-icon ${classMap({ expanded: this.expanded })}"
+          ></ha-svg-icon>
+        `;
     return html`
       <div class="top ${classMap({ expanded: this.expanded })}">
         <div
@@ -42,28 +50,15 @@ export class HaExpansionPanel extends LitElement {
           aria-expanded=${this.expanded}
           aria-controls="sect1"
         >
-          ${this.leftChevron && !this.noCollapse
-            ? html`
-                <ha-svg-icon
-                  .path=${mdiChevronDown}
-                  class="summary-icon ${classMap({ expanded: this.expanded })}"
-                ></ha-svg-icon>
-              `
-            : ""}
+          <slot name="leading-icon"></slot>
+          ${this.leftChevron ? chevronIcon : nothing}
           <slot name="header">
             <div class="header">
               ${this.header}
               <slot class="secondary" name="secondary">${this.secondary}</slot>
             </div>
           </slot>
-          ${!this.leftChevron && !this.noCollapse
-            ? html`
-                <ha-svg-icon
-                  .path=${mdiChevronDown}
-                  class="summary-icon ${classMap({ expanded: this.expanded })}"
-                ></ha-svg-icon>
-              `
-            : ""}
+          ${!this.leftChevron ? chevronIcon : nothing}
           <slot name="icons"></slot>
         </div>
       </div>
@@ -178,6 +173,13 @@ export class HaExpansionPanel extends LitElement {
     }
 
     :host([leftchevron]) .summary-icon {
+      margin-left: 0;
+      margin-right: 8px;
+      margin-inline-start: 0;
+      margin-inline-end: 8px;
+    }
+
+    ::slotted(ha-svg-icon[slot="leading-icon"]) {
       margin-left: 0;
       margin-right: 8px;
       margin-inline-start: 0;

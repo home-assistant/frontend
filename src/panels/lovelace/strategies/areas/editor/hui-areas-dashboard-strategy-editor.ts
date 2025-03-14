@@ -1,5 +1,5 @@
 import { mdiTextureBox } from "@mdi/js";
-import { css, html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { getAreaContext } from "../../../../../common/entity/context/get_area_context";
@@ -52,11 +52,15 @@ export class HuiAreasDashboardStrategyEditor
     };
 
     return html`
-      <ha-expansion-panel leftChevron .expanded=${true} outlined>
-        <h3 slot="header">
-          <ha-svg-icon .path=${mdiTextureBox}></ha-svg-icon>
-          Areas to show
-        </h3>
+      <ha-expansion-panel
+        leftChevron
+        .expanded=${true}
+        outlined
+        .header=${this.hass.localize(
+          "ui.panel.lovelace.editor.strategy.areas.areas_header"
+        )}
+      >
+        <ha-svg-icon slot="leading-icon" .path=${mdiTextureBox}></ha-svg-icon>
         <ha-items-display-editor
           .hass=${this.hass}
           .items=${items}
@@ -82,18 +86,6 @@ export class HuiAreasDashboardStrategyEditor
     }
 
     fireEvent(this, "config-changed", { config: newConfig });
-  }
-
-  static get styles() {
-    return [
-      css`
-        ha-expansion-panel h3 {
-          font-size: 14px;
-          font-weight: 500;
-          line-height: 20px;
-        }
-      `,
-    ];
   }
 }
 
