@@ -93,7 +93,7 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
       sandbox_user_params += "allow-top-navigation-by-user-activation";
     }
     const sandbox_params = this._config.disable_sandbox
-      ? nothing
+      ? undefined
       : `${sandbox_user_params} ${IFRAME_SANDBOX}`;
 
     return html`
@@ -107,7 +107,7 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
           <iframe
             title=${ifDefined(this._config.title)}
             src=${this._config.url}
-            .sandbox=${sandbox_params}
+            sandbox=${ifDefined(sandbox_params)}
             allow=${this._config.allow ?? "fullscreen"}
           ></iframe>
         </div>
