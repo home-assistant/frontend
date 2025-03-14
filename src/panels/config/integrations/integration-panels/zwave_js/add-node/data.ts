@@ -1,6 +1,7 @@
 export const backButtonStages: Partial<ZWaveJSAddNodeStage>[] = [
   "qr_scan",
   "select_other_method",
+  "qr_code_input",
 ];
 
 export const closeButtonStages: Partial<ZWaveJSAddNodeStage>[] = [

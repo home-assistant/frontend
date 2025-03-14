@@ -5776,9 +5776,6 @@
             "searching_device": "Searching for devices…",
             "follow_device_instructions": "Follow the directions that came with your device to trigger pairing on the device.",
             "choose_inclusion_strategy": "How do you want to add your device",
-            "qr_code": "QR Code",
-            "qr_code_paragraph": "If your device supports SmartStart you can scan the QR code for easy pairing.",
-            "scan_qr_code": "Scan QR code",
             "inclusion_failed": "The device could not be added.",
             "check_logs": "Please check the logs for more information.",
             "inclusion_finished": "The device has been added.",
@@ -5809,6 +5806,15 @@
               "qr_code_manual_description": "You can scan the QR code with another QR scanner and paste the code.",
               "search_device": "Search for device",
               "search_device_description": "Use this option to manually include a device that does not have a SmartStart QR code."
+            },
+            "qr": {
+              "manual": {
+                "title": "Enter QR code manually",
+                "text": "You can scan the QR code with another QR scanner and paste the code here.",
+                "placeholder": "Code"
+              },
+              "scan_code": "Scan QR code",
+              "other_add_options": "Other add options"
             }
           },
           "provisioned": {

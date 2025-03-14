@@ -38,6 +38,7 @@ import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-qr-scanner";
 import "./add-node/zwave-js-add-node-select-method";
+import type { HaTextField } from "../../../../../components/ha-textfield";
 
 const INCLUSION_TIMEOUT = 300000; // 5 minutes
 
@@ -75,6 +76,8 @@ class DialogZWaveJSAddNode extends LitElement {
   @state() private _requestedGrant?: RequestedGrant;
 
   @state() private _securityClasses: SecurityClass[] = [];
+
+  @state() private _manualQrCodeInput = "";
 
   private _qrProcessing = false;
 
@@ -181,10 +184,23 @@ class DialogZWaveJSAddNode extends LitElement {
   private _handleBack() {
     if (this._step && closeButtonStages.includes(this._step!)) {
       this.closeDialog();
-    } else if (this._step === "select_other_method") {
-      this._step = "qr_scan";
-    } else if (this._step === "qr_scan") {
-      this._step = "select_method";
+      return;
+    }
+
+    switch(this._step) {
+      case "select_other_method":
+        this._step = "qr_scan";
+        break;
+      case "qr_scan":
+        this._step = "select_method";
+        break;
+      case "qr_code_input":
+        if (this.hass.auth.external?.config.hasBarCodeScanner) {
+          this._step = "select_other_method";
+          break;
+        }
+        this._step = "select_method";
+        break;
     }
   }
 
@@ -200,7 +216,13 @@ class DialogZWaveJSAddNode extends LitElement {
 
     switch (this._step) {
       case "qr_scan":
-        titleTranslationKey = "scan_qr_code";
+        titleTranslationKey = "qr.scan_code";
+        break;
+      case "qr_code_input":
+        titleTranslationKey = "qr.manual.title";
+        break;
+      case "select_other_method":
+        titleTranslationKey = "qr.other_add_options";
         break;
     }
 
@@ -242,6 +264,24 @@ class DialogZWaveJSAddNode extends LitElement {
           ></ha-qr-scanner>
         </div>
       `;
+    }
+
+    if (this._step === "qr_code_input") {
+      return html`
+        <div slot="content" class="qr-code-input">
+          <p>
+            ${this.hass.localize(
+              "ui.panel.config.zwave_js.add_node.qr.manual.text"
+            )}
+          </p>
+          <ha-textfield .placeholder=${this.hass.localize("ui.panel.config.zwave_js.add_node.qr.manual.placeholder")} .value=${this._manualQrCodeInput} @input=${this._manualQrCodeInputChange}></ha-textfield>
+        </div>
+        <div slot="actions">
+          <ha-button .disabled=${!this._manualQrCodeInput} @click=${this._handleQrCodeScanned}>
+            ${this.hass.localize("ui.common.next")}
+          </ha-button>
+        </div>
+      `
     }
 
     return html`<div class="loading" slot="content">
@@ -357,13 +397,24 @@ class DialogZWaveJSAddNode extends LitElement {
   }
   
   private async _handleQrCodeScanned(ev: CustomEvent): Promise<void> {
-    const qrCodeString = ev.detail.value;
+    let qrCodeString: string;
     this._error = undefined;
     this._open = true;
 
-    if (this._step !== "qr_scan" || this._qrProcessing) {
+    if ((this._step !== "qr_scan" && this._step !== "qr_code_input") || this._qrProcessing) {
       return;
     }
+
+    if (this._step === "qr_code_input") {
+      if (!this._manualQrCodeInput) {
+        return;
+      }
+
+      qrCodeString = this._manualQrCodeInput;
+    } else {
+      qrCodeString = ev.detail.value;
+    }
+
 
     this._qrProcessing = true;
     const dsk = await zwaveTryParseDskFromQrCode(
@@ -477,6 +528,10 @@ class DialogZWaveJSAddNode extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
+  private _manualQrCodeInputChange(ev: InputEvent): void {
+    this._manualQrCodeInput = (ev.target as HaTextField).value;
+  }
+
   public closeDialog(): void {
     if (this._open) {
       this._dialog?.close();
@@ -498,6 +553,12 @@ class DialogZWaveJSAddNode extends LitElement {
           align-items: center;
           justify-content: center;
           height: 100%;
+        }
+        .qr-code-input ha-textfield {
+          width: 100%;
+        }
+        .qr-code-input p {
+          color: var(--secondary-text-color);
         }
       `,
     ];
