@@ -829,7 +829,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
       );
     } else if (message.event === "nvm restore progress") {
       this._restoreProgress =
-        Math.round((message.bytesWritten / message.total) * 100 - 50) + 50;
+        Math.round((message.bytesWritten / message.total) * 50) + 50;
     }
   };
 
