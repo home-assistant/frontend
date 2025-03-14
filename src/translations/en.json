@@ -7472,7 +7472,7 @@
               "url": "URL"
             },
             "areas": {
-              "areas_header": "Areas to display"
+              "areas_display": "Areas to display"
             }
           },
           "view": {

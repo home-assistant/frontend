@@ -1,18 +1,11 @@
-import { mdiTextureBox } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { getAreaContext } from "../../../../../common/entity/context/get_area_context";
-import "../../../../../components/ha-expansion-panel";
-import "../../../../../components/ha-items-display-editor";
-import type {
-  DisplayItem,
-  DisplayValue,
-} from "../../../../../components/ha-items-display-editor";
+import "../../../../../components/ha-areas-display-editor";
+import type { AreasDisplayValue } from "../../../../../components/ha-areas-display-editor";
 import type { HomeAssistant } from "../../../../../types";
 import type { LovelaceStrategyEditor } from "../../types";
 import type { AreasDashboardStrategyConfig } from "../areas-dashboard-strategy";
-import { getAreas } from "../helpers/areas-strategy-helpers";
 
 @customElement("hui-areas-dashboard-strategy-editor")
 export class HuiAreasDashboardStrategyEditor
@@ -33,57 +26,27 @@ export class HuiAreasDashboardStrategyEditor
       return nothing;
     }
 
-    const areas = getAreas(this.hass.areas, [], this._config.areas_order);
-
-    const items: DisplayItem[] = areas.map((area) => {
-      const { floor } = getAreaContext(area.area_id, this.hass!);
-      return {
-        value: area.area_id,
-        label: area.name,
-        icon: area.icon ?? undefined,
-        iconPath: mdiTextureBox,
-        description: floor?.name,
-      };
-    });
-
-    const value: DisplayValue = {
-      order: this._config.areas_order ?? [],
-      hidden: this._config.hidden_areas ?? [],
-    };
+    const value = this._config.areas_display;
 
     return html`
-      <ha-expansion-panel
-        left-chevron
-        .expanded=${true}
-        outlined
-        .header=${this.hass.localize(
-          "ui.panel.lovelace.editor.strategy.areas.areas_header"
+      <ha-areas-display-editor
+        .hass=${this.hass}
+        .value=${value}
+        .label=${this.hass.localize(
+          "ui.panel.lovelace.editor.strategy.areas.areas_display"
         )}
-      >
-        <ha-svg-icon slot="leading-icon" .path=${mdiTextureBox}></ha-svg-icon>
-        <ha-items-display-editor
-          .hass=${this.hass}
-          .items=${items}
-          .value=${value}
-          @value-changed=${this._areaDisplayChanged}
-        ></ha-items-display-editor>
-      </ha-expansion-panel>
+        expanded
+        @value-changed=${this._areaDisplayChanged}
+      ></ha-areas-display-editor>
     `;
   }
 
   private _areaDisplayChanged(ev: CustomEvent): void {
-    const value = ev.detail.value as DisplayValue;
+    const value = ev.detail.value as AreasDisplayValue;
     const newConfig: AreasDashboardStrategyConfig = {
       ...this._config!,
-      hidden_areas: value.hidden,
-      areas_order: value.order,
+      areas_display: value,
     };
-    if (newConfig.hidden_areas?.length === 0) {
-      delete newConfig.hidden_areas;
-    }
-    if (newConfig.areas_order?.length === 0) {
-      delete newConfig.areas_order;
-    }
 
     fireEvent(this, "config-changed", { config: newConfig });
   }
