@@ -3121,6 +3121,10 @@
                 "iframe": {
                   "title": "Webpage",
                   "description": "Integrate a webpage as a dashboard"
+                },
+                "areas": {
+                  "title": "Areas (experimental)",
+                  "description": "Display your devices with a view for each area"
                 }
               }
             },
