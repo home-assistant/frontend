@@ -1,32 +1,15 @@
-import "@material/mwc-button/mwc-button";
-import { mdiAlertCircle, mdiCheckCircle, mdiQrcodeScan } from "@mdi/js";
+import { mdiChevronLeft, mdiClose } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import memoizeOne from "memoize-one";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-alert";
-import type { HaCheckbox } from "../../../../../components/ha-checkbox";
-import "../../../../../components/ha-spinner";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
-import "../../../../../components/ha-checkbox";
-import "../../../../../components/ha-formfield";
-import "../../../../../components/ha-qr-scanner";
-import "../../../../../components/ha-radio";
-import "../../../../../components/ha-switch";
-import "../../../../../components/ha-textfield";
-import type { HaTextField } from "../../../../../components/ha-textfield";
-import type {
-  QRProvisioningInformation,
-  RequestedGrant,
-} from "../../../../../data/zwave_js";
 import {
   cancelSecureBootstrapS2,
   InclusionStrategy,
   MINIMUM_QR_STRING_LENGTH,
   provisionZwaveSmartStartNode,
-  SecurityClass,
   stopZwaveInclusion,
   subscribeAddZwaveNode,
   ZWaveFeature,
@@ -34,11 +17,29 @@ import {
   zwaveParseQrCode,
   zwaveSupportsFeature,
   zwaveTryParseDskFromQrCode,
-  zwaveValidateDskAndEnterPin,
+  type QRProvisioningInformation,
+  type RequestedGrant,
+  type SecurityClass,
 } from "../../../../../data/zwave_js";
-import { haStyle, haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { ZWaveJSAddNodeDialogParams } from "./show-dialog-zwave_js-add-node";
+import {
+  backButtonStages,
+  closeButtonStages,
+  type ZWaveJSAddNodeStage,
+} from "./add-node/data";
+import type { HaMdDialog } from "../../../../../components/ha-md-dialog";
+
+import "../../../../../components/ha-md-dialog";
+import "../../../../../components/ha-spinner";
+import "../../../../../components/ha-fade-in";
+import "../../../../../components/ha-dialog-header";
+import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-button";
+import "../../../../../components/ha-qr-scanner";
+import "./add-node/zwave-js-add-node-select-method";
+
+const INCLUSION_TIMEOUT = 300000; // 5 minutes
 
 export interface ZWaveJSAddNodeDevice {
   id: string;
@@ -49,50 +50,63 @@ export interface ZWaveJSAddNodeDevice {
 class DialogZWaveJSAddNode extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _params?: ZWaveJSAddNodeDialogParams;
+  @state() private _step?: ZWaveJSAddNodeStage;
 
   @state() private _entryId?: string;
-
-  @state() private _status?:
-    | "loading"
-    | "started"
-    | "started_specific"
-    | "choose_strategy"
-    | "qr_scan"
-    | "interviewing"
-    | "failed"
-    | "timed_out"
-    | "finished"
-    | "provisioned"
-    | "validate_dsk_enter_pin"
-    | "grant_security_classes"
-    | "waiting_for_device";
-
-  @state() private _device?: ZWaveJSAddNodeDevice;
-
-  @state() private _stages?: string[];
-
-  @state() private _inclusionStrategy?: InclusionStrategy;
 
   @state() private _dsk?: string;
 
   @state() private _error?: string;
 
-  @state() private _requestedGrant?: RequestedGrant;
+  @state() private _supportsSmartStart?: boolean;
 
-  @state() private _securityClasses: SecurityClass[] = [];
+  @state() private _inclusionStrategy?: InclusionStrategy;
+
+  @state() private _stages?: string[];
 
   @state() private _lowSecurity = false;
 
   @state() private _lowSecurityReason?: number;
+  
+  @state() private _device?: ZWaveJSAddNodeDevice;
+  
+  @state() private _requestedGrant?: RequestedGrant;
 
-  @state() private _supportsSmartStart?: boolean;
+  @state() private _securityClasses: SecurityClass[] = [];
+
+  private _qrProcessing = false;
 
   private _addNodeTimeoutHandle?: number;
 
+  @query("ha-md-dialog") private _dialog?: HaMdDialog;
+
+  private _onStop?: () => void;
+
   private _subscribed?: Promise<UnsubscribeFunc | undefined>;
 
-  private _qrProcessing = false;
+  // ----
+
+  protected render() {
+    if (!this._entryId) {
+      return nothing;
+    }
+
+    // Prevent accidentally closing the dialog in certain stages
+    const preventClose = !!this._step && this._shouldPreventClose(this._step);
+
+    return html`
+      <ha-md-dialog
+        open
+        .disableCancelAction=${preventClose}
+        @closed=${this._dialogClosed}
+      >
+        <ha-dialog-header slot="headline">
+          ${this._renderHeader()}
+        </ha-dialog-header>
+        ${this._renderStep()}
+      </ha-md-dialog>
+    `;
+  }
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -101,654 +115,36 @@ class DialogZWaveJSAddNode extends LitElement {
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
+    window.removeEventListener("beforeunload", this._onBeforeUnload);
+
     this._unsubscribe();
   }
 
+  private _onBeforeUnload = (event: BeforeUnloadEvent) => {
+    if (this._step && this._shouldPreventClose(this._step)) {
+      event.preventDefault();
+      // support for legacy browsers
+      event.returnValue = true;
+    }
+  };
+
   public async showDialog(params: ZWaveJSAddNodeDialogParams): Promise<void> {
-    if (this._status) {
+    if (this._step) {
       // already started
       return;
     }
-    this._params = params;
+    this._onStop = params?.onStop;
     this._entryId = params.entry_id;
-    this._status = "loading";
-    this._checkSmartStartSupport();
+    this._step = "loading";
+
     if (params.dsk) {
-      this._status = "validate_dsk_enter_pin";
+      this._step = "validate_dsk_enter_pin";
       this._dsk = params.dsk;
-    }
-    this._startInclusion();
-  }
 
-  @query("#pin-input") private _pinInput?: HaTextField;
-
-  protected render() {
-    if (!this._entryId) {
-      return nothing;
-    }
-
-    // Prevent accidentally closing the dialog in certain stages
-    const preventClose = this._shouldPreventClose();
-
-    const heading = this.hass.localize(
-      "ui.panel.config.zwave_js.add_node.title"
-    );
-
-    return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${preventClose
-          ? heading
-          : createCloseHeading(this.hass, heading)}
-        scrimClickAction=${ifDefined(preventClose ? "" : undefined)}
-        escapeKeyAction=${ifDefined(preventClose ? "" : undefined)}
-      >
-        ${this._status === "loading"
-          ? html`<div style="display: flex; justify-content: center;">
-              <ha-spinner size="large"></ha-spinner>
-            </div>`
-          : this._status === "waiting_for_device"
-            ? html`<div class="flex-container">
-                <ha-spinner></ha-spinner>
-                <p>
-                  ${this.hass.localize(
-                    "ui.panel.config.zwave_js.add_node.waiting_for_device"
-                  )}
-                </p>
-              </div>`
-            : this._status === "choose_strategy"
-              ? html`<h3>Choose strategy</h3>
-                  <div class="flex-column">
-                    <ha-formfield
-                      .label=${html`<b>Secure if possible</b>
-                        <div class="secondary">
-                          Requires user interaction during inclusion. Fast and
-                          secure with S2 when supported. Allows manually
-                          selecting which security keys to grant. Fallback to
-                          legacy S0 or no encryption when necessary.
-                        </div>`}
-                    >
-                      <ha-radio
-                        name="strategy"
-                        @change=${this._handleStrategyChange}
-                        .value=${InclusionStrategy.Default}
-                        .checked=${this._inclusionStrategy ===
-                          InclusionStrategy.Default ||
-                        this._inclusionStrategy === undefined}
-                      >
-                      </ha-radio>
-                    </ha-formfield>
-                    <ha-formfield
-                      .label=${html`<b>Legacy Secure</b>
-                        <div class="secondary">
-                          Uses the older S0 security that is secure, but slow
-                          due to a lot of overhead. Allows securely including S2
-                          capable devices which fail to be included with S2.
-                        </div>`}
-                    >
-                      <ha-radio
-                        name="strategy"
-                        @change=${this._handleStrategyChange}
-                        .value=${InclusionStrategy.Security_S0}
-                        .checked=${this._inclusionStrategy ===
-                        InclusionStrategy.Security_S0}
-                      >
-                      </ha-radio>
-                    </ha-formfield>
-                    <ha-formfield
-                      .label=${html`<b>Insecure</b>
-                        <div class="secondary">Do not use encryption.</div>`}
-                    >
-                      <ha-radio
-                        name="strategy"
-                        @change=${this._handleStrategyChange}
-                        .value=${InclusionStrategy.Insecure}
-                        .checked=${this._inclusionStrategy ===
-                        InclusionStrategy.Insecure}
-                      >
-                      </ha-radio>
-                    </ha-formfield>
-                  </div>
-                  <mwc-button
-                    slot="primaryAction"
-                    @click=${this._startManualInclusion}
-                  >
-                    Search device
-                  </mwc-button>`
-              : this._status === "qr_scan"
-                ? html` <ha-qr-scanner
-                      .hass=${this.hass}
-                      .localize=${this.hass.localize}
-                      .error=${this._error}
-                      @qr-code-scanned=${this._qrCodeScanned}
-                      @qr-code-error=${this._qrCodeError}
-                      @qr-code-closed=${this._startOver}
-                    ></ha-qr-scanner>
-                    <mwc-button
-                      slot="secondaryAction"
-                      @click=${this._startOver}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.common.back"
-                      )}
-                    </mwc-button>`
-                : this._status === "validate_dsk_enter_pin"
-                  ? html`
-                <p>
-                  Please enter the 5-digit PIN for your device and verify that
-                  the rest of the device-specific key matches the one that can
-                  be found on your device or the manual.
-                </p>
-                ${
-                  this._error
-                    ? html`<ha-alert alert-type="error">
-                        ${this._error}
-                      </ha-alert>`
-                    : ""
-                }
-                <div class="flex-container">
-                <ha-textfield
-                  label="PIN"
-                  id="pin-input"
-                  @keyup=${this._handlePinKeyUp}
-                ></ha-textfield>
-                ${this._dsk}
-                </div>
-                <mwc-button
-                  slot="primaryAction"
-                  @click=${this._validateDskAndEnterPin}
-                >
-                  Submit
-                </mwc-button>
-              </div>
-            `
-                  : this._status === "grant_security_classes"
-                    ? html`
-                        <h3>
-                          The device has requested the following security
-                          classes:
-                        </h3>
-                        ${this._error
-                          ? html`<ha-alert alert-type="error"
-                              >${this._error}</ha-alert
-                            >`
-                          : ""}
-                        <div class="flex-column">
-                          ${this._requestedGrant?.securityClasses
-                            .sort((a, b) => {
-                              // Put highest security classes at the top, S0 at the bottom
-                              if (a === SecurityClass.S0_Legacy) return 1;
-                              if (b === SecurityClass.S0_Legacy) return -1;
-                              return b - a;
-                            })
-                            .map(
-                              (securityClass) =>
-                                html`<ha-formfield
-                                  .label=${html`<b
-                                      >${this.hass.localize(
-                                        `ui.panel.config.zwave_js.security_classes.${SecurityClass[securityClass]}.title`
-                                      )}</b
-                                    >
-                                    <div class="secondary">
-                                      ${this.hass.localize(
-                                        `ui.panel.config.zwave_js.security_classes.${SecurityClass[securityClass]}.description`
-                                      )}
-                                    </div>`}
-                                >
-                                  <ha-checkbox
-                                    @change=${this._handleSecurityClassChange}
-                                    .value=${securityClass}
-                                    .checked=${this._securityClasses.includes(
-                                      securityClass
-                                    )}
-                                  >
-                                  </ha-checkbox>
-                                </ha-formfield>`
-                            )}
-                        </div>
-                        <mwc-button
-                          slot="primaryAction"
-                          .disabled=${!this._securityClasses.length}
-                          @click=${this._grantSecurityClasses}
-                        >
-                          Submit
-                        </mwc-button>
-                      `
-                    : this._status === "timed_out"
-                      ? html`
-                          <h3>Timed out!</h3>
-                          <p>
-                            We have not found any device in inclusion mode. Make
-                            sure the device is active and in inclusion mode.
-                          </p>
-                          <mwc-button
-                            slot="primaryAction"
-                            @click=${this._startOver}
-                          >
-                            Retry
-                          </mwc-button>
-                        `
-                      : this._status === "started_specific"
-                        ? html`<h3>
-                              ${this.hass.localize(
-                                "ui.panel.config.zwave_js.add_node.searching_device"
-                              )}
-                            </h3>
-                            <ha-spinner></ha-spinner>
-                            <p>
-                              ${this.hass.localize(
-                                "ui.panel.config.zwave_js.add_node.follow_device_instructions"
-                              )}
-                            </p>`
-                        : this._status === "started"
-                          ? html`
-                              <div class="select-inclusion">
-                                <div class="outline">
-                                  <h2>
-                                    ${this.hass.localize(
-                                      "ui.panel.config.zwave_js.add_node.searching_device"
-                                    )}
-                                  </h2>
-                                  <ha-spinner></ha-spinner>
-                                  <p>
-                                    ${this.hass.localize(
-                                      "ui.panel.config.zwave_js.add_node.follow_device_instructions"
-                                    )}
-                                  </p>
-                                  <p>
-                                    <button
-                                      class="link"
-                                      @click=${this._chooseInclusionStrategy}
-                                    >
-                                      ${this.hass.localize(
-                                        "ui.panel.config.zwave_js.add_node.choose_inclusion_strategy"
-                                      )}
-                                    </button>
-                                  </p>
-                                </div>
-                                ${this._supportsSmartStart
-                                  ? html`<div class="outline">
-                                      <h2>
-                                        ${this.hass.localize(
-                                          "ui.panel.config.zwave_js.add_node.qr_code"
-                                        )}
-                                      </h2>
-                                      <ha-svg-icon
-                                        .path=${mdiQrcodeScan}
-                                      ></ha-svg-icon>
-                                      <p>
-                                        ${this.hass.localize(
-                                          "ui.panel.config.zwave_js.add_node.qr_code_paragraph"
-                                        )}
-                                      </p>
-                                      <p>
-                                        <mwc-button @click=${this._scanQRCode}>
-                                          ${this.hass.localize(
-                                            "ui.panel.config.zwave_js.add_node.scan_qr_code"
-                                          )}
-                                        </mwc-button>
-                                      </p>
-                                    </div>`
-                                  : ""}
-                              </div>
-                              <mwc-button
-                                slot="primaryAction"
-                                @click=${this.closeDialog}
-                              >
-                                ${this.hass.localize("ui.common.cancel")}
-                              </mwc-button>
-                            `
-                          : this._status === "interviewing"
-                            ? html`
-                                <div class="flex-container">
-                                  <ha-spinner></ha-spinner>
-                                  <div class="status">
-                                    <p>
-                                      <b
-                                        >${this.hass.localize(
-                                          "ui.panel.config.zwave_js.add_node.interview_started"
-                                        )}</b
-                                      >
-                                    </p>
-                                    ${this._lowSecurity
-                                      ? html`<ha-alert
-                                          alert-type="warning"
-                                          title=${this.hass.localize(
-                                            "ui.panel.config.zwave_js.add_node.adding_insecurely"
-                                          )}
-                                        >
-                                          ${this.hass.localize(
-                                            "ui.panel.config.zwave_js.add_node.added_insecurely_text"
-                                          )}
-                                          ${typeof this._lowSecurityReason !==
-                                          "undefined"
-                                            ? html`<p>
-                                                ${this.hass.localize(
-                                                  `ui.panel.config.zwave_js.add_node.low_security_reason.${this._lowSecurityReason}`
-                                                )}
-                                              </p>`
-                                            : ""}
-                                        </ha-alert>`
-                                      : ""}
-                                    ${this._stages
-                                      ? html` <div class="stages">
-                                          ${this._stages.map(
-                                            (stage) => html`
-                                              <span class="stage">
-                                                <ha-svg-icon
-                                                  .path=${mdiCheckCircle}
-                                                  class="success"
-                                                ></ha-svg-icon>
-                                                ${stage}
-                                              </span>
-                                            `
-                                          )}
-                                        </div>`
-                                      : ""}
-                                  </div>
-                                </div>
-                                <mwc-button
-                                  slot="primaryAction"
-                                  @click=${this.closeDialog}
-                                >
-                                  ${this.hass.localize("ui.common.close")}
-                                </mwc-button>
-                              `
-                            : this._status === "failed"
-                              ? html`
-                                  <div class="flex-container">
-                                    <div class="status">
-                                      <ha-alert
-                                        alert-type="error"
-                                        .title=${this.hass.localize(
-                                          "ui.panel.config.zwave_js.add_node.inclusion_failed"
-                                        )}
-                                      >
-                                        ${this._error ||
-                                        this.hass.localize(
-                                          "ui.panel.config.zwave_js.add_node.check_logs"
-                                        )}
-                                      </ha-alert>
-                                      ${this._stages
-                                        ? html` <div class="stages">
-                                            ${this._stages.map(
-                                              (stage) => html`
-                                                <span class="stage">
-                                                  <ha-svg-icon
-                                                    .path=${mdiCheckCircle}
-                                                    class="success"
-                                                  ></ha-svg-icon>
-                                                  ${stage}
-                                                </span>
-                                              `
-                                            )}
-                                          </div>`
-                                        : ""}
-                                    </div>
-                                  </div>
-                                  <mwc-button
-                                    slot="primaryAction"
-                                    @click=${this.closeDialog}
-                                  >
-                                    ${this.hass.localize("ui.common.close")}
-                                  </mwc-button>
-                                `
-                              : this._status === "finished"
-                                ? html`
-                                    <div class="flex-container">
-                                      <ha-svg-icon
-                                        .path=${this._lowSecurity
-                                          ? mdiAlertCircle
-                                          : mdiCheckCircle}
-                                        class=${this._lowSecurity
-                                          ? "warning"
-                                          : "success"}
-                                      ></ha-svg-icon>
-                                      <div class="status">
-                                        <p>
-                                          ${this.hass.localize(
-                                            "ui.panel.config.zwave_js.add_node.inclusion_finished"
-                                          )}
-                                        </p>
-                                        ${this._lowSecurity
-                                          ? html`<ha-alert
-                                              alert-type="warning"
-                                              title=${this.hass.localize(
-                                                "ui.panel.config.zwave_js.add_node.added_insecurely"
-                                              )}
-                                            >
-                                              ${this.hass.localize(
-                                                "ui.panel.config.zwave_js.add_node.added_insecurely_text"
-                                              )}
-                                              ${typeof this
-                                                ._lowSecurityReason !==
-                                              "undefined"
-                                                ? html`<p>
-                                                    ${this.hass.localize(
-                                                      `ui.panel.config.zwave_js.add_node.low_security_reason.${this._lowSecurityReason}`
-                                                    )}
-                                                  </p>`
-                                                : nothing}
-                                            </ha-alert>`
-                                          : ""}
-                                        <a
-                                          href=${`/config/devices/device/${this._device?.id}`}
-                                        >
-                                          <mwc-button>
-                                            ${this.hass.localize(
-                                              "ui.panel.config.zwave_js.add_node.view_device"
-                                            )}
-                                          </mwc-button>
-                                        </a>
-                                        ${this._stages
-                                          ? html` <div class="stages">
-                                              ${this._stages.map(
-                                                (stage) => html`
-                                                  <span class="stage">
-                                                    <ha-svg-icon
-                                                      .path=${mdiCheckCircle}
-                                                      class="success"
-                                                    ></ha-svg-icon>
-                                                    ${stage}
-                                                  </span>
-                                                `
-                                              )}
-                                            </div>`
-                                          : ""}
-                                      </div>
-                                    </div>
-                                    <mwc-button
-                                      slot="primaryAction"
-                                      @click=${this.closeDialog}
-                                    >
-                                      ${this.hass.localize("ui.common.close")}
-                                    </mwc-button>
-                                  `
-                                : this._status === "provisioned"
-                                  ? html` <div class="flex-container">
-                                        <ha-svg-icon
-                                          .path=${mdiCheckCircle}
-                                          class="success"
-                                        ></ha-svg-icon>
-                                        <div class="status">
-                                          <p>
-                                            ${this.hass.localize(
-                                              "ui.panel.config.zwave_js.add_node.provisioning_finished"
-                                            )}
-                                          </p>
-                                        </div>
-                                      </div>
-                                      <mwc-button
-                                        slot="primaryAction"
-                                        @click=${this.closeDialog}
-                                      >
-                                        ${this.hass.localize("ui.common.close")}
-                                      </mwc-button>`
-                                  : ""}
-      </ha-dialog>
-    `;
-  }
-
-  private _shouldPreventClose(): boolean {
-    return (
-      this._status === "started_specific" ||
-      this._status === "validate_dsk_enter_pin" ||
-      this._status === "grant_security_classes" ||
-      this._status === "waiting_for_device"
-    );
-  }
-
-  private _chooseInclusionStrategy(): void {
-    this._unsubscribe();
-    this._status = "choose_strategy";
-  }
-
-  private _handleStrategyChange(ev: CustomEvent): void {
-    this._inclusionStrategy = (ev.target as any).value;
-  }
-
-  private _handleSecurityClassChange(ev: CustomEvent): void {
-    const checkbox = ev.currentTarget as HaCheckbox;
-    const securityClass = Number(checkbox.value);
-    if (checkbox.checked && !this._securityClasses.includes(securityClass)) {
-      this._securityClasses = [...this._securityClasses, securityClass];
-    } else if (!checkbox.checked) {
-      this._securityClasses = this._securityClasses.filter(
-        (val) => val !== securityClass
-      );
-    }
-  }
-
-  private async _scanQRCode(): Promise<void> {
-    this._unsubscribe();
-    this._status = "qr_scan";
-  }
-
-  private _qrCodeScanned(ev: CustomEvent): void {
-    if (this._qrProcessing) {
+      this._startInclusion();
       return;
     }
-    this._handleQrCodeScanned(ev.detail.value);
-  }
 
-  private _qrCodeError(ev: CustomEvent): void {
-    this._error = ev.detail.message;
-  }
-
-  private async _handleQrCodeScanned(qrCodeString: string): Promise<void> {
-    this._error = undefined;
-    if (this._status !== "qr_scan" || this._qrProcessing) {
-      return;
-    }
-    this._qrProcessing = true;
-    const dsk = await zwaveTryParseDskFromQrCode(
-      this.hass,
-      this._entryId!,
-      qrCodeString
-    );
-    if (dsk) {
-      this._status = "loading";
-      // wait for QR scanner to be removed before resetting qr processing
-      this.updateComplete.then(() => {
-        this._qrProcessing = false;
-      });
-      this._inclusionStrategy = InclusionStrategy.Security_S2;
-      this._startInclusion(undefined, dsk);
-      return;
-    }
-    if (
-      qrCodeString.length < MINIMUM_QR_STRING_LENGTH ||
-      !qrCodeString.startsWith("90")
-    ) {
-      this._qrProcessing = false;
-      this._error = `Invalid QR code (${qrCodeString})`;
-      return;
-    }
-    let provisioningInfo: QRProvisioningInformation;
-    try {
-      provisioningInfo = await zwaveParseQrCode(
-        this.hass,
-        this._entryId!,
-        qrCodeString
-      );
-    } catch (err: any) {
-      this._qrProcessing = false;
-      this._error = err.message;
-      return;
-    }
-    this._status = "loading";
-    // wait for QR scanner to be removed before resetting qr processing
-    this.updateComplete.then(() => {
-      this._qrProcessing = false;
-    });
-    if (provisioningInfo.version === 1) {
-      try {
-        await provisionZwaveSmartStartNode(
-          this.hass,
-          this._entryId!,
-          provisioningInfo
-        );
-        this._status = "provisioned";
-      } catch (err: any) {
-        this._error = err.message;
-        this._status = "failed";
-      }
-    } else if (provisioningInfo.version === 0) {
-      this._inclusionStrategy = InclusionStrategy.Security_S2;
-      this._startInclusion(provisioningInfo);
-    } else {
-      this._error = "This QR code is not supported";
-      this._status = "failed";
-    }
-  }
-
-  private _handlePinKeyUp(ev: KeyboardEvent) {
-    if (ev.key === "Enter") {
-      this._validateDskAndEnterPin();
-    }
-  }
-
-  private async _validateDskAndEnterPin(): Promise<void> {
-    this._status = "waiting_for_device";
-    this._error = undefined;
-    try {
-      await zwaveValidateDskAndEnterPin(
-        this.hass,
-        this._entryId!,
-        this._pinInput!.value as string
-      );
-    } catch (err: any) {
-      this._error = err.message;
-      this._status = "validate_dsk_enter_pin";
-      await this.updateComplete;
-      this._pinInput?.focus();
-    }
-  }
-
-  private async _grantSecurityClasses(): Promise<void> {
-    this._status = "waiting_for_device";
-    this._error = undefined;
-    try {
-      await zwaveGrantSecurityClasses(
-        this.hass,
-        this._entryId!,
-        this._securityClasses
-      );
-    } catch (err: any) {
-      this._error = err.message;
-      this._status = "grant_security_classes";
-    }
-  }
-
-  private _startManualInclusion() {
-    if (!this._inclusionStrategy) {
-      this._inclusionStrategy = InclusionStrategy.Default;
-    }
-    this._startInclusion();
-  }
-
-  private async _checkSmartStartSupport() {
     this._supportsSmartStart = (
       await zwaveSupportsFeature(
         this.hass,
@@ -756,10 +152,116 @@ class DialogZWaveJSAddNode extends LitElement {
         ZWaveFeature.SmartStart
       )
     ).supported;
+
+    if (this._supportsSmartStart) {
+      if (this.hass.auth.external?.config.hasBarCodeScanner) {
+        this._step = "qr_scan";
+      } else {
+        this._step = "select_method";
+      }
+    } else {
+      this._step = "started";
+      this._startInclusion();
+    }
   }
 
-  private _startOver(_ev: Event) {
-    this._startInclusion();
+  private _shouldPreventClose = memoizeOne((step: ZWaveJSAddNodeStage) =>
+    [
+      "loading",
+      "started_specific",
+      "validate_dsk_enter_pin",
+      "grant_security_classes",
+      "waiting_for_device",
+    ].includes(step)
+  );
+
+  private _handleBack() {
+    if (this._step && closeButtonStages.includes(this._step!)) {
+      this.closeDialog();
+    } else if (this._step === "select_other_method") {
+      this._step = "qr_scan";
+    } else if (this._step === "qr_scan") {
+      this._step = "select_method";
+    }
+  }
+
+  private _renderHeader() {
+    let icon: string | undefined;
+    if (this._step && closeButtonStages.includes(this._step)) {
+      icon = mdiClose;
+    } else if (this._step && backButtonStages.includes(this._step)) {
+      icon = mdiChevronLeft;
+    }
+
+    let titleTranslationKey = "title";
+
+    switch (this._step) {
+      case "qr_scan":
+        titleTranslationKey = "scan_qr_code";
+        break;
+    }
+
+    return html`
+      ${icon
+        ? html`<ha-icon-button
+            slot="navigationIcon"
+            @click=${this._handleBack}
+            .label=${this.hass.localize("ui.common.close")}
+            .path=${icon}
+          ></ha-icon-button>`
+        : nothing}
+      <span slot="title" id="dialog-light-color-favorite-title"
+        >${this.hass.localize(
+          `ui.panel.config.zwave_js.add_node.${titleTranslationKey}`
+        )}</span
+      >
+    `;
+  }
+
+  private _renderStep() {
+    if (["select_method", "select_other_method"].includes(this._step!)) {
+      return html`<zwave-js-add-node-select-method slot="content"
+        .hass=${this.hass}
+        .hideQrWebcam=${this._step === "select_other_method"}
+        @z-wave-method-selected=${this._methodSelected}
+      ></zwave-js-add-node-select-method>`;
+    }
+    
+    if (this._step === "qr_scan") {
+      return html`
+        <div slot="content">
+          <ha-qr-scanner
+            slot="content"
+            .hass=${this.hass}
+            @qr-code-scanned=${this._handleQrCodeScanned}
+            @qr-code-closed=${this.closeDialog}
+            @qr-code-more-options=${this._showMoreOptions}
+          ></ha-qr-scanner>
+        </div>
+      `;
+    }
+
+    return html`<div class="loading" slot="content">
+      <ha-fade-in .delay=${1000}>
+        <ha-spinner size="large"></ha-spinner>
+      </ha-fade-in>
+    </div>`;
+  }
+
+  private _methodSelected(ev: CustomEvent): void {
+    const method = ev.detail.method;
+    if (method === "qr_code_webcam") {
+      this._step = "qr_scan";
+    } else if (method === "qr_code_manual") {
+      this._step = "qr_code_input";
+    } else if (method === "search_device") {
+      this._step = "loading";
+      this._startInclusion();
+    }
+  }
+
+  private _showMoreOptions() {
+    this._step = "select_other_method";
   }
 
   private _startInclusion(
@@ -775,67 +277,63 @@ class DialogZWaveJSAddNode extends LitElement {
       this.hass,
       this._entryId!,
       (message) => {
-        if (message.event === "inclusion started") {
-          this._status = specificDevice ? "started_specific" : "started";
-        }
-        if (message.event === "inclusion failed") {
-          this._unsubscribe();
-          this._status = "failed";
-        }
-        if (message.event === "inclusion stopped") {
-          // We either found a device, or it failed, either way, cancel the timeout as we are no longer searching
-          if (this._addNodeTimeoutHandle) {
-            clearTimeout(this._addNodeTimeoutHandle);
-          }
-          this._addNodeTimeoutHandle = undefined;
-        }
-
-        if (message.event === "node found") {
-          // The user may have to enter a PIN. Until then prevent accidentally
-          // closing the dialog
-          this._status = "waiting_for_device";
-        }
-
-        if (message.event === "validate dsk and enter pin") {
-          this._status = "validate_dsk_enter_pin";
-          this._dsk = message.dsk;
-        }
-
-        if (message.event === "grant security classes") {
-          if (this._inclusionStrategy === undefined) {
-            zwaveGrantSecurityClasses(
-              this.hass,
-              this._entryId!,
-              message.requested_grant.securityClasses,
-              message.requested_grant.clientSideAuth
-            );
-            return;
-          }
-          this._requestedGrant = message.requested_grant;
-          this._securityClasses = message.requested_grant.securityClasses;
-          this._status = "grant_security_classes";
-        }
-
-        if (message.event === "device registered") {
-          this._device = message.device;
-        }
-        if (message.event === "node added") {
-          this._status = "interviewing";
-          this._lowSecurity = message.node.low_security;
-          this._lowSecurityReason = message.node.low_security_reason;
-        }
-
-        if (message.event === "interview completed") {
-          this._unsubscribe();
-          this._status = "finished";
-        }
-
-        if (message.event === "interview stage completed") {
-          if (this._stages === undefined) {
-            this._stages = [message.stage];
-          } else {
-            this._stages = [...this._stages, message.stage];
-          }
+        switch (message.event) {
+          case "inclusion started":
+            this._step = specificDevice ? "started_specific" : "started";
+            break;
+          case "inclusion failed":
+            this._unsubscribe();
+            this._step = "failed";
+            break;
+          case "inclusion stopped":
+            // We either found a device, or it failed, either way, cancel the timeout as we are no longer searching
+            if (this._addNodeTimeoutHandle) {
+              clearTimeout(this._addNodeTimeoutHandle);
+            }
+            this._addNodeTimeoutHandle = undefined;
+            break;
+          case "node found":
+            // The user may have to enter a PIN. Until then prevent accidentally
+            // closing the dialog
+            this._step = "waiting_for_device";
+            break;
+          case "validate dsk and enter pin":
+            this._step = "validate_dsk_enter_pin";
+            this._dsk = message.dsk;
+            break;
+          case "grant security classes":
+            if (this._inclusionStrategy === undefined) {
+              zwaveGrantSecurityClasses(
+                this.hass,
+                this._entryId!,
+                message.requested_grant.securityClasses,
+                message.requested_grant.clientSideAuth
+              );
+              break;
+            }
+            this._requestedGrant = message.requested_grant;
+            this._securityClasses = message.requested_grant.securityClasses;
+            this._step = "grant_security_classes";
+            break;
+          case "device registered":
+            this._device = message.device;
+            break;
+          case "node added":
+            this._step = "interviewing";
+            this._lowSecurity = message.node.low_security;
+            this._lowSecurityReason = message.node.low_security_reason;
+            break;
+          case "interview completed":
+            this._unsubscribe();
+            this._step = "finished";
+            break;
+          case "interview stage completed":
+            if (this._stages === undefined) {
+              this._stages = [message.stage];
+            } else {
+              this._stages = [...this._stages, message.stage];
+            }
+            break;
         }
       },
       qrProvisioningInformation,
@@ -845,21 +343,92 @@ class DialogZWaveJSAddNode extends LitElement {
       this._inclusionStrategy
     ).catch((err) => {
       this._error = err.message;
-      this._status = "failed";
+      this._step = "failed";
       return undefined;
     });
     this._addNodeTimeoutHandle = window.setTimeout(() => {
       this._unsubscribe();
-      this._status = "timed_out";
-    }, 300000);
+      this._step = "timed_out";
+    }, INCLUSION_TIMEOUT);
   }
+  
+  private async _handleQrCodeScanned(ev: CustomEvent): Promise<void> {
+    const qrCodeString = ev.detail.value;
+    this._error = undefined;
 
-  private _onBeforeUnload = (event: BeforeUnloadEvent) => {
-    if (this._shouldPreventClose()) {
-      event.preventDefault();
+    if (this._step !== "qr_scan" || this._qrProcessing) {
+      return;
     }
-    event.returnValue = true;
-  };
+
+    this._qrProcessing = true;
+    const dsk = await zwaveTryParseDskFromQrCode(
+      this.hass,
+      this._entryId!,
+      qrCodeString
+    );
+
+    if (dsk) {
+      this._step = "loading";
+      // wait for QR scanner to be removed before resetting qr processing
+      this.updateComplete.then(() => {
+        this._qrProcessing = false;
+      });
+      this._inclusionStrategy = InclusionStrategy.Security_S2;
+      this._startInclusion(undefined, dsk);
+      return;
+    }
+
+    if (
+      qrCodeString.length < MINIMUM_QR_STRING_LENGTH ||
+      !qrCodeString.startsWith("90")
+    ) {
+      this._qrProcessing = false;
+      this._error = `Invalid QR code (${qrCodeString})`;
+      this._step = "failed";
+      return;
+    }
+
+    let provisioningInfo: QRProvisioningInformation;
+
+    try {
+      provisioningInfo = await zwaveParseQrCode(
+        this.hass,
+        this._entryId!,
+        qrCodeString
+      );
+    } catch (err: any) {
+      this._qrProcessing = false;
+      this._error = err.message;
+      this._step = "failed";
+      return;
+    }
+
+    this._step = "loading";
+    // wait for QR scanner to be removed before resetting qr processing
+    this.updateComplete.then(() => {
+      this._qrProcessing = false;
+    });
+
+    if (provisioningInfo.version === 1) {
+      try {
+        await provisionZwaveSmartStartNode(
+          this.hass,
+          this._entryId!,
+          provisioningInfo
+        );
+        this._step = "provisioned";
+      } catch (err: any) {
+        this._error = err.message;
+        this._step = "failed";
+      }
+    } else if (provisioningInfo.version === 0) {
+      this._inclusionStrategy = InclusionStrategy.Security_S2;
+      this._startInclusion(provisioningInfo);
+    } else {
+      this._error = "This QR code is not supported";
+      this._step = "failed";
+    }
+  }
 
   private _unsubscribe(): void {
     if (this._subscribed) {
@@ -869,23 +438,21 @@ class DialogZWaveJSAddNode extends LitElement {
     if (this._entryId) {
       stopZwaveInclusion(this.hass, this._entryId);
       if (
-        this._status &&
+        this._step &&
         [
           "waiting_for_device",
           "validate_dsk_enter_pin",
           "grant_security_classes",
-        ].includes(this._status)
+        ].includes(this._step)
       ) {
         cancelSecureBootstrapS2(this.hass, this._entryId);
       }
-      if (this._params?.onStop) {
-        this._params.onStop();
-      }
+      this._onStop?.();
     }
     this._requestedGrant = undefined;
     this._dsk = undefined;
     this._securityClasses = [];
-    this._status = undefined;
+    this._step = undefined;
     if (this._addNodeTimeoutHandle) {
       clearTimeout(this._addNodeTimeoutHandle);
     }
@@ -893,117 +460,34 @@ class DialogZWaveJSAddNode extends LitElement {
     window.removeEventListener("beforeunload", this._onBeforeUnload);
   }
 
-  public closeDialog(): void {
+  private _dialogClosed(): void {
     this._unsubscribe();
     this._inclusionStrategy = undefined;
     this._entryId = undefined;
-    this._status = undefined;
+    this._step = undefined;
     this._device = undefined;
     this._stages = undefined;
     this._error = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
+  public closeDialog(): void {
+    this._dialog?.close();
+  }
+
   static get styles(): CSSResultGroup {
     return [
-      haStyleDialog,
-      haStyle,
       css`
-        h3 {
-          margin-top: 0;
+        ha-md-dialog {
+          --dialog-content-padding: 0 24px 24px;
+          --md-dialog-min-height: 320px;
+          --md-dialog-min-width: 560px;
         }
-
-        .success {
-          color: var(--success-color);
-        }
-
-        .warning {
-          color: var(--warning-color);
-        }
-
-        .stages {
-          margin-top: 16px;
-          display: grid;
-        }
-
-        .flex-container .stage ha-svg-icon {
-          width: 16px;
-          height: 16px;
-          margin-right: 0px;
-          margin-inline-end: 0px;
-          margin-inline-start: initial;
-        }
-        .stage {
-          padding: 8px;
-        }
-
-        .flex-container {
+        .loading {
           display: flex;
           align-items: center;
-        }
-
-        .flex-column {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .flex-column ha-formfield {
-          padding: 8px 0;
-        }
-
-        .select-inclusion {
-          display: flex;
-          align-items: center;
-        }
-
-        .select-inclusion .outline:nth-child(2) {
-          margin-left: 16px;
-          margin-inline-start: 16px;
-          margin-inline-end: initial;
-        }
-
-        .select-inclusion .outline {
-          border: 1px solid var(--divider-color);
-          border-radius: 4px;
-          padding: 16px;
-          min-height: 250px;
-          text-align: center;
-          flex: 1;
-        }
-
-        @media all and (max-width: 500px) {
-          .select-inclusion {
-            flex-direction: column;
-          }
-
-          .select-inclusion .outline:nth-child(2) {
-            margin-left: 0;
-            margin-inline-start: 0;
-            margin-inline-end: initial;
-            margin-top: 16px;
-          }
-        }
-
-        ha-svg-icon {
-          width: 68px;
-          height: 48px;
-        }
-        ha-textfield {
-          display: block;
-        }
-        .secondary {
-          color: var(--secondary-text-color);
-        }
-
-        .flex-container ha-spinner,
-        .flex-container ha-svg-icon {
-          margin-right: 20px;
-          margin-inline-end: 20px;
-          margin-inline-start: initial;
-        }
-
-        .status {
-          flex: 1;
+          justify-content: center;
+          height: 100%;
         }
       `,
     ];

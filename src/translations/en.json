@@ -1106,7 +1106,8 @@
         "only_https_supported": "You can only use your camera to scan a QR code when using HTTPS.",
         "not_supported": "Your browser doesn't support QR scanning.",
         "manual_input": "You can scan the QR code with another QR scanner and paste the code in the input below",
-        "enter_qr_code": "Enter QR code value"
+        "enter_qr_code": "Enter QR code value",
+        "retry": "Retry"
       },
       "climate-control": {
         "temperature_up": "Increase temperature",
@@ -5794,6 +5795,15 @@
               "6": "The PIN was incorrect, so the included node could not decode the key exchange commands.",
               "7": "There was a mismatch in security keys between the controller and the node.",
               "8": "Unknown error occurred."
+            },
+            "select_method": {
+              "webcam_unsupported": "You can only use your camera to scan a QR code when using a secure connection with the app or over HTTPS.",
+              "qr_code_webcam": "Scan QR code using webcam",
+              "qr_code_webcam_description": "Find and scan the code on your device.",
+              "qr_code_manual": "Enter QR code manually",
+              "qr_code_manual_description": "You can scan the QR code with another QR scanner and paste the code.",
+              "search_device": "Search for device",
+              "search_device_description": "Use this option to manually include a device that does not have a SmartStart QR code."
             }
           },
           "provisioned": {

@@ -158,6 +158,9 @@ export class HaMdDialog extends MdDialog {
         --md-dialog-headline-size: 1.574rem;
         --md-dialog-supporting-text-size: 1rem;
         --md-dialog-supporting-text-line-height: 1.5rem;
+
+        min-height: var(--md-dialog-min-height);
+        min-width: var(--md-dialog-min-width);
       }
 
       :host([type="alert"]) {
