@@ -71,7 +71,7 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
   protected render() {
     return html`
       <ha-expansion-panel
-        leftChevron
+        left-chevron
         .expanded=${this.expanded}
         @expanded-will-change=${this._expandedWillChange}
         @expanded-changed=${this._expandedChanged}
