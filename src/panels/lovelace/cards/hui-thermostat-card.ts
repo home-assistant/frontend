@@ -152,7 +152,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
           tabindex="0"
         ></ha-icon-button>
         ${this._config.features?.length
-          ? html` <hui-card-features
+          ? html`<hui-card-features
               style=${styleMap({
                 "--feature-color": color,
               })}
