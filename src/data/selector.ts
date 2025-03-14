@@ -93,9 +93,7 @@ export interface AreaSelector {
 }
 
 export interface AreasDisplaySelector {
-  areas_display: {
-    expanded?: boolean;
-  } | null;
+  areas_display: {} | null;
 }
 
 export interface AttributeSelector {
