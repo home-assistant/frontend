@@ -33,7 +33,7 @@ export class HaFilterDomains extends LitElement {
   protected render() {
     return html`
       <ha-expansion-panel
-        left-chevron
+        leftChevron
         .expanded=${this.expanded}
         @expanded-will-change=${this._expandedWillChange}
         @expanded-changed=${this._expandedChanged}

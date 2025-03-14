@@ -97,7 +97,7 @@ export class HaCardConditionEditor extends LitElement {
 
     return html`
       <div class="container">
-        <ha-expansion-panel left-chevron>
+        <ha-expansion-panel leftChevron>
           <h3 slot="header">
             <ha-svg-icon
               class="condition-icon"

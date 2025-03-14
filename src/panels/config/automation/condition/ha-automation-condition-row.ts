@@ -128,7 +128,7 @@ export default class HaAutomationConditionRow extends LitElement {
             `
           : ""}
 
-        <ha-expansion-panel left-chevron>
+        <ha-expansion-panel leftChevron>
           <h3 slot="header">
             <ha-svg-icon
               class="condition-icon"

@@ -523,7 +523,7 @@ export class HaServiceControl extends LitElement {
           return fields.length &&
             this._hasFilteredFields(fields, targetEntities)
             ? html`<ha-expansion-panel
-                left-chevron
+                leftChevron
                 .expanded=${!dataField.collapsed}
                 .header=${this.hass.localize(
                   `component.${domain}.services.${serviceName}.sections.${dataField.key}.name`

@@ -41,7 +41,7 @@ export class HaFilterStates extends LitElement {
     const hasIcon = this.states.find((item) => item.icon);
     return html`
       <ha-expansion-panel
-        left-chevron
+        leftChevron
         .expanded=${this.expanded}
         @expanded-will-change=${this._expandedWillChange}
         @expanded-changed=${this._expandedChanged}

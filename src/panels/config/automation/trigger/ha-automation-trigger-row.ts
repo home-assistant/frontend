@@ -159,7 +159,7 @@ export default class HaAutomationTriggerRow extends LitElement {
             `
           : nothing}
 
-        <ha-expansion-panel left-chevron>
+        <ha-expansion-panel leftChevron>
           <h3 slot="header">
             <ha-svg-icon
               class="trigger-icon"

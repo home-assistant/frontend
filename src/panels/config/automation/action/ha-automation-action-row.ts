@@ -203,7 +203,7 @@ export default class HaAutomationActionRow extends LitElement {
               </div>
             `
           : nothing}
-        <ha-expansion-panel left-chevron>
+        <ha-expansion-panel leftChevron>
           <h3 slot="header">
             ${type === "service" &&
             "action" in this.action &&

@@ -82,7 +82,7 @@ export default class HaScriptFieldRow extends LitElement {
 
     return html`
       <ha-card outlined>
-        <ha-expansion-panel left-chevron>
+        <ha-expansion-panel leftChevron>
           <h3 slot="header">${this.key}</h3>
 
           <slot name="icons" slot="icons"></slot>
