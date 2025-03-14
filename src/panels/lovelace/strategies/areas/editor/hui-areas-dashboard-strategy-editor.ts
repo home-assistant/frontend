@@ -4,15 +4,15 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { getAreaContext } from "../../../../../common/entity/context/get_area_context";
 import "../../../../../components/ha-expansion-panel";
+import "../../../../../components/ha-items-display-editor";
+import type {
+  DisplayItem,
+  DisplayValue,
+} from "../../../../../components/ha-items-display-editor";
 import type { HomeAssistant } from "../../../../../types";
 import type { LovelaceStrategyEditor } from "../../types";
 import type { AreasDashboardStrategyConfig } from "../areas-dashboard-strategy";
 import { getAreas } from "../helpers/areas-strategy-helpers";
-import "./ha-items-visibility-editor";
-import type {
-  VisibilityEditorItem,
-  VisibilityEditorValue,
-} from "./ha-items-visibility-editor";
 
 @customElement("hui-areas-dashboard-strategy-editor")
 export class HuiAreasDashboardStrategyEditor
@@ -35,7 +35,7 @@ export class HuiAreasDashboardStrategyEditor
 
     const areas = getAreas(this.hass.areas, [], this._config.areas_order);
 
-    const items: VisibilityEditorItem[] = areas.map((area) => {
+    const items: DisplayItem[] = areas.map((area) => {
       const { floor } = getAreaContext(area.area_id, this.hass!);
       return {
         value: area.area_id,
@@ -46,7 +46,7 @@ export class HuiAreasDashboardStrategyEditor
       };
     });
 
-    const value = {
+    const value: DisplayValue = {
       order: this._config.areas_order ?? [],
       hidden: this._config.hidden_areas ?? [],
     };
@@ -57,18 +57,18 @@ export class HuiAreasDashboardStrategyEditor
           <ha-svg-icon .path=${mdiTextureBox}></ha-svg-icon>
           Areas to show
         </h3>
-        <ha-items-visibility-editor
+        <ha-items-display-editor
           .hass=${this.hass}
           .items=${items}
           .value=${value}
-          @value-changed=${this._areaVisibilityChanged}
-        ></ha-items-visibility-editor>
+          @value-changed=${this._areaDisplayChanged}
+        ></ha-items-display-editor>
       </ha-expansion-panel>
     `;
   }
 
-  private _areaVisibilityChanged(ev: CustomEvent): void {
-    const value = ev.detail.value as VisibilityEditorValue;
+  private _areaDisplayChanged(ev: CustomEvent): void {
+    const value = ev.detail.value as DisplayValue;
     const newConfig: AreasDashboardStrategyConfig = {
       ...this._config!,
       hidden_areas: value.hidden,
