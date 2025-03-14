@@ -53,7 +53,7 @@ export class HuiAreasDashboardStrategyEditor
 
     return html`
       <ha-expansion-panel
-        leftChevron
+        left-chevron
         .expanded=${true}
         outlined
         .header=${this.hass.localize(
