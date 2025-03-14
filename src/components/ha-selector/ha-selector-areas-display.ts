@@ -1,14 +1,14 @@
 import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { AreaFilterSelector } from "../../data/selector";
+import type { AreasDisplaySelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
-import "../ha-area-filter";
+import "../ha-areas-display-editor";
 
-@customElement("ha-selector-area_filter")
-export class HaAreaFilterSelector extends LitElement {
+@customElement("ha-selector-areas_display")
+export class HaAreasDisplaySelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public selector!: AreaFilterSelector;
+  @property({ attribute: false }) public selector!: AreasDisplaySelector;
 
   @property() public value?: any;
 
@@ -22,20 +22,20 @@ export class HaAreaFilterSelector extends LitElement {
 
   protected render() {
     return html`
-      <ha-area-filter
+      <ha-areas-display-editor
         .hass=${this.hass}
         .value=${this.value}
         .label=${this.label}
         .helper=${this.helper}
         .disabled=${this.disabled}
         .required=${this.required}
-      ></ha-area-filter>
+      ></ha-areas-display-editor>
     `;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-selector-area_filter": HaAreaFilterSelector;
+    "ha-selector-areas_display": HaAreasDisplaySelector;
   }
 }

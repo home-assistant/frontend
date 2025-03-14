@@ -1,6 +1,6 @@
 import { mdiTextureBox } from "@mdi/js";
 import type { TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
+import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { getAreaContext } from "../common/entity/context/get_area_context";
@@ -12,20 +12,22 @@ import type { DisplayItem, DisplayValue } from "./ha-items-display-editor";
 import "./ha-svg-icon";
 import "./ha-textfield";
 
-export interface AreaFilterValue {
+export interface AreasDisplayValue {
   hidden?: string[];
   order?: string[];
 }
 
-@customElement("ha-area-filter")
-export class HaAreaPicker extends LitElement {
+@customElement("ha-areas-display-editor")
+export class HaAreasDisplayEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public label?: string;
 
-  @property({ attribute: false }) public value?: AreaFilterValue;
+  @property({ attribute: false }) public value?: AreasDisplayValue;
 
   @property() public helper?: string;
+
+  @property({ type: Boolean }) public expanded = false;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -55,7 +57,11 @@ export class HaAreaPicker extends LitElement {
     };
 
     return html`
-      <ha-expansion-panel outlined .header=${this.label}>
+      <ha-expansion-panel
+        outlined
+        .header=${this.label}
+        .expanded=${this.expanded}
+      >
         <ha-svg-icon slot="leading-icon" .path=${mdiTextureBox}></ha-svg-icon>
         <ha-items-display-editor
           .hass=${this.hass}
@@ -70,7 +76,7 @@ export class HaAreaPicker extends LitElement {
   private async _areaDisplayChanged(ev) {
     ev.stopPropagation();
     const value = ev.detail.value as DisplayValue;
-    const newValue: AreaFilterValue = {
+    const newValue: AreasDisplayValue = {
       ...this.value,
       ...value,
     };
@@ -83,17 +89,10 @@ export class HaAreaPicker extends LitElement {
 
     fireEvent(this, "value-changed", { value: newValue });
   }
-
-  static styles = css`
-    ha-list-item {
-      --mdc-list-side-padding-left: 8px;
-      --mdc-list-side-padding-right: 8px;
-    }
-  `;
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-area-filter": HaAreaPicker;
+    "ha-areas-display-editor": HaAreasDisplayEditor;
   }
 }
