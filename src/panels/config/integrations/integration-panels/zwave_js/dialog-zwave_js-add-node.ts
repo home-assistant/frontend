@@ -1,3 +1,4 @@
+import "@shoelace-style/shoelace/dist/components/animation/animation";
 import { mdiChevronLeft, mdiClose } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
@@ -182,7 +183,8 @@ class DialogZWaveJSAddNode extends LitElement {
   );
 
   private _handleBack() {
-    if (this._step && closeButtonStages.includes(this._step!)) {
+    if ((this._step && closeButtonStages.includes(this._step!)) ||
+    (this._step === "started" && !this._supportsSmartStart)) {
       this.closeDialog();
       return;
     }
@@ -201,14 +203,25 @@ class DialogZWaveJSAddNode extends LitElement {
         }
         this._step = "select_method";
         break;
+      case "started":
+        this._unsubscribe();
+        if (this._supportsSmartStart && this.hass.auth.external?.config.hasBarCodeScanner) {
+          this._step = "select_other_method";
+          break;
+        } else if (this._supportsSmartStart) {
+          this._step = "select_method";
+          break;
+        }
     }
   }
 
   private _renderHeader() {
     let icon: string | undefined;
-    if (this._step && closeButtonStages.includes(this._step)) {
+    if (this._step && closeButtonStages.includes(this._step) ||
+    this._step === "started" && !this._supportsSmartStart) {
       icon = mdiClose;
-    } else if (this._step && backButtonStages.includes(this._step)) {
+    } else if ((this._step && backButtonStages.includes(this._step)) ||
+    this._step === "started" && this._supportsSmartStart) {
       icon = mdiChevronLeft;
     }
 
@@ -223,6 +236,12 @@ class DialogZWaveJSAddNode extends LitElement {
         break;
       case "select_other_method":
         titleTranslationKey = "qr.other_add_options";
+        break;
+      case "started":
+        titleTranslationKey = "searching_devices";
+        break;
+      case "started_specific":
+        titleTranslationKey = "searching_specific_device";
         break;
     }
 
@@ -279,6 +298,27 @@ class DialogZWaveJSAddNode extends LitElement {
         <div slot="actions">
           <ha-button .disabled=${!this._manualQrCodeInput} @click=${this._handleQrCodeScanned}>
             ${this.hass.localize("ui.common.next")}
+          </ha-button>
+        </div>
+      `
+    }
+
+    if (this._step === "started") {
+      return html`
+        <div slot="content" class="searching-devices">
+          <div class="searching-spinner">
+            <div class="spinner">
+              <ha-spinner></ha-spinner>
+            </div>
+            <sl-animation name="pulse" easing="linear" .duration=${2000} play>
+              <div class="circle"></div>
+            </sl-animation>
+          </div>
+          <p>
+            ${this.hass.localize("ui.panel.config.zwave_js.add_node.follow_device_instructions")}
+          </p>
+          <ha-button>
+            ${this.hass.localize("ui.panel.config.zwave_js.add_node.security_options")}
           </ha-button>
         </div>
       `
@@ -554,6 +594,35 @@ class DialogZWaveJSAddNode extends LitElement {
           justify-content: center;
           height: 100%;
         }
+        .searching-devices {
+          text-align: center;
+        }
+        .searching-spinner {
+          margin-left: auto;
+          margin-right: auto;
+          position: relative;
+          width: 128px;
+          height: 128px;
+        }
+        .searching-spinner .circle {
+          border-radius: 50%;
+          background-color: var(--light-primary-color);
+          position: absolute;
+          width: calc(100% - 32px);
+          height: calc(100% - 32px);
+          margin: 16px;
+        }
+        .searching-spinner .spinner {
+          z-index: 1;
+          position: absolute;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 100%;
+          height: 100%;
+          --ha-spinner-divider-color: var(--light-primary-color);
+        }
+
         .qr-code-input ha-textfield {
           width: 100%;
         }

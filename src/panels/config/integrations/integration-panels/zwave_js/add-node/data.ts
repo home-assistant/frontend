@@ -6,6 +6,7 @@ export const backButtonStages: Partial<ZWaveJSAddNodeStage>[] = [
 
 export const closeButtonStages: Partial<ZWaveJSAddNodeStage>[] = [
   "select_method",
+  "started_specific",
 ];
 
 export type ZWaveJSAddNodeStage =

@@ -5784,8 +5784,10 @@
           },
           "add_node": {
             "title": "Add a Z-Wave device",
-            "searching_device": "Searching for devices…",
-            "follow_device_instructions": "Follow the directions that came with your device to trigger pairing on the device.",
+            "searching_devices": "Searching for devices",
+            "searching_specific_device": "Searching for device",
+            "follow_device_instructions": "Follow the directions provided with your device to put it into pairing mode (sometime called \"inclusion mode\")",
+            "security_options": "Advanced security options",
             "choose_inclusion_strategy": "How do you want to add your device",
             "inclusion_failed": "The device could not be added.",
             "check_logs": "Please check the logs for more information.",
