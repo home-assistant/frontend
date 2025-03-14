@@ -1,3 +1,4 @@
+import { mdiAlertOutline } from "@mdi/js";
 import "@material/mwc-button/mwc-button";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -10,6 +11,7 @@ import "../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-list-item";
 import "../../../components/ha-tooltip";
+import "../../../components/ha-svg-icon";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
 import { createCounter } from "../../../data/counter";
 import { createInputBoolean } from "../../../data/input_boolean";
@@ -33,6 +35,7 @@ import { isHelperDomain } from "./const";
 import type { ShowDialogHelperDetailParams } from "./show-dialog-helper-detail";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stringCompare } from "../../../common/string/compare";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 
 type HelperCreators = Record<
   HelperDomain,
@@ -210,39 +213,41 @@ export class DialogHelperDetail extends LitElement {
             const isLoaded =
               !(domain in HELPERS) || isComponentLoaded(this.hass, domain);
             return html`
-              <ha-tooltip
-                .disabled=${isLoaded}
-                .content=${this.hass.localize(
-                  "ui.dialogs.helper_settings.platform_not_loaded",
-                  { platform: domain }
-                )}
+              <ha-list-item
+                .disabled=${!isLoaded}
+                hasmeta
+                .domain=${domain}
+                @request-selected=${this._domainPicked}
+                graphic="icon"
               >
-                <div>
-                  <ha-list-item
-                    .disabled=${!isLoaded}
-                    hasmeta
-                    .domain=${domain}
-                    @request-selected=${this._domainPicked}
-                    graphic="icon"
-                  >
-                    <img
-                      slot="graphic"
-                      loading="lazy"
-                      alt=""
-                      src=${brandsUrl({
-                        domain,
-                        type: "icon",
-                        useFallback: true,
-                        darkOptimized: this.hass.themes?.darkMode,
-                      })}
-                      crossorigin="anonymous"
-                      referrerpolicy="no-referrer"
-                    />
-                    <span class="item-text"> ${label} </span>
-                    <ha-icon-next slot="meta"></ha-icon-next>
-                  </ha-list-item>
-                </div>
-              </ha-tooltip>
+                <img
+                  slot="graphic"
+                  loading="lazy"
+                  alt=""
+                  src=${brandsUrl({
+                    domain,
+                    type: "icon",
+                    useFallback: true,
+                    darkOptimized: this.hass.themes?.darkMode,
+                  })}
+                  crossorigin="anonymous"
+                  referrerpolicy="no-referrer"
+                />
+                <span class="item-text"> ${label} </span>
+                ${isLoaded
+                  ? html`<ha-icon-next slot="meta"></ha-icon-next>`
+                  : html`<ha-tooltip
+                      hoist
+                      slot="meta"
+                      .content=${this.hass.localize(
+                        "ui.dialogs.helper_settings.platform_not_loaded",
+                        { platform: domain }
+                      )}
+                      @click=${stopPropagation}
+                    >
+                      <ha-svg-icon path=${mdiAlertOutline}></ha-svg-icon>
+                    </ha-tooltip>`}
+              </ha-list-item>
             `;
           })}
         </mwc-list>
@@ -409,6 +414,9 @@ export class DialogHelperDetail extends LitElement {
         }
         ha-icon-next {
           width: 24px;
+        }
+        ha-tooltip {
+          pointer-events: auto;
         }
         .form {
           padding: 24px;
