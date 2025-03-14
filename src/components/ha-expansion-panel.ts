@@ -172,7 +172,8 @@ export class HaExpansionPanel extends LitElement {
       margin-inline-end: initial;
     }
 
-    :host([left-chevron]) .summary-icon {
+    :host([left-chevron]) .summary-icon,
+    ::slotted([slot="leading-icon"]) {
       margin-left: 0;
       margin-right: 8px;
       margin-inline-start: 0;

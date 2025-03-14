@@ -7452,7 +7452,7 @@
           },
           "strategy": {
             "original-states": {
-              "areas": "Areas",
+              "areas": "Areas to display",
               "hide_entities_without_area": "Hide entities without area",
               "hide_energy": "Hide energy"
             },
