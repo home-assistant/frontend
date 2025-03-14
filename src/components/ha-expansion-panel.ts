@@ -180,6 +180,13 @@ export class HaExpansionPanel extends LitElement {
       margin-inline-end: 8px;
     }
 
+    ::slotted(ha-svg-icon[slot="leading-icon"]) {
+      margin-left: 0;
+      margin-right: 8px;
+      margin-inline-start: 0;
+      margin-inline-end: 8px;
+    }
+
     #summary {
       flex: 1;
       display: flex;

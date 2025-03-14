@@ -7470,6 +7470,9 @@
             },
             "iframe": {
               "url": "URL"
+            },
+            "areas": {
+              "areas_header": "Areas to display"
             }
           },
           "view": {
