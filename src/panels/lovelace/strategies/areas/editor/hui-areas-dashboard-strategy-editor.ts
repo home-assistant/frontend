@@ -35,8 +35,8 @@ export class HuiAreasDashboardStrategyEditor
         .label=${this.hass.localize(
           "ui.panel.lovelace.editor.strategy.areas.areas_display"
         )}
-        expanded
         @value-changed=${this._areaDisplayChanged}
+        expanded
       ></ha-areas-display-editor>
     `;
   }
