@@ -194,8 +194,8 @@ class DialogDashboardStrategyEditor extends LitElement {
           --dialog-content-padding: 0 24px;
           --dialog-surface-position: fixed;
           --dialog-surface-top: 40px;
-          --mdc-dialog-min-width: 600px;
-          --mdc-dialog-max-width: 90vw;
+          --mdc-dialog-min-width: min(600px, calc(100% - 32px));
+          --mdc-dialog-max-width: calc(100% - 32px);
           --mdc-dialog-max-height: calc(100% - 80px);
         }
 
