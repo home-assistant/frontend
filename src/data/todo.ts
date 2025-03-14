@@ -25,7 +25,7 @@ export enum TodoSortMode {
 export interface TodoItem {
   uid: string;
   summary: string;
-  status?: TodoItemStatus;
+  status: TodoItemStatus | null;
   description?: string | null;
   due?: string | null;
 }
